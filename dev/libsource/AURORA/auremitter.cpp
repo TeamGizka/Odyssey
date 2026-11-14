@@ -2417,6 +2417,7 @@ void PartEmitter::RenderLinked()  // PC 0x004C2590 GOG 0x004C26A0
         if (i < m_lstActive.m_nCount - 1)
         {
             Vector vSegment = lstPositions[i + 1] - lstPositions[i];
+            float fInverse = 1.0f;
             float fX = vCameraX * vSegment;
             float fY = vSegment * vCameraY;
             float fLength = (float)sqrt(fX * fX + fY * fY);
@@ -2425,9 +2426,9 @@ void PartEmitter::RenderLinked()  // PC 0x004C2590 GOG 0x004C26A0
             if (fLength > EMITTER_LINK_LENGTH_EPSILON)
             {
 
-                float fInverse = 1.0f / fLength;
-                fX *= fInverse;
-                fY *= fInverse;
+                fInverse = 1.0f / fLength;
+                fX = (fX * fInverse);
+                fY = (fY * fInverse);
                 vSide = vCameraX * fY - vCameraY * fX;
                 vAlong = vCameraX * fX + vCameraY * fY;
             }
