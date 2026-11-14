@@ -4450,8 +4450,8 @@ void PartSkin::Project(const Vector& vPosition, float fDistance,
     AurSetVertexProgramParameter4f(SKIN_VP_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
 
     Part* pPart = pSkin;
-    Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
-    Quaternion qRotation = -pPart->m_qOrientation;
+    Vector vTranslation = -pSkin->m_qOrientation * -pSkin->m_vPosition;
+    Quaternion qRotation = -pSkin->m_qOrientation;
     while (pPart->m_pParent != 0)
     {
         pPart = pPart->m_pParent;
