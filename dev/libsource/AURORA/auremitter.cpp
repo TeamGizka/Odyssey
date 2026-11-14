@@ -3076,8 +3076,9 @@ void LightningEmitter::Update(float fTimeStep)
                                               (int)(fScale * m_fYSize * 100.0f));
                 bRandomStart = true;
             }
-            Vector& vEnd = m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition;
-            vEnd = m_pTarget->GetPosition();
+            Particle* pLastParticle = m_lstActive[m_lstActive.m_nCount - 1];
+            pLastParticle->m_vPosition = m_pTarget.m_pObject->GetPosition();
+            Vector& vEnd = pLastParticle->m_vPosition;
             if (m_fTargetSize != 0.0f)
             {
                 Vector vOffset;
@@ -3696,7 +3697,7 @@ void PartEmitter::RenderFunc()
                                    fBlend * lstTargetPoints[0].m_fY,
                            (1.0f - fBlend) * lstPoints[0].m_fZ +
                                    fBlend * lstTargetPoints[0].m_fZ);
-                Vector vTarget = static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition();
+                Vector vTarget = m_pTarget->GetPosition();
                 for (int j = 1; j < lstPoints.m_nCount; j++)
                 {
                     float fTime = 0.0f;
@@ -3773,7 +3774,7 @@ void PartEmitter::RenderFunc()
                                        fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[0].m_fY,
                                (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[0].m_fZ +
                                        fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[0].m_fZ);
-                    Vector vTarget = static_cast<Gob*>(pLightning->m_lstBranches[i]->m_pTarget.m_pObject)->GetPosition();
+                    Vector vTarget = pLightning->m_lstBranches[i]->m_pTarget->GetPosition();
                     for (j = 1; j < pLightning->m_lstBranches[i]->m_lstReserved21C.m_nCount; j++)
                     {
                         float fTime = 0.0f;
