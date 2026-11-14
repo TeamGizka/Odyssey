@@ -358,7 +358,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
         return 0;
     }
 
-    if (CAMERA_NAVIGATE_HS_ENABLED && g_nHSMode)
+    if (CAMERA_NAVIGATE_HS_ENABLED && (CAMERA_NAVIGATE_HS_ENABLED && g_nHSMode) != 0)
     {
         m_fSpeed *= CAMERA_NAVIGATE_HS_SPEED_SCALE;
         m_fStrafe *= CAMERA_NAVIGATE_HS_STRAFE_SCALE;
@@ -370,8 +370,8 @@ int CSWCameraNavigate::Control(float fTimeStep)
         m_fTurn = 0.0f;
         qOrientation = qOrientation * YawPitchRoll(0.0f, -90.0f, 0.0f);
         m_fLastRoll = m_fRoll =
-            (CAMERA_NAVIGATE_ROLL_HISTORY_WEIGHT - 2.0f * fTimeStep) * m_fLastRoll +
-            (2.0f * fTimeStep + CAMERA_NAVIGATE_ROLL_INPUT_WEIGHT) * m_fRoll;
+            (CAMERA_NAVIGATE_ROLL_HISTORY_WEIGHT - (fTimeStep + fTimeStep)) * m_fLastRoll +
+            (fTimeStep + fTimeStep + CAMERA_NAVIGATE_ROLL_INPUT_WEIGHT) * m_fRoll;
         qOrientation = qOrientation *
             YawPitchRoll(0.0f, 0.0f, m_fRoll - Roll(qOrientation));
         float fTilt = fTimeStep * m_fTilt;
@@ -386,10 +386,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
         qOrientation = normalize(qOrientation);
         static_cast<Gob*>(m_pObject)->SetOrientation(qOrientation);
 
-        Vector vMovement;
-        vMovement.m_fX = m_fStrafe;
-        vMovement.m_fY = (-m_fSpeed);
-        vMovement.m_fZ = 0.0f;
+        Vector vMovement(m_fStrafe, -m_fSpeed, 0.0f);
         m_fStrafe = 0.0f;
         m_fSpeed = 0.0f;
         if (vMovement.m_fX != 0.0f || vMovement.m_fY != 0.0f)
@@ -423,10 +420,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
     m_fTilt = 0.0f;
     Quaternion qMovement = YawPitchRoll(
         fYaw, fPitch - 90.0f, Roll(static_cast<Gob*>(m_pObject)->GetOrientation()));
-    Vector vMovement;
-    vMovement.m_fX = m_fStrafe;
-    vMovement.m_fY = (fDirection * m_fSpeed);
-    vMovement.m_fZ = 0.0f;
+    Vector vMovement(m_fStrafe, fDirection * m_fSpeed, 0.0f);
     if (vMovement.m_fX != 0.0f || vMovement.m_fY != 0.0f)
     {
         vMovement = (qMovement * vMovement) * fTimeStep;
