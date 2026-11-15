@@ -27,6 +27,8 @@
 #include "swguiingamegameplay.h"
 #include "swguiingameautopause.h"
 
+#define SWGUIOPTIONS_DEBUG 0
+
 #ifndef _XBOX
 void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)
 {
@@ -1094,11 +1096,6 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
-// PC 0x00750940 GOG 0x0074F8F0
-void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
-{
-    SetDescription(48722);
-}
 // PC 0x00752430 GOG 0x007529A0
 CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -1774,6 +1771,15 @@ void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
         CExoString sSection("Game Options");
         CExoString sFile(".\\swkotor2.ini");
         cIni.WriteIniEntry(sValue, sFile, sSection, sKey);
+    }
+}
+// PC 0x00750940 GOG 0x0074F8F0
+void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
+{
+    SetDescription(48722);
+    if (SWGUIOPTIONS_DEBUG)
+    {
+        SetUpOptions();
     }
 }
 // PC 0x00750950 GOG 0x00750D80
