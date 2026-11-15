@@ -25,6 +25,8 @@ template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 #include "nwseffectlist.h"
 #include "swguiingame.inl"
 
+#define SWGUIINGAME_DEBUG 0
+
 void CSWGuiMessageBox::OnDeath(CSWGuiControl* pControl)
 {
     g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
@@ -38,6 +40,13 @@ static inline void SetBorderFillImage(CSWGuiBorderParams& cParams, const CResRef
 
 void CSWGuiMessageBox::DisplayDeathMessage()
 {
+#ifndef _XBOX
+    if (SWGUIINGAME_DEBUG)
+    {
+        CSWGuiProgressBarReveal cBar;
+        CSWGuiCharButton cButton;
+    }
+#endif
     SetAllowCancel(0);
     SetMessage(42351);
     m_pCallbackObject = this;
@@ -1974,6 +1983,12 @@ CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)
     m_btnQuit.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
     m_fFadeTime = 0.5f;
 }
+#ifndef _XBOX
+// PC 0x00679E80 GOG 0x00679C50
+CSWGuiMainInterfaceChar::~CSWGuiMainInterfaceChar()
+{
+}
+#endif
 // PC 0x0067B240 GOG 0x0067B010
 CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -2170,6 +2185,12 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
         delete pSaveLoad;
     }
 }
+#ifndef _XBOX
+// PC 0x00679DC0 GOG 0x00679B90
+CSWGuiMainInterfaceChar::CSWGuiMainInterfaceChar()
+{
+}
+#endif
 // PC 0x00679F60 GOG 0x00679D30
 void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned long nMessages)
 {

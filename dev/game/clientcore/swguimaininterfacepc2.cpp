@@ -469,10 +469,6 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5
 }
 #endif
 
-// PC 0x00679DC0 GOG 0x00679B90
-CSWGuiMainInterfaceChar::CSWGuiMainInterfaceChar()
-{
-}
 
 #ifdef _XBOX
 CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()
@@ -601,11 +597,6 @@ template <> void CExoArrayList<CSWGuiFloatyText*>::DelIndex(int nIndex)
     {
         element[nIndex] = element[nIndex + 1];
     }
-}
-// PC 0x00679E80 GOG 0x00679C50
-CSWGuiMainInterfaceChar::~CSWGuiMainInterfaceChar()
-{
-    Swguimaininterfacepc2Trace1();
 }
 // PC 0x006DCFD0 GOG 0x006DD3E0
 void CSWGuiButtonToggle::SetToggled(int bToggled)
