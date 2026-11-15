@@ -48,3 +48,4 @@ template CExoLinkedList<CSWGuiInGameItemEntry>::CExoLinkedList();
 template CExoArrayList<CSWGuiControlEvent>::~CExoArrayList();
 template CExoArrayList<CSWGuiSkillStruct>::~CExoArrayList();
 template CExoArrayList<CSWGuiButton*>::CExoArrayList(int);
+template CExoArrayList<CSWSItem*>::~CExoArrayList();

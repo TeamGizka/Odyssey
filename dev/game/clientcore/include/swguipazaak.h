@@ -135,12 +135,7 @@ public:
 #else
     void SetActivated(int bActivated);
 #endif
-    // PC 0x006D2FF0 GOG 0x006D2BE0
-    void StartFlash(const Vector& vColor)
-    {
-        m_fFlashTimer = 0.8f;
-        m_vFlashColor = vColor;
-    }
+    void StartFlash(const Vector& vColor);
 
     float m_fFlashTimer;
 #ifdef _XBOX

@@ -1631,11 +1631,6 @@ void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,
     m_cThumb.Initialize(m_cExtent, cParams);
     return SetExtent(m_cExtent);
 }
-// PC 0x00417A40 GOG 0x00417A70
-inline void CSWGuiControl::SetActive(int bActive)
-{
-    m_bActive = bActive;
-}
 // PC 0x00417980 GOG 0x004179B0
 void CSWGuiListBox::SetScrollBarExtent(int nWidth, int bUpdate)
 {
@@ -1674,6 +1669,11 @@ void CSWGuiListBox::SetScrollBarOnLeft(int bLeft)
     }
     m_bScrollBarOnLeft = bLeft;
     SetScrollBarExtent(m_cScrollBar.m_cExtent.m_nWidth, 1);
+}
+// PC 0x00417A40 GOG 0x00417A70
+inline void CSWGuiControl::SetActive(int bActive)
+{
+    m_bActive = bActive;
 }
 // PC 0x00417A60 GOG 0x00417A90
 int CSWGuiListBox::GetScrollRange()

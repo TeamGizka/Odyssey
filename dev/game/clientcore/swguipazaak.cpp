@@ -228,6 +228,12 @@ inline void CSWGuiWagerPopup::HandleButtonWager(CSWGuiControl* pControl)
 {
     HandleInputEvent(45, 1);
 }
+// PC 0x006D2FF0 GOG 0x006D2BE0
+inline void CSWGuiActivatedButton::StartFlash(const Vector& vColor)
+{
+    m_fFlashTimer = 0.8f;
+    m_vFlashColor = vColor;
+}
 // PC 0x006D3020 GOG 0x006D2D80
 void CSWGuiActivatedButton::Draw(float fElapsed)
 {

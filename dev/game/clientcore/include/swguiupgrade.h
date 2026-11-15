@@ -571,13 +571,4 @@ public:
     void SetItem(unsigned long, int, unsigned long, unsigned long);
 };
 
-inline int CSWGuiUpgradeItemSelect::GetUpgradeItemEquipped()
-{
-    if (m_pUpgradeItem != 0)
-    {
-        return m_pUpgradeItem->m_bShowItemSuffix;
-    }
-    return 0;
-}
-
 #endif

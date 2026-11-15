@@ -303,6 +303,15 @@ void CSWGuiCreateItem::SetCreateTable(CExoString sTable)
 {
     m_s3EF0 = sTable;
 }
+// PC 0x00723C70 GOG 0x00723980
+inline int CSWGuiUpgradeItemSelect::GetUpgradeItemEquipped()
+{
+    if (m_pUpgradeItem != 0)
+    {
+        return m_pUpgradeItem->m_bShowItemSuffix;
+    }
+    return 0;
+}
 // PC 0x00723C90 GOG 0x007239A0
 unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemId()
 {
