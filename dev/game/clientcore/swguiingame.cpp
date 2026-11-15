@@ -1984,9 +1984,9 @@ CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)
     m_fFadeTime = 0.5f;
 }
 #ifndef _XBOX
-// PC 0x00679E80 GOG 0x00679C50
-CSWGuiMainInterfaceChar::~CSWGuiMainInterfaceChar()
+static inline void DestroyInGameMenu(CSWGuiInGameMenu* pMenu)
 {
+    pMenu->CSWGuiInGameMenu::~CSWGuiInGameMenu();
 }
 #endif
 // PC 0x0067B240 GOG 0x0067B010
@@ -2188,6 +2188,10 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
 #ifndef _XBOX
 // PC 0x00679DC0 GOG 0x00679B90
 CSWGuiMainInterfaceChar::CSWGuiMainInterfaceChar()
+{
+}
+// PC 0x00679E80 GOG 0x00679C50
+CSWGuiMainInterfaceChar::~CSWGuiMainInterfaceChar()
 {
 }
 #endif
