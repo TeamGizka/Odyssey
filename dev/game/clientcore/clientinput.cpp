@@ -2158,22 +2158,25 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
                 CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
                     g_pAppManager->GetClientExoApp()->GetModule()->
                         GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
-                if (CameraLookUp > fTiltUp)
+                do
                 {
-                    CameraLookUp -= FREE_LOOK_RETURN_STEP;
-                    if (CameraLookUp < fTiltUp)
-                        CameraLookUp = fTiltUp;
-                }
-                else if (pCamera != NULL)
-                    pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;
-                if (CameraLookDown > fTiltDown)
-                {
-                    CameraLookDown -= FREE_LOOK_RETURN_STEP;
-                    if (CameraLookDown < fTiltDown)
-                        CameraLookDown = fTiltDown;
-                }
-                else if (pCamera != NULL)
-                    pCamera->m_fTiltSpeed = fTiltSpeed;
+                    if (CameraLookUp > fTiltUp)
+                    {
+                        CameraLookUp -= FREE_LOOK_RETURN_STEP;
+                        if (CameraLookUp < fTiltUp)
+                            CameraLookUp = fTiltUp;
+                    }
+                    else if (pCamera != NULL)
+                        pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;
+                    if (CameraLookDown > fTiltDown)
+                    {
+                        CameraLookDown -= FREE_LOOK_RETURN_STEP;
+                        if (CameraLookDown < fTiltDown)
+                            CameraLookDown = fTiltDown;
+                    }
+                    else if (pCamera != NULL)
+                        pCamera->m_fTiltSpeed = fTiltSpeed;
+                } while (0);
             }
             if (bRotate && g_bLeftMouseDown && fUpDown <= 0.0f)
             {
