@@ -1341,7 +1341,7 @@ CExoEncapsulatedFile::CExoEncapsulatedFile()
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        void (CExoArrayList<CExoString>::*pfnSetSize)(int) = &CExoArrayList<CExoString>::SetSize;
     }
     Initialize();
 }

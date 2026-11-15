@@ -1545,7 +1545,8 @@ CSWCCreatureStats_ClassInfo::CSWCCreatureStats_ClassInfo()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        RemoveKnownSpell(0, 0);
+        void (CSWCCreatureStats_ClassInfo::*pfnRemove)(unsigned char, unsigned long) =
+            &CSWCCreatureStats_ClassInfo::RemoveKnownSpell;
     }
     m_nClass = 0;
     m_nLevel = 0;
