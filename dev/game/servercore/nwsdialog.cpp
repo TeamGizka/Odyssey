@@ -41,8 +41,8 @@ char* vodebug(char* szArgs)
         return "usage: VODebug <0:Off, 1:On>";
     }
     g_bVODebugEnabled = nEnable != 0;
-    _snprintf(sOut, 255, nEnable ? "VO Debug logging started."
-                                 : "VO Debug logging terminated.");
+    sprintf(sOut, nEnable ? "VO Debug logging started."
+                          : "VO Debug logging terminated.");
     return sOut;
 }
 static inline C2DA* NwsdialogEmotionTable();
