@@ -64,6 +64,13 @@
 #include "nwcprojectile.h"
 #include "nwcitem.h"
 
+#define NWVMACHINECOMMANDS_DEBUG 0
+
+static inline void DeleteMessageData(CSWCCMessageData* pData)
+{
+    delete pData;
+}
+
 int g_nRunScriptVar = 0;
 #ifdef _XBOX
 int bDisableScriptLogging = 1;
@@ -2990,118 +2997,6 @@ int CSWVirtualMachineCommands::ExecuteCommandDoSinglePlayerAutoSave(
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     pServerExoApp->SetAutoSavePending(1);
     return 0;
-}
-// PC 0x005CEC10 GOG 0x005CEC80
-int CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack(int nCommand, int nArgs)
-{
-
-    int nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
-    int bFeedback = 1;
-    unsigned char nAttackResult = 0;
-    unsigned char nConcealment = 0;
-    unsigned long oidTarget;
-    CGameObject* pTarget;
-    CGameObject* pAttacker;
-    int nAttackBonus;
-    int nRoll;
-
-    if (g_pVirtualMachine->StackPopObject(&oidTarget) == 0)
-    {
-        return ERROR_STACK_POP;
-    }
-    else
-    {
-        if (nArgs >= 2)
-        {
-            if (g_pVirtualMachine->StackPopInteger(&bFeedback) == 0)
-                return ERROR_STACK_POP;
-        }
-        CGameObjectArray* pObjectArray = g_pAppManager->GetServerExoApp()->GetObjectArray();
-        if (pObjectArray->GetGameObject(oidTarget, &pTarget) == CGameObjectArray::SUCCESS &&
-            pObjectArray->GetGameObject(m_oidObject, &pAttacker) == CGameObjectArray::SUCCESS)
-        {
-            if (pAttacker->AsSWSCreature() != NULL)
-            {
-                if (pTarget->AsSWSCreature() != NULL)
-                {
-                    if (nCommand == COMMAND_TOUCH_ATTACK_MELEE)
-                        nAttackBonus = pAttacker->AsSWSCreature()->GetStats()->GetMeleeAttackBonus(0, 1, 1, 0);
-                    else
-                        nAttackBonus = pAttacker->AsSWSCreature()->GetStats()->GetRangedAttackBonus(0, 1, 1);
-                    int nArmorClass = pTarget->AsSWSCreature()->GetStats()->GetArmorClassVersus(pAttacker->AsSWSCreature(), 1);
-                    nRoll = g_pRules->RollDice(1, 20);
-                    if (pAttacker->AsSWSCreature()->ResolveDefensiveEffects(pTarget->AsSWSObject(), 1))
-                    {
-                        nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
-                        CSWSCombatRound* pCurrentRound = pAttacker->AsSWSCreature()->m_pcCombatRound;
-                        int nCurrentAttack = pCurrentRound->m_nCurrentAttack;
-                        CSWSCombatRound* pCombatRound = pAttacker->AsSWSCreature()->m_pcCombatRound;
-                        CSWSCombatAttackData* pAttack = pCombatRound->GetAttack(nCurrentAttack);
-                        nAttackResult = pAttack->m_nAttackResult;
-                        nConcealment = pAttack->m_nConcealment;
-                    }
-                    else if (nRoll != CSWRules::ATTACK_ROLL_AUTOMATIC_MISS && (nAttackBonus + nRoll >= nArmorClass || nRoll == CSWRules::ATTACK_ROLL_AUTOMATIC_HIT))
-                    {
-                        if (nRoll == CSWRules::ATTACK_ROLL_CRITICAL_THREAT)
-                        {
-                            int nCriticalRoll = g_pRules->RollDice(1, 20);
-                            if (nAttackBonus + nCriticalRoll >= nArmorClass)
-                                nResult = CSWCCMessageData::TOUCH_ATTACK_CRITICAL;
-                            else
-                                nResult = CSWCCMessageData::TOUCH_ATTACK_HIT;
-                        }
-                        else
-                            nResult = CSWCCMessageData::TOUCH_ATTACK_HIT;
-                    }
-                    else
-                        nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
-                }
-                else if (pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR ||
-                         pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
-                    nResult = CSWCCMessageData::TOUCH_ATTACK_HIT;
-                else
-                    nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
-            }
-            else
-                nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
-        }
-        else
-            bFeedback = 0;
-        if (bFeedback == 1)
-        {
-            CSWCCMessageData* pMessageData = new CSWCCMessageData;
-            pMessageData->SetObjectID(CSWCCMessageData::TOUCH_ATTACK_ATTACKER, m_oidObject);
-            pMessageData->SetObjectID(CSWCCMessageData::TOUCH_ATTACK_TARGET, pTarget->GetId());
-            pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_BONUS, nAttackBonus);
-            pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_ROLL, nRoll);
-            if (nResult == CSWCCMessageData::TOUCH_ATTACK_MISS)
-            {
-                if (nAttackResult == 0)
-                    pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, CSWCCMessageData::TOUCH_ATTACK_MESSAGE_MISS);
-                else
-                {
-                    pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, nAttackResult);
-                    pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_CONCEALMENT, nConcealment);
-                }
-            }
-            else if (nResult == CSWCCMessageData::TOUCH_ATTACK_HIT)
-                pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, CSWCCMessageData::TOUCH_ATTACK_HIT);
-            else if (nResult == CSWCCMessageData::TOUCH_ATTACK_CRITICAL)
-                pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, CSWCCMessageData::TOUCH_ATTACK_CRITICAL);
-            if (nCommand == COMMAND_TOUCH_ATTACK_RANGED)
-                pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RANGED, 1);
-            CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(m_oidObject);
-            if (pPlayer != NULL)
-                g_pAppManager->GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
-                    pPlayer->GetPlayerId(), CSWSMessage::CC_MESSAGE_TOUCH_ATTACK, pMessageData, NULL);
-            pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(pTarget->GetId());
-            if (pPlayer != NULL)
-                g_pAppManager->GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
-                    pPlayer->GetPlayerId(), CSWSMessage::CC_MESSAGE_TOUCH_ATTACK, pMessageData, NULL);
-            delete pMessageData;
-        }
-        return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : ERROR_STACK_PUSH;
-    }
 }
 // PC 0x005B2500 GOG 0x005B2570
 int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityDecrease(int nCommand,
@@ -20899,6 +20794,10 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntryStrref(
 // PC 0x005CE800 GOG 0x005CE870
 int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
 {
+    if (NWVMACHINECOMMANDS_DEBUG)
+    {
+        CExoLinkedListNode* pPosition = g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos();
+    }
 
     unsigned long oidCreature;
     int nStrRef;
@@ -21052,6 +20951,122 @@ int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntryStrref(
         }
     }
     return 0;
+}
+// PC 0x005CEC10 GOG 0x005CEC80
+int CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack(int nCommand, int nArgs)
+{
+    if (NWVMACHINECOMMANDS_DEBUG)
+    {
+        CExoLinkedListNode* pPosition = g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos();
+    }
+
+    int nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
+    int bFeedback = 1;
+    unsigned char nAttackResult = 0;
+    unsigned char nConcealment = 0;
+    unsigned long oidTarget;
+    CGameObject* pTarget;
+    CGameObject* pAttacker;
+    int nAttackBonus;
+    int nRoll;
+
+    if (g_pVirtualMachine->StackPopObject(&oidTarget) == 0)
+    {
+        return ERROR_STACK_POP;
+    }
+    else
+    {
+        if (nArgs >= 2)
+        {
+            if (g_pVirtualMachine->StackPopInteger(&bFeedback) == 0)
+                return ERROR_STACK_POP;
+        }
+        CGameObjectArray* pObjectArray = g_pAppManager->GetServerExoApp()->GetObjectArray();
+        if (pObjectArray->GetGameObject(oidTarget, &pTarget) == CGameObjectArray::SUCCESS &&
+            pObjectArray->GetGameObject(m_oidObject, &pAttacker) == CGameObjectArray::SUCCESS)
+        {
+            if (pAttacker->AsSWSCreature() != NULL)
+            {
+                if (pTarget->AsSWSCreature() != NULL)
+                {
+                    if (nCommand == COMMAND_TOUCH_ATTACK_MELEE)
+                        nAttackBonus = pAttacker->AsSWSCreature()->GetStats()->GetMeleeAttackBonus(0, 1, 1, 0);
+                    else
+                        nAttackBonus = pAttacker->AsSWSCreature()->GetStats()->GetRangedAttackBonus(0, 1, 1);
+                    int nArmorClass = pTarget->AsSWSCreature()->GetStats()->GetArmorClassVersus(pAttacker->AsSWSCreature(), 1);
+                    nRoll = g_pRules->RollDice(1, 20);
+                    if (pAttacker->AsSWSCreature()->ResolveDefensiveEffects(pTarget->AsSWSObject(), 1))
+                    {
+                        nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
+                        CSWSCombatRound* pCurrentRound = pAttacker->AsSWSCreature()->m_pcCombatRound;
+                        int nCurrentAttack = pCurrentRound->m_nCurrentAttack;
+                        CSWSCombatRound* pCombatRound = pAttacker->AsSWSCreature()->m_pcCombatRound;
+                        CSWSCombatAttackData* pAttack = pCombatRound->GetAttack(nCurrentAttack);
+                        nAttackResult = pAttack->m_nAttackResult;
+                        nConcealment = pAttack->m_nConcealment;
+                    }
+                    else if (nRoll != CSWRules::ATTACK_ROLL_AUTOMATIC_MISS && (nAttackBonus + nRoll >= nArmorClass || nRoll == CSWRules::ATTACK_ROLL_AUTOMATIC_HIT))
+                    {
+                        if (nRoll == CSWRules::ATTACK_ROLL_CRITICAL_THREAT)
+                        {
+                            int nCriticalRoll = g_pRules->RollDice(1, 20);
+                            if (nAttackBonus + nCriticalRoll >= nArmorClass)
+                                nResult = CSWCCMessageData::TOUCH_ATTACK_CRITICAL;
+                            else
+                                nResult = CSWCCMessageData::TOUCH_ATTACK_HIT;
+                        }
+                        else
+                            nResult = CSWCCMessageData::TOUCH_ATTACK_HIT;
+                    }
+                    else
+                        nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
+                }
+                else if (pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR ||
+                         pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+                    nResult = CSWCCMessageData::TOUCH_ATTACK_HIT;
+                else
+                    nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
+            }
+            else
+                nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
+        }
+        else
+            bFeedback = 0;
+        if (bFeedback == 1)
+        {
+            CSWCCMessageData* pMessageData = new CSWCCMessageData;
+            pMessageData->SetObjectID(CSWCCMessageData::TOUCH_ATTACK_ATTACKER, m_oidObject);
+            pMessageData->SetObjectID(CSWCCMessageData::TOUCH_ATTACK_TARGET, pTarget->GetId());
+            pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_BONUS, nAttackBonus);
+            pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_ROLL, nRoll);
+            if (nResult == CSWCCMessageData::TOUCH_ATTACK_MISS)
+            {
+                if (nAttackResult == 0)
+                    pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, CSWCCMessageData::TOUCH_ATTACK_MESSAGE_MISS);
+                else
+                {
+                    pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, nAttackResult);
+                    pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_CONCEALMENT, nConcealment);
+                }
+            }
+            else if (nResult == CSWCCMessageData::TOUCH_ATTACK_HIT)
+                pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, CSWCCMessageData::TOUCH_ATTACK_HIT);
+            else if (nResult == CSWCCMessageData::TOUCH_ATTACK_CRITICAL)
+                pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RESULT, CSWCCMessageData::TOUCH_ATTACK_CRITICAL);
+            if (nCommand == COMMAND_TOUCH_ATTACK_RANGED)
+                pMessageData->SetInteger(CSWCCMessageData::TOUCH_ATTACK_RANGED, 1);
+            CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(m_oidObject);
+            if (pPlayer != NULL)
+                g_pAppManager->GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
+                    pPlayer->GetPlayerId(), CSWSMessage::CC_MESSAGE_TOUCH_ATTACK, pMessageData, NULL);
+            pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(pTarget->GetId());
+            if (pPlayer != NULL)
+                g_pAppManager->GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
+                    pPlayer->GetPlayerId(), CSWSMessage::CC_MESSAGE_TOUCH_ATTACK, pMessageData, NULL);
+            delete pMessageData;
+        }
+        return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : ERROR_STACK_PUSH;
+    }
 }
 // PC 0x005CEFB0 GOG 0x005CF020
 int CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction(int nCommand,
@@ -21453,6 +21468,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetInPersistentObject(int nCommand,
 int CSWVirtualMachineCommands::ExecuteCommandGetItemInInventory(int nCommand,
                                                                int nArgs)
 {
+    if (NWVMACHINECOMMANDS_DEBUG)
+    {
+        CExoLinkedListNode* pPosition = g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos();
+    }
 
     unsigned short nItemIndex;
     unsigned long oidItem = OBJECT_INVALID;
