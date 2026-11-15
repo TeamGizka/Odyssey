@@ -4,7 +4,7 @@
 #include "../math3d/math3d.h"
 
 class PartLight;
-inline void AurPchListPartLightPtr_Allocate() { (void)&List<PartLight*>::allocate; }
+template void List<PartLight*>::allocate(int);
 #include "aurmodel.h"
 #define WIN32_LEAN_AND_MEAN
 #include "aurprimitive.h"

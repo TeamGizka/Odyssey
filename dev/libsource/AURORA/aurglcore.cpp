@@ -5,13 +5,12 @@
 #include <string.h>
 #include "aurora.h"
 
-static inline void AurGLPoolLists()
-{
-    List<unsigned long>* pPools = new List<unsigned long>(0);
-    List<int> lstLocks(0);
-    List<char*> lstBackup(0);
-    pPools->Remove(0);
-}
+template List<unsigned long>::List(int);
+template void List<unsigned long>::Remove(unsigned long);
+template List<int>::List(int);
+template List<int>::~List();
+template List<char*>::List(int);
+template List<char*>::~List();
 #include <GL/gl.h>
 #include <GL/glu.h>
 

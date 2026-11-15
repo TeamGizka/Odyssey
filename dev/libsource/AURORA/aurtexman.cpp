@@ -13,10 +13,10 @@
 #include "aurbehavior.h"
 
 class CAurTextureBasic;
-inline void AurTexPchDelIndex() { (void)&List<CAurTextureBasic*>::DelIndex; }
-inline void AurTexPchAllocate() { (void)&List<SafePointer<CAurObject>*>::Add; (void)&List<char*>::allocate; (void)&List<int>::allocate; }
-inline void AurTexPchListVector() { List<Vector> lstVertices; }
-inline void AurTexPchSP(SafePointer<CAurTexture>* p) { delete p; }
+template void List<CAurTextureBasic*>::DelIndex(int);
+template void List<int>::allocate(int);
+template List<Vector>::~List();
+template SafePointer<CAurTexture>::~SafePointer();
 #include "aurconsole.h"
 
 int AurTextureCompressionAvailable();
