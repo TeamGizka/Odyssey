@@ -1489,10 +1489,65 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
     pModule = (CResGFF*)g_pExoResMan->GetResObject("Module", RESTYPE_IFO);
     CExoString sPlayerName;
     CResStruct cModuleStruct;
+    CResList cOldPlayerList;
+    CResStruct cOldPlayerStruct;
+    int bSuccess;
     if (pModule == NULL)
         return 0;
     pModule->Demand();
     pModule->GetTopLevelStruct(&cModuleStruct);
+    if (NWSMODULE_DEBUG)
+    {
+        if (!pModule->GetList(&cOldPlayerList, &cModuleStruct, "Mod_PlayerList"))
+        {
+            pModule->Release();
+            g_pExoResMan->ReleaseResObject(pModule);
+            return 0;
+        }
+        for (nPlayer = 0; nPlayer < m_lstPlayers.Count(); nPlayer++)
+        {
+            int bSaved = 0;
+            for (int nSaved = 0; nSaved < lstSavedPlayers.num; nSaved++)
+            {
+                if (lstSavedPlayers[nSaved] == nPlayer)
+                {
+                    bSaved = 1;
+                    break;
+                }
+            }
+            if (!bSaved)
+            {
+                if (!pModule->GetListElement(&cOldPlayerStruct, &cOldPlayerList, nPlayer))
+                {
+                    g_pExoResMan->ReleaseResObject(pModule);
+                    return 0;
+                }
+                unsigned long oidPlayer = pModule->ReadFieldDWORD(&cOldPlayerStruct,
+                    "ObjectId", bSuccess, OBJECT_INVALID);
+                sPlayerName = pModule->ReadFieldCExoString(&cOldPlayerStruct,
+                    "Mod_CommntyName", bSuccess, -1);
+                if (!lstPlayers.Contains(oidPlayer) && oidPlayer != OBJECT_INVALID)
+                {
+                    CSWSPlayer* pPlayer = new CSWSPlayer(oidPlayer);
+                    pPlayer->LoadCharacterFromIFO(nPlayer, 1, 0);
+                    CSWSCreature* pCreature = (CSWSCreature*)pPlayer->GetGameObject();
+                    pRes->AddListElement(&cPlayerStruct, &cPlayerList, GFF_STRUCT_PLAYER);
+                    pRes->WriteFieldCExoString(&cPlayerStruct, sPlayerName, "Mod_CommntyName");
+                    int bIsPrimaryPlayer = pPlayer->m_bIsAllowedToSave;
+                    pRes->WriteFieldBYTE(&cPlayerStruct,
+                        bIsPrimaryPlayer, "Mod_IsPrimaryPlr");
+                    pRes->WriteFieldCExoLocString(&cPlayerStruct,
+                        pCreature->GetStats()->m_lsFirstName, "Mod_FirstName");
+                    pRes->WriteFieldCExoLocString(&cPlayerStruct,
+                        pCreature->GetStats()->m_lsLastName, "Mod_LastName");
+                    pRes->WriteFieldDWORD(&cPlayerStruct, pCreature->GetId(), "ObjectId");
+                    pCreature->SaveCreature(pRes, &cPlayerStruct);
+                    pCreature->RemoveFromArea(0);
+                    delete pPlayer;
+                }
+            }
+        }
+    }
     pModule->Release();
     g_pExoResMan->ReleaseResObject(pModule);
     return 0;

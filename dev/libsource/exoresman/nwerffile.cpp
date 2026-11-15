@@ -346,8 +346,8 @@ int CERFFile::SetNumEntries(unsigned long nEntries)
 
     if (NWERFFILE_DEBUG)
     {
-        CERFRes res;
-        res.CopyToFile(m_pFile, m_pFile, NULL);
+        CERFRes* pRes = NULL;
+        pRes->CopyToFile(m_pFile, m_pFile, NULL);
     }
     return 0;
 }

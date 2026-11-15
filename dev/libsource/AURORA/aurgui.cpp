@@ -864,8 +864,8 @@ CAurGUIImageInternal::~CAurGUIImageInternal()
 {
     if (AURGUI_DEBUG)
     {
-        List<int> lstTextureTIDs;
-        lstTextureTIDs.Add(m_pMaterial->GetTextureTID());
+        List<int>* pTextureTIDs = NULL;
+        pTextureTIDs->Add(m_pMaterial->GetTextureTID());
     }
     if (CAurGUIImage::cm_nGUITID == m_pMaterial->GetTextureTID())
     {
