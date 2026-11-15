@@ -35,6 +35,7 @@ static inline void Swguimaininterfacepc2Trace3();
 static inline void Swguimaininterfacepc2Trace2();
 static inline void Swguimaininterfacepc2Trace1();
 #define SWGUIMAININTERFACEPC2_TRACE() Swguimaininterfacepc2Trace1()
+#define SWGUIMAININTERFACEPC2_DEBUG 0
 
 // PC 0x004015A0 GOG 0x004015A0
 void CSWGuiMainInterface::QueueActiveAction()
@@ -2546,15 +2547,15 @@ void CSWGuiTargetActionMenu::DoTargetAction(int nMenu, int bUnknown)  // PC 0x00
         {
             for (int nAction = 0; nAction < lActions.num; nAction++)
             {
-                if (lActions[nAction].m_nAction == nSelected)
+                if (lActions.element[nAction].m_nAction == nSelected)
                 {
-                    pAction = &lActions[nAction];
+                    pAction = &lActions.element[nAction];
                     break;
                 }
             }
         }
         if (pAction == NULL)
-            pAction = &lActions[0];
+            pAction = &lActions.element[0];
 
         if (pPlayer != NULL && pAction != NULL)
         {
@@ -3542,17 +3543,17 @@ void CSWGuiMainInterface::DoPersonalAction(int nMenu, int bUnknown)  // PC 0x006
                 for (int nAction = 0;
                      nAction < m_aPersonalActionLists[nMenu].num; nAction++)
                 {
-                    if (m_aPersonalActionLists[nMenu][nAction].m_nAction ==
+                    if (m_aPersonalActionLists[nMenu].element[nAction].m_nAction ==
                         nSelected)
                     {
-                        pAction = &m_aPersonalActionLists[nMenu][nAction];
+                        pAction = &m_aPersonalActionLists[nMenu].element[nAction];
                         break;
                     }
                 }
             }
             if (pAction == NULL)
             {
-                pAction = &m_aPersonalActionLists[nMenu][0];
+                pAction = &m_aPersonalActionLists[nMenu].element[0];
             }
 
             if (pPlayer != NULL && pAction != NULL)
@@ -4015,7 +4016,7 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006
     {
         for (int nAction = 0; nAction < m_aActionLists[nMenu].num; nAction++)
         {
-            m_aActionLists[nMenu][nAction].Clear();
+            m_aActionLists[nMenu].element[nAction].Clear();
         }
         m_aActionLists[nMenu].num = 0;
         pCreature->GetTargetActions(pTarget, nMenu, m_aActionLists[nMenu]);
@@ -4027,7 +4028,7 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006
         int nAction;
         for (nAction = 0; nAction < m_aActionLists[nMenu].num; nAction++)
         {
-            if (m_aActionLists[nMenu][nAction].m_nAction ==
+            if (m_aActionLists[nMenu].element[nAction].m_nAction ==
                 m_aSelectedActions[m_nTargetType][nMenu])
             {
                 bFound = 1;
@@ -4038,18 +4039,18 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006
         {
             m_aActions[nMenu].Show(0, m_aActionLists[nMenu].num > 1);
             m_aActions[nMenu].SetIcon(
-                m_aActionLists[nMenu][nAction].m_resIcon,
-                m_aActionLists[nMenu][nAction].m_sName,
-                m_aActionLists[nMenu][nAction].m_bEnabled &&
+                m_aActionLists[nMenu].element[nAction].m_resIcon,
+                m_aActionLists[nMenu].element[nAction].m_sName,
+                m_aActionLists[nMenu].element[nAction].m_bEnabled &&
                     bDisabled == 0, 0);
         }
         else if (m_aActionLists[nMenu].num > 0)
         {
             m_aActions[nMenu].Show(0, m_aActionLists[nMenu].num > 1);
             m_aActions[nMenu].SetIcon(
-                m_aActionLists[nMenu][0].m_resIcon,
-                m_aActionLists[nMenu][0].m_sName,
-                m_aActionLists[nMenu][0].m_bEnabled &&
+                m_aActionLists[nMenu].element[0].m_resIcon,
+                m_aActionLists[nMenu].element[0].m_sName,
+                m_aActionLists[nMenu].element[0].m_bEnabled &&
                     bDisabled == 0, 0);
         }
         else
@@ -4323,7 +4324,7 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x00
             for (int nAction = 0; nAction < m_aPersonalActionLists[nMenu].num;
                  nAction++)
             {
-                m_aPersonalActionLists[nMenu][nAction].Clear();
+                m_aPersonalActionLists[nMenu].element[nAction].Clear();
             }
             m_aPersonalActionLists[nMenu].num = 0;
             pCreature->GetPersonalActions(nMenu, m_aPersonalActionLists[nMenu]);
@@ -4337,7 +4338,7 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x00
             for (nAction = 0; nAction < m_aPersonalActionLists[nMenu].num;
                  nAction++)
             {
-                if (m_aPersonalActionLists[nMenu][nAction].m_nAction ==
+                if (m_aPersonalActionLists[nMenu].element[nAction].m_nAction ==
                     m_aSelectedPersonalActions[nMenu])
                 {
                     bFound = 1;
@@ -4349,9 +4350,9 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x00
                 m_aPersonalActions[nMenu].Show(0,
                     m_aPersonalActionLists[nMenu].num > 1);
                 m_aPersonalActions[nMenu].SetIcon(
-                    m_aPersonalActionLists[nMenu][nAction].m_resIcon,
-                    m_aPersonalActionLists[nMenu][nAction].m_sName,
-                    m_aPersonalActionLists[nMenu][nAction].m_bEnabled &&
+                    m_aPersonalActionLists[nMenu].element[nAction].m_resIcon,
+                    m_aPersonalActionLists[nMenu].element[nAction].m_sName,
+                    m_aPersonalActionLists[nMenu].element[nAction].m_bEnabled &&
                         bDisabled == 0, 0);
             }
             else if (m_aPersonalActionLists[nMenu].num > 0)
@@ -4359,9 +4360,9 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x00
                 m_aPersonalActions[nMenu].Show(0,
                     m_aPersonalActionLists[nMenu].num > 1);
                 m_aPersonalActions[nMenu].SetIcon(
-                    m_aPersonalActionLists[nMenu][0].m_resIcon,
-                    m_aPersonalActionLists[nMenu][0].m_sName,
-                    m_aPersonalActionLists[nMenu][0].m_bEnabled &&
+                    m_aPersonalActionLists[nMenu].element[0].m_resIcon,
+                    m_aPersonalActionLists[nMenu].element[0].m_sName,
+                    m_aPersonalActionLists[nMenu].element[0].m_bEnabled &&
                         bDisabled == 0, 0);
             }
             else
@@ -4377,7 +4378,7 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x00
 #ifndef _XBOX
 void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x006E3980 GOG 0x006E4670
 {
-    Swguimaininterfacepc2Trace3();
+    Swguimaininterfacepc2Trace2();
     if (pControl->m_bSelected != 0)
     {
         int nIndex = pControl->m_nIndex;
@@ -4395,6 +4396,7 @@ void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x
 #ifndef _XBOX
 void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3A70 GOG 0x006E3660
 {
+    Swguimaininterfacepc2Trace3();
     if (pControl->m_bSelected != 0)
     {
         ResetPartyMemberItemUse();
@@ -4415,6 +4417,7 @@ void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC
 #ifndef _XBOX
 void CSWGuiMainInterface::OnActionDownArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3AF0 GOG 0x006E36E0
 {
+    Swguimaininterfacepc2Trace3();
     if (pControl->m_bSelected != 0)
     {
         ResetPartyMemberItemUse();
@@ -4631,6 +4634,10 @@ void CSWGuiMainInterface::Draw(float fElapsed)
 #endif
     PopulateMenus(1);
 #ifndef _XBOX
+    if (SWGUIMAININTERFACEPC2_DEBUG)
+    {
+        CExoArrayList<CSWGuiInterfaceAction> lstActions;
+    }
     if (m_bSelectingUseItemTarget)
     {
         CSWSCreature* pServerCreature = pPlayer->GetServerCreature();
