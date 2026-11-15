@@ -766,15 +766,15 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
                         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
                                      pTextureCoords[2 * (nEnd + i) + 1]);
                         vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
-                        vVertex = -qWorldOrientation *
-                            (vCurrent + qCurrent * vVertex - vWorldPosition);
+                        vVertex = vCurrent + qCurrent * vVertex - vWorldPosition;
+                        vVertex = -qWorldOrientation * vVertex;
                         SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
                         avTrail[i] = vVertex;
                         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
                                      pTextureCoords[2 * (nEnd + i) + 1]);
                         vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
-                        vVertex = -qWorldOrientation *
-                            (vPrevious + qPrevious * vVertex - vWorldPosition);
+                        vVertex = vPrevious + qPrevious * vVertex - vWorldPosition;
+                        vVertex = -qWorldOrientation * vVertex;
                         SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
                         avTrail[i] = avTrail[i] - vVertex;
                     }
@@ -810,8 +810,8 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
                          pTextureCoords[2 * (nEnd + i) + 1]);
             vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
-            vVertex = -qWorldOrientation *
-                (vCurrent + qCurrent * vVertex - vWorldPosition);
+            vVertex = vCurrent + qCurrent * vVertex - vWorldPosition;
+            vVertex = -qWorldOrientation * vVertex;
             float fX = vVertex.m_fX;
             float fY = vVertex.m_fY;
             float fZ = vVertex.m_fZ;
