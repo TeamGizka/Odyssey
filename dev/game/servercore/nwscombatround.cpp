@@ -19,6 +19,8 @@
 #include "nwcanimbase.h"
 #include "nwccreature.h"
 
+#define NWSCOMBATROUND_DEBUG 0
+
 int g_bPauseCombatEndOfRound = 0;
 int g_nCombatStretch = 0;
 // PC 0x004015A0 GOG 0x004015A0
@@ -1257,6 +1259,49 @@ int CSWSCombatRound::RemoveLastAction()
 
     return bRemoved;
 }
+// PC 0x00528B60 GOG 0x00528BE0
+int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
+{
+    if (NWSCOMBATROUND_DEBUG)
+    {
+        int bPending = GetActionPending();
+    }
+    m_nOnHandAttacks = m_pBaseCreature->m_pStats->GetAttacksPerRound();
+    m_nOnHandAttacks += GetFunctionalBonusEffectAttacks();
+
+    if (nFeat == CSWFeat::FEAT_FLURRY)
+    {
+        m_nOnHandAttacks++;
+    }
+    else if (nFeat == CSWFeat::FEAT_IMPROVED_FLURRY)
+    {
+        m_nOnHandAttacks++;
+    }
+    else if (nFeat == CSWFeat::FEAT_WHIRLWIND_ATTACK)
+    {
+        m_nOnHandAttacks++;
+    }
+    else if (nFeat == CSWFeat::FEAT_RAPID_SHOT)
+    {
+        m_nOnHandAttacks++;
+    }
+    else if (nFeat == CSWFeat::FEAT_IMPROVED_RAPID_SHOT)
+    {
+        m_nOnHandAttacks++;
+    }
+    else if (nFeat == CSWFeat::FEAT_MULTI_SHOT)
+    {
+        m_nOnHandAttacks++;
+    }
+
+    if (m_pBaseCreature->IsWieldingLightsaber() &&
+        m_pBaseCreature->m_n1110 == 264)
+    {
+        m_nOnHandAttacks++;
+    }
+
+    return m_nOnHandAttacks;
+}
 // PC 0x00528C00 GOG 0x00528C80
 void CSWSCombatRound::ClearAllAttacks()
 {
@@ -1851,45 +1896,6 @@ void CSWSCombatRound::SetOffHandAttack(int bOffHand)
 int CSWSCombatRound::GetOffHandAttack()
 {
     return m_bOffHandAttack;
-}
-// PC 0x00528B60 GOG 0x00528BE0
-int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
-{
-    m_nOnHandAttacks = m_pBaseCreature->m_pStats->GetAttacksPerRound();
-    m_nOnHandAttacks += GetFunctionalBonusEffectAttacks();
-
-    if (nFeat == CSWFeat::FEAT_FLURRY)
-    {
-        m_nOnHandAttacks++;
-    }
-    else if (nFeat == CSWFeat::FEAT_IMPROVED_FLURRY)
-    {
-        m_nOnHandAttacks++;
-    }
-    else if (nFeat == CSWFeat::FEAT_WHIRLWIND_ATTACK)
-    {
-        m_nOnHandAttacks++;
-    }
-    else if (nFeat == CSWFeat::FEAT_RAPID_SHOT)
-    {
-        m_nOnHandAttacks++;
-    }
-    else if (nFeat == CSWFeat::FEAT_IMPROVED_RAPID_SHOT)
-    {
-        m_nOnHandAttacks++;
-    }
-    else if (nFeat == CSWFeat::FEAT_MULTI_SHOT)
-    {
-        m_nOnHandAttacks++;
-    }
-
-    if (m_pBaseCreature->IsWieldingLightsaber() &&
-        m_pBaseCreature->m_n1110 == 264)
-    {
-        m_nOnHandAttacks++;
-    }
-
-    return m_nOnHandAttacks;
 }
 // PC 0x00527CD0 GOG 0x00527D30
 int CSWSCombatRound::CalculateOffHandAttacks()

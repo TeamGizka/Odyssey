@@ -43,6 +43,12 @@
 #include "nwskill.h"
 #include "aurdraw.h"
 
+static inline void NWSObjectAIDebugDelete(CSWSObjectActionNode* pAction)
+{
+    delete pAction;
+}
+
+
 int RenderAi = 0;
 
 int OverrideReputation = CSWSObject::REPUTATION_NO_OVERRIDE;
