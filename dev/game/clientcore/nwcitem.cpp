@@ -54,13 +54,37 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
     m_bPowered = 0;
     m_nUnknown1A0 = 0;
 }
+// PC 0x0069D650 GOG 0x0069D430
+CSWCItem::~CSWCItem()
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel(MODEL_SLOT_VISUAL_EFFECT);
+    }
+    UnloadModel();
+
+    if (m_pActiveProperties != NULL)
+    {
+        delete[] m_pActiveProperties;
+        m_pActiveProperties = NULL;
+    }
+    if (m_pVisualEffect != NULL)
+    {
+        m_pVisualEffect->AttachToObject(NULL, "", Gob::ATTACH_NORMAL);
+        delete m_pVisualEffect;
+        m_pVisualEffect = NULL;
+    }
+    if (m_pPowerSound != NULL)
+    {
+        delete m_pPowerSound;
+    }
+    m_pPowerSound = NULL;
+}
 
 #include "appmanager.h"
 
 #define NWCITEM_DEBUG 0
 
-static inline void NwcitemTrace1();
-#define NWCITEM_TRACE() NwcitemTrace1()
 // PC 0x0069CC10 GOG 0x0069C9C0
 void CSWCItem::AIUpdate()
 {
@@ -192,6 +216,16 @@ CSWCCreature* CSWCItem::GetEquippedBy()
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     return pClientExoApp->GetCreatureByGameObjectID(nEquippedBy);
 }
+// PC 0x006DB7A0 GOG 0x0069CD00
+void CSWCItem::UnloadModel()
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel();
+        delete m_pAnimBase;
+        m_pAnimBase = NULL;
+    }
+}
 // PC 0x0069CF50 GOG 0x0069CD30
 void CSWCItem::UnloadModel(unsigned char nModel)
 {
@@ -264,6 +298,19 @@ int CSWCItem::GetActivePropertySpellID(int nIndex)
         return -1;
     }
     return m_pActiveProperties[nIndex].m_nSubtype;
+}
+// PC 0x0069D750 GOG 0x0069D530
+void CSWCItem::SetOrientation(const Vector& vOrientation)
+{
+    m_vOrientation = vOrientation;
+    Vector vNormal(0.0f, 0.0f, 1.0f);
+    if (enableitemgroundalignment && m_pArea)
+    {
+        Vector vPosition = m_vPosition;
+        vPosition.m_fZ = 0.0f;
+        ComputeZValue(&vPosition, 0.0f, &vNormal);
+    }
+    UpdateOrientation(vNormal);
 }
 // PC 0x0069D110 GOG 0x0069CEF0
 void CSWCItem::SetStackSize(int nStackSize)
@@ -407,173 +454,13 @@ void CSWCItem::SetArea(CSWCArea* pArea)
         SetPosition(m_vPosition);
     }
 }
-// PC 0x0069D2B0 GOG 0x0069D090
-void CSWCItem::SetItemPropertyUsesLeft(int nIndex, unsigned short nUsesLeft)
-{
-    if (nIndex < 8)
-    {
-        m_anItemPropertyUsesLeft[nIndex] = nUsesLeft;
-        if (nIndex == m_nActivePropertyIndex && nUsesLeft == 0)
-        {
-            int i;
-            for (i = 0; i < 8; i++)
-            {
-                CSWItemProperty* pProperty = GetActiveProperty(i);
-                if (pProperty != NULL && pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM &&
-                    m_anItemPropertyUsesLeft[i] > 0)
-                {
-                    m_nActivePropertyIndex = i;
-                    break;
-                }
-            }
-            if (i == 8)
-            {
-                m_nActivePropertyIndex = -1;
-            }
-        }
-    }
-}
-// PC 0x0069D330 GOG 0x0069D110
-void CSWCItem::UpdateOrientation(const Vector& vNormal)
-{
-    Quaternion qOrientation;
-    float fRoll = 0.0f;
-    float fPitch = 0.0f;
-
-    if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nRotateOnGround ==
-        CSWBaseItem::GROUND_ROTATION_ROLL)
-    {
-        fRoll = 90.0f;
-    }
-    else if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nRotateOnGround ==
-             CSWBaseItem::GROUND_ROTATION_PITCH)
-    {
-        fPitch = 90.0f;
-    }
-
-    qOrientation = YawPitchRoll(Yaw(m_vOrientation), fPitch, fRoll);
-    if (enableitemgroundalignment != 0)
-    {
-        Vector vUp(0.0f, 0.0f, 1.0f);
-        qOrientation = RotationArc(vUp, vNormal) * qOrientation;
-    }
-    CSWCAnimBase* pAnimBase = m_pAnimBase;
-    if (pAnimBase != NULL)
-    {
-        pAnimBase->SetOrientation(qOrientation);
-    }
-}
-// PC 0x006DB7A0 GOG 0x0069CD00
-void CSWCItem::UnloadModel()
-{
-    if (m_pAnimBase != NULL)
-    {
-        m_pAnimBase->UnloadModel();
-        delete m_pAnimBase;
-        m_pAnimBase = NULL;
-    }
-}
-// PC 0x0069D520 GOG 0x0069D300
-void CSWCItem::ResolveCreaturePoweredAnimations(int bPower)
-{
-    CSWCCreature* pCreature = g_pAppManager->GetClientExoApp()->
-        GetCreatureByGameObjectID(m_oidEquippedBy);
-    if (pCreature != NULL)
-    {
-        unsigned char nPoweredAnimations = 0;
-        if (pCreature->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND) == GetId())
-        {
-            nPoweredAnimations = CSWCAnimBase::POWERED_ANIMATION_RIGHTHAND;
-        }
-        else if (pCreature->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND) == GetId())
-        {
-            nPoweredAnimations = CSWCAnimBase::POWERED_ANIMATION_LEFTHAND;
-        }
-        if (pCreature->GetAnimationBase() != NULL)
-        {
-            if (bPower && !m_bPowered)
-            {
-                nPoweredAnimations |= pCreature->GetAnimationBase()->m_nPoweredAnimations;
-            }
-            else if (!bPower && m_bPowered)
-            {
-                nPoweredAnimations = ~nPoweredAnimations &
-                    pCreature->GetAnimationBase()->m_nPoweredAnimations;
-            }
-            else if (!bPower && !m_bPowered)
-            {
-                nPoweredAnimations &= ~(CSWCAnimBase::POWERED_ANIMATION_RIGHTHAND |
-                    CSWCAnimBase::POWERED_ANIMATION_LEFTHAND);
-            }
-
-            if (GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_POWERED_HAND_39 &&
-                GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_POWERED_HAND_40 &&
-                GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_POWERED_HAND_41)
-            {
-                nPoweredAnimations |= CSWCAnimBase::POWERED_ANIMATION_OTHER;
-            }
-            else
-            {
-                nPoweredAnimations &= ~CSWCAnimBase::POWERED_ANIMATION_OTHER;
-            }
-            pCreature->GetAnimationBase()->m_nPoweredAnimations = nPoweredAnimations;
-        }
-    }
-}
-// PC 0x0069D610 GOG 0x0069D3F0
-CSWSItem* CSWCItem::GetServerItem()
-{
-    if (GetServerObject() != NULL)
-    {
-        return GetServerObject()->AsSWSItem();
-    }
-    return NULL;
-}
-// PC 0x0069D650 GOG 0x0069D430
-CSWCItem::~CSWCItem()
-{
-    NWCITEM_TRACE();
-    if (m_pAnimBase != NULL)
-    {
-        m_pAnimBase->UnloadModel(MODEL_SLOT_VISUAL_EFFECT);
-    }
-    UnloadModel();
-
-    if (m_pActiveProperties != NULL)
-    {
-        delete[] m_pActiveProperties;
-        m_pActiveProperties = NULL;
-    }
-    if (m_pVisualEffect != NULL)
-    {
-        m_pVisualEffect->AttachToObject(NULL, "", Gob::ATTACH_NORMAL);
-        delete m_pVisualEffect;
-        m_pVisualEffect = NULL;
-    }
-    if (m_pPowerSound != NULL)
-    {
-        delete m_pPowerSound;
-    }
-    m_pPowerSound = NULL;
-}
-// PC 0x0069D750 GOG 0x0069D530
-void CSWCItem::SetOrientation(const Vector& vOrientation)
-{
-    NWCITEM_TRACE();
-    m_vOrientation = vOrientation;
-    Vector vNormal(0.0f, 0.0f, 1.0f);
-    if (enableitemgroundalignment && m_pArea)
-    {
-        Vector vPosition = m_vPosition;
-        vPosition.m_fZ = 0.0f;
-        ComputeZValue(&vPosition, 0.0f, &vNormal);
-    }
-    UpdateOrientation(vNormal);
-}
 // PC 0x0069D7F0 GOG 0x0069D5D0
 CExoString CSWCItem::GetName(int bFullName)
 {
-    NWCITEM_TRACE();
+    if (NWCITEM_DEBUG)
+    {
+        CSWSItem* pServerItem = GetServerItem();
+    }
     STR_RES strRes;
     CExoString sName;
 
@@ -602,13 +489,35 @@ CExoString CSWCItem::GetName(int bFullName)
 
     return sName;
 }
+// PC 0x0069D2B0 GOG 0x0069D090
+void CSWCItem::SetItemPropertyUsesLeft(int nIndex, unsigned short nUsesLeft)
+{
+    if (nIndex < 8)
+    {
+        m_anItemPropertyUsesLeft[nIndex] = nUsesLeft;
+        if (nIndex == m_nActivePropertyIndex && nUsesLeft == 0)
+        {
+            int i;
+            for (i = 0; i < 8; i++)
+            {
+                CSWItemProperty* pProperty = GetActiveProperty(i);
+                if (pProperty != NULL && pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM &&
+                    m_anItemPropertyUsesLeft[i] > 0)
+                {
+                    m_nActivePropertyIndex = i;
+                    break;
+                }
+            }
+            if (i == 8)
+            {
+                m_nActivePropertyIndex = -1;
+            }
+        }
+    }
+}
 // PC 0x0069D9D0 GOG 0x0069D7B0
 void CSWCItem::SetPosition(const Vector& vPosition)
 {
-    if (NWCITEM_DEBUG)
-    {
-        CExoString sName = GetName(1);
-    }
     Vector vNormal(0.0f, 0.0f, 1.0f);
     Vector vNewPosition = vPosition;
 
@@ -640,10 +549,6 @@ void CSWCItem::SetPosition(const Vector& vPosition)
 void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
                          int bSilent)
 {
-    if (NWCITEM_DEBUG)
-    {
-        CExoString sName = GetName(1);
-    }
     CSWCArea* pModuleArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
     CSWMiniGame* pMiniGame = pModuleArea->m_pMiniGame;
     if (pMiniGame != NULL)
@@ -745,7 +650,90 @@ void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
     }
     m_bPowered = bPower;
 }
-
-static inline void NwcitemTrace1()
+// PC 0x0069D330 GOG 0x0069D110
+void CSWCItem::UpdateOrientation(const Vector& vNormal)
 {
+    Quaternion qOrientation;
+    float fRoll = 0.0f;
+    float fPitch = 0.0f;
+
+    if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nRotateOnGround ==
+        CSWBaseItem::GROUND_ROTATION_ROLL)
+    {
+        fRoll = 90.0f;
+    }
+    else if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nRotateOnGround ==
+             CSWBaseItem::GROUND_ROTATION_PITCH)
+    {
+        fPitch = 90.0f;
+    }
+
+    qOrientation = YawPitchRoll(Yaw(m_vOrientation), fPitch, fRoll);
+    if (enableitemgroundalignment != 0)
+    {
+        Vector vUp(0.0f, 0.0f, 1.0f);
+        qOrientation = RotationArc(vUp, vNormal) * qOrientation;
+    }
+    CSWCAnimBase* pAnimBase = m_pAnimBase;
+    if (pAnimBase != NULL)
+    {
+        pAnimBase->SetOrientation(qOrientation);
+    }
 }
+// PC 0x0069D520 GOG 0x0069D300
+void CSWCItem::ResolveCreaturePoweredAnimations(int bPower)
+{
+    CSWCCreature* pCreature = g_pAppManager->GetClientExoApp()->
+        GetCreatureByGameObjectID(m_oidEquippedBy);
+    if (pCreature != NULL)
+    {
+        unsigned char nPoweredAnimations = 0;
+        if (pCreature->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND) == GetId())
+        {
+            nPoweredAnimations = CSWCAnimBase::POWERED_ANIMATION_RIGHTHAND;
+        }
+        else if (pCreature->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND) == GetId())
+        {
+            nPoweredAnimations = CSWCAnimBase::POWERED_ANIMATION_LEFTHAND;
+        }
+        if (pCreature->GetAnimationBase() != NULL)
+        {
+            if (bPower && !m_bPowered)
+            {
+                nPoweredAnimations |= pCreature->GetAnimationBase()->m_nPoweredAnimations;
+            }
+            else if (!bPower && m_bPowered)
+            {
+                nPoweredAnimations = ~nPoweredAnimations &
+                    pCreature->GetAnimationBase()->m_nPoweredAnimations;
+            }
+            else if (!bPower && !m_bPowered)
+            {
+                nPoweredAnimations &= ~(CSWCAnimBase::POWERED_ANIMATION_RIGHTHAND |
+                    CSWCAnimBase::POWERED_ANIMATION_LEFTHAND);
+            }
+
+            if (GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_POWERED_HAND_39 &&
+                GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_POWERED_HAND_40 &&
+                GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_POWERED_HAND_41)
+            {
+                nPoweredAnimations |= CSWCAnimBase::POWERED_ANIMATION_OTHER;
+            }
+            else
+            {
+                nPoweredAnimations &= ~CSWCAnimBase::POWERED_ANIMATION_OTHER;
+            }
+            pCreature->GetAnimationBase()->m_nPoweredAnimations = nPoweredAnimations;
+        }
+    }
+}
+// PC 0x0069D610 GOG 0x0069D3F0
+CSWSItem* CSWCItem::GetServerItem()
+{
+    if (GetServerObject() != NULL)
+    {
+        return GetServerObject()->AsSWSItem();
+    }
+    return NULL;
+}
+
