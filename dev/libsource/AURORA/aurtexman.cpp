@@ -1488,9 +1488,6 @@ TextureController* CAurTexture::GetController()
     return 0;
 }
 
-#include "aurrendergl.h"
-#include "aurscenemanager.h"
-#include "aurparse.h"
 // PC 0x004065A0 GOG 0x00406570
 int AurTextureSetDim(int nWidth, int nHeight)
 {
@@ -1501,6 +1498,10 @@ int AurTextureGetMaxTexID()
 {
     return maxtexid;
 }
+
+#include "aurrendergl.h"
+#include "aurscenemanager.h"
+#include "aurparse.h"
 // PC 0x00421640 GOG 0x00421650
 void GLRender::SetCurrentTID(unsigned int nTID)
 {
@@ -1755,16 +1756,6 @@ inline void GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget, unsigned lo
     }
 }
 
-#else
-inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,  // PC 0x00421C40 GOG 0x00421C50
-                                 unsigned long nTexture)
-{
-    glBindTexture(enableTranslationTable[nTarget], nTexture);
-    glTexParameteri(enableTranslationTable[nTarget], GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                    GLRender::cm_nAnisotropy);
-    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = nTexture;
-    return GLRender::cm_uiCurrentStage;
-}
 #endif
 // PC 0x00421BE0 GOG 0x00421BF0
 void AurTextureSuspendUpdates()
@@ -1796,6 +1787,16 @@ bool AurTextureEnvMapDisabled()
 template <> inline SafePointer<CAurTexture>::SafePointer()  // PC 0x00421C30 GOG 0x00421C40
     : m_pObject(0)
 {
+}
+
+inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,  // PC 0x00421C40 GOG 0x00421C50
+                                 unsigned long nTexture)
+{
+    glBindTexture(enableTranslationTable[nTarget], nTexture);
+    glTexParameteri(enableTranslationTable[nTarget], GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                    GLRender::cm_nAnisotropy);
+    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = nTexture;
+    return GLRender::cm_uiCurrentStage;
 }
 #endif
 
