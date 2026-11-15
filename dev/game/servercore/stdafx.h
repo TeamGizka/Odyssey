@@ -13,4 +13,8 @@ template const CExoString& CExoArrayList<CExoString>::operator[](int) const;
 template int CExoLinkedList<CSWSObjectActionNode>::IsEmpty();
 template CSWSObjectActionNode* CExoLinkedList<CSWSObjectActionNode>::RemoveHead();
 template CExoLinkedListNode* CExoLinkedList<CSWSObjectActionNode>::AddHead(CSWSObjectActionNode*);
+class CSWSClient;
+template CExoLinkedListNode* CExoLinkedList<CSWSClient>::GetHeadPos();
+template CSWSClient* CExoLinkedList<CSWSClient>::GetAtPos(CExoLinkedListNode*);
+template CSWSClient* CExoLinkedList<CSWSClient>::GetNext(CExoLinkedListNode*&);
 

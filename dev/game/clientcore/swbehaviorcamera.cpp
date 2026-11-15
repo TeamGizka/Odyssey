@@ -19,6 +19,8 @@
 #include "clientexoapp.h"
 #include "clientoptions.h"
 
+#define SWBEHAVIORCAMERA_DEBUG 0
+
 #define SW_CAMERA_QA_REPORT
 
 float CameraPersonalSpace = 0.35f;
@@ -793,6 +795,11 @@ void CSWCameraOnAStick::SetLookAtTarget(CSWCObject* pTarget)
 // PC 0x00690990 GOG 0x00690700
 int CSWCameraFreeLook::Control(float fTimeStep)
 {
+    if (SWBEHAVIORCAMERA_DEBUG)
+    {
+        CSWCameraOnAStick* pOnAStick = NULL;
+        Vector vHead = pOnAStick->GetTargetHeadPosition();
+    }
     if (CAurBehavior::Control(fTimeStep))
     {
 #ifndef _XBOX

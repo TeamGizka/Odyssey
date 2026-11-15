@@ -10,6 +10,8 @@
 #include "nwcsoundobject.h"
 #include "nwssoundobject.h"
 
+#define NWSSOUNDOBJECT_DEBUG 0
+
 // PC 0x00570470 GOG 0x005705A0
 CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
     : CSWSObject(CGameObject::OBJECT_TYPE_SOUND, oidObject, 0), m_lstSounds(0)
@@ -159,6 +161,10 @@ void CSWSSoundObject::EventHandler(unsigned long nEventId,
 // PC 0x00570110 GOG 0x00570240
 void CSWSSoundObject::Play()
 {
+    if (NWSSOUNDOBJECT_DEBUG)
+    {
+        CSWCSoundObject* pClientSound = GetClientSoundObject();
+    }
     CSWSMessage* pMessage;
     CExoLinkedList<CSWSClient>* pPlayerList;
     CExoLinkedListNode* pNode;
@@ -194,6 +200,10 @@ void CSWSSoundObject::Play()
 // PC 0x005701B0 GOG 0x005702E0
 void CSWSSoundObject::Stop()
 {
+    if (NWSSOUNDOBJECT_DEBUG)
+    {
+        CSWCSoundObject* pClientSound = GetClientSoundObject();
+    }
     CSWSMessage* pMessage;
     CExoLinkedList<CSWSClient>* pPlayerList;
     CExoLinkedListNode* pNode;
@@ -293,6 +303,10 @@ void CSWSSoundObject::ChangeVolume(int nVolume)
 // PC 0x00570390 GOG 0x005704C0
 void CSWSSoundObject::ChangePosition(Vector vPosition)
 {
+    if (NWSSOUNDOBJECT_DEBUG)
+    {
+        CSWCSoundObject* pClientSound = GetClientSoundObject();
+    }
     CSWSMessage* pMessage;
     CExoLinkedList<CSWSClient>* pPlayerList;
     CExoLinkedListNode* pNode;
