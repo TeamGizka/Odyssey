@@ -783,6 +783,8 @@ enum LightParameter
 
 #define AUR_SHADOW_INDEX_COUNT 6144
 
+class Gob;
+class VertexPrimitive;
 class VertexPrimitiveFlat;
 class VertexPrimitiveSkinned;
 class MdlNodeSkin;
@@ -794,14 +796,20 @@ class GLRender
     friend class ImposterManager;
     friend class CAurTextureBasic;
     friend class CAurTriangleBin;
+    friend class PartEmitter;
+    friend class PartSkin;
+    friend class PartTriMesh;
     friend class Scene;
     friend void EndImposterRender(unsigned long nRecord);
     friend void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive);
+    friend void RenderBumpmapFallback(VertexPrimitive* pPrimitive);
     friend void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive);
     friend void RenderEMBM(VertexPrimitiveFlat* pPrimitive);
     friend void RenderEMLM(VertexPrimitiveFlat* pPrimitive);
     friend void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool, bool);
     friend void RenderFlatDecal(VertexPrimitiveFlat* pPrimitive);
+    friend void RenderFlatVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart);
+    friend void RenderHologramEffect(int nRenderPath, VertexPrimitiveFlat* pPrimitive);
     friend void RenderLightMapped(VertexPrimitiveFlat* pPrimitive);
     friend void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive);
     friend void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive);
@@ -810,6 +818,10 @@ class GLRender
     friend void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive);
     friend void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive);
     friend void SetBumpLightColor(Vector& vColor);
+    friend void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
+                                      CAurTexture* pTexture0, CAurTexture* pTexture1,
+                                      CAurTexture* pTexture2, CAurTexture* pTexture3,
+                                      bool bKeepBlend);
     friend void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
                                       List<Matrix>& rbones,
                                       VertexPrimitiveSkinned* pPrimitive,
@@ -1000,11 +1012,11 @@ public:
 private:
     static void (*pfuncSetPixelShaderAmbientColor)(Vector& vColor, float fAlpha);
     static void (*pfuncSetBumpLightColor)(Vector& vColor, float fAlpha);
-public:
     static void (*pfuncEnablePixelShaders)(int nShader, CAurTexture* pTexture0,
                                           CAurTexture* pTexture1,
                                           CAurTexture* pTexture2,
                                           CAurTexture* pTexture3);
+public:
     static void DisableCombiners(CAurTexture* pTexture);
     static void EnableCombiners(int nShader, CAurTexture* pTexture0,
                                CAurTexture* pTexture1, CAurTexture* pTexture2,

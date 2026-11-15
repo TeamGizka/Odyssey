@@ -58,7 +58,6 @@ public:
     CSWSCreature* GetPUPOwner(int nPUP);
     int RemovePuppet(int nPUP);
     int AssignPUP(int nPUP, int nNPC);
-    int GetActiveNPC();
     unsigned char GetNumNPCAvailable();
     int SetNPCObject(int nNPC, unsigned long oidNPC);
     int GetIsMember(int nNPC);

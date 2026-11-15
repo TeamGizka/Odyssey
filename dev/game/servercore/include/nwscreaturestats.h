@@ -408,8 +408,6 @@ public:
 
     unsigned char GetNumClasses() { return m_nClassCount; }
     float GetLeaderWeight();
-    int GetFactionIndex();
-    void SetFactionIndex(int nFaction);
     short GetArmorClassVersus(CSWSCreature* pTarget, int bTouchAttack);
     int GetIsPCFaction();
 

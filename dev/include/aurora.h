@@ -596,13 +596,6 @@ public:
     static CAuroraTXI* GetTXI(CExoString const&);
     static CAuroraVisibility* GetVisibility(CExoString const&);
     static CAuroraModelX* GetModelX(CExoString const&);
-    static int ReleaseTexture(CAuroraTexture*);
-    static int Release16BitTexture(CAurora16BitTexture*);
-    static int ReleaseLayeredTexture(CAuroraLayeredTexture*);
-    static int ReleaseCompressedTexture(CAuroraCompressedTexture*);
-    static int ReleaseProcessedTexture(CAuroraProcessedTexture*);
-    static int ReleaseTXI(CAuroraTXI*);
-    static int ReleaseVisibility(CAuroraVisibility*);
     static CExoLinkedList<CAuroraModel> m_lstRequestedModel;
     static CExoString m_pCurrentTexturePack[4];
 };
