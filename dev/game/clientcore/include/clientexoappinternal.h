@@ -1102,15 +1102,7 @@ public:
     void SetPrimaryPCPortrait(CResRef cPortrait);
     void SetPrimaryPCPortraitId(unsigned short nPortraitId);
     unsigned long GetPlayerId() { return m_nPlayerId; }
-    CSWCPlayer(unsigned long nPlayerId)  // PC 0x0069FDF0 GOG 0x0069FBD0
-        : m_sPlayerName(),
-          m_cPrimaryPCPortrait(),
-          m_sPrimaryPCName()
-    {
-        m_nPlayerId = nPlayerId;
-        m_nUnknown8 = 0;
-        m_nPrimaryPCPortraitId = -1;
-    }
+    CSWCPlayer(unsigned long nPlayerId);
 };
 
 #include "exobase.h"
@@ -1122,6 +1114,7 @@ public:
                      CExoString& sCategory, CExoString& sName,
                      CExoString& sValue);
     int SendSysAdminToServerMessage(const CExoString& sMessage);
+    int SendSysAdminToServerBootPlayer(unsigned long nPlayerId);
     int HandleServerToSysAdminMessage(unsigned char* pData,
                                       unsigned long nSize);
 };

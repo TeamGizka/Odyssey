@@ -77,6 +77,16 @@ void CSWCProjectile::SetSourcePosition(const Vector& vPosition)
 {
     m_vSourcePosition = vPosition;
 }
+// PC 0x0069FDF0 GOG 0x0069FBD0
+CSWCPlayer::CSWCPlayer(unsigned long nPlayerId)
+    : m_sPlayerName(),
+      m_cPrimaryPCPortrait(),
+      m_sPrimaryPCName()
+{
+    m_nPlayerId = nPlayerId;
+    m_nUnknown8 = 0;
+    m_nPrimaryPCPortraitId = -1;
+}
 // PC 0x0069FE60 GOG 0x0069FC40
 CSWCMessage::CSWCMessage()
 {
