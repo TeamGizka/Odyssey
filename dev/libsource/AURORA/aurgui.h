@@ -5,6 +5,7 @@ class Material;
 class Vector;
 #include "aurmaterial.h"
 #include "aurrendergl.h"
+#include "aurtexptr.h"
 
 enum
 {
@@ -229,7 +230,19 @@ public:
     {
         m_nCursorIndex = -1;
     }
-    virtual char* GetFontTexture();
+    virtual char* GetFontTexture()  // PC 0x00470DF0 GOG 0x00470F30
+    {
+        CAurTexture* pFont = AsTexture(m_pFont);
+
+        if (pFont != 0)
+        {
+            return pFont->GetName();
+        }
+        else
+        {
+            return 0;
+        }
+    }
     virtual void SetFontTexture(char* sFont);
     virtual int GetFontPixelHeight();
     virtual void WrapStrings(int nWidth);

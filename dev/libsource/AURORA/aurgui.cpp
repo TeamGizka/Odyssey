@@ -1527,20 +1527,6 @@ inline void CAurGUIStringInternal::SetSizeBoundingRect(int nWidth, int nHeight)
     m_nWidth = nWidth;
     m_nHeight = nHeight;
 }
-// PC 0x00470DF0 GOG 0x00470F30
-inline char* CAurGUIStringInternal::GetFontTexture()
-{
-    CAurTexture* pFont = AsTexture(m_pFont);
-
-    if (pFont != 0)
-    {
-        return pFont->GetName();
-    }
-    else
-    {
-        return 0;
-    }
-}
 // PC 0x00470E90 GOG 0x00470FD0
 CAurGUIStringInternal::~CAurGUIStringInternal()
 {
