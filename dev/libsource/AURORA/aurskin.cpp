@@ -956,20 +956,9 @@ static inline void SkinDebugSetup()
     int nDebug10 = 0;
     int nDebug11 = 0;
 }
-static inline void SkinDebugWalk()
+static inline void SkinDebugBone()
 {
     int nDebug1 = 0;
-    int nDebug2 = 0;
-    int nDebug3 = 0;
-    int nDebug4 = 0;
-    int nDebug5 = 0;
-    int nDebug6 = 0;
-    int nDebug7 = 0;
-    int nDebug8 = 0;
-    int nDebug9 = 0;
-    int nDebug10 = 0;
-    int nDebug11 = 0;
-    int nDebug12 = 0;
 }
 // PC 0x004A50A0 GOG 0x004A5160
 void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
@@ -1008,8 +997,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             currentscene->m_bFog ? 1.0f : 0.0f, 0.5f);
 
         Part* pPart = pSkin;
-        char bRendered = pPrimitive->m_pPart->m_pAurObject->m_bRendered;
-        if (bRendered)
+        if (pPrimitive->m_pPart->m_pAurObject->m_bRendered)
         {
             while (pPart->m_pParent != 0)
                 pPart = pPart->m_pParent;
@@ -1023,7 +1011,8 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         pPart = pSkin;
         Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
         Quaternion qRotation = -pPart->m_qOrientation;
-        SkinDebugWalk();
+        SkinDebugSetup();
+        SkinDebugBone();
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
@@ -1037,14 +1026,16 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             if (nBone == -1)
                 continue;
             {
+                const Vector& vFirst = mRotation.m_vFirst;
+                const Vector& vSecond = mRotation.m_vSecond;
+                SkinDebugBone();
                 Vector vBone = qRotation * (qbones.m_pList[i] * pNode->m_lstTBoneRefInv.m_pList[i]);
                 AurDrawLine(vTranslation, vBone);
-                vBone = vTranslation + qRotation * tbones.m_pList[i] + vBone;
+                Vector& vBoneTranslation = tbones.m_pList[i];
+                vBone = vTranslation + qRotation * vBoneTranslation + vBone;
                 Quaternion qBone = qRotation * qbones.m_pList[i] * pNode->m_lstQBoneRefInv.m_pList[i];
                 mRotation = qBone.getmatrix();
                 nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
-                const Vector& vFirst = mRotation.m_vFirst;
-                const Vector& vSecond = mRotation.m_vSecond;
                 const Vector& vThird = mRotation.m_vThird;
                 GLRender_SetVertexProgramParameter4f(nBone,
                     vFirst.m_fX, vSecond.m_fX,
