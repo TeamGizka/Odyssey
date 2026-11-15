@@ -52,6 +52,9 @@ class CSWGuiPanel;
 class CSWGuiObject
 {
 public:
+    CSWGuiObject()
+    {
+    }
     virtual ~CSWGuiObject()  // PC 0x0040A2A0 GOG 0x0040A270
     {
     }

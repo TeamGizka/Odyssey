@@ -5,7 +5,4 @@
 #include "exoresman.h"
 #include "resare.h"
 
-inline const CResRef& PathfindPchAreResRef(const CResHelper<CResARE, RESTYPE_ARE>* pHelper)
-{
-    return pHelper->GetResRef();
-}
+template const CResRef& CResHelper<CResARE, RESTYPE_ARE>::GetResRef() const;

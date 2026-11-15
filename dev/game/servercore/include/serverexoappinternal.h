@@ -239,6 +239,7 @@ public:
     void RemoveFromExclusionList(unsigned long oidObject, unsigned char nType);
     CExoLinkedList<unsigned long>* GetActiveExclusionList();
     int IsOnActiveExclusionList(unsigned long oidObject);
+    int IsOnExclusionList(unsigned long oidObject);
     int ResolvePlayerByFirstName(const CExoString& sFirstName);
     int GetDifficultyOption(int nOption);
     void AddCharListRequest(unsigned long nPlayerId);
@@ -291,6 +292,7 @@ public:
     int UpdateAutoSaveTimer();
     int AutoSaveOnEnteringModule(const CExoString& sModule, C2DA* p2DA);
     int UpdateMainLoopTimeBudget(unsigned __int64 nTime);
+    int StartShutdownTimer(unsigned __int64 nTime, unsigned __int64 nDelay);
     int UpdateShutdownTimer(unsigned __int64 nTime);
     void UpdateMapData();
     void ForceRunAreaOnExitScripts();
