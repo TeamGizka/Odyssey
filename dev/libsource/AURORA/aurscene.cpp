@@ -228,6 +228,7 @@ char Scene::IsAnimating()
 #include <math.h>
 #include "aurtexman.h"
 #include "aurprimitive.h"
+#include "aurlightmanager.h"
 // PC 0x004636B0 GOG 0x004637C0
 int EmitterOrderCmp(const void* pFirst, const void* pSecond)
 {
@@ -272,7 +273,6 @@ void AurEnableInterleavedAnimations()
     g_bEnableInterleavedAnimations = 1;
 }
 
-#include "aurlightmanager.h"
 // PC 0x00463890 GOG 0x004639A0
 void AurDisableInterleavedAnimations()
 {

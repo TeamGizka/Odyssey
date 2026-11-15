@@ -215,6 +215,23 @@ char* setfadetoalways(char* sArguments)
 // PC 0x004808F0 GOG 0x00480A70
 int AurClearActiveBins()
 {
+    if (AURSCENEMANAGER_DEBUG)
+    {
+        for (int i = 0; i < g_pActiveBins.m_nCount; i++)
+        {
+            CAurTriangleBin* pBin = g_pActiveBins.m_pList[i];
+            AurDrawLine(pBin->m_vBoundingBoxMinimum, pBin->m_vBoundingBoxMaximum, 0);
+            AurDrawLine(pBin->m_vBoundingBoxMinimum, pBin->m_vMaximum, 0);
+            AurDrawLine(pBin->m_vBoundingBoxMaximum, pBin->m_vMaximum, 0);
+        }
+        for (int j = 0; j < g_pOldActiveBins.m_nCount; j++)
+        {
+            CAurTriangleBin* pOldBin = g_pOldActiveBins.m_pList[j];
+            AurDrawLine(pOldBin->m_vBoundingBoxMinimum, pOldBin->m_vBoundingBoxMaximum, 1);
+            AurDrawLine(pOldBin->m_vBoundingBoxMinimum, pOldBin->m_vMaximum, 1);
+            AurDrawLine(pOldBin->m_vBoundingBoxMaximum, pOldBin->m_vMaximum, 1);
+        }
+    }
     g_pActiveBins.m_nCount = 0;
     g_pOldActiveBins.m_nCount = 0;
     return 0;
