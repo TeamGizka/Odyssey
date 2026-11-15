@@ -128,6 +128,17 @@ int CExoFile::SeekEnd()
     return m_pInternal->SeekEnd();
 }
 
+inline unsigned long CExoFileInternal::Write(const void* data,
+                                             unsigned long size,
+                                             unsigned long count)
+{
+    if (m_pFile != NULL)
+    {
+        return size * fwrite(data, size, count, m_pFile);
+    }
+    return 0;
+}
+
 inline unsigned long CExoFileInternal::Write(const CExoString& text)
 {
     if (m_pFile != NULL)

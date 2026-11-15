@@ -2,4 +2,4 @@
 kotor_library(netlayer
   netlayer.cpp)
 
-target_compile_options(netlayer PRIVATE /YX)
+# No precompiled header: K2 emits CExoString::GetLength ahead of StartConnectToSession.
