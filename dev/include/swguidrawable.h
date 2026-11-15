@@ -84,6 +84,7 @@ public:
 
     CSWGuiTextParams(const CExoString& sText, const CResRef& cFont,
                      const Vector& vColor, int nAlignment, float fAlpha);
+    ~CSWGuiTextParams() {}
     CSWGuiTextParams& operator=(const CSWGuiTextParams& cParams);
     void SetText(const CExoString& sText); void SetStrRef(unsigned long nStrRef);
     void RestoreDefaultColor(); void ReSetFont();

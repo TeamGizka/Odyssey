@@ -190,24 +190,6 @@ void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x00680850 GOG 0x00680630
-int CGuiInGame::HandleDialogModels(unsigned long oidPlayer,
-                                  unsigned long nModels,
-                                  unsigned long* pObjectIds, CResRef* pModels,
-                                  const CResRef& cCameraModel,
-                                  const CResRef& cAmbientTrack)
-{
-    InitializeStuntModelData(nModels);
-    for (unsigned long nModel = 0; nModel < nModels; ++nModel)
-    {
-        SetStuntModelData(nModel, pObjectIds[nModel], pModels[nModel]);
-    }
-    if (!LoadStuntModelsForDialog())
-        return 0;
-    LoadCameraModelForDialog(cCameraModel);
-    LoadAmbientTrackForDialog(cAmbientTrack);
-    return 1;
-}
 // PC 0x00683410 GOG 0x006831F0
 int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
 {
@@ -3334,6 +3316,37 @@ CPlaceableCamera* CGuiInGame::GetPlaceableCamera(int nCamera)
     }
     return &m_aPlaceableCameras[nCamera];
 }
+
+void CGuiInGame::LoadCameraModelForDialog(const CResRef& cCameraModel)
+{
+    if (cCameraModel.IsValid() && !m_bAnimatedCameraLoaded)
+    {
+        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+        if (pModule != 0)
+        {
+            pModule->LoadAnimatedCamera(cCameraModel);
+            m_bAnimatedCameraLoaded = 1;
+        }
+    }
+}
+// PC 0x00680850 GOG 0x00680630
+int CGuiInGame::HandleDialogModels(unsigned long oidPlayer,
+                                  unsigned long nModels,
+                                  unsigned long* pObjectIds, CResRef* pModels,
+                                  const CResRef& cCameraModel,
+                                  const CResRef& cAmbientTrack)
+{
+    InitializeStuntModelData(nModels);
+    for (unsigned long nModel = 0; nModel < nModels; ++nModel)
+    {
+        SetStuntModelData(nModel, pObjectIds[nModel], pModels[nModel]);
+    }
+    if (!LoadStuntModelsForDialog())
+        return 0;
+    LoadCameraModelForDialog(cCameraModel);
+    LoadAmbientTrackForDialog(cAmbientTrack);
+    return 1;
+}
 // PC 0x00680930 GOG 0x00680710
 int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
                                       unsigned long nReply,
@@ -6423,19 +6436,6 @@ int CGuiInGame::CloseDialog()
         return m_bDialogEntryShown;
     }
     return 0;
-}
-
-void CGuiInGame::LoadCameraModelForDialog(const CResRef& cCameraModel)
-{
-    if (cCameraModel.IsValid() && !m_bAnimatedCameraLoaded)
-    {
-        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
-        if (pModule != 0)
-        {
-            pModule->LoadAnimatedCamera(cCameraModel);
-            m_bAnimatedCameraLoaded = 1;
-        }
-    }
 }
 // PC 0x00684F00 GOG 0x00684CA0
 void CGuiInGame::ClearDialogNonDependantList()

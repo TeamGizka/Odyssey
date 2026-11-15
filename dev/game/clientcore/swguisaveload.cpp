@@ -1272,6 +1272,18 @@ void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
     m_nStoryHint = pRes->ReadFieldBYTE(&stStruct, "STORYHINT", bSuccess, nDefault);
 }
 #endif
+int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0 GOG 0x007070C0
+{
+#ifdef _XBOX
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(
+        nStart + (int)((float)nStep / (float)nSteps * (float)nRange), 1);
+#else
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(
+        nStart + (int)((double)nStep / (double)nSteps * (double)nRange), 1);
+#endif
+    UpdateScreen(0.033333335f, 0, 0);
+    return 0;
+}
 // PC 0x00707510 GOG 0x00707100
 void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
 {
@@ -2641,18 +2653,6 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x0070A
     return 1;
 }
 #endif
-int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0 GOG 0x007070C0
-{
-#ifdef _XBOX
-    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(
-        nStart + (int)((float)nStep / (float)nSteps * (float)nRange), 1);
-#else
-    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(
-        nStart + (int)((double)nStep / (double)nSteps * (double)nRange), 1);
-#endif
-    UpdateScreen(0.033333335f, 0, 0);
-    return 0;
-}
 // PC 0x0070A5A0 GOG 0x0070A2E0
 CSWGuiSaveNamePanel::CSWGuiSaveNamePanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)

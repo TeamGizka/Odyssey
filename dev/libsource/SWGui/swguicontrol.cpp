@@ -1180,57 +1180,6 @@ void CSWGuiListBox::OrganizeOversized()  // PC 0x00419BE0 GOG 0x00419BD0
     m_lItems[0]->SetExtent(cExtent);
 }
 #endif
-void CSWGuiListBox::Draw(float fElapsed)  // PC 0x0041ADF0 GOG 0x0041ADE0
-{
-    int nCount = m_lItems.num;
-    if (m_bShowScrollBar)
-    {
-        if (m_bPulseArrows)
-            m_cScrollBar.m_cArrow.m_cParams.m_fAlpha = m_fArrowAlpha;
-        m_cScrollBar.Draw(fElapsed);
-    }
-    m_cBorder.Draw(fElapsed);
-    if (AurGUISetupViewport(m_cItemExtent.m_nLeft, m_cItemExtent.m_nTop,
-                            m_cItemExtent.m_nWidth, m_cItemExtent.m_nHeight,
-                            m_vColor, false, 1.0f))
-    {
-        if (m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-            m_lItems.num > 0 && !m_bHideScrollIcon)
-        {
-            m_lItems[0]->Draw(fElapsed);
-        }
-        else
-        {
-            for (int i = 0; i < nCount; i++)
-            {
-                CSWGuiControl* pControl = m_lItems[i];
-                int nTop = pControl->m_cExtent.m_nTop;
-                int nBottom = pControl->m_cExtent.GetBottom();
-                if (nBottom > 0 && nTop <= m_cItemExtent.m_nHeight &&
-                    (!m_bClipItems ||
-                     (nBottom < m_cItemExtent.m_nHeight && nTop >= 0)))
-                    pControl->Draw(fElapsed);
-            }
-        }
-        AurGUICloseViewport();
-    }
-#ifndef _XBOX
-    if (g_pGuiMan->m_pMouseCapture == this && m_nHeldEvent)
-    {
-        int nX, nY;
-        ((CSWGuiPanel*)m_pOwner)->GetLocalMouseCoords(&nX, &nY);
-        if (m_cScrollBar.HitCheckScrollbar(nX, nY) == m_nScrollBarPart)
-        {
-            m_fRepeatDelay -= fElapsed;
-            while (m_fRepeatDelay < 0.0f)
-            {
-                m_fRepeatDelay += 0.1f;
-                HandleInputEvent(m_nHeldEvent, 1);
-            }
-        }
-    }
-#endif
-}
 // PC 0x00419DD0 GOG 0x00419DC0
 CSWGuiControl* CSWGuiListBox::GetControl(int nIndex)
 {
@@ -2484,6 +2433,57 @@ void CSWGuiListBox::OrganizeControls()  // PC 0x0041A970 GOG 0x0041A960
     }
 }
 #endif
+void CSWGuiListBox::Draw(float fElapsed)  // PC 0x0041ADF0 GOG 0x0041ADE0
+{
+    int nCount = m_lItems.num;
+    if (m_bShowScrollBar)
+    {
+        if (m_bPulseArrows)
+            m_cScrollBar.m_cArrow.m_cParams.m_fAlpha = m_fArrowAlpha;
+        m_cScrollBar.Draw(fElapsed);
+    }
+    m_cBorder.Draw(fElapsed);
+    if (AurGUISetupViewport(m_cItemExtent.m_nLeft, m_cItemExtent.m_nTop,
+                            m_cItemExtent.m_nWidth, m_cItemExtent.m_nHeight,
+                            m_vColor, false, 1.0f))
+    {
+        if (m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
+            m_lItems.num > 0 && !m_bHideScrollIcon)
+        {
+            m_lItems[0]->Draw(fElapsed);
+        }
+        else
+        {
+            for (int i = 0; i < nCount; i++)
+            {
+                CSWGuiControl* pControl = m_lItems[i];
+                int nTop = pControl->m_cExtent.m_nTop;
+                int nBottom = pControl->m_cExtent.GetBottom();
+                if (nBottom > 0 && nTop <= m_cItemExtent.m_nHeight &&
+                    (!m_bClipItems ||
+                     (nBottom < m_cItemExtent.m_nHeight && nTop >= 0)))
+                    pControl->Draw(fElapsed);
+            }
+        }
+        AurGUICloseViewport();
+    }
+#ifndef _XBOX
+    if (g_pGuiMan->m_pMouseCapture == this && m_nHeldEvent)
+    {
+        int nX, nY;
+        ((CSWGuiPanel*)m_pOwner)->GetLocalMouseCoords(&nX, &nY);
+        if (m_cScrollBar.HitCheckScrollbar(nX, nY) == m_nScrollBarPart)
+        {
+            m_fRepeatDelay -= fElapsed;
+            while (m_fRepeatDelay < 0.0f)
+            {
+                m_fRepeatDelay += 0.1f;
+                HandleInputEvent(m_nHeldEvent, 1);
+            }
+        }
+    }
+#endif
+}
 void CSWGuiListBox::LoadProtoItem(CResGFF* pGFF, CResStruct& cStruct)  // PC 0x0041CDF0 GOG 0x0041CDE0
 {
     CResStruct cProtoItem;

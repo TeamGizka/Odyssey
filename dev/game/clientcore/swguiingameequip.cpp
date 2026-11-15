@@ -1316,6 +1316,23 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
     }
 }
 
+// PC 0x007162B0 GOG 0x00715FA0
+void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected)
+    {
+        CSWGuiInGameItemEntry* pEntry = (CSWGuiInGameItemEntry*)pControl;
+        CSWSItem* pItem =
+            g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
+        if (pItem != 0 && pItem->m_bNewItem)
+        {
+            pItem->m_bNewItem = 0;
+            pEntry->m_bUnavailable = 0;
+            pEntry->SetItem(pEntry->m_oidItem, pEntry->m_bEquipped, pEntry->m_bUnavailable);
+        }
+    }
+}
+
 void CSWGuiInGameEquip::UpdatePortraits(int bShow)
 {
     if (!bShow)
@@ -2033,24 +2050,6 @@ void CSWGuiInGameItemEntry::UpdateItem()
     SetItem(m_oidItem, m_bEquipped, m_bUnavailable);
 }
 
-#ifndef _XBOX
-// PC 0x007162B0 GOG 0x00715FA0
-void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected)
-    {
-        CSWGuiInGameItemEntry* pEntry = (CSWGuiInGameItemEntry*)pControl;
-        CSWSItem* pItem =
-            g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
-        if (pItem != 0 && pItem->m_bNewItem)
-        {
-            pItem->m_bNewItem = 0;
-            pEntry->m_bUnavailable = 0;
-            pEntry->SetItem(pEntry->m_oidItem, pEntry->m_bEquipped, pEntry->m_bUnavailable);
-        }
-    }
-}
-#endif
 // PC 0x00715260 GOG 0x00714F50
 void CSWGuiInGameItemEntry::SetCanUse(unsigned char nCanUse)
 {
@@ -2825,221 +2824,6 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00718E80 GOG 0x00718B70
-CSWGuiInGameEquip::~CSWGuiInGameEquip()
-{
-    m_lbDesc.ClearItems();
-    m_lbItems.ClearItems();
-    for (int i = 0; i < m_lItemEntries.num; i++)
-    {
-        if (m_lItemEntries[i] != 0)
-        {
-            delete m_lItemEntries[i];
-        }
-        m_lItemEntries[i] = 0;
-    }
-    m_lItemEntries.RemoveAll();
-    if (m_pDescribedCopy != 0)
-    {
-        delete m_pDescribedCopy;
-        m_pDescribedCopy = 0;
-    }
-    if (m_pComparedCopy != 0)
-    {
-        delete m_pComparedCopy;
-        m_pComparedCopy = 0;
-    }
-}
-
-// PC 0x00718450 GOG 0x00718140
-void CSWGuiInGameEquip::CloseDescription()
-{
-    ShowDescription(0);
-    m_bDescriptionShown = 0;
-    SetActiveControl(m_pDescribedControl, 0);
-    OnEnterSlot(m_pActiveControl);
-
-    m_lbItems.SetEnabled(0);
-}
-#endif
-
-// PC 0x00719540 GOG 0x00719230
-void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
-{
-    if (pControl != NULL && !pControl->m_bSelected)
-    {
-        return;
-    }
-    if (!m_n50E8)
-    {
-        return;
-    }
-    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
-    if (pPartyTable == NULL)
-    {
-        return;
-    }
-    CSWCCreature* pCreature = NULL;
-    CExoString sTag;
-    int bFound = 0;
-    for (int i = 0; i < CSWPartyTable::MAX_NPCS; i++)
-    {
-        if (++m_nCharacter == CSWPartyTable::MAX_NPCS)
-        {
-            m_nCharacter = CHARACTER_PLAYER;
-            bFound = 1;
-            break;
-        }
-        if (pPartyTable->GetIsNPCAvailable(m_nCharacter))
-        {
-            switch (m_nCharacter)
-            {
-            case NPC_ATTON:
-                sTag = "atton";
-                break;
-            case NPC_BAO_DUR:
-                sTag = "baodur";
-                break;
-            case NPC_CANDEROUS:
-                sTag = "mand";
-                break;
-            case NPC_DISCIPLE:
-                sTag = "disciple";
-                break;
-            case NPC_G0T0:
-                sTag = "g0t0";
-                break;
-            case NPC_HANDMAIDEN:
-                sTag = "handmaiden";
-                break;
-            case NPC_HANHARR:
-                sTag = "hanharr";
-                break;
-            case NPC_HK_47:
-                sTag = "hk47";
-                break;
-            case NPC_KREIA:
-                sTag = "kreia";
-                break;
-            case NPC_MIRA:
-                sTag = "mira";
-                break;
-            case NPC_T3_M4:
-                sTag = "t3m4";
-                break;
-            case NPC_VISAS:
-                sTag = "visasmarr";
-                break;
-            }
-            unsigned long oidNPC =
-                g_pAppManager->GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0);
-            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-            pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(oidNPC));
-            if (pCreature != NULL)
-            {
-                g_pAppManager->GetServerExoApp()->GetPartyTable()->SetNPCObject(m_nCharacter, oidNPC);
-                bFound = 1;
-                break;
-            }
-        }
-    }
-    if (bFound)
-    {
-        if (m_nCharacter == CHARACTER_PLAYER)
-        {
-            SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
-            OnEnterSlot(m_pActiveControl);
-        }
-        else
-        {
-            SetCharacter(pCreature);
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->SetTopMenuOverrideCharacter(m_nCharacter);
-            OnEnterSlot(m_pActiveControl);
-        }
-    }
-}
-#ifndef _XBOX
-// PC 0x007197B0 GOG 0x007194A0
-void CSWGuiInGameEquip::Draw(float fElapsed)
-{
-    if (!m_n50E8)
-    {
-        SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
-    }
-    UpdateInventory();
-    if (m_f50E4 > 0.0f)
-    {
-        m_f50E4 -= fElapsed;
-    }
-    if (m_f50E4 > 0.0f)
-    {
-        m_btnSwapWeapons.SetEnabled(0);
-    }
-    else
-    {
-        m_btnSwapWeapons.SetEnabled(1);
-    }
-    CSWGuiPanel::Draw(fElapsed);
-}
-// PC 0x00719850 GOG 0x00719540
-void CSWGuiInGameEquip::OnPanelAdded()
-{
-    CExoString sModuleName = g_pAppManager->GetServerExoApp()->GetModuleName();
-    int bNotPrologue = sModuleName.CompareNoCase("003EBO");
-    m_nCharacter = CHARACTER_PLAYER;
-    if (bNotPrologue)
-    {
-        m_n50E8 = 1;
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
-        m_btnNextNpc.SetShown(1);
-        m_btnPrevNpc.SetShown(1);
-        m_btnSwapWeapons.SetShown(0);
-    }
-    else
-    {
-        m_n50E8 = 0;
-        m_btnNextNpc.SetShown(0);
-        m_btnPrevNpc.SetShown(0);
-        m_btnSwapWeapons.SetShown(1);
-    }
-    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
-    UpdatePortraits(1);
-    OnEnterSlot(m_pActiveControl);
-    CSWGuiPanel::OnPanelAdded();
-}
-
-// PC 0x00719980 GOG 0x00719670
-void CSWGuiInGameEquip::OnPanelRemoved()
-{
-    int i;
-
-    if (m_n50E8)
-    {
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
-    }
-    if (m_bDescriptionShown)
-    {
-        CloseDescription();
-    }
-    m_lbItems.ClearItems();
-    for (i = 0; i < m_lItemEntries.num; i++)
-    {
-        if (m_lItemEntries[i] != 0)
-        {
-            delete m_lItemEntries[i];
-        }
-        m_lItemEntries[i] = 0;
-    }
-    m_lItemEntries.RemoveAll();
-    m_nPendingSlot = 0;
-    m_oidPendingItem = OBJECT_INVALID;
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelRemoved();
-#endif
-}
-#endif
-#ifndef _XBOX
 void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
 {
 
@@ -3325,6 +3109,221 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
             m_nPendingSlot = 0;
     }
 }
+// PC 0x00718E80 GOG 0x00718B70
+CSWGuiInGameEquip::~CSWGuiInGameEquip()
+{
+    m_lbDesc.ClearItems();
+    m_lbItems.ClearItems();
+    for (int i = 0; i < m_lItemEntries.num; i++)
+    {
+        if (m_lItemEntries[i] != 0)
+        {
+            delete m_lItemEntries[i];
+        }
+        m_lItemEntries[i] = 0;
+    }
+    m_lItemEntries.RemoveAll();
+    if (m_pDescribedCopy != 0)
+    {
+        delete m_pDescribedCopy;
+        m_pDescribedCopy = 0;
+    }
+    if (m_pComparedCopy != 0)
+    {
+        delete m_pComparedCopy;
+        m_pComparedCopy = 0;
+    }
+}
+
+// PC 0x00718450 GOG 0x00718140
+void CSWGuiInGameEquip::CloseDescription()
+{
+    ShowDescription(0);
+    m_bDescriptionShown = 0;
+    SetActiveControl(m_pDescribedControl, 0);
+    OnEnterSlot(m_pActiveControl);
+
+    m_lbItems.SetEnabled(0);
+}
+#endif
+
+// PC 0x00719540 GOG 0x00719230
+void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
+{
+    if (pControl != NULL && !pControl->m_bSelected)
+    {
+        return;
+    }
+    if (!m_n50E8)
+    {
+        return;
+    }
+    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
+    if (pPartyTable == NULL)
+    {
+        return;
+    }
+    CSWCCreature* pCreature = NULL;
+    CExoString sTag;
+    int bFound = 0;
+    for (int i = 0; i < CSWPartyTable::MAX_NPCS; i++)
+    {
+        if (++m_nCharacter == CSWPartyTable::MAX_NPCS)
+        {
+            m_nCharacter = CHARACTER_PLAYER;
+            bFound = 1;
+            break;
+        }
+        if (pPartyTable->GetIsNPCAvailable(m_nCharacter))
+        {
+            switch (m_nCharacter)
+            {
+            case NPC_ATTON:
+                sTag = "atton";
+                break;
+            case NPC_BAO_DUR:
+                sTag = "baodur";
+                break;
+            case NPC_CANDEROUS:
+                sTag = "mand";
+                break;
+            case NPC_DISCIPLE:
+                sTag = "disciple";
+                break;
+            case NPC_G0T0:
+                sTag = "g0t0";
+                break;
+            case NPC_HANDMAIDEN:
+                sTag = "handmaiden";
+                break;
+            case NPC_HANHARR:
+                sTag = "hanharr";
+                break;
+            case NPC_HK_47:
+                sTag = "hk47";
+                break;
+            case NPC_KREIA:
+                sTag = "kreia";
+                break;
+            case NPC_MIRA:
+                sTag = "mira";
+                break;
+            case NPC_T3_M4:
+                sTag = "t3m4";
+                break;
+            case NPC_VISAS:
+                sTag = "visasmarr";
+                break;
+            }
+            unsigned long oidNPC =
+                g_pAppManager->GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0);
+            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+            pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(oidNPC));
+            if (pCreature != NULL)
+            {
+                g_pAppManager->GetServerExoApp()->GetPartyTable()->SetNPCObject(m_nCharacter, oidNPC);
+                bFound = 1;
+                break;
+            }
+        }
+    }
+    if (bFound)
+    {
+        if (m_nCharacter == CHARACTER_PLAYER)
+        {
+            SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
+            OnEnterSlot(m_pActiveControl);
+        }
+        else
+        {
+            SetCharacter(pCreature);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->SetTopMenuOverrideCharacter(m_nCharacter);
+            OnEnterSlot(m_pActiveControl);
+        }
+    }
+}
+#ifndef _XBOX
+// PC 0x007197B0 GOG 0x007194A0
+void CSWGuiInGameEquip::Draw(float fElapsed)
+{
+    if (!m_n50E8)
+    {
+        SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
+    }
+    UpdateInventory();
+    if (m_f50E4 > 0.0f)
+    {
+        m_f50E4 -= fElapsed;
+    }
+    if (m_f50E4 > 0.0f)
+    {
+        m_btnSwapWeapons.SetEnabled(0);
+    }
+    else
+    {
+        m_btnSwapWeapons.SetEnabled(1);
+    }
+    CSWGuiPanel::Draw(fElapsed);
+}
+// PC 0x00719850 GOG 0x00719540
+void CSWGuiInGameEquip::OnPanelAdded()
+{
+    CExoString sModuleName = g_pAppManager->GetServerExoApp()->GetModuleName();
+    int bNotPrologue = sModuleName.CompareNoCase("003EBO");
+    m_nCharacter = CHARACTER_PLAYER;
+    if (bNotPrologue)
+    {
+        m_n50E8 = 1;
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
+        m_btnNextNpc.SetShown(1);
+        m_btnPrevNpc.SetShown(1);
+        m_btnSwapWeapons.SetShown(0);
+    }
+    else
+    {
+        m_n50E8 = 0;
+        m_btnNextNpc.SetShown(0);
+        m_btnPrevNpc.SetShown(0);
+        m_btnSwapWeapons.SetShown(1);
+    }
+    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
+    UpdatePortraits(1);
+    OnEnterSlot(m_pActiveControl);
+    CSWGuiPanel::OnPanelAdded();
+}
+
+// PC 0x00719980 GOG 0x00719670
+void CSWGuiInGameEquip::OnPanelRemoved()
+{
+    int i;
+
+    if (m_n50E8)
+    {
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
+    }
+    if (m_bDescriptionShown)
+    {
+        CloseDescription();
+    }
+    m_lbItems.ClearItems();
+    for (i = 0; i < m_lItemEntries.num; i++)
+    {
+        if (m_lItemEntries[i] != 0)
+        {
+            delete m_lItemEntries[i];
+        }
+        m_lItemEntries[i] = 0;
+    }
+    m_lItemEntries.RemoveAll();
+    m_nPendingSlot = 0;
+    m_oidPendingItem = OBJECT_INVALID;
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
+}
+#endif
+#ifndef _XBOX
 // PC 0x00719AA0 GOG 0x00719790
 void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
 {
