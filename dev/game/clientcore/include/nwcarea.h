@@ -195,14 +195,9 @@ public:
 #ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;
     List<CAurObject*> m_lstToBeDeletedEmitters;
-    // PC 0x007058A0 GOG 0x007017C0
-    void AddToBeDeletedEmitter(CAurObject* pEmitter)
-    {
-        if (pEmitter != NULL)
-        {
-            m_lstToBeDeletedEmitters.Add(pEmitter);
-        }
-    }
+    void AddToBeDeletedEmitter(CAurObject* pEmitter);
+    void AddCAurObjectToHitCheckIgnoreList(CAurObject* pObject);
+    void UnhighlightAreaTransitions();
 #endif
 };
 

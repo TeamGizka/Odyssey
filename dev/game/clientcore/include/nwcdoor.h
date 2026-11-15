@@ -74,6 +74,8 @@ public:
     void AnimationUpdate();
     void UpdateAreaTransitionDisplay();
     void HilightDoor(int bHilight);
+    unsigned char GetState();
+    void ToggleLockState();
     // PC 0x007343D0 GOG 0x007340E0
     CExoString GetTransitionDestination()
     {

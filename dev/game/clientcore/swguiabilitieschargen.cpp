@@ -569,6 +569,11 @@ void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+// PC 0x007686D0 GOG 0x007681D0
+CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
+{
+    m_lbDescription.ClearItems();
+}
 // PC 0x007688A0 GOG 0x007686E0
 void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
 {
@@ -709,11 +714,6 @@ void CSWGuiAbilitiesCharGen::SetDescription(unsigned long nStrRef)
 #ifdef _XBOX
     m_lblRanalog.SetEnabledFlag(m_lbDescription.IsOversized());
 #endif
-}
-// PC 0x007686D0 GOG 0x007681D0
-CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
-{
-    m_lbDescription.ClearItems();
 }
 // PC 0x00768B40 GOG 0x00768980
 void CSWGuiAbilitiesCharGen::OnRecommendButton()

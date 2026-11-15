@@ -49,6 +49,7 @@ public:
 
     void ResetTimer(int nIndex);
     int LoadEffect(unsigned long nAreaEffectId);
+    void HideClippedInstances();
     int SetAnimation(unsigned short nAnimation, unsigned char nInstance);
     void StopEffect();
     void SetMoveTimer(unsigned long nTime, CAurObject* pObject);

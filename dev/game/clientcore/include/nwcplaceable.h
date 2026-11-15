@@ -65,6 +65,8 @@ public:
     int GetAppearance() { return m_nAppearance; }
     void AnimationUpdate();
     void HilightPlaceable(int bHilight);
+    void ToggleLockState();
+    void ShowFeedbackBubbleText();
 
     CExoString m_sName;
     CExoString m_sTag;

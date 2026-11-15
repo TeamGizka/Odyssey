@@ -19,7 +19,9 @@ class CSWGuiControl;
 class CSWGuiFloatyText;
 class CSWGuiInGameItemEntry;
 class CSWGuiKeyMapButton;
+class CSWSCombatRoundAction;
 class CSWSItem;
+class CSWSObjectActionNode;
 struct CSWCPlaceableObjectLight;
 struct CSWGuiControlEvent;
 struct CSWGuiSkillStruct;
@@ -49,3 +51,17 @@ template CExoArrayList<CSWGuiControlEvent>::~CExoArrayList();
 template CExoArrayList<CSWGuiSkillStruct>::~CExoArrayList();
 template CExoArrayList<CSWGuiButton*>::CExoArrayList(int);
 template CExoArrayList<CSWSItem*>::~CExoArrayList();
+template void List<CAurObject*>::allocate(int);
+template void List<CAurObject*>::Add(CAurObject*);
+
+#include "swpattern.h"
+
+template CExoArrayList<CSWRumblePattern>::CExoArrayList(int);
+template CExoArrayList<CSWRumblePattern>::~CExoArrayList();
+template CExoArrayList<CSWGuiKeyMapButton*>::~CExoArrayList();
+template CExoLinkedListNode* CExoLinkedList<CSWSObjectActionNode>::GetHeadPos();
+template CSWSObjectActionNode* CExoLinkedList<CSWSObjectActionNode>::GetAtPos(CExoLinkedListNode*);
+template CSWSObjectActionNode* CExoLinkedList<CSWSObjectActionNode>::GetNext(CExoLinkedListNode*&);
+template CExoLinkedListNode* CExoLinkedList<CSWSCombatRoundAction>::GetHeadPos();
+template CSWSCombatRoundAction* CExoLinkedList<CSWSCombatRoundAction>::GetAtPos(CExoLinkedListNode*);
+template CSWSCombatRoundAction* CExoLinkedList<CSWSCombatRoundAction>::GetNext(CExoLinkedListNode*&);

@@ -190,6 +190,7 @@ public:
     int SetDesiredPositionTimer(int nTime);
     void SetDesiredPosition(const Vector& vPosition);
     void SetSourcePosition(const Vector& vPosition);
+    void MoveProjectileToFinalVelocity();
     void MoveProjectileAccelerating();
     void MoveProjectileSpiral();
     void SetProjectileVelAndAccel(const Vector& vDirection);

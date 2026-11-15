@@ -83,6 +83,9 @@ public:
     }
     void SetDoneSortBy(int nSortBy);
     void SetActiveSortBy(int nSortBy);
+    void CheckForUpdates();
+    void SetJournalPageOpen();
+    void SetJournalPageClosed();
 
     CSWCSortedJournalArrayList m_lstDone;
     CSWCSortedJournalArrayList m_lstActive;
