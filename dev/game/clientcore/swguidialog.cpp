@@ -55,36 +55,6 @@ void CSWGuiDialog::SetReplyActive(CSWGuiControl* pControl)
     CSWGuiLabel* pLabel = pControl->AsLabel();
     pLabel->m_cText.m_cParams.SetColor(m_vReplyHighlightColor);
 }
-// PC 0x0070FCD0 GOG 0x0070FA20
-CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
-    : CSWGuiDialog(pManager)
-{
-    m_pTop = 0;
-#ifdef _XBOX
-    StartLoadFromLayout("computercamera");
-    InitControl(m_lblCameraTitle, "LBL_A", 1);
-    InitControl(m_lblReturn, "LBL_RETURN", 1);
-    StopLoadFromLayout();
-#else
-    {
-        CResRef cLayout("computercam_p");
-        StartLoadFromLayout(cLayout);
-    }
-
-    CSWGuiExtent cExtent = m_cExtent;
-    cExtent.m_nHeight = g_nScreenHeight;
-    cExtent.m_nWidth = g_nScreenWidth;
-    CSWGuiPanel::SetExtent(cExtent);
-
-    InitControl(m_lblReturn, "LBL_RETURN", 1);
-    cExtent = m_lblReturn.m_cExtent;
-    cExtent.m_nLeft = (g_nScreenWidth - cExtent.m_nWidth) / 2;
-    cExtent.m_nTop = g_nScreenHeight - 75;
-    m_lblReturn.SetExtent(cExtent);
-
-    StopLoadFromLayout();
-#endif
-}
 // PC 0x0070D440 GOG 0x0070D430
 void CSWGuiDialog::SetReplyInactive(CSWGuiControl* pControl)
 {
@@ -141,6 +111,15 @@ int CSWGuiDialog::SelectReply(int nReply)
     }
     return 0;
 }
+// PC 0x0070E420 GOG 0x0070EC70
+CSWGuiDialogLetterbox::CSWGuiDialogLetterbox(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    m_vColor = CGuiInGame::COLOR_BLACK;
+    ResetFade();
+    m_nPosition = 0;
+    m_bDone = 0;
+}
 // PC 0x0070D600 GOG 0x0070D5E0
 void CSWGuiDialog::Reset()
 {
@@ -155,6 +134,70 @@ void CSWGuiDialog::Reset()
         CExoString sText("");
         m_lblReply[i].m_cText.m_cParams.SetText(sText);
     }
+}
+// PC 0x0070F100 GOG 0x0070EA00
+void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
+                              unsigned long* pReplyIndices, int nStartIndex,
+                              int bUnknown)
+{
+    if (SWGUIDIALOG_DEBUG)
+    {
+        SwguidialogTrace3(this);
+    }
+    Reset();
+    CSWGuiExtent cExtent;
+    cExtent.m_nLeft = cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight =
+        0;
+    CExoArrayList<CSWGuiControl*> lReplies;
+    if (nCount >= MAX_REPLIES)
+    {
+        nCount = MAX_REPLIES;
+    }
+    m_nReplyCount = nCount;
+    for (int i = 0; i < m_nReplyCount; i++)
+    {
+        if (!pReplies[i].IsEmpty())
+        {
+#ifdef _XBOX
+            m_lblReply[i].m_cText.m_cParams.SetText(pReplies[i]);
+#else
+            CExoString sNumber;
+            sNumber.Format("%d. ", i + 1);
+            m_lblReply[i].m_cText.m_cParams.SetText(sNumber + pReplies[i]);
+#endif
+#ifndef _XBOX
+            m_lblReply[i].m_cText.m_cParams.ReSetFont();
+#endif
+            cExtent = m_lblReply[i].m_cExtent;
+            cExtent.m_nHeight = m_lblReply[i].m_cText.GetIdealHeight();
+            m_lblReply[i].SetExtent(cExtent);
+#ifndef _XBOX
+            m_lblReply[i].AddEvent(
+                CSWGuiControl::EVENT_SELECT, this,
+                (CSWGuiHandler)&CSWGuiDialog::HandleSelectReply);
+#endif
+            lReplies.Add(&m_lblReply[i]);
+        }
+        m_aReplyIndex[i] = pReplyIndices[i];
+    }
+    if (bUnknown)
+    {
+        m_lbReplies.AddControls(lReplies, 0, 0, 1);
+        m_lbReplies.SetEnabledFlag(1);
+        SetActiveControl(&m_lbReplies, 0);
+        m_nSelectedReply = 0;
+        m_lbReplies.SetSelectedControl(0, 0);
+#ifndef _XBOX
+        short nBottom = m_lbReplies.m_nBottomVisibleItem;
+        int nNum = m_lbReplies.m_lItems.num;
+        m_lbReplies.SetShowScrollBar(nBottom < nNum - 1);
+#endif
+    }
+    m_bDialogActive = 0;
+#ifndef _XBOX
+    m_pManager->HandleMouseMove(m_pManager->m_nMouseX,
+                                m_pManager->m_nMouseY);
+#endif
 }
 // PC 0x0070D6D0 GOG 0x0070D1A0
 int CSWGuiDialog::GetReplyIndex(int nReply)
@@ -373,6 +416,38 @@ void CSWGuiDialogLetterbox::SetBottom()
     g_Letterbox_bottom = m_cExtent.m_nTop;
     m_nPosition = POSITION_BOTTOM;
 }
+// PC 0x0070E560 GOG 0x0070EDB0
+CSWGuiManager* CSWGuiDialogLetterbox::SetMiddle()
+{
+    if (m_pManager == 0)
+    {
+        m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
+    }
+    m_nPosition = POSITION_MIDDLE;
+    ResetFade();
+    CSWGuiManager* pManager = m_pManager;
+    m_cExtent.m_nTop = 0;
+    m_cExtent.m_nLeft = 0;
+    m_cExtent.m_nWidth = pManager->m_nWidth;
+    m_cExtent.m_nHeight = pManager->m_nHeight;
+    return pManager;
+}
+// PC 0x0070DAB0 GOG 0x0070DA70
+void CSWGuiDialogLetterbox::ResetFade()
+{
+    if (m_nPosition == POSITION_MIDDLE)
+    {
+        SetAlpha(0.0f);
+    }
+    else
+    {
+        SetAlpha(1.0f);
+    }
+    m_fFadeDelay = 0;
+    m_fFadeLength = 0;
+    m_fFadeTime = 0.0f;
+    m_bFadeIn = 0;
+}
 // PC 0x0070DAF0 GOG 0x0070DAB0
 void CSWGuiDialogLetterbox::SetFade(int bFadeIn, float fDelay, float fLength,
                                     const Vector& vColor)
@@ -468,166 +543,6 @@ void CSWGuiDialogCinematic::ShowDialogMessage()
     cExtent.m_nHeight = m_pManager->m_nHeight - cExtent.m_nTop;
     pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     pGui->m_pDialogLetterbox->SetExtentSpecial(cExtent);
-}
-// PC 0x0070DE50 GOG 0x0070E2A0
-int CSWGuiDialogCinematic::SelectReply(int nReply)
-{
-    if (CSWGuiDialog::SelectReply(nReply))
-    {
-        m_pTop->SetReply("");
-        if (m_pManager->PanelExists(m_pTop))
-        {
-            GetManager()->RemovePanel(m_pTop);
-        }
-    }
-    return 1;
-}
-// PC 0x0070DF20 GOG 0x0070E370
-void CSWGuiDialogCinematic::Reset()
-{
-    CSWGuiExtent cExtent;
-    cExtent.m_nHeight = 0;
-    cExtent.m_nWidth = 0;
-    cExtent.m_nTop = 0;
-    cExtent.m_nLeft = 0;
-    int nMarginX;
-    int nMarginY;
-    m_pManager->GetSafeMargin(nMarginX, nMarginY);
-    cExtent.m_nLeft = nMarginX;
-    int nHeight = m_pManager->m_nHeight;
-    cExtent.m_nTop =
-        nHeight -
-        (nHeight - (int)(m_pManager->m_nWidth * 0.42857149f)) / 2;
-    cExtent.m_nWidth = m_pManager->m_nWidth - nMarginX * 2;
-#ifdef _XBOX
-    cExtent.m_nHeight = 66;
-    int nShrink = m_cExtent.m_nHeight - 66;
-#else
-    cExtent.m_nHeight = 100;
-    int nShrink = m_cExtent.m_nHeight - 100;
-#endif
-    SetExtent(cExtent);
-    cExtent.m_nLeft = 0;
-    cExtent.m_nWidth = m_pManager->m_nWidth;
-    cExtent.m_nHeight = m_pManager->m_nHeight - cExtent.m_nTop;
-    CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    pGui->m_pDialogLetterbox->SetExtent(cExtent);
-    cExtent = m_lblMessage.m_cExtent;
-    cExtent.m_nHeight -= nShrink;
-    m_lblMessage.SetExtent(cExtent);
-    {
-        CExoString sEmpty("");
-        m_lblMessage.m_cText.m_cParams.SetText(sEmpty);
-    }
-    CSWGuiDialog::Reset();
-}
-// PC 0x0070E080 GOG 0x0070E630
-void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
-{
-    if (nState != 0)
-    {
-        switch (nEvent)
-        {
-        case 57:
-            m_lbMessage.HandleInputEvent(GUIEVENT_UP, 1);
-            break;
-        case 58:
-            m_lbMessage.HandleInputEvent(GUIEVENT_DOWN, 1);
-            break;
-        }
-    }
-    return CSWGuiDialog::HandleInputEvent(nEvent, nState);
-}
-
-// PC 0x007088F0 GOG 0x00708630
-void CSWGuiDialogComputer::OnPanelAdded()
-{
-    m_pSound->Play();
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
-}
-
-// PC 0x0070A8A0 GOG 0x0070A5E0
-void CSWGuiDialogComputer::OnPanelRemoved()
-{
-    m_pSound->Stop();
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelRemoved();
-#endif
-}
-// PC 0x0070E120 GOG 0x0070D240
-CExoString CSWGuiDialogComputer::GetFullScreenBG()
-{
-    CExoString sBackground("800x600");
-    if (g_nScreenWidth == 1024)
-    {
-        if (g_nScreenHeight == 768)
-            sBackground = "1024x768";
-    }
-    else if (g_nScreenWidth == 1280)
-    {
-        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
-            sBackground = "1280x960";
-    }
-    else if (g_nScreenWidth == 1600 && g_nScreenHeight == 1200)
-    {
-        sBackground = "1600x1200";
-    }
-#ifndef _XBOX
-    sBackground = sBackground +
-        CSWGuiManager::FULLSCREEN_BGS[PC_BACKGROUND_SUFFIX_COMPUTER] +
-        CExoString(m_nBackground);
-#endif
-    return sBackground;
-}
-#ifndef _XBOX
-// PC 0x0070E270 GOG 0x0070E8E0
-void CSWGuiDialogComputerCamera::SetLiveFeedMessageVisible(int bVisible)
-{
-    m_lblReturn.SetEnabledFlag(bVisible);
-}
-#endif
-// PC 0x0070E420 GOG 0x0070EC70
-CSWGuiDialogLetterbox::CSWGuiDialogLetterbox(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    m_vColor = CGuiInGame::COLOR_BLACK;
-    ResetFade();
-    m_nPosition = 0;
-    m_bDone = 0;
-}
-// PC 0x0070E560 GOG 0x0070EDB0
-CSWGuiManager* CSWGuiDialogLetterbox::SetMiddle()
-{
-    if (m_pManager == 0)
-    {
-        m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
-    }
-    m_nPosition = POSITION_MIDDLE;
-    ResetFade();
-    CSWGuiManager* pManager = m_pManager;
-    m_cExtent.m_nTop = 0;
-    m_cExtent.m_nLeft = 0;
-    m_cExtent.m_nWidth = pManager->m_nWidth;
-    m_cExtent.m_nHeight = pManager->m_nHeight;
-    return pManager;
-}
-// PC 0x0070DAB0 GOG 0x0070DA70
-void CSWGuiDialogLetterbox::ResetFade()
-{
-    if (m_nPosition == POSITION_MIDDLE)
-    {
-        SetAlpha(0.0f);
-    }
-    else
-    {
-        SetAlpha(1.0f);
-    }
-    m_fFadeDelay = 0;
-    m_fFadeLength = 0;
-    m_fFadeTime = 0.0f;
-    m_bFadeIn = 0;
 }
 // PC 0x0070E5D0 GOG 0x0070DB10
 void CSWGuiDialogLetterbox::Draw(float fElapsed)
@@ -751,6 +666,81 @@ CSWGuiDialogTop::CSWGuiDialogTop(CSWGuiManager* pManager,
     m_bPositioned = 1;
 #endif
 }
+// PC 0x0070F400 GOG 0x0070F150
+void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
+                                       unsigned long* pReplyIndices,
+                                       int nStartIndex, int bUnknown)
+{
+    if (bUnknown)
+    {
+        m_pTop->SetReply(m_sMessage);
+    }
+    CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
+                             bUnknown);
+    if (m_lbReplies.m_bEnabled)
+    {
+        CSWGuiExtent cExtent = m_lbReplies.m_cExtent;
+        int nFontHeight = m_lblReply[0].m_cText.GetFontHeight();
+        cExtent.m_nHeight -= cExtent.m_nHeight % nFontHeight;
+        m_lbReplies.SetExtent(cExtent);
+    }
+    if (bUnknown && !m_pManager->PanelExists(m_pTop))
+    {
+        m_pManager->AddPanel(m_pTop, 0, 1);
+    }
+}
+// PC 0x0070DE50 GOG 0x0070E2A0
+int CSWGuiDialogCinematic::SelectReply(int nReply)
+{
+    if (CSWGuiDialog::SelectReply(nReply))
+    {
+        m_pTop->SetReply("");
+        if (m_pManager->PanelExists(m_pTop))
+        {
+            GetManager()->RemovePanel(m_pTop);
+        }
+    }
+    return 1;
+}
+// PC 0x0070DF20 GOG 0x0070E370
+void CSWGuiDialogCinematic::Reset()
+{
+    CSWGuiExtent cExtent;
+    cExtent.m_nHeight = 0;
+    cExtent.m_nWidth = 0;
+    cExtent.m_nTop = 0;
+    cExtent.m_nLeft = 0;
+    int nMarginX;
+    int nMarginY;
+    m_pManager->GetSafeMargin(nMarginX, nMarginY);
+    cExtent.m_nLeft = nMarginX;
+    int nHeight = m_pManager->m_nHeight;
+    cExtent.m_nTop =
+        nHeight -
+        (nHeight - (int)(m_pManager->m_nWidth * 0.42857149f)) / 2;
+    cExtent.m_nWidth = m_pManager->m_nWidth - nMarginX * 2;
+#ifdef _XBOX
+    cExtent.m_nHeight = 66;
+    int nShrink = m_cExtent.m_nHeight - 66;
+#else
+    cExtent.m_nHeight = 100;
+    int nShrink = m_cExtent.m_nHeight - 100;
+#endif
+    SetExtent(cExtent);
+    cExtent.m_nLeft = 0;
+    cExtent.m_nWidth = m_pManager->m_nWidth;
+    cExtent.m_nHeight = m_pManager->m_nHeight - cExtent.m_nTop;
+    CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+    pGui->m_pDialogLetterbox->SetExtent(cExtent);
+    cExtent = m_lblMessage.m_cExtent;
+    cExtent.m_nHeight -= nShrink;
+    m_lblMessage.SetExtent(cExtent);
+    {
+        CExoString sEmpty("");
+        m_lblMessage.m_cText.m_cParams.SetText(sEmpty);
+    }
+    CSWGuiDialog::Reset();
+}
 // PC 0x0070EA20 GOG 0x0070EE90
 CSWGuiDialogCinematic::CSWGuiDialogCinematic(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
@@ -824,7 +814,6 @@ CSWGuiDialogCinematic::~CSWGuiDialogCinematic()
         m_pTop = 0;
     }
 }
-
 // PC 0x0070F4D0 GOG 0x0070F220
 CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
@@ -889,6 +878,117 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     m_lblMessage.m_cText.m_cParams.SetColor(m_vReplyColor);
     m_vReplyHighlightColor = CGuiInGame::COLOR_WHITE;
 }
+// PC 0x0070E080 GOG 0x0070E630
+void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 57:
+            m_lbMessage.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case 58:
+            m_lbMessage.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+        }
+    }
+    return CSWGuiDialog::HandleInputEvent(nEvent, nState);
+}
+// PC 0x0070FBB0 GOG 0x0070F900
+void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
+                                      unsigned long* pReplyIndices,
+                                      int nStartIndex, int bUnknown)
+{
+    CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
+                             bUnknown);
+    if (bUnknown != 0)
+    {
+        m_lblMessage.SetEnabledFlag(1);
+    }
+    UpdateSkills();
+}
+
+// PC 0x007088F0 GOG 0x00708630
+void CSWGuiDialogComputer::OnPanelAdded()
+{
+    m_pSound->Play();
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+}
+
+// PC 0x0070A8A0 GOG 0x0070A5E0
+void CSWGuiDialogComputer::OnPanelRemoved()
+{
+    m_pSound->Stop();
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
+}
+// PC 0x0070FBF0 GOG 0x0070F940
+void CSWGuiDialogComputer::SetDialogMessage(const CExoString& sMessage)
+{
+    if (SWGUIDIALOG_DEBUG)
+    {
+        CSWGuiDialogComputer::SetReplies(0, NULL, NULL, 0, 0);
+    }
+    UpdateSkills();
+    CSWGuiDialog::SetDialogMessage(sMessage);
+    m_lbMessage.SetEnabledFlag(m_lblMessage.m_bEnabled);
+    if (m_lbMessage.m_bEnabled)
+    {
+        m_lbMessage.ClearItems();
+        CSWGuiExtent cExtent = m_lblMessage.m_cExtent;
+        int nHeight;
+        if (sMessage.GetLength() > 0)
+        {
+            nHeight = m_lblMessage.m_cText.GetIdealHeight();
+        }
+        else
+        {
+            nHeight = m_lblMessage.m_cText.GetFontHeight();
+        }
+        cExtent.m_nHeight = nHeight;
+        m_lblMessage.SetExtent(cExtent);
+        CSWGuiControl* pMessage = &m_lblMessage;
+        m_lbMessage.AddControls(&pMessage, 1, 0, 0, 0);
+        m_lbMessage.SetSelectedControl(&m_lblMessage, 0);
+    }
+}
+// PC 0x0070E120 GOG 0x0070D240
+CExoString CSWGuiDialogComputer::GetFullScreenBG()
+{
+    CExoString sBackground("800x600");
+    if (g_nScreenWidth == 1024)
+    {
+        if (g_nScreenHeight == 768)
+            sBackground = "1024x768";
+    }
+    else if (g_nScreenWidth == 1280)
+    {
+        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
+            sBackground = "1280x960";
+    }
+    else if (g_nScreenWidth == 1600 && g_nScreenHeight == 1200)
+    {
+        sBackground = "1600x1200";
+    }
+#ifndef _XBOX
+    sBackground = sBackground +
+        CSWGuiManager::FULLSCREEN_BGS[PC_BACKGROUND_SUFFIX_COMPUTER] +
+        CExoString(m_nBackground);
+#endif
+    return sBackground;
+}
+#ifndef _XBOX
+// PC 0x0070E270 GOG 0x0070E8E0
+void CSWGuiDialogComputerCamera::SetLiveFeedMessageVisible(int bVisible)
+{
+    m_lblReturn.SetEnabledFlag(bVisible);
+}
+#endif
+
 // PC 0x0070EDD0 GOG 0x0070E570
 CSWGuiDialogComputer::~CSWGuiDialogComputer()
 {
@@ -899,6 +999,40 @@ CSWGuiDialogComputer::~CSWGuiDialogComputer()
     }
 
     m_lbMessage.ClearItems();
+}
+// PC 0x0070FCD0 GOG 0x0070FA20
+CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
+    : CSWGuiDialog(pManager)
+{
+    if (SWGUIDIALOG_DEBUG)
+    {
+        SwguidialogTrace3(this);
+    }
+    m_pTop = 0;
+#ifdef _XBOX
+    StartLoadFromLayout("computercamera");
+    InitControl(m_lblCameraTitle, "LBL_A", 1);
+    InitControl(m_lblReturn, "LBL_RETURN", 1);
+    StopLoadFromLayout();
+#else
+    {
+        CResRef cLayout("computercam_p");
+        StartLoadFromLayout(cLayout);
+    }
+
+    CSWGuiExtent cExtent = m_cExtent;
+    cExtent.m_nHeight = g_nScreenHeight;
+    cExtent.m_nWidth = g_nScreenWidth;
+    CSWGuiPanel::SetExtent(cExtent);
+
+    InitControl(m_lblReturn, "LBL_RETURN", 1);
+    cExtent = m_lblReturn.m_cExtent;
+    cExtent.m_nLeft = (g_nScreenWidth - cExtent.m_nWidth) / 2;
+    cExtent.m_nTop = g_nScreenHeight - 75;
+    m_lblReturn.SetExtent(cExtent);
+
+    StopLoadFromLayout();
+#endif
 }
 // PC 0x0070EE90 GOG 0x0070E690
 void CSWGuiDialogComputer::UpdateSkills()
@@ -935,131 +1069,5 @@ CSWGuiDialogComputerCamera::~CSWGuiDialogComputerCamera()
     {
         delete m_pTop;
         m_pTop = 0;
-    }
-}
-// PC 0x0070F100 GOG 0x0070EA00
-void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
-                              unsigned long* pReplyIndices, int nStartIndex,
-                              int bUnknown)
-{
-    Reset();
-    CSWGuiExtent cExtent;
-    cExtent.m_nLeft = cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight =
-        0;
-    CExoArrayList<CSWGuiControl*> lReplies;
-    if (nCount >= MAX_REPLIES)
-    {
-        nCount = MAX_REPLIES;
-    }
-    m_nReplyCount = nCount;
-    for (int i = 0; i < m_nReplyCount; i++)
-    {
-        if (!pReplies[i].IsEmpty())
-        {
-#ifdef _XBOX
-            m_lblReply[i].m_cText.m_cParams.SetText(pReplies[i]);
-#else
-            CExoString sNumber;
-            sNumber.Format("%d. ", i + 1);
-            m_lblReply[i].m_cText.m_cParams.SetText(sNumber + pReplies[i]);
-#endif
-#ifndef _XBOX
-            m_lblReply[i].m_cText.m_cParams.ReSetFont();
-#endif
-            cExtent = m_lblReply[i].m_cExtent;
-            cExtent.m_nHeight = m_lblReply[i].m_cText.GetIdealHeight();
-            m_lblReply[i].SetExtent(cExtent);
-#ifndef _XBOX
-            m_lblReply[i].AddEvent(
-                CSWGuiControl::EVENT_SELECT, this,
-                (CSWGuiHandler)&CSWGuiDialog::HandleSelectReply);
-#endif
-            lReplies.Add(&m_lblReply[i]);
-        }
-        m_aReplyIndex[i] = pReplyIndices[i];
-    }
-    if (bUnknown)
-    {
-        m_lbReplies.AddControls(lReplies, 0, 0, 1);
-        m_lbReplies.SetEnabledFlag(1);
-        SetActiveControl(&m_lbReplies, 0);
-        m_nSelectedReply = 0;
-        m_lbReplies.SetSelectedControl(0, 0);
-#ifndef _XBOX
-        short nBottom = m_lbReplies.m_nBottomVisibleItem;
-        int nNum = m_lbReplies.m_lItems.num;
-        m_lbReplies.SetShowScrollBar(nBottom < nNum - 1);
-#endif
-    }
-    m_bDialogActive = 0;
-#ifndef _XBOX
-    m_pManager->HandleMouseMove(m_pManager->m_nMouseX,
-                                m_pManager->m_nMouseY);
-#endif
-}
-// PC 0x0070F400 GOG 0x0070F150
-void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
-                                       unsigned long* pReplyIndices,
-                                       int nStartIndex, int bUnknown)
-{
-    if (bUnknown)
-    {
-        m_pTop->SetReply(m_sMessage);
-    }
-    CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
-                             bUnknown);
-    if (m_lbReplies.m_bEnabled)
-    {
-        CSWGuiExtent cExtent = m_lbReplies.m_cExtent;
-        int nFontHeight = m_lblReply[0].m_cText.GetFontHeight();
-        cExtent.m_nHeight -= cExtent.m_nHeight % nFontHeight;
-        m_lbReplies.SetExtent(cExtent);
-    }
-    if (bUnknown && !m_pManager->PanelExists(m_pTop))
-    {
-        m_pManager->AddPanel(m_pTop, 0, 1);
-    }
-}
-// PC 0x0070FBB0 GOG 0x0070F900
-void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
-                                      unsigned long* pReplyIndices,
-                                      int nStartIndex, int bUnknown)
-{
-    CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
-                             bUnknown);
-    if (bUnknown != 0)
-    {
-        m_lblMessage.SetEnabledFlag(1);
-    }
-    UpdateSkills();
-}
-// PC 0x0070FBF0 GOG 0x0070F940
-void CSWGuiDialogComputer::SetDialogMessage(const CExoString& sMessage)
-{
-    if (SWGUIDIALOG_DEBUG)
-    {
-        CSWGuiDialogComputer::SetReplies(0, NULL, NULL, 0, 0);
-    }
-    UpdateSkills();
-    CSWGuiDialog::SetDialogMessage(sMessage);
-    m_lbMessage.SetEnabledFlag(m_lblMessage.m_bEnabled);
-    if (m_lbMessage.m_bEnabled)
-    {
-        m_lbMessage.ClearItems();
-        CSWGuiExtent cExtent = m_lblMessage.m_cExtent;
-        int nHeight;
-        if (sMessage.GetLength() > 0)
-        {
-            nHeight = m_lblMessage.m_cText.GetIdealHeight();
-        }
-        else
-        {
-            nHeight = m_lblMessage.m_cText.GetFontHeight();
-        }
-        cExtent.m_nHeight = nHeight;
-        m_lblMessage.SetExtent(cExtent);
-        CSWGuiControl* pMessage = &m_lblMessage;
-        m_lbMessage.AddControls(&pMessage, 1, 0, 0, 0);
-        m_lbMessage.SetSelectedControl(&m_lblMessage, 0);
     }
 }
