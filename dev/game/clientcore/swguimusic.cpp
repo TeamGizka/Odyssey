@@ -9,6 +9,68 @@
 #include "twodimarrays.h"
 #include "swguioptions.h"
 #include "guiingame.h"
+// PC 0x0074C680 GOG 0x0074C4C0
+void CSWGuiTitleMusic::OnPlayPicked(CSWGuiControl* pControl)
+{
+    if (m_lMusic.num >= 1 && m_pSelectedSong != NULL)
+    {
+        if (pControl->m_bSelected)
+        {
+            CMusicItemInfo* pInfo = (CMusicItemInfo*)m_pSelectedSong->GetUserData();
+            m_pStreamingSound->SetLooping(m_bLooping);
+            if (m_pStreamingSound->IsPlaying())
+            {
+                StopMusic();
+            }
+            CResRef cSong(pInfo->m_sFileName);
+            m_pStreamingSound->Play(cSong, m_nMusicResType, 0, 1, 0);
+            m_lblTrackName.m_cText.m_cParams.SetText(
+                m_pSelectedSong->m_cText.m_cParams.m_sText);
+        }
+        m_bPlaying = 1;
+    }
+}
+// PC 0x0074C730 GOG 0x0074C570
+void CSWGuiTitleMusic::OnStopPicked(CSWGuiControl* pControl)
+{
+    if (m_lMusic.num >= 1 && pControl->m_bSelected &&
+        m_pStreamingSound->IsPlaying())
+    {
+        StopMusic();
+    }
+}
+// PC 0x0074C770 GOG 0x0074C5B0
+void CSWGuiTitleMusic::OnNextPicked(CSWGuiControl* pControl)
+{
+    CSWGuiListBox* pList = &m_lbMusic;
+    if (m_pSelectedSong == NULL)
+    {
+        pList->SetSelectedControl(0, 0);
+    }
+    else
+    {
+        int nNumItems = m_lbMusic.GetNumItems();
+        pList->SetSelectedControl(m_pSelectedSong, 0);
+        int nNext = m_lbMusic.m_nSelectedItem + 1;
+        if (nNext >= nNumItems)
+        {
+            nNext = 0;
+        }
+        pList->SetSelectedControl(nNext, 0);
+    }
+    OnSongPicked(pList->GetSelectedControl());
+    CMusicItemInfo* pInfo = (CMusicItemInfo*)m_pSelectedSong->GetUserData();
+    m_pStreamingSound->SetLooping(m_bLooping);
+    if (m_pStreamingSound->IsPlaying())
+    {
+        StopMusic();
+    }
+    CResRef cSong(pInfo->m_sFileName);
+    m_pStreamingSound->Play(cSong, m_nMusicResType, 0, 1, 0);
+    m_lblTrackName.m_cText.m_cParams.SetText(
+        m_pSelectedSong->m_cText.m_cParams.m_sText);
+    m_bPlaying = 1;
+}
 
 // PC 0x0074C200 GOG 0x0074C050
 void CSWGuiTitleMusic::HandleInputEvent(int nEvent, int nState)
@@ -93,68 +155,6 @@ void CSWGuiTitleMusic::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
-}
-// PC 0x0074C680 GOG 0x0074C4C0
-void CSWGuiTitleMusic::OnPlayPicked(CSWGuiControl* pControl)
-{
-    if (m_lMusic.num >= 1 && m_pSelectedSong != NULL)
-    {
-        if (pControl->m_bSelected)
-        {
-            CMusicItemInfo* pInfo = (CMusicItemInfo*)m_pSelectedSong->GetUserData();
-            m_pStreamingSound->SetLooping(m_bLooping);
-            if (m_pStreamingSound->IsPlaying())
-            {
-                StopMusic();
-            }
-            CResRef cSong(pInfo->m_sFileName);
-            m_pStreamingSound->Play(cSong, m_nMusicResType, 0, 1, 0);
-            m_lblTrackName.m_cText.m_cParams.SetText(
-                m_pSelectedSong->m_cText.m_cParams.m_sText);
-        }
-        m_bPlaying = 1;
-    }
-}
-// PC 0x0074C730 GOG 0x0074C570
-void CSWGuiTitleMusic::OnStopPicked(CSWGuiControl* pControl)
-{
-    if (m_lMusic.num >= 1 && pControl->m_bSelected &&
-        m_pStreamingSound->IsPlaying())
-    {
-        StopMusic();
-    }
-}
-// PC 0x0074C770 GOG 0x0074C5B0
-void CSWGuiTitleMusic::OnNextPicked(CSWGuiControl* pControl)
-{
-    CSWGuiListBox* pList = &m_lbMusic;
-    if (m_pSelectedSong == NULL)
-    {
-        pList->SetSelectedControl(0, 0);
-    }
-    else
-    {
-        int nNumItems = m_lbMusic.GetNumItems();
-        pList->SetSelectedControl(m_pSelectedSong, 0);
-        int nNext = m_lbMusic.m_nSelectedItem + 1;
-        if (nNext >= nNumItems)
-        {
-            nNext = 0;
-        }
-        pList->SetSelectedControl(nNext, 0);
-    }
-    OnSongPicked(pList->GetSelectedControl());
-    CMusicItemInfo* pInfo = (CMusicItemInfo*)m_pSelectedSong->GetUserData();
-    m_pStreamingSound->SetLooping(m_bLooping);
-    if (m_pStreamingSound->IsPlaying())
-    {
-        StopMusic();
-    }
-    CResRef cSong(pInfo->m_sFileName);
-    m_pStreamingSound->Play(cSong, m_nMusicResType, 0, 1, 0);
-    m_lblTrackName.m_cText.m_cParams.SetText(
-        m_pSelectedSong->m_cText.m_cParams.m_sText);
-    m_bPlaying = 1;
 }
 // PC 0x0074C850 GOG 0x0074C690
 void CSWGuiTitleMusic::Draw(float fElapsed)

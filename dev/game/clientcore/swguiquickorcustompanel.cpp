@@ -42,6 +42,37 @@ void CSWGuiQuickOrCustomPanel::OnSelectCustomCharacterButton(
         }
     }
 }
+// PC 0x00761A00 GOG 0x00761D40
+void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 45:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            HandleCancelButton();
+            break;
+        case 58:
+        {
+            CSWGuiControl* pList = &m_cDescriptionList;
+            pList->HandleInputEvent(GUIEVENT_DOWN, 1);
+        }
+        break;
+        case 57:
+        {
+            CSWGuiControl* pList = &m_cDescriptionList;
+            pList->HandleInputEvent(GUIEVENT_UP, 1);
+        }
+        break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
 // PC 0x00761AD0 GOG 0x00761820
 void CSWGuiQuickOrCustomPanel::SetDescription(unsigned long nStrRef)
 {
@@ -132,35 +163,4 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
 #endif
-}
-// PC 0x00761A00 GOG 0x00761D40
-void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
-{
-    if (nState != 0)
-    {
-        switch (nEvent)
-        {
-        case 45:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            break;
-        case 40:
-        case 46:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            HandleCancelButton();
-            break;
-        case 58:
-        {
-            CSWGuiControl* pList = &m_cDescriptionList;
-            pList->HandleInputEvent(GUIEVENT_DOWN, 1);
-        }
-        break;
-        case 57:
-        {
-            CSWGuiControl* pList = &m_cDescriptionList;
-            pList->HandleInputEvent(GUIEVENT_UP, 1);
-        }
-        break;
-        }
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }

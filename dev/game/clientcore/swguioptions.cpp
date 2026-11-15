@@ -920,6 +920,82 @@ void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
+// PC 0x00750200 GOG 0x007507B0
+void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            if (m_nUnknown80C != 0)
+            {
+                CExoIni cIni;
+                CExoString sValue;
+                {
+                    int bRead = cIni.ReadIniEntry(
+                        sValue, ".\\swkotor2.ini", "Graphics Options",
+                        "Disable Vertex Buffer Objects");
+                    if (bRead != 0 && sValue.AsINT() == 1)
+                    {
+                        AurDisableVertexBufferObjects();
+                    }
+                }
+                ReInitAurora(g_nScreenWidth, g_nScreenHeight, g_nBitsPerPixel,
+                             g_pAurora->FullScreen(), 1);
+                {
+                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini",
+                                                  "Graphics Options",
+                                                  "Disable Write-Only VBO");
+                    if (bRead != 0)
+                    {
+                        if (sValue.AsINT() == 1)
+                        {
+                            AurDisableVertexBufferObjectsWriteOnly();
+                        }
+                        else
+                        {
+                            AurEnableVertexBufferObjectsWriteOnly();
+                        }
+                    }
+                }
+                m_nUnknown80C = 0;
+            }
+            break;
+        case 39:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            OnResolutionChosen(0);
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+
+#endif  // PC 0x0074EFE0 GOG 0x0074F440
+
+#ifndef _XBOX
+// PC 0x0074E840 GOG 0x0074EDC0
+void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bSoftShadows = m_bSoftShadows;
+        m_bChanged = 1;
+        m_bSoftShadows = (bSoftShadows == 0);
+    }
+}
+// PC 0x0074E870 GOG 0x0074D550
+int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
+{
+    int bVSync = (m_bVSync == 0);
+    m_bVSync = bVSync;
+    return bVSync;
+}
 // PC 0x0074E990 GOG 0x0074EEF0
 void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
 {
@@ -980,63 +1056,12 @@ void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
         SetTexQualText();
     }
 }
-// PC 0x00750200 GOG 0x007507B0
-void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
+// PC 0x0074EBA0 GOG 0x0074D570
+void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
 {
-    if (nState != 0)
-    {
-        switch (nEvent)
-        {
-        case 40:
-        case 46:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            m_pManager->PopModalPanel();
-            m_bDeferredRemoval = 0;
-            m_nExitState = EXITSTATE_DELETE;
-            if (m_nUnknown80C != 0)
-            {
-                CExoIni cIni;
-                CExoString sValue;
-                {
-                    int bRead = cIni.ReadIniEntry(
-                        sValue, ".\\swkotor2.ini", "Graphics Options",
-                        "Disable Vertex Buffer Objects");
-                    if (bRead != 0 && sValue.AsINT() == 1)
-                    {
-                        AurDisableVertexBufferObjects();
-                    }
-                }
-                ReInitAurora(g_nScreenWidth, g_nScreenHeight, g_nBitsPerPixel,
-                             g_pAurora->FullScreen(), 1);
-                {
-                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini",
-                                                  "Graphics Options",
-                                                  "Disable Write-Only VBO");
-                    if (bRead != 0)
-                    {
-                        if (sValue.AsINT() == 1)
-                        {
-                            AurDisableVertexBufferObjectsWriteOnly();
-                        }
-                        else
-                        {
-                            AurEnableVertexBufferObjectsWriteOnly();
-                        }
-                    }
-                }
-                m_nUnknown80C = 0;
-            }
-            break;
-        case 39:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            OnResolutionChosen(0);
-            break;
-        }
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+    m_bDiscard = 1;
+    OnBButtonPressed(pControl);
 }
-
-#ifndef _XBOX
 void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC 0x0074EBB0 GOG 0x0074F100
 {
     if (pControl == 0 || pControl->m_bSelected != 0)
@@ -1067,33 +1092,6 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
         g_pGuiMan->ReloadPanels(g_nScreenWidth, g_nScreenHeight);
         g_pGuiMan->ReloadToolTipPanel();
     }
-}
-#endif
-#endif  // PC 0x0074EFE0 GOG 0x0074F440
-
-#ifndef _XBOX
-// PC 0x0074E840 GOG 0x0074EDC0
-void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        int bSoftShadows = m_bSoftShadows;
-        m_bChanged = 1;
-        m_bSoftShadows = (bSoftShadows == 0);
-    }
-}
-// PC 0x0074E870 GOG 0x0074D550
-int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
-{
-    int bVSync = (m_bVSync == 0);
-    m_bVSync = bVSync;
-    return bVSync;
-}
-// PC 0x0074EBA0 GOG 0x0074D570
-void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
-{
-    m_bDiscard = 1;
-    OnBButtonPressed(pControl);
 }
 #endif
 // PC 0x00750940 GOG 0x0074F8F0

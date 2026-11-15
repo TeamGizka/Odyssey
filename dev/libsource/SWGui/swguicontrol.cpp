@@ -1565,21 +1565,6 @@ void CSWGuiScrollBar::SetVisibleValue(int nValue)
     }
     SetExtent(m_cExtent);
 }
-// PC 0x004190B0 GOG 0x004190A0
-void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,
-                                 const CSWGuiBorderParams& cBorder,
-                                 const CResRef& sArrow, const CResRef& sThumb)
-{
-    m_cExtent = cExtent;
-    m_cBorder.Initialize(m_cExtent, cBorder);
-    Vector vColor(1.0f, 1.0f, 1.0f);
-    CSWGuiImageParams cParams(CResRef(), 0, 0, 0.0f, 18, 1.0f, vColor);
-    cParams.SetImage(sArrow, 0);
-    m_cArrow.Initialize(m_cExtent, cParams);
-    cParams.SetImage(sThumb, 0);
-    m_cThumb.Initialize(m_cExtent, cParams);
-    return SetExtent(m_cExtent);
-}
 // PC 0x00417980 GOG 0x004179B0
 void CSWGuiListBox::SetScrollBarExtent(int nWidth, int bUpdate)
 {
@@ -3294,6 +3279,21 @@ void CSWGuiScrollBar::Draw(float fElapsed)
         m_cArrow.SetExtent(cArrow);
         m_cArrow.Draw(fElapsed);
     }
+}
+// PC 0x004190B0 GOG 0x004190A0
+void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,
+                                 const CSWGuiBorderParams& cBorder,
+                                 const CResRef& sArrow, const CResRef& sThumb)
+{
+    m_cExtent = cExtent;
+    m_cBorder.Initialize(m_cExtent, cBorder);
+    Vector vColor(1.0f, 1.0f, 1.0f);
+    CSWGuiImageParams cParams(CResRef(), 0, 0, 0.0f, 18, 1.0f, vColor);
+    cParams.SetImage(sArrow, 0);
+    m_cArrow.Initialize(m_cExtent, cParams);
+    cParams.SetImage(sThumb, 0);
+    m_cThumb.Initialize(m_cExtent, cParams);
+    return SetExtent(m_cExtent);
 }
 // PC 0x00419180 GOG 0x00419170
 void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,

@@ -83,26 +83,6 @@ void CSWGuiMainInterfaceAction::Draw(float fElapsed)
         AurGUIStopLayer();
     }
 }
-#else
-void CSWGuiMainInterfaceAction::Draw(float fElapsed)  // PC 0x006DD020 GOG 0x006DD690
-{
-    if (m_CSWGuiButton_0.m_bEnabled != 0)
-    {
-        m_CSWGuiButton_0.Draw(fElapsed);
-    }
-    if (m_CSWGuiButton_388.m_bEnabled != 0)
-    {
-        m_CSWGuiButton_388.Draw(fElapsed);
-    }
-    if (m_CSWGuiButton_54C.m_bEnabled != 0)
-    {
-        m_CSWGuiButton_54C.Draw(fElapsed);
-    }
-    if (m_CSWGuiButton_1C4.m_bEnabled != 0)
-    {
-        m_CSWGuiButton_1C4.Draw(fElapsed);
-    }
-}
 #endif
 
 #ifndef _XBOX
@@ -643,6 +623,27 @@ inline int CSWGuiMainInterfaceAction::GetActive()  // PC 0x006DCFF0 GOG 0x006DD6
 #endif
 
 #ifndef _XBOX
+#ifndef _XBOX
+void CSWGuiMainInterfaceAction::Draw(float fElapsed)  // PC 0x006DD020 GOG 0x006DD690
+{
+    if (m_CSWGuiButton_0.m_bEnabled != 0)
+    {
+        m_CSWGuiButton_0.Draw(fElapsed);
+    }
+    if (m_CSWGuiButton_388.m_bEnabled != 0)
+    {
+        m_CSWGuiButton_388.Draw(fElapsed);
+    }
+    if (m_CSWGuiButton_54C.m_bEnabled != 0)
+    {
+        m_CSWGuiButton_54C.Draw(fElapsed);
+    }
+    if (m_CSWGuiButton_1C4.m_bEnabled != 0)
+    {
+        m_CSWGuiButton_1C4.Draw(fElapsed);
+    }
+}
+#endif
 CSWGuiControl* CSWGuiMainInterfaceAction::HitCheckMouse(int nX, int nY)  // PC 0x006DD090 GOG 0x006DCC90
 {
     CSWGuiControl* pControl = NULL;
@@ -1775,6 +1776,14 @@ void CSWGuiMainInterface::OnStealthButtonPressed(CSWGuiControl* pControl)  // PC
                 ->GetPlayerCharacter()
                 ->PartyMenuStealth(0, NULL);
         }
+    }
+}
+// PC 0x006DEE20 GOG 0x006E0C40
+void CSWGuiMainInterface::OnCharacterEntered(CSWGuiControl* pControl)
+{
+    if (m_bSelectingUseItemTarget && pControl != NULL)
+    {
+        m_nUseItemTargetMember = pControl->m_nIndex - 1;
     }
 }
 
@@ -4587,14 +4596,6 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface, 
 #endif
 
 #ifndef _XBOX
-// PC 0x006DEE20 GOG 0x006E0C40
-void CSWGuiMainInterface::OnCharacterEntered(CSWGuiControl* pControl)
-{
-    if (m_bSelectingUseItemTarget && pControl != NULL)
-    {
-        m_nUseItemTargetMember = pControl->m_nIndex - 1;
-    }
-}
 #endif
 
 #ifndef _XBOX

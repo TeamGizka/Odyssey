@@ -511,30 +511,6 @@ void CSWGuiMessageBox::SetCancelButtonMessage(unsigned long nStrRef)
     m_btnCancel.m_cText.m_cParams.SetStrRef(nStrRef);
 #endif
 }
-// PC 0x0067AF50 GOG 0x0067AD20
-CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    StartLoadFromLayout("gameover_p");
-    InitControl(m_lblMessage, "LBL_MESSAGE", 1);
-    InitControl(m_btnLastSave, "BTN_LASTSAVE", 1);
-    InitControl(m_btnLoadGame, "BTN_LOADGAME", 1);
-    InitControl(m_btnQuit, "BTN_QUIT", 1);
-    StopLoadFromLayout();
-    m_btnLastSave.AddEvent(GUIEVENT_ACTIVATE, this,
-                           (CSWGuiHandler)&CSWGuiDeathDisplay::OnLastSavePressed);
-    m_btnLoadGame.AddEvent(GUIEVENT_ACTIVATE, this,
-                           (CSWGuiHandler)&CSWGuiDeathDisplay::OnLoadGamePressed);
-    m_btnQuit.AddEvent(GUIEVENT_ACTIVATE, this,
-                       (CSWGuiHandler)&CSWGuiDeathDisplay::OnQuitPressed);
-    m_btnLastSave.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
-    m_btnLastSave.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
-    m_btnLoadGame.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
-    m_btnLoadGame.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
-    m_btnQuit.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
-    m_btnQuit.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
-    m_fFadeTime = 0.5f;
-}
 // PC 0x00675D20 GOG 0x00675AC0
 void CSWGuiMessageBox::HideButtons()
 {
@@ -578,125 +554,6 @@ void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
     m_pCallbackObject = pObject;
     m_pCallback = pHandler;
     m_pCallbackControl = pControl;
-}
-// PC 0x0067B240 GOG 0x0067B010
-CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    StartLoadFromLayout("top_p");
-    InitControl(m_LblhEqu, "LBLH_EQU", 1);
-    InitControl(m_LblhInv, "LBLH_INV", 1);
-    InitControl(m_LblhCha, "LBLH_CHA", 1);
-    InitControl(m_LblhMap, "LBLH_MAP", 1);
-    InitControl(m_LblhAbi, "LBLH_ABI", 1);
-    InitControl(m_LblhJou, "LBLH_JOU", 1);
-    InitControl(m_LblhOpt, "LBLH_OPT", 1);
-    InitControl(m_LblhMsg, "LBLH_MSG", 1);
-#ifndef _XBOX
-    InitControl(m_btnEqu, "BTN_EQU", 1); InitControl(m_btnInv, "BTN_INV", 1);
-    InitControl(m_btnChar, "BTN_CHAR", 1); InitControl(m_btnMap, "BTN_MAP", 1);
-    InitControl(m_btnAbi, "BTN_ABI", 1); InitControl(m_btnJou, "BTN_JOU", 1);
-    InitControl(m_btnOpt, "BTN_OPT", 1); InitControl(m_btnMsg, "BTN_MSG", 1);
-    InitControl(m_lblTopClass1, "LBL_TOP_CLASS1", 1);
-    InitControl(m_lblTopClass2, "LBL_TOP_CLASS2", 1);
-    InitControl(m_lblTopClass1Level, "LBL_TOP_CLASS1LEVEL", 1);
-    InitControl(m_lblTopClass2Level, "LBL_TOP_CLASS2LEVEL", 1);
-    InitControl(m_lblCharName, "LBL_CHARNAME", 1);
-    m_cChar2350.Initialize((CSWGuiMainInterface*)this, 1);
-    InitControl(m_lblChar2, "LBL_CHAR2", 1);
-    InitControl(m_lblLevelUp2, "LBL_LEVELUP2", 1);
-    InitControl(m_lblBack2, "LBL_BACK2", 1);
-    InitControl(m_btnChange2, "BTN_CHANGE2", 1);
-    InitControl(m_lblChar3, "LBL_CHAR3", 1);
-    InitControl(m_lblLevelUp3, "LBL_LEVELUP3", 1);
-    InitControl(m_lblBack3, "LBL_BACK3", 1);
-    InitControl(m_btnChange3, "BTN_CHANGE3", 1);
-    InitControl(m_lblSecTitle, "LBL_SECTITLE", 1);
-#else
-    InitControl(m_lblLeftArrow, "LBL_LEFT_ARROW", 1); InitControl(m_lblRightArrow, "LBL_RIGHT_ARROW", 1);
-#endif
-    StopLoadFromLayout();
-#ifndef _XBOX
-    m_btnChange2.SetFocusable(0);
-    m_btnChange2.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnChangeCharacter);
-    m_btnChange3.SetFocusable(0);
-    m_btnChange3.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnChangeCharacter);
-    m_n3DCC = 0;
-#endif
-
-    m_LblhEqu.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhInv.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhCha.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhMap.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhAbi.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhJou.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhOpt.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhMsg.AddEvent(53, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
-    m_LblhEqu.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-    m_LblhInv.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-    m_LblhCha.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-    m_LblhMap.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-    m_LblhAbi.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-    m_LblhJou.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-    m_LblhOpt.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-    m_LblhMsg.AddEvent(54, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
-#ifndef _XBOX
-    m_btnEqu.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnEquipButtonPressed);
-    m_btnInv.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnInvButtonPressed);
-    m_btnChar.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnCharButtonPressed);
-    m_btnMap.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnMapButtonPressed);
-    m_btnAbi.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnAbiButtonPressed);
-    m_btnJou.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnJouButtonPressed);
-    m_btnOpt.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnOptButtonPressed);
-    m_btnMsg.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-        (CSWGuiHandler)&CSWGuiInGameMenu::OnMsgButtonPressed);
-
-    m_btnEqu.SetFocusable(0); m_btnInv.SetFocusable(0);
-    m_btnChar.SetFocusable(0); m_btnMap.SetFocusable(0);
-    m_btnAbi.SetFocusable(0); m_btnJou.SetFocusable(0);
-    m_btnOpt.SetFocusable(0); m_btnMsg.SetFocusable(0);
-    SetActiveControl(&m_btnEqu, 0);
-#else
-    SetActiveControl(&m_LblhEqu, 0);
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
-#endif
-#ifndef _XBOX
-    m_btnEqu.SetToolTip(STRREF_TOOLTIP_EQUIP, GUIEVENT_MENU_EQUIPMENT);
-    m_btnInv.SetToolTip(STRREF_TOOLTIP_INVENTORY, GUIEVENT_MENU_INVENTORY);
-    m_btnChar.SetToolTip(STRREF_TOOLTIP_CHARACTER, GUIEVENT_MENU_CHARACTER);
-    m_btnMap.SetToolTip(STRREF_TOOLTIP_MAP, GUIEVENT_MENU_MAP);
-    m_btnAbi.SetToolTip(STRREF_TOOLTIP_ABILITIES, GUIEVENT_MENU_ABILITIES);
-    m_btnJou.SetToolTip(STRREF_TOOLTIP_JOURNAL, GUIEVENT_MENU_JOURNAL);
-    m_btnOpt.SetToolTip(STRREF_TOOLTIP_OPTIONS, GUIEVENT_MENU_OPTIONS);
-    m_btnMsg.SetToolTip(STRREF_TOOLTIP_PARTY_SELECTION, GUIEVENT_MENU_MESSAGES);
-    m_nTopMenuOverrideCharacter = -1;
-#endif
 }
 // PC 0x00675E80 GOG 0x00675C20
 void CSWGuiMessageBox::OnPanelAdded()
@@ -2093,6 +1950,149 @@ CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
     StopLoadFromLayout();
 }
 #ifndef _XBOX
+// PC 0x0067AF50 GOG 0x0067AD20
+CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("gameover_p");
+    InitControl(m_lblMessage, "LBL_MESSAGE", 1);
+    InitControl(m_btnLastSave, "BTN_LASTSAVE", 1);
+    InitControl(m_btnLoadGame, "BTN_LOADGAME", 1);
+    InitControl(m_btnQuit, "BTN_QUIT", 1);
+    StopLoadFromLayout();
+    m_btnLastSave.AddEvent(GUIEVENT_ACTIVATE, this,
+                           (CSWGuiHandler)&CSWGuiDeathDisplay::OnLastSavePressed);
+    m_btnLoadGame.AddEvent(GUIEVENT_ACTIVATE, this,
+                           (CSWGuiHandler)&CSWGuiDeathDisplay::OnLoadGamePressed);
+    m_btnQuit.AddEvent(GUIEVENT_ACTIVATE, this,
+                       (CSWGuiHandler)&CSWGuiDeathDisplay::OnQuitPressed);
+    m_btnLastSave.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
+    m_btnLastSave.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
+    m_btnLoadGame.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
+    m_btnLoadGame.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
+    m_btnQuit.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
+    m_btnQuit.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
+    m_fFadeTime = 0.5f;
+}
+// PC 0x0067B240 GOG 0x0067B010
+CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("top_p");
+    InitControl(m_LblhEqu, "LBLH_EQU", 1);
+    InitControl(m_LblhInv, "LBLH_INV", 1);
+    InitControl(m_LblhCha, "LBLH_CHA", 1);
+    InitControl(m_LblhMap, "LBLH_MAP", 1);
+    InitControl(m_LblhAbi, "LBLH_ABI", 1);
+    InitControl(m_LblhJou, "LBLH_JOU", 1);
+    InitControl(m_LblhOpt, "LBLH_OPT", 1);
+    InitControl(m_LblhMsg, "LBLH_MSG", 1);
+#ifndef _XBOX
+    InitControl(m_btnEqu, "BTN_EQU", 1); InitControl(m_btnInv, "BTN_INV", 1);
+    InitControl(m_btnChar, "BTN_CHAR", 1); InitControl(m_btnMap, "BTN_MAP", 1);
+    InitControl(m_btnAbi, "BTN_ABI", 1); InitControl(m_btnJou, "BTN_JOU", 1);
+    InitControl(m_btnOpt, "BTN_OPT", 1); InitControl(m_btnMsg, "BTN_MSG", 1);
+    InitControl(m_lblTopClass1, "LBL_TOP_CLASS1", 1);
+    InitControl(m_lblTopClass2, "LBL_TOP_CLASS2", 1);
+    InitControl(m_lblTopClass1Level, "LBL_TOP_CLASS1LEVEL", 1);
+    InitControl(m_lblTopClass2Level, "LBL_TOP_CLASS2LEVEL", 1);
+    InitControl(m_lblCharName, "LBL_CHARNAME", 1);
+    m_cChar2350.Initialize((CSWGuiMainInterface*)this, 1);
+    InitControl(m_lblChar2, "LBL_CHAR2", 1);
+    InitControl(m_lblLevelUp2, "LBL_LEVELUP2", 1);
+    InitControl(m_lblBack2, "LBL_BACK2", 1);
+    InitControl(m_btnChange2, "BTN_CHANGE2", 1);
+    InitControl(m_lblChar3, "LBL_CHAR3", 1);
+    InitControl(m_lblLevelUp3, "LBL_LEVELUP3", 1);
+    InitControl(m_lblBack3, "LBL_BACK3", 1);
+    InitControl(m_btnChange3, "BTN_CHANGE3", 1);
+    InitControl(m_lblSecTitle, "LBL_SECTITLE", 1);
+#else
+    InitControl(m_lblLeftArrow, "LBL_LEFT_ARROW", 1); InitControl(m_lblRightArrow, "LBL_RIGHT_ARROW", 1);
+#endif
+    StopLoadFromLayout();
+#ifndef _XBOX
+    m_btnChange2.SetFocusable(0);
+    m_btnChange2.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnChangeCharacter);
+    m_btnChange3.SetFocusable(0);
+    m_btnChange3.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnChangeCharacter);
+    m_n3DCC = 0;
+#endif
+
+    m_LblhEqu.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhInv.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhCha.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhMap.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhAbi.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhJou.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhOpt.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhMsg.AddEvent(53, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
+    m_LblhEqu.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+    m_LblhInv.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+    m_LblhCha.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+    m_LblhMap.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+    m_LblhAbi.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+    m_LblhJou.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+    m_LblhOpt.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+    m_LblhMsg.AddEvent(54, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderRight);
+#ifndef _XBOX
+    m_btnEqu.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnEquipButtonPressed);
+    m_btnInv.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnInvButtonPressed);
+    m_btnChar.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnCharButtonPressed);
+    m_btnMap.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnMapButtonPressed);
+    m_btnAbi.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnAbiButtonPressed);
+    m_btnJou.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnJouButtonPressed);
+    m_btnOpt.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnOptButtonPressed);
+    m_btnMsg.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnMsgButtonPressed);
+
+    m_btnEqu.SetFocusable(0); m_btnInv.SetFocusable(0);
+    m_btnChar.SetFocusable(0); m_btnMap.SetFocusable(0);
+    m_btnAbi.SetFocusable(0); m_btnJou.SetFocusable(0);
+    m_btnOpt.SetFocusable(0); m_btnMsg.SetFocusable(0);
+    SetActiveControl(&m_btnEqu, 0);
+#else
+    SetActiveControl(&m_LblhEqu, 0);
+    m_bCenterHorizontal = 1;
+    m_bCenterVertical = 1;
+#endif
+#ifndef _XBOX
+    m_btnEqu.SetToolTip(STRREF_TOOLTIP_EQUIP, GUIEVENT_MENU_EQUIPMENT);
+    m_btnInv.SetToolTip(STRREF_TOOLTIP_INVENTORY, GUIEVENT_MENU_INVENTORY);
+    m_btnChar.SetToolTip(STRREF_TOOLTIP_CHARACTER, GUIEVENT_MENU_CHARACTER);
+    m_btnMap.SetToolTip(STRREF_TOOLTIP_MAP, GUIEVENT_MENU_MAP);
+    m_btnAbi.SetToolTip(STRREF_TOOLTIP_ABILITIES, GUIEVENT_MENU_ABILITIES);
+    m_btnJou.SetToolTip(STRREF_TOOLTIP_JOURNAL, GUIEVENT_MENU_JOURNAL);
+    m_btnOpt.SetToolTip(STRREF_TOOLTIP_OPTIONS, GUIEVENT_MENU_OPTIONS);
+    m_btnMsg.SetToolTip(STRREF_TOOLTIP_PARTY_SELECTION, GUIEVENT_MENU_MESSAGES);
+    m_nTopMenuOverrideCharacter = -1;
+#endif
+}
 // PC 0x00679A70 GOG 0x00679810
 void CSWGuiInGameMenu::OnChangeCharacter(CSWGuiControl* pControl)
 {
