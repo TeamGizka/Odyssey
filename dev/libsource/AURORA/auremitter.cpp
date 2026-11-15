@@ -1213,70 +1213,72 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630 GOG 0x004BB740
         Vector vColor;
         float fWidth;
         float fHeight;
+        float fAge;
+        float fT;
         if (m_fLifeTime >= 0.0f)
         {
             if (m_pReserved1F4 == LIGHTNING)
-                fFrameTime = i * fReciprocalLife;
+                fAge = i * fReciprocalLife;
             else
-                fFrameTime = fReciprocalLife * pParticle->m_fAge;
+                fAge = fReciprocalLife * pParticle->m_fAge;
 
             if (m_fPercentStart == EMITTER_UNSET_COLOR_KEY_TIME)
             {
-                vColor = Interpolate(m_vColorStart, m_vColorEnd, fFrameTime);
-                fStart = 1.0f - fFrameTime;
+                vColor = Interpolate(m_vColorStart, m_vColorEnd, fAge);
+                fStart = 1.0f - fAge;
                 fAlpha = fStart * m_fAlphaStart;
-                fAlpha += fFrameTime * m_fAlphaEnd;
+                fAlpha += fAge * m_fAlphaEnd;
                 fWidth = fStart * m_fXSizeStart;
-                fWidth += fFrameTime * m_fXSizeEnd;
+                fWidth += fAge * m_fXSizeEnd;
                 fWidth *= 0.5f;
                 if (m_fYSizeStart == 0.0f && m_fYSizeEnd == 0.0f)
                     fHeight = fWidth;
                 else
                 {
-                    fHeight = fFrameTime * m_fYSizeEnd;
+                    fHeight = fAge * m_fYSizeEnd;
                     fHeight += fStart * m_fYSizeStart;
                     fHeight *= 0.5f;
                 }
             }
-            else if (fFrameTime >= m_fPercentEnd)
+            else if (fAge >= m_fPercentEnd)
             {
                 vColor = m_vColorEnd;
                 fAlpha = m_fAlphaEnd;
                 fWidth = m_fXSizeEnd;
                 fHeight = m_fYSizeEnd != 0.0f ? m_fYSizeEnd : fWidth;
             }
-            else if (fFrameTime >= m_fPercentMid)
+            else if (fAge >= m_fPercentMid)
             {
-                fFrameTime = (fFrameTime - m_fPercentMid) / (m_fPercentEnd - m_fPercentMid);
-                vColor = Interpolate(m_vColorMid, m_vColorEnd, fFrameTime);
-                float fStart = 1.0f - fFrameTime;
+                fT = (fAge - m_fPercentMid) / (m_fPercentEnd - m_fPercentMid);
+                vColor = Interpolate(m_vColorMid, m_vColorEnd, fT);
+                fStart = 1.0f - fT;
                 fAlpha = fStart * m_fAlphaMid;
-                fAlpha += fFrameTime * m_fAlphaEnd;
+                fAlpha += fT * m_fAlphaEnd;
                 fWidth = fStart * m_fXSizeMid;
-                fWidth += fFrameTime * m_fXSizeEnd;
+                fWidth += fT * m_fXSizeEnd;
                 fWidth *= 0.5f;
                 if (m_fYSizeMid == 0.0f && m_fYSizeEnd == 0.0f)
                     fHeight = fWidth;
                 else
                 {
-                    fHeight = fFrameTime * m_fYSizeEnd;
+                    fHeight = fT * m_fYSizeEnd;
                     fHeight += fStart * m_fYSizeMid;
                     fHeight *= 0.5f;
                 }
             }
-            else if (fFrameTime >= m_fPercentStart)
+            else if (fAge >= m_fPercentStart)
             {
-                fFrameTime = (fFrameTime - m_fPercentStart) / (m_fPercentMid - m_fPercentStart);
-                vColor = Interpolate(m_vColorStart, m_vColorMid, fFrameTime);
-                float fStart = 1.0f - fFrameTime;
+                fT = (fAge - m_fPercentStart) / (m_fPercentMid - m_fPercentStart);
+                vColor = Interpolate(m_vColorStart, m_vColorMid, fT);
+                fStart = 1.0f - fT;
                 fAlpha = fStart * m_fAlphaStart;
-                fAlpha += fFrameTime * m_fAlphaMid;
+                fAlpha += fT * m_fAlphaMid;
                 fWidth = fStart * m_fXSizeStart;
-                fWidth += fFrameTime * m_fXSizeMid;
+                fWidth += fT * m_fXSizeMid;
                 fWidth *= 0.5f;
                 if (m_fYSizeStart != 0.0f || m_fYSizeMid != 0.0f)
                 {
-                    fHeight = fFrameTime * m_fYSizeMid;
+                    fHeight = fT * m_fYSizeMid;
                     fHeight += fStart * m_fYSizeStart;
                     fHeight *= 0.5f;
                 }
