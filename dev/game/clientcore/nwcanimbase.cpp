@@ -880,58 +880,6 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x006F96B0 GOG 0x006F97C0
-unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
-{
-    CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
-    unsigned char nResult = CENTER_POINT_UNAVAILABLE;
-    if (pCamera != 0 && m_pModel != 0)
-    {
-        Vector vMinimum;
-        Vector vMaximum;
-        Vector vPosition = m_pModel->GetPosition();
-        Quaternion qOrientation = m_pModel->GetOrientation();
-        Vector vCameraPosition = pCamera->GetPosition();
-        Vector vView = -pCamera->GetOrientation().zdir();
-        m_pModel->GetBoundingBox(vMinimum, vMaximum);
-
-        const int nCorners = 8;
-        Vector avCorners[nCorners];
-        Vector vWorldMinimum(FLT_MAX, FLT_MAX, FLT_MAX);
-        Vector vWorldMaximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-        avCorners[0] = vMinimum;
-        avCorners[1] = vMaximum;
-        avCorners[2] = Vector(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-        avCorners[3] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-        avCorners[4] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-        avCorners[5] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-        avCorners[6] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-        avCorners[7] = Vector(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-
-        for (int i = 0; i < nCorners; ++i)
-        {
-            avCorners[i] = qOrientation * avCorners[i] + vPosition;
-            vWorldMinimum.m_fX = min(vWorldMinimum.m_fX, avCorners[i].m_fX);
-            vWorldMinimum.m_fY = min(vWorldMinimum.m_fY, avCorners[i].m_fY);
-            vWorldMinimum.m_fZ = min(vWorldMinimum.m_fZ, avCorners[i].m_fZ);
-            vWorldMaximum.m_fX = max(vWorldMaximum.m_fX, avCorners[i].m_fX);
-            vWorldMaximum.m_fY = max(vWorldMaximum.m_fY, avCorners[i].m_fY);
-            vWorldMaximum.m_fZ = max(vWorldMaximum.m_fZ, avCorners[i].m_fZ);
-        }
-
-        Vector vPoint = (vWorldMaximum - vWorldMinimum) / 2.0f + vWorldMinimum;
-        if (vView * vPoint > vView * vCameraPosition)
-            nResult = CENTER_POINT_IN_FRONT;
-        else
-            nResult = CENTER_POINT_BEHIND;
-
-        vPoint = pCamera->MapToScreen(vPoint, true);
-        CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
-        vCenter.m_fX = vPoint.m_fX * pGuiManager->m_nWidth;
-        vCenter.m_fY = vPoint.m_fY * pGuiManager->m_nHeight;
-    }
-    return nResult;
-}
 // PC 0x006F9150 GOG 0x006F9260
 int CSWCAnimBase::GetBoundingRect(CAurObject* pObject, CSWGuiExtent& extent)
 {
@@ -985,6 +933,58 @@ int CSWCAnimBase::GetBoundingRect(CAurObject* pObject, CSWGuiExtent& extent)
         return 1;
     }
     return 0;
+}
+// PC 0x006F96B0 GOG 0x006F97C0
+unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
+{
+    CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
+    unsigned char nResult = CENTER_POINT_UNAVAILABLE;
+    if (pCamera != 0 && m_pModel != 0)
+    {
+        Vector vMinimum;
+        Vector vMaximum;
+        Vector vPosition = m_pModel->GetPosition();
+        Quaternion qOrientation = m_pModel->GetOrientation();
+        Vector vCameraPosition = pCamera->GetPosition();
+        Vector vView = -pCamera->GetOrientation().zdir();
+        m_pModel->GetBoundingBox(vMinimum, vMaximum);
+
+        const int nCorners = 8;
+        Vector avCorners[nCorners];
+        Vector vWorldMinimum(FLT_MAX, FLT_MAX, FLT_MAX);
+        Vector vWorldMaximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+        avCorners[0] = vMinimum;
+        avCorners[1] = vMaximum;
+        avCorners[2] = Vector(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+        avCorners[3] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+        avCorners[4] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+        avCorners[5] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+        avCorners[6] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+        avCorners[7] = Vector(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+
+        for (int i = 0; i < nCorners; ++i)
+        {
+            avCorners[i] = qOrientation * avCorners[i] + vPosition;
+            vWorldMinimum.m_fX = min(vWorldMinimum.m_fX, avCorners[i].m_fX);
+            vWorldMinimum.m_fY = min(vWorldMinimum.m_fY, avCorners[i].m_fY);
+            vWorldMinimum.m_fZ = min(vWorldMinimum.m_fZ, avCorners[i].m_fZ);
+            vWorldMaximum.m_fX = max(vWorldMaximum.m_fX, avCorners[i].m_fX);
+            vWorldMaximum.m_fY = max(vWorldMaximum.m_fY, avCorners[i].m_fY);
+            vWorldMaximum.m_fZ = max(vWorldMaximum.m_fZ, avCorners[i].m_fZ);
+        }
+
+        Vector vPoint = (vWorldMaximum - vWorldMinimum) / 2.0f + vWorldMinimum;
+        if (vView * vPoint > vView * vCameraPosition)
+            nResult = CENTER_POINT_IN_FRONT;
+        else
+            nResult = CENTER_POINT_BEHIND;
+
+        vPoint = pCamera->MapToScreen(vPoint, true);
+        CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
+        vCenter.m_fX = vPoint.m_fX * pGuiManager->m_nWidth;
+        vCenter.m_fY = vPoint.m_fY * pGuiManager->m_nHeight;
+    }
+    return nResult;
 }
 // PC 0x006F9C40 GOG 0x006F9D50
 int CSWCAnimBase::GetBoundingRect(CSWGuiExtent& extent)

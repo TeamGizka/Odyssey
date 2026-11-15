@@ -22,6 +22,16 @@ CSWCAnimBaseWield::CSWCAnimBaseWield()
     m_bTorchLit = 0;
     m_pTorchSound = 0;
 }
+// PC 0x006F46C0 GOG 0x006F4460
+int CSWCAnimBase::AddAnimationFlag(int nFlag)
+{
+    return AddAnimationFlagInternal(m_pModel, nFlag);
+}
+// PC 0x006F46E0 GOG 0x006F4480
+int CSWCAnimBase::RemoveAnimationFlag(int nFlag)
+{
+    return RemoveAnimationFlagInternal(m_pModel, nFlag);
+}
 // PC 0x006F4700 GOG 0x006F42B0
 CSWCAnimBaseWield::~CSWCAnimBaseWield()
 {

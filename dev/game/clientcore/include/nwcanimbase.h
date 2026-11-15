@@ -22,6 +22,7 @@ public:
     virtual ~CSWAnimBase();
     CSWAnimBase();
     int Set(int, float);
+    int Get(int, float*);
 };
 
 class CAurBehavior;
@@ -180,14 +181,8 @@ public:
     virtual void UpdateSound(int)  // PC 0x005EE1C0 GOG 0x005EE1A0
     {
     }
-    virtual int AddAnimationFlag(int nFlag)  // PC 0x006F46C0 GOG 0x006F4460
-    {
-        return AddAnimationFlagInternal(m_pModel, nFlag);
-    }
-    virtual int RemoveAnimationFlag(int nFlag)  // PC 0x006F46E0 GOG 0x006F4480
-    {
-        return RemoveAnimationFlagInternal(m_pModel, nFlag);
-    }
+    virtual int AddAnimationFlag(int nFlag);
+    virtual int RemoveAnimationFlag(int nFlag);
     virtual void SetLean(float fLean);
     virtual void Lean();
     virtual int GetBoundingRect(CSWGuiExtent& extent);
@@ -299,6 +294,7 @@ public:
     virtual int SetAnimation(unsigned short, float, int, float);
     virtual CExoString GetAnimationName(unsigned short);
     virtual unsigned short ServerToClientAnimation(unsigned short);
+    void EnableAlwaysRender();
 };
 
 class CResRef;
