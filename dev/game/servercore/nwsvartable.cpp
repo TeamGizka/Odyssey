@@ -5,11 +5,6 @@
 #include "nwjournal.h"
 #include "nwsvartable.h"
 
-inline void ScriptVarDestroy(CSWSScriptVar* pVar)
-{
-    pVar->~CSWSScriptVar();
-}
-
 #define NWSVARTABLE_DEBUG 0
 
 const int CSWSScriptVarTable::VARTYPE_INTEGER = 1;
@@ -22,6 +17,7 @@ void CSWSScriptVarTable::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     if (NWSVARTABLE_DEBUG)
     {
+        Add(CSWSScriptVar());
         Allocate(num);
         delete[] element;
     }
