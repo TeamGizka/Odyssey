@@ -1690,6 +1690,10 @@ void LookAtAnimation::BuildAnimation()
     m_pEndOrientation = &pLooking->m_lstControllerData[nOrientationIndex + 4];
     ((Animation*)m_pTree)->m_fLength = m_fDuration;
     ((Animation*)m_pTree)->m_fTransitionTime = m_fDuration;
+    if (AURANIM_DEBUG)
+    {
+        m_pTarget = m_pGob;
+    }
 }
 #ifndef _XBOX
 // PC 0x004B74B0 GOG 0x004B75C0

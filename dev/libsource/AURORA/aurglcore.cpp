@@ -524,6 +524,72 @@ static Vector* AllocateVectorArray(int nCount)
     return new Vector[nCount];
 }
 
+void SpitLetters(char* szString)
+{
+    if (initialized == 0)
+    {
+        AurInitFont();
+    }
+
+    AurPushAttrib(GL_LIST_BIT);
+    glListBase(fontOffset);
+    glCallLists(strlen(szString), GL_UNSIGNED_BYTE, szString);
+    AurPopAttrib();
+}
+// PC 0x00447510 GOG 0x00447660
+void InitializeSystemPoolManager()
+{
+    if (manRef == 0)
+    {
+        manRef = new RequestPoolManagerSys;
+    }
+}
+// PC 0x00447580 GOG 0x004476D0
+void InitializeVertexBufferObjectPoolManager()
+{
+    if (manRef == 0)
+    {
+        manRef = new RequestPoolManagerVBO;
+    }
+}
+// PC 0x00425350 GOG 0x00425460
+void RequestPoolManagerSys::ResizePool(unsigned int nPool, unsigned int nSize)
+{
+    totalvertexpool += nSize - m_pPoolSize[nPool];
+    totalvertexpool4k += ((nSize + 4095) & 0xFFFFF000) -
+                                ((m_pPoolSize[nPool] + 4095) & 0xFFFFF000);
+    char* pOldPool = m_ppPools[nPool];
+    char* pNewPool = new char[nSize];
+    memcpy(pNewPool, pOldPool, m_pPoolSize[nPool]);
+    delete[] pOldPool;
+    m_pPoolSize[nPool] = nSize;
+    m_ppPools[nPool] = pNewPool;
+}
+// PC 0x00425400 GOG 0x00425510
+int RequestPoolManagerSys::GetPoolSize(unsigned int nPool)
+{
+    return m_pPoolSize[nPool];
+}
+// PC 0x00425410 GOG 0x00425520
+int RequestPoolManagerSys::GetPool(unsigned int nPool)
+{
+    if (nPool == (unsigned int)-1)
+    {
+        return 0;
+    }
+
+    return (int)m_ppPools[nPool];
+}
+// PC 0x00425410 GOG 0x00425520
+int RequestPoolManagerSys::GetIndexPool(unsigned int nPool)
+{
+    if (nPool == (unsigned int)-1)
+    {
+        return 0;
+    }
+
+    return (int)m_ppPools[nPool];
+}
 unsigned int ones32popcount(unsigned int x)
 {
     x -= ((x >> 1) & 0x55555555);
@@ -652,77 +718,6 @@ template <> inline List<unsigned long>::~List()
     {
         delete[] m_pList;
     }
-}
-
-inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
-{
-}
-
-void SpitLetters(char* szString)
-{
-    if (initialized == 0)
-    {
-        AurInitFont();
-    }
-
-    AurPushAttrib(GL_LIST_BIT);
-    glListBase(fontOffset);
-    glCallLists(strlen(szString), GL_UNSIGNED_BYTE, szString);
-    AurPopAttrib();
-}
-// PC 0x00447510 GOG 0x00447660
-void InitializeSystemPoolManager()
-{
-    if (manRef == 0)
-    {
-        manRef = new RequestPoolManagerSys;
-    }
-}
-// PC 0x00447580 GOG 0x004476D0
-void InitializeVertexBufferObjectPoolManager()
-{
-    if (manRef == 0)
-    {
-        manRef = new RequestPoolManagerVBO;
-    }
-}
-// PC 0x00425350 GOG 0x00425460
-void RequestPoolManagerSys::ResizePool(unsigned int nPool, unsigned int nSize)
-{
-    totalvertexpool += nSize - m_pPoolSize[nPool];
-    totalvertexpool4k += ((nSize + 4095) & 0xFFFFF000) -
-                                ((m_pPoolSize[nPool] + 4095) & 0xFFFFF000);
-    char* pOldPool = m_ppPools[nPool];
-    char* pNewPool = new char[nSize];
-    memcpy(pNewPool, pOldPool, m_pPoolSize[nPool]);
-    delete[] pOldPool;
-    m_pPoolSize[nPool] = nSize;
-    m_ppPools[nPool] = pNewPool;
-}
-// PC 0x00425400 GOG 0x00425510
-int RequestPoolManagerSys::GetPoolSize(unsigned int nPool)
-{
-    return m_pPoolSize[nPool];
-}
-// PC 0x00425410 GOG 0x00425520
-int RequestPoolManagerSys::GetPool(unsigned int nPool)
-{
-    if (nPool == (unsigned int)-1)
-    {
-        return 0;
-    }
-
-    return (int)m_ppPools[nPool];
-}
-// PC 0x00425410 GOG 0x00425520
-int RequestPoolManagerSys::GetIndexPool(unsigned int nPool)
-{
-    if (nPool == (unsigned int)-1)
-    {
-        return 0;
-    }
-
-    return (int)m_ppPools[nPool];
 }
 // PC 0x00434BB0 GOG 0x00434D00
 void RequestPoolManagerVBO::BackUpPoolManager()
@@ -10603,6 +10598,9 @@ void GLRender::RenderFuryATI(unsigned long nTexture)
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glDisable(GL_FRAGMENT_SHADER_ATI);
     glFlush();
+}
+inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
+{
 }
 // PC 0x00431DA0 GOG 0x00431EF0
 inline RequestPoolManager::~RequestPoolManager()
