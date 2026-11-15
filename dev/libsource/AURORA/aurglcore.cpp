@@ -709,6 +709,11 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTextureARB(GL_TEXTURE0_ARB);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glDisable(GL_PER_STAGE_CONSTANTS_NV);
+    glDisable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glFlush();
 }
 // PC 0x00448F80 GOG 0x00431EB0
