@@ -343,7 +343,7 @@ void Particle::randomDirection(int nWidth, int nHeight)
         m_vPosition - CurrentCamera->Gob::m_vPosition);
     Quaternion qNewOrientation;
 
-    int nAngle = rand() % (1 - (int)(fSpread * -100.0f));
+    int nAngle = rand() % ((int)(fSpread * 100.0f) + 1);
     m_qOrientation = Quaternion(m_pEmitter->m_vXAxis, nAngle * 0.01f) * m_qOrientation;
     int nRotation = rand() % 628;
     m_qOrientation = Quaternion(m_pEmitter->m_vDirection, nRotation * 0.01f) * m_qOrientation;
