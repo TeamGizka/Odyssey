@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <windows.h>
 
+#define EXODEBUGINTERNAL_DEBUG 0
+
 bool g_bDisplayServicedResources = false;
 bool g_bExtendedResourceTracking = false;
 // PC 0x00637A30 GOG 0x00637930
@@ -148,6 +150,10 @@ void CExoDebugInternal::CloseLogFiles()
 // PC 0x00637B80 GOG 0x00637A70
 void CExoDebugInternal::Warning(int line, char* file, const char* message)
 {
+    if (EXODEBUGINTERNAL_DEBUG)
+    {
+        CloseLogFiles();
+    }
     CExoString sWarning;
     if (message == NULL)
     {

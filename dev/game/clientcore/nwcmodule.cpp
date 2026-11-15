@@ -28,6 +28,8 @@
 #include "nwcanimbase.h"
 #include "swmain.h"
 
+#define NWCMODULE_DEBUG 0
+
 const int CCameraSettings::CAMERA_ON_STICK = 0;
 const int CCameraSettings::CAMERA_FREE_LOOK = 1;
 
@@ -2087,6 +2089,10 @@ void CSWCModule::Update(float fTimeDelta)
 // PC 0x0069AFF0 GOG 0x0069ADA0
 int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
 {
+    if (NWCMODULE_DEBUG)
+    {
+        float fCollision = UpdateCameraCollision(fTimeDelta, 0.0f);
+    }
     CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
     Vector vHit;
     Vector vPosition;

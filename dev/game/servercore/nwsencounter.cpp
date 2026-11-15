@@ -18,6 +18,11 @@
 
 #include "factionmanager.h"
 
+static inline CEncounterSpawnPoint* NWSEncounterDebugSpawnPoints(int nCount)
+{
+    return new CEncounterSpawnPoint[nCount];
+}
+
 CEncounterListEntry& CEncounterListEntry::operator=(
     const CEncounterListEntry& other)
 {

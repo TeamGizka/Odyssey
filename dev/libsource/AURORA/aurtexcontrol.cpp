@@ -14,6 +14,8 @@
 
 #include "aurparse.h"
 
+#define AURTEXCONTROL_DEBUG 0
+
 char* firstword(char* sLine);
 int Parse(char* sValue, int& nValue);
 int Parse(char* sValue, float& fValue);
@@ -444,43 +446,6 @@ void LifeTextureController::Control()
         m_pTexture->FreeImage();
         delete[] pOldState;
     }
-}
-// PC 0x004782E0 GOG 0x00478470
-void ArturoTextureController::Init()
-{
-    int nImageWidth = m_pTexture->GetWidth();
-    int nImageHeight = m_pTexture->GetHeight();
-    int nPixels = m_nArturoHeight * m_nArturoWidth;
-    int nImageSize = nImageHeight * nImageWidth;
-    int i;
-    int j;
-
-    m_fArturoFrame = 0;
-    if (m_bDistort != 0)
-    {
-        SetImage();
-    }
-
-    m_pfArturoCurrent = new float[nPixels];
-    m_pfArturoPrevious = new float[nPixels];
-    m_pfArturoNext = new float[nPixels];
-    m_pArturoIndex = new unsigned char[nImageSize];
-    for (i = 0; i < m_nArturoHeight; i++)
-    {
-        for (j = 0; j < m_nArturoWidth; j++)
-        {
-            float fX = (float)j / m_nArturoWidth * 2.0f - 1.0f;
-            float fY = (float)i / m_nArturoHeight * 2.0f - 1.0f;
-
-            m_pfArturoPrevious[i * m_nArturoWidth + j] = 0.0f;
-            m_pfArturoCurrent[i * m_nArturoWidth + j] =
-                (float)sin((1.0f - (float)sqrt(fY * fY + fX * fX)) *
-                           PI) *
-                127.0f;
-        }
-    }
-    BuildArturoImage();
-    BuildArturoImage();
 }
 // PC 0x00476310 GOG 0x004764A0
 void ArturoTextureController::BuildArturoImage()
@@ -1122,6 +1087,47 @@ void WaveTextureController::Control()
         delete[] pResult;
     }
 }
+// PC 0x004782E0 GOG 0x00478470
+void ArturoTextureController::Init()
+{
+    if (AURTEXCONTROL_DEBUG)
+    {
+        unsigned char* pChannel = Height2Channel(NULL, NULL);
+    }
+    int nImageWidth = m_pTexture->GetWidth();
+    int nImageHeight = m_pTexture->GetHeight();
+    int nPixels = m_nArturoHeight * m_nArturoWidth;
+    int nImageSize = nImageHeight * nImageWidth;
+    int i;
+    int j;
+
+    m_fArturoFrame = 0;
+    if (m_bDistort != 0)
+    {
+        SetImage();
+    }
+
+    m_pfArturoCurrent = new float[nPixels];
+    m_pfArturoPrevious = new float[nPixels];
+    m_pfArturoNext = new float[nPixels];
+    m_pArturoIndex = new unsigned char[nImageSize];
+    for (i = 0; i < m_nArturoHeight; i++)
+    {
+        for (j = 0; j < m_nArturoWidth; j++)
+        {
+            float fX = (float)j / m_nArturoWidth * 2.0f - 1.0f;
+            float fY = (float)i / m_nArturoHeight * 2.0f - 1.0f;
+
+            m_pfArturoPrevious[i * m_nArturoWidth + j] = 0.0f;
+            m_pfArturoCurrent[i * m_nArturoWidth + j] =
+                (float)sin((1.0f - (float)sqrt(fY * fY + fX * fX)) *
+                           PI) *
+                127.0f;
+        }
+    }
+    BuildArturoImage();
+    BuildArturoImage();
+}
 // PC 0x00478410 GOG 0x004785A0
 void ArturoTextureController::Control()
 {
@@ -1249,6 +1255,10 @@ void RandomTextureController::Control()
 // PC 0x004787B0 GOG 0x00478940
 void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
 {
+    if (AURTEXCONTROL_DEBUG)
+    {
+        unsigned char* pChannel = Height2Channel(NULL, NULL);
+    }
     int nBPP = m_pTexture->GetBPP();
     m_nDirtyFrame = 0;
     m_nBlendMode = nFormula;

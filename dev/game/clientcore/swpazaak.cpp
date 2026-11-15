@@ -6,6 +6,11 @@
 #include "exobase.h"
 #include "gameobjectarray.h"
 
+static inline void SWPazaakDebugCards()
+{
+    CPazaakCard aCards[2];
+}
+
 int CPazaakCard::s_pnPazaakCardValues[33] =
 {
     1, 2, 3, 4, 5, 6,

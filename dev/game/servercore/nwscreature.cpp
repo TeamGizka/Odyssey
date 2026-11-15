@@ -866,6 +866,10 @@ void CSWSCreature::ActionManager(unsigned long nAction)
 // PC 0x0051A860 GOG 0x0051A8C0
 void CSWSCreature::ActivityManager(unsigned long nAction)
 {
+    if (NWSCREATURE_DEBUG)
+    {
+        ActionManager(nAction);
+    }
     if (nAction != ACTIVITY_ACTION_COUNTERSPELL)
     {
         SetActivity(ACTIVITY_GROUP_HIGH, 0, 0);

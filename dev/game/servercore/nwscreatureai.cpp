@@ -5776,6 +5776,10 @@ int CSWSCreature::AIActionStanceMeditative(CSWSObjectActionNode* pNode)
 // PC 0x0054D850 GOG 0x0054D970
 int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
 {
+    if (NWSCREATUREAI_DEBUG)
+    {
+        int bSkill = CheckUseMagicDeviceSkill(pItem, 0);
+    }
     if (!pItem->GetPropertyByTypeExists(
             CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_CLASS, 0))
     {
@@ -5870,6 +5874,11 @@ void CSWSCreature::UnpossessCreature()
 int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown,
                              int bCheckFullHealth)
 {
+    if (NWSCREATUREAI_DEBUG)
+    {
+        unsigned long nSlot;
+        CanEquipItem(pItem, &nSlot, 0, 0, 0);
+    }
     int bCanUse = TRUE;
     if (pItem == NULL)
     {

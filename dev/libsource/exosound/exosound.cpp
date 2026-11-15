@@ -12,6 +12,8 @@ const int CExoSound::CEXOSOUND_MODE_LOSTFOCUS = 5;
 const int CExoSound::CEXOSOUND_MODE_GAINFOCUS = 6;
 
 #include "exosoundinternal.h"
+
+#define EXOSOUND_DEBUG 0
 // PC 0x006214C0 GOG 0x00621490
 CExoSoundSource::CExoSoundSource()
 {
@@ -814,6 +816,10 @@ void CExoStreamingSoundSource::SetPosition(const Vector& vPosition)
 void CExoStreamingSoundSource::SetStreamingMusicForMovie(
     int bStreamingMusicForMovie)
 {
+    if (EXOSOUND_DEBUG)
+    {
+        unsigned char nVolume = GetVolume();
+    }
     CExoStreamingSoundSourceInternal* pInternal = m_pInternal;
     if (pInternal != NULL)
     {
@@ -994,6 +1000,10 @@ int CExoSound::GetSoundMode()
 void CExoSound::GetPriorityGroupDistance(int nGroup, float* pfMinDistance,
                                          float* pfMaxDistance)
 {
+    if (EXOSOUND_DEBUG)
+    {
+        float fMusicVolume = GetMusicVolume();
+    }
     CExoSoundInternal* pInternal;
     CExoSoundPriorityGroup* pPriorityGroup;
 

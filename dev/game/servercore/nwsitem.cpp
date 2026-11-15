@@ -4330,6 +4330,10 @@ void CSWSItem::UpdateUsedActiveProperties()
 // PC 0x00569240 GOG 0x00569370
 void CSWSItem::AddAttackModifierProperties(CExoString& sString)
 {
+    if (NWSITEM_DEBUG)
+    {
+        CloseItemForAllPlayers();
+    }
     int nAttackModifier = 0;
     CExoString sAttackModifier;
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS, 0) ||
