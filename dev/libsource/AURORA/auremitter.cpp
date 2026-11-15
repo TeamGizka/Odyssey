@@ -2977,8 +2977,16 @@ inline void LightningDebugStep()
 {
     int nStep = 0;
     int nMaxSteps = 32;
+    int nPoint = 0;
+    int nBranch = 0;
     float fTolerance = 0.001f;
     float fError = 0.0f;
+    float fLength = 0.0f;
+    float fMaxLength = 0.0f;
+    float fAngle = 0.0f;
+    float fMaxAngle = 0.0f;
+    float fBlend = 0.0f;
+    float fScale = 1.0f;
 }
 #define LIGHTNING_BRANCH_DEBUG 0
 // PC 0x004C5730 GOG 0x004C5840
@@ -3324,7 +3332,6 @@ void LightningEmitter::Update(float fTimeStep)
             for (j = 0; j < m_lstReserved210.m_nCount; j++)
             {
                 m_lstReserved210[j] = qRotation * (m_lstReserved210[j] - m_vReserved204) + m_vOrigin;
-                LightningDebugStep();
                 const Vector& vTangent = m_lstReserved234[j];
                 m_lstReserved234[j] = qRotation * vTangent;
                 LightningDebugStep();
@@ -3341,8 +3348,7 @@ void LightningEmitter::Update(float fTimeStep)
                     Vector vPosition;
                     vPosition = m_lstBranches[j]->m_pTarget->GetPosition();
                     vPosition = qRotation * (vPosition - m_vReserved204) + m_vOrigin;
-                    LightningDebugStep();
-                    m_lstBranches[j]->m_pTarget->SetPosition(vPosition);
+                    m_lstBranches[j]->m_pTarget.m_pObject->SetPosition(vPosition);
                 }
             }
             m_vReserved1F8 = vNewDirection;
