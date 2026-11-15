@@ -29,7 +29,6 @@
 #include "worldtimer.h"
 #include "clientoptions.h"
 #include "exobase.h"
-#include "swguiupgrade.h"
 #include "swguistore.h"
 #include "nwmessage.h"
 #include "exobase.h"
@@ -72,6 +71,8 @@
 #endif
 
 #define DIALOG_CAMERA_GRAN_PULLBACK_OFFSET 0.25f
+
+#define GUIINGAME_DEBUG 0
 
 
 
@@ -190,53 +191,7 @@ void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x00683410 GOG 0x006831F0
-int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
-{
-    int nResult = 0;
-    ClearRepliesData();
-    m_nReplies = nReplies;
-    m_asReplyText = new CExoString[nReplies];
-    m_pnReplyValue1 = new unsigned long[m_nReplies];
-    m_pnReplyValue2 = new unsigned long[m_nReplies];
-    m_pnReplyValue3 = new unsigned long[m_nReplies];
-    m_pnReplyValue4 = new int[m_nReplies];
-    m_pfReplyValue5 = new float[m_nReplies];
-    m_pfReplyValue6 = new float[m_nReplies];
-    m_pnReplyValue7 = new unsigned long[m_nReplies];
-    m_pnReplyValue8 = new unsigned short[m_nReplies];
-    m_pfReplyValue9 = new float[m_nReplies];
-    m_pnReplyValue10 = new int[m_nReplies];
-    m_pnReplyValue11 = new unsigned char[m_nReplies];
-    m_pvReplyValue12 = new Vector[m_nReplies];
-    m_pfReplyValue13 = new float[m_nReplies];
-    m_pfReplyValue14 = new float[m_nReplies];
-    m_pnReplyAnimations = new int[m_nReplies];
-    m_ppnReplyAnimationIDs = new unsigned long*[m_nReplies];
-    m_ppnReplyAnimationFlags = new unsigned short*[m_nReplies];
-    if (m_asReplyText != 0 &&
-        m_pnReplyValue1 != 0 &&
-        m_pnReplyValue2 != 0 &&
-        m_pnReplyValue3 != 0 &&
-        m_pnReplyValue4 != 0 &&
-        m_pfReplyValue5 != 0 &&
-        m_pfReplyValue6 != 0 &&
-        m_pnReplyValue7 != 0 &&
-        m_pnReplyValue8 != 0 &&
-        m_pfReplyValue9 != 0 &&
-        m_pnReplyValue10 != 0 &&
-        m_pnReplyValue11 != 0 &&
-        m_pvReplyValue12 != 0 &&
-        m_pfReplyValue13 != 0 &&
-        m_pfReplyValue14 != 0 &&
-        m_pnReplyAnimations != 0 &&
-        *m_ppnReplyAnimationIDs != 0 &&
-        *m_ppnReplyAnimationFlags != 0)
-    {
-        nResult = 1;
-    }
-    return nResult;
-}
+#include "swguiupgrade.h"
 // PC 0x00685280 GOG 0x00684FF0
 CGuiInGame::CGuiInGame()
 {
@@ -419,6 +374,10 @@ CGuiInGame::~CGuiInGame()
     delete [] m_pDialogBuffer;
     delete [] m_pMessageBuffer;
     delete [] m_pCombatBuffer;
+    if (GUIINGAME_DEBUG)
+    {
+        delete [] m_asReplyText;
+    }
     while (m_lDialogNoOrientList.GetHeadPos() != 0)
         delete m_lDialogNoOrientList.RemoveHead();
     if (m_pDialogAmbientTrack != 0)
@@ -4849,6 +4808,53 @@ void CGuiInGame::ClearRepliesData()
     }
     m_nReplies = 0;
 }
+// PC 0x00683410 GOG 0x006831F0
+int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
+{
+    int nResult = 0;
+    ClearRepliesData();
+    m_nReplies = nReplies;
+    m_asReplyText = new CExoString[nReplies];
+    m_pnReplyValue1 = new unsigned long[m_nReplies];
+    m_pnReplyValue2 = new unsigned long[m_nReplies];
+    m_pnReplyValue3 = new unsigned long[m_nReplies];
+    m_pnReplyValue4 = new int[m_nReplies];
+    m_pfReplyValue5 = new float[m_nReplies];
+    m_pfReplyValue6 = new float[m_nReplies];
+    m_pnReplyValue7 = new unsigned long[m_nReplies];
+    m_pnReplyValue8 = new unsigned short[m_nReplies];
+    m_pfReplyValue9 = new float[m_nReplies];
+    m_pnReplyValue10 = new int[m_nReplies];
+    m_pnReplyValue11 = new unsigned char[m_nReplies];
+    m_pvReplyValue12 = new Vector[m_nReplies];
+    m_pfReplyValue13 = new float[m_nReplies];
+    m_pfReplyValue14 = new float[m_nReplies];
+    m_pnReplyAnimations = new int[m_nReplies];
+    m_ppnReplyAnimationIDs = new unsigned long*[m_nReplies];
+    m_ppnReplyAnimationFlags = new unsigned short*[m_nReplies];
+    if (m_asReplyText != 0 &&
+        m_pnReplyValue1 != 0 &&
+        m_pnReplyValue2 != 0 &&
+        m_pnReplyValue3 != 0 &&
+        m_pnReplyValue4 != 0 &&
+        m_pfReplyValue5 != 0 &&
+        m_pfReplyValue6 != 0 &&
+        m_pnReplyValue7 != 0 &&
+        m_pnReplyValue8 != 0 &&
+        m_pfReplyValue9 != 0 &&
+        m_pnReplyValue10 != 0 &&
+        m_pnReplyValue11 != 0 &&
+        m_pvReplyValue12 != 0 &&
+        m_pfReplyValue13 != 0 &&
+        m_pfReplyValue14 != 0 &&
+        m_pnReplyAnimations != 0 &&
+        *m_ppnReplyAnimationIDs != 0 &&
+        *m_ppnReplyAnimationFlags != 0)
+    {
+        nResult = 1;
+    }
+    return nResult;
+}
 #ifndef _XBOX
 int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)  // PC 0x006836D0 GOG 0x006834B0
 {
@@ -5912,6 +5918,10 @@ void CGuiInGame::InitializeGlobal()
 void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
                                       unsigned long oidSpeaker)
 {
+    if (GUIINGAME_DEBUG)
+    {
+        ClearDialogNonDependantList();
+    }
     if (sMessage != "")
     {
         CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -6038,6 +6048,11 @@ int CGuiInGame::InitializeDialogAnimationData(unsigned long nAnimations)
 {
     int bResult = 0;
 
+    if (GUIINGAME_DEBUG)
+    {
+        ClearDialogNonDependantList();
+    }
+
     StoreLastDialogAnimationData();
     ClearDialogAnimationData();
     if (nAnimations != 0)
@@ -6063,6 +6078,10 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                                  float fPitch, float fHeight,
                                  unsigned long oidTarget, int nVideoEffect)
 {
+    if (GUIINGAME_DEBUG)
+    {
+        ClearDialogNonDependantList();
+    }
     unsigned long oidPrevious = m_oidPreviousDialogObject1;
     CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(oidPrevious);
     if (pObject != 0 && pObject->AsSWCCreature() != 0)
@@ -6454,6 +6473,11 @@ void CGuiInGame::ClearDialogNonDependantList()
 void CGuiInGame::SetDialogAnimations()
 {
     int i;
+
+    if (GUIINGAME_DEBUG)
+    {
+        CloseDialog();
+    }
 
     for (i = 0; i < 3; ++i)
     {
@@ -6854,6 +6878,10 @@ int CGuiInGame::HandleDialogEntry(
 // PC 0x006888C0 GOG 0x00688630
 void CGuiInGame::AddToDialogNonDependantList(const CExoString& sName)
 {
+    if (GUIINGAME_DEBUG)
+    {
+        CloseDialog();
+    }
     if (!sName.CompareNoCase("") && !sName.IsEmpty() &&
         !IsOnDialogNonDependantList(sName))
     {
