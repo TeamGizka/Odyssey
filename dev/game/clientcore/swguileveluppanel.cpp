@@ -6,6 +6,9 @@
 #include "clientexoapp.h"
 #include "swguiingame.h"
 #include "nwccreature.h"
+
+#define SWGUILEVELUPPANEL_DEBUG 0
+
 // PC 0x0075D590 GOG 0x0075D3B0
 void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
 {
@@ -512,6 +515,10 @@ void CSWGuiLevelUpPanel::OnPanelAdded()
     m_nState = -1;
     ChangeState(0);
     m_nFirstState = m_nState;
+    if (SWGUILEVELUPPANEL_DEBUG)
+    {
+        OnSelectAcceptButton(NULL);
+    }
 #ifdef _XBOX
     m_pParent->SetBackPromptEnabled(m_bCanCancel);
 #else

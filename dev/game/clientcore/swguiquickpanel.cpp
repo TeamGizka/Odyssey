@@ -11,6 +11,8 @@
 #include "nwclass.h"
 #include "nwccreaturestats.h"
 
+#define SWGUIQUICKPANEL_DEBUG 0
+
 void CSWGuiQuickPanel::CancelPanel()
 {
 #ifdef _XBOX
@@ -289,6 +291,10 @@ void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
     }
     else
     {
+        if (SWGUIQUICKPANEL_DEBUG)
+        {
+            DoQuickStats();
+        }
         CancelPanel();
     }
 }
