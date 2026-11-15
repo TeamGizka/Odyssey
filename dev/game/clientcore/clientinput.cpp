@@ -1651,8 +1651,9 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
 #ifndef _XBOX
     g_pExoInput->UpdateMouseDelta(fMouseTime);
 #endif
+    CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     int bPeragusDialog = 0;
-    if (g_pAppManager->GetClientExoApp()->GetModule() != NULL &&
+    if (pClientExoApp->GetModule() != NULL &&
         g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("107PER") &&
         m_nInputClass == INPUT_CLASS_DIALOG)
         bPeragusDialog = 1;
