@@ -159,4 +159,4 @@ kotor_project_pch(clientcore HEADER stdafx.h SOURCE stdafx.cpp
   EXCLUDE
     clientexoappinternal.cpp guiingame.cpp swminigame.cpp console.cpp nwccreature.cpp swbehaviorcamera.cpp
     nwcobject.cpp nwcvisualeffect.cpp swbehaviorcameradialog.cpp swguiSubCreateItem.cpp swguiskillflowchart.cpp
-    SWAccelerationControlers.cpp swguifeatschargen.cpp)
+    SWAccelerationControlers.cpp swguifeatschargen.cpp nwcambientsound.cpp)
