@@ -336,6 +336,15 @@ void CSWCSoundObject::UpdateIntervalVariation()
     }
 }
 
+template <> inline void CExoArrayList<CResRef>::DelIndex(int nIndex)
+{
+    num--;
+    for (; nIndex < num; nIndex++)
+    {
+        element[nIndex] = element[nIndex + 1];
+    }
+}
+
 void CSWCSoundObject::ResetLastUpdate()
 {
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(
