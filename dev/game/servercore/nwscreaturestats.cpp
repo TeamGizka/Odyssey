@@ -1597,7 +1597,11 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
 
-    int nWeaponFocusBonus = GetWeaponFocus(pWeapon);
+    int nWeaponFocusBonus = 0;
+    if (GetWeaponFocus(pWeapon))
+    {
+        nWeaponFocusBonus = 1;
+    }
     nAttackBonus += nWeaponFocusBonus;
     pAttack->m_Extra1.m_nWeaponFocusBonus = nWeaponFocusBonus;
     int nLightsaberBonus = 0;
