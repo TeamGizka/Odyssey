@@ -942,6 +942,35 @@ void RenderSkinned(VertexPrimitiveSkinned* pPrimitive, bool bBumpedOut)
     return ExecuteSkinTransforms(pNode, tbones, rbones, pPrimitive, bBumpedOut);
 #endif
 }
+static inline void SkinDebugSetup()
+{
+    int nDebug1 = 0;
+    int nDebug2 = 0;
+    int nDebug3 = 0;
+    int nDebug4 = 0;
+    int nDebug5 = 0;
+    int nDebug6 = 0;
+    int nDebug7 = 0;
+    int nDebug8 = 0;
+    int nDebug9 = 0;
+    int nDebug10 = 0;
+    int nDebug11 = 0;
+}
+static inline void SkinDebugWalk()
+{
+    int nDebug1 = 0;
+    int nDebug2 = 0;
+    int nDebug3 = 0;
+    int nDebug4 = 0;
+    int nDebug5 = 0;
+    int nDebug6 = 0;
+    int nDebug7 = 0;
+    int nDebug8 = 0;
+    int nDebug9 = 0;
+    int nDebug10 = 0;
+    int nDebug11 = 0;
+    int nDebug12 = 0;
+}
 // PC 0x004A50A0 GOG 0x004A5160
 void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
 {
@@ -961,6 +990,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         if (bHologram && pTriMesh->m_bHideInHolograms)
             return;
         pPrimitive->SetupVertexArraysStandard();
+        SkinDebugSetup();
         Matrix mRotation;
         static List<Quaternion> qbones(0);
         static List<Vector> tbones(0);
@@ -993,6 +1023,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         pPart = pSkin;
         Vector vTranslation = -pSkin->m_qOrientation * -pSkin->m_vPosition;
         Quaternion qRotation = -pSkin->m_qOrientation;
+        SkinDebugWalk();
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
@@ -1010,17 +1041,17 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 vBone = vTranslation + qRotation * tbones[i] + vBone;
                 Quaternion qBone = qRotation * qbones[i] * pNode->m_lstQBoneRefInv[i];
                 mRotation = qBone.getmatrix();
-                int nRegister = PartSkin::SKIN_VP_BONES + 3 * nBone;
+                nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
                 const Vector& vFirst = mRotation.m_vFirst;
                 const Vector& vSecond = mRotation.m_vSecond;
                 const Vector& vThird = mRotation.m_vThird;
-                GLRender_SetVertexProgramParameter4f(nRegister,
+                GLRender_SetVertexProgramParameter4f(nBone,
                     vFirst.m_fX, vSecond.m_fX,
                     vThird.m_fX, vBone.m_fX);
-                GLRender_SetVertexProgramParameter4f(++nRegister,
+                GLRender_SetVertexProgramParameter4f(++nBone,
                     vFirst.m_fY, vSecond.m_fY,
                     vThird.m_fY, vBone.m_fY);
-                GLRender_SetVertexProgramParameter4f(nRegister + 1,
+                GLRender_SetVertexProgramParameter4f(nBone + 1,
                     vFirst.m_fZ, vSecond.m_fZ,
                     vThird.m_fZ, vBone.m_fZ);
             }
@@ -1755,6 +1786,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         }
         else
         {
+            VertexProgram* pProgram;
             if ((pSkin->m_pAurObject != 0 && pSkin->m_pAurObject->m_pEnvironmentMap.m_pObject != 0) ||
                 pSkin->m_pMaterial->HasEnvMap())
             {
@@ -1789,7 +1821,6 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 }
                 else
                 {
-                    VertexProgram* pProgram;
                     if (pEnvMap->IsCubeMap())
                         pProgram = GetSkinCubeMapVP();
                     else
@@ -1798,16 +1829,20 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     {
                         if (!currentscene->m_bFog)
                         {
-                            float afBlack[3] = {0.0f, 0.0f, 0.0f};
+                            float afBlack[3];
+                            afBlack[0] = 0.0f;
+                            afBlack[1] = 0.0f;
+                            afBlack[2] = 0.0f;
                             glFogfv(enableTranslationTable[FOG_COLOR], afBlack);
                             GLRender_SetFogModef(FOG_START, 1000.0f);
                             GLRender_SetFogModef(FOG_END, 2000.0f);
                         }
                         GLRender_Disable(ENABLE_FOG);
-                        float afFog[4] = {
-                            pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fX,
-                            pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fY,
-                            pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fZ, 1.0f};
+                        float afFog[4];
+                        afFog[0] = pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fX;
+                        afFog[1] = pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fY;
+                        afFog[2] = pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fZ;
+                        afFog[3] = 1.0f;
                         glSetFragmentShaderConstantATI(GL_CON_1_ATI, afFog);
                     }
                     pProgram->Enable(pSkin, true);
@@ -1832,13 +1867,13 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     GLRender_Disable(ENABLE_FOG);
                     GLRender_EnablePixelShaders(MODEL_SHADER_STANDARD_FOG,
                         pSkin->m_pMaterial->m_pTexture0, 0, 0, 0);
-                    float afFog[4] = {
-                        pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fX,
-                        pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fY,
-                        pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fZ, 1.0f};
+                    float afFog[4];
+                    afFog[0] = pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fX;
+                    afFog[1] = pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fY;
+                    afFog[2] = pSkin->m_pAurObject->m_pScene->m_vFogColor.m_fZ;
+                    afFog[3] = 1.0f;
                     glSetFragmentShaderConstantATI(GL_CON_1_ATI, afFog);
                 }
-                VertexProgram* pProgram;
                 if (use3boneskinning)
                 {
                     static VertexProgram* skin3bonevp = new VertexProgram(
