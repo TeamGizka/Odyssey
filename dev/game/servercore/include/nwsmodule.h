@@ -202,7 +202,6 @@ public:
     {
         m_sTag = sTag.LowerCase();
     }
-    unsigned long FindObjectByTagOrdinal(const CExoString& sTag, int nOrdinal);
     void ClearAreaCache();
     int GetTime(unsigned long* pnYear, unsigned long* pnMonth,
                 unsigned long* pnDay, unsigned long* pnTimeOfDay,

@@ -60,6 +60,11 @@ inline int CStatusSummary::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
     pRes->WriteFieldINT(&stStruct, m_nMaxForcePointsGain, "MAXFPGAIN");
     return pRes->WriteFieldINT(&stStruct, m_nMaxForcePointsLost, "MAXFPLOST");
 }
+// PC 0x004EA0C0 GOG 0x004EAE20
+inline CExoString CSWPartyTable::GetPCName()
+{
+    return m_sPCName;
+}
 
 #include "serverexoapp.h"
 #include "swguisaveload.h"

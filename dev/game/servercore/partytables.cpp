@@ -35,12 +35,6 @@ extern __int64 g_nCurrentSessionStartFILETIME;
 
 #define PARTYTABLES_DEBUG 0
 
-// PC 0x004EA0C0 GOG 0x004EAE20
-CExoString CSWPartyTable::GetPCName()
-{
-    return m_sPCName;
-}
-
 // PC 0x005792E0 GOG 0x00579360
 int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
 {

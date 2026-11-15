@@ -336,11 +336,6 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
                 0, NULL, 0, NULL);
             return 1;
         }
-        CExoString sMessage;
-        sMessage.Format("Area %s not valid.", sAreaName.CStr());
-        SendServerToPlayerChatMessage(5, OBJECT_INVALID, sMessage,
-            pPlayer->GetPlayerId(), "");
-        return 0;
     }
     if (nMinor == 25)
     {
@@ -390,6 +385,29 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
         pPathfind->m_fStepScale = fStepScale;
         pPathfind->ComputeStepTolerance();
         return 0;
+    }
+    if (nMinor == 2)
+    {
+        CSWSObject* pObject = pPlayer->GetGameObject();
+        if (pObject == NULL)
+            return 0;
+        CGameEffect* pEffect = new CGameEffect(1);
+        pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
+        pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+            CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+        pObject->ApplyEffect(pEffect, 0, 0);
+        pEffect = new CGameEffect(1);
+        pEffect->m_nType = CSWSEffectListHandler::EFFECT_HEAL;
+        pEffect->SetInteger(0, pObject->GetMaxHitPoints(1));
+        pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+            CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+        pObject->ApplyEffect(pEffect, 0, 0);
+        if (pObject->AsSWSCreature() != NULL)
+        {
+            CSWSCreatureStats* pStats = pObject->AsSWSCreature()->GetStats();
+            pStats->m_nCurrentForcePoints = pObject->AsSWSCreature()->GetMaxForcePoints();
+        }
+        return 1;
     }
     if (nMinor == 7)
     {

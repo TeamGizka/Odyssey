@@ -1880,7 +1880,7 @@ void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
                 break;
             }
             unsigned long oidNPC =
-                g_pAppManager->GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0UL);
+                g_pAppManager->GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0);
             CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
             pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(oidNPC));
             if (pCreature != NULL)

@@ -20553,67 +20553,67 @@ int CSWVirtualMachineCommands::ExecuteCommandRebuildPartyTable(int nCommand, int
         if (pModule != NULL)
         {
             unsigned long oidNPC;
-            oidNPC = pModule->FindObjectByTagOrdinal("atton", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("atton", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(0) != 0)
             {
                 pPartyTable->SetNPCObject(0, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("baodur", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("baodur", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(1) != 0)
             {
                 pPartyTable->SetNPCObject(1, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("mand", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("mand", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(2) != 0)
             {
                 pPartyTable->SetNPCObject(2, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("g0t0", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("g0t0", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(3) != 0)
             {
                 pPartyTable->SetNPCObject(3, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("handmaiden", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("handmaiden", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(4) != 0)
             {
                 pPartyTable->SetNPCObject(4, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("hk47", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("hk47", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(5) != 0)
             {
                 pPartyTable->SetNPCObject(5, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("kreia", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("kreia", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(6) != 0)
             {
                 pPartyTable->SetNPCObject(6, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("mira", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("mira", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(7) != 0)
             {
                 pPartyTable->SetNPCObject(7, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("t3m4", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("t3m4", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(8) != 0)
             {
                 pPartyTable->SetNPCObject(8, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("visasmarr", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("visasmarr", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(9) != 0)
             {
                 pPartyTable->SetNPCObject(9, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("hanharr", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("hanharr", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(10) != 0)
             {
                 pPartyTable->SetNPCObject(10, oidNPC);
             }
-            oidNPC = pModule->FindObjectByTagOrdinal("disciple", 0UL);
+            oidNPC = pModule->FindObjectByTagOrdinal("disciple", 0);
             if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(11) != 0)
             {
                 pPartyTable->SetNPCObject(11, oidNPC);
             }
-            unsigned long oidRemote = pModule->FindObjectByTagOrdinal("remote", 0UL);
+            unsigned long oidRemote = pModule->FindObjectByTagOrdinal("remote", 0);
             if (oidRemote != OBJECT_INVALID && pPartyTable->GetIsPUPAvailable(0) != 0)
             {
                 pPartyTable->SetPUPObject(0, oidRemote);
