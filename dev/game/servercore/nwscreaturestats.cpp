@@ -1690,7 +1690,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
             CExoString sBonus;
             sBonus.Format(" + %d (Targeting Bonus)", nTargetingBonus);
-            m_pCreature->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
+            GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
         }
     }
 
@@ -1701,13 +1701,13 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         int bBest = FALSE;
         if (pTarget->m_pStats->GetIsPC())
         {
-            if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) && pTarget->m_pStats->GetGoodEvilAlignment() <= 40)
+            if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) && pTarget->GetStats()->GetGoodEvilAlignment() <= 40)
             {
                 nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI;
                 nCrushPenalty = -2;
                 bBest = TRUE;
             }
-            else if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) && pTarget->m_pStats->GetGoodEvilAlignment() <= 40)
+            else if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) && pTarget->GetStats()->GetGoodEvilAlignment() <= 40)
             {
                 nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
                 nCrushPenalty = -1;
@@ -1717,30 +1717,33 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         {
             for (int i = 0; i < 12; ++i)
             {
-                if (g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsNPCAvailable(i) &&
-                    g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsMember(i))
+                if (!g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsNPCAvailable(i) ||
+                    !g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsMember(i))
                 {
-                    unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
-                    if (oidNPC != OBJECT_INVALID)
-                    {
-                        CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
-                        if (pNPC != NULL)
-                        {
-                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) &&
-                                pNPC->GetStats()->GetGoodEvilAlignment() <= 40)
-                            {
-                                nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI;
-                                nCrushPenalty = -2;
-                                break;
-                            }
-                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) &&
-                                pNPC->m_pStats->GetGoodEvilAlignment() <= 40)
-                            {
-                                nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
-                                nCrushPenalty = -1;
-                            }
-                        }
-                    }
+                    continue;
+                }
+                unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
+                if (oidNPC == OBJECT_INVALID)
+                {
+                    continue;
+                }
+                CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
+                if (pNPC == NULL)
+                {
+                    continue;
+                }
+                if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) &&
+                    pNPC->GetStats()->GetGoodEvilAlignment() <= 40)
+                {
+                    nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI;
+                    nCrushPenalty = -2;
+                    break;
+                }
+                if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) &&
+                    pNPC->GetStats()->GetGoodEvilAlignment() <= 40)
+                {
+                    nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
+                    nCrushPenalty = -1;
                 }
             }
         }
@@ -1753,12 +1756,12 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
         CExoString sBonus;
         sBonus.Format(" + %d (Crush Opposition Penalty)", nCrushPenalty);
-        m_pCreature->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
+        GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
     }
 
     int nInspireSpell = 0;
     int nInspireBonus = 0;
-    if (m_pCreature->m_bInParty)
+    if (GetCreature()->m_bInParty)
     {
         int bBest = FALSE;
         if (this->GetIsPC())
@@ -1779,37 +1782,40 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         {
             for (int i = 0; i < 12; ++i)
             {
-                if (g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsNPCAvailable(i) &&
-                    g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsMember(i))
+                if (!g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsNPCAvailable(i) ||
+                    !g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsMember(i))
                 {
-                    unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
-                    if (oidNPC != OBJECT_INVALID)
-                    {
-                        CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
-                        if (pNPC != NULL)
-                        {
-                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI, 0) &&
-                                pNPC->GetStats()->GetGoodEvilAlignment() >= 60)
-                            {
-                                nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI;
-                                nInspireBonus = 2;
-                                break;
-                            }
-                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III, 0) &&
-                                pNPC->m_pStats->GetGoodEvilAlignment() >= 60)
-                            {
-                                nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
-                                nInspireBonus = 1;
-                            }
-                        }
-                    }
+                    continue;
+                }
+                unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
+                if (oidNPC == OBJECT_INVALID)
+                {
+                    continue;
+                }
+                CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
+                if (pNPC == NULL)
+                {
+                    continue;
+                }
+                if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI, 0) &&
+                    pNPC->GetStats()->GetGoodEvilAlignment() >= 60)
+                {
+                    nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI;
+                    nInspireBonus = 2;
+                    break;
+                }
+                if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III, 0) &&
+                    pNPC->GetStats()->GetGoodEvilAlignment() >= 60)
+                {
+                    nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
+                    nInspireBonus = 1;
                 }
             }
         }
     }
+    nAttackBonus += nInspireBonus;
     pAttack->m_Extra1.m_nUnknown25 = nInspireSpell;
     pAttack->m_Extra1.m_nUnknown26 += nInspireBonus;
-    nAttackBonus += nInspireBonus;
     if (g_bEnableCombatDebugging && nInspireBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1822,7 +1828,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     int nFormBonus = 0;
     if (m_pCreature->IsWieldingLightsaber())
     {
-        switch (m_pCreature->m_n1110)
+        switch (GetCreature()->m_n1110)
         {
         case CSWSpell::FORM_SABER_I_SHII_CHO:
             nForm = CSWSpell::FORM_SABER_I_SHII_CHO;
@@ -1845,9 +1851,9 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             break;
         }
     }
+    nAttackBonus += nFormBonus;
     pAttack->m_Extra1.m_nUnknown28 = nForm;
     pAttack->m_Extra1.m_nUnknown2C += nFormBonus;
-    nAttackBonus += nFormBonus;
     if (g_bEnableCombatDebugging && nFormBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
