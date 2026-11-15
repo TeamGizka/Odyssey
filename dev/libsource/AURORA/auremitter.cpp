@@ -3243,7 +3243,7 @@ void LightningEmitter::Update(float fTimeStep)
                     Vector vJitterDirection = m_vReserved27C;
                     int nAngleRange = (int)m_fLightningZigZag;
                     int nAngle = 0;
-                    Vector vAxis = m_pTarget->GetPosition() - m_vOrigin;
+                    Vector vAxis = m_pTarget.m_pObject->GetPosition() - m_vOrigin;
                     for (int i = 1; i < m_lstActive.m_nCount - 1; i++)
                     {
                         if (nAngleRange != 0)
@@ -3297,7 +3297,8 @@ void LightningEmitter::Update(float fTimeStep)
             for (j = 0; j < m_lstReserved210.m_nCount; j++)
             {
                 m_lstReserved210[j] = qRotation * (m_lstReserved210[j] - m_vReserved204) + m_vOrigin;
-                m_lstReserved234[j] = qRotation * m_lstReserved234[j];
+                const Vector& vTangent = m_lstReserved234[j];
+                m_lstReserved234[j] = qRotation * vTangent;
             }
             if (pNode->m_nNumBranches > 0 && m_lstBranches.m_nCount != 0)
             {
