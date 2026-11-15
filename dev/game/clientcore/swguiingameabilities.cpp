@@ -403,15 +403,6 @@ void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
     m_cText.m_cParams.SetStrRef(nStrRef);
 }
 #include "swguiskillflowchartinl.h"
-// PC 0x00736C80 GOG 0x007369E0
-CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
-{
-    m_lbDescription.ClearItems();
-#ifndef _XBOX
-    m_lbDescFeats.ClearItems();
-#endif
-    m_lbAbility.ClearItems();
-}
 #ifdef _XBOX
 CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -539,6 +530,15 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x0
     m_pCreature = NULL;
 }
 #endif
+// PC 0x00736C80 GOG 0x007369E0
+CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
+{
+    m_lbDescription.ClearItems();
+#ifndef _XBOX
+    m_lbDescFeats.ClearItems();
+#endif
+    m_lbAbility.ClearItems();
+}
 // PC 0x00738780 GOG 0x007384E0
 void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
 {

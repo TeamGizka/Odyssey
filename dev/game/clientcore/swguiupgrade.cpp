@@ -27,6 +27,8 @@
 #include "nwskill.h"
 #include "swparty.h"
 
+#define SWGUIUPGRADE_DEBUG 0
+
 #ifndef _XBOX
 template <> int CExoArrayList<CSWSItem*>::IndexOf(CSWSItem* value) const  // PC 0x004DD4A0 GOG 0x004DCB80
 {
@@ -1823,6 +1825,99 @@ void CSWGuiUpgrade::GetArmorModelAndTextureResRef(
     {
         sTexture = "";
     }
+}
+// PC 0x0072ADE0 GOG 0x0072AAF0
+void CSWGuiCreateMedicalItem::PopulateInventoryItemListBox()
+{
+    CItemRepository* pRepository;
+
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
+    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
+    C2DA* pTable = pArrays->m_pChemicalCreate;
+    if (pTable == 0)
+        return;
+
+    if (pCreature != 0)
+        pRepository = pCreature->GetItemRepository(1);
+    CExoArrayList<CSWGuiControl*> lControls;
+    int nEntryIndex = 0;
+    int nResult = 0;
+    CExoString sLabel;
+    unsigned long nItems = 0;
+    for (unsigned long i = 0; i < pRepository->GetNumItems(); i++)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != 0 && pItem->m_bPlotObject == 0)
+            nItems++;
+    }
+
+    unsigned long nSorted = 0;
+    int nPanelSort = 0;
+    int nNextPanelSort = 0;
+    for (; nSorted < nItems; nPanelSort = nNextPanelSort)
+    {
+        for (unsigned long i = 0; i < pRepository->GetNumItems() && nResult == 0; i++)
+        {
+            CSWSItem* pItem = pRepository->ItemListGetItem(i);
+            int bChemical = 0;
+            for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
+            {
+                pTable->GetCExoStringEntry(nRow, "label", &sLabel);
+                CExoString sTag;
+                sTag = pItem->m_sTag.CStr();
+                if (sTag == sLabel)
+                {
+                    bChemical = 1;
+                    int nGroup = 0;
+                    pTable->GetINTEntry(nRow, "group", &nGroup);
+                    if (nGroup == 5)
+                        bChemical = 0;
+                    break;
+                }
+            }
+            if (pItem != 0 && pItem->m_bPlotObject == 0)
+            {
+                int nItemPanelSort = pItem->GetBaseItem()->m_nStorePanelSort;
+                if (nItemPanelSort == nPanelSort)
+                {
+                    if (bChemical && pItem->GetCost() > 0u)
+                    {
+                        if (SWGUIUPGRADE_DEBUG)
+                        {
+                            GetItemBuyValue(pItem);
+                        }
+                        nResult = CreateItemEntry(nEntryIndex, lControls,
+                                                  pItem->GetId(), 1, "");
+                    }
+                    nSorted++;
+                }
+                else if (nItemPanelSort > nPanelSort)
+                {
+                    if (nNextPanelSort == nPanelSort ||
+                        nItemPanelSort < nNextPanelSort)
+                        nNextPanelSort = nItemPanelSort;
+                }
+            }
+        }
+    }
+
+    m_lbxInventoryItems.AddControls(lControls, 0, 1, 0);
+    if (m_lbxInventoryItems.m_bEnabled != 0)
+    {
+        if (lControls.num > 0)
+        {
+            m_lbxInventoryItems.SetSelectedControl(0, 0);
+        }
+        else
+        {
+            m_lbxInventoryItems.SetSelectedControl(-1, 0);
+            m_lblCostValue.m_cText.m_cParams.SetText("");
+            m_lblStockValue.m_cText.m_cParams.SetText("");
+            m_lblDescription.m_cText.m_cParams.SetText("");
+        }
+    }
+    m_n33E8 = 0;
 }
 // PC 0x0072B1B0 GOG 0x0072AEC0
 void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
@@ -5030,6 +5125,111 @@ void CSWGuiCreateMedicalItem::SetDescription(const CExoString& sDescription)
         m_lbxDescription.m_lItems.num > 0 && !m_lbxDescription.m_bHideScrollIcon;
 }
 
+// PC 0x0072FBA0 GOG 0x0072F8B0
+int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
+                                      CExoArrayList<CSWGuiControl*>& lControls,
+                                      unsigned long oidItem, int bInventory,
+                                      CExoString sTemplate)
+{
+    CExoArrayList<CSWGuiStoreItemEntry*>* pEntries =
+        bInventory ? &m_lInventoryEntries : &m_lStoreEntries;
+    CSWGuiStoreItemEntry* pEntry;
+    if (nEntries < pEntries->num)
+    {
+        pEntry = (*pEntries)[nEntries];
+    }
+    else
+    {
+        CSWGuiStoreItemEntry* pNewEntry = new CSWGuiStoreItemEntry;
+        pEntry = pNewEntry;
+        pEntries->Add(pNewEntry);
+        pNewEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+        if (bInventory)
+        {
+            CSWGuiButton* pProto = m_lbxInventoryItems.m_pProtoItem->AsButton();
+            int nWidth = m_lbxInventoryItems.m_cItemExtent.m_nWidth -
+                         2 * m_lbxInventoryItems.m_nPadding;
+            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                               pProto->m_cHilite, nWidth);
+            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlInvAButton);
+            pNewEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
+                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlInvAButton);
+        }
+        else
+        {
+            CSWGuiButton* pProto = m_lbxStoreItems.m_pProtoItem->AsButton();
+            int nWidth = m_lbxStoreItems.m_cItemExtent.m_nWidth -
+                         2 * m_lbxStoreItems.m_nPadding;
+            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                               pProto->m_cHilite, nWidth);
+            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlStoreAButton);
+            pNewEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
+                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlStoreAButton);
+        }
+        pNewEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                        (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlEntered);
+    }
+    if (bInventory == 0)
+    {
+        C2DA* pTable = g_pRules->Get2DArrays()->m_pChemicalCreate;
+
+
+        CExoString sTag;
+        int nFoundRow = -1;
+        for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
+        {
+            if (!pTable->GetCExoStringEntry(nRow, "label", &sTag))
+                return 0;
+            if (sTag.CompareNoCase(sTemplate))
+            {
+                nFoundRow = nRow;
+                break;
+            }
+        }
+        if (nFoundRow != -1)
+        {
+            pEntry->m_n3B0 = nFoundRow;
+            int nBaseSkill = -1;
+            int nSkill = -1;
+            if (!pTable->GetINTEntry(nFoundRow, "base_skill", &nBaseSkill))
+                return 0;
+            if (!pTable->GetINTEntry(nFoundRow, "skillLevel", &nSkill))
+                return 0;
+            CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+            CSWSCreature* pCreature = pServer->GetPlayerCreature();
+            if (nSkill > pCreature->GetStats()->GetSkillRank(nBaseSkill, 0, 0))
+            {
+                pEntry->SetColors(CGuiInGame::DISABLED_TEXT, CGuiInGame::DISABLED_TEXT,
+                                  CGuiInGame::COLOR_NEW_HIGHLIGHT,
+                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                pEntry->m_n3B4 = 0;
+            }
+            else
+            {
+                pEntry->SetColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                  CGuiInGame::COLOR_UPGRADE_TEXT,
+                                  CGuiInGame::COLOR_UPGRADE_TEXT,
+                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                pEntry->m_n3B4 = 1;
+            }
+        }
+
+    }
+    else
+    {
+        pEntry->SetColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                          CGuiInGame::COLOR_UPGRADE_TEXT,
+                          CGuiInGame::COLOR_NEW_HIGHLIGHT,
+                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    }
+    pEntry->SetItem(oidItem, 0, -1);
+    pEntry->SetActive(0);
+    lControls.Add(pEntry);
+    nEntries++;
+    return 0;
+}
 // PC 0x00730070 GOG 0x0072FD80
 CSWGuiSwoopUpgrade::CSWGuiSwoopUpgrade(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -5163,95 +5363,6 @@ const CSWGuiUpgrade::SlotInfo
     { 2, "i_powerc", 48555 }, { -1, "i_powerc", 0 },
     { -1, "i_powerc", 0 }, { -1, "i_powerc", 0 }
 };
-// PC 0x0072ADE0 GOG 0x0072AAF0
-void CSWGuiCreateMedicalItem::PopulateInventoryItemListBox()
-{
-    CItemRepository* pRepository;
-
-    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-    CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
-    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
-    C2DA* pTable = pArrays->m_pChemicalCreate;
-    if (pTable == 0)
-        return;
-
-    if (pCreature != 0)
-        pRepository = pCreature->GetItemRepository(1);
-    CExoArrayList<CSWGuiControl*> lControls;
-    int nEntryIndex = 0;
-    int nResult = 0;
-    CExoString sLabel;
-    unsigned long nItems = 0;
-    for (unsigned long i = 0; i < pRepository->GetNumItems(); i++)
-    {
-        CSWSItem* pItem = pRepository->ItemListGetItem(i);
-        if (pItem != 0 && pItem->m_bPlotObject == 0)
-            nItems++;
-    }
-
-    unsigned long nSorted = 0;
-    int nPanelSort = 0;
-    int nNextPanelSort = 0;
-    for (; nSorted < nItems; nPanelSort = nNextPanelSort)
-    {
-        for (unsigned long i = 0; i < pRepository->GetNumItems() && nResult == 0; i++)
-        {
-            CSWSItem* pItem = pRepository->ItemListGetItem(i);
-            int bChemical = 0;
-            for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
-            {
-                pTable->GetCExoStringEntry(nRow, "label", &sLabel);
-                CExoString sTag;
-                sTag = pItem->m_sTag.CStr();
-                if (sTag == sLabel)
-                {
-                    bChemical = 1;
-                    int nGroup = 0;
-                    pTable->GetINTEntry(nRow, "group", &nGroup);
-                    if (nGroup == 5)
-                        bChemical = 0;
-                    break;
-                }
-            }
-            if (pItem != 0 && pItem->m_bPlotObject == 0)
-            {
-                int nItemPanelSort = pItem->GetBaseItem()->m_nStorePanelSort;
-                if (nItemPanelSort == nPanelSort)
-                {
-                    if (bChemical && pItem->GetCost() > 0u)
-                    {
-                        nResult = CreateItemEntry(nEntryIndex, lControls,
-                                                  pItem->GetId(), 1, "");
-                    }
-                    nSorted++;
-                }
-                else if (nItemPanelSort > nPanelSort)
-                {
-                    if (nNextPanelSort == nPanelSort ||
-                        nItemPanelSort < nNextPanelSort)
-                        nNextPanelSort = nItemPanelSort;
-                }
-            }
-        }
-    }
-
-    m_lbxInventoryItems.AddControls(lControls, 0, 1, 0);
-    if (m_lbxInventoryItems.m_bEnabled != 0)
-    {
-        if (lControls.num > 0)
-        {
-            m_lbxInventoryItems.SetSelectedControl(0, 0);
-        }
-        else
-        {
-            m_lbxInventoryItems.SetSelectedControl(-1, 0);
-            m_lblCostValue.m_cText.m_cParams.SetText("");
-            m_lblStockValue.m_cText.m_cParams.SetText("");
-            m_lblDescription.m_cText.m_cParams.SetText("");
-        }
-    }
-    m_n33E8 = 0;
-}
 
 
 // PC 0x0072D950 GOG 0x0072D660
@@ -5467,111 +5578,6 @@ void CSWGuiCreateMedicalItem::OnCreateFilterPicked(CSWGuiControl* pControl)
         UpdateCreateFilters();
         SetItemList();
     }
-}
-// PC 0x0072FBA0 GOG 0x0072F8B0
-int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
-                                      CExoArrayList<CSWGuiControl*>& lControls,
-                                      unsigned long oidItem, int bInventory,
-                                      CExoString sTemplate)
-{
-    CExoArrayList<CSWGuiStoreItemEntry*>* pEntries =
-        bInventory ? &m_lInventoryEntries : &m_lStoreEntries;
-    CSWGuiStoreItemEntry* pEntry;
-    if (nEntries < pEntries->num)
-    {
-        pEntry = (*pEntries)[nEntries];
-    }
-    else
-    {
-        CSWGuiStoreItemEntry* pNewEntry = new CSWGuiStoreItemEntry;
-        pEntry = pNewEntry;
-        pEntries->Add(pNewEntry);
-        pNewEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
-        if (bInventory)
-        {
-            CSWGuiButton* pProto = m_lbxInventoryItems.m_pProtoItem->AsButton();
-            int nWidth = m_lbxInventoryItems.m_cItemExtent.m_nWidth -
-                         2 * m_lbxInventoryItems.m_nPadding;
-            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
-                               pProto->m_cHilite, nWidth);
-            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
-                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlInvAButton);
-            pNewEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
-                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlInvAButton);
-        }
-        else
-        {
-            CSWGuiButton* pProto = m_lbxStoreItems.m_pProtoItem->AsButton();
-            int nWidth = m_lbxStoreItems.m_cItemExtent.m_nWidth -
-                         2 * m_lbxStoreItems.m_nPadding;
-            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
-                               pProto->m_cHilite, nWidth);
-            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
-                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlStoreAButton);
-            pNewEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
-                            (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlStoreAButton);
-        }
-        pNewEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
-                        (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlEntered);
-    }
-    if (bInventory == 0)
-    {
-        C2DA* pTable = g_pRules->Get2DArrays()->m_pChemicalCreate;
-
-
-        CExoString sTag;
-        int nFoundRow = -1;
-        for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
-        {
-            if (!pTable->GetCExoStringEntry(nRow, "label", &sTag))
-                return 0;
-            if (sTag.CompareNoCase(sTemplate))
-            {
-                nFoundRow = nRow;
-                break;
-            }
-        }
-        if (nFoundRow != -1)
-        {
-            pEntry->m_n3B0 = nFoundRow;
-            int nBaseSkill = -1;
-            int nSkill = -1;
-            if (!pTable->GetINTEntry(nFoundRow, "base_skill", &nBaseSkill))
-                return 0;
-            if (!pTable->GetINTEntry(nFoundRow, "skillLevel", &nSkill))
-                return 0;
-            CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-            CSWSCreature* pCreature = pServer->GetPlayerCreature();
-            if (nSkill > pCreature->GetStats()->GetSkillRank(nBaseSkill, 0, 0))
-            {
-                pEntry->SetColors(CGuiInGame::DISABLED_TEXT, CGuiInGame::DISABLED_TEXT,
-                                  CGuiInGame::COLOR_NEW_HIGHLIGHT,
-                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                pEntry->m_n3B4 = 0;
-            }
-            else
-            {
-                pEntry->SetColors(CGuiInGame::COLOR_UPGRADE_BORDER,
-                                  CGuiInGame::COLOR_UPGRADE_TEXT,
-                                  CGuiInGame::COLOR_UPGRADE_TEXT,
-                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                pEntry->m_n3B4 = 1;
-            }
-        }
-
-    }
-    else
-    {
-        pEntry->SetColors(CGuiInGame::COLOR_UPGRADE_BORDER,
-                          CGuiInGame::COLOR_UPGRADE_TEXT,
-                          CGuiInGame::COLOR_NEW_HIGHLIGHT,
-                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
-    }
-    pEntry->SetItem(oidItem, 0, -1);
-    pEntry->SetActive(0);
-    lControls.Add(pEntry);
-    nEntries++;
-    return 0;
 }
 // PC 0x00728D40 GOG 0x00728A50
 void CSWGuiSwoopUpgrade::SetDescription(const CExoString& sDescription)

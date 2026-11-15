@@ -25,14 +25,6 @@ extern int g_Letterbox_bottom;
 
 #define SWGUIDIALOG_DEBUG 0
 
-static void SwguidialogTrace3(CSWGuiDialog* pDialog)
-{
-    if (0)
-    {
-        pDialog->CSWGuiDialog::~CSWGuiDialog();
-    }
-}
-
 // PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWGuiDialogComputer::SetType(unsigned char)
 {
@@ -49,13 +41,14 @@ CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
     Reset();
 }
 
+// PC 0x0070D440 GOG 0x0070D430
 void CSWGuiDialog::SetReplyActive(CSWGuiControl* pControl)
 {
     EXOXBOXASSERT(pControl->AsLabel());
     CSWGuiLabel* pLabel = pControl->AsLabel();
     pLabel->m_cText.m_cParams.SetColor(m_vReplyHighlightColor);
 }
-// PC 0x0070D440 GOG 0x0070D430
+// PC 0x0070D470 GOG 0x0070D460
 void CSWGuiDialog::SetReplyInactive(CSWGuiControl* pControl)
 {
     EXOXBOXASSERT(pControl->AsLabel());
@@ -142,7 +135,7 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
 {
     if (SWGUIDIALOG_DEBUG)
     {
-        SwguidialogTrace3(this);
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pDialogLetterbox->SetMiddle();
     }
     Reset();
     CSWGuiExtent cExtent;
@@ -547,6 +540,10 @@ void CSWGuiDialogCinematic::ShowDialogMessage()
 // PC 0x0070E5D0 GOG 0x0070DB10
 void CSWGuiDialogLetterbox::Draw(float fElapsed)
 {
+    if (SWGUIDIALOG_DEBUG)
+    {
+        SetMiddle();
+    }
     if (m_nPosition == POSITION_MIDDLE && m_fFadeTime > 0.0f)
     {
         if (fElapsed < 5.0f)
@@ -1004,10 +1001,6 @@ CSWGuiDialogComputer::~CSWGuiDialogComputer()
 CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
 {
-    if (SWGUIDIALOG_DEBUG)
-    {
-        SwguidialogTrace3(this);
-    }
     m_pTop = 0;
 #ifdef _XBOX
     StartLoadFromLayout("computercamera");

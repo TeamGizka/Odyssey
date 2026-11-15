@@ -53,11 +53,6 @@ template CExoArrayList<CSWGuiButton*>::CExoArrayList(int);
 template CExoArrayList<CSWSItem*>::~CExoArrayList();
 template void List<CAurObject*>::allocate(int);
 template void List<CAurObject*>::Add(CAurObject*);
-
-#include "swpattern.h"
-
-template CExoArrayList<CSWRumblePattern>::CExoArrayList(int);
-template CExoArrayList<CSWRumblePattern>::~CExoArrayList();
 template CExoArrayList<CSWGuiKeyMapButton*>::~CExoArrayList();
 template CExoLinkedListNode* CExoLinkedList<CSWSObjectActionNode>::GetHeadPos();
 template CSWSObjectActionNode* CExoLinkedList<CSWSObjectActionNode>::GetAtPos(CExoLinkedListNode*);
