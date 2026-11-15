@@ -24,6 +24,7 @@ class CTlkFile : public CExoFile
 {
 public:
     CTlkFile(const CExoString& sResRef);
+    ~CTlkFile();
     int ReadHeader();
 
     static const unsigned long TLK_FILE_TYPE;

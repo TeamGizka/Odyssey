@@ -5,6 +5,8 @@
 
 #include <string.h>
 
+#define EXOTLKTABLE_DEBUG 0
+
 const unsigned long CTlkFile::TLK_FILE_TYPE = 0x204B4C54;
 const char* CTlkFile::TLK_FILE_VERSION = "V3.0";
 
@@ -53,19 +55,31 @@ CTlkTable::CTlkTable()
     m_bDebugMode = 0;
 }
 
-inline void TlkTableProbeFile(const CExoString& sResRef, CTlkTable::SCustomToken* pToken)
+inline void TlkTableProbeFile(CTlkTable::SCustomToken* pToken)
 {
-    CTlkFile file(sResRef);
     pToken->~SCustomToken();
 }
-
-inline void TlkTableReleaseEntries(CTlkFile* pFile, CTlkTable::SCustomToken* pTokens, int nCount)
+// PC 0x0041ED00 GOG 0x0041ED00
+CTlkFile::~CTlkFile()
 {
-    delete pFile;
-    CTlkTable::SCustomToken* pNew = new CTlkTable::SCustomToken[nCount];
-    pNew[0] = pTokens[0];
-    delete[] pTokens;
 }
+
+#ifndef _XBOX
+int CTlkTable::ExoIsDBCSLeadByte(unsigned char c)
+{
+    if (EXOTLKTABLE_DEBUG)
+    {
+        delete m_aFiles[0];
+        SCustomToken* pTokens = new SCustomToken[1];
+        pTokens[0] = m_pCustomTokens[0];
+    }
+    if (IsDBCSLeadByte(c) || c > 0x7f)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+#endif
 // PC 0x0041ED10 GOG 0x0041ED20
 int CTlkTable::AddFile(const CExoString& sResRef, int nContentPkg)
 {
@@ -111,16 +125,6 @@ int CTlkTable::AddFile(const CExoString& sResRef, int nContentPkg)
     return TRUE;
 }
 
-#ifndef _XBOX
-int CTlkTable::ExoIsDBCSLeadByte(unsigned char c)
-{
-    if (IsDBCSLeadByte(c) || c > 0x7f)
-    {
-        return TRUE;
-    }
-    return FALSE;
-}
-#endif
 // PC 0x0041EF40 GOG 0x0041EF50
 void CTlkTable::SetCustomToken(int nToken, const CExoString& sValue)
 {

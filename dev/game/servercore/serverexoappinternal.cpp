@@ -130,15 +130,6 @@ enum SaveGameStringRef
     STRREF_SAVING_GAME_HINT = 41926
 };
 
-inline void ServerExoAppInternalReserve(CExoArrayList<unsigned long>* pIds, int nSize, CExoString* pStrings,
-    CExoLinkedList<CSWSClient>* pClients, CExoLinkedList<unsigned long>* pExclusions)
-{
-    pIds->Allocate(nSize);
-    delete[] pStrings;
-    delete pClients;
-    delete pExclusions;
-}
-
 static inline CServerExoApp* GetServerExoApp()
 {
     return g_pAppManager->m_pServerExoApp;
@@ -565,6 +556,14 @@ void CServerExoAppInternal::OnCDChange()
 
 void CServerExoAppInternal::OnExit()
 {
+    if (SERVEREXOAPPINTERNAL_DEBUG)
+    {
+        m_lstPendingPlayers.Allocate(0);
+        CExoString* pNames = new CExoString[1];
+        delete[] pNames;
+        delete m_pPlayerList;
+        delete m_pTimestopExclusionList;
+    }
 }
 
 void CServerExoAppInternal::OnGainFocus()
