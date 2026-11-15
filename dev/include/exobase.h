@@ -57,24 +57,6 @@ public:
     char operator[](int nIndex) const;
     CExoString operator+(const CExoString& sString) const;
 
-    int AsINT() const
-    {
-        if (m_sString != NULL)
-        {
-            return atoi(m_sString);
-        }
-
-        return 0;
-    }
-    float AsFLOAT() const
-    {
-        if (m_sString != NULL)
-        {
-            return atof(m_sString);
-        }
-
-        return 0.0f;
-    }
     char* CStr() const;
     void Format(char* szFormat, ...);
     int GetLength() const
@@ -95,6 +77,24 @@ public:
         }
 
         return FALSE;
+    }
+    int AsINT() const
+    {
+        if (m_sString != NULL)
+        {
+            return atoi(m_sString);
+        }
+
+        return 0;
+    }
+    float AsFLOAT() const
+    {
+        if (m_sString != NULL)
+        {
+            return atof(m_sString);
+        }
+
+        return 0.0f;
     }
     BOOL CompareNoCase(const char* szString) const;
     BOOL CompareNoCase(const CExoString& sString) const;

@@ -1,8 +1,32 @@
+#define WIN32_LEAN_AND_MEAN
 #include "twodimarray.h"
 #include "exoresman.h"
 
 #include <stdio.h>
 #include <string.h>
+// PC 0x0041DCC0 GOG 0x0041DCB0
+C2DA::C2DA(CResRef cResRef, int bRequest)
+{
+    m_ppEntries = NULL;
+    m_pRowLabels = NULL;
+    m_pColumnLabels = NULL;
+    m_nNumRows = 0;
+    m_nNumColumns = 0;
+    m_sDefault = "";
+    m_bLoaded = 0;
+    m_bPacked = 0;
+    m_pEntryData = NULL;
+    m_pEntryOffsets = NULL;
+    m_pRowLabelOffsets = NULL;
+    m_pColumnLabelOffsets = NULL;
+    m_pLabelData = NULL;
+    SetResRef(cResRef, bRequest);
+}
+// PC 0x0041DD80 GOG 0x0041DD70
+C2DA::~C2DA()
+{
+    Unload2DArray();
+}
 // PC 0x0041D140 GOG 0x0041D130
 int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
 {
@@ -33,43 +57,6 @@ int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
     return -1;
 }
 
-// PC 0x0041D4D0 GOG 0x0041D4C0
-int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
-{
-    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
-        nColumn >= m_nNumColumns)
-    {
-        *pnEntry = m_sDefault.AsINT();
-        return 0;
-    }
-
-    if (m_bPacked)
-    {
-        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
-
-        *pnEntry = 0;
-        sscanf(m_pEntryData + nOffset, "%i", pnEntry);
-        return m_pEntryData[nOffset] != 0;
-    }
-
-    if (m_ppEntries[nRow][nColumn] == "")
-    {
-        *pnEntry = 0;
-        return 0;
-    }
-
-    if (m_ppEntries[nRow][nColumn].GetLength() > 2 &&
-        m_ppEntries[nRow][nColumn].CStr()[0] == '0' &&
-        (m_ppEntries[nRow][nColumn].CStr()[1] == 'x' ||
-         m_ppEntries[nRow][nColumn].CStr()[1] == 'X'))
-    {
-        sscanf(m_ppEntries[nRow][nColumn].CStr(), "%x", pnEntry);
-        return 1;
-    }
-
-    *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
-    return 1;
-}
 // PC 0x0041DDE0 GOG 0x0041DDD0
 int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
 {
@@ -97,33 +84,118 @@ int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
     return psEntry->GetLength() > 0;
 }
 
-// PC 0x0041D3D0 GOG 0x0041D3C0
-int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
+int C2DA::SaveBinary2da(char* sFileName)
 {
-    int nColumn = GetColumnIndex(sColumn);
+    int nRow;
+    int nColumn;
+    int nEntry;
+    int nNumEntries;
+    int nNumStrings;
+    int* pStringIndices;
+    int* pStringOffsets;
+    int nDataSize;
+    CExoString* pStrings;
+    FILE* pFile;
 
-    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    if (!m_bLoaded)
     {
-        *pfEntry = m_sDefault.AsFLOAT();
         return 0;
     }
 
-    if (m_bPacked)
-    {
-        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
+    nNumEntries = m_nNumRows * m_nNumColumns;
+    pStrings = new CExoString[nNumEntries];
+    nNumStrings = 0;
+    pStringIndices = new int[m_nNumRows * m_nNumColumns];
+    pStringOffsets = new int[m_nNumRows * m_nNumColumns];
 
-        *pfEntry = 0.0f;
-        sscanf(m_pEntryData + nOffset, "%f", pfEntry);
-        return m_pEntryData[nOffset] != 0;
+    for (nRow = 0; nRow < m_nNumRows; nRow++)
+    {
+        for (nColumn = 0; nColumn < m_nNumColumns; nColumn++)
+        {
+            for (nEntry = 0; nEntry < nNumStrings; nEntry++)
+            {
+                if (pStrings[nEntry] == m_ppEntries[nRow][nColumn])
+                {
+                    break;
+                }
+            }
+
+            if (nEntry == nNumStrings)
+            {
+                pStrings[nNumStrings++] = m_ppEntries[nRow][nColumn];
+            }
+
+            pStringIndices[nRow * m_nNumColumns + nColumn] = nEntry;
+        }
     }
 
-    if (m_ppEntries[nRow][nColumn] == "")
+    nDataSize = 0;
+    for (nEntry = 0; nEntry < nNumStrings; nEntry++)
     {
-        *pfEntry = 0.0f;
+        pStringOffsets[nEntry] = nDataSize;
+        nDataSize += strlen(pStrings[nEntry].CStr()) + 1;
+    }
+
+    if (nDataSize >= 0x10000)
+    {
+        delete[] pStrings;
+        delete[] pStringIndices;
+        delete[] pStringOffsets;
         return 0;
     }
 
-    *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
+    pFile = fopen(sFileName, "wb");
+    if (!pFile)
+    {
+        delete[] pStrings;
+        delete[] pStringIndices;
+        delete[] pStringOffsets;
+        return 0;
+    }
+
+    fprintf(pFile, "2DA ");
+    fprintf(pFile, "V2.b");
+    fprintf(pFile, "\n");
+    if (m_sDefault[0])
+    {
+        fprintf(pFile, "DEFAULT: %s\n", m_sDefault.CStr());
+    }
+
+    for (nColumn = 0; nColumn < m_nNumColumns; nColumn++)
+    {
+        fprintf(pFile, "%s\t", m_pColumnLabels[nColumn].CStr());
+    }
+    fprintf(pFile, "%c", 0);
+
+    fwrite(&m_nNumRows, 4, 1, pFile);
+    for (nRow = 0; nRow < m_nNumRows; nRow++)
+    {
+        fprintf(pFile, "%s\t", m_pRowLabels[nRow].CStr());
+    }
+
+    for (nRow = 0; nRow < m_nNumRows; nRow++)
+    {
+        for (nColumn = 0; nColumn < m_nNumColumns; nColumn++)
+        {
+            fwrite(&pStringOffsets[pStringIndices[nRow * m_nNumColumns + nColumn]],
+                   2, 1, pFile);
+        }
+    }
+    fwrite(&nDataSize, 2, 1, pFile);
+
+    for (nEntry = 0; nEntry < nNumStrings; nEntry++)
+    {
+        if (pStrings[nEntry][0])
+        {
+            fprintf(pFile, "%s", pStrings[nEntry].CStr());
+        }
+        fprintf(pFile, "%c", 0);
+    }
+
+    fclose(pFile);
+    delete[] pStrings;
+    delete[] pStringIndices;
+    delete[] pStringOffsets;
     return 1;
 }
 // PC 0x0041D1F0 GOG 0x0041D1E0
@@ -180,6 +252,72 @@ int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
     }
 
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
+    return 1;
+}
+// PC 0x0041D3D0 GOG 0x0041D3C0
+int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
+{
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        *pfEntry = m_sDefault.AsFLOAT();
+        return 0;
+    }
+
+    if (m_bPacked)
+    {
+        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
+
+        *pfEntry = 0.0f;
+        sscanf(m_pEntryData + nOffset, "%f", pfEntry);
+        return m_pEntryData[nOffset] != 0;
+    }
+
+    if (m_ppEntries[nRow][nColumn] == "")
+    {
+        *pfEntry = 0.0f;
+        return 0;
+    }
+
+    *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
+    return 1;
+}
+// PC 0x0041D4D0 GOG 0x0041D4C0
+int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
+{
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
+        nColumn >= m_nNumColumns)
+    {
+        *pnEntry = m_sDefault.AsINT();
+        return 0;
+    }
+
+    if (m_bPacked)
+    {
+        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
+
+        *pnEntry = 0;
+        sscanf(m_pEntryData + nOffset, "%i", pnEntry);
+        return m_pEntryData[nOffset] != 0;
+    }
+
+    if (m_ppEntries[nRow][nColumn] == "")
+    {
+        *pnEntry = 0;
+        return 0;
+    }
+
+    if (m_ppEntries[nRow][nColumn].GetLength() > 2 &&
+        m_ppEntries[nRow][nColumn].CStr()[0] == '0' &&
+        (m_ppEntries[nRow][nColumn].CStr()[1] == 'x' ||
+         m_ppEntries[nRow][nColumn].CStr()[1] == 'X'))
+    {
+        sscanf(m_ppEntries[nRow][nColumn].CStr(), "%x", pnEntry);
+        return 1;
+    }
+
+    *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
 // PC 0x0041D640 GOG 0x0041D630
@@ -306,29 +444,6 @@ int C2DA::GetNextToken(char** ppData, unsigned long* pnSize, char* szToken,
     *szToken = 0;
 
     return nCount > 0;
-}
-// PC 0x0041DCC0 GOG 0x0041DCB0
-C2DA::C2DA(CResRef cResRef, int bRequest)
-{
-    m_ppEntries = NULL;
-    m_pRowLabels = NULL;
-    m_pColumnLabels = NULL;
-    m_nNumRows = 0;
-    m_nNumColumns = 0;
-    m_sDefault = "";
-    m_bLoaded = 0;
-    m_bPacked = 0;
-    m_pEntryData = NULL;
-    m_pEntryOffsets = NULL;
-    m_pRowLabelOffsets = NULL;
-    m_pColumnLabelOffsets = NULL;
-    m_pLabelData = NULL;
-    SetResRef(cResRef, bRequest);
-}
-// PC 0x0041DD80 GOG 0x0041DD70
-C2DA::~C2DA()
-{
-    Unload2DArray();
 }
 // PC 0x0041DEC0 GOG 0x0041DEB0
 int C2DA::GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn,
@@ -520,6 +635,95 @@ int C2DA::GetINTEntry(const CExoString& sRow, int nColumn, int* pnEntry)
 
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
+}
+// PC 0x0041D8B0 GOG 0x0041D8A0
+int C2DA::GetRowIndex(const CExoString& sRowLabel)
+{
+    int i;
+
+    if (m_bPacked)
+    {
+        for (i = 0; i < m_nNumRows; i++)
+        {
+            if (stricmp(&m_pLabelData[m_pRowLabelOffsets[i]],
+                         sRowLabel.CStr()) == 0)
+            {
+                return i;
+            }
+        }
+    }
+    else
+    {
+        for (i = 0; i < m_nNumRows; i++)
+        {
+            if (m_pRowLabels[i].CompareNoCase(sRowLabel))
+            {
+                return i;
+            }
+        }
+    }
+
+    return -1;
+}
+// PC 0x0041D940 GOG 0x0041D930
+int C2DA::SkipNewLines(char** ppData, unsigned long* pnSize)
+{
+    unsigned long nSize = *pnSize;
+    unsigned long nSkipped = 0;
+    unsigned long nCount = 0;
+    char* pData = *ppData;
+
+    while (nSkipped < *pnSize)
+    {
+        if (*pData != '\n' && *pData != '\r' && *pData != ' ' && *pData != '\t')
+        {
+            break;
+        }
+
+        nSkipped = nCount;
+
+        while (nSkipped < *pnSize && (*pData == '\n' || *pData == '\r'))
+        {
+            pData++;
+            nSkipped++;
+        }
+
+        nCount = nSkipped;
+
+        while (nCount < *pnSize && (*pData == ' ' || *pData == '\t'))
+        {
+            pData++;
+            nCount++;
+        }
+
+        if (nCount == nSize)
+        {
+            nSkipped = nCount;
+            break;
+        }
+    }
+
+    *ppData += nSkipped;
+    *pnSize -= nSkipped;
+
+    return nSkipped > 0;
+}
+
+static unsigned long GetLineLength(char* pData, unsigned long nSize)
+{
+    unsigned long nLength;
+
+    for (nLength = 0; nLength < nSize; nLength++)
+    {
+        if (*pData == '\n' || *pData == '\r')
+        {
+            break;
+        }
+
+        pData++;
+    }
+
+    return nLength;
 }
 // PC 0x0041E570 GOG 0x0041E560
 int C2DA::Load2DArray()
@@ -769,95 +973,6 @@ int C2DA::Load2DArray()
     m_bLoaded = 1;
     return 1;
 }
-// PC 0x0041D8B0 GOG 0x0041D8A0
-int C2DA::GetRowIndex(const CExoString& sRowLabel)
-{
-    int i;
-
-    if (m_bPacked)
-    {
-        for (i = 0; i < m_nNumRows; i++)
-        {
-            if (stricmp(&m_pLabelData[m_pRowLabelOffsets[i]],
-                         sRowLabel.CStr()) == 0)
-            {
-                return i;
-            }
-        }
-    }
-    else
-    {
-        for (i = 0; i < m_nNumRows; i++)
-        {
-            if (m_pRowLabels[i].CompareNoCase(sRowLabel))
-            {
-                return i;
-            }
-        }
-    }
-
-    return -1;
-}
-// PC 0x0041D940 GOG 0x0041D930
-int C2DA::SkipNewLines(char** ppData, unsigned long* pnSize)
-{
-    unsigned long nSize = *pnSize;
-    unsigned long nSkipped = 0;
-    unsigned long nCount = 0;
-    char* pData = *ppData;
-
-    while (nSkipped < *pnSize)
-    {
-        if (*pData != '\n' && *pData != '\r' && *pData != ' ' && *pData != '\t')
-        {
-            break;
-        }
-
-        nSkipped = nCount;
-
-        while (nSkipped < *pnSize && (*pData == '\n' || *pData == '\r'))
-        {
-            pData++;
-            nSkipped++;
-        }
-
-        nCount = nSkipped;
-
-        while (nCount < *pnSize && (*pData == ' ' || *pData == '\t'))
-        {
-            pData++;
-            nCount++;
-        }
-
-        if (nCount == nSize)
-        {
-            nSkipped = nCount;
-            break;
-        }
-    }
-
-    *ppData += nSkipped;
-    *pnSize -= nSkipped;
-
-    return nSkipped > 0;
-}
-
-static unsigned long GetLineLength(char* pData, unsigned long nSize)
-{
-    unsigned long nLength;
-
-    for (nLength = 0; nLength < nSize; nLength++)
-    {
-        if (*pData == '\n' || *pData == '\r')
-        {
-            break;
-        }
-
-        pData++;
-    }
-
-    return nLength;
-}
 // PC 0x0041D9E0 GOG 0x0041D9D0
 void C2DA::Unload2DArray()
 {
@@ -904,117 +1019,3 @@ void C2DA::Unload2DArray()
     }
 }
 
-int C2DA::SaveBinary2da(char* sFileName)
-{
-    int nRow;
-    int nColumn;
-    int nEntry;
-    int nNumEntries;
-    int nNumStrings;
-    int* pStringIndices;
-    int* pStringOffsets;
-    int nDataSize;
-    CExoString* pStrings;
-    FILE* pFile;
-
-    if (!m_bLoaded)
-    {
-        return 0;
-    }
-
-    nNumEntries = m_nNumRows * m_nNumColumns;
-    pStrings = new CExoString[nNumEntries];
-    nNumStrings = 0;
-    pStringIndices = new int[m_nNumRows * m_nNumColumns];
-    pStringOffsets = new int[m_nNumRows * m_nNumColumns];
-
-    for (nRow = 0; nRow < m_nNumRows; nRow++)
-    {
-        for (nColumn = 0; nColumn < m_nNumColumns; nColumn++)
-        {
-            for (nEntry = 0; nEntry < nNumStrings; nEntry++)
-            {
-                if (pStrings[nEntry] == m_ppEntries[nRow][nColumn])
-                {
-                    break;
-                }
-            }
-
-            if (nEntry == nNumStrings)
-            {
-                pStrings[nNumStrings++] = m_ppEntries[nRow][nColumn];
-            }
-
-            pStringIndices[nRow * m_nNumColumns + nColumn] = nEntry;
-        }
-    }
-
-    nDataSize = 0;
-    for (nEntry = 0; nEntry < nNumStrings; nEntry++)
-    {
-        pStringOffsets[nEntry] = nDataSize;
-        nDataSize += strlen(pStrings[nEntry].CStr()) + 1;
-    }
-
-    if (nDataSize >= 0x10000)
-    {
-        delete[] pStrings;
-        delete[] pStringIndices;
-        delete[] pStringOffsets;
-        return 0;
-    }
-
-    pFile = fopen(sFileName, "wb");
-    if (!pFile)
-    {
-        delete[] pStrings;
-        delete[] pStringIndices;
-        delete[] pStringOffsets;
-        return 0;
-    }
-
-    fprintf(pFile, "2DA ");
-    fprintf(pFile, "V2.b");
-    fprintf(pFile, "\n");
-    if (m_sDefault[0])
-    {
-        fprintf(pFile, "DEFAULT: %s\n", m_sDefault.CStr());
-    }
-
-    for (nColumn = 0; nColumn < m_nNumColumns; nColumn++)
-    {
-        fprintf(pFile, "%s\t", m_pColumnLabels[nColumn].CStr());
-    }
-    fprintf(pFile, "%c", 0);
-
-    fwrite(&m_nNumRows, 4, 1, pFile);
-    for (nRow = 0; nRow < m_nNumRows; nRow++)
-    {
-        fprintf(pFile, "%s\t", m_pRowLabels[nRow].CStr());
-    }
-
-    for (nRow = 0; nRow < m_nNumRows; nRow++)
-    {
-        for (nColumn = 0; nColumn < m_nNumColumns; nColumn++)
-        {
-            fwrite(&pStringOffsets[pStringIndices[nRow * m_nNumColumns + nColumn]],
-                   2, 1, pFile);
-        }
-    }
-    fwrite(&nDataSize, 2, 1, pFile);
-
-    for (nEntry = 0; nEntry < nNumStrings; nEntry++)
-    {
-        if (pStrings[nEntry][0])
-        {
-            fprintf(pFile, "%s", pStrings[nEntry].CStr());
-        }
-        fprintf(pFile, "%c", 0);
-    }
-
-    fclose(pFile);
-    delete[] pStrings;
-    delete[] pStringIndices;
-    delete[] pStringOffsets;
-    return 1;
-}

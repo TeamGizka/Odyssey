@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN
 #include "exoresman.h"
 #include "exobase.h"
 #include "resgff.h"
@@ -68,6 +69,176 @@ unsigned char* CResRef::GetResRef() const
     return (unsigned char*)m_resRef;
 }
 
+// PC 0x00406010 GOG 0x00405FE0
+void CResRef::CopyToString(CExoString& sString) const
+{
+    char szResRef[17];
+
+    memcpy(szResRef, m_resRef, 16);
+    szResRef[16] = 0;
+    sString = szResRef;
+}
+// PC 0x00406050 GOG 0x00406020
+void CResRef::CopyToString(char* pString) const
+{
+    memcpy(pString, m_resRef, 16);
+    pString[16] = 0;
+}
+// PC 0x00406080 GOG 0x00406050
+char* CResRef::GetResRefStr() const
+{
+    s_nCurBufferIndex = (s_nCurBufferIndex + 1) % 4;
+    memcpy(RETURN_BUFFERS[s_nCurBufferIndex], m_resRef, 16);
+    RETURN_BUFFERS[s_nCurBufferIndex][16] = 0;
+    return RETURN_BUFFERS[s_nCurBufferIndex];
+}
+// PC 0x004060D0 GOG 0x004060A0
+int CResRef::IsValid() const
+{
+    return m_resRef[0] != 0;
+}
+// PC 0x004060E0 GOG 0x004060B0
+unsigned char CResRef::GetLength() const
+{
+    unsigned char nLength = 0;
+    while (nLength < 16 && m_resRef[nLength])
+    {
+        ++nLength;
+    }
+    return nLength;
+}
+// PC 0x00406100 GOG 0x004060D0
+int CResRef::operator!=(char* pString) const
+{
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        int nChar = tolower((signed char)pString[i]);
+        if (nChar != tolower(m_resRef[i]))
+        {
+            return 1;
+        }
+        if (!nChar)
+        {
+            break;
+        }
+    }
+    return 0;
+}
+// PC 0x00406150 GOG 0x00406120
+int CResRef::operator==(const CResRef& other) const
+{
+    return memcmp(other.m_resRef, m_resRef, 16) == 0;
+}
+// PC 0x00406170 GOG 0x00406140
+int CResRef::operator==(char* pString) const
+{
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        int nChar = tolower((signed char)pString[i]);
+        if (nChar != tolower(m_resRef[i]))
+        {
+            return 0;
+        }
+        if (!nChar)
+        {
+            break;
+        }
+    }
+    return 1;
+}
+// PC 0x004061C0 GOG 0x00406190
+CResRef CResRef::operator=(const CResRef& other)
+{
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        m_resRef[i] = (unsigned char)tolower(other.m_resRef[i]);
+    }
+    return *this;
+}
+// PC 0x00406210 GOG 0x004061E0
+CResRef CResRef::operator=(unsigned char* pResRef)
+{
+    memcpy(m_resRef, pResRef, 16);
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        if (!m_resRef[i])
+        {
+            memset(m_resRef + i + 1, 0, 15 - i);
+            break;
+        }
+        m_resRef[i] = (unsigned char)tolower(m_resRef[i]);
+    }
+    return *this;
+}
+// PC 0x004062D0 GOG 0x004062A0
+CResRef CResRef::operator=(const CExoString& sString)
+{
+    unsigned int nLength = sString.GetLength();
+
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        m_resRef[i] = 0;
+    }
+
+    if (nLength > 0)
+    {
+        const char* pString = sString.CStr();
+
+        memcpy(m_resRef, pString, nLength > 16 ? 16 : nLength);
+
+        for (unsigned int i = 0; i < (nLength > 16 ? 16 : nLength); ++i)
+        {
+            m_resRef[i] = (unsigned char)tolower(m_resRef[i]);
+        }
+    }
+
+    return *this;
+}
+// PC 0x00406380 GOG 0x00406350
+CResRef CResRef::operator=(char* pString)
+{
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        m_resRef[i] = 0;
+    }
+    if (pString)
+    {
+        EXOXBOXASSERT(strlen(pString) <= 16);
+        for (unsigned int i = 0; i < 16; ++i)
+        {
+            if (!pString[i])
+            {
+                break;
+            }
+            m_resRef[i] = (unsigned char)tolower((signed char)pString[i]);
+        }
+    }
+    return *this;
+}
+// PC 0x004063F0 GOG 0x004063C0
+CResRef CResRef::operator+=(const CExoString& sString)
+{
+    CExoString sTemp;
+    char szResRef[17];
+
+    memcpy(szResRef, m_resRef, 16);
+    szResRef[16] = 0;
+    sTemp = szResRef;
+    sTemp = sTemp + sString;
+    sTemp = sTemp.LowerCase();
+
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        m_resRef[i] = 0;
+    }
+    if (sTemp.GetLength() > 0)
+    {
+        memcpy(m_resRef, sTemp.CStr(),
+               sTemp.GetLength() > sizeof(m_resRef) ? sizeof(m_resRef)
+                                                    : sTemp.GetLength());
+    }
+    return *this;
+}
 #ifndef _XBOX
 int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)  // PC 0x006955A0 GOG 0x00695350
 {
@@ -2080,176 +2251,6 @@ int CExoResMan::ServiceFromDirectoryRaw(CRes* pRes, int nSize, char* pBuffer)
     }
 
     return 0;
-}
-// PC 0x00406010 GOG 0x00405FE0
-void CResRef::CopyToString(CExoString& sString) const
-{
-    char szResRef[17];
-
-    memcpy(szResRef, m_resRef, 16);
-    szResRef[16] = 0;
-    sString = szResRef;
-}
-// PC 0x00406050 GOG 0x00406020
-void CResRef::CopyToString(char* pString) const
-{
-    memcpy(pString, m_resRef, 16);
-    pString[16] = 0;
-}
-// PC 0x00406080 GOG 0x00406050
-char* CResRef::GetResRefStr() const
-{
-    s_nCurBufferIndex = (s_nCurBufferIndex + 1) % 4;
-    memcpy(RETURN_BUFFERS[s_nCurBufferIndex], m_resRef, 16);
-    RETURN_BUFFERS[s_nCurBufferIndex][16] = 0;
-    return RETURN_BUFFERS[s_nCurBufferIndex];
-}
-// PC 0x004060D0 GOG 0x004060A0
-int CResRef::IsValid() const
-{
-    return m_resRef[0] != 0;
-}
-// PC 0x004060E0 GOG 0x004060B0
-unsigned char CResRef::GetLength() const
-{
-    unsigned char nLength = 0;
-    while (nLength < 16 && m_resRef[nLength])
-    {
-        ++nLength;
-    }
-    return nLength;
-}
-// PC 0x00406100 GOG 0x004060D0
-int CResRef::operator!=(char* pString) const
-{
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        int nChar = tolower((signed char)pString[i]);
-        if (nChar != tolower(m_resRef[i]))
-        {
-            return 1;
-        }
-        if (!nChar)
-        {
-            break;
-        }
-    }
-    return 0;
-}
-// PC 0x00406150 GOG 0x00406120
-int CResRef::operator==(const CResRef& other) const
-{
-    return memcmp(other.m_resRef, m_resRef, 16) == 0;
-}
-// PC 0x00406170 GOG 0x00406140
-int CResRef::operator==(char* pString) const
-{
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        int nChar = tolower((signed char)pString[i]);
-        if (nChar != tolower(m_resRef[i]))
-        {
-            return 0;
-        }
-        if (!nChar)
-        {
-            break;
-        }
-    }
-    return 1;
-}
-// PC 0x004061C0 GOG 0x00406190
-CResRef CResRef::operator=(const CResRef& other)
-{
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        m_resRef[i] = (unsigned char)tolower(other.m_resRef[i]);
-    }
-    return *this;
-}
-// PC 0x00406210 GOG 0x004061E0
-CResRef CResRef::operator=(unsigned char* pResRef)
-{
-    memcpy(m_resRef, pResRef, 16);
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        if (!m_resRef[i])
-        {
-            memset(m_resRef + i + 1, 0, 15 - i);
-            break;
-        }
-        m_resRef[i] = (unsigned char)tolower(m_resRef[i]);
-    }
-    return *this;
-}
-// PC 0x004062D0 GOG 0x004062A0
-CResRef CResRef::operator=(const CExoString& sString)
-{
-    unsigned int nLength = sString.GetLength();
-
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        m_resRef[i] = 0;
-    }
-
-    if (nLength > 0)
-    {
-        const char* pString = sString.CStr();
-
-        memcpy(m_resRef, pString, nLength > 16 ? 16 : nLength);
-
-        for (unsigned int i = 0; i < (nLength > 16 ? 16 : nLength); ++i)
-        {
-            m_resRef[i] = (unsigned char)tolower(m_resRef[i]);
-        }
-    }
-
-    return *this;
-}
-// PC 0x00406380 GOG 0x00406350
-CResRef CResRef::operator=(char* pString)
-{
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        m_resRef[i] = 0;
-    }
-    if (pString)
-    {
-        EXOXBOXASSERT(strlen(pString) <= 16);
-        for (unsigned int i = 0; i < 16; ++i)
-        {
-            if (!pString[i])
-            {
-                break;
-            }
-            m_resRef[i] = (unsigned char)tolower((signed char)pString[i]);
-        }
-    }
-    return *this;
-}
-// PC 0x004063F0 GOG 0x004063C0
-CResRef CResRef::operator+=(const CExoString& sString)
-{
-    CExoString sTemp;
-    char szResRef[17];
-
-    memcpy(szResRef, m_resRef, 16);
-    szResRef[16] = 0;
-    sTemp = szResRef;
-    sTemp = sTemp + sString;
-    sTemp = sTemp.LowerCase();
-
-    for (unsigned int i = 0; i < 16; ++i)
-    {
-        m_resRef[i] = 0;
-    }
-    if (sTemp.GetLength() > 0)
-    {
-        memcpy(m_resRef, sTemp.CStr(),
-               sTemp.GetLength() > sizeof(m_resRef) ? sizeof(m_resRef)
-                                                    : sTemp.GetLength());
-    }
-    return *this;
 }
 // PC 0x00406560 GOG 0x00406530
 CRes::CRes()
