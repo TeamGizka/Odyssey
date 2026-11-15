@@ -1032,11 +1032,19 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 Vector vBone = qRotation * (qbones.m_pList[i] * pNode->m_lstTBoneRefInv.m_pList[i]);
                 AurDrawLine(vTranslation, vBone);
                 Vector& vBoneTranslation = tbones.m_pList[i];
+                const Vector& vThird = mRotation.m_vThird;
+                if (&vBoneTranslation != &tbones.m_pList[i])
+                    continue;
                 vBone = vTranslation + qRotation * vBoneTranslation + vBone;
+                if (&vFirst != &mRotation.m_vFirst)
+                    continue;
+                if (&vSecond != &mRotation.m_vSecond)
+                    continue;
+                if (&vThird != &mRotation.m_vThird)
+                    continue;
                 Quaternion qBone = qRotation * qbones.m_pList[i] * pNode->m_lstQBoneRefInv.m_pList[i];
                 mRotation = qBone.getmatrix();
                 nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
-                const Vector& vThird = mRotation.m_vThird;
                 GLRender_SetVertexProgramParameter4f(nBone,
                     vFirst.m_fX, vSecond.m_fX,
                     vThird.m_fX, vBone.m_fX);
