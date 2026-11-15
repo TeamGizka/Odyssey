@@ -3254,15 +3254,16 @@ void LightningEmitter::Update(float fTimeStep)
                     {
                         if (!(fRange >= 0.01))
                             break;
-                        Vector vOffset;
                         if (rand() & 1)
-                            vOffset = vDirection;
+                            vPerpendicular = vDirection;
                         else
-                            vOffset = -vDirection;
+                            vPerpendicular = -vDirection;
                         float fRandom = (rand() % (int)(fRange * 100.0f)) * 0.01;
                         m_lstActive[j]->m_vPosition = m_lstActive[j]->m_vPosition +
-                            vOffset * fRandom * m_fLightningScale * m_fScale;
+                            vPerpendicular * fRandom * m_fLightningScale * m_fScale;
                     }
+                    Vector vDebug;
+                    vDebug = vPerpendicular;
                 }
                 else
                 {
