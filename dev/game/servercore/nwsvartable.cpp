@@ -10,11 +10,7 @@ inline void ScriptVarDestroy(CSWSScriptVar* pVar)
     pVar->~CSWSScriptVar();
 }
 
-inline void ScriptVarTableReserve(CSWSScriptVarTable* pTable, int nSize, CSWSScriptVar* pVars)
-{
-    pTable->Allocate(nSize);
-    delete[] pVars;
-}
+#define NWSVARTABLE_DEBUG 0
 
 const int CSWSScriptVarTable::VARTYPE_INTEGER = 1;
 const int CSWSScriptVarTable::VARTYPE_FLOAT = 2;
@@ -24,6 +20,11 @@ const int CSWSScriptVarTable::VARTYPE_LOCATION = 5;
 // PC 0x005A08C0 GOG 0x005A0930
 void CSWSScriptVarTable::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
+    if (NWSVARTABLE_DEBUG)
+    {
+        Allocate(num);
+        delete[] element;
+    }
     CScriptLocation lLocation;
     CResList lstVars;
     CResStruct sElement;

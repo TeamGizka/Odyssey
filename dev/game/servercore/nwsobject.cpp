@@ -40,10 +40,7 @@
 #include "clientexoappinternal.h"
 #include "nwclass.h"
 
-inline void NwsobjectDestroyScriptVar(CSWSScriptVar* pVar)
-{
-    pVar->~CSWSScriptVar();
-}
+#define NWSOBJECT_DEBUG 0
 
 const int CSWSObject::ACTION_IN_PROGRESS = 1;
 const int CSWSObject::ACTION_COMPLETE = 2;
@@ -53,6 +50,10 @@ const unsigned long CSWSObject::AI_TIME_SLICE = 1000;
 // PC 0x004F6080 GOG 0x00505870
 void CSWSDialog::AddPlayer(CSWSDialogPlayer* pPlayer)
 {
+    if (NWSOBJECT_DEBUG)
+    {
+        CSWSScriptVar var;
+    }
     if (pPlayer != NULL)
         m_lstPlayers.AddTail(pPlayer);
 }

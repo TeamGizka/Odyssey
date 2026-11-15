@@ -8,13 +8,6 @@
 #include "twodimarrays.h"
 #include "twodimarray.h"
 
-#ifdef _XBOX
-static inline C2DA* SwguimovieGetMovies2DA(CTwoDimArrays* pArrays)
-{
-    EXOXBOXASSERT(pArrays->m_pMovies2DA);
-    return pArrays->m_pMovies2DA;
-}
-#endif
 // PC 0x0074B400 GOG 0x0074B250
 void CSWGuiTitleMovies::HandleInputEvent(int nEvent, int nState)
 {

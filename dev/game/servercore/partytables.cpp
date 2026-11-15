@@ -33,6 +33,8 @@
 
 extern __int64 g_nCurrentSessionStartFILETIME;
 
+#define PARTYTABLES_DEBUG 0
+
 // PC 0x004EA0C0 GOG 0x004EAE20
 CExoString CSWPartyTable::GetPCName()
 {
@@ -88,15 +90,15 @@ int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
 #endif
 }
 
-inline void PartyTableReleaseStorage(CItemRepository* pItems, CSWSJournal* pJournal)
-{
-    delete pItems;
-    delete pJournal;
-}
 // PC 0x0057C840 GOG 0x0057C8C0
 int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
                             const Vector& vOrientation, int bResurrect)
 {
+    if (PARTYTABLES_DEBUG)
+    {
+        delete m_pPartyItems;
+        delete m_pPartyJournal;
+    }
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     unsigned long oidNPC = GetNPCObject(nNPC, 1, bResurrect);
     CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidNPC);

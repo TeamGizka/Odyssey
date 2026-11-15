@@ -73,6 +73,9 @@
 #include "nwspell.h"
 #include "nwfeat.h"
 #include "nwskill.h"
+
+#define CLIENTEXOAPPINTERNAL_DEBUG 0
+
 #ifdef _XBOX
 
 #define VIDEO_DEFAULT_DYNAMIC_LIGHTS 8
@@ -1308,6 +1311,11 @@ void CClientExoAppInternal::StopServices()  // PC 0x00650110 GOG 0x0064FFC0
         delete m_pAnimationTimer;
         m_pAnimationTimer = NULL;
     }
+    if (CLIENTEXOAPPINTERNAL_DEBUG)
+    {
+        delete m_pPauseExclusionList;
+        m_pPauseExclusionList = NULL;
+    }
     if (m_pClientOptions != NULL)
     {
         delete m_pClientOptions;
@@ -1603,15 +1611,6 @@ void CClientExoAppInternal::AddToPauseExclusionList(unsigned long oidObject)
     }
 }
 
-inline void ClientExoAppInternalReleaseList(CExoLinkedList<unsigned long>* pList)
-{
-    delete pList;
-}
-
-inline void ClientExoAppInternalReserveActions(CExoArrayList<CSWGuiInterfaceAction>* pActions, int nSize)
-{
-    pActions->Allocate(nSize);
-}
 // PC 0x00643B10 GOG 0x006439C0
 void CClientExoAppInternal::SetPauseState(unsigned char nPauseState, int bPause,
                                         CExoLinkedList<unsigned long>* pExclusionList)

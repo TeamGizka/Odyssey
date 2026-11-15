@@ -30,21 +30,6 @@
 
 int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo);
 
-inline void SwminigameContainerAllocates(CExoArrayList<unsigned long>* pIds,
-                                         CExoArrayList<SWMGTrackInfo*>* pTracks,
-                                         CExoArrayList<SafePointer<CAurObject>*>* pBullets,
-                                         CExoArrayList<SWMGExplodeBullet*>* pEffects,
-                                         CExoArrayList<CResRef>* pModels,
-                                         List<SafePointer<CAurObject>*>* pPointers)
-{
-    pIds->Allocate(1);
-    pTracks->Allocate(1);
-    pBullets->Allocate(1);
-    pEffects->Allocate(1);
-    pModels->Allocate(1);
-    pPointers->allocate(1);
-}
-
 // PC 0x006C55D0 GOG 0x006C52E0
 inline void CSWMiniGame::AxisVelocity(const Vector& vAxis, float fScale)
 {

@@ -43,7 +43,7 @@
 #include "nwrace.h"
 #include "aurdraw.h"
 
-static inline void NwscreatureaiTrace1();
+#define NWSCREATUREAI_DEBUG 0
 
 #define NWSCREATUREAI_DEBUG_LINE_HEIGHT 1.0f
 
@@ -6417,7 +6417,10 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
 // PC 0x0054DDB0 GOG 0x0054DED0
 int CSWSCreature::GetNumInvited()
 {
-    NwscreatureaiTrace1();
+    if (NWSCREATUREAI_DEBUG)
+    {
+        CleanInvitationLists();
+    }
     if (m_pInvitationsOffered != NULL)
     {
         return m_pInvitationsOffered->num;
@@ -8397,10 +8400,6 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
             nResult = WalkUpdateLocation();
     }
     AIACTIONMOVETOPOINT_RETURN(nResult);
-}
-
-static inline void NwscreatureaiTrace1()
-{
 }
 
 #ifdef _XBOX

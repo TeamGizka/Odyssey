@@ -22,11 +22,12 @@ template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 #include "exotlktable.h"
 #include "aurora.h"
 
+#define SWGUICONTROL_DEBUG 0
+
 float CSWGuiListBox::m_fArrowAlpha = 1.0f;
 float CSWGuiListBox::m_fArrowAlphaPulseTime = 0.75f;
 bool CSWGuiListBox::m_bArrowAlphaPulseUp;
 
-static inline void SwguicontrolTrace1();
 // PC 0x00416E70 GOG 0x00416EA0
 void CSWGuiNavigable::SetMoveToControl(int nDirection, CSWGuiControl* pControl)
 {
@@ -796,7 +797,10 @@ void CSWGuiListBox::ClearItems()  // PC 0x00419410 GOG 0x00419400
 // PC 0x00419500 GOG 0x004194F0
 void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent, CSWGuiListBox* pProto)
 {
-    SwguicontrolTrace1();
+    if (SWGUICONTROL_DEBUG)
+    {
+        ClearItems();
+    }
     Initialize(cExtent, pProto->m_cBorder.m_cParams, pProto->m_nPadding);
     CSWGuiScrollBar* pScrollBar = &pProto->m_cScrollBar;
     return m_cScrollBar.Initialize(pScrollBar->m_cExtent, pScrollBar);
@@ -3386,10 +3390,6 @@ int CSWGuiScrollBar::HitCheckScrollbar(int nX, int nY)
         }
         return SCROLLBAR_NONE;
     }
-}
-
-static inline void SwguicontrolTrace1()
-{
 }
 
 #ifdef _XBOX
