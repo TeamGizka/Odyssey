@@ -12,9 +12,6 @@ void AurTextureRelease(CAurTexture* pTexture);
 
 #define AURGRASS_DEBUG 0
 
-static inline void AurgrassTrace2();
-static inline void AurgrassTrace1();
-
 float CAurTriangleBin::m_fNearRadiusSquared = 225.0f;
 float CAurTriangleBin::m_fFarRadiusSquared = 900.0f;
 int newgrass = 1;
@@ -340,8 +337,8 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
 }
 // PC 0x004D3AA0 GOG 0x004D3BE0
 CAurTriangleListElem::CAurTriangleListElem()
+    : m_lstVertices(0)
 {
-    AurgrassTrace2();
     m_pFace = 0;
     m_pTriMesh = 0;
     m_nTriangle = 0;
@@ -893,15 +890,6 @@ void CAurTriangleBin::BuildGrassPolys()  // PC 0x004D68C0 GOG 0x004D6A00
 #endif
         CreateArrays();
     }
-}
-
-static inline void AurgrassTrace2()
-{
-    AurgrassTrace1();
-}
-
-static inline void AurgrassTrace1()
-{
 }
 
 #ifdef _XBOX

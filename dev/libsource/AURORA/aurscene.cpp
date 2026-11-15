@@ -18,7 +18,6 @@ void AurPopClientState()
 #endif
 
 class CHitInfo;
-static inline void AurSceneTrace(CHitInfo* = 0);
 #include "aurscene.h"
 #include "aurora.h"
 #include <aurlist.h>
@@ -27,11 +26,6 @@ static inline void AurSceneTrace(CHitInfo* = 0);
 #include "aurdraw.h"
 
 #define AURSCENE_DEBUG 0
-
-static inline void AurSceneTrace4();
-static inline void AurSceneTrace3();
-static inline void AurSceneTrace2();
-static inline void AurSceneTrace1();
 
 const int Scene::FADING_OFF = 1;
 const int Scene::FADING_ON = 2;
@@ -3232,7 +3226,10 @@ int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo
 void InitGrassBins(Vector vMin, Vector vMax,
                    List<List<CAurTriangleBin*> >& lstBins)
 {
-    AurSceneTrace();
+    if (AURSCENE_DEBUG)
+    {
+        SafePointer<CAurTexture> pTexture;
+    }
     lstBins.m_nCount = 0;
     int nBinsX;
     int nBinsY;
@@ -3961,30 +3958,6 @@ void Scene::RenderLensFlares()
 CAurScene* NewCAurScene(char* sName)
 {
     return (CAurScene*)new Scene(sName);
-}
-
-static inline void AurSceneTrace(CHitInfo*)
-{
-    AurSceneTrace4();
-}
-
-static inline void AurSceneTrace4()
-{
-    AurSceneTrace3();
-}
-
-static inline void AurSceneTrace3()
-{
-    AurSceneTrace2();
-}
-
-static inline void AurSceneTrace2()
-{
-    AurSceneTrace1();
-}
-
-static inline void AurSceneTrace1()
-{
 }
 
 #ifdef _XBOX

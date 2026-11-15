@@ -17,9 +17,7 @@
 #include "aurrendergl.h"
 #include "aurwindmanager.h"
 
-static inline void AuranimTrace3();
-static inline void AuranimTrace2();
-static inline void AuranimTrace1();
+#define AURANIM_DEBUG 0
 
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
@@ -1198,7 +1196,6 @@ Animation::~Animation()
 void Gob::PlayOutOfOrderAnimation(char* sName, float* pfWeights,
                                  float* pfTimes, int nCount, float fLength)
 {
-    AuranimTrace3();
     Animation* pAnimation = FindAnimation(m_pModel, sName);
     if (pAnimation == 0)
     {
@@ -1212,6 +1209,10 @@ void Gob::PlayOutOfOrderAnimation(char* sName, float* pfWeights,
     pRun->m_fTransitionTime = pAnimation->m_fTransitionTime;
     pRun->m_nFlags = 0x209;
     m_lOutOfOrderAnimations.Insert(pRun, 0);
+    if (AURANIM_DEBUG)
+    {
+        pAnimation->m_lEvents.SetSize(0);
+    }
 }
 // PC 0x004B6130 GOG 0x004B6240
 Animation::Animation(char* sName)
@@ -1228,7 +1229,10 @@ Animation::Animation(char* sName)
 void NewController::ReportKeys(Part* pPart, MdlNode* pNode,
                                float fStartTime, float fEndTime)
 {
-    AuranimTrace3();
+    if (AURANIM_DEBUG)
+    {
+        AnimRun::m_pTraceRun->m_pAnimation->m_lEvents.SetSize(0);
+    }
     if (pPart->m_pAurObject == 0)
         return;
 
@@ -1483,7 +1487,10 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
 // PC 0x004B6B20 GOG 0x004B6C30
 int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
 {
-    AuranimTrace3();
+    if (AURANIM_DEBUG)
+    {
+        Gob::PlayOutOfOrderAnimation(sName, 0, 0, 0, 0.0f);
+    }
     if (sName == 0 || *sName == 0 || stricmp("NULL", sName) == 0)
     {
         for (int i = m_lOutOfOrderAnimations.m_nCount; i != 0; )
@@ -2051,20 +2058,6 @@ void Gob::BeginLookAtAnimate(CAurObject* pTarget, char* sTargetPart,
     {
         EndLookAtAnimate();
     }
-}
-
-static inline void AuranimTrace3()
-{
-    AuranimTrace2();
-}
-
-static inline void AuranimTrace2()
-{
-    AuranimTrace1();
-}
-
-static inline void AuranimTrace1()
-{
 }
 
 #ifdef _XBOX

@@ -12,13 +12,11 @@
 
 extern bool g_bTexturesRebuilt;
 #define AURGUI_MAX_WRAPPED_LINES 100
+#define AURGUI_DEBUG 0
 #ifdef _XBOX
 
 #define m_fScale 1.0f
 #endif
-
-static inline void AurguiTrace2();
-static inline void AurguiTrace1();
 
 #ifdef _XBOX
 
@@ -864,7 +862,11 @@ CAurGUIImageInternal::CAurGUIImageInternal()
 // PC 0x00470410 GOG 0x00470550
 CAurGUIImageInternal::~CAurGUIImageInternal()
 {
-    AurguiTrace2();
+    if (AURGUI_DEBUG)
+    {
+        List<int> lstTextureTIDs;
+        lstTextureTIDs.Add(m_pMaterial->GetTextureTID());
+    }
     if (CAurGUIImage::cm_nGUITID == m_pMaterial->GetTextureTID())
     {
         CAurGUIImage::FlushBuffer(CAurGUIImage::cm_fAlpha);
@@ -880,7 +882,11 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
                                         float fRotation, const Vector& vColor,
                                         float fAlpha)
 {
-    AurguiTrace2();
+    if (AURGUI_DEBUG)
+    {
+        List<int> lstTextureTIDs;
+        lstTextureTIDs.Add(m_pMaterial->GetTextureTID());
+    }
     if (noguirender != 0)
         return;
 
@@ -1608,15 +1614,6 @@ CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // PC 0x004
     return new CAurGUIStringInternal(sString, sFont, vColor, fScale);
 }
 #endif
-
-static inline void AurguiTrace2()
-{
-    AurguiTrace1();
-}
-
-static inline void AurguiTrace1()
-{
-}
 
 #ifdef _XBOX
 CAurGUIDraw::~CAurGUIDraw()
