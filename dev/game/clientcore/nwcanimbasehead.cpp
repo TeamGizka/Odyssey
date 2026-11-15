@@ -5,9 +5,10 @@
 #include "clientexoapp.h"
 #include "nwcitem.h"
 
+#define NWCANIMBASEHEAD_DEBUG 0
+
 static const unsigned char ANIM_MODEL_HEAD = 254;
 
-static inline void NwcanimbaseheadTrace1();
 // PC 0x006F6380 GOG 0x006F5E60
 CSWCAnimBaseHead::CSWCAnimBaseHead()
 {
@@ -21,7 +22,10 @@ CSWCAnimBaseHead::CSWCAnimBaseHead()
     m_cEnvMap = "";
     m_nEnvMapType = 0;
     m_nHeadItem = OBJECT_INVALID;
-    NwcanimbaseheadTrace1();
+    if (NWCANIMBASEHEAD_DEBUG)
+    {
+        RestoreTexture();
+    }
 }
 // PC 0x006F5820 GOG 0x006F5410
 CSWCAnimBaseHead::~CSWCAnimBaseHead()
@@ -410,8 +414,4 @@ void CSWCAnimBaseHead::DisableDistortion()
         }
     }
     CSWCAnimBase::DisableDistortion();
-}
-
-static inline void NwcanimbaseheadTrace1()
-{
 }

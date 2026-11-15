@@ -21,9 +21,7 @@ class CSWRoomSurfaceMeshAABBNode;
 class CSWRoomSurfaceExternalEdge
 {
 public:
-    CSWRoomSurfaceExternalEdge();
-
-    CSWRoomSurfaceExternalEdge(int nEdge)
+    CSWRoomSurfaceExternalEdge(int nEdge = -1)
     {
         m_nEdge = nEdge;
         m_nAdjacentRoom = -1;

@@ -13,7 +13,8 @@
 #include "gameobjectarray.h"
 #include "nwsstore.h"
 
-static inline void NwsstoreTrace1();
+#define NWSSTORE_DEBUG 0
+
 // PC 0x00570AE0 GOG 0x00570C10
 CSWSStore::CSWSStore(unsigned long oidStore)
     : CSWSObject(CGameObject::OBJECT_TYPE_STORE, oidStore, 0)
@@ -98,7 +99,10 @@ CSWSStore::~CSWSStore()
 // PC 0x00570D00 GOG 0x00570E30
 int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
 {
-    NwsstoreTrace1();
+    if (NWSSTORE_DEBUG)
+    {
+        m_pItemRepository->m_lstItems.Remove(OBJECT_INVALID);
+    }
     pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
     pRes->WriteFieldCExoLocString(pStruct, m_lsName, "LocName");
     pRes->WriteFieldINT(pStruct, m_nMarkDown, "MarkDown");
@@ -140,7 +144,10 @@ int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
 int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                          int bLoadingGame)
 {
-    NwsstoreTrace1();
+    if (NWSSTORE_DEBUG)
+    {
+        m_pItemRepository->m_lstItems.Remove(OBJECT_INVALID);
+    }
     int result = (int)pArea;
 
     if (pArea != NULL)
@@ -183,7 +190,10 @@ void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
 // PC 0x00570FA0 GOG 0x005710D0
 int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
 {
-    NwsstoreTrace1();
+    if (NWSSTORE_DEBUG)
+    {
+        m_pItemRepository->m_lstItems.Remove(pItem->m_nId);
+    }
     if (pItem->m_bInfinite)
     {
         CSWSItem* pNewItem = new CSWSItem(OBJECT_INVALID);
@@ -344,7 +354,10 @@ int CSWSStore::AcquireItem(CSWSItem* pItem, int bAppend)
 // PC 0x005710F0 GOG 0x00571220
 int CSWSStore::AddItemToInventory(CSWSItem** ppItem, int bAppend)
 {
-    NwsstoreTrace1();
+    if (NWSSTORE_DEBUG)
+    {
+        m_pItemRepository->m_lstItems.Add((*ppItem)->m_nId);
+    }
     if (bAppend)
     {
         m_pItemRepository->AddItem(ppItem, 1, 0, 1);
@@ -401,8 +414,4 @@ int CSWSStore::LoadFromTemplate(const CResRef& cResRef, int bFromTemplate)
         delete pRes;
         return 1;
     }
-}
-
-static inline void NwsstoreTrace1()
-{
 }

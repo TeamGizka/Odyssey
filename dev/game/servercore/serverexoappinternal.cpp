@@ -33,11 +33,11 @@ void AurPersistDisplay();
 void AurReleaseFrameTexture();
 #endif
 
-static inline void ServerExoAppTrace(CServerExoApp* = 0);
+#define SERVEREXOAPPINTERNAL_DEBUG 0
+
 // PC 0x004E9EF0 GOG 0x004EAC50
 inline int CStatusSummary::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 {
-    ServerExoAppTrace();
     pRes->WriteFieldBYTE(&stStruct, m_bDisplaySPending, "DISPLAYSPENDING");
     pRes->WriteFieldBYTE(&stStruct, m_bItemReceived, "ITEMRECEIVED");
     pRes->WriteFieldBYTE(&stStruct, m_bItemLost, "ITEMLOST");
@@ -86,6 +86,10 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
     pRes->WriteFieldDWORD(&stStruct, m_nTimePauseDay, "TIME_PAUSEDAY");
     pRes->WriteFieldDWORD(&stStruct, m_nTimePauseTime, "TIME_PAUSETIME");
     pRes->AddStructToStruct(&stStatusSummary, &stStruct, "STATUSSUMMARY", 0);
+    if (SERVEREXOAPPINTERNAL_DEBUG)
+    {
+        CServerExoAppInternal::s_pServerExoAppInternal->GetModule();
+    }
     return m_cStatusSummary.SaveToGFF(pRes, stStatusSummary);
 }
 
@@ -120,9 +124,6 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 #include "nwerffile.h"
 #include "nwerffile.h"
 
-#define SERVEREXOAPPINTERNAL_DEBUG 0
-
-static inline void ServerExoAppTrace(CServerExoApp*);
 enum SaveGameStringRef
 {
     STRREF_AUTO_SAVE_NAME = 1593,
@@ -156,10 +157,6 @@ static inline CSWReentrantServerStats* GetReentrantServerStats()
 static inline unsigned __int64 GetHighResolutionTimer()
 {
     return g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-}
-
-static inline void ServerExoAppTrace(CServerExoApp*)
-{
 }
 
 CServerExoAppInternal* CServerExoAppInternal::s_pServerExoAppInternal;

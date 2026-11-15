@@ -11,7 +11,6 @@
 
 #define SWGUIINGAMECREDITS_DEBUG 0
 
-static inline void SwguiingamecreditsTrace1();
 
 static int g_nOldScreenHeight = 0;
 static int g_nOldHeight = 0;
@@ -205,7 +204,6 @@ void CSWGuiInGameCredits::OnPanelAdded()
 // PC 0x006E86F0 GOG 0x006E8530
 void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
 {
-    SwguiingamecreditsTrace1();
     if (nState != 0)
     {
         switch (nEvent)
@@ -216,6 +214,11 @@ void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_CANCEL_ALTERNATE:
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
+            if (SWGUIINGAMECREDITS_DEBUG)
+            {
+                delete m_pMusic;
+                m_pMusic = NULL;
+            }
             break;
         }
     }
@@ -493,7 +496,3 @@ void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x006E8DA0 GOG 0x006E8A60
     return CSWGuiPanel::Draw(fElapsed);
 }
 #endif
-
-static inline void SwguiingamecreditsTrace1()
-{
-}

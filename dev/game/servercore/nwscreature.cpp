@@ -63,8 +63,6 @@
 #define FORFEIT_NO_ITEM_BUT_SHIELD 128
 #define USER_DEFINED_EVENT_FORFEIT_VIOLATION 4001
 
-static inline void NwscreatureTrace1();
-#define NWSCREATURE_TRACE() NwscreatureTrace1()
 
 int g_bEnableCombatDebugging = 0;
 int g_bEnableSavingThrowDebugging = 1;
@@ -92,6 +90,8 @@ const unsigned char CSWSCreature::XP_CALCULATIONS_MAX_XP_SCALE = 200;
 
 #include "swgui.h"
 #include "swmain.h"
+
+#define NWSCREATURE_DEBUG 0
 // PC 0x0050B8C0 GOG 0x0050B920
 int CSWSCreaturePartyFollowInfo::Save(CResGFF* pRes, CResStruct* pStruct)
 {
@@ -132,7 +132,6 @@ inline CSWSCreaturePartyFollowInfo::CSWSCreaturePartyFollowInfo() throw()
 // PC 0x00510D70 GOG 0x00510DD0
 inline void CSWSCreaturePartyFollowInfo::Clear()
 {
-    NWSCREATURE_TRACE();
     Vector vZero;
 
     m_vFollowLocation = vZero;
@@ -144,6 +143,11 @@ inline void CSWSCreaturePartyFollowInfo::Clear()
     m_nResult = CSWSObject::ACTION_COMPLETE;
     m_nTimeElapsed = 0;
     m_bInSafetyRange = 1;
+    if (NWSCREATURE_DEBUG)
+    {
+        CSWSScriptVar* pVars = NULL;
+        delete[] pVars;
+    }
 }
 // PC 0x0050BAB0 GOG 0x0050BB10
 void CSWSCreature::SetId(unsigned long oidCreature)
@@ -12888,10 +12892,6 @@ CResRef CSWSCreature::GetPortraitBasedOnAlignment()
         return GetPortrait();
     }
     return CResRef(sResRef);
-}
-
-static inline void NwscreatureTrace1()
-{
 }
 
 #ifdef _XBOX

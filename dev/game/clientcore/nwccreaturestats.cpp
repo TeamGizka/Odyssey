@@ -25,9 +25,6 @@
 
 #define NWCCREATURESTATS_DEBUG 0
 
-static inline void NwccreaturestatsTrace3();
-static inline void NwccreaturestatsTrace2();
-static inline void NwccreaturestatsTrace1();
 // PC 0x00700340 GOG 0x006FFF30
 CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
 {
@@ -1084,7 +1081,10 @@ unsigned char CSWCCreatureStats::GetSpellsPerDayLeft(unsigned char nClass,
 void CSWCCreatureStats_ClassInfo::AddKnownSpell(unsigned char nLevel,
                                                unsigned long nSpell)
 {
-    NwccreaturestatsTrace2();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        ClearKnownSpells();
+    }
     if (nLevel < 1)
     {
         if (m_lstKnownSpells[nLevel].IndexOf(nSpell) == -1)
@@ -1116,7 +1116,10 @@ char CSWCCreatureStats::GetSkillModifier(unsigned short nSkill)
 // PC 0x006FC900 GOG 0x006FC4F0
 void CSWCCreatureStats_ClassInfo::ClearKnownSpells()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        m_lstKnownSpells[0].Remove(0);
+    }
     for (int i = m_lstKnownSpells[0].num - 1; i >= 0; i--)
     {
         m_lstKnownSpells[0].DelIndex(i);
@@ -1540,7 +1543,10 @@ void CSWCCreatureStats::RemoveKnownSpell(unsigned char nClass,
 // PC 0x006FEAC0 GOG 0x006FE6B0
 CSWCCreatureStats_ClassInfo::CSWCCreatureStats_ClassInfo()
 {
-    NwccreaturestatsTrace3();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        RemoveKnownSpell(0, 0);
+    }
     m_nClass = 0;
     m_nLevel = 0;
     m_nUnknown19 = 0;
@@ -1552,6 +1558,10 @@ CSWCCreatureStats_ClassInfo::CSWCCreatureStats_ClassInfo()
 void CSWCCreatureStats_ClassInfo::RemoveKnownSpell(unsigned char nLevel,
                                                    unsigned long nSpell)
 {
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        AddKnownSpell(nLevel, nSpell);
+    }
     if (nLevel < SPELL_LEVEL_COUNT)
     {
         if (m_lstKnownSpells[nLevel].IndexOf(nSpell) >= 0)
@@ -2708,18 +2718,4 @@ void CSWCCreatureStats::GetMenuInfo(
 int CSWCCreatureStats::CalculateAttackModifier()
 {
     return GetSTRMod();
-}
-
-static inline void NwccreaturestatsTrace3()
-{
-    NwccreaturestatsTrace2();
-}
-
-static inline void NwccreaturestatsTrace2()
-{
-    NwccreaturestatsTrace1();
-}
-
-static inline void NwccreaturestatsTrace1()
-{
 }

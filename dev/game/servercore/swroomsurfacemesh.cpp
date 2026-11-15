@@ -14,8 +14,6 @@ template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Add(CSWRoomSurfaceMeshA
 #include "twodimarray.h"
 #include "swmain.h"
 
-static inline void RoomSurfaceMeshTrace1();
-#define SWROOMSURFACEMESH_TRACE() RoomSurfaceMeshTrace1()
 
 int g_bRenderClipWalkable = 0;
 
@@ -25,13 +23,6 @@ __int64 QueryTimerFrequency()
     LARGE_INTEGER nFrequency;
     QueryPerformanceFrequency(&nFrequency);
     return nFrequency.QuadPart;
-}
-
-inline CSWRoomSurfaceExternalEdge::CSWRoomSurfaceExternalEdge()
-{
-    m_nEdge = -1;
-    m_nAdjacentRoom = -1;
-    SWROOMSURFACEMESH_TRACE();
 }
 
 inline void AddExternalEdge(
@@ -62,9 +53,6 @@ template <> CExoArrayList<CSWRoomSurfaceMeshAABBNode>::~CExoArrayList()
 }
 #endif
 
-static inline void RoomSurfaceMeshTrace1()
-{
-}
 // PC 0x005769D0 GOG 0x00576640
 float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
 {

@@ -4,8 +4,6 @@
 #include "exoresman.h"
 #include "nwcanimbase.h"
 
-static inline void NwcanimbaseheadTrace2();
-
 class CSWCAnimBaseHead : public virtual CSWCAnimBaseTW
 {
 public:
@@ -42,7 +40,6 @@ public:
     virtual void DisableDistortion();
     virtual void SetHeadItem(unsigned long nItemId)  // PC 0x006F36B0 GOG 0x006F3EB0
     {
-        NwcanimbaseheadTrace2();
         m_nHeadItem = nItemId;
     }
 
@@ -58,9 +55,5 @@ public:
     Gob* m_pHeadModel;
     unsigned long m_nHeadItem;
 };
-
-static inline void NwcanimbaseheadTrace2()
-{
-}
 
 #endif

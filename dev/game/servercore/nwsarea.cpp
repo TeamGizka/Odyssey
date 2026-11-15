@@ -44,10 +44,6 @@
 
 #define NWSAREA_DEBUG 0
 
-static inline void NwsareaSync4();
-static inline void NwsareaSync3();
-static inline void NwsareaSync2();
-static inline void NwsareaSync1();
 
 static CResRef* AllocateResRefArray(int nCount)
 {
@@ -3712,7 +3708,6 @@ int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
 // PC 0x004E9780 GOG 0x004E9850
 int CSWSArea::LoadArea(int bLoadingGame)
 {
-    NwsareaSync4();
     if (m_pRes->Demand() == NULL)
     {
         return 0;
@@ -3748,25 +3743,6 @@ int CSWSArea::LoadArea(int bLoadingGame)
     m_nGridMaskBytes = (unsigned char)ceil(nWidth * nHeight / 8.0f);
 
     return 1;
-}
-
-static inline void NwsareaSync4()
-{
-    NwsareaSync3();
-}
-
-static inline void NwsareaSync3()
-{
-    NwsareaSync2();
-}
-
-static inline void NwsareaSync2()
-{
-    NwsareaSync1();
-}
-
-static inline void NwsareaSync1()
-{
 }
 
 #ifdef _XBOX
