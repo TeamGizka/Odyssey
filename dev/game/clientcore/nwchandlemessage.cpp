@@ -59,11 +59,11 @@
 
 #define NWCHANDLEMESSAGE_DEBUG 0
 
-enum CombatMessageStringRef
-{
-    STRREF_CC_HIT = 1371, STRREF_CC_MISS = 1373, STRREF_CC_CRITICAL_HIT = 1390,
-    STRREF_CC_SUCCESS = 1392, STRREF_CC_FAILURE = 1393
-};
+#define STRREF_CC_HIT 1371
+#define STRREF_CC_MISS 1373
+#define STRREF_CC_CRITICAL_HIT 1390
+#define STRREF_CC_SUCCESS 1392
+#define STRREF_CC_FAILURE 1393
 
 int enablemodelrequest = 1;
 int g_bLogConversations = 0;
