@@ -103,100 +103,6 @@ void CSWGuiMessageBox::ShowLoadError(unsigned long nStrRef)
     m_pCallbackControl = 0;
 }
 #endif
-// PC 0x0067A960 GOG 0x0067A730
-void CSWGuiInGameMessages::ShowEffects()
-{
-    m_lbMessages.m_bEnabled = 0;
-    m_lbDialog.SetEnabledFlag(0);
-    CSWGuiListBox* pGood = &m_lbEffectsGood;
-    pGood->m_bEnabled = 1;
-    CSWGuiListBox* pBad = &m_lbEffectsBad;
-    pBad->m_bEnabled = 1;
-    m_lbCombat.SetEnabledFlag(0);
-    m_lblEffectsGood.SetEnabledFlag(1);
-    m_lblEffectsBad.SetEnabledFlag(1);
-
-    m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-    pGood->ClearItems();
-    pBad->ClearItems();
-    CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
-    if (pCreature == 0)
-        return;
-    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
-    if (pServerCreature == 0)
-        return;
-    CExoArrayList<CSWGuiControl*> aGood;
-    CExoArrayList<CSWGuiControl*> aBad;
-    CSWGuiLabelHilight* pGoodProto = (CSWGuiLabelHilight*)m_lbEffectsGood.m_pProtoItem;
-    CSWGuiExtent cGoodExtent(0, 0,
-        pGood->m_cItemExtent.m_nWidth - 2 * pGood->m_nPadding, 10);
-    CSWGuiLabelHilight* pBadProto = (CSWGuiLabelHilight*)m_lbEffectsBad.m_pProtoItem;
-    CSWGuiExtent cBadExtent(0, 0,
-        pBad->m_cItemExtent.m_nWidth - 2 * pBad->m_nPadding, 10);
-
-    CExoString sName;
-    for (int i = 0; i < pServerCreature->GetEffectIconCount(); i++)
-    {
-        CEffectIconObject* pIcon = pServerCreature->GetEffectIcons()->element[i];
-
-        unsigned long nStrRef = pIcon->m_nStrRef;
-        if (nStrRef >= 1)
-        {
-            sName = g_pTlkTable->GetSimpleString(nStrRef);
-
-            CSWGuiLabelHilight* pLabel = new CSWGuiLabelHilight();
-            if (pIcon->m_bGood)
-            {
-                pLabel->Initialize(cGoodExtent, pGoodProto);
-                pLabel->m_cText.m_cParams.SetText(sName);
-                pLabel->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-                CSWGuiText* pText = &pLabel->m_cText;
-                cGoodExtent.m_nHeight = pText->GetIdealHeight() +
-                    2 * pLabel->m_cHilite.m_cParams.GetBorderDim();
-                pLabel->SetExtent(cGoodExtent);
-                pLabel->SetActive(0);
-                aGood.Add(pLabel);
-            }
-            else
-            {
-                pLabel->Initialize(cBadExtent, pBadProto);
-                pLabel->m_cText.m_cParams.SetText(sName);
-                pLabel->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-                CSWGuiText* pText = &pLabel->m_cText;
-                cBadExtent.m_nHeight = pText->GetIdealHeight() +
-                    2 * pLabel->m_cHilite.m_cParams.GetBorderDim();
-                pLabel->SetExtent(cBadExtent);
-                pLabel->SetActive(0);
-                aBad.Add(pLabel);
-            }
-        }
-    }
-    if (aGood.num > 0)
-    {
-        pGood->AddControls(aGood, 1, 1, 1);
-        pGood->SetSelectedControl(0, 0);
-    }
-    if (aBad.num > 0)
-    {
-        pBad->AddControls(aBad, 1, 1, 1);
-        pBad->SetSelectedControl(0, 0);
-    }
-    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
-        CGuiInGame::MESSAGE_TYPE_EFFECTS;
-}
-// PC 0x0067AD90 GOG 0x0067AB60
-void CSWGuiMessageBox::SetMessage(CExoString sMessage)
-{
-    g_pTlkTable->ParseStr(sMessage);
-    m_lblMessage.m_cText.m_cParams.SetText(sMessage);
-#ifndef _XBOX
-    m_lblMessage.m_cText.m_cParams.ReSetFont();
-#endif
-    FixMessageLabel();
-}
 // PC 0x00675430 GOG 0x006751D0
 void CSWGuiInGameMenu::OnShoulderLeft(CSWGuiControl* pControl)
 {
@@ -213,6 +119,155 @@ void CSWGuiInGameMenu::OnShoulderRight(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->NextSWInGameGui();
     }
 }
+// PC 0x00676AD0 GOG 0x00676870
+void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
+{
+    if (nControl >= 0 && nControl < m_lControls.num)
+        SetActiveControl(m_lControls[nControl], bActive);
+}
+#ifndef _XBOX
+// PC 0x00676B00 GOG 0x006768A0
+void CSWGuiInGameMenu::Draw(float fElapsed)
+{
+    CSWCCreature* pCreature;
+    if (m_nTopMenuOverrideCharacter != -1)
+    {
+        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+        pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
+            pServerExoApp->GetPartyTable()->GetNPCObject(m_nTopMenuOverrideCharacter, 0, 1)));
+        if (pCreature == NULL)
+        {
+            return;
+        }
+    }
+    else
+    {
+        pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    }
+    CSWSCreature* pServer = pCreature->GetServerCreature();
+    CSWSCreatureStats* pStats = pServer->GetStats();
+    m_cChar2350.SetPortrait(pCreature->GetPortrait(1));
+    int nPoisonState = pServer->m_nPoisonState;
+    m_cChar2350.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1), nPoisonState);
+    int nMaxForce = pServer->GetMaxForcePoints();
+    m_cChar2350.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);
+    int nState = 0;
+    int nBuffCount = 0;
+    int nDebuffCount = 0;
+    if (pServer->GetDead() || pServer->GetDeadTemp())
+    {
+        nState = CSWGuiMainInterfaceChar::PORTRAIT_DEAD;
+    }
+    else if (pServer->GetStats()->CanLevelUp())
+    {
+        nState = CSWGuiMainInterfaceChar::PORTRAIT_LEVEL_UP;
+    }
+    else if (pServer->IsDebilitated(0))
+    {
+        nState = CSWGuiMainInterfaceChar::PORTRAIT_DEBILITATED;
+    }
+    else
+    {
+        int nIcon = 0;
+        int nEffectCount = pServer->GetEffectIconCount();
+        if (nEffectCount > 0)
+        {
+            do
+            {
+                if (pServer->m_lstEffectIcons.element[nIcon]->m_bGood)
+                    nBuffCount++;
+                else
+                    nDebuffCount++;
+                ++nIcon;
+            } while (nIcon < nEffectCount);
+        }
+    }
+    CExoString sName = pCreature->GetName();
+    int nTag = sName.Find('<', 0);
+    int nToken = sName.Find('{', 0);
+    if (nTag != -1 || nToken != -1)
+    {
+        g_pSWTlkTable->ParseStr(sName, (CGameObject*)pCreature, 0, 1);
+    }
+    m_lblCharName.m_cText.m_cParams.SetText(sName);
+    if (pStats->GetNumClasses() == 1)
+    {
+        unsigned long nStrRef = g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef;
+        m_lblTopClass1.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+        m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
+        m_lblTopClass2.m_cText.m_cParams.SetText("");
+        m_lblTopClass2Level.m_cText.m_cParams.SetText("");
+    }
+    else
+    {
+        unsigned long nStrRef = g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef;
+        m_lblTopClass1.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+        m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
+        nStrRef = g_pRules->m_pClasses[pStats->GetClass(1)].m_nNameStrRef;
+        m_lblTopClass2.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+        m_lblTopClass2Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(1, 0));
+    }
+    m_cChar2350.Show(1, nState, nBuffCount, nDebuffCount);
+    CSWGuiPanel::Draw(fElapsed);
+    m_cChar2350.DrawEffects(fElapsed, 1);
+    int nCharacters = g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters();
+    if (nCharacters == 1 || nCharacters == 0)
+    {
+        m_lblChar2.SetEnabledFlag(0);
+        m_lblBack2.SetEnabledFlag(0);
+        m_lblLevelUp2.SetEnabledFlag(0);
+        m_btnChange2.SetEnabledFlag(0);
+        m_lblChar3.SetEnabledFlag(0);
+        m_lblBack3.SetEnabledFlag(0);
+        m_lblLevelUp3.SetEnabledFlag(0);
+        m_btnChange3.SetEnabledFlag(0);
+    }
+    else if (nCharacters == 2)
+    {
+        CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
+        CSWSCreature* pMemberServer = pMember->GetServerCreature();
+        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
+        m_lblChar2.SetEnabledFlag(1);
+        m_lblBack2.SetEnabledFlag(1);
+        if (pMemberServer->GetStats()->CanLevelUp())
+            m_lblLevelUp2.SetEnabledFlag(1);
+        else
+            m_lblLevelUp2.SetEnabledFlag(0);
+        m_btnChange2.SetEnabledFlag(1);
+        m_lblChar3.SetEnabledFlag(0);
+        m_lblBack3.SetEnabledFlag(0);
+        m_lblLevelUp3.SetEnabledFlag(0);
+        m_btnChange3.SetEnabledFlag(0);
+    }
+    else if (nCharacters == 3)
+    {
+        CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
+        CSWSCreature* pMemberServer = pMember->GetServerCreature();
+        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
+        m_lblChar2.SetEnabledFlag(1);
+        m_lblBack2.SetEnabledFlag(1);
+        if (pMemberServer->GetStats()->CanLevelUp())
+            m_lblLevelUp2.SetEnabledFlag(1);
+        else
+            m_lblLevelUp2.SetEnabledFlag(0);
+        m_btnChange2.SetEnabledFlag(1);
+        pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(2);
+        pMemberServer = pMember->GetServerCreature();
+        m_lblChar3.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
+        m_lblChar3.SetEnabledFlag(1);
+        m_lblBack3.SetEnabledFlag(1);
+        if (pMemberServer->GetStats()->CanLevelUp())
+            m_lblLevelUp3.SetEnabledFlag(1);
+        else
+            m_lblLevelUp3.SetEnabledFlag(0);
+        m_btnChange3.SetEnabledFlag(1);
+    }
+}
+#endif
 // PC 0x00675490 GOG 0x00675230
 void CSWGuiInGameMenu::Update(float fElapsed)
 {
@@ -242,17 +297,152 @@ void CSWGuiInGameMenu::OnEquipButtonPressed(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_EQUIP);
 }
+// PC 0x00677240 GOG 0x00676FE0
+CSWGuiInGameMessages::~CSWGuiInGameMessages()
+{
+    m_lbDialog.ClearItems();
+    m_lbMessages.ClearItems();
+    m_lbCombat.ClearItems();
+    m_lbEffectsGood.ClearItems();
+    m_lbEffectsBad.ClearItems();
+    delete[] m_pDialogLabels;
+    delete[] m_pMessageLabels;
+    delete[] m_pCombatLabels;
+}
+// PC 0x00677430 GOG 0x006771D0
+CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    m_bAllowCancel = 1;
+    m_bShowButtons = 1;
+    m_bHideButtons = 0;
+    m_bHasIcon = 0;
+    m_n9BC = 0;
+    StartLoadFromLayout("confirm_p");
+#ifdef _XBOX
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblOk, "LBL_OK", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblCancel, "LBL_CANCEL", 1);
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    StopLoadFromLayout();
+#else
+    CSWGuiButton* pOk = &m_btnOk;
+    InitControl(*pOk, "BTN_OK", 1);
+    InitControl(m_btnCancel, "BTN_CANCEL", 1);
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
+    StopLoadFromLayout();
+    pOk->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                  (CSWGuiHandler)&CSWGuiMessageBox::OnOkButtonPressed);
+    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
+#endif
+    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    m_lblIcon.SetExtent(CSWGuiExtent(0, 10, 32, 32));
+    CSWGuiLabel* pIcon = &m_lblIcon;
+    pIcon->m_bEnabled = 0;
+    AddControl(pIcon);
+    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
+    if (pProto)
+        m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
+    CenterPanel();
+    m_cPanelExtent = m_cExtent;
+    m_cMessageExtent = m_lbMessage.m_cExtent;
+#ifdef _XBOX
+    m_nLblABottomOffset = m_cExtent.m_nHeight - m_lblA.m_cExtent.m_nTop;
+    m_nLblBBottomOffset = m_cExtent.m_nHeight - m_lblB.m_cExtent.m_nTop;
+    m_nLblRAnalogRightOffset = m_cExtent.m_nWidth - m_lblRAnalog.m_cExtent.m_nLeft;
+#endif
+    m_bAccepted = 0;
+    m_pCallback = 0;
+    m_pCallbackObject = 0;
+    m_pCallbackControl = 0;
+    m_nPreviousInputClass = 0;
+#ifndef _XBOX
+    m_bFocusOk = 0;
+#endif
+    m_n9C4 = 0;
+    m_nOpenSound = 15;
+}
 // PC 0x00675540 GOG 0x006752E0
 void CSWGuiInGameMenu::OnInvButtonPressed(CSWGuiControl* pControl)
 {
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_INVENTORY);
 }
+#ifndef _XBOX
+// PC 0x00677700 GOG 0x006774A0
+CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
+    : CSWGuiPanel(pManager)
+{
+    if (nStyle == 0)
+    {
+        CSWGuiMessageBox::CSWGuiMessageBox(pManager);
+        return;
+    }
+    m_bAllowCancel = 1;
+    m_bShowButtons = 1;
+    m_bHideButtons = 0;
+    m_bHasIcon = 0;
+    m_n9BC = nStyle;
+    StartLoadFromLayout("datapad_p");
+    SetBorderFillImage(m_pBorder->m_cParams, "", 0);
+    InitControl(m_btnOk, "BTN_OK", 1);
+    InitControl(m_btnCancel, "BTN_CANCEL", 1);
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
+    StopLoadFromLayout();
+    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    m_btnOk.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                     (CSWGuiHandler)&CSWGuiMessageBox::OnOkButtonPressed);
+    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
+    CSWGuiLabel* pIcon = &m_lblIcon;
+    pIcon->SetExtent(CSWGuiExtent(0, 10, 32, 32));
+    pIcon->m_bEnabled = 0;
+    AddControl(pIcon);
+    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
+    if (pProto)
+        m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
+    CenterPanel();
+    m_cPanelExtent = m_cExtent;
+    m_cMessageExtent = m_lbMessage.m_cExtent;
+    m_bAccepted = 0;
+    m_pCallback = 0;
+    m_pCallbackObject = 0;
+    m_pCallbackControl = 0;
+    m_nPreviousInputClass = 0;
+    m_nOpenSound = 15;
+    m_bFocusOk = 0;
+}
+#endif
 // PC 0x00675560 GOG 0x00675300
 void CSWGuiInGameMenu::OnCharButtonPressed(CSWGuiControl* pControl)
 {
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_CHARACTER);
+}
+// PC 0x00677A20 GOG 0x006777C0
+void CSWGuiMessageBox::SetAllowCancel(int bAllowCancel)
+{
+    m_bAllowCancel = bAllowCancel;
+    m_nOpenSound = bAllowCancel != 0 ? 15 : 2;
+    UpdateControls();
+}
+// PC 0x00677A50 GOG 0x006777F0
+void CSWGuiMessageBox::SetIcon(const CResRef& cIcon)
+{
+    if (cIcon.IsValid())
+    {
+        m_bHasIcon = 1;
+        m_lblIcon.m_cBorder.m_cParams.SetFillImage(cIcon, 0);
+        UpdateControls();
+    }
+    else
+    {
+        m_bHasIcon = 0;
+        UpdateControls();
+    }
 }
 // PC 0x00675580 GOG 0x00675320
 void CSWGuiInGameMenu::OnMapButtonPressed(CSWGuiControl* pControl)
@@ -265,6 +455,16 @@ void CSWGuiInGameMenu::OnAbiButtonPressed(CSWGuiControl* pControl)
 {
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_ABILITIES);
+}
+// PC 0x0067AD90 GOG 0x0067AB60
+void CSWGuiMessageBox::SetMessage(CExoString sMessage)
+{
+    g_pTlkTable->ParseStr(sMessage);
+    m_lblMessage.m_cText.m_cParams.SetText(sMessage);
+#ifndef _XBOX
+    m_lblMessage.m_cText.m_cParams.ReSetFont();
+#endif
+    FixMessageLabel();
 }
 // PC 0x006755C0 GOG 0x00675360
 void CSWGuiInGameMenu::OnJouButtonPressed(CSWGuiControl* pControl)
@@ -284,6 +484,230 @@ void CSWGuiInGameMenu::OnMsgButtonPressed(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_MESSAGES);
 }
+// PC 0x00677AA0 GOG 0x00677840
+void CSWGuiMessageBox::FixMessageLabel()
+{
+    CSWGuiExtent cPanel = m_cPanelExtent;
+    CSWGuiExtent cMessage = m_cMessageExtent;
+    CSWGuiExtent cControl;
+#ifdef _XBOX
+    CSWGuiExtent cPrompt;
+#endif
+
+    if (m_bHasIcon)
+    {
+        cPanel.m_nHeight += 32;
+        cMessage.m_nTop += 32;
+        cPanel.m_nTop -= 16;
+    }
+#ifdef _XBOX
+    if (m_bShowButtons && !m_bHideButtons)
+    {
+        if (!m_bAllowCancel)
+        {
+            cPanel.m_nHeight -= m_nLblBBottomOffset - 15;
+            cPanel.m_nTop += (m_nLblBBottomOffset - 15) / 2;
+        }
+    }
+    else
+    {
+        cPanel.m_nHeight -= m_nLblABottomOffset - 15;
+        cPanel.m_nTop += (m_nLblABottomOffset - 15) / 2;
+    }
+
+    if (m_lblOk.m_bEnabled)
+    {
+        cControl = m_lblOk.m_cExtent;
+        cControl.m_nWidth = 20;
+        m_lblOk.SetExtent(cControl);
+        while (m_lblOk.m_cText.GetIdealHeight() != m_lblOk.m_cText.GetFontHeight())
+        {
+            cControl.m_nWidth += 10;
+            m_lblOk.SetExtent(cControl);
+        }
+        if (cPanel.m_nWidth <= m_lblA.m_cExtent.m_nWidth + cControl.m_nWidth - 2)
+            cPanel.m_nWidth = m_lblA.m_cExtent.m_nWidth + cControl.m_nWidth - 2;
+    }
+    if (m_lblCancel.m_bEnabled)
+    {
+        cControl = m_lblCancel.m_cExtent;
+        cControl.m_nWidth = 20;
+        m_lblCancel.SetExtent(cControl);
+        while (m_lblCancel.m_cText.GetIdealHeight() != m_lblCancel.m_cText.GetFontHeight())
+        {
+            cControl.m_nWidth += 10;
+            m_lblCancel.SetExtent(cControl);
+        }
+        if (cPanel.m_nWidth <= m_lblB.m_cExtent.m_nWidth + cControl.m_nWidth - 2)
+            cPanel.m_nWidth = m_lblB.m_cExtent.m_nWidth + cControl.m_nWidth - 2;
+    }
+#else
+    if (m_bShowButtons && !m_bHideButtons)
+    {
+        if (!m_bAllowCancel)
+        {
+            cPanel.m_nHeight -= m_btnCancel.m_cExtent.m_nHeight + 2;
+            cPanel.m_nTop += (m_btnCancel.m_cExtent.m_nHeight + 2) / 2;
+        }
+    }
+    else
+    {
+        cPanel.m_nHeight -= m_btnOk.m_cExtent.m_nHeight;
+        cPanel.m_nTop += m_btnOk.m_cExtent.m_nHeight / 2;
+    }
+
+    if (m_btnOk.m_bEnabled)
+    {
+        cControl = m_btnOk.m_cExtent;
+        cControl.m_nWidth = 100;
+        m_btnOk.SetExtent(cControl);
+        while (m_btnOk.m_cText.GetIdealHeight() != m_btnOk.m_cText.GetFontHeight())
+        {
+            cControl.m_nWidth += 10;
+            m_btnOk.SetExtent(cControl);
+        }
+        cControl.m_nWidth += 2 * m_btnOk.m_cBorder.m_cParams.m_nInnerOffset;
+        m_btnOk.SetExtent(cControl);
+        if (cPanel.m_nWidth <= cControl.m_nWidth - 2)
+            cPanel.m_nWidth = cControl.m_nWidth - 2;
+    }
+    if (m_btnCancel.m_bEnabled)
+    {
+        cControl = m_btnCancel.m_cExtent;
+        cControl.m_nWidth = 100;
+        m_btnCancel.SetExtent(cControl);
+        while (m_btnCancel.m_cText.GetIdealHeight() != m_btnCancel.m_cText.GetFontHeight())
+        {
+            cControl.m_nWidth += 10;
+            m_btnCancel.SetExtent(cControl);
+        }
+        cControl.m_nWidth += 2 * m_btnCancel.m_cBorder.m_cParams.m_nInnerOffset;
+        m_btnCancel.SetExtent(cControl);
+        if (cPanel.m_nWidth <= cControl.m_nWidth - 2)
+            cPanel.m_nWidth = cControl.m_nWidth - 2;
+    }
+#endif
+
+    if (m_n9BC != 0)
+    {
+        cPanel.m_nHeight = 300;
+        cPanel.m_nWidth = 400;
+        cPanel.m_nLeft =
+            g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / 2 -
+            cPanel.m_nWidth / 2;
+    }
+    cMessage.m_nWidth += cPanel.m_nWidth - m_cPanelExtent.m_nWidth;
+    SetExtent(cPanel);
+    if (m_n9BC != 0)
+    {
+        cMessage.m_nHeight = 208;
+        cMessage.m_nWidth = 334;
+        cMessage.m_nLeft = 33;
+        cMessage.m_nTop = 27;
+    }
+    m_lbMessage.SetExtent(cMessage);
+    m_lbMessage.SetScrollBarExtent(16, 1);
+    AddMessageLabel();
+#ifndef _XBOX
+    int nScrollWidth = m_lbMessage.m_cScrollBar.m_cExtent.m_nWidth;
+    m_lbMessage.SetScrollBarExtent(0, 1);
+#endif
+
+    if (m_lbMessage.IsOversized())
+    {
+        int nFontHeight = m_lblMessage.m_cText.GetFontHeight();
+        while (m_lbMessage.IsOversized() &&
+               (cPanel.m_nWidth < 440 || cPanel.m_nHeight < 280))
+        {
+            if (cPanel.m_nHeight > 160 && cPanel.m_nWidth < 440)
+            {
+                cMessage.m_nWidth += 40;
+                cPanel.m_nWidth += 40;
+                cPanel.m_nLeft -= 20;
+                m_lbMessage.SetExtent(cMessage);
+                AddMessageLabel();
+                if (!m_lbMessage.IsOversized())
+                    break;
+            }
+            if (cPanel.m_nHeight < 280)
+            {
+                cMessage.m_nHeight += nFontHeight;
+                cPanel.m_nHeight += nFontHeight;
+                cPanel.m_nTop -= nFontHeight / 2;
+                m_lbMessage.SetExtent(cMessage);
+                AddMessageLabel();
+            }
+        }
+        SetExtent(cPanel);
+    }
+
+#ifdef _XBOX
+    if (m_lbMessage.IsOversized())
+        m_lblRAnalog.SetEnabledFlag(1);
+    else
+    {
+        m_lblRAnalog.SetEnabledFlag(0);
+        m_lbMessage.SetScrollBarExtent(0, 1);
+    }
+    cControl = m_lblRAnalog.m_cExtent;
+    CSWGuiExtent* pListExtent = &m_lbMessage.m_cExtent;
+    cPrompt = *pListExtent;
+    cControl.m_nTop = cPrompt.m_nHeight / 2 - cControl.m_nHeight / 2 + cPrompt.m_nTop;
+    cControl.m_nLeft = m_cExtent.m_nWidth - m_nLblRAnalogRightOffset;
+    m_lblRAnalog.SetExtent(cControl);
+    int nCenter = m_cExtent.m_nWidth / 2;
+    cControl = m_lblIcon.m_cExtent;
+    cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
+    m_lblIcon.SetExtent(cControl);
+    cControl = m_lblOk.m_cExtent;
+    CSWGuiExtent* pAExtent = &m_lblA.m_cExtent;
+    cPrompt = *pAExtent;
+    cPrompt.m_nTop = pListExtent->m_nHeight + pListExtent->m_nTop - 4;
+    cPrompt.m_nLeft = nCenter - (cPrompt.m_nWidth + cControl.m_nWidth - 2) / 2;
+    m_lblA.SetExtent(cPrompt);
+    cControl.m_nTop = cPrompt.m_nTop - 1;
+    cControl.m_nLeft = cPrompt.m_nLeft + 30;
+    m_lblOk.SetExtent(cControl);
+    cControl = m_lblCancel.m_cExtent;
+    cPrompt = m_lblB.m_cExtent;
+    cPrompt.m_nTop = pAExtent->m_nHeight + pAExtent->m_nTop - 14;
+    cPrompt.m_nLeft = nCenter - (cPrompt.m_nWidth + cControl.m_nWidth - 2) / 2;
+    m_lblB.SetExtent(cPrompt);
+    cControl.m_nTop = cPrompt.m_nTop - 1;
+    cControl.m_nLeft = cPrompt.m_nLeft + 30;
+    m_lblCancel.SetExtent(cControl);
+#else
+    if (m_lbMessage.IsOversized())
+    {
+        m_lbMessage.SetScrollBarExtent(nScrollWidth, 1);
+        AddMessageLabel();
+    }
+
+    int nCenter = m_cExtent.m_nWidth / 2;
+    cControl = m_lblIcon.m_cExtent;
+    cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
+    m_lblIcon.SetExtent(cControl);
+    if (m_n9BC != 0)
+    {
+        cControl.m_nTop = 245;
+        cControl.m_nHeight = 28;
+        cControl.m_nWidth = 120;
+        cControl.m_nLeft = cPanel.m_nWidth / 2 - cControl.m_nWidth / 2;
+    }
+    else
+    {
+        cControl = m_btnOk.m_cExtent;
+        cControl.m_nTop = m_lbMessage.m_cExtent.m_nHeight + m_lbMessage.m_cExtent.m_nTop + 4;
+        cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
+    }
+    m_btnOk.SetExtent(cControl);
+    cControl = m_btnCancel.m_cExtent;
+    cControl.m_nTop = m_btnOk.m_cExtent.m_nHeight + m_btnOk.m_cExtent.m_nTop + 2;
+    cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
+    m_btnCancel.SetExtent(cControl);
+    CenterPanel();
+#endif
+}
 // PC 0x00675620 GOG 0x006753C0
 void CSWGuiInGameMenu::HandleInputEvent(int nEvent, int nState)
 {
@@ -299,6 +723,16 @@ void CSWGuiInGameMenu::HandleInputEvent(int nEvent, int nState)
         break;
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006780A0 GOG 0x00677E40
+void CSWGuiControllerLossBox::OnPanelAdded()
+{
+    SetAllowCancel(0);
+    SetMessage(STRREF_CONTROLLER_LOST);
+    m_pCallbackObject = this;
+    m_pCallback = (CSWGuiHandler)&CSWGuiControllerLossBox::OnAccept;
+    m_pCallbackControl = 0;
+    CSWGuiMessageBox::OnPanelAdded();
 }
 // PC 0x00675680 GOG 0x00675420
 void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
@@ -342,6 +776,76 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+// PC 0x006780E0 GOG 0x00677E80
+CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("statussummary_p");
+    InitControl(m_aStatusLabels[GUI_STATUS_JOURNAL], "LBL_JOURNAL", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_JOURNAL], "LBL_JOURNAL_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_CREDITS], "LBL_CREDITS", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_CREDITS], "LBL_CREDITS_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_XP], "LBL_XP", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_XP], "LBL_XP_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_STEALTH_XP], "LBL_STEALTH", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_STEALTH_XP], "LBL_STEALTH_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_DARK_SHIFT], "LBL_DARKSIDE", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_DARK_SHIFT], "LBL_DARKSIDE_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_LIGHT_SHIFT], "LBL_LIGHTSIDE", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_LIGHT_SHIFT], "LBL_LIGHTSIDE_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_NET_SHIFT], "LBL_NETSHIFT", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_NET_SHIFT], "LBL_NETSHIFT_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_ITEM_RECEIVED], "LBL_RECEIVED", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED], "LBL_RECEIVED_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_ITEM_LOST], "LBL_LOST", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_ITEM_LOST], "LBL_LOST_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_INFLUENCE_GAIN], "LBL_INFLUENCE_RECV", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_INFLUENCE_GAIN], "LBL_INFLUENCE_RECV_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_INFLUENCE_LOST], "LBL_INFLUENCE_LOST", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_INFLUENCE_LOST], "LBL_INFLUENCE_LOST_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_MAX_FP_GAIN], "LBL_MAX_FP_GAINED", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_MAX_FP_GAIN], "LBL_MAX_FP_GAINED_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_MAX_FP_LOST], "LBL_MAX_FP_LOST", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_MAX_FP_LOST], "LBL_MAX_FP_LOST_DESC", 1);
+#ifdef _XBOX
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblOk, "LBL_OK", 1);
+    StopLoadFromLayout();
+#else
+    CSWGuiButton* pOk = &m_btnOk;
+    InitControl(*pOk, "BTN_OK", 1);
+    StopLoadFromLayout();
+    pOk->m_bFocusable = 0;
+    pOk->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                  (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
+#endif
+    m_cStatusSummary.m_bDisplaySPending = 0;
+    m_cStatusSummary.m_bSoundPending = 0;
+    m_cStatusSummary.m_bItemReceived = 0;
+    m_cStatusSummary.m_bItemLost = 0;
+    m_cStatusSummary.m_bJournal = 0;
+    m_cStatusSummary.m_bLevelUpSound = 0;
+    m_cStatusSummary.m_bNewQuestSound = 0;
+    m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bDarkAlignSound = 0;
+    m_cStatusSummary.m_bLightAlignSound = 0;
+    m_cStatusSummary.m_bCreditsNet = 0;
+    m_cStatusSummary.m_nCredits = 0;
+    m_cStatusSummary.m_nLightShift = 0;
+    m_cStatusSummary.m_nDarkShift = 0;
+    m_cStatusSummary.m_nExperience = 0;
+    m_cStatusSummary.m_nStealthExperience = 0;
+    m_cStatusSummary.m_nInfluenceGain = 0;
+    m_cStatusSummary.m_nInfluenceLost = 0;
+    m_cStatusSummary.m_nMaxForcePointsGain = 0;
+    m_cStatusSummary.m_nMaxForcePointsLost = 0;
+    m_cStatusSummary.m_nSuppressed = 0;
+    m_n94 = 0;
+
+#ifndef _XBOX
+    m_bPositioned = 1;
+#endif
+}
 // PC 0x006758B0 GOG 0x00675650
 void CSWGuiInGameMessages::ShowDialogMessages()
 {
@@ -361,6 +865,78 @@ void CSWGuiInGameMessages::ShowDialogMessages()
     SetActiveControl(pDialog, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_DIALOG;
+}
+// PC 0x00678800 GOG 0x006785A0
+void CSWGuiStatusSummary::DisplayStatus()
+{
+    PlayPendingSounds();
+
+    for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; nStatus++)
+    {
+        int bShow = 0;
+        switch (nStatus)
+        {
+        case GUI_STATUS_JOURNAL:
+            bShow = m_cStatusSummary.m_bJournal;
+            break;
+        case GUI_STATUS_CREDITS:
+            bShow = m_cStatusSummary.m_nCredits != 0;
+            break;
+        case GUI_STATUS_XP:
+            bShow = m_cStatusSummary.m_nExperience != 0;
+            break;
+        case GUI_STATUS_STEALTH_XP:
+            bShow = m_cStatusSummary.m_nStealthExperience != 0;
+            break;
+        case GUI_STATUS_DARK_SHIFT:
+            bShow = m_cStatusSummary.m_nDarkShift > m_cStatusSummary.m_nLightShift;
+            break;
+        case GUI_STATUS_LIGHT_SHIFT:
+            bShow = m_cStatusSummary.m_nLightShift > m_cStatusSummary.m_nDarkShift;
+            break;
+        case GUI_STATUS_ITEM_RECEIVED:
+            bShow = m_cStatusSummary.m_bItemReceived;
+            break;
+        case GUI_STATUS_ITEM_LOST:
+            bShow = m_cStatusSummary.m_bItemLost;
+            break;
+        case GUI_STATUS_INFLUENCE_GAIN:
+            bShow = m_cStatusSummary.m_nInfluenceGain;
+            break;
+        case GUI_STATUS_INFLUENCE_LOST:
+            bShow = m_cStatusSummary.m_nInfluenceLost;
+            break;
+        case GUI_STATUS_MAX_FP_GAIN:
+            bShow = m_cStatusSummary.m_nMaxForcePointsGain;
+            break;
+        case GUI_STATUS_MAX_FP_LOST:
+            bShow = m_cStatusSummary.m_nMaxForcePointsLost;
+            break;
+        }
+        if (bShow)
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowFlashingStatus(nStatus);
+    }
+
+    m_cStatusSummary.m_bDisplaySPending = 0;
+    m_cStatusSummary.m_bSoundPending = 0;
+    m_cStatusSummary.m_bItemReceived = 0;
+    m_cStatusSummary.m_bItemLost = 0;
+    m_cStatusSummary.m_bJournal = 0;
+    m_cStatusSummary.m_bLevelUpSound = 0;
+    m_cStatusSummary.m_bNewQuestSound = 0;
+    m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bDarkAlignSound = 0;
+    m_cStatusSummary.m_bLightAlignSound = 0;
+    m_cStatusSummary.m_bCreditsNet = 0;
+    m_cStatusSummary.m_nCredits = 0;
+    m_cStatusSummary.m_nLightShift = 0;
+    m_cStatusSummary.m_nDarkShift = 0;
+    m_cStatusSummary.m_nExperience = 0;
+    m_cStatusSummary.m_nStealthExperience = 0;
+    m_cStatusSummary.m_nInfluenceGain = 0;
+    m_cStatusSummary.m_nInfluenceLost = 0;
+    m_cStatusSummary.m_nMaxForcePointsGain = 0;
+    m_cStatusSummary.m_nMaxForcePointsLost = 0;
 }
 // PC 0x00675960 GOG 0x00675700
 void CSWGuiInGameMessages::ShowFeedbackMessages()
@@ -400,6 +976,350 @@ void CSWGuiInGameMessages::ShowCombatMessages()
     SetActiveControl(pCombat, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_COMBAT;
+}
+// PC 0x00678930 GOG 0x006786D0
+void CSWGuiStatusSummary::OnPanelAdded()
+{
+
+    int bJournal = 0;
+    CExoString sDescription;
+    CSWGuiExtent cExtent;
+    cExtent.m_nLeft = cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight = 0;
+
+    PlayPendingSounds();
+    if (m_cStatusSummary.m_nDarkShift || m_cStatusSummary.m_nLightShift)
+        m_n94 = 1;
+
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    int nTop = (int)(fScaleY * 10.0f);
+    int nWidth = (int)(fScaleX * 150.0f);
+
+    for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; nStatus++)
+    {
+        int bShow = 0;
+        int bFlash = 1;
+        int bSetDescription = 0;
+        switch (nStatus)
+        {
+        case GUI_STATUS_JOURNAL:
+            bShow = m_cStatusSummary.m_bJournal;
+            bJournal = bShow;
+            break;
+        case GUI_STATUS_CREDITS:
+            bShow = m_cStatusSummary.m_nCredits != 0 || m_cStatusSummary.m_bCreditsNet;
+            if (bShow)
+            {
+                bSetDescription = 1;
+                if (m_cStatusSummary.m_nCredits >= 0)
+                {
+                    g_pTlkTable->SetCustomToken(0, m_cStatusSummary.m_nCredits);
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CREDITS_RECEIVED);
+                }
+                else
+                {
+                    g_pTlkTable->SetCustomToken(0, -m_cStatusSummary.m_nCredits);
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CREDITS_LOST);
+                }
+                if (m_cStatusSummary.m_bCreditsNet)
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NET_CHANGE) + sDescription;
+            }
+            break;
+        case GUI_STATUS_XP:
+            bShow = m_cStatusSummary.m_nExperience != 0;
+            if (bShow)
+            {
+                bSetDescription = 1;
+                g_pTlkTable->SetCustomToken(0, m_cStatusSummary.m_nExperience);
+                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_XP_RECEIVED);
+            }
+            break;
+        case GUI_STATUS_STEALTH_XP:
+            bShow = m_cStatusSummary.m_nStealthExperience != 0;
+            if (bShow)
+            {
+                bSetDescription = 1;
+                g_pTlkTable->SetCustomToken(0, m_cStatusSummary.m_nStealthExperience);
+                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_STEALTH_XP_RECEIVED);
+            }
+            break;
+        case GUI_STATUS_DARK_SHIFT:
+            bShow = m_cStatusSummary.m_nDarkShift > 0;
+            bFlash = m_cStatusSummary.m_nDarkShift > m_cStatusSummary.m_nLightShift;
+            break;
+        case GUI_STATUS_LIGHT_SHIFT:
+            bShow = m_cStatusSummary.m_nLightShift > 0;
+            bFlash = m_cStatusSummary.m_nLightShift > m_cStatusSummary.m_nDarkShift;
+            break;
+        case GUI_STATUS_NET_SHIFT:
+            bShow = m_cStatusSummary.m_nLightShift > 0 &&
+                    m_cStatusSummary.m_nDarkShift > 0 &&
+                    m_cStatusSummary.m_nLightShift != m_cStatusSummary.m_nDarkShift;
+            bFlash = 0;
+            if (bShow)
+            {
+                bSetDescription = 1;
+                if (m_cStatusSummary.m_nLightShift > m_cStatusSummary.m_nDarkShift)
+                {
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NET_LIGHT_SHIFT);
+                    m_aStatusLabels[GUI_STATUS_NET_SHIFT].m_cBorder.m_cParams.SetFillImage(
+                        m_aStatusLabels[GUI_STATUS_LIGHT_SHIFT].m_cBorder.m_cParams.m_cFillImage, 0);
+                }
+                else
+                {
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NET_DARK_SHIFT);
+                    m_aStatusLabels[GUI_STATUS_NET_SHIFT].m_cBorder.m_cParams.SetFillImage(
+                        m_aStatusLabels[GUI_STATUS_DARK_SHIFT].m_cBorder.m_cParams.m_cFillImage, 0);
+                }
+            }
+            break;
+        case GUI_STATUS_ITEM_RECEIVED:
+        {
+            CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+            CExoString sItems;
+            for (int nItem = 0; nItem < pInGameGui->m_a1030.num; nItem++)
+            {
+                CExoLocString sLocName(pInGameGui->m_a1030[nItem]);
+                CExoString sName;
+                sLocName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
+                if (sItems == "")
+                    sItems = sName + "\n";
+                else
+                    sItems.Format("%s%s\n", sItems.CStr(), sName.CStr());
+                int nTokenStart = sItems.Find('<', 0);
+                int nCustomStart = sItems.Find('{', 0);
+                if (nTokenStart != -1 || nCustomStart != -1)
+                    g_pSWTlkTable->ParseStr(sItems,
+                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter(), 0, 1);
+            }
+            if (sItems == "")
+                bShow = 0;
+            else
+            {
+                bShow = 1;
+                bSetDescription = 1;
+                g_pTlkTable->SetCustomToken(0, sItems);
+                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_ITEMS_RECEIVED);
+            }
+            break;
+        }
+        case GUI_STATUS_ITEM_LOST:
+            bShow = m_cStatusSummary.m_bItemLost;
+            break;
+        case GUI_STATUS_INFLUENCE_GAIN:
+        case GUI_STATUS_INFLUENCE_LOST:
+        {
+            CExoString sNames;
+            int nNPC = 0;
+            CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
+            int nMask = nStatus == GUI_STATUS_INFLUENCE_GAIN ? m_cStatusSummary.m_nInfluenceGain
+                                                              : m_cStatusSummary.m_nInfluenceLost;
+            for (; nNPC < INFLUENCE_NPC_COUNT; nNPC++)
+            {
+                if (((nMask >> nNPC) & 1) == 0)
+                    continue;
+                CExoString sName;
+                switch (nNPC)
+                {
+                case NPC_ATTON:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_ATTON, NULL, 0, 0);
+                    break;
+                case NPC_BAO_DUR:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_BAO_DUR, NULL, 0, 0);
+                    break;
+                case NPC_MANDALORE:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_MANDALORE, NULL, 0, 0);
+                    break;
+                case NPC_G0T0:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_G0T0, NULL, 0, 0);
+                    break;
+                case NPC_HANDMAIDEN:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HANDMAIDEN, NULL, 0, 0);
+                    break;
+                case NPC_HK_47:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HK_47, NULL, 0, 0);
+                    break;
+                case NPC_KREIA:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_KREIA, NULL, 0, 0);
+                    break;
+                case NPC_MIRA:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_MIRA, NULL, 0, 0);
+                    break;
+                case NPC_T3_M4:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_T3_M4, NULL, 0, 0);
+                    break;
+                case NPC_VISAS:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_VISAS, NULL, 0, 0);
+                    break;
+                case NPC_HANHARR:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HANHARR, NULL, 0, 0);
+                    break;
+                case NPC_DISCIPLE:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_DISCIPLE, NULL, 0, 0);
+                    break;
+                case NPC_REMOTE:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_REMOTE, NULL, 0, 0);
+                    break;
+                }
+                if (sNames == "")
+                    sNames = sName;
+                else
+                    sNames.Format("%s, %s", sNames.CStr(), sName.CStr());
+            }
+            if (sNames == "")
+                bShow = 0;
+            else
+            {
+                bShow = 1;
+                bSetDescription = 1;
+                g_pTlkTable->SetCustomToken(0, sNames);
+                if (nStatus == GUI_STATUS_INFLUENCE_GAIN)
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_INFLUENCE_GAINED);
+                else
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_INFLUENCE_LOST);
+            }
+            break;
+        }
+        case GUI_STATUS_MAX_FP_GAIN:
+            bShow = m_cStatusSummary.m_nMaxForcePointsGain;
+            break;
+        case GUI_STATUS_MAX_FP_LOST:
+            bShow = m_cStatusSummary.m_nMaxForcePointsLost;
+            break;
+        }
+
+        if (bShow)
+        {
+            CSWGuiLabel* pLabel = &m_aStatusLabels[nStatus];
+            CSWGuiLabel* pDescription = &m_aStatusDescriptions[nStatus];
+            pLabel->m_bEnabled = 1;
+            pDescription->m_bEnabled = 1;
+            if (bSetDescription)
+            {
+                m_aStatusDescriptions[nStatus].m_cText.m_cParams.SetText(sDescription);
+                m_aStatusDescriptions[nStatus].m_cText.m_cParams.ReSetFont();
+            }
+            cExtent = m_aStatusLabels[nStatus].m_cExtent;
+            cExtent.m_nTop = nTop;
+            cExtent.m_nHeight = STATUS_ICON_SIZE;
+            cExtent.m_nWidth = STATUS_ICON_SIZE;
+            pLabel->SetExtent(cExtent);
+            cExtent = m_aStatusDescriptions[nStatus].m_cExtent;
+            cExtent.m_nTop = nTop - 1;
+            if (nStatus != GUI_STATUS_ITEM_RECEIVED)
+                cExtent.m_nHeight = STATUS_DESCRIPTION_HEIGHT;
+            else
+                cExtent.m_nHeight = m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
+            cExtent.m_nWidth = nWidth;
+            pDescription->SetExtent(cExtent);
+            if (nStatus == GUI_STATUS_ITEM_RECEIVED)
+            {
+                if (m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.m_cParams.m_sText != "")
+                {
+                    int nItemWidth = (int)(fScaleX * 300.0f);
+                    if (nItemWidth > nWidth)
+                        nWidth = nItemWidth;
+                    cExtent.m_nWidth = nWidth;
+                    m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].SetExtent(cExtent);
+                }
+            }
+            else if (m_aStatusDescriptions[nStatus].m_cText.m_cParams.m_sText != "" && nWidth < 440)
+            {
+                do
+                {
+                    if (m_aStatusDescriptions[nStatus].m_cText.GetIdealHeight() ==
+                        m_aStatusDescriptions[nStatus].m_cText.GetFontHeight())
+                        break;
+                    nWidth += (int)(fScaleX * 20.0f);
+                    cExtent.m_nWidth = nWidth;
+                    pDescription->SetExtent(cExtent);
+                } while (nWidth < 440);
+            }
+            if (bFlash)
+                g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowFlashingStatus(nStatus);
+            if (nStatus == GUI_STATUS_ITEM_RECEIVED)
+            {
+                int nIdealHeight = m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
+                if (nIdealHeight < STATUS_ROW_HEIGHT)
+                    nTop += STATUS_ROW_HEIGHT;
+                else
+                    nTop += nIdealHeight;
+            }
+            else
+                nTop += STATUS_ROW_HEIGHT;
+        }
+        else
+        {
+            CSWGuiLabel* pLabel = &m_aStatusLabels[nStatus];
+            pLabel->m_bEnabled = 0;
+            m_aStatusDescriptions[nStatus].m_bEnabled = 0;
+        }
+    }
+    cExtent.m_nHeight = nTop - (int)(fScaleY * -32.0f);
+    cExtent.m_nWidth = m_aStatusDescriptions[0].m_cExtent.m_nLeft - (int)(fScaleX * -10.0f) + nWidth;
+    cExtent.m_nTop = (m_pManager->m_nHeight - cExtent.m_nHeight) / 2;
+    cExtent.m_nLeft = (m_pManager->m_nWidth - cExtent.m_nWidth) / 2;
+    SetExtent(cExtent);
+    int nPanelWidth = cExtent.m_nWidth;
+#ifdef _XBOX
+    CSWGuiExtent cOkExtent = m_lblOk.m_cExtent;
+    cExtent = m_lblA.m_cExtent;
+    cExtent.m_nLeft = (nPanelWidth - cOkExtent.m_nWidth - cExtent.m_nWidth) / 2;
+    cOkExtent.m_nLeft = cExtent.m_nWidth + cExtent.m_nLeft;
+    cExtent.m_nTop = nTop;
+    cOkExtent.m_nTop = nTop - 1;
+    m_lblA.SetExtent(cExtent);
+    m_lblOk.SetExtent(cOkExtent);
+#else
+    CSWGuiExtent* pOkExtent = &m_btnOk.m_cExtent;
+    cExtent = *pOkExtent;
+    cExtent.m_nTop = nTop;
+    cExtent.m_nLeft = (nPanelWidth - cExtent.m_nWidth) / 2;
+    m_btnOk.SetExtent(cExtent);
+#endif
+    m_cStatusSummary.m_bDisplaySPending = 0;
+    m_cStatusSummary.m_bSoundPending = 0;
+    m_cStatusSummary.m_bItemReceived = 0;
+    m_cStatusSummary.m_bItemLost = 0;
+    m_cStatusSummary.m_bJournal = 0;
+    m_cStatusSummary.m_bLevelUpSound = 0;
+    m_cStatusSummary.m_bNewQuestSound = 0;
+    m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bDarkAlignSound = 0;
+    m_cStatusSummary.m_bLightAlignSound = 0;
+    m_cStatusSummary.m_bCreditsNet = 0;
+    m_cStatusSummary.m_nCredits = 0;
+    m_cStatusSummary.m_nLightShift = 0;
+    m_cStatusSummary.m_nDarkShift = 0;
+    m_cStatusSummary.m_nExperience = 0;
+    m_cStatusSummary.m_nStealthExperience = 0;
+    m_cStatusSummary.m_nInfluenceGain = 0;
+    m_cStatusSummary.m_nInfluenceLost = 0;
+    m_cStatusSummary.m_nMaxForcePointsGain = 0;
+    m_cStatusSummary.m_nMaxForcePointsLost = 0;
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+    if (bJournal)
+        g_pAppManager->GetClientExoApp()->ShowTutorialWindow(CClientExoApp::TUTORIAL_JOURNAL,
+                                                          OBJECT_INVALID, OBJECT_INVALID, 0);
+#ifndef _XBOX
+    CSWGuiExtent cPanelExtent = m_cExtent;
+    CSWGuiExtent cButtonExtent = *pOkExtent;
+    int nMouseX = cButtonExtent.m_nLeft;
+    int nMouseY = cPanelExtent.m_nTop;
+    nMouseX += cPanelExtent.m_nLeft + cButtonExtent.m_nWidth / 2;
+    nMouseY += cButtonExtent.m_nTop + cButtonExtent.m_nHeight / 2;
+#endif
+#ifndef _XBOX
+    g_pGuiMan->StoreCurrentMousePosition();
+    g_pGuiMan->MoveMouseToPosition(nMouseX, nMouseY);
+#endif
 }
 
 #ifdef _XBOX
@@ -497,6 +1417,27 @@ void CSWGuiMessageBox::SetMessageColors(Vector vBorderColor, Vector vTextColor)
     m_btnCancel.m_cText.m_cParams.SetDefaultColor(vTextColor);
     m_lblMessage.m_cText.m_cParams.SetColor(vTextColor);
 }
+// PC 0x00675C70 GOG 0x00675A10
+void CSWGuiMessageBox::UpdateControls()
+{
+#ifdef _XBOX
+    CSWGuiLabel* pA = &m_lblA;
+    pA->m_bEnabled = m_bShowButtons;
+    CSWGuiLabel* pOk = &m_lblOk;
+    pOk->m_bEnabled = m_bShowButtons;
+    CSWGuiLabel* pB = &m_lblB;
+    CSWGuiLabel* pCancel = &m_lblCancel;
+    pB->m_bEnabled = m_bAllowCancel && m_bShowButtons;
+    pCancel->m_bEnabled = m_bAllowCancel && m_bShowButtons;
+#else
+    CSWGuiButton* pOk = &m_btnOk;
+    pOk->m_bEnabled = m_bShowButtons;
+    CSWGuiButton* pCancel = &m_btnCancel;
+    pCancel->m_bEnabled = m_bAllowCancel && m_bShowButtons;
+#endif
+    CSWGuiLabel* pIcon = &m_lblIcon;
+    pIcon->m_bEnabled = m_bHasIcon;
+}
 // PC 0x00675CD0 GOG 0x00675A70
 void CSWGuiMessageBox::SetMessage(unsigned long nStrRef)
 {
@@ -510,6 +1451,14 @@ void CSWGuiMessageBox::SetOkButtonMessage(unsigned long nStrRef)
 #else
     m_btnOk.m_cText.m_cParams.SetStrRef(nStrRef);
 #endif
+}
+// PC 0x006799B0 GOG 0x00679750
+CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("tooltip8X6_p");
+    InitControl(m_lblToolTip, "tooltip", 1);
+    StopLoadFromLayout();
 }
 // PC 0x00675D10 GOG 0x00675AB0
 void CSWGuiMessageBox::SetCancelButtonMessage(unsigned long nStrRef)
@@ -554,6 +1503,22 @@ void CSWGuiMessageBox::ResetButtonMessage()
     m_btnOk.m_cText.m_cParams.SetStrRef(1580);
     m_btnCancel.m_cText.m_cParams.SetStrRef(1581);
 #endif
+}
+// PC 0x00675D90 GOG 0x00675B30
+void CSWGuiMessageBox::AddMessageLabel()
+{
+    CSWGuiListBox* pList = &m_lbMessage;
+    CSWGuiExtent extent = m_lblMessage.m_cExtent;
+    extent.m_nWidth = pList->m_cItemExtent.m_nWidth - 2 * pList->m_nPadding;
+    m_lblMessage.SetExtent(extent);
+    if (m_lblMessage.m_cText.m_cParams.m_sText.GetLength() > 0)
+        extent.m_nHeight = m_lblMessage.m_cText.GetIdealHeight();
+    else
+        extent.m_nHeight = m_lblMessage.m_cText.GetFontHeight();
+    m_lblMessage.SetExtent(extent);
+    CSWGuiControl* pControl = &m_lblMessage;
+    pList->AddControls(&pControl, 1, 0, 0, 0);
+    pList->SetSelectedControl(&m_lblMessage, 0);
 }
 // PC 0x00675E60 GOG 0x00675C00
 void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
@@ -906,1058 +1871,13 @@ void CSWGuiDeathDisplay::OnQuitPressed(CSWGuiControl* pControl)
     g_pAppManager->m_pClientExoApp->SetGameOver(0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->RemoveDeathMessage(1);
 }
-// PC 0x00676AD0 GOG 0x00676870
-void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
-{
-    if (nControl >= 0 && nControl < m_lControls.num)
-        SetActiveControl(m_lControls.element[nControl], bActive);
-}
 #ifndef _XBOX
-// PC 0x00676B00 GOG 0x006768A0
-void CSWGuiInGameMenu::Draw(float fElapsed)
-{
-    CSWCCreature* pCreature;
-    if (m_nTopMenuOverrideCharacter != -1)
-    {
-        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-        pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
-            pServerExoApp->GetPartyTable()->GetNPCObject(m_nTopMenuOverrideCharacter, 0, 1)));
-        if (pCreature == NULL)
-        {
-            return;
-        }
-    }
-    else
-    {
-        pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
-    }
-    CSWSCreature* pServer = pCreature->GetServerCreature();
-    CSWSCreatureStats* pStats = pServer->GetStats();
-    m_cChar2350.SetPortrait(pCreature->GetPortrait(1));
-    int nPoisonState = pServer->m_nPoisonState;
-    m_cChar2350.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1), nPoisonState);
-    int nMaxForce = pServer->GetMaxForcePoints();
-    m_cChar2350.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);
-    int nState = 0;
-    int nBuffCount = 0;
-    int nDebuffCount = 0;
-    if (pServer->GetDead() || pServer->GetDeadTemp())
-    {
-        nState = CSWGuiMainInterfaceChar::PORTRAIT_DEAD;
-    }
-    else if (pServer->GetStats()->CanLevelUp())
-    {
-        nState = CSWGuiMainInterfaceChar::PORTRAIT_LEVEL_UP;
-    }
-    else if (pServer->IsDebilitated(0))
-    {
-        nState = CSWGuiMainInterfaceChar::PORTRAIT_DEBILITATED;
-    }
-    else
-    {
-        int nIcon = 0;
-        int nEffectCount = pServer->GetEffectIconCount();
-        if (nEffectCount > 0)
-        {
-            do
-            {
-                if (pServer->m_lstEffectIcons.element[nIcon]->m_bGood)
-                    nBuffCount++;
-                else
-                    nDebuffCount++;
-                ++nIcon;
-            } while (nIcon < nEffectCount);
-        }
-    }
-    CExoString sName = pCreature->GetName();
-    int nTag = sName.Find('<', 0);
-    int nToken = sName.Find('{', 0);
-    if (nTag != -1 || nToken != -1)
-    {
-        g_pSWTlkTable->ParseStr(sName, (CGameObject*)pCreature, 0, 1);
-    }
-    m_lblCharName.m_cText.m_cParams.SetText(sName);
-    if (pStats->GetNumClasses() == 1)
-    {
-        unsigned long nStrRef = g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef;
-        m_lblTopClass1.m_cText.m_cParams.SetText(
-            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
-        m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
-        m_lblTopClass2.m_cText.m_cParams.SetText("");
-        m_lblTopClass2Level.m_cText.m_cParams.SetText("");
-    }
-    else
-    {
-        unsigned long nStrRef = g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef;
-        m_lblTopClass1.m_cText.m_cParams.SetText(
-            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
-        m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
-        nStrRef = g_pRules->m_pClasses[pStats->GetClass(1)].m_nNameStrRef;
-        m_lblTopClass2.m_cText.m_cParams.SetText(
-            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
-        m_lblTopClass2Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(1, 0));
-    }
-    m_cChar2350.Show(1, nState, nBuffCount, nDebuffCount);
-    CSWGuiPanel::Draw(fElapsed);
-    m_cChar2350.DrawEffects(fElapsed, 1);
-    int nCharacters = g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters();
-    if (nCharacters == 1 || nCharacters == 0)
-    {
-        m_lblChar2.SetEnabledFlag(0);
-        m_lblBack2.SetEnabledFlag(0);
-        m_lblLevelUp2.SetEnabledFlag(0);
-        m_btnChange2.SetEnabledFlag(0);
-        m_lblChar3.SetEnabledFlag(0);
-        m_lblBack3.SetEnabledFlag(0);
-        m_lblLevelUp3.SetEnabledFlag(0);
-        m_btnChange3.SetEnabledFlag(0);
-    }
-    else if (nCharacters == 2)
-    {
-        CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
-        CSWSCreature* pMemberServer = pMember->GetServerCreature();
-        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
-        m_lblChar2.SetEnabledFlag(1);
-        m_lblBack2.SetEnabledFlag(1);
-        if (pMemberServer->GetStats()->CanLevelUp())
-            m_lblLevelUp2.SetEnabledFlag(1);
-        else
-            m_lblLevelUp2.SetEnabledFlag(0);
-        m_btnChange2.SetEnabledFlag(1);
-        m_lblChar3.SetEnabledFlag(0);
-        m_lblBack3.SetEnabledFlag(0);
-        m_lblLevelUp3.SetEnabledFlag(0);
-        m_btnChange3.SetEnabledFlag(0);
-    }
-    else if (nCharacters == 3)
-    {
-        CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
-        CSWSCreature* pMemberServer = pMember->GetServerCreature();
-        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
-        m_lblChar2.SetEnabledFlag(1);
-        m_lblBack2.SetEnabledFlag(1);
-        if (pMemberServer->GetStats()->CanLevelUp())
-            m_lblLevelUp2.SetEnabledFlag(1);
-        else
-            m_lblLevelUp2.SetEnabledFlag(0);
-        m_btnChange2.SetEnabledFlag(1);
-        pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(2);
-        pMemberServer = pMember->GetServerCreature();
-        m_lblChar3.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
-        m_lblChar3.SetEnabledFlag(1);
-        m_lblBack3.SetEnabledFlag(1);
-        if (pMemberServer->GetStats()->CanLevelUp())
-            m_lblLevelUp3.SetEnabledFlag(1);
-        else
-            m_lblLevelUp3.SetEnabledFlag(0);
-        m_btnChange3.SetEnabledFlag(1);
-    }
-}
 #endif
 
-// PC 0x00677240 GOG 0x00676FE0
-CSWGuiInGameMessages::~CSWGuiInGameMessages()
-{
-    m_lbDialog.ClearItems();
-    m_lbMessages.ClearItems();
-    m_lbCombat.ClearItems();
-    m_lbEffectsGood.ClearItems();
-    m_lbEffectsBad.ClearItems();
-    delete[] m_pDialogLabels;
-    delete[] m_pMessageLabels;
-    delete[] m_pCombatLabels;
-}
-// PC 0x00677430 GOG 0x006771D0
-CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    m_bAllowCancel = 1;
-    m_bShowButtons = 1;
-    m_bHideButtons = 0;
-    m_bHasIcon = 0;
-    m_n9BC = 0;
-    StartLoadFromLayout("confirm_p");
-#ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblOk, "LBL_OK", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblCancel, "LBL_CANCEL", 1);
-    InitControl(m_lbMessage, "LB_MESSAGE", 1);
-    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    StopLoadFromLayout();
-#else
-    CSWGuiButton* pOk = &m_btnOk;
-    InitControl(*pOk, "BTN_OK", 1);
-    InitControl(m_btnCancel, "BTN_CANCEL", 1);
-    InitControl(m_lbMessage, "LB_MESSAGE", 1);
-    StopLoadFromLayout();
-    pOk->AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                  (CSWGuiHandler)&CSWGuiMessageBox::OnOkButtonPressed);
-    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                         (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
-#endif
-    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    m_lblIcon.SetExtent(CSWGuiExtent(0, 10, 32, 32));
-    CSWGuiLabel* pIcon = &m_lblIcon;
-    pIcon->m_bEnabled = 0;
-    AddControl(pIcon);
-    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
-    if (pProto)
-        m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
-    CenterPanel();
-    m_cPanelExtent = m_cExtent;
-    m_cMessageExtent = m_lbMessage.m_cExtent;
-#ifdef _XBOX
-    m_nLblABottomOffset = m_cExtent.m_nHeight - m_lblA.m_cExtent.m_nTop;
-    m_nLblBBottomOffset = m_cExtent.m_nHeight - m_lblB.m_cExtent.m_nTop;
-    m_nLblRAnalogRightOffset = m_cExtent.m_nWidth - m_lblRAnalog.m_cExtent.m_nLeft;
-#endif
-    m_bAccepted = 0;
-    m_pCallback = 0;
-    m_pCallbackObject = 0;
-    m_pCallbackControl = 0;
-    m_nPreviousInputClass = 0;
-#ifndef _XBOX
-    m_bFocusOk = 0;
-#endif
-    m_n9C4 = 0;
-    m_nOpenSound = 15;
-}
 
 #ifndef _XBOX
-// PC 0x00677700 GOG 0x006774A0
-CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
-    : CSWGuiPanel(pManager)
-{
-    if (nStyle == 0)
-    {
-        CSWGuiMessageBox::CSWGuiMessageBox(pManager);
-        return;
-    }
-    m_bAllowCancel = 1;
-    m_bShowButtons = 1;
-    m_bHideButtons = 0;
-    m_bHasIcon = 0;
-    m_n9BC = nStyle;
-    StartLoadFromLayout("datapad_p");
-    SetBorderFillImage(m_pBorder->m_cParams, "", 0);
-    InitControl(m_btnOk, "BTN_OK", 1);
-    InitControl(m_btnCancel, "BTN_CANCEL", 1);
-    InitControl(m_lbMessage, "LB_MESSAGE", 1);
-    StopLoadFromLayout();
-    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    m_btnOk.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                     (CSWGuiHandler)&CSWGuiMessageBox::OnOkButtonPressed);
-    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                         (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
-    CSWGuiLabel* pIcon = &m_lblIcon;
-    pIcon->SetExtent(CSWGuiExtent(0, 10, 32, 32));
-    pIcon->m_bEnabled = 0;
-    AddControl(pIcon);
-    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
-    if (pProto)
-        m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
-    CenterPanel();
-    m_cPanelExtent = m_cExtent;
-    m_cMessageExtent = m_lbMessage.m_cExtent;
-    m_bAccepted = 0;
-    m_pCallback = 0;
-    m_pCallbackObject = 0;
-    m_pCallbackControl = 0;
-    m_nPreviousInputClass = 0;
-    m_nOpenSound = 15;
-    m_bFocusOk = 0;
-}
-#endif
-// PC 0x00677A20 GOG 0x006777C0
-void CSWGuiMessageBox::SetAllowCancel(int bAllowCancel)
-{
-    m_bAllowCancel = bAllowCancel;
-    m_nOpenSound = bAllowCancel != 0 ? 15 : 2;
-    UpdateControls();
-}
-// PC 0x00677A50 GOG 0x006777F0
-void CSWGuiMessageBox::SetIcon(const CResRef& cIcon)
-{
-    if (cIcon.IsValid())
-    {
-        m_bHasIcon = 1;
-        m_lblIcon.m_cBorder.m_cParams.SetFillImage(cIcon, 0);
-        UpdateControls();
-    }
-    else
-    {
-        m_bHasIcon = 0;
-        UpdateControls();
-    }
-}
-// PC 0x00675C70 GOG 0x00675A10
-void CSWGuiMessageBox::UpdateControls()
-{
-#ifdef _XBOX
-    CSWGuiLabel* pA = &m_lblA;
-    pA->m_bEnabled = m_bShowButtons;
-    CSWGuiLabel* pOk = &m_lblOk;
-    pOk->m_bEnabled = m_bShowButtons;
-    CSWGuiLabel* pB = &m_lblB;
-    CSWGuiLabel* pCancel = &m_lblCancel;
-    pB->m_bEnabled = m_bAllowCancel && m_bShowButtons;
-    pCancel->m_bEnabled = m_bAllowCancel && m_bShowButtons;
-#else
-    CSWGuiButton* pOk = &m_btnOk;
-    pOk->m_bEnabled = m_bShowButtons;
-    CSWGuiButton* pCancel = &m_btnCancel;
-    pCancel->m_bEnabled = m_bAllowCancel && m_bShowButtons;
-#endif
-    CSWGuiLabel* pIcon = &m_lblIcon;
-    pIcon->m_bEnabled = m_bHasIcon;
-}
-// PC 0x00677AA0 GOG 0x00677840
-void CSWGuiMessageBox::FixMessageLabel()
-{
-    CSWGuiExtent cPanel = m_cPanelExtent;
-    CSWGuiExtent cMessage = m_cMessageExtent;
-    CSWGuiExtent cControl;
-#ifdef _XBOX
-    CSWGuiExtent cPrompt;
 #endif
 
-    if (m_bHasIcon)
-    {
-        cPanel.m_nHeight += 32;
-        cMessage.m_nTop += 32;
-        cPanel.m_nTop -= 16;
-    }
-#ifdef _XBOX
-    if (m_bShowButtons && !m_bHideButtons)
-    {
-        if (!m_bAllowCancel)
-        {
-            cPanel.m_nHeight -= m_nLblBBottomOffset - 15;
-            cPanel.m_nTop += (m_nLblBBottomOffset - 15) / 2;
-        }
-    }
-    else
-    {
-        cPanel.m_nHeight -= m_nLblABottomOffset - 15;
-        cPanel.m_nTop += (m_nLblABottomOffset - 15) / 2;
-    }
-
-    if (m_lblOk.m_bEnabled)
-    {
-        cControl = m_lblOk.m_cExtent;
-        cControl.m_nWidth = 20;
-        m_lblOk.SetExtent(cControl);
-        while (m_lblOk.m_cText.GetIdealHeight() != m_lblOk.m_cText.GetFontHeight())
-        {
-            cControl.m_nWidth += 10;
-            m_lblOk.SetExtent(cControl);
-        }
-        if (cPanel.m_nWidth <= m_lblA.m_cExtent.m_nWidth + cControl.m_nWidth - 2)
-            cPanel.m_nWidth = m_lblA.m_cExtent.m_nWidth + cControl.m_nWidth - 2;
-    }
-    if (m_lblCancel.m_bEnabled)
-    {
-        cControl = m_lblCancel.m_cExtent;
-        cControl.m_nWidth = 20;
-        m_lblCancel.SetExtent(cControl);
-        while (m_lblCancel.m_cText.GetIdealHeight() != m_lblCancel.m_cText.GetFontHeight())
-        {
-            cControl.m_nWidth += 10;
-            m_lblCancel.SetExtent(cControl);
-        }
-        if (cPanel.m_nWidth <= m_lblB.m_cExtent.m_nWidth + cControl.m_nWidth - 2)
-            cPanel.m_nWidth = m_lblB.m_cExtent.m_nWidth + cControl.m_nWidth - 2;
-    }
-#else
-    if (m_bShowButtons && !m_bHideButtons)
-    {
-        if (!m_bAllowCancel)
-        {
-            cPanel.m_nHeight -= m_btnCancel.m_cExtent.m_nHeight + 2;
-            cPanel.m_nTop += (m_btnCancel.m_cExtent.m_nHeight + 2) / 2;
-        }
-    }
-    else
-    {
-        cPanel.m_nHeight -= m_btnOk.m_cExtent.m_nHeight;
-        cPanel.m_nTop += m_btnOk.m_cExtent.m_nHeight / 2;
-    }
-
-    if (m_btnOk.m_bEnabled)
-    {
-        cControl = m_btnOk.m_cExtent;
-        cControl.m_nWidth = 100;
-        m_btnOk.SetExtent(cControl);
-        while (m_btnOk.m_cText.GetIdealHeight() != m_btnOk.m_cText.GetFontHeight())
-        {
-            cControl.m_nWidth += 10;
-            m_btnOk.SetExtent(cControl);
-        }
-        cControl.m_nWidth += 2 * m_btnOk.m_cBorder.m_cParams.m_nInnerOffset;
-        m_btnOk.SetExtent(cControl);
-        if (cPanel.m_nWidth <= cControl.m_nWidth - 2)
-            cPanel.m_nWidth = cControl.m_nWidth - 2;
-    }
-    if (m_btnCancel.m_bEnabled)
-    {
-        cControl = m_btnCancel.m_cExtent;
-        cControl.m_nWidth = 100;
-        m_btnCancel.SetExtent(cControl);
-        while (m_btnCancel.m_cText.GetIdealHeight() != m_btnCancel.m_cText.GetFontHeight())
-        {
-            cControl.m_nWidth += 10;
-            m_btnCancel.SetExtent(cControl);
-        }
-        cControl.m_nWidth += 2 * m_btnCancel.m_cBorder.m_cParams.m_nInnerOffset;
-        m_btnCancel.SetExtent(cControl);
-        if (cPanel.m_nWidth <= cControl.m_nWidth - 2)
-            cPanel.m_nWidth = cControl.m_nWidth - 2;
-    }
-#endif
-
-    if (m_n9BC != 0)
-    {
-        cPanel.m_nHeight = 300;
-        cPanel.m_nWidth = 400;
-        cPanel.m_nLeft =
-            g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / 2 -
-            cPanel.m_nWidth / 2;
-    }
-    cMessage.m_nWidth += cPanel.m_nWidth - m_cPanelExtent.m_nWidth;
-    SetExtent(cPanel);
-    if (m_n9BC != 0)
-    {
-        cMessage.m_nHeight = 208;
-        cMessage.m_nWidth = 334;
-        cMessage.m_nLeft = 33;
-        cMessage.m_nTop = 27;
-    }
-    m_lbMessage.SetExtent(cMessage);
-    m_lbMessage.SetScrollBarExtent(16, 1);
-    AddMessageLabel();
-#ifndef _XBOX
-    int nScrollWidth = m_lbMessage.m_cScrollBar.m_cExtent.m_nWidth;
-    m_lbMessage.SetScrollBarExtent(0, 1);
-#endif
-
-    if (m_lbMessage.IsOversized())
-    {
-        int nFontHeight = m_lblMessage.m_cText.GetFontHeight();
-        while (m_lbMessage.IsOversized() &&
-               (cPanel.m_nWidth < 440 || cPanel.m_nHeight < 280))
-        {
-            if (cPanel.m_nHeight > 160 && cPanel.m_nWidth < 440)
-            {
-                cMessage.m_nWidth += 40;
-                cPanel.m_nWidth += 40;
-                cPanel.m_nLeft -= 20;
-                m_lbMessage.SetExtent(cMessage);
-                AddMessageLabel();
-                if (!m_lbMessage.IsOversized())
-                    break;
-            }
-            if (cPanel.m_nHeight < 280)
-            {
-                cMessage.m_nHeight += nFontHeight;
-                cPanel.m_nHeight += nFontHeight;
-                cPanel.m_nTop -= nFontHeight / 2;
-                m_lbMessage.SetExtent(cMessage);
-                AddMessageLabel();
-            }
-        }
-        SetExtent(cPanel);
-    }
-
-#ifdef _XBOX
-    if (m_lbMessage.IsOversized())
-        m_lblRAnalog.SetEnabledFlag(1);
-    else
-    {
-        m_lblRAnalog.SetEnabledFlag(0);
-        m_lbMessage.SetScrollBarExtent(0, 1);
-    }
-    cControl = m_lblRAnalog.m_cExtent;
-    CSWGuiExtent* pListExtent = &m_lbMessage.m_cExtent;
-    cPrompt = *pListExtent;
-    cControl.m_nTop = cPrompt.m_nHeight / 2 - cControl.m_nHeight / 2 + cPrompt.m_nTop;
-    cControl.m_nLeft = m_cExtent.m_nWidth - m_nLblRAnalogRightOffset;
-    m_lblRAnalog.SetExtent(cControl);
-    int nCenter = m_cExtent.m_nWidth / 2;
-    cControl = m_lblIcon.m_cExtent;
-    cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
-    m_lblIcon.SetExtent(cControl);
-    cControl = m_lblOk.m_cExtent;
-    CSWGuiExtent* pAExtent = &m_lblA.m_cExtent;
-    cPrompt = *pAExtent;
-    cPrompt.m_nTop = pListExtent->m_nHeight + pListExtent->m_nTop - 4;
-    cPrompt.m_nLeft = nCenter - (cPrompt.m_nWidth + cControl.m_nWidth - 2) / 2;
-    m_lblA.SetExtent(cPrompt);
-    cControl.m_nTop = cPrompt.m_nTop - 1;
-    cControl.m_nLeft = cPrompt.m_nLeft + 30;
-    m_lblOk.SetExtent(cControl);
-    cControl = m_lblCancel.m_cExtent;
-    cPrompt = m_lblB.m_cExtent;
-    cPrompt.m_nTop = pAExtent->m_nHeight + pAExtent->m_nTop - 14;
-    cPrompt.m_nLeft = nCenter - (cPrompt.m_nWidth + cControl.m_nWidth - 2) / 2;
-    m_lblB.SetExtent(cPrompt);
-    cControl.m_nTop = cPrompt.m_nTop - 1;
-    cControl.m_nLeft = cPrompt.m_nLeft + 30;
-    m_lblCancel.SetExtent(cControl);
-#else
-    if (m_lbMessage.IsOversized())
-    {
-        m_lbMessage.SetScrollBarExtent(nScrollWidth, 1);
-        AddMessageLabel();
-    }
-
-    int nCenter = m_cExtent.m_nWidth / 2;
-    cControl = m_lblIcon.m_cExtent;
-    cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
-    m_lblIcon.SetExtent(cControl);
-    if (m_n9BC != 0)
-    {
-        cControl.m_nTop = 245;
-        cControl.m_nHeight = 28;
-        cControl.m_nWidth = 120;
-        cControl.m_nLeft = cPanel.m_nWidth / 2 - cControl.m_nWidth / 2;
-    }
-    else
-    {
-        cControl = m_btnOk.m_cExtent;
-        cControl.m_nTop = m_lbMessage.m_cExtent.m_nHeight + m_lbMessage.m_cExtent.m_nTop + 4;
-        cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
-    }
-    m_btnOk.SetExtent(cControl);
-    cControl = m_btnCancel.m_cExtent;
-    cControl.m_nTop = m_btnOk.m_cExtent.m_nHeight + m_btnOk.m_cExtent.m_nTop + 2;
-    cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
-    m_btnCancel.SetExtent(cControl);
-    CenterPanel();
-#endif
-}
-// PC 0x00675D90 GOG 0x00675B30
-void CSWGuiMessageBox::AddMessageLabel()
-{
-    CSWGuiListBox* pList = &m_lbMessage;
-    CSWGuiExtent extent = m_lblMessage.m_cExtent;
-    extent.m_nWidth = pList->m_cItemExtent.m_nWidth - 2 * pList->m_nPadding;
-    m_lblMessage.SetExtent(extent);
-    if (m_lblMessage.m_cText.m_cParams.m_sText.GetLength() > 0)
-        extent.m_nHeight = m_lblMessage.m_cText.GetIdealHeight();
-    else
-        extent.m_nHeight = m_lblMessage.m_cText.GetFontHeight();
-    m_lblMessage.SetExtent(extent);
-    CSWGuiControl* pControl = &m_lblMessage;
-    pList->AddControls(&pControl, 1, 0, 0, 0);
-    pList->SetSelectedControl(&m_lblMessage, 0);
-}
-// PC 0x006780A0 GOG 0x00677E40
-void CSWGuiControllerLossBox::OnPanelAdded()
-{
-    SetAllowCancel(0);
-    SetMessage(STRREF_CONTROLLER_LOST);
-    m_pCallbackObject = this;
-    m_pCallback = (CSWGuiHandler)&CSWGuiControllerLossBox::OnAccept;
-    m_pCallbackControl = 0;
-    CSWGuiMessageBox::OnPanelAdded();
-}
-// PC 0x006780E0 GOG 0x00677E80
-CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    StartLoadFromLayout("statussummary_p");
-    InitControl(m_aStatusLabels[GUI_STATUS_JOURNAL], "LBL_JOURNAL", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_JOURNAL], "LBL_JOURNAL_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_CREDITS], "LBL_CREDITS", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_CREDITS], "LBL_CREDITS_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_XP], "LBL_XP", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_XP], "LBL_XP_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_STEALTH_XP], "LBL_STEALTH", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_STEALTH_XP], "LBL_STEALTH_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_DARK_SHIFT], "LBL_DARKSIDE", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_DARK_SHIFT], "LBL_DARKSIDE_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_LIGHT_SHIFT], "LBL_LIGHTSIDE", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_LIGHT_SHIFT], "LBL_LIGHTSIDE_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_NET_SHIFT], "LBL_NETSHIFT", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_NET_SHIFT], "LBL_NETSHIFT_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_ITEM_RECEIVED], "LBL_RECEIVED", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED], "LBL_RECEIVED_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_ITEM_LOST], "LBL_LOST", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_ITEM_LOST], "LBL_LOST_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_INFLUENCE_GAIN], "LBL_INFLUENCE_RECV", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_INFLUENCE_GAIN], "LBL_INFLUENCE_RECV_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_INFLUENCE_LOST], "LBL_INFLUENCE_LOST", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_INFLUENCE_LOST], "LBL_INFLUENCE_LOST_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_MAX_FP_GAIN], "LBL_MAX_FP_GAINED", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_MAX_FP_GAIN], "LBL_MAX_FP_GAINED_DESC", 1);
-    InitControl(m_aStatusLabels[GUI_STATUS_MAX_FP_LOST], "LBL_MAX_FP_LOST", 1);
-    InitControl(m_aStatusDescriptions[GUI_STATUS_MAX_FP_LOST], "LBL_MAX_FP_LOST_DESC", 1);
-#ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblOk, "LBL_OK", 1);
-    StopLoadFromLayout();
-#else
-    CSWGuiButton* pOk = &m_btnOk;
-    InitControl(*pOk, "BTN_OK", 1);
-    StopLoadFromLayout();
-    pOk->m_bFocusable = 0;
-    pOk->AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                  (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
-#endif
-    m_cStatusSummary.m_bDisplaySPending = 0;
-    m_cStatusSummary.m_bSoundPending = 0;
-    m_cStatusSummary.m_bItemReceived = 0;
-    m_cStatusSummary.m_bItemLost = 0;
-    m_cStatusSummary.m_bJournal = 0;
-    m_cStatusSummary.m_bLevelUpSound = 0;
-    m_cStatusSummary.m_bNewQuestSound = 0;
-    m_cStatusSummary.m_bCompleteSound = 0;
-    m_cStatusSummary.m_bDarkAlignSound = 0;
-    m_cStatusSummary.m_bLightAlignSound = 0;
-    m_cStatusSummary.m_bCreditsNet = 0;
-    m_cStatusSummary.m_nCredits = 0;
-    m_cStatusSummary.m_nLightShift = 0;
-    m_cStatusSummary.m_nDarkShift = 0;
-    m_cStatusSummary.m_nExperience = 0;
-    m_cStatusSummary.m_nStealthExperience = 0;
-    m_cStatusSummary.m_nInfluenceGain = 0;
-    m_cStatusSummary.m_nInfluenceLost = 0;
-    m_cStatusSummary.m_nMaxForcePointsGain = 0;
-    m_cStatusSummary.m_nMaxForcePointsLost = 0;
-    m_cStatusSummary.m_nSuppressed = 0;
-    m_n94 = 0;
-
-#ifndef _XBOX
-    m_bPositioned = 1;
-#endif
-}
-// PC 0x00678800 GOG 0x006785A0
-void CSWGuiStatusSummary::DisplayStatus()
-{
-    PlayPendingSounds();
-
-    for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; nStatus++)
-    {
-        int bShow = 0;
-        switch (nStatus)
-        {
-        case GUI_STATUS_JOURNAL:
-            bShow = m_cStatusSummary.m_bJournal;
-            break;
-        case GUI_STATUS_CREDITS:
-            bShow = m_cStatusSummary.m_nCredits != 0;
-            break;
-        case GUI_STATUS_XP:
-            bShow = m_cStatusSummary.m_nExperience != 0;
-            break;
-        case GUI_STATUS_STEALTH_XP:
-            bShow = m_cStatusSummary.m_nStealthExperience != 0;
-            break;
-        case GUI_STATUS_DARK_SHIFT:
-            bShow = m_cStatusSummary.m_nDarkShift > m_cStatusSummary.m_nLightShift;
-            break;
-        case GUI_STATUS_LIGHT_SHIFT:
-            bShow = m_cStatusSummary.m_nLightShift > m_cStatusSummary.m_nDarkShift;
-            break;
-        case GUI_STATUS_ITEM_RECEIVED:
-            bShow = m_cStatusSummary.m_bItemReceived;
-            break;
-        case GUI_STATUS_ITEM_LOST:
-            bShow = m_cStatusSummary.m_bItemLost;
-            break;
-        case GUI_STATUS_INFLUENCE_GAIN:
-            bShow = m_cStatusSummary.m_nInfluenceGain;
-            break;
-        case GUI_STATUS_INFLUENCE_LOST:
-            bShow = m_cStatusSummary.m_nInfluenceLost;
-            break;
-        case GUI_STATUS_MAX_FP_GAIN:
-            bShow = m_cStatusSummary.m_nMaxForcePointsGain;
-            break;
-        case GUI_STATUS_MAX_FP_LOST:
-            bShow = m_cStatusSummary.m_nMaxForcePointsLost;
-            break;
-        }
-        if (bShow)
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowFlashingStatus(nStatus);
-    }
-
-    m_cStatusSummary.m_bDisplaySPending = 0;
-    m_cStatusSummary.m_bSoundPending = 0;
-    m_cStatusSummary.m_bItemReceived = 0;
-    m_cStatusSummary.m_bItemLost = 0;
-    m_cStatusSummary.m_bJournal = 0;
-    m_cStatusSummary.m_bLevelUpSound = 0;
-    m_cStatusSummary.m_bNewQuestSound = 0;
-    m_cStatusSummary.m_bCompleteSound = 0;
-    m_cStatusSummary.m_bDarkAlignSound = 0;
-    m_cStatusSummary.m_bLightAlignSound = 0;
-    m_cStatusSummary.m_bCreditsNet = 0;
-    m_cStatusSummary.m_nCredits = 0;
-    m_cStatusSummary.m_nLightShift = 0;
-    m_cStatusSummary.m_nDarkShift = 0;
-    m_cStatusSummary.m_nExperience = 0;
-    m_cStatusSummary.m_nStealthExperience = 0;
-    m_cStatusSummary.m_nInfluenceGain = 0;
-    m_cStatusSummary.m_nInfluenceLost = 0;
-    m_cStatusSummary.m_nMaxForcePointsGain = 0;
-    m_cStatusSummary.m_nMaxForcePointsLost = 0;
-}
-
-// PC 0x00678930 GOG 0x006786D0
-void CSWGuiStatusSummary::OnPanelAdded()
-{
-
-    int bJournal = 0;
-    CExoString sDescription;
-    CSWGuiExtent cExtent;
-    cExtent.m_nLeft = cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight = 0;
-
-    PlayPendingSounds();
-    if (m_cStatusSummary.m_nDarkShift || m_cStatusSummary.m_nLightShift)
-        m_n94 = 1;
-
-    float fScaleX = 1.0f;
-    float fScaleY = 1.0f;
-    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
-    {
-        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
-        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
-    }
-    int nTop = (int)(fScaleY * 10.0f);
-    int nWidth = (int)(fScaleX * 150.0f);
-
-    for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; nStatus++)
-    {
-        int bShow = 0;
-        int bFlash = 1;
-        int bSetDescription = 0;
-        switch (nStatus)
-        {
-        case GUI_STATUS_JOURNAL:
-            bShow = m_cStatusSummary.m_bJournal;
-            bJournal = bShow;
-            break;
-        case GUI_STATUS_CREDITS:
-            bShow = m_cStatusSummary.m_nCredits != 0 || m_cStatusSummary.m_bCreditsNet;
-            if (bShow)
-            {
-                bSetDescription = 1;
-                if (m_cStatusSummary.m_nCredits >= 0)
-                {
-                    g_pTlkTable->SetCustomToken(0, m_cStatusSummary.m_nCredits);
-                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CREDITS_RECEIVED);
-                }
-                else
-                {
-                    g_pTlkTable->SetCustomToken(0, -m_cStatusSummary.m_nCredits);
-                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CREDITS_LOST);
-                }
-                if (m_cStatusSummary.m_bCreditsNet)
-                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NET_CHANGE) + sDescription;
-            }
-            break;
-        case GUI_STATUS_XP:
-            bShow = m_cStatusSummary.m_nExperience != 0;
-            if (bShow)
-            {
-                bSetDescription = 1;
-                g_pTlkTable->SetCustomToken(0, m_cStatusSummary.m_nExperience);
-                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_XP_RECEIVED);
-            }
-            break;
-        case GUI_STATUS_STEALTH_XP:
-            bShow = m_cStatusSummary.m_nStealthExperience != 0;
-            if (bShow)
-            {
-                bSetDescription = 1;
-                g_pTlkTable->SetCustomToken(0, m_cStatusSummary.m_nStealthExperience);
-                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_STEALTH_XP_RECEIVED);
-            }
-            break;
-        case GUI_STATUS_DARK_SHIFT:
-            bShow = m_cStatusSummary.m_nDarkShift > 0;
-            bFlash = m_cStatusSummary.m_nDarkShift > m_cStatusSummary.m_nLightShift;
-            break;
-        case GUI_STATUS_LIGHT_SHIFT:
-            bShow = m_cStatusSummary.m_nLightShift > 0;
-            bFlash = m_cStatusSummary.m_nLightShift > m_cStatusSummary.m_nDarkShift;
-            break;
-        case GUI_STATUS_NET_SHIFT:
-            bShow = m_cStatusSummary.m_nLightShift > 0 &&
-                    m_cStatusSummary.m_nDarkShift > 0 &&
-                    m_cStatusSummary.m_nLightShift != m_cStatusSummary.m_nDarkShift;
-            bFlash = 0;
-            if (bShow)
-            {
-                bSetDescription = 1;
-                if (m_cStatusSummary.m_nLightShift > m_cStatusSummary.m_nDarkShift)
-                {
-                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NET_LIGHT_SHIFT);
-                    m_aStatusLabels[GUI_STATUS_NET_SHIFT].m_cBorder.m_cParams.SetFillImage(
-                        m_aStatusLabels[GUI_STATUS_LIGHT_SHIFT].m_cBorder.m_cParams.m_cFillImage, 0);
-                }
-                else
-                {
-                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NET_DARK_SHIFT);
-                    m_aStatusLabels[GUI_STATUS_NET_SHIFT].m_cBorder.m_cParams.SetFillImage(
-                        m_aStatusLabels[GUI_STATUS_DARK_SHIFT].m_cBorder.m_cParams.m_cFillImage, 0);
-                }
-            }
-            break;
-        case GUI_STATUS_ITEM_RECEIVED:
-        {
-            CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
-            CExoString sItems;
-            for (int nItem = 0; nItem < pInGameGui->m_a1030.num; nItem++)
-            {
-                CExoLocString sLocName(pInGameGui->m_a1030[nItem]);
-                CExoString sName;
-                sLocName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
-                if (sItems == "")
-                    sItems = sName + "\n";
-                else
-                    sItems.Format("%s%s\n", sItems.CStr(), sName.CStr());
-                int nTokenStart = sItems.Find('<', 0);
-                int nCustomStart = sItems.Find('{', 0);
-                if (nTokenStart != -1 || nCustomStart != -1)
-                    g_pSWTlkTable->ParseStr(sItems,
-                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter(), 0, 1);
-            }
-            if (sItems == "")
-                bShow = 0;
-            else
-            {
-                bShow = 1;
-                bSetDescription = 1;
-                g_pTlkTable->SetCustomToken(0, sItems);
-                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_ITEMS_RECEIVED);
-            }
-            break;
-        }
-        case GUI_STATUS_ITEM_LOST:
-            bShow = m_cStatusSummary.m_bItemLost;
-            break;
-        case GUI_STATUS_INFLUENCE_GAIN:
-        case GUI_STATUS_INFLUENCE_LOST:
-        {
-            CExoString sNames;
-            int nNPC = 0;
-            CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
-            int nMask = nStatus == GUI_STATUS_INFLUENCE_GAIN ? m_cStatusSummary.m_nInfluenceGain
-                                                              : m_cStatusSummary.m_nInfluenceLost;
-            for (; nNPC < INFLUENCE_NPC_COUNT; nNPC++)
-            {
-                if (((nMask >> nNPC) & 1) == 0)
-                    continue;
-                CExoString sName;
-                switch (nNPC)
-                {
-                case NPC_ATTON:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_ATTON, NULL, 0, 0);
-                    break;
-                case NPC_BAO_DUR:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_BAO_DUR, NULL, 0, 0);
-                    break;
-                case NPC_MANDALORE:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_MANDALORE, NULL, 0, 0);
-                    break;
-                case NPC_G0T0:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_G0T0, NULL, 0, 0);
-                    break;
-                case NPC_HANDMAIDEN:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HANDMAIDEN, NULL, 0, 0);
-                    break;
-                case NPC_HK_47:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HK_47, NULL, 0, 0);
-                    break;
-                case NPC_KREIA:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_KREIA, NULL, 0, 0);
-                    break;
-                case NPC_MIRA:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_MIRA, NULL, 0, 0);
-                    break;
-                case NPC_T3_M4:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_T3_M4, NULL, 0, 0);
-                    break;
-                case NPC_VISAS:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_VISAS, NULL, 0, 0);
-                    break;
-                case NPC_HANHARR:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HANHARR, NULL, 0, 0);
-                    break;
-                case NPC_DISCIPLE:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_DISCIPLE, NULL, 0, 0);
-                    break;
-                case NPC_REMOTE:
-                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_REMOTE, NULL, 0, 0);
-                    break;
-                }
-                if (sNames == "")
-                    sNames = sName;
-                else
-                    sNames.Format("%s, %s", sNames.CStr(), sName.CStr());
-            }
-            if (sNames == "")
-                bShow = 0;
-            else
-            {
-                bShow = 1;
-                bSetDescription = 1;
-                g_pTlkTable->SetCustomToken(0, sNames);
-                if (nStatus == GUI_STATUS_INFLUENCE_GAIN)
-                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_INFLUENCE_GAINED);
-                else
-                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_INFLUENCE_LOST);
-            }
-            break;
-        }
-        case GUI_STATUS_MAX_FP_GAIN:
-            bShow = m_cStatusSummary.m_nMaxForcePointsGain;
-            break;
-        case GUI_STATUS_MAX_FP_LOST:
-            bShow = m_cStatusSummary.m_nMaxForcePointsLost;
-            break;
-        }
-
-        if (bShow)
-        {
-            CSWGuiLabel* pLabel = &m_aStatusLabels[nStatus];
-            CSWGuiLabel* pDescription = &m_aStatusDescriptions[nStatus];
-            pLabel->m_bEnabled = 1;
-            pDescription->m_bEnabled = 1;
-            if (bSetDescription)
-            {
-                m_aStatusDescriptions[nStatus].m_cText.m_cParams.SetText(sDescription);
-                m_aStatusDescriptions[nStatus].m_cText.m_cParams.ReSetFont();
-            }
-            cExtent = m_aStatusLabels[nStatus].m_cExtent;
-            cExtent.m_nTop = nTop;
-            cExtent.m_nHeight = STATUS_ICON_SIZE;
-            cExtent.m_nWidth = STATUS_ICON_SIZE;
-            pLabel->SetExtent(cExtent);
-            cExtent = m_aStatusDescriptions[nStatus].m_cExtent;
-            cExtent.m_nTop = nTop - 1;
-            if (nStatus != GUI_STATUS_ITEM_RECEIVED)
-                cExtent.m_nHeight = STATUS_DESCRIPTION_HEIGHT;
-            else
-                cExtent.m_nHeight = m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
-            cExtent.m_nWidth = nWidth;
-            pDescription->SetExtent(cExtent);
-            if (nStatus == GUI_STATUS_ITEM_RECEIVED)
-            {
-                if (m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.m_cParams.m_sText != "")
-                {
-                    int nItemWidth = (int)(fScaleX * 300.0f);
-                    if (nItemWidth > nWidth)
-                        nWidth = nItemWidth;
-                    cExtent.m_nWidth = nWidth;
-                    m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].SetExtent(cExtent);
-                }
-            }
-            else if (m_aStatusDescriptions[nStatus].m_cText.m_cParams.m_sText != "" && nWidth < 440)
-            {
-                do
-                {
-                    if (m_aStatusDescriptions[nStatus].m_cText.GetIdealHeight() ==
-                        m_aStatusDescriptions[nStatus].m_cText.GetFontHeight())
-                        break;
-                    nWidth += (int)(fScaleX * 20.0f);
-                    cExtent.m_nWidth = nWidth;
-                    pDescription->SetExtent(cExtent);
-                } while (nWidth < 440);
-            }
-            if (bFlash)
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowFlashingStatus(nStatus);
-            if (nStatus == GUI_STATUS_ITEM_RECEIVED)
-            {
-                int nIdealHeight = m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
-                if (nIdealHeight < STATUS_ROW_HEIGHT)
-                    nTop += STATUS_ROW_HEIGHT;
-                else
-                    nTop += nIdealHeight;
-            }
-            else
-                nTop += STATUS_ROW_HEIGHT;
-        }
-        else
-        {
-            CSWGuiLabel* pLabel = &m_aStatusLabels[nStatus];
-            pLabel->m_bEnabled = 0;
-            m_aStatusDescriptions[nStatus].m_bEnabled = 0;
-        }
-    }
-    cExtent.m_nHeight = nTop - (int)(fScaleY * -32.0f);
-    cExtent.m_nWidth = m_aStatusDescriptions[0].m_cExtent.m_nLeft - (int)(fScaleX * -10.0f) + nWidth;
-    cExtent.m_nTop = (m_pManager->m_nHeight - cExtent.m_nHeight) / 2;
-    cExtent.m_nLeft = (m_pManager->m_nWidth - cExtent.m_nWidth) / 2;
-    SetExtent(cExtent);
-    int nPanelWidth = cExtent.m_nWidth;
-#ifdef _XBOX
-    CSWGuiExtent cOkExtent = m_lblOk.m_cExtent;
-    cExtent = m_lblA.m_cExtent;
-    cExtent.m_nLeft = (nPanelWidth - cOkExtent.m_nWidth - cExtent.m_nWidth) / 2;
-    cOkExtent.m_nLeft = cExtent.m_nWidth + cExtent.m_nLeft;
-    cExtent.m_nTop = nTop;
-    cOkExtent.m_nTop = nTop - 1;
-    m_lblA.SetExtent(cExtent);
-    m_lblOk.SetExtent(cOkExtent);
-#else
-    CSWGuiExtent* pOkExtent = &m_btnOk.m_cExtent;
-    cExtent = *pOkExtent;
-    cExtent.m_nTop = nTop;
-    cExtent.m_nLeft = (nPanelWidth - cExtent.m_nWidth) / 2;
-    m_btnOk.SetExtent(cExtent);
-#endif
-    m_cStatusSummary.m_bDisplaySPending = 0;
-    m_cStatusSummary.m_bSoundPending = 0;
-    m_cStatusSummary.m_bItemReceived = 0;
-    m_cStatusSummary.m_bItemLost = 0;
-    m_cStatusSummary.m_bJournal = 0;
-    m_cStatusSummary.m_bLevelUpSound = 0;
-    m_cStatusSummary.m_bNewQuestSound = 0;
-    m_cStatusSummary.m_bCompleteSound = 0;
-    m_cStatusSummary.m_bDarkAlignSound = 0;
-    m_cStatusSummary.m_bLightAlignSound = 0;
-    m_cStatusSummary.m_bCreditsNet = 0;
-    m_cStatusSummary.m_nCredits = 0;
-    m_cStatusSummary.m_nLightShift = 0;
-    m_cStatusSummary.m_nDarkShift = 0;
-    m_cStatusSummary.m_nExperience = 0;
-    m_cStatusSummary.m_nStealthExperience = 0;
-    m_cStatusSummary.m_nInfluenceGain = 0;
-    m_cStatusSummary.m_nInfluenceLost = 0;
-    m_cStatusSummary.m_nMaxForcePointsGain = 0;
-    m_cStatusSummary.m_nMaxForcePointsLost = 0;
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
-    if (bJournal)
-        g_pAppManager->GetClientExoApp()->ShowTutorialWindow(CClientExoApp::TUTORIAL_JOURNAL,
-                                                          OBJECT_INVALID, OBJECT_INVALID, 0);
-#ifndef _XBOX
-    CSWGuiExtent cPanelExtent = m_cExtent;
-    CSWGuiExtent cButtonExtent = *pOkExtent;
-    int nMouseX = cButtonExtent.m_nLeft;
-    int nMouseY = cPanelExtent.m_nTop;
-    nMouseX += cPanelExtent.m_nLeft + cButtonExtent.m_nWidth / 2;
-    nMouseY += cButtonExtent.m_nTop + cButtonExtent.m_nHeight / 2;
-#endif
-#ifndef _XBOX
-    g_pGuiMan->StoreCurrentMousePosition();
-    g_pGuiMan->MoveMouseToPosition(nMouseX, nMouseY);
-#endif
-}
-// PC 0x006799B0 GOG 0x00679750
-CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    StartLoadFromLayout("tooltip8X6_p");
-    InitControl(m_lblToolTip, "tooltip", 1);
-    StopLoadFromLayout();
-}
 #ifndef _XBOX
 // PC 0x0067AF50 GOG 0x0067AD20
 CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)
@@ -2132,6 +2052,27 @@ void CSWGuiInGameMenu::OnChangeCharacter(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateInventory();
 }
 #endif
+// PC 0x0067C060 GOG 0x0067BE30
+void CSWGuiInGameMessages::OnPanelAdded()
+{
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateMessageGUI(this);
+    int nMessageType = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType;
+    if (nMessageType == CGuiInGame::MESSAGE_TYPE_DIALOG)
+        ShowDialogMessages();
+    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_FEEDBACK)
+        ShowFeedbackMessages();
+    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_COMBAT)
+        ShowCombatMessages();
+    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_EFFECTS)
+        ShowEffects();
+
+
+    g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0xC, OBJECT_INVALID,
+                                                       OBJECT_INVALID, 0);
+}
 // PC 0x00679B50 GOG 0x006798F0
 void CSWGuiDeathDisplay::OnLoadGamePressed(CSWGuiControl* pControl)
 {
@@ -2150,6 +2091,10 @@ void CSWGuiDeathDisplay::OnLoadGamePressed(CSWGuiControl* pControl)
     else
     {
         delete pSaveLoad;
+        if (SWGUIINGAME_DEBUG)
+        {
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox->SetAllowCancel(0);
+        }
     }
 }
 // PC 0x00679C50 GOG 0x00679A00
@@ -2369,27 +2314,6 @@ void CSWGuiInGameMessages::AddCombatMessages(CGuiInGameMessage* pMessages, unsig
         pList->SetSelectedControl(nMessages - 1, 0);
     }
 }
-// PC 0x0067C060 GOG 0x0067BE30
-void CSWGuiInGameMessages::OnPanelAdded()
-{
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
-    g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateMessageGUI(this);
-    int nMessageType = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType;
-    if (nMessageType == CGuiInGame::MESSAGE_TYPE_DIALOG)
-        ShowDialogMessages();
-    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_FEEDBACK)
-        ShowFeedbackMessages();
-    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_COMBAT)
-        ShowCombatMessages();
-    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_EFFECTS)
-        ShowEffects();
-
-
-    g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0xC, OBJECT_INVALID,
-                                                       OBJECT_INVALID, 0);
-}
 // PC 0x0067C0F0 GOG 0x0067BEC0
 void CSWGuiInGameMessages::ChangeMessageDisplay(CSWGuiControl* pControl)
 {
@@ -2489,6 +2413,90 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     m_lbCombat.SetSelectOnLeftClick(1);
     SetActiveControl(pMessages, 0);
 }
+// PC 0x0067A960 GOG 0x0067A730
+void CSWGuiInGameMessages::ShowEffects()
+{
+    m_lbMessages.m_bEnabled = 0;
+    m_lbDialog.SetEnabledFlag(0);
+    CSWGuiListBox* pGood = &m_lbEffectsGood;
+    pGood->m_bEnabled = 1;
+    CSWGuiListBox* pBad = &m_lbEffectsBad;
+    pBad->m_bEnabled = 1;
+    m_lbCombat.SetEnabledFlag(0);
+    m_lblEffectsGood.SetEnabledFlag(1);
+    m_lblEffectsBad.SetEnabledFlag(1);
+
+    m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    pGood->ClearItems();
+    pBad->ClearItems();
+    CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    if (pCreature == 0)
+        return;
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    if (pServerCreature == 0)
+        return;
+    CExoArrayList<CSWGuiControl*> aGood;
+    CExoArrayList<CSWGuiControl*> aBad;
+    CSWGuiLabelHilight* pGoodProto = (CSWGuiLabelHilight*)m_lbEffectsGood.m_pProtoItem;
+    CSWGuiExtent cGoodExtent(0, 0,
+        pGood->m_cItemExtent.m_nWidth - 2 * pGood->m_nPadding, 10);
+    CSWGuiLabelHilight* pBadProto = (CSWGuiLabelHilight*)m_lbEffectsBad.m_pProtoItem;
+    CSWGuiExtent cBadExtent(0, 0,
+        pBad->m_cItemExtent.m_nWidth - 2 * pBad->m_nPadding, 10);
+
+    CExoString sName;
+    for (int i = 0; i < pServerCreature->GetEffectIconCount(); i++)
+    {
+        CEffectIconObject* pIcon = pServerCreature->GetEffectIcons()->element[i];
+
+        unsigned long nStrRef = pIcon->m_nStrRef;
+        if (nStrRef >= 1)
+        {
+            sName = g_pTlkTable->GetSimpleString(nStrRef);
+
+            CSWGuiLabelHilight* pLabel = new CSWGuiLabelHilight();
+            if (pIcon->m_bGood)
+            {
+                pLabel->Initialize(cGoodExtent, pGoodProto);
+                pLabel->m_cText.m_cParams.SetText(sName);
+                pLabel->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                CSWGuiText* pText = &pLabel->m_cText;
+                cGoodExtent.m_nHeight = pText->GetIdealHeight() +
+                    2 * pLabel->m_cHilite.m_cParams.GetBorderDim();
+                pLabel->SetExtent(cGoodExtent);
+                pLabel->SetActive(0);
+                aGood.Add(pLabel);
+            }
+            else
+            {
+                pLabel->Initialize(cBadExtent, pBadProto);
+                pLabel->m_cText.m_cParams.SetText(sName);
+                pLabel->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                CSWGuiText* pText = &pLabel->m_cText;
+                cBadExtent.m_nHeight = pText->GetIdealHeight() +
+                    2 * pLabel->m_cHilite.m_cParams.GetBorderDim();
+                pLabel->SetExtent(cBadExtent);
+                pLabel->SetActive(0);
+                aBad.Add(pLabel);
+            }
+        }
+    }
+    if (aGood.num > 0)
+    {
+        pGood->AddControls(aGood, 1, 1, 1);
+        pGood->SetSelectedControl(0, 0);
+    }
+    if (aBad.num > 0)
+    {
+        pBad->AddControls(aBad, 1, 1, 1);
+        pBad->SetSelectedControl(0, 0);
+    }
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
+        CGuiInGame::MESSAGE_TYPE_EFFECTS;
+}
 // PC 0x0067CA30 GOG 0x0067C800
 void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
 {
@@ -2514,6 +2522,10 @@ void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
 #endif
             if (!m_bWasPaused)
                 g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);
+            if (SWGUIINGAME_DEBUG)
+            {
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessagesPanel->ChangeMessageDisplay(0);
+            }
             break;
         }
     }
