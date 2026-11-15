@@ -94,7 +94,7 @@ inline void FreeTextFormat()
     glDeleteLists(fontOffset, 128);
 }
 
-inline void GLRender::PrintStringAtScreenPos(char* szString, float fX, float fY)
+void GLRender::PrintStringAtScreenPos(char* szString, float fX, float fY)
 {
     glPushAttrib(GL_TEXTURE_BIT | GL_DEPTH_BUFFER_BIT | GL_LIGHTING_BIT);
     glDisable(GL_TEXTURE_2D);

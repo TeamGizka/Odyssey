@@ -6149,29 +6149,6 @@ void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
     }
 }
 
-void GLRender::RenderPausePlane()
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glBegin(GL_QUADS);
-    glColor4ubv((GLubyte*)&g_rgbaPauseOverlayColor);
-    glVertex2f(-1.0f, 1.0f);
-    glVertex2f(-1.0f, -1.0f);
-    glVertex2f(1.0f, -1.0f);
-    glVertex2f(1.0f, 1.0f);
-    glEnd();
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
-}
-
 inline void DrawPrimitive(unsigned int nMode, int nFirst, int nCount)
 {
     glDrawArrays(nMode, nFirst, nCount);
@@ -7194,6 +7171,29 @@ void BeginImposterRender(unsigned long nRecord)
     glLoadIdentity();
     gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     gluErrorString(glGetError());
+}
+
+void GLRender::RenderPausePlane()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glBegin(GL_QUADS);
+    glColor4ubv((GLubyte*)&g_rgbaPauseOverlayColor);
+    glVertex2f(-1.0f, 1.0f);
+    glVertex2f(-1.0f, -1.0f);
+    glVertex2f(1.0f, -1.0f);
+    glVertex2f(1.0f, 1.0f);
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
 }
 
 void EndImposterRender(unsigned long nRecord)

@@ -285,14 +285,6 @@ void HandleLoadError(unsigned long nError)  // PC 0x004015A0 GOG 0x004015A0
 }
 #endif
 
-void ReportFatalError(const char* szError)
-{
-    char szMessage[512];
-
-    sprintf(szMessage, "Fatal error: %s\n", szError);
-    OutputDebugString(szMessage);
-}
-
 #ifndef _XBOX
 int StoreMouseTrailsState()  // PC 0x004015B0 GOG 0x004015B0
 {
@@ -358,6 +350,37 @@ UINT RestoreScreenSaverState()  // PC 0x00401650 GOG 0x00401650
                                      g_nScreenSaverEnabled, NULL, 0);
     }
     return bScreenSaverEnabled;
+}
+#endif
+#ifndef _XBOX
+const char* tc(char* sBuffer)
+{
+    int nLevelVertices = RyanTotalLevelVertices;
+    int nAnimations = animationfootprint;
+    int nVertices = totalvertexpool;
+    int nTextures = usedtexturememory;
+    int nParts = countpart;
+
+    spawn(sBuffer);
+    AurTextureMakeCurrent();
+
+#ifndef _XBOX
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    SwapBuffers(GLRender::m_hDC);
+#endif
+
+    verts = (totalvertexpool - nVertices) / BYTES_PER_KB;
+    anims = (animationfootprint - nAnimations) / BYTES_PER_KB;
+    texts = (usedtexturememory - nTextures) / BYTES_PER_KB;
+    parts = countpart - nParts;
+    verts2 = RyanTotalLevelVertices - nLevelVertices;
+
+    sprintf(sBuffer, "Verts %d-%d Anims %d Text %d Parts %d", verts2, verts,
+            anims, texts, parts);
+    return sBuffer;
 }
 #endif
 // PC 0x00401670 GOG 0x00401670
@@ -446,36 +469,6 @@ const char* ResMem(char* sBuffer)
     sprintf(sBuffer, "%d %d %d/%d %d", nTotal / BYTES_PER_KB,
             nServicedSize / BYTES_PER_KB, nResources, nKeys,
             nImageSize / BYTES_PER_KB);
-    return sBuffer;
-}
-
-const char* tc(char* sBuffer)
-{
-    int nLevelVertices = RyanTotalLevelVertices;
-    int nAnimations = animationfootprint;
-    int nVertices = totalvertexpool;
-    int nTextures = usedtexturememory;
-    int nParts = countpart;
-
-    spawn(sBuffer);
-    AurTextureMakeCurrent();
-
-#ifndef _XBOX
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    SwapBuffers(GLRender::m_hDC);
-#endif
-
-    verts = (totalvertexpool - nVertices) / BYTES_PER_KB;
-    anims = (animationfootprint - nAnimations) / BYTES_PER_KB;
-    texts = (usedtexturememory - nTextures) / BYTES_PER_KB;
-    parts = countpart - nParts;
-    verts2 = RyanTotalLevelVertices - nLevelVertices;
-
-    sprintf(sBuffer, "Verts %d-%d Anims %d Text %d Parts %d", verts2, verts,
-            anims, texts, parts);
     return sBuffer;
 }
 #endif
