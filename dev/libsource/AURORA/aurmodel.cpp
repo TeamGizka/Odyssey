@@ -15,6 +15,8 @@
 #include <math.h>
 #include "aurdraw.h"
 
+#define AURMODEL_DEBUG 0
+
 int PartTriMesh::m_nNextPartID = 1;
 
 int PartProjection::m_nNextProjectionID = 1;
@@ -111,13 +113,6 @@ int MdlNodeAffectedByWind(MdlNode* pNode)
 {
     MdlNodeEmitter* pEmitter = pNode->AsMdlNodeEmitter();
     return pEmitter != 0 && pEmitter->IsAffectedByWind();
-}
-
-inline CAurObjectLightContainer::CAurObjectLightContainer()
-    : m_lstLights(0), m_lstFadeIntensities(0)
-{
-    m_pShadowLight = 0;
-    m_fShadowFade = 0.0f;
 }
 
 const char* setmirrorimage(char* sCommand)
@@ -331,10 +326,6 @@ const char* setgobwind(char* sCommand)
     return "Success.";
 }
 
-inline CAurObject::CAurObject()
-{
-}
-
 const char* spinmodels(char* sCommand)
 {
     for (int i = 0; i < 1000; i++)
@@ -495,29 +486,6 @@ const char* doganmodels(char* sCommand)
     return "SUCKY-SUCKY?  FIVE DOLLAR!";
 }
 #endif
-// PC 0x0045D4E0 GOG 0x0045D620
-Part* CreateInstanceTreeR(MdlNode* pNode, Gob* pGob)
-{
-    if (!pNode)
-        return 0;
-
-    Part* pPart = pNode->CreateInstanceDispatch(pGob);
-    pPart->m_pAurObject = pGob;
-    position_scale_factor = 1.0f;
-    pNode->ControlDispatch(pPart, -1.0f, 0.0f, 1.0f);
-    pPart->m_lstChildren.SetSize(pNode->m_lChildren.m_nCount);
-    for (int i = 0; i < pNode->m_lChildren.m_nCount; i++)
-    {
-        pPart->m_lstChildren[i] = CreateInstanceTreeR(pNode->m_lChildren[i], pGob);
-        pPart->m_lstChildren[i]->m_pParent = pPart;
-    }
-    pPart->m_nNodeID = pNode->m_nNodeID;
-    return pPart;
-}
-// PC 0x0045CD20 GOG 0x0045CE60
-inline CAurObject::~CAurObject()
-{
-}
 // PC 0x0044FD60 GOG 0x0044FEA0
 MaxFace_PostProcess::MaxFace_PostProcess()
 {
@@ -917,10 +885,6 @@ void MdlNodeLightsaber::InternalDestructor()  // PC 0x00452BF0 GOG 0x00452D60
     --countnode;
 }
 #endif
-inline MdlNode* MdlNodeTrigger::InternalConJoin()  // PC 0x00453170 GOG 0x004532B0
-{
-    return new MdlNodeTrigger(TranslateNodeName());
-}
 // PC 0x00452C50 GOG 0x00452D30
 void MdlNode::InternalDestructor()
 {
@@ -1002,6 +966,16 @@ PartLightsaber::~PartLightsaber()
     m_nFirstSegment = 0;
     m_nNextSegment = 0;
 }
+inline CAurObjectLightContainer::CAurObjectLightContainer()
+    : m_lstLights(0), m_lstFadeIntensities(0)
+{
+    m_pShadowLight = 0;
+    m_fShadowFade = 0.0f;
+}
+// PC 0x00459830 GOG 0x004599D0
+inline CAurObjectLightContainer::~CAurObjectLightContainer()
+{
+}
 // PC 0x0045CB60 GOG 0x0045CCA0
 void MdlNode::DestructorDispatch()
 {
@@ -1045,6 +1019,9 @@ void MdlNode::DestructorDispatch()
         break;
     }
 }
+inline CAurObject::CAurObject()
+{
+}
 // PC 0x0045C290 GOG 0x0045C3D0
 void MdlNodeLight::InternalDestructor()
 {
@@ -1056,9 +1033,17 @@ void MdlNodeLight::InternalDestructor()
     }
     MdlNode::InternalDestructor();
 }
+// PC 0x0045CD20 GOG 0x0045CE60
+inline CAurObject::~CAurObject()
+{
+}
 // PC 0x0045CD30 GOG 0x0045CE70
 Part* MdlNode::CreateInstanceDispatch(Gob* pGob)
 {
+    if (AURMODEL_DEBUG)
+    {
+        DestructorDispatch();
+    }
     switch (m_nNodeType)
     {
     case MDL_NODE_HEADER:
@@ -1093,6 +1078,11 @@ static void findallmaterials(Part* pPart, List<Material*>& lMaterials);
 // PC 0x0045C350 GOG 0x0045C490
 Part* MdlNodeLightsaber::InternalCreateInstance(Gob*)
 {
+    if (AURMODEL_DEBUG)
+    {
+        MdlNodeLight* pLight = NULL;
+        pLight->InternalDestructor();
+    }
     return new PartLightsaber(this);
 }
 // PC 0x0045C3C0 GOG 0x0045C500
@@ -1366,6 +1356,25 @@ MdlNodeAABB::~MdlNodeAABB()
     m_nNodeType = 0;
     delete m_pAABBData;
 }
+// PC 0x0045D4E0 GOG 0x0045D620
+Part* CreateInstanceTreeR(MdlNode* pNode, Gob* pGob)
+{
+    if (!pNode)
+        return 0;
+
+    Part* pPart = pNode->CreateInstanceDispatch(pGob);
+    pPart->m_pAurObject = pGob;
+    position_scale_factor = 1.0f;
+    pNode->ControlDispatch(pPart, -1.0f, 0.0f, 1.0f);
+    pPart->m_lstChildren.SetSize(pNode->m_lChildren.m_nCount);
+    for (int i = 0; i < pNode->m_lChildren.m_nCount; i++)
+    {
+        pPart->m_lstChildren[i] = CreateInstanceTreeR(pNode->m_lChildren[i], pGob);
+        pPart->m_lstChildren[i]->m_pParent = pPart;
+    }
+    pPart->m_nNodeID = pNode->m_nNodeID;
+    return pPart;
+}
 // PC 0x0045D6F0 GOG 0x0045D830
 Part* CreateInstanceTree(MdlNode* pNode, Gob* pGob)
 {
@@ -1381,10 +1390,6 @@ PartDanglyMesh::~PartDanglyMesh()
     GLRender::DeletePool(m_nVertexPool);
     m_nVertexPool = RequestPoolManager::INVALID_POOL;
 #endif
-}
-// PC 0x00459830 GOG 0x004599D0
-inline CAurObjectLightContainer::~CAurObjectLightContainer()
-{
 }
 // PC 0x0045BB60 GOG 0x0045BD00
 PartLightsaber::PartLightsaber(MdlNode* pNode)
@@ -1591,6 +1596,10 @@ PartTriMesh::~PartTriMesh()
         m_pOriginalTexCoords = 0;
     }
 }
+inline MdlNode* MdlNodeTrigger::InternalConJoin()  // PC 0x00453170 GOG 0x004532B0
+{
+    return new MdlNodeTrigger(TranslateNodeName());
+}
 // PC 0x004531D0 GOG 0x00453310
 Part* Gob::GetPart(char* sName)
 {
@@ -1696,6 +1705,10 @@ Gob* FindGob(char* sName)
 // PC 0x00453390 GOG 0x004534D0
 void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
 {
+    if (AURMODEL_DEBUG)
+    {
+        Gob* pGob = FindGob(NULL);
+    }
     m_nImposterType = nImposterType;
 #ifdef _XBOX
     m_nImposters = 0;

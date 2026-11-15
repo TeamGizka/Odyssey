@@ -4443,6 +4443,10 @@ void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
         }
     }
 }
+static inline void DeleteLinkedListInternal(CExoLinkedListInternal* pInternal)
+{
+    delete pInternal;
+}
 // PC 0x004F04C0 GOG 0x004EFB70
 CServerExoAppInternal::~CServerExoAppInternal()
 {

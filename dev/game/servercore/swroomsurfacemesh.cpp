@@ -14,6 +14,8 @@ template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Add(CSWRoomSurfaceMeshA
 #include "twodimarray.h"
 #include "swmain.h"
 
+#define SWROOMSURFACEMESH_DEBUG 0
+
 
 int g_bRenderClipWalkable = 0;
 
@@ -217,6 +219,10 @@ void CSWRoomSurfaceMesh::GetTriangleVertices(int nUnused, int nTriangle,
 // PC 0x00575390 GOG 0x00575230
 int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
 {
+    if (SWROOMSURFACEMESH_DEBUG)
+    {
+        _CSWWalkMeshHeader stHeader;
+    }
     int nResult = CSWCollisionMesh::LoadMeshBinary(pMesh);
 
     if (nResult == 0)
@@ -840,18 +846,6 @@ int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
 
     return m_pFaceMaterials[hitInfo.m_nField0C];
 }
-// PC 0x00576990 GOG 0x00576600
-void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
-{
-    if (m_bBinary == 0)
-    {
-        CSWCollisionMesh::TransformToWorld(vPosition);
-        if (m_lstAABBNodes.num != 0)
-        {
-            TransformAABBToWorld(m_nAABBRootNode, vPosition);
-        }
-    }
-}
 // PC 0x00576A70 GOG 0x00576AF0
 CSWRoomSurfaceMesh::~CSWRoomSurfaceMesh()
 {
@@ -1070,6 +1064,22 @@ void CSWRoomSurfaceMesh::AddCrossing(const Vector& vStart,
     m_lstCrossings.Insert(vCrossing, nIndex);
     m_lstCrossingFaces.Insert(nFace, nIndex);
     nCrossings++;
+}
+// PC 0x00576990 GOG 0x00576600
+void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
+{
+    if (SWROOMSURFACEMESH_DEBUG)
+    {
+        int nMaterial = GetSurfaceMaterial(vPosition);
+    }
+    if (m_bBinary == 0)
+    {
+        CSWCollisionMesh::TransformToWorld(vPosition);
+        if (m_lstAABBNodes.num != 0)
+        {
+            TransformAABBToWorld(m_nAABBRootNode, vPosition);
+        }
+    }
 }
 // PC 0x00577550 GOG 0x005775D0
 CSWRoomSurfaceMesh::CSWRoomSurfaceMesh()

@@ -1567,6 +1567,17 @@ CAurRoom* Scene::GetRoom(int nRoom)
 
     return 0;
 }
+#ifndef _XBOX
+void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x00466DA0 GOG 0x00466EB0
+{
+    glBegin(primTypeTranslationTable[nMode]);
+    for (int i = 0; i < lstVertices.m_nCount; i++)
+    {
+        glVertex3fv((GLfloat*)&lstVertices[i]);
+    }
+    glEnd();
+}
+#endif
 // PC 0x00466DF0 GOG 0x00466F00
 int Scene::SetCurrentRoom(int nRoom)
 {
@@ -3048,17 +3059,6 @@ void Scene::Animate(float fTimeStep)
     currentscene = 0;
 }
 
-#ifndef _XBOX
-void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x00466DA0 GOG 0x00466EB0
-{
-    glBegin(primTypeTranslationTable[nMode]);
-    for (int i = 0; i < lstVertices.m_nCount; i++)
-    {
-        glVertex3fv((GLfloat*)&lstVertices.m_pList[i]);
-    }
-    glEnd();
-}
-#endif
 // PC 0x00465DE0 GOG 0x00465EF0
 void ComputePartBBox(PartTriMesh* pTriMesh)
 {
@@ -3251,6 +3251,11 @@ void InitGrassBins(Vector vMin, Vector vMax,
 Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
                       const Quaternion& qOrientation)
 {
+    if (AURSCENE_DEBUG)
+    {
+        SafePointer<CAurScene>* pSafePointer = NULL;
+        *pSafePointer = this;
+    }
     AurTextureSetModeStatic();
     Model* pModel = FindModel(sName);
     if (!pModel)
