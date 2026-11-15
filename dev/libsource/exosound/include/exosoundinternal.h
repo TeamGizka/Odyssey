@@ -50,10 +50,8 @@ public:
 
 
 
-    // PC 0x006222F0 GOG 0x006222C0
-    unsigned char GetMaxPlaying() { return m_nMaxPlaying; }
-    // PC 0x00622300 GOG 0x006222D0
-    unsigned char GetPlaying() { return m_nPlaying; }
+    unsigned char GetMaxPlaying();
+    unsigned char GetPlaying();
     void SetVolumeDistances(float fMin, float fMax)
     {
         m_fMaxVolumeDist = fMax;

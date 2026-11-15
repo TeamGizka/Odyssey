@@ -847,7 +847,7 @@ void CAurTexture::IncrementTIDIndex(int nIndex)
         pTexture->m_nTIDIndex = pTexture->m_pTextureIDs[nIndex];
     }
 }
-// PC 0x00420BE0 GOG 0x00420BF0
+// PC 0x004209C0 GOG 0x004209D0
 inline LifeTextureController::~LifeTextureController()
 {
     delete[] m_pState;
@@ -857,7 +857,7 @@ inline LifeTextureController::LifeTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
 }
-// PC 0x00420B60 GOG 0x00420B70
+// PC 0x00420A40 GOG 0x00420A50
 inline PerlinTextureController::~PerlinTextureController()
 {
     delete[] m_pPerlinImage;
@@ -868,7 +868,39 @@ inline PerlinTextureController::PerlinTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
 }
-// PC 0x004209C0 GOG 0x004209D0
+// PC 0x00420AA0 GOG 0x00420AB0
+short AurTextureCalculateHashID(char* sName, short nNumTXI, int* pTXI)
+{
+    int nHash = 0;
+    int nLength = strlen(sName);
+    for (int i = 0; i < nLength; i++)
+    {
+        int nValue;
+        if (nHash == 0)
+        {
+            nValue = tolower(sName[i]);
+        }
+        else
+        {
+            nValue = nHash * tolower(sName[i]);
+        }
+        nHash = nValue % 65101;
+    }
+    if (nNumTXI > 0)
+    {
+        for (int j = 0; j < nNumTXI; j++)
+        {
+            int nValue = pTXI[j];
+            if (nHash != 0)
+            {
+                nValue *= nHash;
+            }
+            nHash = nValue % 65101;
+        }
+    }
+    return nHash;
+}
+// PC 0x00420B60 GOG 0x00420B70
 inline RandomTextureController::~RandomTextureController()
 {
     delete[] m_pRandomImage;
@@ -881,7 +913,7 @@ inline RandomTextureController::RandomTextureController(CAurTexture* pTexture)
     m_pRandomImage = NULL;
     m_pChannelImage = NULL;
 }
-// PC 0x00420A40 GOG 0x00420A50
+// PC 0x00420BE0 GOG 0x00420BF0
 inline RingDistortTextureController::~RingDistortTextureController()
 {
     delete[] m_pRingImage;
@@ -921,38 +953,6 @@ inline DirtyTextureController::DirtyTextureController(CAurTexture* pTexture, int
     m_nDirtyFrame = 0;
     m_nDirtyIndex = nDirtyIndex;
     m_nBlendMode = 0;
-}
-// PC 0x00420AA0 GOG 0x00420AB0
-short AurTextureCalculateHashID(char* sName, short nNumTXI, int* pTXI)
-{
-    int nHash = 0;
-    int nLength = strlen(sName);
-    for (int i = 0; i < nLength; i++)
-    {
-        int nValue;
-        if (nHash == 0)
-        {
-            nValue = tolower(sName[i]);
-        }
-        else
-        {
-            nValue = nHash * tolower(sName[i]);
-        }
-        nHash = nValue % 65101;
-    }
-    if (nNumTXI > 0)
-    {
-        for (int j = 0; j < nNumTXI; j++)
-        {
-            int nValue = pTXI[j];
-            if (nHash != 0)
-            {
-                nValue *= nHash;
-            }
-            nHash = nValue % 65101;
-        }
-    }
-    return nHash;
 }
 
 #ifdef _XBOX

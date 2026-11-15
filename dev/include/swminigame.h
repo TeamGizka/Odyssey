@@ -460,10 +460,6 @@ public:
 class SWMGKeyInfo
 {
 public:
-    SWMGKeyInfo()
-    {
-    }
-
     float m_fTime;
     Vector m_vPosition;
     Quaternion m_qOrientation;
@@ -581,6 +577,7 @@ public:
     void Hit();
     void AdjustHitPoints(int nHitPoints);
     void OnHitObstacle(int nReserved);
+    void OnHitWorld(int nReserved);
     void OnDamage(int nReserved);
     int DoObstacleHitCheck(CSWMGObstacle* pObstacle);
     void OnDeath(int nReserved);

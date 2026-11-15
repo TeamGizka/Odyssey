@@ -8,6 +8,14 @@
 
 #define EXOSOUNDSOURCE_DEBUG 0
 
+inline unsigned char CExoSoundPriorityGroup::GetMaxPlaying()
+{
+    return m_nMaxPlaying;
+}
+inline unsigned char CExoSoundPriorityGroup::GetPlaying()
+{
+    return m_nPlaying;
+}
 // PC 0x00626D80 GOG 0x00626D20
 int CExoSoundSourceInternal::Demand()
 {

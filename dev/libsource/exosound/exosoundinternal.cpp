@@ -57,11 +57,6 @@ inline int CExoSoundSourceInternal::GetPlayWhenFree()
 {
     return m_bPlayWhenFree;
 }
-// PC 0x00621C70 GOG 0x00621C40
-inline unsigned long CExoSoundSourceInternal::GetOneShotDelay()
-{
-    return m_nOneShotDelay;
-}
 
 #ifndef _XBOX
 void CExoSoundInternal::SetListenerOrientation(const Vector& vOrientation,  // PC 0x00622160 GOG 0x00622130
@@ -106,6 +101,11 @@ void CExoSoundInternal::SetListenerPosition(const Vector& vPosition)  // PC 0x00
 }
 #endif
 // PC 0x006222A0 GOG 0x00622270
+inline unsigned long CExoSoundSourceInternal::GetOneShotDelay()
+{
+    return m_nOneShotDelay;
+}
+// PC 0x006222B0 GOG 0x00622280
 inline unsigned long CExoSoundSourceInternal::GetDelayStart()
 {
     return m_nDelayStart;
@@ -131,6 +131,16 @@ inline CResRef& CExoStreamingSoundSourceInternal::GetResRef()
 inline int CExoStreamingSoundSourceInternal::GetResourceType()
 {
     return m_nResourceType;
+}
+// PC 0x006222F0 GOG 0x006222C0
+inline unsigned char CExoSoundPriorityGroup::GetMaxPlaying()
+{
+    return m_nMaxPlaying;
+}
+// PC 0x00622300 GOG 0x006222D0
+inline unsigned char CExoSoundPriorityGroup::GetPlaying()
+{
+    return m_nPlaying;
 }
 // PC 0x00622310 GOG 0x006222E0
 inline float CExoSoundInternal::GetDesiredAmbientScale()
