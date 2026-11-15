@@ -842,12 +842,11 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0
                     }
                     else
                     {
-                        sPath = CExoString("MODULES\\") + m_sAsyncModuleName +
-                                CExoString("_dlg");
+                        sPath = CExoString("MODULES\\") + m_sAsyncModuleName;
                         CExoString sDirectory;
                         sDirectory.Format("LIVE%d:%s", nDownloadedPackage,
                                           sPath.CStr());
-                        sPath = sDirectory;
+                        sPath = sDirectory + CExoString("_dlg");
                     }
                     AddKeyTable(CacheResource(sPath, RESTYPE_ERF),
                                 TABLE_ENCAPSULATED, PRIORITY_MODULE);
