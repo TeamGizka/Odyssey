@@ -1348,7 +1348,6 @@ public:
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    virtual int GetDead();
     virtual void SetPortraitId(unsigned short nPortraitId);
     virtual void UpdateEffectPtrs();
     virtual void UpdateAttributesOnEffect(CGameEffect* pEffect);
@@ -2579,7 +2578,6 @@ public:
 
 
     int GetEffectIconCount() { return m_lstEffectIcons.num; }
-    const CResRef& GetEffectIcon(int nIndex);
     void SendFeedbackMessage(unsigned short nMessage,
                              CSWCCMessageData* pMessageData);
     void DisplayFloatyDataToSelf(unsigned long nData);
@@ -2642,7 +2640,6 @@ public:
     int LoadCreature(CResGFF* pRes, CResStruct* pStruct, int nAreaId);
     int LoadFromTemplate(const CResRef& cResRef, int bFlag);
     int ResolveInitiative();
-    void RemoveEffect(CGameEffect* pEffect);
     void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bFlag1,
                    int bFlag2);
     void ReceiveExperience(int nExperience);
@@ -2831,6 +2828,14 @@ public:
         {
             m_pStats->m_cPortrait = CResRef(cResRef);
         }
+    }
+    int GetDead()  // PC 0x0051A480 GOG 0x0051A4E0
+    {
+        if (GetInParty())
+        {
+            return 0;
+        }
+        return CSWSObject::GetDead();
     }
     int UnequipItem(CSWSItem* pItem);
     int ToggleMode(unsigned char nMode);

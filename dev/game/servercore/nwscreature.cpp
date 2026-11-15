@@ -12475,14 +12475,6 @@ CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x0050FFD0 G
     return m_pcItemRepository;
 }
 #endif
-int CSWSCreature::GetDead()  // PC 0x0051A480 GOG 0x0051A4E0
-{
-    if (GetInParty())
-    {
-        return 0;
-    }
-    return CSWSObject::GetDead();
-}
 // PC 0x00510030 GOG 0x00510090
 void CSWSCreature::SetIsPuppet(int bIsPuppet)
 {

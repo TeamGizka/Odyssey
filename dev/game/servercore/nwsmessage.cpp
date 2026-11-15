@@ -6,6 +6,7 @@
 #include "exotlktable.h"
 #include "gameobjectarray.h"
 #include "nwmessage.h"
+#define NWSMESSAGE_DEBUG 0
 // PC 0x005A0AF0 GOG 0x005A0B60
 unsigned long CSWSMessage::ReadOBJECTIDServer()
 {
@@ -165,6 +166,10 @@ int CSWSMessage::GetLocStringServerTime(unsigned long nPlayerId,
 
     sResult = "";
     fTime = 0.0f;
+    if (NWSMESSAGE_DEBUG)
+    {
+        GetLocStringServer(nPlayerId, lsString, lsString, sResult, nGender);
+    }
     if (g_pAppManager->m_pServerExoApp == NULL)
     {
         return 0;

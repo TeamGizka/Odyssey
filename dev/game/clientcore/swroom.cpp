@@ -1,4 +1,5 @@
 #include "swroom.h"
+#define SWROOM_DEBUG 0
 // PC 0x0055B520 GOG 0x0055B650
 CSWRoom::CSWRoom()
 {
@@ -9,6 +10,10 @@ CSWRoom::CSWRoom()
 // PC 0x0055B560 GOG 0x0055B640
 CSWRoom::~CSWRoom()
 {
+    if (SWROOM_DEBUG)
+    {
+        GetNoWalkMesh();
+    }
 }
 // PC 0x0055B570 GOG 0x0055B6B0
 void CSWRoom::SetRoomInfo(const CResRef& cResRef, const Vector& vPosition)
