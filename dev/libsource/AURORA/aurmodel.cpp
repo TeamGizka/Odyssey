@@ -2664,11 +2664,6 @@ void Gob::EnableInViewVolume()
     m_bInViewVolume = 1;
     DoEvent("propagateviewvolume", 0);
 }
-// PC 0x0045DDD0 GOG 0x0045DEE0
-void Gob::DisableInViewVolume()
-{
-    m_bInViewVolume = 0;
-}
 // PC 0x00450C80 GOG 0x00450DC0
 CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
                             Vector* pHit, CHitInfo* pInfo)

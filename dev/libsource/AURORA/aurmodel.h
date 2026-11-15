@@ -232,7 +232,11 @@ public:
     }
 
     virtual void EnableInViewVolume();
-    virtual void DisableInViewVolume();
+    // PC 0x0045DDD0 GOG 0x0045DEE0
+    virtual void DisableInViewVolume()
+    {
+        m_bInViewVolume = 0;
+    }
     // PC 0x0045DDE0 GOG 0x0045DEF0
     virtual bool IsInViewVolume()
     {
@@ -1355,7 +1359,7 @@ public:
     // PC 0x00698BD0 GOG 0x00698980
     virtual PartLight* AsPartLight() { return this; }
     virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570
-    virtual void Draw(bool) {}  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void Draw(bool bRenderChildren);
     virtual void Mat();
     PartLight(MdlNode*);
 };

@@ -945,6 +945,10 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
 void Part::Mat()
 {
 }
+// PC 0x005EE1C0 GOG 0x005EE1A0
+void PartLight::Draw(bool bRenderChildren)
+{
+}
 
 void SetBumpLightColor(Vector& vColor);
 
