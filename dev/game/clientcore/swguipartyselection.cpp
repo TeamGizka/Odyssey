@@ -744,6 +744,10 @@ void CSWGuiPartySelection::UpdateVisibleCharacters()
 }
 #endif
 // PC 0x0071F6C0 GOG 0x0071EB00
+inline CSWGuiPartySelectionData::CSWGuiPartySelectionData()
+{
+}
+// PC 0x0071EDA0 GOG 0x0071DCB0
 inline CSWGuiPartySelectionData::~CSWGuiPartySelectionData()
 {
 }

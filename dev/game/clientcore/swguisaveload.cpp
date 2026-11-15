@@ -18,6 +18,8 @@
 #include "worldtimer.h"
 #include "nwmessage.h"
 
+#define SWGUISAVELOAD_DEBUG 0
+
 #ifndef _XBOX
 // PC 0x0070C480 GOG 0x0070C1D0
 int CSWGuiSaveLoad::LaunchMostRecentSave()
@@ -1437,6 +1439,23 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
     m_bDataLoaded = 1;
 }
 #endif
+// PC 0x00708210 GOG 0x00707E00
+inline CResRef CSWGuiSaveLoadEntry::GetPortrait(int nIndex)
+{
+    if (nIndex >= 0 && nIndex < 3)
+    {
+        return m_aPortraits[nIndex];
+    }
+    return CResRef();
+}
+// PC 0x00708260 GOG 0x00707E50
+CExoString CSWGuiSaveLoadEntry::GetGameDirectory()
+{
+    CExoString sDirectory;
+
+    sDirectory.Format("SAVES:%06d - %s", m_nSaveGame, m_sGameName);
+    return sDirectory;
+}
 // PC 0x0070C570 GOG 0x0070C2C0
 void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
 {
@@ -2050,6 +2069,10 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x00709490 GOG 0
     int nIndex;
     int nLastIndex;
 
+    if (SWGUISAVELOAD_DEBUG)
+    {
+        m_lEntries[0]->m_bDataLoaded = 0;
+    }
     pMessageBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
     if (pMessageBox->m_bAccepted)
     {
@@ -2074,6 +2097,10 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x00709490 GOG 0
 // PC 0x00709560 GOG 0x007092A0
 void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 {
+    if (SWGUISAVELOAD_DEBUG)
+    {
+        m_lEntries[0]->m_bDataLoaded = 0;
+    }
     if (pControl->m_bSelected && pControl->AsButton() != NULL)
     {
         CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)pControl;
@@ -2241,14 +2268,6 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
     m_nSaveNumber = 0;
     m_nTimeStamp = 0;
 #endif
-}
-// PC 0x00708260 GOG 0x00707E50
-CExoString CSWGuiSaveLoadEntry::GetGameDirectory()
-{
-    CExoString sDirectory;
-
-    sDirectory.Format("SAVES:%06d - %s", m_nSaveGame, m_sGameName);
-    return sDirectory;
 }
 void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A070 GOG 0x00709DB0
 {

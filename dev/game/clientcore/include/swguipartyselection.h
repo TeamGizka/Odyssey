@@ -29,6 +29,7 @@ public:
 class CSWGuiPartySelectionData
 {
 public:
+    CSWGuiPartySelectionData();
     ~CSWGuiPartySelectionData();
 
     CSWCCreature* m_pCreature;

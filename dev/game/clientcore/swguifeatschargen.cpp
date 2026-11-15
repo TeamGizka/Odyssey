@@ -8,6 +8,8 @@
 #include "swguifeatschargen.h"
 #include "nwccreature.h"
 
+#define SWGUIFEATSCHARGEN_DEBUG 0
+
 
 // PC 0x00765200 GOG 0x00765020
 CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
@@ -738,6 +740,10 @@ void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 {
     STR_RES strRes;
 
+    if (SWGUIFEATSCHARGEN_DEBUG)
+    {
+        m_lChosen.IndexOf((unsigned short)nStrRef);
+    }
     g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
     m_lblDescription.m_cText.m_cParams.SetText(strRes.m_sString);
     m_lbDesc.ClearItems();

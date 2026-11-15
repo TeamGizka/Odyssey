@@ -26,6 +26,8 @@
 #include "nwccreaturestats.h"
 #include "nwccreatureappearance.h"
 
+#define SWGUIMAINMENU_DEBUG 0
+
 
 
 #ifndef _XBOX
@@ -439,7 +441,7 @@ inline void CSWGuiMainMenu::OnPanelAdded()
     }
 }
 #else
-inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0 GOG 0x006D13F0
+void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0 GOG 0x006D13F0
 {
     unsigned __int64 nFreeBytes;
     g_pExoResMan->GetFreeDiskSpace("SAVES:", &nFreeBytes);
@@ -447,6 +449,10 @@ inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0 GOG 0x006D13F0
     __int64 nNeededUnits = 3200;
     CExoString sAutoSave;
     sAutoSave.Format("SAVES:%06d - %s", 1, "AUTOSAVE");
+    if (SWGUIMAINMENU_DEBUG)
+    {
+        m_lstModules.DelIndex(0);
+    }
     int bCreated = g_pExoResMan->CreateDirectory2(sAutoSave) == 0;
     if (!bCreated)
     {
@@ -537,6 +543,10 @@ void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
 // PC 0x006D1960 GOG 0x006D1660
 void CSWGuiMainMenu::DeleteModuleList()
 {
+    if (SWGUIMAINMENU_DEBUG)
+    {
+        CErrorMessageData cMessage;
+    }
     while (m_lstModules.num > 0)
     {
         m_lstModules.DelIndex(0);

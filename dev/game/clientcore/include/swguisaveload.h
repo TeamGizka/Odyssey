@@ -67,6 +67,10 @@ public:
     void HandleFilterPress(CSWGuiControl* pControl);
     void PopulateGameLB();
     void SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lControls);
+    void SelectValidSaveDirectory();
+    void OnSteamCloudSaves(CSWGuiControl* pControl);
+    void ShowTooManyCloudSavesDialog();
+    void SwapSteamCloudSaves();
 #endif
 #ifdef _XBOX
     void UpdateFreeBlocks();
@@ -217,15 +221,7 @@ public:
 #endif
 
     CExoString GetGameDirectory();
-    // PC 0x00708210 GOG 0x00707E00
-    CResRef GetPortrait(int nIndex)
-    {
-        if (nIndex >= 0 && nIndex < 3)
-        {
-            return m_aPortraits[nIndex];
-        }
-        return CResRef();
-    }
+    CResRef GetPortrait(int nIndex);
     void LoadData(CExoString const&);
     void SetXboxTitle(CExoString const&);
 #ifndef _XBOX
