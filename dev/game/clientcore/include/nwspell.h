@@ -13,6 +13,7 @@ public:
     static const int USERTYPE_FEAT;
     static const int USERTYPE_ITEM;
     static const int USERTYPE_MASTER;
+    static const int USERTYPE_FORM;
 
     enum ProjectileSpawnPoint
     {

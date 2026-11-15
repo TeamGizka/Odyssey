@@ -434,7 +434,7 @@ public:
     void FullHealth(CSWGuiControl* pControl);
     void SquadFullHealth(CSWGuiControl* pControl);
 
-    static const int m_nFilterName[6];
+    static const int m_nFilterName[FILTER_MISC + 1];
 
     CSWGuiLabel m_lblUnknown64;
     CSWGuiLabel m_lblInv;

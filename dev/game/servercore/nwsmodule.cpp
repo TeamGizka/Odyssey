@@ -1686,19 +1686,6 @@ unsigned long CSWSModule::FindObjectByTagOrdinal(const CExoString& sTag,
     return OBJECT_INVALID;
 }
 
-unsigned long CSWSModule::FindObjectByTagOrdinal(const CExoString& sTag,
-                                                 int nOrdinal)
-{
-    CExoString sTagCopy = sTag;
-    int nIndex = nOrdinal + FindTagPositionInTable((char*)sTagCopy.CStr());
-
-    if (nIndex < m_lstTagTable.num &&
-        sTagCopy == m_lstTagTable[nIndex].m_sTag)
-    {
-        return m_lstTagTable[nIndex].m_oidObject;
-    }
-    return OBJECT_INVALID;
-}
 // PC 0x00507330 GOG 0x004FF3C0
 unsigned long CSWSModule::FindObjectByTagTypeOrdinal(const CExoString& sTag,
                                                      int nObjectType,

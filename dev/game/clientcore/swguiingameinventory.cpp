@@ -19,7 +19,11 @@
 #include "swguiingamecharacter.h"
 #include "swguiingameequip.h"
 
+#ifndef _XBOX
+const int CSWGuiInGameInventory::m_nFilterName[FILTER_MISC + 1] =
+#else
 const int CSWGuiInGameInventory::m_nFilterName[6] =
+#endif
 {
     41822, 42165, 41818, 41821, 41819, 41820
 };

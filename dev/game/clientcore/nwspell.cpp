@@ -15,6 +15,7 @@ const int CSWSpell::USERTYPE_MONSTERPOWER = 2;
 const int CSWSpell::USERTYPE_FEAT = 3;
 const int CSWSpell::USERTYPE_ITEM = 4;
 const int CSWSpell::USERTYPE_MASTER = 5;
+const int CSWSpell::USERTYPE_FORM = 6;
 // PC 0x005E1D00 GOG 0x005E1D30
 CSWSpell::CSWSpell()
 {
