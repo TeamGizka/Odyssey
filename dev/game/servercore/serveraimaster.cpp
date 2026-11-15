@@ -1484,3 +1484,8 @@ void CServerAIMaster::AdjustTargetAndWitnessReputations(
     unsigned long oidTarget, unsigned long oidActor, int nAction)
 {
 }
+
+int AIMasterIsCreatureDeadTemp(CSWSCreature* pCreature)
+{
+    return pCreature->GetDeadTemp();
+}
