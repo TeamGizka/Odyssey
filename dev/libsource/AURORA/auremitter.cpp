@@ -2962,6 +2962,13 @@ void LightningEmitter::UpdateControlPoints()
 
 inline Vector PartEmitter::GetOrigin() { return m_vOrigin; }
 
+inline void LightningDebugStep()
+{
+    int nStep = 0;
+    int nMaxSteps = 32;
+    float fTolerance = 0.001f;
+    float fError = 0.0f;
+}
 #define LIGHTNING_BRANCH_DEBUG 0
 // PC 0x004C5730 GOG 0x004C5840
 void LightningEmitter::Update(float fTimeStep)
@@ -3302,8 +3309,10 @@ void LightningEmitter::Update(float fTimeStep)
             for (j = 0; j < m_lstReserved210.m_nCount; j++)
             {
                 m_lstReserved210[j] = qRotation * (m_lstReserved210[j] - m_vReserved204) + m_vOrigin;
+                LightningDebugStep();
                 const Vector& vTangent = m_lstReserved234[j];
                 m_lstReserved234[j] = qRotation * vTangent;
+                LightningDebugStep();
             }
             if (pNode->m_nNumBranches > 0 && m_lstBranches.m_nCount != 0)
             {
@@ -3313,9 +3322,11 @@ void LightningEmitter::Update(float fTimeStep)
                         m_lstBranches[j]->m_lstReserved21C[0] =
                         m_lstBranches[j]->m_lstReserved228[0] =
                         m_lstActive[m_lstBranchIndices[j]]->m_vPosition + m_lstReserved270[m_lstBranchIndices[j]];
+                    LightningDebugStep();
                     Vector vPosition;
                     vPosition = m_lstBranches[j]->m_pTarget->GetPosition();
                     vPosition = qRotation * (vPosition - m_vReserved204) + m_vOrigin;
+                    LightningDebugStep();
                     m_lstBranches[j]->m_pTarget->SetPosition(vPosition);
                 }
             }
