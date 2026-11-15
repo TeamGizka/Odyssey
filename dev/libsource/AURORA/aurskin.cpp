@@ -2043,11 +2043,13 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
     }
 }
 
+#include "aurdraw.h"
+
 #ifndef _XBOX
 void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
 {
     GLRender::SetActiveTexture(0);
-    ((CAurTexture*)m_pMaterial->m_pTexture3.m_pObject)->Bind();
+    m_pMaterial->m_pTexture3->Bind();
     if (m_pMaterial->m_lstBlendSrc.m_nCount > 1)
     {
         m_pMaterial->SetBlendingMode(1);
@@ -2080,11 +2082,13 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
         Part* pPart = pSkin;
         Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
         Quaternion qRotation = -pPart->m_qOrientation;
+        AurDrawLine(vTranslation, vTranslation * 2.0f);
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
             Vector vLocal = -pPart->m_qOrientation * -pPart->m_vPosition;
-            vTranslation = vTranslation + qRotation * vLocal;
+            Vector vRotated = qRotation * vLocal;
+            vTranslation = vTranslation + vRotated;
             qRotation = qRotation * -pPart->m_qOrientation;
         }
         GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
@@ -2097,14 +2101,14 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
                 qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
                 mRotation = qbones[i].getmatrix();
                 Vector& vBoneTranslation = tbones[i];
-                int nRegister = SKIN_VP_BONES + 3 * nBone;
-                AurSetVertexProgramParameter4f(nRegister,
+                nBone = SKIN_VP_BONES + 3 * nBone;
+                AurSetVertexProgramParameter4f(nBone,
                     mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
                     mRotation.m_vThird.m_fX, vBoneTranslation.m_fX);
-                AurSetVertexProgramParameter4f(++nRegister,
+                AurSetVertexProgramParameter4f(++nBone,
                     mRotation.m_vFirst.m_fY, mRotation.m_vSecond.m_fY,
                     mRotation.m_vThird.m_fY, vBoneTranslation.m_fY);
-                AurSetVertexProgramParameter4f(++nRegister,
+                AurSetVertexProgramParameter4f(++nBone,
                     mRotation.m_vFirst.m_fZ, mRotation.m_vSecond.m_fZ,
                     mRotation.m_vThird.m_fZ, vBoneTranslation.m_fZ);
             }
