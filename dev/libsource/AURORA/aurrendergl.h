@@ -809,6 +809,7 @@ class GLRender
     friend void RenderNoiseMapped(VertexPrimitiveFlat* pPrimitive, int nTexture, int nCoordSpace);
     friend void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive);
     friend void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive);
+    friend void SetBumpLightColor(Vector& vColor);
     friend void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
                                       List<Matrix>& rbones,
                                       VertexPrimitiveSkinned* pPrimitive,
@@ -998,8 +999,8 @@ public:
     static void SetFragmentShaderConstant1(Vector& vColor, float fAlpha);
 private:
     static void (*pfuncSetPixelShaderAmbientColor)(Vector& vColor, float fAlpha);
-public:
     static void (*pfuncSetBumpLightColor)(Vector& vColor, float fAlpha);
+public:
     static void (*pfuncEnablePixelShaders)(int nShader, CAurTexture* pTexture0,
                                           CAurTexture* pTexture1,
                                           CAurTexture* pTexture2,

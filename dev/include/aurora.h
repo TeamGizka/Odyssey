@@ -603,7 +603,6 @@ public:
     static int ReleaseProcessedTexture(CAuroraProcessedTexture*);
     static int ReleaseTXI(CAuroraTXI*);
     static int ReleaseVisibility(CAuroraVisibility*);
-    static int ReleaseModelX(CAuroraModelX*);
     static CExoLinkedList<CAuroraModel> m_lstRequestedModel;
     static CExoString m_pCurrentTexturePack[4];
 };
