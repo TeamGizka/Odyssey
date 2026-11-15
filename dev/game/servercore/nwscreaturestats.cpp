@@ -5343,12 +5343,19 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
                 GetCreature()->SetCurrentHitPoints(nCurrentHitPoints +
                                                  GetCONMod() * GetLevel(0));
         }
-        m_nCurrentForcePoints =
-            (nForce + GetWISMod() * GetLevel(0) < GetLevel(0)) ? GetLevel(0) :
-            nForce + GetWISMod() * GetLevel(0);
-        char nWIS = GetWISMod();
-        if (nForcePoints > nCurrentForce)
+        if (nForce + GetWISMod() * GetLevel(0) < GetLevel(0))
         {
+            nDefaultForce = GetLevel(0);
+            m_nCurrentForcePoints = nDefaultForce;
+        }
+        else
+        {
+            nDefaultForce = nForce + GetWISMod() * GetLevel(0);
+            m_nCurrentForcePoints = nDefaultForce;
+        }
+        if (nCurrentForce < nForcePoints)
+        {
+            char nWIS = GetWISMod();
             int nFP = nForcePoints;
             if (nFP + nWIS * GetLevel(0) <= GetLevel(0))
             {
@@ -5363,6 +5370,7 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
         }
         else
         {
+            char nWIS = GetWISMod();
             m_nCurrentForcePoints =
                 (nForcePoints + nWIS * GetLevel(0) <= GetLevel(0)) ? GetLevel(0) :
                 nForce + GetWISMod() * GetLevel(0);
