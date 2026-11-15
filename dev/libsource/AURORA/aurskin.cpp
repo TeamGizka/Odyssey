@@ -956,6 +956,9 @@ static inline void SkinDebugSetup()
     int nDebug10 = 0;
     int nDebug11 = 0;
 }
+static inline void SkinDebugTransform(const Vector& vPosition, const Vector& vTranslation)
+{
+}
 static inline void SkinDebugBone()
 {
     int nDebug1 = 0;
@@ -1036,6 +1039,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 if (&vBoneTranslation != &tbones.m_pList[i])
                     continue;
                 vBone = vTranslation + qRotation * vBoneTranslation + vBone;
+                SkinDebugTransform(vBone, vBoneTranslation);
                 if (&vFirst != &mRotation.m_vFirst)
                     continue;
                 if (&vSecond != &mRotation.m_vSecond)
