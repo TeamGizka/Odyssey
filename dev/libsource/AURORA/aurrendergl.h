@@ -794,6 +794,7 @@ class GLRender
     friend class ImposterManager;
     friend class CAurTextureBasic;
     friend class CAurTriangleBin;
+    friend class Scene;
     friend void EndImposterRender(unsigned long nRecord);
     friend void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive);
     friend void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive);
@@ -805,6 +806,7 @@ class GLRender
     friend void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive);
     friend void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive);
     friend void RenderNV1xEMLM(VertexPrimitiveFlat* pPrimitive);
+    friend void RenderNoiseMapped(VertexPrimitiveFlat* pPrimitive, int nTexture, int nCoordSpace);
     friend void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive);
     friend void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive);
     friend void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
@@ -994,7 +996,9 @@ public:
     static void SetCombinerConstant1(Vector& vColor, float fAlpha);
     static void SetFragmentShaderConstant0(Vector& vColor, float fAlpha);
     static void SetFragmentShaderConstant1(Vector& vColor, float fAlpha);
+private:
     static void (*pfuncSetPixelShaderAmbientColor)(Vector& vColor, float fAlpha);
+public:
     static void (*pfuncSetBumpLightColor)(Vector& vColor, float fAlpha);
     static void (*pfuncEnablePixelShaders)(int nShader, CAurTexture* pTexture0,
                                           CAurTexture* pTexture1,
@@ -1229,7 +1233,9 @@ public:
     static CAurTexture* m_pHologramFilterTexture;
     static short m_FuryLevel;
     static CAurTexture* m_pFuryTexture;
+private:
     static CAurTexture* m_pDirtyTexture[3];
+public:
     static int InitRenderSystem();
     static int GetFogArraysInfoRef();
     static void SetViewTransform(Vector& vPosition, Quaternion& qOrientation);
@@ -1435,7 +1441,6 @@ extern int useshadowmethod;
 extern float epsilon;
 extern int noclipshadows;
 extern int dontprotectagainstclip;
-void ClipProjection(Vector& vPosition, const Vector& vStart, const Plane& plane);
 
 enum { SHADOW_METHOD_VERTEX_PROGRAM = 3 };
 
