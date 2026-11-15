@@ -16,6 +16,10 @@ template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Add(CSWRoomSurfaceMeshA
 
 #define SWROOMSURFACEMESH_DEBUG 0
 
+inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
+{
+}
+
 
 int g_bRenderClipWalkable = 0;
 

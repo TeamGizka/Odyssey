@@ -28,10 +28,7 @@ public:
     int m_nEdgeOffset;
     int m_nPerimeterCount;
     int m_nPerimeterOffset;
-    // PC 0x00557570 GOG 0x00558170
-    _CSWWalkMeshHeader()
-    {
-    }
+    _CSWWalkMeshHeader();
 };
 
 class CResBWM : public CRes

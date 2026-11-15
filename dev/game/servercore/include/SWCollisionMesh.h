@@ -65,11 +65,7 @@ public:
     CSWCollisionMesh(unsigned short nTextResType,
                      unsigned short nBinaryResType);
     ~CSWCollisionMesh();
-    // PC 0x0065D0F0 GOG 0x0065CF00
-    virtual int LoadDefaultMesh()
-    {
-        return 1;
-    }
+    virtual int LoadDefaultMesh();
 
     virtual int SaveBinaryMesh(const CExoString& sFileName);
     virtual void TransformToWorld(const Vector& vPosition);
@@ -118,6 +114,7 @@ public:
         return LocalToWorld(m_avUsePoints[nUsePoint]);
     }
     Vector NormalLocalToWorld(const Vector& vPosition);
+    Vector NormalWorldToLocal(const Vector& vPosition);
     void ComputeMeshNormals();
     int GetMeshBoundingBox(Vector& vMin, Vector& vMax);
     int GetMeshOutline(Vector& vFirst, Vector& vSecond, Vector& vThird,

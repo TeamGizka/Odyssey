@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
+inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
+{
+}
+
 const int CSWDoorSurfaceMesh::DOOR_STATE_CLOSED = 0;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN1 = 1;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN2 = 2;

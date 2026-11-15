@@ -8,6 +8,9 @@
 #include "exoresman.h"
 #include "SWCollisionMesh.h"
 
+#define SWCOLLISIONMESH_DEBUG 0
+
+
 inline void CSWCollisionMesh::GetFaceVertex(int nIndex, int nCorner,
                                             Vector& vVertex)
 {
@@ -221,6 +224,16 @@ void CSWCollisionMesh::ComputeMeshNormals()
         }
     }
 }
+// PC 0x0065D0F0 GOG 0x0065CF00
+int CSWCollisionMesh::LoadDefaultMesh()
+{
+    if (SWCOLLISIONMESH_DEBUG)
+    {
+        Vector avDefaultBounds[2];
+        GetMeshBoundingBox(avDefaultBounds[0], avDefaultBounds[1]);
+    }
+    return 1;
+}
 // PC 0x005571B0 GOG 0x005571B0
 int CSWCollisionMesh::LoadMesh(int nType)
 {
@@ -335,6 +348,10 @@ int CSWCollisionMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
 {
     m_bBinary = 0;
     return 1;
+}
+// PC 0x00557570 GOG 0x00558170
+inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
+{
 }
 // PC 0x005575B0 GOG 0x005573E0
 int CSWCollisionMesh::LoadMeshString(unsigned char** ppData,
