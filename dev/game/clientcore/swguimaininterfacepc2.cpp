@@ -36,9 +36,6 @@ static inline void Swguimaininterfacepc2Trace2();
 static inline void Swguimaininterfacepc2Trace1();
 #define SWGUIMAININTERFACEPC2_TRACE() Swguimaininterfacepc2Trace1()
 
-static inline CClientExoApp* ClientExoAppLate3(CAppManager* p);
-static inline CClientExoApp* ClientExoAppLate2(CAppManager* p);
-static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
 // PC 0x004015A0 GOG 0x004015A0
 void CSWGuiMainInterface::QueueActiveAction()
 {
@@ -511,21 +508,6 @@ void CSWGuiMainInterface::OnCharacterRightClicked(CSWGuiControl* pControl)  // P
 {
 }
 #endif
-
-static inline CClientExoApp* ClientExoAppLate3(CAppManager* p)
-{
-    return ClientExoAppLate2(p);
-}
-
-static inline CClientExoApp* ClientExoAppLate2(CAppManager* p)
-{
-    return ClientExoAppLate1(p);
-}
-
-static inline CClientExoApp* ClientExoAppLate1(CAppManager* p)
-{
-    return p->m_pClientExoApp;
-}
 
 static inline void Swguimaininterfacepc2Trace3()
 {
@@ -4673,8 +4655,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
         m_fFormMessageTime = 0.0f;
         m_nFormMessage = 0;
         CExoString sText;
-        int nMember = m_nUseItemTargetMember;
-        if (nMember == -1)
+        if (m_nUseItemTargetMember == -1)
         {
             CSWGuiButton* pButton = &m_btnCancelPartyItemSelect;
             sText = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_USE_ITEM_SELECT_MEMBER);
@@ -4684,6 +4665,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
         }
         else
         {
+            int nMember = m_nUseItemTargetMember;
             if (nMember == 2 &&
                 g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters != 3)
             {
