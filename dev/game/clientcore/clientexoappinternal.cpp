@@ -5931,6 +5931,36 @@ int CClientExoAppInternal::PlayMovieQueue(int nFlags)  // PC 0x0064ED60 GOG 0x00
 
     return nResult;
 }
+
+const unsigned long LEGAL_SCREEN_MIN_SHOW_TIME = 2000;
+
+void CClientExoAppInternal::BeginIntro()  // PC 0x0064EDA0 GOG 0x0064EC50
+{
+    if (!m_bSkipIntro)
+    {
+        AddMovieToMovieQueue("leclogo", 1);
+        AddMovieToMovieQueue("obsidianent", 1);
+        int nMovie;
+        CExoArrayList<int>* pFlags = &m_aMovieQueueFlags;
+        CExoArrayList<CExoString>* pMovies = &m_aMovieQueue;
+        PlayMoviesInExoArrayList(*pMovies, nMovie, 0, 1, pFlags, 0);
+        pMovies->num = 0;
+        pFlags->num = 0;
+
+        if (m_pLegalScreen == NULL)
+        {
+            m_pLegalScreen = new CSWGuiLegalScreen(m_pSWGuiManager,
+                                                   LEGAL_SCREEN_MIN_SHOW_TIME);
+        }
+
+        m_pSWGuiManager->AddPanel(m_pLegalScreen, 1, 1);
+        m_pLegalScreen->SetImage("legal");
+        m_pLegalScreen->SetImage("");
+        m_pSWGuiManager->RemovePanel(m_pLegalScreen);
+        delete m_pLegalScreen;
+        m_pLegalScreen = NULL;
+    }
+}
 #endif
 // PC 0x0064EB10 GOG 0x0064E9C0
 int CClientExoAppInternal::PlayMoviesInExoArrayList(
@@ -8515,38 +8545,6 @@ int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
     }
     return 0;
 }
-
-#ifndef _XBOX
-const unsigned long LEGAL_SCREEN_MIN_SHOW_TIME = 2000;
-
-void CClientExoAppInternal::BeginIntro()  // PC 0x0064EDA0 GOG 0x0064EC50
-{
-    if (!m_bSkipIntro)
-    {
-        AddMovieToMovieQueue("leclogo", 1);
-        AddMovieToMovieQueue("obsidianent", 1);
-        int nMovie;
-        CExoArrayList<int>* pFlags = &m_aMovieQueueFlags;
-        CExoArrayList<CExoString>* pMovies = &m_aMovieQueue;
-        PlayMoviesInExoArrayList(*pMovies, nMovie, 0, 1, pFlags, 0);
-        pMovies->num = 0;
-        pFlags->num = 0;
-
-        if (m_pLegalScreen == NULL)
-        {
-            m_pLegalScreen = new CSWGuiLegalScreen(m_pSWGuiManager,
-                                                   LEGAL_SCREEN_MIN_SHOW_TIME);
-        }
-
-        m_pSWGuiManager->AddPanel(m_pLegalScreen, 1, 1);
-        m_pLegalScreen->SetImage("legal");
-        m_pLegalScreen->SetImage("");
-        m_pSWGuiManager->RemovePanel(m_pLegalScreen);
-        delete m_pLegalScreen;
-        m_pLegalScreen = NULL;
-    }
-}
-#endif
 
 void CClientExoAppInternal::ClearCameraInput()
 {

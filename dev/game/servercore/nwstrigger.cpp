@@ -102,6 +102,10 @@ void CSWSTrigger::CreateNewGeometry(float fRadius, const Vector& vPosition,
 int CSWSTrigger::GetCanFireMineOnObject(unsigned long oidObject, int bForce)
 {
     int bCanFire = 1;
+    if (NWSTRIGGER_DEBUG)
+    {
+        int nTargetArea = GetTargetArea();
+    }
     CSWSCreature* pCreator =
         g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(m_oidCreator);
     CServerExoApp* pServerApp = g_pAppManager->GetServerExoApp();
@@ -226,6 +230,10 @@ CSWCTrigger* CSWSTrigger::GetClientTrigger()
 // PC 0x00584B40 GOG 0x00584BC0
 void CSWSTrigger::SetCreator(unsigned long oidCreator)
 {
+    if (NWSTRIGGER_DEBUG)
+    {
+        int nTargetArea = GetTargetArea();
+    }
     m_oidCreator = oidCreator;
     if (oidCreator != OBJECT_INVALID &&
         (oidCreator == g_pAppManager->GetServerExoApp()->GetPlayerCreatureId() ||

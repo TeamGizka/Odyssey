@@ -125,195 +125,6 @@ int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
     }
     return SetAnimationInternal(pObject, nAnimation, fSpeed, nFlags, fBlend);
 }
-// PC 0x006F4B10 GOG 0x006F4770
-void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
-                                         const CResRef& sLeft)
-{
-    CExoString sModel;
-
-    CSWCItem* pRightItem =
-        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nRightItemId);
-    if (pRightItem != 0)
-    {
-        Gob* pModel = pRightItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-        if (pModel != 0)
-        {
-            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            pModel->AttachToScene(0);
-            if (m_pTorchSound != 0)
-            {
-                m_pTorchSound->Stop();
-            }
-        }
-    }
-
-    CSWCItem* pLeftItem =
-        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nLeftItemId);
-    if (pLeftItem != 0)
-    {
-        Gob* pModel = pLeftItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-        if (pModel != 0)
-        {
-            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            pModel->AttachToScene(0);
-        }
-    }
-
-    if (m_resHiddenRight != sRight)
-    {
-        if (m_pHiddenRightModel != 0)
-        {
-            m_pHiddenRightModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            m_pHiddenRightModel->AttachToScene(0);
-            delete m_pHiddenRightModel;
-            m_pHiddenRightModel = 0;
-        }
-        if (*const_cast<CResRef&>(sRight).GetResRef() != 0)
-        {
-            sRight.CopyToString(sModel);
-            m_pHiddenRightModel = static_cast<Gob*>(
-                NewCAurObject((char*)sModel.CStr(), "dummyright", 0, 0));
-            if (m_pHiddenRightModel != 0)
-            {
-                m_pHiddenRightModel->AttachToObject(m_pModel, "rhand", Gob::ATTACH_NORMAL);
-            }
-        }
-        m_resHiddenRight = sRight;
-    }
-
-    if (m_resHiddenLeft != sLeft)
-    {
-        if (m_pHiddenLeftModel != 0)
-        {
-            m_pHiddenLeftModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            m_pHiddenLeftModel->AttachToScene(0);
-            delete m_pHiddenLeftModel;
-            m_pHiddenLeftModel = 0;
-        }
-        if (*const_cast<CResRef&>(sLeft).GetResRef() != 0)
-        {
-            sLeft.CopyToString(sModel);
-            m_pHiddenLeftModel = static_cast<Gob*>(
-                NewCAurObject((char*)sModel.CStr(), "dummyleft", 0, 0));
-            if (m_pHiddenLeftModel != 0)
-            {
-                m_pHiddenLeftModel->AttachToObject(m_pModel, "lhand", Gob::ATTACH_NORMAL);
-            }
-        }
-        m_resHiddenLeft = sLeft;
-    }
-
-    m_bItemsHidden = 1;
-}
-// PC 0x006F4D50 GOG 0x006F49B0
-void CSWCAnimBaseWield::ShowWieldedItems()
-{
-    if (m_bItemsHidden != 0)
-    {
-        if (m_pHiddenRightModel != 0)
-        {
-            m_pHiddenRightModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            m_pHiddenRightModel->AttachToScene(0);
-            delete m_pHiddenRightModel;
-            m_pHiddenRightModel = 0;
-        }
-        if (m_pHiddenLeftModel != 0)
-        {
-            m_pHiddenLeftModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            m_pHiddenLeftModel->AttachToScene(0);
-            delete m_pHiddenLeftModel;
-            m_pHiddenLeftModel = 0;
-        }
-
-        CSWCItem* pRightItem =
-            g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                m_nRightItemId);
-        if (pRightItem != 0)
-        {
-            Gob* pModel = pRightItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-            if (pModel != 0)
-            {
-                pModel->AttachToObject(m_pModel, (char*)m_sRightAttach.CStr(),
-                                       0);
-            }
-            if (m_pTorchSound != 0)
-            {
-                m_pTorchSound->Play();
-            }
-        }
-
-        CSWCItem* pLeftItem =
-            g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                m_nLeftItemId);
-        if (pLeftItem != 0)
-        {
-            Gob* pModel = pLeftItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-            if (pModel != 0)
-            {
-                pModel->AttachToObject(m_pModel, (char*)m_sLeftAttach.CStr(),
-                                       0);
-            }
-        }
-
-        RefreshHilite();
-        m_resHiddenRight = "";
-        m_resHiddenLeft = "";
-        m_bItemsHidden = 0;
-    }
-}
-// PC 0x006F4EB0 GOG 0x006F43F0
-void CSWCAnimBaseWield::TurnOnShadows()
-{
-    CSWCAnimBase::TurnOnShadows();
-}
-// PC 0x006F4EC0 GOG 0x006F4400
-void CSWCAnimBaseWield::TurnOffShadows()
-{
-    CSWCAnimBase::TurnOffShadows();
-}
-// PC 0x006F4ED0 GOG 0x006F4B10
-void CSWCAnimBaseWield::UpdateSound(int bPlaying)
-{
-    if (bPlaying != 0 && m_bTorchLit != 0)
-    {
-        if (m_pTorchSound == 0)
-        {
-            m_pTorchSound = new CExoSoundSource("al_cv_firetorch1");
-            if (m_pTorchSound == 0)
-            {
-                return;
-            }
-            m_pTorchSound->Set3D(1);
-            m_pTorchSound->SetPriorityGroup(6);
-            m_pTorchSound->SetVolume(10);
-            m_pTorchSound->SetLooping(1);
-            m_pTorchSound->Play();
-        }
-        if (m_pTorchSound != 0)
-        {
-            CSWCItem* pItem =
-                g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                    m_nRightItemId);
-            if (pItem != 0 && pItem->GetModel(255, 1) != 0)
-            {
-                m_pTorchSound->SetPosition(
-                    pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1)->GetPosition(), 0.0f);
-            }
-            else if (m_pModel != 0)
-            {
-                m_pTorchSound->SetPosition(m_pModel->GetPosition(), 0.0f);
-            }
-        }
-    }
-    else
-    {
-        if (m_pTorchSound != 0)
-        {
-            delete m_pTorchSound;
-            m_pTorchSound = 0;
-        }
-    }
-}
 // PC 0x006F5250 GOG 0x006F4E70
 Gob* CSWCAnimBaseWield::GetModel(unsigned char nSlot)
 {
@@ -533,6 +344,195 @@ int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
     }
     return g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nItemId) !=
            0;
+}
+// PC 0x006F4B10 GOG 0x006F4770
+void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
+                                         const CResRef& sLeft)
+{
+    CExoString sModel;
+
+    CSWCItem* pRightItem =
+        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nRightItemId);
+    if (pRightItem != 0)
+    {
+        Gob* pModel = pRightItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != 0)
+        {
+            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            pModel->AttachToScene(0);
+            if (m_pTorchSound != 0)
+            {
+                m_pTorchSound->Stop();
+            }
+        }
+    }
+
+    CSWCItem* pLeftItem =
+        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nLeftItemId);
+    if (pLeftItem != 0)
+    {
+        Gob* pModel = pLeftItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != 0)
+        {
+            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            pModel->AttachToScene(0);
+        }
+    }
+
+    if (m_resHiddenRight != sRight)
+    {
+        if (m_pHiddenRightModel != 0)
+        {
+            m_pHiddenRightModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            m_pHiddenRightModel->AttachToScene(0);
+            delete m_pHiddenRightModel;
+            m_pHiddenRightModel = 0;
+        }
+        if (*const_cast<CResRef&>(sRight).GetResRef() != 0)
+        {
+            sRight.CopyToString(sModel);
+            m_pHiddenRightModel = static_cast<Gob*>(
+                NewCAurObject((char*)sModel.CStr(), "dummyright", 0, 0));
+            if (m_pHiddenRightModel != 0)
+            {
+                m_pHiddenRightModel->AttachToObject(m_pModel, "rhand", Gob::ATTACH_NORMAL);
+            }
+        }
+        m_resHiddenRight = sRight;
+    }
+
+    if (m_resHiddenLeft != sLeft)
+    {
+        if (m_pHiddenLeftModel != 0)
+        {
+            m_pHiddenLeftModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            m_pHiddenLeftModel->AttachToScene(0);
+            delete m_pHiddenLeftModel;
+            m_pHiddenLeftModel = 0;
+        }
+        if (*const_cast<CResRef&>(sLeft).GetResRef() != 0)
+        {
+            sLeft.CopyToString(sModel);
+            m_pHiddenLeftModel = static_cast<Gob*>(
+                NewCAurObject((char*)sModel.CStr(), "dummyleft", 0, 0));
+            if (m_pHiddenLeftModel != 0)
+            {
+                m_pHiddenLeftModel->AttachToObject(m_pModel, "lhand", Gob::ATTACH_NORMAL);
+            }
+        }
+        m_resHiddenLeft = sLeft;
+    }
+
+    m_bItemsHidden = 1;
+}
+// PC 0x006F4D50 GOG 0x006F49B0
+void CSWCAnimBaseWield::ShowWieldedItems()
+{
+    if (m_bItemsHidden != 0)
+    {
+        if (m_pHiddenRightModel != 0)
+        {
+            m_pHiddenRightModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            m_pHiddenRightModel->AttachToScene(0);
+            delete m_pHiddenRightModel;
+            m_pHiddenRightModel = 0;
+        }
+        if (m_pHiddenLeftModel != 0)
+        {
+            m_pHiddenLeftModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            m_pHiddenLeftModel->AttachToScene(0);
+            delete m_pHiddenLeftModel;
+            m_pHiddenLeftModel = 0;
+        }
+
+        CSWCItem* pRightItem =
+            g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                m_nRightItemId);
+        if (pRightItem != 0)
+        {
+            Gob* pModel = pRightItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+            if (pModel != 0)
+            {
+                pModel->AttachToObject(m_pModel, (char*)m_sRightAttach.CStr(),
+                                       0);
+            }
+            if (m_pTorchSound != 0)
+            {
+                m_pTorchSound->Play();
+            }
+        }
+
+        CSWCItem* pLeftItem =
+            g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                m_nLeftItemId);
+        if (pLeftItem != 0)
+        {
+            Gob* pModel = pLeftItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+            if (pModel != 0)
+            {
+                pModel->AttachToObject(m_pModel, (char*)m_sLeftAttach.CStr(),
+                                       0);
+            }
+        }
+
+        RefreshHilite();
+        m_resHiddenRight = "";
+        m_resHiddenLeft = "";
+        m_bItemsHidden = 0;
+    }
+}
+// PC 0x006F4EB0 GOG 0x006F43F0
+void CSWCAnimBaseWield::TurnOnShadows()
+{
+    CSWCAnimBase::TurnOnShadows();
+}
+// PC 0x006F4EC0 GOG 0x006F4400
+void CSWCAnimBaseWield::TurnOffShadows()
+{
+    CSWCAnimBase::TurnOffShadows();
+}
+// PC 0x006F4ED0 GOG 0x006F4B10
+void CSWCAnimBaseWield::UpdateSound(int bPlaying)
+{
+    if (bPlaying != 0 && m_bTorchLit != 0)
+    {
+        if (m_pTorchSound == 0)
+        {
+            m_pTorchSound = new CExoSoundSource("al_cv_firetorch1");
+            if (m_pTorchSound == 0)
+            {
+                return;
+            }
+            m_pTorchSound->Set3D(1);
+            m_pTorchSound->SetPriorityGroup(6);
+            m_pTorchSound->SetVolume(10);
+            m_pTorchSound->SetLooping(1);
+            m_pTorchSound->Play();
+        }
+        if (m_pTorchSound != 0)
+        {
+            CSWCItem* pItem =
+                g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                    m_nRightItemId);
+            if (pItem != 0 && pItem->GetModel(255, 1) != 0)
+            {
+                m_pTorchSound->SetPosition(
+                    pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1)->GetPosition(), 0.0f);
+            }
+            else if (m_pModel != 0)
+            {
+                m_pTorchSound->SetPosition(m_pModel->GetPosition(), 0.0f);
+            }
+        }
+    }
+    else
+    {
+        if (m_pTorchSound != 0)
+        {
+            delete m_pTorchSound;
+            m_pTorchSound = 0;
+        }
+    }
 }
 // PC 0x006F5070 GOG 0x006F4CB0
 void CSWCAnimBaseWield::EnableDistortion()

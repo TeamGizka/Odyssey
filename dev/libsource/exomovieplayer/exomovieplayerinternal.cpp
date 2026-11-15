@@ -18,6 +18,8 @@ HWND g_hMovieWnd;
 #include "exomovieplayerinternal.h"
 #include "swmain.h"
 
+#define EXOMOVIEPLAYERINTERNAL_DEBUG 0
+
 template <class T> inline void ExoMovieListTrace(CExoArrayList<T>*)
 {
 }
@@ -456,6 +458,10 @@ void CExoMoviePlayerInternal::FinishMovie()
 void CExoMoviePlayerInternal::ShowFadePanel()
 {
     m_critSect.EnterCriticalSection();
+    if (EXOMOVIEPLAYERINTERNAL_DEBUG)
+    {
+        CExoString& sMovie = m_lstMovies[0];
+    }
     if (m_pFadePanel == NULL)
     {
         m_pFadePanel = new CSWGuiFade(g_pAppManager->GetClientExoApp()->GetSWGuiManager());
@@ -470,6 +476,10 @@ void CExoMoviePlayerInternal::ShowFadePanel()
 void CExoMoviePlayerInternal::HideFadePanel()
 {
     m_critSect.EnterCriticalSection();
+    if (EXOMOVIEPLAYERINTERNAL_DEBUG)
+    {
+        CExoString& sMovie = m_lstMovies[0];
+    }
     if (m_pFadePanel != NULL)
     {
         m_pFadePanel->SetAlpha(0.0f);

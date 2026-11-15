@@ -8591,6 +8591,44 @@ void CSWSCreature::SetGold(int nGold)
 
     m_nGold = nGold;
 }
+// PC 0x00515A30 GOG 0x00515A90
+void CSWSCreature::AddComponent(int nComponent, int bFeedback)
+{
+    int nNewComponent = GetComponent() + nComponent;
+    if (nNewComponent > MAX_GOLD)
+    {
+        nNewComponent = MAX_GOLD;
+    }
+
+    int nComponentAdded = nNewComponent - GetComponent();
+    SetComponent(nNewComponent);
+
+    if (bFeedback == 1 && nComponentAdded != 0)
+    {
+        CSWCCMessageData* pMessageData = new CSWCCMessageData;
+        pMessageData->SetInteger(0, nComponentAdded);
+        SendFeedbackMessage(FEEDBACK_COMPONENTS_ADDED, pMessageData);
+    }
+}
+// PC 0x00515B50 GOG 0x00515BB0
+void CSWSCreature::AddChemical(int nChemical, int bFeedback)
+{
+    int nNewChemical = GetChemical() + nChemical;
+    if (nNewChemical > MAX_GOLD)
+    {
+        nNewChemical = MAX_GOLD;
+    }
+
+    int nChemicalAdded = nNewChemical - GetChemical();
+    SetChemical(nNewChemical);
+
+    if (bFeedback == 1 && nChemicalAdded != 0)
+    {
+        CSWCCMessageData* pMessageData = new CSWCCMessageData;
+        pMessageData->SetInteger(0, nChemicalAdded);
+        SendFeedbackMessage(FEEDBACK_CHEMICALS_ADDED, pMessageData);
+    }
+}
 // PC 0x0050E800 GOG 0x0050E860
 int CSWSCreature::GetComponent()
 {
@@ -8662,6 +8700,32 @@ int CSWSCreature::DecrementSpellReadyCount(unsigned long nSpell,
     }
 
     return m_pStats->UnReadySpell(nSpell);
+}
+// PC 0x0050E920 GOG 0x0050E980
+void CSWSCreature::SendFeedbackMessage(unsigned short nMessage,
+                                      CSWCCMessageData* pMessageData)
+{
+    CSWSPlayer* pPlayer =
+        g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(m_nId);
+    if (pPlayer != NULL)
+    {
+        if (pMessageData == NULL)
+        {
+            pMessageData = new CSWCCMessageData;
+            pMessageData->SetInteger(CSWSMessage::FEEDBACK_INTEGER_MESSAGE, nMessage);
+        }
+        else
+        {
+            pMessageData->SetInteger(CSWSMessage::FEEDBACK_INTEGER_MESSAGE, nMessage);
+        }
+        CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
+        pMessage->SendServerToPlayerCCMessage(pPlayer->m_nPlayerId,
+            CSWSMessage::CC_MESSAGE_FEEDBACK, pMessageData, NULL);
+    }
+    if (pMessageData != NULL)
+    {
+        delete pMessageData;
+    }
 }
 // PC 0x0050E9E0 GOG 0x0050EA40
 void CSWSCreature::AutoCloseGUIPanels(int bForce)
@@ -8842,44 +8906,6 @@ int CSWSSpellScriptData::LoadData(CResGFF* pRes, CResStruct* pStruct)
         pRes->ReadFieldINT(pStruct, "FinalForceCost", bSuccess, 0);
 
     return 1;
-}
-// PC 0x00515A30 GOG 0x00515A90
-void CSWSCreature::AddComponent(int nComponent, int bFeedback)
-{
-    int nNewComponent = GetComponent() + nComponent;
-    if (nNewComponent > MAX_GOLD)
-    {
-        nNewComponent = MAX_GOLD;
-    }
-
-    int nComponentAdded = nNewComponent - GetComponent();
-    SetComponent(nNewComponent);
-
-    if (bFeedback == 1 && nComponentAdded != 0)
-    {
-        CSWCCMessageData* pMessageData = new CSWCCMessageData;
-        pMessageData->SetInteger(0, nComponentAdded);
-        SendFeedbackMessage(FEEDBACK_COMPONENTS_ADDED, pMessageData);
-    }
-}
-// PC 0x00515B50 GOG 0x00515BB0
-void CSWSCreature::AddChemical(int nChemical, int bFeedback)
-{
-    int nNewChemical = GetChemical() + nChemical;
-    if (nNewChemical > MAX_GOLD)
-    {
-        nNewChemical = MAX_GOLD;
-    }
-
-    int nChemicalAdded = nNewChemical - GetChemical();
-    SetChemical(nNewChemical);
-
-    if (bFeedback == 1 && nChemicalAdded != 0)
-    {
-        CSWCCMessageData* pMessageData = new CSWCCMessageData;
-        pMessageData->SetInteger(0, nChemicalAdded);
-        SendFeedbackMessage(FEEDBACK_CHEMICALS_ADDED, pMessageData);
-    }
 }
 // PC 0x00515C70 GOG 0x00515CD0
 int CSWSCreature::GetTotalEffectBonus(unsigned char nEffectType, CSWSObject* pObject,
@@ -12077,32 +12103,6 @@ void CSWSCreature::BroadcastAttackOfOpportunity(unsigned long oidTarget)
 void CSWSCreature::BroadcastAttackDataToParty(CSWCCMessageData* pData,
                                             CSWSCombatAttackData* pAttack)
 {
-}
-// PC 0x0050E920 GOG 0x0050E980
-void CSWSCreature::SendFeedbackMessage(unsigned short nMessage,
-                                      CSWCCMessageData* pMessageData)
-{
-    CSWSPlayer* pPlayer =
-        g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(m_nId);
-    if (pPlayer != NULL)
-    {
-        if (pMessageData == NULL)
-        {
-            pMessageData = new CSWCCMessageData;
-            pMessageData->SetInteger(CSWSMessage::FEEDBACK_INTEGER_MESSAGE, nMessage);
-        }
-        else
-        {
-            pMessageData->SetInteger(CSWSMessage::FEEDBACK_INTEGER_MESSAGE, nMessage);
-        }
-        CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
-        pMessage->SendServerToPlayerCCMessage(pPlayer->m_nPlayerId,
-            CSWSMessage::CC_MESSAGE_FEEDBACK, pMessageData, NULL);
-    }
-    if (pMessageData != NULL)
-    {
-        delete pMessageData;
-    }
 }
 // PC 0x0050EFC0 GOG 0x0050F020
 int CSWSCreature::ApplyPoisonDamage(int nPoison, CGameEffect* pEffect,

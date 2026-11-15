@@ -35,6 +35,7 @@
 #include "clientoptions.h"
 
 #define NWSPLACEABLE_DEBUG 0
+#define DATAPAD_READ_BOOLEAN 94
 
 int RenderPlaceableBBox = 0;
 // PC 0x0058A400 GOG 0x0058A480
@@ -691,6 +692,117 @@ void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
         GetArea()->AddObjectToArea(m_nId, 1);
     }
 }
+// PC 0x00589F00 GOG 0x00589F80
+void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
+{
+    if (m_bOpen == 0 && m_bHasInventory != 0)
+    {
+        if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState != 0)
+        {
+            SetAnimation(PLACEABLE_ANIMATION_CLOSED);
+            return;
+        }
+
+        CSWSPlayer* pPlayer =
+            g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidOpener);
+        if (pPlayer != NULL)
+        {
+            unsigned int nItemCount = m_pcItemRepository->m_lstItems.num;
+            int bHasItems = nItemCount > 0;
+            if (NWSPLACEABLE_DEBUG)
+            {
+                unsigned long oidFirstItem = m_pcItemRepository->m_lstItems[0];
+            }
+            unsigned long oidObject = m_nId;
+            g_pAppManager->GetServerExoApp()->GetSWSMessage()
+                ->SendServerToPlayerGuiContainerObject_Open(
+                    pPlayer, oidObject, bHasItems);
+
+            CScriptEvent* pEvent = new CScriptEvent;
+            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OPEN;
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, oidOpener, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT,
+                pEvent);
+
+            if (bAnimate != 0)
+                SetAnimation(PLACEABLE_ANIMATION_OPEN);
+            m_bOpen = 1;
+        }
+        else
+        {
+            SetAnimation(PLACEABLE_ANIMATION_CLOSED);
+        }
+    }
+}
+// PC 0x0058A060 GOG 0x0058A0E0
+void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
+{
+    if (m_bOpen)
+    {
+        if (bUpdatePlayer)
+        {
+            CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidCloser);
+            if (pPlayer != NULL)
+            {
+                CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+                while (m_pcItemRepository->m_lstItems.num > 0u)
+                {
+                    unsigned int nItemCount = m_pcItemRepository->m_lstItems.num;
+                    CSWSItem* pItem = m_pcItemRepository->ItemListGetItem(nItemCount - 1);
+                    if (NWSPLACEABLE_DEBUG)
+                    {
+                        unsigned long oidItem = m_pcItemRepository->m_lstItems[nItemCount - 1];
+                    }
+                    m_pcItemRepository->RemoveItem(pItem);
+                    if (pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_DATAPAD)
+                    {
+                        if (m_sTag.CompareNoCase("lockertsfinv"))
+                        {
+                            pItem->m_lVarTable.SetLocalBoolean(DATAPAD_READ_BOOLEAN, 1);
+                        }
+                        else
+                        {
+                            int bRead = pItem->m_lVarTable.GetLocalBoolean(DATAPAD_READ_BOOLEAN);
+                            if (bRead == 0)
+                            {
+                                pItem->m_lVarTable.SetLocalBoolean(DATAPAD_READ_BOOLEAN, 1);
+                                CExoString sText;
+                                CExoLocString* pDescription = &pItem->m_sDescIdentified;
+                                pDescription->GetString(0, &sText, 0);
+                                CSWGuiMessageBox* pDatapad =
+                                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
+                                pDatapad->SetAllowCancel(0);
+                                pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
+                                CResRef cFont("fnt_d16x16");
+                                pDatapad->m_lblMessage.m_cText.m_cParams.SetFont(cFont);
+                                pDatapad->SetMessage(sText);
+                                pDatapad->SetCallback(NULL, NULL, NULL);
+                                g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pDatapad, 1, 1);
+                                g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
+                            }
+                        }
+                    }
+                    pCreature->GetItemRepository(1)->AddItem(&pItem, 1, 1, 1);
+                    if (pItem != NULL)
+                        pItem->SetPossessor(oidCloser, 1, 1, OBJECT_INVALID);
+                }
+            }
+        }
+
+        CScriptEvent* pEvent = new CScriptEvent;
+        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLOSE;
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, oidCloser, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+        SetAnimation(PLACEABLE_ANIMATION_CLOSED);
+        m_bOpen = 0;
+        if (m_bHasInventory && m_bDieWhenEmpty && m_pcItemRepository->m_lstItems.num == 0)
+        {
+            m_bUseable = 0;
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, m_nId, m_nId, CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+        }
+    }
+}
 // PC 0x00586F80 GOG 0x00587000
 void CSWSPlaceable::RemoveFromArea()
 {
@@ -1139,110 +1251,6 @@ CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
         return GetClientObject()->AsSWCPlaceable();
 
     return NULL;
-}
-// PC 0x00589F00 GOG 0x00589F80
-void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
-{
-    if (m_bOpen == 0 && m_bHasInventory != 0)
-    {
-        if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState != 0)
-        {
-            SetAnimation(PLACEABLE_ANIMATION_CLOSED);
-            return;
-        }
-
-        CSWSPlayer* pPlayer =
-            g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidOpener);
-        if (pPlayer != NULL)
-        {
-            unsigned int nItemCount = m_pcItemRepository->m_lstItems.num;
-            int bHasItems = nItemCount > 0;
-            unsigned long oidObject = m_nId;
-            g_pAppManager->GetServerExoApp()->GetSWSMessage()
-                ->SendServerToPlayerGuiContainerObject_Open(
-                    pPlayer, oidObject, bHasItems);
-
-            CScriptEvent* pEvent = new CScriptEvent;
-            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OPEN;
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, oidOpener, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT,
-                pEvent);
-
-            if (bAnimate != 0)
-                SetAnimation(PLACEABLE_ANIMATION_OPEN);
-            m_bOpen = 1;
-        }
-        else
-        {
-            SetAnimation(PLACEABLE_ANIMATION_CLOSED);
-        }
-    }
-}
-#define DATAPAD_READ_BOOLEAN 94
-// PC 0x0058A060 GOG 0x0058A0E0
-void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
-{
-    if (m_bOpen)
-    {
-        if (bUpdatePlayer)
-        {
-            CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidCloser);
-            if (pPlayer != NULL)
-            {
-                CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
-                while (m_pcItemRepository->m_lstItems.num > 0u)
-                {
-                    unsigned int nItemCount = m_pcItemRepository->m_lstItems.num;
-                    CSWSItem* pItem = m_pcItemRepository->ItemListGetItem(nItemCount - 1);
-                    m_pcItemRepository->RemoveItem(pItem);
-                    if (pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_DATAPAD)
-                    {
-                        if (m_sTag.CompareNoCase("lockertsfinv"))
-                        {
-                            pItem->m_lVarTable.SetLocalBoolean(DATAPAD_READ_BOOLEAN, 1);
-                        }
-                        else
-                        {
-                            int bRead = pItem->m_lVarTable.GetLocalBoolean(DATAPAD_READ_BOOLEAN);
-                            if (bRead == 0)
-                            {
-                                pItem->m_lVarTable.SetLocalBoolean(DATAPAD_READ_BOOLEAN, 1);
-                                CExoString sText;
-                                CExoLocString* pDescription = &pItem->m_sDescIdentified;
-                                pDescription->GetString(0, &sText, 0);
-                                CSWGuiMessageBox* pDatapad =
-                                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
-                                pDatapad->SetAllowCancel(0);
-                                pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
-                                CResRef cFont("fnt_d16x16");
-                                pDatapad->m_lblMessage.m_cText.m_cParams.SetFont(cFont);
-                                pDatapad->SetMessage(sText);
-                                pDatapad->SetCallback(NULL, NULL, NULL);
-                                g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pDatapad, 1, 1);
-                                g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
-                            }
-                        }
-                    }
-                    pCreature->GetItemRepository(1)->AddItem(&pItem, 1, 1, 1);
-                    if (pItem != NULL)
-                        pItem->SetPossessor(oidCloser, 1, 1, OBJECT_INVALID);
-                }
-            }
-        }
-
-        CScriptEvent* pEvent = new CScriptEvent;
-        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLOSE;
-        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, oidCloser, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-        SetAnimation(PLACEABLE_ANIMATION_CLOSED);
-        m_bOpen = 0;
-        if (m_bHasInventory && m_bDieWhenEmpty && m_pcItemRepository->m_lstItems.num == 0)
-        {
-            m_bUseable = 0;
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, m_nId, m_nId, CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
-        }
-    }
 }
 // PC 0x0058A330 GOG 0x0058A3B0
 int CSWSPlaceable::GetItemCount(int bDropableOnly)

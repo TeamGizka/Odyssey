@@ -278,6 +278,89 @@ int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
 
     return 1;
 }
+// PC 0x00576040 GOG 0x00575F00
+int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
+                                             CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    if (m_lstAABBNodes.num == 0)
+    {
+        return 0;
+    }
+
+    hitInfo.m_nField00 = m_nLOSMaterialMask;
+    if (CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo) > 0)
+    {
+        hitInfo.m_nField08 = 1;
+        hitInfo.m_vHitPosition = vEnd;
+    }
+
+    return hitInfo.m_nField08;
+}
+// PC 0x005760A0 GOG 0x00575F60
+int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
+                                          CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    if (m_lstAABBNodes.num == 0)
+    {
+        return 0;
+    }
+
+    hitInfo.m_nField00 = m_nWalkCheckMaterialMask;
+
+    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+
+    if (hitInfo.m_nField0C == -1)
+    {
+        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
+
+        vOffset *= 0.001f;
+        vStart += vOffset;
+        vEnd += vOffset;
+        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+    }
+
+    if (nHits > 0)
+    {
+        hitInfo.m_nField08 = 1;
+        hitInfo.m_vHitPosition = vEnd;
+    }
+
+    return hitInfo.m_nField08;
+}
+// PC 0x005761D0 GOG 0x00576090
+int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
+                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    if (m_lstAABBNodes.num == 0)
+    {
+        return 0;
+    }
+
+    __int64 nStartTime = QueryTimer();
+
+    hitInfo.m_nField00 = m_nAllMaterialsMask;
+
+    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+
+    if (hitInfo.m_nField0C == -1)
+    {
+        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
+
+        vOffset *= 0.001f;
+        vStart += vOffset;
+        vEnd += vOffset;
+        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+    }
+
+    if (nHits > 0)
+    {
+        hitInfo.m_nField08 = 1;
+        hitInfo.m_vHitPosition = vEnd;
+    }
+
+    checkaabbtime = (float)(QueryTimer() - nStartTime);
+    return hitInfo.m_nField08;
+}
 // PC 0x005754B0 GOG 0x00575DA0
 int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
@@ -309,6 +392,57 @@ int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
     }
 
     return nResult;
+}
+// PC 0x00575630 GOG 0x00575350
+int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& vEnd,
+                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    const Vector& vMinimum = m_lstAABBNodes[nNode].m_vMin;
+    const Vector& vMaximum = m_lstAABBNodes[nNode].m_vMax;
+#ifdef _XBOX
+    extern int DumpRoomBBox; if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
+#endif
+    if (!BoxIntersect(vStart, vEnd, vMinimum, vMaximum))
+    {
+        return 0;
+    }
+
+    if (m_lstAABBNodes[nNode].m_nTriangle != -1)
+    {
+        int nTriangle = m_lstAABBNodes[nNode].m_nTriangle;
+        int nMaterialMask = 1 << m_pFaceMaterials[nTriangle];
+        int nHits = 0;
+        if (!(hitInfo.m_nField00 & nMaterialMask))
+        {
+            return 0;
+        }
+
+        Vector avVertices[3];
+        Vector vNormal;
+        for (int i = 0; i < 3; ++i)
+        {
+            avVertices[i] = m_pVertices[m_pFaces[nTriangle * 3 + i]];
+        }
+
+        if (polyhit(avVertices, 3, vStart, vEnd, &vEnd, &vNormal))
+        {
+            hitInfo.m_nField0C = nTriangle;
+            nHits = 1;
+            hitInfo.m_nField1C = nMaterialMask;
+        }
+        return nHits;
+    }
+    else
+    {
+        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nField04)
+        {
+            return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
+        }
+        else
+        {
+            return CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo);
+        }
+    }
 }
 // PC 0x00575800 GOG 0x00575520
 void CSWRoomSurfaceMesh::TransformAABBToWorld(int nNode, const Vector& vOffset)
@@ -471,140 +605,6 @@ int CSWRoomSurfaceMesh::SetRoomAdjacency(CSWRoomSurfaceMesh* pOther,
 int CSWRoomSurfaceMesh::GetAdjacentRoom(int nEdge)
 {
     return m_lstExternalEdges[nEdge].m_nAdjacentRoom;
-}
-// PC 0x00576040 GOG 0x00575F00
-int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
-                                             CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    if (m_lstAABBNodes.num == 0)
-    {
-        return 0;
-    }
-
-    hitInfo.m_nField00 = m_nLOSMaterialMask;
-    if (CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo) > 0)
-    {
-        hitInfo.m_nField08 = 1;
-        hitInfo.m_vHitPosition = vEnd;
-    }
-
-    return hitInfo.m_nField08;
-}
-// PC 0x005760A0 GOG 0x00575F60
-int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
-                                          CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    if (m_lstAABBNodes.num == 0)
-    {
-        return 0;
-    }
-
-    hitInfo.m_nField00 = m_nWalkCheckMaterialMask;
-
-    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-
-    if (hitInfo.m_nField0C == -1)
-    {
-        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
-
-        vOffset *= 0.001f;
-        vStart += vOffset;
-        vEnd += vOffset;
-        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-    }
-
-    if (nHits > 0)
-    {
-        hitInfo.m_nField08 = 1;
-        hitInfo.m_vHitPosition = vEnd;
-    }
-
-    return hitInfo.m_nField08;
-}
-// PC 0x005761D0 GOG 0x00576090
-int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
-                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    if (m_lstAABBNodes.num == 0)
-    {
-        return 0;
-    }
-
-    __int64 nStartTime = QueryTimer();
-
-    hitInfo.m_nField00 = m_nAllMaterialsMask;
-
-    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-
-    if (hitInfo.m_nField0C == -1)
-    {
-        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
-
-        vOffset *= 0.001f;
-        vStart += vOffset;
-        vEnd += vOffset;
-        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-    }
-
-    if (nHits > 0)
-    {
-        hitInfo.m_nField08 = 1;
-        hitInfo.m_vHitPosition = vEnd;
-    }
-
-    checkaabbtime = (float)(QueryTimer() - nStartTime);
-    return hitInfo.m_nField08;
-}
-// PC 0x00575630 GOG 0x00575350
-int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& vEnd,
-                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    const Vector& vMinimum = m_lstAABBNodes[nNode].m_vMin;
-    const Vector& vMaximum = m_lstAABBNodes[nNode].m_vMax;
-#ifdef _XBOX
-    extern int DumpRoomBBox; if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
-#endif
-    if (!BoxIntersect(vStart, vEnd, vMinimum, vMaximum))
-    {
-        return 0;
-    }
-
-    if (m_lstAABBNodes[nNode].m_nTriangle != -1)
-    {
-        int nTriangle = m_lstAABBNodes[nNode].m_nTriangle;
-        int nMaterialMask = 1 << m_pFaceMaterials[nTriangle];
-        int nHits = 0;
-        if (!(hitInfo.m_nField00 & nMaterialMask))
-        {
-            return 0;
-        }
-
-        Vector avVertices[3];
-        Vector vNormal;
-        for (int i = 0; i < 3; ++i)
-        {
-            avVertices[i] = m_pVertices[m_pFaces[nTriangle * 3 + i]];
-        }
-
-        if (polyhit(avVertices, 3, vStart, vEnd, &vEnd, &vNormal))
-        {
-            hitInfo.m_nField0C = nTriangle;
-            nHits = 1;
-            hitInfo.m_nField1C = nMaterialMask;
-        }
-        return nHits;
-    }
-    else
-    {
-        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nField04)
-        {
-            return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
-        }
-        else
-        {
-            return CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo);
-        }
-    }
 }
 
 // PC 0x00578C90 GOG 0x00578D10
