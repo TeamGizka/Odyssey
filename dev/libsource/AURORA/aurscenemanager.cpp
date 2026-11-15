@@ -17,8 +17,7 @@
 #include "aurconsole.h"
 #include "aurdraw.h"
 
-static inline void AurscenemanagerTrace2();
-static inline void AurscenemanagerTrace1();
+#define AURSCENEMANAGER_DEBUG 0
 
 float fadeToZeroTime = 0.25f;
 
@@ -174,15 +173,6 @@ template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& 
     return *this;
 }
 
-
-static inline void AurscenemanagerTrace2()
-{
-    AurscenemanagerTrace1();
-}
-
-static inline void AurscenemanagerTrace1()
-{
-}
 
 #ifdef _XBOX
 
@@ -674,7 +664,6 @@ void LightBins(BSPNode* pNode, void* pData)
 // PC 0x00481F20 GOG 0x004820A0
 static void ConstructCameraFadePlane(Scene* pScene)
 {
-    AurscenemanagerTrace2();
     CAurBehaviorCameraFollow* pFollow = 0;
     if (CurrentCamera && CurrentCamera->m_pBehavior)
     {
@@ -714,6 +703,10 @@ static void ConstructCameraFadePlane(Scene* pScene)
         CurrentCamera->m_planeFadePerpendicular = Plane(vDirection,
             -((vTarget - vForward * perpCloseFactor) * vDirection));
         CurrentCamera->SetFadePlanes(planeRight, planeLeft);
+        if (AURSCENEMANAGER_DEBUG)
+        {
+            HitPartOnBSPNode(pScene->m_pBSPRoot, vCamera, vTarget, NULL);
+        }
     }
 }
 // PC 0x00482330 GOG 0x004824B0

@@ -41,10 +41,6 @@ class CSWGlobalVariableTable;
 class CSWSClient;
 class CExoString;
 
-inline void ServerExoAppTrace(const void*)
-{
-}
-
 class CServerExoApp : public CBaseExoApp
 {
 public:
@@ -156,7 +152,7 @@ public:
 #ifdef _XBOX
     int TestSafeLocation(unsigned long oidObject, Vector vPosition); int ComputeSafeLocation(Vector vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(Vector vPosition); int DebugValidatePath(unsigned long oidCreature, int bTempWayPoints); void SetHintTimers(unsigned long nHintTimer1, unsigned long nHintTimer2);
 #else
-    int TestSafeLocation(unsigned long oidObject, const Vector& vPosition); int ComputeSafeLocation(const Vector& vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(const Vector& vPosition);
+    int TestSafeLocation(unsigned long oidObject, const Vector& vPosition); int ComputeSafeLocation(const Vector& vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(const Vector& vPosition); int DebugValidatePath(unsigned long oidCreature, int bTempWayPoints);
 #endif
     int GetSurfaceMaterial(const CResRef& cAreaResRef, Vector vPosition,
                            int nRoomIndex);
@@ -227,7 +223,6 @@ public:
     // PC 0x004EA0F0 GOG 0x004EAE50
     CSWSCreature* GetPlayerCreature()
     {
-        ServerExoAppTrace(this);
         return GetCreatureByGameObjectID(GetPlayerCreatureId());
     }
 

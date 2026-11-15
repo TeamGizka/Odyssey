@@ -23,9 +23,8 @@ inline void AurPchListPartLightPtr_Allocate() { (void)&List<PartLight*>::allocat
 #include "aurtexcontrol.h"
 #include "aurdraw.h"
 
-static inline void AurmodelrenderTrace1();
-#define AURMODELRENDER_TRACE() AurmodelrenderTrace1()
 #define AUR_FORCE_GLOW_PULSE_STEP 0.024639942f
+#define AURMODELRENDER_DEBUG 0
 
 #ifndef _XBOX
 #pragma inline_recursion(on)
@@ -939,16 +938,26 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
     }
 }
 
+// PC 0x004015A0 GOG 0x004015A0
+void Part::Mat()
+{
+}
+
+void SetBumpLightColor(Vector& vColor);
+
 // PC 0x0048E200 GOG 0x0048E2D0
 void PartLight::Mat()
 {
-    AURMODELRENDER_TRACE();
     float fRed = m_vColor.m_fX;
     float fGreen = m_vColor.m_fY;
     float fBlue = m_vColor.m_fZ;
 
     GLRender_SetColor4f(fRed, fGreen, fBlue, 1.0f);
     currentcolor = m_vColor;
+    if (AURMODELRENDER_DEBUG)
+    {
+        SetBumpLightColor(m_vColor);
+    }
 }
 
 void DynamicPartCalculateMaterial(Gob* pGob, Vector& vColor,
@@ -956,7 +965,6 @@ void DynamicPartCalculateMaterial(Gob* pGob, Vector& vColor,
 
 void PartTriMesh::Mat()
 {
-    AURMODELRENDER_TRACE();
     MdlNodeTriMesh* pNode = (MdlNodeTriMesh*)m_pNode;
     static Vector vLastDiffuse(-1.0f, -1.0f, -1.0f);
     static Vector vLastAmbient(-1.0f, -1.0f, -1.0f);
@@ -4564,17 +4572,9 @@ void Gob::Render(bool bRenderLast)
     if (bRenderLast)
         DoEvent("propagaterender", 0);
 }
-// PC 0x004015A0 GOG 0x004015A0
-void Part::Mat()
-{
-}
 // PC 0x00693D50 GOG 0x00693AC0
 void Part::Project(const Vector& vPoint, float fDistance, const Plane& cPlane,
                    CAurShadowData* pShadowData)
-{
-}
-
-static inline void AurmodelrenderTrace1()
 {
 }
 
