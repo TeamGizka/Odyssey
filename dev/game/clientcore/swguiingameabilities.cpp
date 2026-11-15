@@ -20,6 +20,398 @@
 
 #define SWGUIINGAMEABILITIES_DEBUG 0
 
+
+void CSWGuiInGameAbilities::CreateFeatList()
+{
+    if (m_pCreature != NULL)
+    {
+        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
+        m_cFeatChart.CreateFeatChart(pServerCreature->m_pStats);
+        m_cFeatChart.SetSkillStatusAll(CSWGuiSkillFlow::STATUS_YELLOW);
+        m_cFeatChart.SetTopLeft();
+    }
+}
+
+// PC 0x00736580 GOG 0x007362A0
+void CSWGuiInGameAbilities::OnPanelRemoved()
+{
+    m_lbAbility.ClearItems();
+    m_cPowerChart.ClearChart();
+    m_cFeatChart.ClearChart();
+}
+// PC 0x007365B0 GOG 0x007362D0
+void CSWGuiInGameAbilities::CreatePowerList()
+{
+    if (m_pCreature != NULL)
+    {
+        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
+        m_cPowerChart.CreatePowerChart(pServerCreature->m_pStats, 0);
+        m_cPowerChart.SetSkillStatusAll(CSWGuiSkillFlow::STATUS_YELLOW);
+        m_cPowerChart.SetTopLeft();
+    }
+}
+
+// PC 0x007365F0 GOG 0x00736310
+void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
+{
+#ifdef _XBOX
+    CSWGuiListBox* pListBox = &m_lbDescription;
+#else
+    CSWGuiListBox* pListBox =
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode == 2
+            ? &m_lbDescFeats
+            : &m_lbDescription;
+#endif
+    pListBox->ClearItems();
+
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (bShow != 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+
+    m_lblDescription.SetExtent(cExtent);
+
+    CSWGuiControl* pControl = &m_lblDescription;
+    pListBox->AddControls(&pControl, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+#ifdef _XBOX
+    m_lblRAnalog.SetEnabledFlag(m_lbDescription.IsOversized());
+#endif
+}
+
+void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
+{
+    m_lblDescription.m_cText.m_cParams.SetText(sText);
+    UpdateDescriptionListBox(sText.GetLength() > 0);
+}
+
+int CSWGuiInGameAbilities::DisplayPowers()
+{
+    unsigned char nClass = m_pCreature->m_pStats->GetClass(
+        m_pCreature->m_pStats->GetNumClasses() - 1);
+    return CSWClass::IsJedi((int)nClass);
+}
+
+#ifndef _XBOX
+void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x00736730 GOG 0x00736450
+{
+    switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
+    {
+    case 0:
+        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        break;
+    case 1:
+        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        break;
+    case 2:
+        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        break;
+    }
+}
+#endif
+// PC 0x00736790 GOG 0x007364B0
+void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
+{
+    if (cExtent.m_nWidth > 42)
+    {
+        m_cExtent = cExtent;
+        CSWGuiExtent cIcon;
+        cIcon.m_nLeft = m_cExtent.m_nLeft;
+        cIcon.m_nTop = m_cExtent.m_nTop;
+        cIcon.m_nWidth = 42;
+        cIcon.m_nHeight = 42;
+        m_cNormal.SetExtent(cIcon);
+        m_cHilite.SetExtent(cIcon);
+        CSWGuiExtent cSelection;
+        cSelection.m_nLeft = m_cExtent.m_nLeft + 7;
+        cSelection.m_nTop = m_cExtent.m_nTop + 7;
+        cSelection.m_nWidth = 27;
+        cSelection.m_nHeight = 27;
+        m_cSelection.SetExtent(cSelection);
+
+        cIcon.m_nLeft += 42;
+        cIcon.m_nWidth = m_cExtent.m_nWidth - 42;
+        CSWGuiLabel::m_cBorder.SetExtent(cIcon);
+        CSWGuiLabelHilight::m_cHilite.SetExtent(cIcon);
+        m_cText.SetExtent(CSWGuiExtent::Intersection(
+            CSWGuiLabel::m_cBorder.GetInnerExtent(),
+            CSWGuiLabelHilight::m_cHilite.GetInnerExtent()));
+    }
+}
+// PC 0x00737850 GOG 0x007375B0
+void CSWGuiInGameAbilities::UpdateView()
+{
+    CExoArrayList<CSWGuiControl*> lstControls;
+
+    SetDescription("");
+
+    switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
+    {
+    case 2:
+#ifdef _XBOX
+        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+#else
+        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
+#ifdef _XBOX
+        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+#else
+        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+#endif
+#ifdef _XBOX
+        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+#else
+        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
+#ifdef _XBOX
+        m_lblNextPage.m_cText.m_cParams.SetText(m_lblSkills.m_cText.m_cParams.m_sText);
+#endif
+        m_lblInfoBackground.SetEnabledFlag(0);
+        m_lblSkillRank.SetEnabledFlag(0);
+        m_lblRankValue.SetEnabledFlag(0);
+        m_lblBonus.SetEnabledFlag(0);
+        m_lblBonusValue.SetEnabledFlag(0);
+        m_lblTotal.SetEnabledFlag(0);
+        m_lblTotalValue.SetEnabledFlag(0);
+#ifndef _XBOX
+        m_lbDescFeats.SetEnabledFlag(1);
+#endif
+        m_lbDescription.SetEnabledFlag(0);
+        m_lbAbility.AddControls(
+            *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cFeatChart.m_cFlows),
+            0, 0, 0);
+        {
+            unsigned char nRow = m_cFeatChart.m_nSelectedRow;
+            m_lbAbility.SetSelectedControl(nRow, 0);
+        }
+        OnEnterFeat(m_cFeatChart.GetSelected());
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x25, OBJECT_INVALID,
+                                                           OBJECT_INVALID, 0);
+        break;
+    case 1:
+#ifdef _XBOX
+        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+#else
+        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
+#ifdef _XBOX
+        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+#else
+        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
+#ifdef _XBOX
+        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+#else
+        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+#endif
+#ifdef _XBOX
+        m_lblNextPage.m_cText.m_cParams.SetText(m_lblFeats.m_cText.m_cParams.m_sText);
+#endif
+        m_lblName.m_cText.m_cParams.SetText("");
+        m_lblRankValue.m_cText.m_cParams.SetText("");
+        m_lblBonusValue.m_cText.m_cParams.SetText("");
+        m_lblTotalValue.m_cText.m_cParams.SetText("");
+        m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_BASE_COST);
+        m_lblTotal.m_cText.m_cParams.SetStrRef(STRREF_COST_PER_USE);
+        m_lblInfoBackground.SetEnabledFlag(1);
+        m_lblSkillRank.SetEnabledFlag(1);
+        m_lblRankValue.SetEnabledFlag(1);
+        m_lblBonus.SetEnabledFlag(1);
+        m_lblBonusValue.SetEnabledFlag(1);
+        m_lblTotal.SetEnabledFlag(1);
+        m_lblTotalValue.SetEnabledFlag(1);
+#ifndef _XBOX
+        m_lbDescFeats.SetEnabledFlag(0);
+#endif
+        m_lbDescription.SetEnabledFlag(1);
+        m_lbAbility.AddControls(
+            *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cPowerChart.m_cFlows),
+            0, 0, 0);
+        {
+            unsigned char nRow = m_cPowerChart.m_nSelectedRow;
+            m_lbAbility.SetSelectedControl(nRow, 0);
+        }
+        OnEnterPower(m_cPowerChart.GetSelected());
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x26, OBJECT_INVALID,
+                                                           OBJECT_INVALID, 0);
+        break;
+    case 0:
+#ifdef _XBOX
+        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+#else
+        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+#endif
+#ifdef _XBOX
+        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+#else
+        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
+#ifdef _XBOX
+        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+#else
+        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
+#ifdef _XBOX
+        if (DisplayPowers())
+            m_lblNextPage.m_cText.m_cParams.SetText(m_lblPowers.m_cText.m_cParams.m_sText);
+        else
+            m_lblNextPage.m_cText.m_cParams.SetText(m_lblFeats.m_cText.m_cParams.m_sText);
+#endif
+        m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_SKILL_RANK);
+        m_lblBonus.m_cText.m_cParams.SetStrRef(STRREF_BONUS);
+        m_lblTotal.m_cText.m_cParams.SetStrRef(STRREF_TOTAL_RANK);
+        m_lblInfoBackground.SetEnabledFlag(1);
+        m_lblSkillRank.SetEnabledFlag(1);
+        m_lblRankValue.SetEnabledFlag(1);
+        m_lblBonus.SetEnabledFlag(1);
+        m_lblBonusValue.SetEnabledFlag(1);
+        m_lblTotal.SetEnabledFlag(1);
+        m_lblTotalValue.SetEnabledFlag(1);
+#ifndef _XBOX
+        m_lbDescFeats.SetEnabledFlag(0);
+#endif
+        m_lbDescription.SetEnabledFlag(1);
+        {
+            int nCount = m_lstSkills.num;
+            if (nCount >= 10)
+            {
+                nCount = 10;
+            }
+            for (int i = 0; i < nCount; i++)
+            {
+                m_aSkillEntries[i].SetActive(0);
+                lstControls.Add(&m_aSkillEntries[i]);
+            }
+        }
+        m_lbAbility.AddControls(lstControls, 0, 1, 0);
+        m_lbAbility.SetSelectedControl(m_nSelectedSkill, 0);
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x24, OBJECT_INVALID,
+                                                           OBJECT_INVALID, 0);
+        break;
+    }
+
+    SetActiveControl(NULL, 0);
+    SetActiveControl(&m_lbAbility, 0);
+}
+// PC 0x007368C0 GOG 0x007365E0
+void CSWGuiInGameSkillEntry::Draw(float fElapsed)
+{
+    if (m_bActive)
+    {
+        CSWGuiLabelHilight::m_cHilite.Draw(fElapsed);
+        m_cHilite.Draw(fElapsed);
+    }
+    else
+    {
+        CSWGuiLabel::m_cBorder.Draw(fElapsed);
+        m_cNormal.Draw(fElapsed);
+    }
+    m_cSelection.Draw(fElapsed);
+    m_cText.Draw(fElapsed);
+}
+// PC 0x00736920 GOG 0x00736680
+void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
+                                        CSWGuiBorder& cBorder,
+                                        CSWGuiBorder& cHilite, int nWidth)
+{
+    m_cText.m_cParams = cText.m_cParams;
+    CSWGuiBorderParams* pParams = &CSWGuiLabel::m_cBorder.m_cParams;
+    *pParams = cBorder.m_cParams;
+    pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+    pParams = &CSWGuiLabelHilight::m_cHilite.m_cParams;
+    *pParams = cHilite.m_cParams;
+    pParams->SetPulsingAlpha(1, 1, 0);
+    pParams = &m_cNormal.m_cParams;
+    {
+#ifndef _XBOX
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#else
+        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#endif
+        pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+    }
+    pParams = &m_cHilite.m_cParams;
+    {
+#ifndef _XBOX
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#else
+        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#endif
+        pParams->SetPulsingAlpha(1, 0, 1);
+    }
+    {
+        CSWGuiExtent cExtent; cExtent.m_nLeft = 0; cExtent.m_nTop = 0; cExtent.m_nWidth = nWidth;
+#ifndef _XBOX
+        cExtent.m_nHeight = 42;
+#else
+        cExtent.m_nHeight = 56;
+#endif
+        SetExtent(cExtent);
+    }
+}
+// PC 0x00736AF0 GOG 0x00736850
+void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
+                                      unsigned char nState)
+{
+    CResRef cIcon("inone");
+    unsigned long nStrRef = 0;
+
+    switch (nState)
+    {
+    case 0:
+    {
+        CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)nSkill];
+        if (pSkill != NULL)
+        {
+            CResRef* pTemp = &(cIcon = pSkill->m_sIcon);
+            nStrRef = pSkill->m_nNameStrRef;
+        }
+        break;
+    }
+    case 1:
+    {
+        CSWFeat* pFeat = g_pRules->GetFeat(nSkill);
+        if (pFeat != NULL)
+        {
+            CResRef* pTemp = &(cIcon = pFeat->m_cIcon);
+            nStrRef = pFeat->m_nNameStrRef;
+        }
+        break;
+    }
+    case 2:
+    {
+        CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSkill);
+        if (pSpell != NULL)
+        {
+            CResRef* pTemp = &(cIcon = pSpell->m_resIcon);
+            nStrRef = pSpell->m_nNameStrRef;
+        }
+        break;
+    }
+    }
+
+    CSWGuiBorderParams* pParams = &m_cSelection.m_cParams;
+    pParams->m_nFillMode = 1;
+    pParams->SetFillImage(cIcon, 0);
+    m_cText.m_cParams.SetStrRef(nStrRef);
+}
+#include "swguiskillflowchartinl.h"
+// PC 0x00736C80 GOG 0x007369E0
+CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
+{
+    m_lbDescription.ClearItems();
+#ifndef _XBOX
+    m_lbDescFeats.ClearItems();
+#endif
+    m_lbAbility.ClearItems();
+}
 #ifdef _XBOX
 CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -147,263 +539,52 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x0
     m_pCreature = NULL;
 }
 #endif
-
-void CSWGuiInGameAbilities::CreateFeatList()
+// PC 0x00738780 GOG 0x007384E0
+void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
 {
-    if (m_pCreature != NULL)
+    m_pCreature = pCreature;
+    if (pCreature != NULL)
     {
-        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
-        m_cFeatChart.CreateFeatChart(pServerCreature->m_pStats);
-        m_cFeatChart.SetSkillStatusAll(CSWGuiSkillFlow::STATUS_YELLOW);
-        m_cFeatChart.SetTopLeft();
-    }
-}
-
-// PC 0x00736580 GOG 0x007362A0
-void CSWGuiInGameAbilities::OnPanelRemoved()
-{
-    m_lbAbility.ClearItems();
-    m_cPowerChart.ClearChart();
-    m_cFeatChart.ClearChart();
-}
-// PC 0x007365B0 GOG 0x007362D0
-void CSWGuiInGameAbilities::CreatePowerList()
-{
-    if (m_pCreature != NULL)
-    {
-        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
-        m_cPowerChart.CreatePowerChart(pServerCreature->m_pStats, 0);
-        m_cPowerChart.SetSkillStatusAll(CSWGuiSkillFlow::STATUS_YELLOW);
-        m_cPowerChart.SetTopLeft();
-    }
-}
-
-// PC 0x007365F0 GOG 0x00736310
-void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
-{
+        m_lbAbility.ClearItems();
+        CreateFeatList();
+        CreateSkillList();
+        unsigned char nClass = m_pCreature->m_pStats->GetClass(
+            m_pCreature->m_pStats->GetNumClasses() - 1);
+        if (CSWClass::IsJedi((int)nClass) != 0)
+        {
+            CreatePowerList();
 #ifdef _XBOX
-    CSWGuiListBox* pListBox = &m_lbDescription;
+            m_lblPowers.SetEnabledFlag(1);
 #else
-    CSWGuiListBox* pListBox =
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode == 2
-            ? &m_lbDescFeats
-            : &m_lbDescription;
+            m_btnPowers.SetEnabledFlag(1);
 #endif
-    pListBox->ClearItems();
-
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (bShow != 0)
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
-    }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-
-    m_lblDescription.SetExtent(cExtent);
-
-    CSWGuiControl* pControl = &m_lblDescription;
-    pListBox->AddControls(&pControl, 1, 0, 0, 0);
-    pListBox->SetSelectedControl(&m_lblDescription, 0);
+            UpdateView();
+            return;
+        }
+        else
+        {
 #ifdef _XBOX
-    m_lblRAnalog.SetEnabledFlag(m_lbDescription.IsOversized());
-#endif
-}
-// PC 0x007366A0 GOG 0x007363C0
-void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
-{
-    if (SWGUIINGAMEABILITIES_DEBUG)
-    {
-        DisplayPowers();
-    }
-    STR_RES strDescription;
-
-    g_pTlkTable->Fetch(nStrRef, strDescription, CTlkTable::GENDER_MALE);
-    m_lblDescription.m_cText.m_cParams.SetText(strDescription.m_sString);
-    UpdateDescriptionListBox(strDescription.m_sString.GetLength() > 0);
-}
-
-void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
-{
-    m_lblDescription.m_cText.m_cParams.SetText(sText);
-    UpdateDescriptionListBox(sText.GetLength() > 0);
-}
-
-int CSWGuiInGameAbilities::DisplayPowers()
-{
-    unsigned char nClass = m_pCreature->m_pStats->GetClass(
-        m_pCreature->m_pStats->GetNumClasses() - 1);
-    return CSWClass::IsJedi((int)nClass);
-}
-
-#ifndef _XBOX
-void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x00736730 GOG 0x00736450
-{
-    switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
-    {
-    case 0:
-        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-        break;
-    case 1:
-        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-        break;
-    case 2:
-        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-        break;
-    }
-}
-#endif
-// PC 0x00736790 GOG 0x007364B0
-void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
-{
-    if (cExtent.m_nWidth > 42)
-    {
-        m_cExtent = cExtent;
-        CSWGuiExtent cIcon;
-        cIcon.m_nLeft = m_cExtent.m_nLeft;
-        cIcon.m_nTop = m_cExtent.m_nTop;
-        cIcon.m_nWidth = 42;
-        cIcon.m_nHeight = 42;
-        m_cNormal.SetExtent(cIcon);
-        m_cHilite.SetExtent(cIcon);
-        CSWGuiExtent cSelection;
-        cSelection.m_nLeft = m_cExtent.m_nLeft + 7;
-        cSelection.m_nTop = m_cExtent.m_nTop + 7;
-        cSelection.m_nWidth = 27;
-        cSelection.m_nHeight = 27;
-        m_cSelection.SetExtent(cSelection);
-
-        cIcon.m_nLeft += 42;
-        cIcon.m_nWidth = m_cExtent.m_nWidth - 42;
-        CSWGuiLabel::m_cBorder.SetExtent(cIcon);
-        CSWGuiLabelHilight::m_cHilite.SetExtent(cIcon);
-        m_cText.SetExtent(CSWGuiExtent::Intersection(
-            CSWGuiLabel::m_cBorder.GetInnerExtent(),
-            CSWGuiLabelHilight::m_cHilite.GetInnerExtent()));
-    }
-}
-// PC 0x007368C0 GOG 0x007365E0
-void CSWGuiInGameSkillEntry::Draw(float fElapsed)
-{
-    if (m_bActive)
-    {
-        CSWGuiLabelHilight::m_cHilite.Draw(fElapsed);
-        m_cHilite.Draw(fElapsed);
-    }
-    else
-    {
-        CSWGuiLabel::m_cBorder.Draw(fElapsed);
-        m_cNormal.Draw(fElapsed);
-    }
-    m_cSelection.Draw(fElapsed);
-    m_cText.Draw(fElapsed);
-}
-// PC 0x00736920 GOG 0x00736680
-void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
-                                        CSWGuiBorder& cBorder,
-                                        CSWGuiBorder& cHilite, int nWidth)
-{
-    m_cText.m_cParams = cText.m_cParams;
-    CSWGuiBorderParams* pParams = &CSWGuiLabel::m_cBorder.m_cParams;
-    *pParams = cBorder.m_cParams;
-    pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
-    pParams = &CSWGuiLabelHilight::m_cHilite.m_cParams;
-    *pParams = cHilite.m_cParams;
-    pParams->SetPulsingAlpha(1, 1, 0);
-    pParams = &m_cNormal.m_cParams;
-    {
-#ifndef _XBOX
-        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
-        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+            m_lblPowers.SetEnabledFlag(0);
 #else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+            m_btnPowers.SetEnabledFlag(0);
 #endif
-        pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
-    }
-    pParams = &m_cHilite.m_cParams;
-    {
-#ifndef _XBOX
-        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
-        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
-#else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
-#endif
-        pParams->SetPulsingAlpha(1, 0, 1);
-    }
-    {
-        CSWGuiExtent cExtent; cExtent.m_nLeft = 0; cExtent.m_nTop = 0; cExtent.m_nWidth = nWidth;
-#ifndef _XBOX
-        cExtent.m_nHeight = 42;
-#else
-        cExtent.m_nHeight = 56;
-#endif
-        SetExtent(cExtent);
-    }
-}
-// PC 0x00736AF0 GOG 0x00736850
-void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
-                                      unsigned char nState)
-{
-    CResRef cIcon("inone");
-    unsigned long nStrRef = 0;
-
-    switch (nState)
-    {
-    case 0:
-    {
-        CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)nSkill];
-        if (pSkill != NULL)
-        {
-            CResRef* pTemp = &(cIcon = pSkill->m_sIcon);
-            nStrRef = pSkill->m_nNameStrRef;
+            if (g_pAppManager->m_pClientExoApp->GetInGameGui()
+                    ->m_nAbilityMode == 1)
+            {
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode =
+                    0;
+            }
         }
-        break;
+        UpdateView();
     }
-    case 1:
-    {
-        CSWFeat* pFeat = g_pRules->GetFeat(nSkill);
-        if (pFeat != NULL)
-        {
-            CResRef* pTemp = &(cIcon = pFeat->m_cIcon);
-            nStrRef = pFeat->m_nNameStrRef;
-        }
-        break;
-    }
-    case 2:
-    {
-        CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSkill);
-        if (pSpell != NULL)
-        {
-            CResRef* pTemp = &(cIcon = pSpell->m_resIcon);
-            nStrRef = pSpell->m_nNameStrRef;
-        }
-        break;
-    }
-    }
-
-    CSWGuiBorderParams* pParams = &m_cSelection.m_cParams;
-    pParams->m_nFillMode = 1;
-    pParams->SetFillImage(cIcon, 0);
-    m_cText.m_cParams.SetStrRef(nStrRef);
-}
-#include "swguiskillflowchartinl.h"
-// PC 0x00736C80 GOG 0x007369E0
-CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
-{
-    m_lbDescription.ClearItems();
-#ifndef _XBOX
-    m_lbDescFeats.ClearItems();
-#endif
-    m_lbAbility.ClearItems();
 }
 // PC 0x00736E90 GOG 0x00736BF0
 void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
 {
     m_nSelectedSkill = pControl->GetID();
-    int nRank = m_lstSkills[m_nSelectedSkill].m_nRank;
-    CSWSkill* pSkill = m_lstSkills[m_nSelectedSkill].m_pSkill;
-    int nBonus = m_lstSkills[m_nSelectedSkill].m_nBonus;
+    int nRank = m_lstSkills.element[m_nSelectedSkill].m_nRank;
+    CSWSkill* pSkill = m_lstSkills.element[m_nSelectedSkill].m_pSkill;
+    int nBonus = m_lstSkills.element[m_nSelectedSkill].m_nBonus;
     CExoString sBonus;
     Vector vColor;
 
@@ -571,161 +752,6 @@ void CSWGuiInGameAbilities::OnAbilitySelectionChanged(CSWGuiControl* pControl)  
     }
 }
 #endif
-// PC 0x00737850 GOG 0x007375B0
-void CSWGuiInGameAbilities::UpdateView()
-{
-    CExoArrayList<CSWGuiControl*> lstControls;
-
-    SetDescription("");
-
-    switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
-    {
-    case 2:
-#ifdef _XBOX
-        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
-        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-#endif
-#ifdef _XBOX
-        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblNextPage.m_cText.m_cParams.SetText(m_lblSkills.m_cText.m_cParams.m_sText);
-#endif
-        m_lblInfoBackground.SetEnabledFlag(0);
-        m_lblSkillRank.SetEnabledFlag(0);
-        m_lblRankValue.SetEnabledFlag(0);
-        m_lblBonus.SetEnabledFlag(0);
-        m_lblBonusValue.SetEnabledFlag(0);
-        m_lblTotal.SetEnabledFlag(0);
-        m_lblTotalValue.SetEnabledFlag(0);
-#ifndef _XBOX
-        m_lbDescFeats.SetEnabledFlag(1);
-#endif
-        m_lbDescription.SetEnabledFlag(0);
-        m_lbAbility.AddControls(
-            *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cFeatChart.m_cFlows),
-            0, 0, 0);
-        {
-            unsigned char nRow = m_cFeatChart.m_nSelectedRow;
-            m_lbAbility.SetSelectedControl(nRow, 0);
-        }
-        OnEnterFeat(m_cFeatChart.GetSelected());
-        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x25, OBJECT_INVALID,
-                                                           OBJECT_INVALID, 0);
-        break;
-    case 1:
-#ifdef _XBOX
-        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
-        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-#endif
-#ifdef _XBOX
-        m_lblNextPage.m_cText.m_cParams.SetText(m_lblFeats.m_cText.m_cParams.m_sText);
-#endif
-        m_lblName.m_cText.m_cParams.SetText("");
-        m_lblRankValue.m_cText.m_cParams.SetText("");
-        m_lblBonusValue.m_cText.m_cParams.SetText("");
-        m_lblTotalValue.m_cText.m_cParams.SetText("");
-        m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_BASE_COST);
-        m_lblTotal.m_cText.m_cParams.SetStrRef(STRREF_COST_PER_USE);
-        m_lblInfoBackground.SetEnabledFlag(1);
-        m_lblSkillRank.SetEnabledFlag(1);
-        m_lblRankValue.SetEnabledFlag(1);
-        m_lblBonus.SetEnabledFlag(1);
-        m_lblBonusValue.SetEnabledFlag(1);
-        m_lblTotal.SetEnabledFlag(1);
-        m_lblTotalValue.SetEnabledFlag(1);
-#ifndef _XBOX
-        m_lbDescFeats.SetEnabledFlag(0);
-#endif
-        m_lbDescription.SetEnabledFlag(1);
-        m_lbAbility.AddControls(
-            *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cPowerChart.m_cFlows),
-            0, 0, 0);
-        {
-            unsigned char nRow = m_cPowerChart.m_nSelectedRow;
-            m_lbAbility.SetSelectedControl(nRow, 0);
-        }
-        OnEnterPower(m_cPowerChart.GetSelected());
-        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x26, OBJECT_INVALID,
-                                                           OBJECT_INVALID, 0);
-        break;
-    case 0:
-#ifdef _XBOX
-        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
-        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-#endif
-#ifdef _XBOX
-        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        if (DisplayPowers())
-            m_lblNextPage.m_cText.m_cParams.SetText(m_lblPowers.m_cText.m_cParams.m_sText);
-        else
-            m_lblNextPage.m_cText.m_cParams.SetText(m_lblFeats.m_cText.m_cParams.m_sText);
-#endif
-        m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_SKILL_RANK);
-        m_lblBonus.m_cText.m_cParams.SetStrRef(STRREF_BONUS);
-        m_lblTotal.m_cText.m_cParams.SetStrRef(STRREF_TOTAL_RANK);
-        m_lblInfoBackground.SetEnabledFlag(1);
-        m_lblSkillRank.SetEnabledFlag(1);
-        m_lblRankValue.SetEnabledFlag(1);
-        m_lblBonus.SetEnabledFlag(1);
-        m_lblBonusValue.SetEnabledFlag(1);
-        m_lblTotal.SetEnabledFlag(1);
-        m_lblTotalValue.SetEnabledFlag(1);
-#ifndef _XBOX
-        m_lbDescFeats.SetEnabledFlag(0);
-#endif
-        m_lbDescription.SetEnabledFlag(1);
-        {
-            int nCount = m_lstSkills.num;
-            if (nCount >= 10)
-            {
-                nCount = 10;
-            }
-            for (int i = 0; i < nCount; i++)
-            {
-                m_aSkillEntries[i].SetActive(0);
-                lstControls.Add(&m_aSkillEntries[i]);
-            }
-        }
-        m_lbAbility.AddControls(lstControls, 0, 1, 0);
-        m_lbAbility.SetSelectedControl(m_nSelectedSkill, 0);
-        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x24, OBJECT_INVALID,
-                                                           OBJECT_INVALID, 0);
-        break;
-    }
-
-    SetActiveControl(NULL, 0);
-    SetActiveControl(&m_lbAbility, 0);
-}
 // PC 0x00737D30 GOG 0x00737A90
 void CSWGuiInGameAbilities::CreateSkillList()
 {
@@ -765,6 +791,19 @@ void CSWGuiInGameAbilities::OnFeatsButtonPressed(CSWGuiControl* pControl)
     UpdateView();
 }
 #endif
+// PC 0x007366A0 GOG 0x007363C0
+void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
+{
+    if (SWGUIINGAMEABILITIES_DEBUG)
+    {
+        DisplayPowers();
+    }
+    STR_RES strDescription;
+
+    g_pTlkTable->Fetch(nStrRef, strDescription, CTlkTable::GENDER_MALE);
+    m_lblDescription.m_cText.m_cParams.SetText(strDescription.m_sString);
+    UpdateDescriptionListBox(strDescription.m_sString.GetLength() > 0);
+}
 
 #ifndef _XBOX
 void CSWGuiInGameAbilities::OnPowersButtonPressed(CSWGuiControl* pControl)
@@ -781,45 +820,6 @@ void CSWGuiInGameAbilities::OnSkillsButtonPressed(CSWGuiControl* pControl)  // P
     UpdateView();
 }
 #endif
-// PC 0x00738780 GOG 0x007384E0
-void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
-{
-    m_pCreature = pCreature;
-    if (pCreature != NULL)
-    {
-        m_lbAbility.ClearItems();
-        CreateFeatList();
-        CreateSkillList();
-        unsigned char nClass = m_pCreature->m_pStats->GetClass(
-            m_pCreature->m_pStats->GetNumClasses() - 1);
-        if (CSWClass::IsJedi((int)nClass) != 0)
-        {
-            CreatePowerList();
-#ifdef _XBOX
-            m_lblPowers.SetEnabledFlag(1);
-#else
-            m_btnPowers.SetEnabledFlag(1);
-#endif
-            UpdateView();
-            return;
-        }
-        else
-        {
-#ifdef _XBOX
-            m_lblPowers.SetEnabledFlag(0);
-#else
-            m_btnPowers.SetEnabledFlag(0);
-#endif
-            if (g_pAppManager->m_pClientExoApp->GetInGameGui()
-                    ->m_nAbilityMode == 1)
-            {
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode =
-                    0;
-            }
-        }
-        UpdateView();
-    }
-}
 
 #ifdef _XBOX
 void CSWGuiInGameAbilities::OnPanelAdded()
