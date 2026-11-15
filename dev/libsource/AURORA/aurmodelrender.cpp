@@ -1,10 +1,13 @@
 #include <windows.h>
 #include <GL/gl.h>
 #include <aurlist.h>
+#include <aurpointer.h>
 #include "../math3d/math3d.h"
 
 class PartLight;
+class CAurTexture;
 template void List<PartLight*>::allocate(int);
+template SafePointer<CAurTexture>::operator CAurTexture*() const;
 #include "aurmodel.h"
 #define WIN32_LEAN_AND_MEAN
 #include "aurprimitive.h"
@@ -2829,6 +2832,8 @@ void RenderEnvironmentMappedVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
 
+#include "aurmaterialinl.h"
+
 void RenderEMLMVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)
 {
     GLRender_Enable(ENABLE_VERTEX_PROGRAM);
@@ -3105,8 +3110,6 @@ void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,
         GLRender_PopCurrentMatrix();
     }
 }
-
-#include "aurmaterialinl.h"
 
 void SetBeaming()
 {
