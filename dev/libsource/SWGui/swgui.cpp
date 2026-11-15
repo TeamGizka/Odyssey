@@ -45,7 +45,67 @@ void AurGUIStopLayer();
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
                         const Vector& vColor, bool bScissor, float fAlpha);
 void AurGUICloseViewport();
+extern int g_nScreenWidth;
+extern int g_nScreenHeight;
 
+// PC 0x0040A0D0 GOG 0x0040A0A0
+int CSWGuiExtent::Load(CResGFF* pGFF, CResStruct& cStruct)
+{
+    CResStruct cExtent;
+    int bSuccess;
+    int nResult;
+
+    nResult = pGFF->GetStructFromStruct(&cExtent, &cStruct, "EXTENT");
+    if (nResult != 0)
+    {
+        m_nLeft = pGFF->ReadFieldINT(&cExtent, "LEFT", bSuccess, 0);
+        m_nTop = pGFF->ReadFieldINT(&cExtent, "TOP", bSuccess, 0);
+        m_nWidth = pGFF->ReadFieldINT(&cExtent, "WIDTH", bSuccess, 0);
+        nResult = m_nHeight =
+            pGFF->ReadFieldINT(&cExtent, "HEIGHT", bSuccess, 0);
+    }
+    return nResult;
+}
+// PC 0x0040A170 GOG 0x0040A140
+void CSWGuiPanel::HandleInputEvent(int nEvent, int nState)
+{
+    if (m_pActiveControl != NULL)
+    {
+        m_pActiveControl->HandleInputEvent(nEvent, nState);
+    }
+}
+// PC 0x0040A180 GOG 0x0040A150
+CExoString CSWGuiPanel::GetFullScreenBG()
+{
+    CExoString sBackground = "800x600";
+
+    if (g_nScreenWidth == 1024)
+    {
+        if (g_nScreenHeight == 768)
+        {
+            sBackground = "1024x768";
+        }
+    }
+    else if (g_nScreenWidth == 1280)
+    {
+        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
+        {
+            sBackground = "1280x960";
+        }
+    }
+    else if (g_nScreenWidth == 1600)
+    {
+        if (g_nScreenHeight == 1200)
+        {
+            sBackground = "1600x1200";
+        }
+    }
+
+#ifndef _XBOX
+    sBackground = sBackground + CSWGuiManager::FULLSCREEN_BGS[m_nBackground];
+#endif
+    return sBackground;
+}
 #include "swguiingame.h"
 #include "nwccreature.h"
 #include "nwcanimbase.h"
@@ -106,64 +166,6 @@ static inline const Vector& SafeRegionWhite(Vector& vColor)
     return vColor;
 }
 
-// PC 0x0040A0D0 GOG 0x0040A0A0
-int CSWGuiExtent::Load(CResGFF* pGFF, CResStruct& cStruct)
-{
-    CResStruct cExtent;
-    int bSuccess;
-    int nResult;
-
-    nResult = pGFF->GetStructFromStruct(&cExtent, &cStruct, "EXTENT");
-    if (nResult != 0)
-    {
-        m_nLeft = pGFF->ReadFieldINT(&cExtent, "LEFT", bSuccess, 0);
-        m_nTop = pGFF->ReadFieldINT(&cExtent, "TOP", bSuccess, 0);
-        m_nWidth = pGFF->ReadFieldINT(&cExtent, "WIDTH", bSuccess, 0);
-        nResult = m_nHeight =
-            pGFF->ReadFieldINT(&cExtent, "HEIGHT", bSuccess, 0);
-    }
-    return nResult;
-}
-// PC 0x0040A170 GOG 0x0040A140
-void CSWGuiPanel::HandleInputEvent(int nEvent, int nState)
-{
-    if (m_pActiveControl != NULL)
-    {
-        m_pActiveControl->HandleInputEvent(nEvent, nState);
-    }
-}
-// PC 0x0040A180 GOG 0x0040A150
-CExoString CSWGuiPanel::GetFullScreenBG()
-{
-    CExoString sBackground = "800x600";
-
-    if (g_nScreenWidth == 1024)
-    {
-        if (g_nScreenHeight == 768)
-        {
-            sBackground = "1024x768";
-        }
-    }
-    else if (g_nScreenWidth == 1280)
-    {
-        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
-        {
-            sBackground = "1280x960";
-        }
-    }
-    else if (g_nScreenWidth == 1600)
-    {
-        if (g_nScreenHeight == 1200)
-        {
-            sBackground = "1600x1200";
-        }
-    }
-
-#ifndef _XBOX
-    sBackground = sBackground + CSWGuiManager::FULLSCREEN_BGS[m_nBackground];
-#endif
-    return sBackground;
-}
 // PC 0x0040BE30 GOG 0x0040BDF0
 CSWGuiManager::CSWGuiManager()
     : m_lPanels(0),
