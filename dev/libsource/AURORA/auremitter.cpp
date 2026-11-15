@@ -2962,6 +2962,17 @@ void LightningEmitter::UpdateControlPoints()
 
 inline Vector PartEmitter::GetOrigin() { return m_vOrigin; }
 
+inline void LightningDebugDelta(const Vector& vDelta)
+{
+    float fLength = 0.0f;
+    float fMaxLength = 0.0f;
+}
+
+inline void LightningDebugPoint()
+{
+    int nPoint = 0;
+}
+
 inline void LightningDebugStep()
 {
     int nStep = 0;
@@ -3304,8 +3315,12 @@ void LightningEmitter::Update(float fTimeStep)
             Vector vNewDirection = m_pTarget->GetPosition() - m_vOrigin;
             Quaternion qRotation = RotationArc(m_vReserved1F8, vNewDirection);
             for (j = 0; j < m_lstActive.m_nCount; j++)
-                m_lstActive[j]->m_vPosition =
-                    qRotation * (m_lstActive[j]->m_vPosition - m_vReserved204) + m_vOrigin;
+            {
+                Vector vDelta = m_lstActive[j]->m_vPosition - m_vReserved204;
+                LightningDebugDelta(vDelta);
+                m_lstActive[j]->m_vPosition = qRotation * vDelta + m_vOrigin;
+                LightningDebugPoint();
+            }
             for (j = 0; j < m_lstReserved210.m_nCount; j++)
             {
                 m_lstReserved210[j] = qRotation * (m_lstReserved210[j] - m_vReserved204) + m_vOrigin;
