@@ -1021,14 +1021,14 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         }
 
         pPart = pSkin;
-        Vector vTranslation = -pSkin->m_qOrientation * -pSkin->m_vPosition;
-        Quaternion qRotation = -pSkin->m_qOrientation;
+        Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
+        Quaternion qRotation = -pPart->m_qOrientation;
         SkinDebugWalk();
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
-            Vector vParent = qRotation * (-pPart->m_qOrientation * -pPart->m_vPosition);
-            vTranslation = vTranslation + vParent;
+            Vector vLocal = -pPart->m_qOrientation * -pPart->m_vPosition;
+            vTranslation = vTranslation + qRotation * vLocal;
             qRotation = qRotation * -pPart->m_qOrientation;
         }
         for (int i = 0; i < pNode->m_nBoneMap; i++)
