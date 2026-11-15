@@ -194,12 +194,6 @@ const char* C_Stats(char* sBuffer)
     return sBuffer;
 }
 
-const char* S_Stats(char* sBuffer)
-{
-    sprintf(sBuffer, "tot[%07.2f]", g_ServerUpdateTime);
-    return sBuffer;
-}
-
 const char* AI_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "Mod[%05.2f] Obj[%05.2f]", g_AIModuleTime, g_AIObjectTime);
@@ -208,113 +202,18 @@ const char* AI_Stats(char* sBuffer)
 
 const char* TexMem(char* sBuffer)
 {
-    int nUncompressed = usedtexturememory - usedcomptexmemory - usedlightmapmemory -
-                        usedcubemapmemory - usedbumpmapmemory;
-
-    sprintf(sBuffer, "(kB) Uncmp %d Cmp %d LM %d CM %d BM %d",
-            nUncompressed / BYTES_PER_KB, usedcomptexmemory / BYTES_PER_KB,
-            usedlightmapmemory / BYTES_PER_KB, usedcubemapmemory / BYTES_PER_KB,
+    sprintf(sBuffer, "(kB) Tex %d Cmp %d LM %d CM %d BM %d",
+            usedtexturememory / BYTES_PER_KB, usedlightmapmemory / BYTES_PER_KB,
+            usedcomptexmemory / BYTES_PER_KB, usedcubemapmemory / BYTES_PER_KB,
             usedbumpmapmemory / BYTES_PER_KB);
-    return sBuffer;
-}
-
-const char* GfxMemOld(char* sBuffer)
-{
-    sprintf(sBuffer, "(kB) Textures %d Verts %d Anims %d",
-            usedtexturememory / BYTES_PER_KB, totalvertexpool / BYTES_PER_KB,
-            animationfootprint / BYTES_PER_KB);
     return sBuffer;
 }
 
 const char* XbxMem(char* sBuffer)
 {
-    int nTotalMem = XBOX_TOTAL_MEMORY;
-    if (usedcomptexmemory == 0)
-    {
-        int nTextures = usedtexturememory - usedlightmapmemory - usedcubemapmemory -
-                        usedbumpmapmemory;
-        nTotalMem -= (int)(nTextures * XBOX_TEXTURE_COMPRESSION);
-        nTotalMem -= animationfootprint + totalvertexpool + usedlightmapmemory +
-                     usedcubemapmemory + usedbumpmapmemory;
-    }
-    else
-    {
-        nTotalMem -= animationfootprint + totalvertexpool + usedtexturememory;
-    }
-
-    int nLevelMem = XBOX_LEVEL_MEMORY - totalvertexpool - usedtexturememory;
-    if (nLevelMem > XBOX_LEVEL_MEMORY_CAP)
-    {
-        nLevelMem = XBOX_LEVEL_MEMORY_CAP;
-    }
-
-    sprintf(sBuffer, "Parts %d Total Mem %d Level Mem %d", countpart,
-            nTotalMem / BYTES_PER_KB, nLevelMem / BYTES_PER_KB);
-    return sBuffer;
-}
-
-const char* GuiMem(char* sBuffer)
-{
-    sprintf(sBuffer, "Tex %d Part %d", RyanStartTextureSize / BYTES_PER_KB,
-            RyanStartParts);
-    return sBuffer;
-}
-
-const char* LevMem(char* sBuffer)
-{
-    sprintf(sBuffer, "Tot %d Tex %d Part %d Vert %d-%d",
-            (RyanLevelTextureSize + RyanLevelVertSize) / BYTES_PER_KB,
-            RyanLevelTextureSize / BYTES_PER_KB, RyanLevelTotalParts,
-            RyanLevelVertices, RyanLevelVertSize / BYTES_PER_KB);
-    return sBuffer;
-}
-
-const char* DynMem(char* sBuffer)
-{
-    int nTextures = usedtexturememory - RyanEndTextureSize;
-    int nVertSize = RyanTotalLevelVertSize - RyanLevelVertSize;
-
-    sprintf(sBuffer, "Tot %d Tex %d Part %d Vert %d-%d",
-            (nTextures + nVertSize) / BYTES_PER_KB, nTextures / BYTES_PER_KB,
-            countpart - RyanEndParts, RyanTotalLevelVertices - RyanLevelVertices,
-            nVertSize / BYTES_PER_KB);
-    return sBuffer;
-}
-
-const char* GfxMem(char* sBuffer)
-{
-    int nResources;
-    int nKeys;
-    int nServicedSize;
-    int nImageSize;
-    int nModelDataSize;
-    int nTextureSize;
-
-    g_pExoResMan->GetResourcesInMemory(&nResources, &nKeys, &nServicedSize,
-                                       &nImageSize, &g_mdlMem, &nModelDataSize,
-                                       &nTextureSize, &g_wavMem);
-    sprintf(sBuffer, "tot: %d md:%d mx:%d tx:%d",
-            (nTextureSize + g_mdlMem + nModelDataSize) / BYTES_PER_KB,
-            g_mdlMem / BYTES_PER_KB, nModelDataSize / BYTES_PER_KB,
-            nTextureSize / BYTES_PER_KB);
-    return sBuffer;
-}
-
-const char* ResMem(char* sBuffer)
-{
-    int nResources;
-    int nKeys;
-    int nServicedSize;
-    int nImageSize;
-    int nModelDataSize;
-    int nTextureSize;
-
-    int nTotal = g_pExoResMan->GetResourcesInMemory(
-        &nResources, &nKeys, &nServicedSize, &nImageSize, &g_mdlMem,
-        &nModelDataSize, &nTextureSize, &g_wavMem);
-    sprintf(sBuffer, "%d %d %d/%d %d", nTotal / BYTES_PER_KB,
-            nServicedSize / BYTES_PER_KB, nResources, nKeys,
-            nImageSize / BYTES_PER_KB);
+    sprintf(sBuffer, "Anims %d Parts %d Tex %d", animationfootprint / BYTES_PER_KB,
+            countpart,
+            (int)(usedtexturememory * XBOX_TEXTURE_COMPRESSION) / BYTES_PER_KB);
     return sBuffer;
 }
 
@@ -330,58 +229,13 @@ const char* DumpLogCounters(char* sBuffer)
 
 void LogLevelStats()
 {
-    FILE* pFile = fopen("D:\\Logs\\Levelstats.txt", "a");
-    if (pFile == NULL)
-    {
-        return;
-    }
-
+    FILE* pFile = fopen("D:\Logs\Levelstats.txt", "a");
     fprintf(pFile, "%s", g_szProcessModuleMemName);
     fprintf(pFile, "\t%d", RyanLevelTotalParts);
-    fprintf(pFile, "\t%d", RyanLevelVertices);
-    fprintf(pFile, "\t%d", RyanLevelVertSize / BYTES_PER_KB);
-    fprintf(pFile, "\t%d", -1);
-    fprintf(pFile, "\t%d", RyanLevelTextureSize / BYTES_PER_KB);
-    fprintf(pFile, "\t%d", -1);
-    fprintf(pFile, "\t%d", countpart - RyanEndParts);
-    fprintf(pFile, "\t%d", (usedtexturememory - RyanEndTextureSize) / BYTES_PER_KB);
-    fprintf(pFile, "\t%d", RyanTotalLevelVertices - RyanLevelVertices);
-    fprintf(pFile, "\t%d", (RyanTotalLevelVertSize - RyanLevelVertSize) / BYTES_PER_KB);
-    fprintf(pFile, "\t%d", maxmemoryused);
-    fprintf(pFile, "\t%d", usedtexturememory);
     fprintf(pFile, "\n");
     fclose(pFile);
 }
 
-const char* tc(char* sBuffer)
-{
-    int nLevelVertices = RyanTotalLevelVertices;
-    int nAnimations = animationfootprint;
-    int nVertices = totalvertexpool;
-    int nTextures = usedtexturememory;
-    int nParts = countpart;
-
-    spawn(sBuffer);
-    AurTextureMakeCurrent();
-
-#ifndef _XBOX
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    SwapBuffers(GLRender::m_hDC);
-#endif
-
-    verts = (totalvertexpool - nVertices) / BYTES_PER_KB;
-    anims = (animationfootprint - nAnimations) / BYTES_PER_KB;
-    texts = (usedtexturememory - nTextures) / BYTES_PER_KB;
-    parts = countpart - nParts;
-    verts2 = RyanTotalLevelVertices - nLevelVertices;
-
-    sprintf(sBuffer, "Verts %d-%d Anims %d Text %d Parts %d", verts2, verts,
-            anims, texts, parts);
-    return sBuffer;
-}
 #endif
 #ifdef _XBOX
 
@@ -390,11 +244,6 @@ void ExoXboxRestart()
     XLaunchNewImage("d:\\default.xbe", NULL);
 }
 #endif
-
-void SaveCreature(char* sName)
-{
-    g_pAppManager->m_pClientExoApp->GetPlayerCreature()->SaveCharGenCreature();
-}
 
 #ifndef _XBOX
 void SetWindowTitle()  // PC 0x00401440 GOG 0x00401440
@@ -526,6 +375,114 @@ void SetClearColor(char* sColor)
 
     sscanf(sColor, "%f %f %f %f", &fRed, &fGreen, &fBlue, &fAlpha);
     GLRender_SetClearColor(fRed, fGreen, fBlue, fAlpha);
+}
+
+#ifndef _XBOX
+const char* S_Stats(char* sBuffer)
+{
+    sprintf(sBuffer, "tot[%07.2f]", g_ServerUpdateTime);
+    return sBuffer;
+}
+
+const char* GuiMem(char* sBuffer)
+{
+    sprintf(sBuffer, "Tex %d Part %d", RyanStartTextureSize / BYTES_PER_KB,
+            RyanStartParts);
+    return sBuffer;
+}
+
+const char* LevMem(char* sBuffer)
+{
+    sprintf(sBuffer, "Tot %d Tex %d Part %d Vert %d-%d",
+            (RyanLevelTextureSize + RyanLevelVertSize) / BYTES_PER_KB,
+            RyanLevelTextureSize / BYTES_PER_KB, RyanLevelTotalParts,
+            RyanLevelVertices, RyanLevelVertSize / BYTES_PER_KB);
+    return sBuffer;
+}
+
+const char* DynMem(char* sBuffer)
+{
+    int nTextures = usedtexturememory - RyanEndTextureSize;
+    int nVertSize = RyanTotalLevelVertSize - RyanLevelVertSize;
+
+    sprintf(sBuffer, "Tot %d Tex %d Part %d Vert %d-%d",
+            (nTextures + nVertSize) / BYTES_PER_KB, nTextures / BYTES_PER_KB,
+            countpart - RyanEndParts, RyanTotalLevelVertices - RyanLevelVertices,
+            nVertSize / BYTES_PER_KB);
+    return sBuffer;
+}
+
+const char* GfxMem(char* sBuffer)
+{
+    int nResources;
+    int nKeys;
+    int nServicedSize;
+    int nImageSize;
+    int nModelDataSize;
+    int nTextureSize;
+
+    g_pExoResMan->GetResourcesInMemory(&nResources, &nKeys, &nServicedSize,
+                                       &nImageSize, &g_mdlMem, &nModelDataSize,
+                                       &nTextureSize, &g_wavMem);
+    sprintf(sBuffer, "tot: %d md:%d mx:%d tx:%d",
+            (nTextureSize + g_mdlMem + nModelDataSize) / BYTES_PER_KB,
+            g_mdlMem / BYTES_PER_KB, nModelDataSize / BYTES_PER_KB,
+            nTextureSize / BYTES_PER_KB);
+    return sBuffer;
+}
+
+const char* ResMem(char* sBuffer)
+{
+    int nResources;
+    int nKeys;
+    int nServicedSize;
+    int nImageSize;
+    int nModelDataSize;
+    int nTextureSize;
+
+    int nTotal = g_pExoResMan->GetResourcesInMemory(
+        &nResources, &nKeys, &nServicedSize, &nImageSize, &g_mdlMem,
+        &nModelDataSize, &nTextureSize, &g_wavMem);
+    sprintf(sBuffer, "%d %d %d/%d %d", nTotal / BYTES_PER_KB,
+            nServicedSize / BYTES_PER_KB, nResources, nKeys,
+            nImageSize / BYTES_PER_KB);
+    return sBuffer;
+}
+
+const char* tc(char* sBuffer)
+{
+    int nLevelVertices = RyanTotalLevelVertices;
+    int nAnimations = animationfootprint;
+    int nVertices = totalvertexpool;
+    int nTextures = usedtexturememory;
+    int nParts = countpart;
+
+    spawn(sBuffer);
+    AurTextureMakeCurrent();
+
+#ifndef _XBOX
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    SwapBuffers(GLRender::m_hDC);
+#endif
+
+    verts = (totalvertexpool - nVertices) / BYTES_PER_KB;
+    anims = (animationfootprint - nAnimations) / BYTES_PER_KB;
+    texts = (usedtexturememory - nTextures) / BYTES_PER_KB;
+    parts = countpart - nParts;
+    verts2 = RyanTotalLevelVertices - nLevelVertices;
+
+    sprintf(sBuffer, "Verts %d-%d Anims %d Text %d Parts %d", verts2, verts,
+            anims, texts, parts);
+    return sBuffer;
+}
+#endif
+
+void SaveCreature(char* sName)
+{
+    g_pAppManager->m_pClientExoApp->GetPlayerCreature()->SaveCharGenCreature();
 }
 // PC 0x00401720 GOG 0x00401720
 void ProcessCommandLine(int argc, char** argv)
