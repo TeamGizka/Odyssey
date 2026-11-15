@@ -41,6 +41,32 @@ int CSWCAnimBaseDoor::LoadModel(const CResRef& sResRef, unsigned char nType)
     m_bPaletteReplaced = 0;
     return 1;
 }
+// PC 0x007564D0 GOG 0x007564F0
+CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
+{
+    unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
+    CExoString sName;
+    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    C2DA* pAnimations = p2DArrays->m_pAnimations;
+
+    if (pAnimations->GetCExoStringEntry(nClientAnimation,
+                                        CTwoDimArrays::COL2DA_ANIMATIONS_NAME,
+                                        &sName) == 0)
+    {
+        sName = "";
+    }
+
+    if (sName.GetLength() <= 0)
+    {
+        CExoString sDiagnostic;
+
+        sDiagnostic.Format("CSWCAnimBaseDoor::GetAnimationName(): No name for "
+                           "server animation %d",
+                           nAnimation);
+    }
+
+    return sName;
+}
 // PC 0x007565E0 GOG 0x007562E0
 int CSWCAnimBaseDoor::SetAnimationInternal(CAurObject* pObject,
                                            unsigned short nAnimation,
@@ -85,32 +111,6 @@ int CSWCAnimBaseDoor::SetAnimationInternal(CAurObject* pObject,
         }
     }
     return 0;
-}
-// PC 0x007564D0 GOG 0x007564F0
-CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
-{
-    unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
-    CExoString sName;
-    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-    C2DA* pAnimations = p2DArrays->m_pAnimations;
-
-    if (pAnimations->GetCExoStringEntry(nClientAnimation,
-                                        CTwoDimArrays::COL2DA_ANIMATIONS_NAME,
-                                        &sName) == 0)
-    {
-        sName = "";
-    }
-
-    if (sName.GetLength() <= 0)
-    {
-        CExoString sDiagnostic;
-
-        sDiagnostic.Format("CSWCAnimBaseDoor::GetAnimationName(): No name for "
-                           "server animation %d",
-                           nAnimation);
-    }
-
-    return sName;
 }
 // PC 0x007567D0 GOG 0x00756600
 unsigned short CSWCAnimBaseDoor::ServerToClientAnimation(

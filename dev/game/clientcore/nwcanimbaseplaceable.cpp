@@ -33,6 +33,67 @@ int CSWCAnimBasePlaceable::LoadModel(const CResRef& sResRef,
     m_bPaletteReplaced = 0;
     return 1;
 }
+// PC 0x00755C40 GOG 0x00755CC0
+CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
+{
+    unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
+    CExoString sName;
+    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    C2DA* pAnimations = p2DArrays->m_pAnimations;
+
+    if (pAnimations->GetCExoStringEntry(nClientAnimation,
+                                        CTwoDimArrays::COL2DA_ANIMATIONS_NAME,
+                                        &sName) == 0)
+    {
+        sName = "";
+    }
+
+    if (sName.GetLength() > 0)
+    {
+        return sName;
+    }
+
+    if (nAnimation >= 1000 && nAnimation <= 1727)
+    {
+        int nIndex = -1;
+        CExoString sSuffix;
+
+        if (nAnimation <= 1127)
+        {
+            nIndex = nAnimation - 1000;
+        }
+        else if (nAnimation >= 1200 && nAnimation <= 1327)
+        {
+            sSuffix = "w";
+            nIndex = nAnimation - 1200;
+        }
+        else if (nAnimation >= 1400 && nAnimation <= 1527)
+        {
+            sSuffix = "l";
+            nIndex = nAnimation - 1400;
+        }
+        else if (nAnimation >= 1600)
+        {
+            sSuffix = "wl";
+            nIndex = nAnimation - 1600;
+        }
+
+        nIndex++;
+        if (nIndex != 0)
+        {
+            char szNumber[4];
+            sprintf(szNumber, "%03d", nIndex);
+            CExoString sNumber(szNumber);
+            sName = CExoString("cut") + sNumber + sSuffix;
+        }
+    }
+    else
+    {
+        sName = "default";
+    }
+
+    return sName;
+}
 // PC 0x00755EA0 GOG 0x00755A50
 int CSWCAnimBasePlaceable::SetAnimation(unsigned short nAnimation, float fSpeed,
                                         int nFlags, float fBlend)
@@ -99,67 +160,6 @@ int CSWCAnimBasePlaceable::SetAnimation(unsigned short nAnimation, float fSpeed,
         break;
     }
     return 1;
-}
-// PC 0x00755C40 GOG 0x00755CC0
-CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
-{
-    unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
-    CExoString sName;
-    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-    C2DA* pAnimations = p2DArrays->m_pAnimations;
-
-    if (pAnimations->GetCExoStringEntry(nClientAnimation,
-                                        CTwoDimArrays::COL2DA_ANIMATIONS_NAME,
-                                        &sName) == 0)
-    {
-        sName = "";
-    }
-
-    if (sName.GetLength() > 0)
-    {
-        return sName;
-    }
-
-    if (nAnimation >= 1000 && nAnimation <= 1727)
-    {
-        int nIndex = -1;
-        CExoString sSuffix;
-
-        if (nAnimation <= 1127)
-        {
-            nIndex = nAnimation - 1000;
-        }
-        else if (nAnimation >= 1200 && nAnimation <= 1327)
-        {
-            sSuffix = "w";
-            nIndex = nAnimation - 1200;
-        }
-        else if (nAnimation >= 1400 && nAnimation <= 1527)
-        {
-            sSuffix = "l";
-            nIndex = nAnimation - 1400;
-        }
-        else if (nAnimation >= 1600)
-        {
-            sSuffix = "wl";
-            nIndex = nAnimation - 1600;
-        }
-
-        nIndex++;
-        if (nIndex != 0)
-        {
-            char szNumber[4];
-            sprintf(szNumber, "%03d", nIndex);
-            CExoString sNumber(szNumber);
-            sName = CExoString("cut") + sNumber + sSuffix;
-        }
-    }
-    else
-    {
-        sName = "default";
-    }
-
-    return sName;
 }
 // PC 0x007560F0 GOG 0x00755F20
 unsigned short CSWCAnimBasePlaceable::ServerToClientAnimation(unsigned short nAnimation)

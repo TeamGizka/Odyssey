@@ -158,6 +158,42 @@ void CSWCAnimBaseHeadWield::ShowWieldedItems()
 {
     return CSWCAnimBaseWield::ShowWieldedItems();
 }
+// PC 0x006F3AC0 GOG 0x006F3EC0
+void CSWCAnimBaseHeadWield::HideHeadItem()
+{
+    CExoString sName;
+    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+    CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
+    if (pItem != NULL)
+    {
+        Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != NULL)
+        {
+            pModel->AttachToObject(NULL, NULL, Gob::ATTACH_NORMAL);
+            pModel->AttachToScene(NULL);
+        }
+    }
+    m_bHeadItemHidden = 1;
+}
+// PC 0x006F3B70 GOG 0x006F3F70
+void CSWCAnimBaseHeadWield::ShowHeadItem()
+{
+    if (m_bHeadItemHidden != 0)
+    {
+        CClientExoApp* pApp = g_pAppManager->GetClientExoApp();
+        CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
+        if (pItem != NULL)
+        {
+            Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+            if (pModel != NULL)
+            {
+                pModel->AttachToObject(m_pHeadModel, "GoggleHook", Gob::ATTACH_NORMAL);
+            }
+        }
+        RefreshHilite();
+        m_bHeadItemHidden = 0;
+    }
+}
 // PC 0x006F3BF0 GOG 0x006F36A0
 void CSWCAnimBaseHeadWield::SetWieldLimited(int bLimited)
 {
@@ -359,6 +395,27 @@ void CSWCAnimBaseHeadWield::UpdateSound(int nEvent)
 {
     return CSWCAnimBaseWield::UpdateSound(nEvent);
 }
+// PC 0x006F4130 GOG 0x006F3FF0
+int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
+{
+    if (m_pHeadModel != NULL)
+    {
+        CSWGuiExtent extentHead;
+        CSWGuiExtent extentBody;
+        extentHead.m_nLeft = extentHead.m_nTop = extentHead.m_nWidth =
+            extentHead.m_nHeight = 0;
+        extentBody.m_nLeft = extentBody.m_nTop = extentBody.m_nWidth =
+            extentBody.m_nHeight = 0;
+        if (CSWCAnimBase::GetBoundingRect(m_pHeadModel, extentHead) != 0 &&
+            CSWCAnimBase::GetBoundingRect(extentBody) != 0)
+        {
+            extent = CSWGuiExtent::Union(extentHead, extentBody);
+            return 1;
+        }
+        return 0;
+    }
+    return CSWCAnimBase::GetBoundingRect(extent);
+}
 // PC 0x006F4200 GOG 0x006F3BE0
 int CSWCAnimBaseHeadWield::EnableBumpedOutShell(const CResRef& sShell,
                                                 float fScale)
@@ -398,60 +455,3 @@ CSWCAnimBaseHeadWield::~CSWCAnimBaseHeadWield()
     UnloadModel();
 }
 
-// PC 0x006F4130 GOG 0x006F3FF0
-int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
-{
-    if (m_pHeadModel != NULL)
-    {
-        CSWGuiExtent extentHead;
-        CSWGuiExtent extentBody;
-        extentHead.m_nLeft = extentHead.m_nTop = extentHead.m_nWidth =
-            extentHead.m_nHeight = 0;
-        extentBody.m_nLeft = extentBody.m_nTop = extentBody.m_nWidth =
-            extentBody.m_nHeight = 0;
-        if (CSWCAnimBase::GetBoundingRect(m_pHeadModel, extentHead) != 0 &&
-            CSWCAnimBase::GetBoundingRect(extentBody) != 0)
-        {
-            extent = CSWGuiExtent::Union(extentHead, extentBody);
-            return 1;
-        }
-        return 0;
-    }
-    return CSWCAnimBase::GetBoundingRect(extent);
-}
-// PC 0x006F3B70 GOG 0x006F3F70
-void CSWCAnimBaseHeadWield::ShowHeadItem()
-{
-    if (m_bHeadItemHidden != 0)
-    {
-        CClientExoApp* pApp = g_pAppManager->GetClientExoApp();
-        CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
-        if (pItem != NULL)
-        {
-            Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-            if (pModel != NULL)
-            {
-                pModel->AttachToObject(m_pHeadModel, "GoggleHook", Gob::ATTACH_NORMAL);
-            }
-        }
-        RefreshHilite();
-        m_bHeadItemHidden = 0;
-    }
-}
-// PC 0x006F3AC0 GOG 0x006F3EC0
-void CSWCAnimBaseHeadWield::HideHeadItem()
-{
-    CExoString sName;
-    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
-    CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
-    if (pItem != NULL)
-    {
-        Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-        if (pModel != NULL)
-        {
-            pModel->AttachToObject(NULL, NULL, Gob::ATTACH_NORMAL);
-            pModel->AttachToScene(NULL);
-        }
-    }
-    m_bHeadItemHidden = 1;
-}

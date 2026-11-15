@@ -1939,10 +1939,6 @@ unsigned char CAurTexture::IsNull()
 {
     return GetReferencedTexture() == CAurTextureBasic::m_pNullTexture.m_pObject;
 }
-// PC 0x00421E50 GOG 0x00421E70
-inline CAurFontInfo::~CAurFontInfo()
-{
-}
 
 const char* savegamesnapshot(char* sCommand)
 {
@@ -3113,6 +3109,10 @@ void CAurTextureBasic::Reset()
         m_nTIDIndex = 0;
     }
 #endif
+}
+// PC 0x00421E50 GOG 0x00421E70
+inline CAurFontInfo::~CAurFontInfo()
+{
 }
 
 List<int> TextureIndices;

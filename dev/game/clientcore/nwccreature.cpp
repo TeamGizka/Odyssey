@@ -4368,6 +4368,83 @@ int CSWCCreature::CanSee(CSWCObject* pObject)
     } while (nHit == CHitInfo::HIT_GOB);
     return nHit != CHitInfo::HIT_STATIC;
 }
+// PC 0x00665660 GOG 0x00665400
+void CSWCCreature::ForceMenuAction(unsigned long nAction,
+                                  CSWCCreature* pTarget)
+{
+    nAction &= ~CSWGuiInterfaceAction::SPELL_ACTION_MASK;
+    if (nAction >= CSWSpell::FORM_SABER_I_SHII_CHO &&
+        nAction <= CSWSpell::FORM_FORCE_IV_MASTERY)
+    {
+        ActionMenuForm(nAction, NULL);
+        return;
+    }
+    CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
+    if (pMessage != NULL)
+    {
+        CSWCCreatureStats* pStats = pTarget->GetStats();
+        unsigned char nClass;
+        for (nClass = 0; nClass < 2; ++nClass)
+        {
+            if (pStats->GetClass(nClass) == CLASS_TYPE_JEDIGUARDIAN ||
+                pStats->GetClass(nClass) == CLASS_TYPE_JEDICONSULAR ||
+                pStats->GetClass(nClass) == CLASS_TYPE_JEDISENTINEL ||
+                pStats->GetClass(nClass) == CLASS_TYPE_JEDIWEAPONMASTER ||
+                pStats->GetClass(nClass) == CLASS_TYPE_JEDIMASTER ||
+                pStats->GetClass(nClass) == CLASS_TYPE_JEDIWATCHMAN ||
+                pStats->GetClass(nClass) == CLASS_TYPE_SITHASSASSIN ||
+                pStats->GetClass(nClass) == CLASS_TYPE_SITHMARAUDER ||
+                pStats->GetClass(nClass) == CLASS_TYPE_SITHLORD)
+                break;
+        }
+        if (nAction == CSWSpell::SPELL_WOOKIEE_RAGE_I ||
+            nAction == CSWSpell::SPELL_WOOKIEE_RAGE_II ||
+            nAction == CSWSpell::SPELL_WOOKIEE_RAGE_III ||
+            nAction == CSWSpell::FORCE_POWER_DROID_CONFUSION ||
+            nAction == CSWSpell::FORCE_POWER_DROID_TRICK)
+        {
+            Vector vTarget;
+            unsigned long oidCreature = m_nId;
+            CSWCMessage* pCastMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
+            if (pCastMessage != NULL)
+            {
+                pCastMessage->SendPlayerToServerInput_CastSpell(nAction, 0, 0, 0, 0,
+                                                                vTarget, oidCreature);
+            }
+        }
+        else if (nClass < 2)
+        {
+            int nFORCEHOSTILE;
+            int bFound;
+            {
+                CExoString sColumn("FORCEHOSTILE");
+                CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+                EXOXBOXASSERT(p2DArrays->m_pSpells);
+                C2DA* pSpells = p2DArrays->m_pSpells;
+                bFound = pSpells->GetINTEntry(
+                    nAction, sColumn, &nFORCEHOSTILE);
+            }
+
+            int nTutorialResult;
+            if (bFound)
+                nTutorialResult = g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
+                    CClientExoApp::TUTORIAL_HOSTILE_FORCE_POWER, GetObjectId(), nClass, nAction);
+            else
+                nTutorialResult = g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
+                    CClientExoApp::TUTORIAL_FORCE_POWER, GetObjectId(), nClass, nAction);
+            if (!nTutorialResult)
+            {
+                Vector vTarget;
+                PerformCastSpell(nAction, GetObjectId(), vTarget, nClass, 0, 0, 0);
+            }
+        }
+        else if (pStats->m_nRace == CSWRace::CRACE_DROID)
+        {
+            pMessage->SendPlayerToServerInput_UseItem(nAction, 0, 0,
+                                                     GetObjectId(), m_vPosition);
+        }
+    }
+}
 // PC 0x006658D0 GOG 0x00665670
 void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
                                          CSWCCreature* pTarget)
@@ -4377,6 +4454,21 @@ void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
         pTarget->SetCombatMode(1);
     }
     ForceMenuAction(nAction, pTarget);
+}
+// PC 0x00665900 GOG 0x006656A0
+void CSWCCreature::GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, int nMenu)
+{
+    int nFirstAction = lstActions.num;
+    CExoString sName;
+    m_pStats->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER, 0, 0, 0,
+        SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED, 0, -1, 0, 1, 0, 0, 0);
+    for (int i = nFirstAction; i < lstActions.num; ++i)
+    {
+        lstActions.element[i].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuForm;
+        lstActions.element[i].m_oidTarget = GetId();
+        lstActions.element[i].m_nAction &= ~CSWGuiInterfaceAction::SPELL_ACTION_MASK;
+        lstActions.element[i].m_n38 = 1;
+    }
 }
 // PC 0x006659F0 GOG 0x00665790
 void CSWCCreature::ActionMenuUseAttackFeat(unsigned long nFeat,
@@ -4733,21 +4825,6 @@ void CSWCCreature::GetHostileForcePowers(
             lstActions[i].m_oidTarget = pTarget->GetId();
 #endif
         }
-    }
-}
-// PC 0x00665900 GOG 0x006656A0
-void CSWCCreature::GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, int nMenu)
-{
-    int nFirstAction = lstActions.num;
-    CExoString sName;
-    m_pStats->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER, 0, 0, 0,
-        SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED, 0, -1, 0, 1, 0, 0, 0);
-    for (int i = nFirstAction; i < lstActions.num; ++i)
-    {
-        lstActions.element[i].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuForm;
-        lstActions.element[i].m_oidTarget = GetId();
-        lstActions.element[i].m_nAction &= ~CSWGuiInterfaceAction::SPELL_ACTION_MASK;
-        lstActions.element[i].m_n38 = 1;
     }
 }
 // PC 0x00667810 GOG 0x006675B0
@@ -5804,83 +5881,6 @@ int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd,
     if (nSceneHit)
         return nSceneHit;
     return bHit;
-}
-// PC 0x00665660 GOG 0x00665400
-void CSWCCreature::ForceMenuAction(unsigned long nAction,
-                                  CSWCCreature* pTarget)
-{
-    nAction &= ~CSWGuiInterfaceAction::SPELL_ACTION_MASK;
-    if (nAction >= CSWSpell::FORM_SABER_I_SHII_CHO &&
-        nAction <= CSWSpell::FORM_FORCE_IV_MASTERY)
-    {
-        ActionMenuForm(nAction, NULL);
-        return;
-    }
-    CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
-    if (pMessage != NULL)
-    {
-        CSWCCreatureStats* pStats = pTarget->GetStats();
-        unsigned char nClass;
-        for (nClass = 0; nClass < 2; ++nClass)
-        {
-            if (pStats->GetClass(nClass) == CLASS_TYPE_JEDIGUARDIAN ||
-                pStats->GetClass(nClass) == CLASS_TYPE_JEDICONSULAR ||
-                pStats->GetClass(nClass) == CLASS_TYPE_JEDISENTINEL ||
-                pStats->GetClass(nClass) == CLASS_TYPE_JEDIWEAPONMASTER ||
-                pStats->GetClass(nClass) == CLASS_TYPE_JEDIMASTER ||
-                pStats->GetClass(nClass) == CLASS_TYPE_JEDIWATCHMAN ||
-                pStats->GetClass(nClass) == CLASS_TYPE_SITHASSASSIN ||
-                pStats->GetClass(nClass) == CLASS_TYPE_SITHMARAUDER ||
-                pStats->GetClass(nClass) == CLASS_TYPE_SITHLORD)
-                break;
-        }
-        if (nAction == CSWSpell::SPELL_WOOKIEE_RAGE_I ||
-            nAction == CSWSpell::SPELL_WOOKIEE_RAGE_II ||
-            nAction == CSWSpell::SPELL_WOOKIEE_RAGE_III ||
-            nAction == CSWSpell::FORCE_POWER_DROID_CONFUSION ||
-            nAction == CSWSpell::FORCE_POWER_DROID_TRICK)
-        {
-            Vector vTarget;
-            unsigned long oidCreature = m_nId;
-            CSWCMessage* pCastMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
-            if (pCastMessage != NULL)
-            {
-                pCastMessage->SendPlayerToServerInput_CastSpell(nAction, 0, 0, 0, 0,
-                                                                vTarget, oidCreature);
-            }
-        }
-        else if (nClass < 2)
-        {
-            int nFORCEHOSTILE;
-            int bFound;
-            {
-                CExoString sColumn("FORCEHOSTILE");
-                CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-                EXOXBOXASSERT(p2DArrays->m_pSpells);
-                C2DA* pSpells = p2DArrays->m_pSpells;
-                bFound = pSpells->GetINTEntry(
-                    nAction, sColumn, &nFORCEHOSTILE);
-            }
-
-            int nTutorialResult;
-            if (bFound)
-                nTutorialResult = g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
-                    CClientExoApp::TUTORIAL_HOSTILE_FORCE_POWER, GetObjectId(), nClass, nAction);
-            else
-                nTutorialResult = g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
-                    CClientExoApp::TUTORIAL_FORCE_POWER, GetObjectId(), nClass, nAction);
-            if (!nTutorialResult)
-            {
-                Vector vTarget;
-                PerformCastSpell(nAction, GetObjectId(), vTarget, nClass, 0, 0, 0);
-            }
-        }
-        else if (pStats->m_nRace == CSWRace::CRACE_DROID)
-        {
-            pMessage->SendPlayerToServerInput_UseItem(nAction, 0, 0,
-                                                     GetObjectId(), m_vPosition);
-        }
-    }
 }
 // PC 0x0065B680 GOG 0x0065B530
 void CSWCCreature::PartyMenuStealth(unsigned long oidTarget,
@@ -6979,37 +6979,6 @@ void CSWCCreature::ActionMenuAttack(unsigned long nAction,
     g_pAppManager->GetClientExoApp()->GetSWCMessage()->
         SendPlayerToServerInput_Attack(GetObjectId(), 0);
 }
-// PC 0x00664170 GOG 0x00663F80
-int CSWCCreature::GetForceShield()
-{
-    CSWSCreature* pCreature = GetServerCreature();
-    int nResult = 0;
-    if (pCreature != NULL)
-    {
-        for (int i = 0; i < pCreature->m_lstEffects.num; i++)
-        {
-            CGameEffect* pEffect = pCreature->m_lstEffects.element[i];
-            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCESHIELD)
-            {
-                nResult = pCreature->m_lstEffects.element[i]->GetInteger(0);
-                break;
-            }
-            if (pEffect->m_nType > CSWSEffectListHandler::EFFECT_FORCESHIELD)
-                break;
-        }
-    }
-    return nResult;
-}
-// PC 0x0065BD20 GOG 0x0065BBA0
-CSWSCreature* CSWCCreature::GetServerCreature()
-{
-    if (GetServerObject() != NULL)
-    {
-        CSWSCreature* pCreature = GetServerObject()->AsSWSCreature();
-        return pCreature;
-    }
-    return NULL;
-}
 // PC 0x00664080 GOG 0x00663E90
 void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigator)
 {
@@ -7063,6 +7032,37 @@ void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigat
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface;
     pMainInterface->m_nFormMessage = nStrRef;
     pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
+}
+// PC 0x00664170 GOG 0x00663F80
+int CSWCCreature::GetForceShield()
+{
+    CSWSCreature* pCreature = GetServerCreature();
+    int nResult = 0;
+    if (pCreature != NULL)
+    {
+        for (int i = 0; i < pCreature->m_lstEffects.num; i++)
+        {
+            CGameEffect* pEffect = pCreature->m_lstEffects.element[i];
+            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCESHIELD)
+            {
+                nResult = pCreature->m_lstEffects.element[i]->GetInteger(0);
+                break;
+            }
+            if (pEffect->m_nType > CSWSEffectListHandler::EFFECT_FORCESHIELD)
+                break;
+        }
+    }
+    return nResult;
+}
+// PC 0x0065BD20 GOG 0x0065BBA0
+CSWSCreature* CSWCCreature::GetServerCreature()
+{
+    if (GetServerObject() != NULL)
+    {
+        CSWSCreature* pCreature = GetServerObject()->AsSWSCreature();
+        return pCreature;
+    }
+    return NULL;
 }
 // PC 0x0065BD40 GOG 0x0065BBC0
 void CSWCCreature::AttachToScene(CAurScene* pScene)
