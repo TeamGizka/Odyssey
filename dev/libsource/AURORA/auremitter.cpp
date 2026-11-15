@@ -3264,7 +3264,7 @@ void LightningEmitter::Update(float fTimeStep)
                             fPosition = 1.0f - fPosition;
                         float fRandom = (rand() % 100) * ((fPosition * 2.0f) * m_fLightningRadius) * 0.01f;
                         Vector vOffset;
-                        vOffset = vLongitudinal * ((rand() % 100) * 0.01f);
+                        vOffset = ((rand() % 100) * 0.01f) * vLongitudinal;
                         if (rand() & 1)
                             vOffset = -vOffset;
                         m_lstReserved270[i] = fRandom * vJitterDirection + vOffset;
