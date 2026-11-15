@@ -6,11 +6,6 @@
 #include "aurconsole.h"
 #include "aurmodel.h"
 
-static inline void AurModelParseTrace3();
-static inline void AurModelParseTrace2();
-static inline void AurModelParseTrace1();
-#define AURMODELPARSE_TRACE() AurModelParseTrace3()
-
 MdlNode* ParseNode(char* sField, MaxTree* pTree);
 char* AurResGetNextLine();
 void* AurResGetData(int nBytes);
@@ -2334,7 +2329,6 @@ void InsertModel(Model* pModel)
 // PC 0x00480870 GOG 0x004809F0
 void BinaryInsertModel(Model* pModel, int nFirst, int nLast)
 {
-    AURMODELPARSE_TRACE();
     int nMiddle;
 
     while (nLast >= nFirst)
@@ -2352,34 +2346,6 @@ void BinaryInsertModel(Model* pModel, int nFirst, int nLast)
 
     return Models.Insert(pModel, nFirst);
 }
-
-static inline void AurModelParseTrace3()
-{
-    AurModelParseTrace2();
-}
-
-static inline void AurModelParseTrace2()
-{
-    AurModelParseTrace1();
-}
-
-static inline void AurModelParseTrace1()
-{
-}
-
-#ifndef _XBOX
-template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nIndex)  // PC 0x0047EB70 GOG 0x0047ECF0
-{
-    int nLast = m_nCount;
-    if (m_nCount == m_nAllocated)
-        allocate(m_nAllocated ? m_nAllocated * 2 : INITIAL_ALLOCATION);
-    m_pList[m_nCount++] = item;
-    for (; nLast > nIndex; nLast--)
-        m_pList[nLast] = m_pList[nLast - 1];
-    m_pList[nIndex] = item;
-    AurModelParseTrace3();
-}
-#endif
 
 #ifdef _XBOX
 void Parse(char* sText, unsigned int& nValue)

@@ -235,13 +235,7 @@ template <class T> void List<T>::AddUnique(T item)
 template <class T> void List<T>::Insert(T item, int nIndex)
 {
     int nLast = m_nCount;
-#ifdef _XBOX
     Add(item);
-#else
-    if (m_nCount == m_nAllocated)
-        allocate(m_nAllocated ? m_nAllocated * 2 : INITIAL_ALLOCATION);
-    m_pList[m_nCount++] = item;
-#endif
     for (; nLast > nIndex; nLast--)
         m_pList[nLast] = m_pList[nLast - 1];
     m_pList[nIndex] = item;
