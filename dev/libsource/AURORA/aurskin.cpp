@@ -12,6 +12,7 @@
 #include "aurlightmanager.h"
 #include "swmain.h"
 #include "aurmaterialinl.h"
+#include "aurdraw.h"
 
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
@@ -48,7 +49,6 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
                            CAurTexture* pTexture0, CAurTexture* pTexture1,
                            CAurTexture* pTexture2, CAurTexture* pTexture3,
                            bool bKeepBlend);
-void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive);
 
 #ifdef _XBOX
 VertexProgram* GetSkinVP(bool)
@@ -1037,9 +1037,10 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             if (nBone == -1)
                 continue;
             {
-                Vector vBone = qRotation * (qbones[i] * pNode->m_lstTBoneRefInv[i]);
-                vBone = vTranslation + qRotation * tbones[i] + vBone;
-                Quaternion qBone = qRotation * qbones[i] * pNode->m_lstQBoneRefInv[i];
+                Vector vBone = qRotation * (qbones.m_pList[i] * pNode->m_lstTBoneRefInv.m_pList[i]);
+                AurDrawLine(vTranslation, vBone);
+                vBone = vTranslation + qRotation * tbones.m_pList[i] + vBone;
+                Quaternion qBone = qRotation * qbones.m_pList[i] * pNode->m_lstQBoneRefInv.m_pList[i];
                 mRotation = qBone.getmatrix();
                 nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
                 const Vector& vFirst = mRotation.m_vFirst;
@@ -2077,8 +2078,6 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
         EXOLOG("RenderSkinnedVPBlur: blur length %f\n", fBlurLength);
     }
 }
-
-#include "aurdraw.h"
 
 #ifndef _XBOX
 void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
