@@ -337,15 +337,6 @@ int CSWGuiScene::RemoveModel(int nModel, int bDestroy)
     }
     return 1;
 }
-// PC 0x00415FE0 GOG 0x00415F90
-CAurObject* CSWGuiScene::GetModel(int nModel)
-{
-    if (nModel >= 0 && nModel < m_lModels.num)
-    {
-        return m_lModels[nModel];
-    }
-    return NULL;
-}
 // PC 0x00416DD0 GOG 0x00416E00
 int CSWGuiScene::AddModel(CAurObject* pModel, int nModel, int bAttach)
 {
@@ -369,6 +360,15 @@ int CSWGuiScene::AddModel(CAurObject* pModel, int nModel, int bAttach)
     }
 
     return 1;
+}
+// PC 0x00415FE0 GOG 0x00415F90
+CAurObject* CSWGuiScene::GetModel(int nModel)
+{
+    if (nModel >= 0 && nModel < m_lModels.num)
+    {
+        return m_lModels[nModel];
+    }
+    return NULL;
 }
 // PC 0x00416E30 GOG 0x00416E60
 CAurObject* CSWGuiScene::AddModel(const CExoString& sModel, int nFlags)
