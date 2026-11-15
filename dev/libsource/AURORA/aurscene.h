@@ -256,6 +256,7 @@ public:
 
     enum { LENS_FLARE_POOL_FLAGS = 0x1011 };
     void SetVisibility(CAurRoom* pRoom, CAurRoom* pVisibleRoom, int bVisible);
+    int QueryVisibility(CAurRoom* pRoom, CAurRoom* pVisibleRoom);
 
     static int geomFadeEnabled;
     static float binsize;
@@ -315,10 +316,6 @@ public:
 CAurScene* NewCAurScene(char* sName);
 void ProjectDynamicShadow(Gob* pGob, PartLight* pLight);
 
-inline void AurSceneTrace(const void*)
-{
-}
-
 class CHitInfo
 {
 public:
@@ -345,7 +342,6 @@ public:
     // PC 0x0046B430 GOG 0x0046B590
     ~CHitInfo()
     {
-        AurSceneTrace(this);
     }
 
     void ClearOutput();
