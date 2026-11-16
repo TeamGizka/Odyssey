@@ -16,7 +16,13 @@ class CAurTextureBasic;
 template void List<CAurTextureBasic*>::DelIndex(int);
 template void List<int>::allocate(int);
 template List<Vector>::~List();
-template SafePointer<CAurTexture>::~SafePointer();
+template <> inline SafePointer<CAurTexture>::~SafePointer()
+{
+    if (m_pObject)
+    {
+        m_pObject->RemoveSafePointer(this);
+    }
+}
 #include "aurconsole.h"
 
 int AurTextureCompressionAvailable();
