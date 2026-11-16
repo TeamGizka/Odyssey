@@ -326,7 +326,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
             CSWCCreatureStats* pPreviewStats = pData->m_pCreature->GetStats();
             pPreviewStats->SetGender(pStats->m_nGender);
             pPreviewStats->SetGoodEvilAlignment(pCreature->GetStats()->m_nGoodEvilAlignment);
-            pPreviewStats->SetBaseCNPCAlignment(pCreature->GetStats()->m_n18C);
+            pPreviewStats->SetBaseCNPCAlignment(pCreature->GetStats()->m_nBaseCNPCAlignment);
             for (int nClass = 0; nClass < pStats->GetNumClasses(); ++nClass)
                 pPreviewStats->SetClass(nClass, pStats->GetClass(nClass));
             if (g_bDo3DGUIs != 0)

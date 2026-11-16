@@ -1744,7 +1744,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
             pCreature->m_pStats->m_nSubraceIndex != pLastUpdateObject->m_nSubraceIndex ||
             pCreature->m_pStats->m_nGender != pLastUpdateObject->m_nGender ||
             pCreature->m_pStats->m_nGoodEvilAlignment != pLastUpdateObject->m_nGoodEvilAlignment ||
-            pCreature->GetStats()->m_n18C != pLastUpdateObject->m_n11A ||
+            pCreature->GetStats()->m_nBaseCNPCAlignment != pLastUpdateObject->m_n11A ||
             pCreature->m_bDeadSelectable != pLastUpdateObject->m_nObjectF4 ||
             pCreature->GetForm() != pLastUpdateObject->m_n11C ||
             pCreature->GetTag() != pLastUpdateObject->m_s120)
@@ -2442,7 +2442,7 @@ int CSWSMessage::SendServerToPlayerArea_VisualEffect(CSWSPlayer* pPlayer,
 int CSWSMessage::SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer,
                                                 unsigned char nWeather,
                                                 int bEnabled,
-                                                unsigned char nUnknown)
+                                                unsigned char nChanceRain)
 {
     unsigned long nPlayerId;
     unsigned long nMessageSize;
@@ -2451,7 +2451,7 @@ int CSWSMessage::SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer,
     CreateWriteMessage(5, RECIPIENT_UNSPECIFIED, 1);
     WriteBYTE(nWeather, 8);
     WriteBOOL(bEnabled);
-    WriteBYTE(nUnknown, 8);
+    WriteBYTE(nChanceRain, 8);
     if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
     {
         return 0;
@@ -4570,16 +4570,16 @@ int CSWSMessage::SendServerToPlayerLogin_Confirm(unsigned long nPlayerId)
 // PC 0x0058C660 GOG 0x0058C6E0
 void CSWSMessage::WriteGameObjUpdate_WorkRemaining(CSWSObject* pObject,
                                                    CSWSArea* pArea, int nValue,
-                                                   int nValue2)
+                                                   int nCompleteStage)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL && (pArea == NULL || pCreature->m_bWorkRemainingCompleteSent == 0) &&
-        (nValue != nValue2 || pCreature->m_bWorkRemainingCompleteSent == 0))
+        (nValue != nCompleteStage || pCreature->m_bWorkRemainingCompleteSent == 0))
     {
         WriteBYTE(0x57, 8);
         WriteBYTE(nValue, 8);
-        WriteBYTE(nValue2, 8);
-        if (nValue == nValue2)
+        WriteBYTE(nCompleteStage, 8);
+        if (nValue == nCompleteStage)
         {
             pCreature->m_bWorkRemainingCompleteSent = 1;
         }
@@ -6394,7 +6394,7 @@ int CSWSMessage::SendServerToPlayerAmbientMusicSetDelay(unsigned long nPlayerId,
 }
 // PC 0x0058FC00 GOG 0x0058FC80
 int CSWSMessage::SendServerToPlayerAmbientMusicChangeTrack(
-    unsigned long nPlayerId, int bDay, int nTrack, int bUnknown)
+    unsigned long nPlayerId, int bDay, int nTrack, int bStreamingMusicForMovie)
 {
     int nResult;
     unsigned long nMessageSize;
@@ -6402,7 +6402,7 @@ int CSWSMessage::SendServerToPlayerAmbientMusicChangeTrack(
     CreateWriteMessage(12, RECIPIENT_UNSPECIFIED, 1);
     WriteBOOL(bDay);
     WriteINT(nTrack, 32);
-    WriteBOOL(bUnknown);
+    WriteBOOL(bStreamingMusicForMovie);
     nResult = GetWriteMessage(&pMessage, &nMessageSize);
     if (nResult == 0)
     {
@@ -7657,7 +7657,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         WriteBYTE(pCreature->m_pStats->m_nSubraceIndex, 8);
         WriteBYTE(pCreature->m_pStats->m_nGender, 8);
         WriteSHORT(pCreature->m_pStats->m_nGoodEvilAlignment, 16);
-        WriteWORD(pCreature->m_pStats->m_n18C, 16);
+        WriteWORD(pCreature->m_pStats->m_nBaseCNPCAlignment, 16);
         WriteINT(pCreature->m_nCurrentForm, 32);
         WriteCExoString(pCreature->m_sTag, 32);
         WriteBOOL(pObject->m_bDeadSelectable);
@@ -7848,7 +7848,7 @@ void CSWSMessage::UpdateLastUpdateObject(
             pLastUpdateObject->m_nSubraceIndex = pCreature->m_pStats->m_nSubraceIndex;
             pLastUpdateObject->m_nGender = pCreature->m_pStats->m_nGender;
             pLastUpdateObject->m_nGoodEvilAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
-            pLastUpdateObject->m_n11A = pCreature->m_pStats->m_n18C;
+            pLastUpdateObject->m_n11A = pCreature->m_pStats->m_nBaseCNPCAlignment;
             pLastUpdateObject->m_n11C = pCreature->m_nCurrentForm;
             pLastUpdateObject->m_s120 = pCreature->m_sTag;
             pLastUpdateObject->m_nObjectF4 = pCreature->m_bDeadSelectable;

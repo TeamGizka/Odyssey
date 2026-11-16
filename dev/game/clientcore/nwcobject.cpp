@@ -102,7 +102,7 @@ void CSWGuiInterfaceAction::Clear()
     m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
 #ifndef _XBOX
     m_nStackSize = 1;
-    m_n38 = 0;
+    m_bRevertActionBar = 0;
 #endif
 }
 // PC 0x00692D60 GOG 0x00692AD0

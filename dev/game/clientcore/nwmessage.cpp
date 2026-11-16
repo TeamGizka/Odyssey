@@ -44,7 +44,7 @@ CSWMessage::CSWMessage()
     m_pReadBuffer = NULL;
     m_nReadBufferSize = 0;
     m_nReadIndex = 0;
-    m_pUnknown10 = NULL;
+    m_pWriteFragmentsBuffer = NULL;
     m_nWriteBufferSize = DEFAULT_WRITE_BUFFER_SIZE;
 }
 // PC 0x0053EF30 GOG 0x0052B720
@@ -56,10 +56,10 @@ CSWMessage::~CSWMessage()
         m_pWriteBuffer = NULL;
     }
 
-    if (m_pUnknown10 != NULL)
+    if (m_pWriteFragmentsBuffer != NULL)
     {
-        delete[] m_pUnknown10;
-        m_pUnknown10 = NULL;
+        delete[] m_pWriteFragmentsBuffer;
+        m_pWriteFragmentsBuffer = NULL;
     }
 }
 // PC 0x0053EF70 GOG 0x0052B760
@@ -409,17 +409,17 @@ void CSWMessage::SetReadMessage(unsigned char* pBuffer, unsigned long nSize,
     m_nReadIndex = 0;
     m_nRecipient = nRecipient;
     m_nMsgType = nMsgType;
-    m_nUnknown38 = 0;
-    m_nUnknown3C = 0;
+    m_nReadFragmentsBufferSize = 0;
+    m_nReadFragmentsIndex = 0;
 
     if (nSize == 0)
     {
-        m_bUnknown44 = m_bUnknown45;
+        m_nReadFragmentsBitPos = m_nLastByteBits;
     }
 
     if (NWMESSAGE_BITSTREAM)
     {
-        m_bUnknown45 = (unsigned char)ReadBits(3);
+        m_nLastByteBits = (unsigned char)ReadBits(3);
     }
 }
 // PC 0x0053F450 GOG 0x0052BCE0
@@ -784,31 +784,31 @@ void CSWMessage::WriteCExoString(const CExoString& sValue, int nBits)
 
 unsigned char CSWMessage::ReadBit(unsigned char nBit)
 {
-    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
+    unsigned char* pFragments = (unsigned char*)m_pReadFragmentsBuffer;
 
-    return (pFragments[m_nUnknown3C] & (1 << (7 - nBit))) >> (7 - nBit);
+    return (pFragments[m_nReadFragmentsIndex] & (1 << (7 - nBit))) >> (7 - nBit);
 }
 
 unsigned __int64 CSWMessage::ReadBits(int nBits)
 {
-    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
+    unsigned char* pFragments = (unsigned char*)m_pReadFragmentsBuffer;
     unsigned __int64 nValue = 0;
     unsigned char cBit;
     int i;
 
     for (i = 0; i < nBits; i++)
     {
-        cBit = (unsigned char)((pFragments[m_nUnknown3C] &
-                                (1 << (7 - m_bUnknown44))) >>
-                               (7 - m_bUnknown44));
+        cBit = (unsigned char)((pFragments[m_nReadFragmentsIndex] &
+                                (1 << (7 - m_nReadFragmentsBitPos))) >>
+                               (7 - m_nReadFragmentsBitPos));
         nValue = (nValue << 1) | (cBit & 1);
 
-        m_bUnknown44++;
+        m_nReadFragmentsBitPos++;
 
-        if (m_bUnknown44 == 8)
+        if (m_nReadFragmentsBitPos == 8)
         {
-            m_nUnknown3C++;
-            m_bUnknown44 = 0;
+            m_nReadFragmentsIndex++;
+            m_nReadFragmentsBitPos = 0;
         }
     }
 
@@ -817,8 +817,8 @@ unsigned __int64 CSWMessage::ReadBits(int nBits)
 
 void CSWMessage::WriteBit(unsigned char bValue)
 {
-    unsigned char* pFragment = m_pUnknown10 + m_nUnknown18;
-    unsigned char nBitPos = *(unsigned char*)&m_nUnknown20;
+    unsigned char* pFragment = m_pWriteFragmentsBuffer + m_nWriteFragmentsIndex;
+    unsigned char nBitPos = *(unsigned char*)&m_nWriteFragmentsBitPos;
 
     *pFragment &= ~(1 << (7 - nBitPos));
     *pFragment |= bValue << (7 - nBitPos);
@@ -826,14 +826,14 @@ void CSWMessage::WriteBit(unsigned char bValue)
 
 void CSWMessage::WriteBits(unsigned __int64 nValue, int nBits)
 {
-    unsigned char& nBitPos = *(unsigned char*)&m_nUnknown20;
+    unsigned char& nBitPos = *(unsigned char*)&m_nWriteFragmentsBitPos;
     unsigned char* pFragment;
 
     while (nBits > 0)
     {
         nBits--;
 
-        pFragment = m_pUnknown10 + m_nUnknown18;
+        pFragment = m_pWriteFragmentsBuffer + m_nWriteFragmentsIndex;
         *pFragment &= ~(1 << (7 - nBitPos));
         *pFragment |= ((unsigned char)(nValue >> nBits) & 1) << (7 - nBitPos);
 
@@ -841,7 +841,7 @@ void CSWMessage::WriteBits(unsigned __int64 nValue, int nBits)
 
         if (nBitPos == 8)
         {
-            m_nUnknown18++;
+            m_nWriteFragmentsIndex++;
             nBitPos = 0;
         }
     }
@@ -908,12 +908,12 @@ unsigned __int64 CSWMessage::ReadUnsigned(int nBits)
 
     if (nBits > 0)
     {
-        nFragmentIndex = m_nUnknown3C +
-                         (unsigned char)((m_bUnknown44 - 1 + nBits) >> 3);
+        nFragmentIndex = m_nReadFragmentsIndex +
+                         (unsigned char)((m_nReadFragmentsBitPos - 1 + nBits) >> 3);
 
-        if (nFragmentIndex > m_nUnknown38)
+        if (nFragmentIndex > m_nReadFragmentsBufferSize)
         {
-            m_nUnknown3C = nFragmentIndex;
+            m_nReadFragmentsIndex = nFragmentIndex;
             return 0;
         }
 
@@ -928,7 +928,7 @@ __int64 CSWMessage::ReadSigned(int nBits)
     unsigned char bNegative;
     __int64 nValue;
 
-    if (m_nUnknown3C > m_nUnknown38)
+    if (m_nReadFragmentsIndex > m_nReadFragmentsBufferSize)
     {
         return 0;
     }

@@ -62,7 +62,7 @@ public:
     {
         m_cExtent = cExtent;
     }
-    virtual void SetActiveControl(CSWGuiControl* pControl, int bUnknown)  // PC 0x006049D0 GOG 0x006049B0
+    virtual void SetActiveControl(CSWGuiControl* pControl, int bPlaySound)  // PC 0x006049D0 GOG 0x006049B0
     {
     }
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver)  // PC 0x005EE1C0 GOG 0x005EE1A0
@@ -514,7 +514,7 @@ public:
 
     int m_nToggleEvent;
     unsigned long m_bToggled : 1;
-    unsigned long m_nUnknown1C8Rest : 31;
+    unsigned long m_nToggleFlagsUnused : 31;
     CSWGuiBorder m_cToggleBorder;
     CSWGuiBorder m_cToggleHilite;
 };
@@ -607,7 +607,7 @@ public:
     int m_nCurValue;
     int m_nVisibleValue;
 #ifdef _XBOX
-    int m_nXboxUnmapped48;
+    int m_nTopValue;
 #endif
     unsigned long m_bDrawMode : 1;
     unsigned long m_bExtendedRange : 1;

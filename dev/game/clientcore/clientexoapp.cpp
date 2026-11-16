@@ -78,9 +78,9 @@ void CClientExoApp::SetCharacterFile(unsigned long nDataSize,
                                        nCharacterFileId);
 }
 // PC 0x00638650 GOG 0x00638540
-void CClientExoApp::DisplayMainMenu(int bUnknown)
+void CClientExoApp::DisplayMainMenu(int bScanContent)
 {
-    m_pcExoAppInternal->DisplayMainMenu(bUnknown);
+    m_pcExoAppInternal->DisplayMainMenu(bScanContent);
 }
 
 #ifdef _XBOX
@@ -444,12 +444,12 @@ int CClientExoApp::SetDebugMode(int nDebugMode)
     return m_pcExoAppInternal->SetDebugMode(nDebugMode);
 }
 #ifndef _XBOX
-int CClientExoApp::StartServices(int nServices, const CExoString& sArg2,  // PC 0x00638AB0 GOG 0x006389A0
-                                 const CExoString& sArg3,
-                                 const CExoString& sArg4, unsigned long nArg5)
+int CClientExoApp::StartServices(int nServices, const CExoString& sModule,  // PC 0x00638AB0 GOG 0x006389A0
+                                 const CExoString& sLoadMusic,
+                                 const CExoString& sLoadScreen, unsigned long nPlayerId)
 {
-    return m_pcExoAppInternal->StartServices(nServices, sArg2, sArg3, sArg4,
-                                             nArg5);
+    return m_pcExoAppInternal->StartServices(nServices, sModule, sLoadMusic, sLoadScreen,
+                                             nPlayerId);
 }
 #endif
 void CClientExoApp::SetEventDescriptions()  // PC 0x00638AC0 GOG 0x006389B0
@@ -901,13 +901,13 @@ void CClientExoApp::EndPazaakGame(int nResult, int nWager, int bPlayAgain,
                                              oidOpponent);
 }
 // PC 0x00639030 GOG 0x00638F30
-int CClientExoApp::GetPazaakResults(int* pnResult, int* pnUnused)
+int CClientExoApp::GetPazaakResults(int* pnResult, int* pnWager)
 {
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
     int nUnused;
     *pnResult = pInternal->m_PazaakState.m_nResult;
     nUnused = pInternal->m_PazaakState.m_nWager;
-    *pnUnused = nUnused;
+    *pnWager = nUnused;
     return nUnused;
 }
 // PC 0x00639050 GOG 0x00638F50
@@ -1414,10 +1414,10 @@ void CClientExoApp::SetMissingFilePending(int bPending)
 
 #ifdef _XBOX
 
-void CClientExoApp::StartServices(int nServices, const CExoString& sArg2,
-                                  const CExoString& sArg3,
-                                  const CExoString& sArg4, unsigned long nArg5)
+void CClientExoApp::StartServices(int nServices, const CExoString& sModule,
+                                  const CExoString& sLoadMusic,
+                                  const CExoString& sLoadScreen, unsigned long nPlayerId)
 {
-    m_pcExoAppInternal->StartServices(nServices, sArg2, sArg3, sArg4, nArg5);
+    m_pcExoAppInternal->StartServices(nServices, sModule, sLoadMusic, sLoadScreen, nPlayerId);
 }
 #endif

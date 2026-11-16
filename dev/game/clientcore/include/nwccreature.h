@@ -65,9 +65,9 @@ public:
     int m_nUnknown04;
     int m_nUnknown08;
     int m_nUnknown0C;
-    int m_nUnknown10;
-    int m_nUnknown14;
-    CExoString m_sUnknown18;
+    int m_bHasStatusObject;
+    int m_oidStatusObject;
+    CExoString m_sStatusName;
     CSWCCreaturePartyStatus();
 };
 
@@ -301,7 +301,7 @@ public:
 
     void SetDesiredOrientation(const Vector& vOrientation);
     void SetDesiredOrientationForLock();
-    void SetLockOrientationToObject(unsigned long oidTarget, int bUnknown);
+    void SetLockOrientationToObject(unsigned long oidTarget, int bForce);
     void StripEquippedItems();
     void PlaySoundSetSound(unsigned short nSound, int bFlag);
     int GetSoundSetStrres(unsigned short nSound, STR_RES& strRes);
@@ -562,8 +562,8 @@ public:
     void PerformCastSpell(unsigned long nSpell, unsigned long nTarget,
                           const Vector& vTargetPos, unsigned char nA,
                           unsigned char nB, unsigned char nC, int nD);
-    void ComputeZValue(CSWCArea* pArea, Vector* pPosition, float fUnused,
-                       Vector* pUnused);
+    void ComputeZValue(CSWCArea* pArea, Vector* pPosition, float fCurrentZ,
+                       Vector* pNormal);
     void PerformUseItem(unsigned long nItem, int nA, unsigned long nB,
                         const Vector& vPosition);
 
@@ -631,7 +631,7 @@ public:
     virtual void SetQuededAnimationCallback();
     int ClearQuededAnimationCallback();
     int BarkString(unsigned long nValue, CExoString const& sString,
-                   CResRef const& cResRef, int nValue2);
+                   CResRef const& cResRef, int nFlags);
     int StopLipSync();
     int BarkBubble(unsigned long nStrRef, const CExoString& sText,
                    const CResRef& cSound, int nFlags);
@@ -706,19 +706,19 @@ public:
 
     int m_bDeadSelectable;
     int m_bLoopingSoundEnabled;
-    int m_nUnknown190;
+    int m_nDetectState;
 
     int m_nStealthState;
-    int m_nUnknown198;
-    int m_nUnknown19C;
-    int m_nUnknown1A0;
+    int m_nParryState;
+    int m_nPowerAttackState;
+    int m_nImprovedPowerAttackState;
     int m_nUnknown1A4;
-    int m_nUnknown1A8;
-    int m_nUnknown1AC;
+    int m_nRapidShotState;
+    int m_nFlurryState;
 
     int m_bInvisibilityVisualApplied;
-    int m_nUnknown1B4;
-    int m_nUnknown1B8;
+    int m_nEncumbranceState;
+    int m_bMovementSpeedLimited;
     Vector* m_pWayPoints;
     Vector* m_pCurrentWayPoint;
 
@@ -728,19 +728,19 @@ public:
     unsigned long m_nDesiredPositionTimer;
     unsigned short m_nWayPointCount;
     unsigned char m_nUnknown1EE;
-    unsigned char m_nUnknown1EF;
-    unsigned char m_nUnknown1F0;
+    unsigned char m_nLastWayPointSequence;
+    unsigned char m_nWayPointSequence;
     unsigned char m_aWayPointStatePadding[3];
 
     int m_nSpeedRampMode;
     float m_fSpeedFactor;
-    float m_fUnknown1FC;
+    float m_fCustomSpeed;
     Vector m_vUnknown200;
 
     float m_fWalkSpeed;
 
     float m_fDriveSpeed;
-    int m_nUnknown214;
+    int m_bCustomSpeed;
     unsigned char m_nCreatureType;
     unsigned char m_aUnmapped219[0x3];
     CSWCCreatureAppearance* m_pAppearance;
@@ -765,7 +765,7 @@ public:
 
     int m_bConjuringCreature;
     int m_nConjuringSpell;
-    unsigned long m_oidUnknown2C8;
+    unsigned long m_oidConjuringTarget;
     int m_bBlurWeapon;
 
     unsigned short m_nWeaponOverlayState;
@@ -806,16 +806,16 @@ public:
     unsigned long m_nCameraFollowDelay;
     int m_bCameraFollowPending;
     int m_bCameraFollowSnap;
-    unsigned char m_aUnmapped31C[0x3C];
+    unsigned char m_aRequestedAppearance[0x3C];
 
     CSWCAnimBase* m_pPendingAnimBase;
     float m_fPendingSpeedFactor;
 
     CExoArrayList<CSWVisibilityNode*> m_lstVisibilityList;
     CSoundSet* m_pSoundSet;
-    unsigned long m_nUnknown370;
-    unsigned long m_nUnknown374;
-    unsigned long m_nUnknown378;
+    unsigned long m_bDisguised;
+    unsigned long m_bCommandable;
+    unsigned long m_bExcited;
 
     unsigned long m_aoidUnknown37C[4];
 
@@ -864,9 +864,9 @@ public:
 #ifndef _XBOX
     float m_fFreeLookTurn;
 #endif
-    int m_n464;
-    int m_n468;
-    int m_n46C;
+    int m_nWeaponSwitchDelay;
+    int m_nLastAIUpdateTime;
+    int m_bPuppet;
 #ifdef _XBOX
 
     int IsLeaderUsableItem(CSWSItem* pItem, int nSlot);

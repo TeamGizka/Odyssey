@@ -315,20 +315,20 @@ int CSWSEffectListHandler::OnApplyFury(CSWSObject* pObject,
         return 0;
     }
     CSWSCreature* pCreature = pObject->AsSWSCreature();
-    pCreature->m_pStats->m_c120 = 0;
+    pCreature->m_pStats->m_nFuryDamageBonus = 0;
     switch (pEffect->m_nSpellId)
     {
     case 164:
     case 271:
-        pCreature->m_pStats->m_n124 = 7;
+        pCreature->m_pStats->m_nFuryVideoEffect = 7;
         break;
     case 165:
     case 272:
-        pCreature->m_pStats->m_n124 = 8;
+        pCreature->m_pStats->m_nFuryVideoEffect = 8;
         break;
     case 166:
     case 273:
-        pCreature->m_pStats->m_n124 = 9;
+        pCreature->m_pStats->m_nFuryVideoEffect = 9;
         break;
     }
     return 0;
@@ -1884,7 +1884,7 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
         if (pAttack != NULL)
         {
             pAttack->m_Extra4.m_nState = (unsigned char)nState;
-            pAttack->m_Extra4.m_nUnknown14 = 1;
+            pAttack->m_Extra4.m_bEffectApplied = 1;
             pCreator->SetAttackSummaryFeedbackEffectData(nState, pCreature->GetId());
         }
     }
@@ -2369,8 +2369,8 @@ int CSWSEffectListHandler::OnRemoveFury(CSWSObject* pObject,
         }
         if (bOtherFury == 0)
         {
-            pCreature->m_pStats->m_c120 = -1;
-            pCreature->m_pStats->m_n124 = 0;
+            pCreature->m_pStats->m_nFuryDamageBonus = -1;
+            pCreature->m_pStats->m_nFuryVideoEffect = 0;
         }
     }
     return 1;
@@ -5208,7 +5208,7 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
             if (!pCreature->m_bDestroyable)
                 bDestroy = 0;
             pCreature->m_pcCombatRound->EndCombatRound(0);
-            pCreature->GetCombatRound()->m_oidUnknown9CC = OBJECT_INVALID;
+            pCreature->GetCombatRound()->m_oidRoundTarget = OBJECT_INVALID;
             unsigned long oidScriptObject = pCreature->GetId();
             CExoString* psDeathScript =
                 &pCreature->m_sScripts[CSWSCreature::SCRIPT_DEATH];

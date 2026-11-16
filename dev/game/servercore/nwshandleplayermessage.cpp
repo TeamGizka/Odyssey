@@ -1456,7 +1456,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
                 pCreature->m_pcCombatRound->RemoveAllActions();
                 pCreature->AddEquipItemActions(pGameObject->AsSWSItem(),
                                                nEquipSlot, 1, 1, 0, 1, 0);
-                unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidRoundTarget;
                 if (oidAttack != OBJECT_INVALID)
                     pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 1,
                                                 1, 10009, 1500, 1, 0, 0, 4, 0);
@@ -1630,7 +1630,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
             pCreature->ClearAllActions(1);
             pCreature->m_pcCombatRound->RemoveAllActions();
             pCreature->AddUnequipActions(pGameObject->AsSWSItem(), oidRepository, 1, 1, 0);
-            unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
+            unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidRoundTarget;
             if (oidAttack != OBJECT_INVALID)
                 pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 1,
                                             1, 10009, 1500, 1, 0, 0, 4, 0);

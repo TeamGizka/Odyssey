@@ -1207,7 +1207,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCreatureFlourishWeapon(int nCommand
             if (pClientCreature != NULL)
             {
                 pClientCreature->ComputeWeaponOverlays(0, 1);
-                if (pClientCreature->m_n464 > 0)
+                if (pClientCreature->m_nWeaponSwitchDelay > 0)
                 {
                     return 0;
                 }
@@ -1247,11 +1247,11 @@ int CSWVirtualMachineCommands::ExecuteCommandCreatureFlourishWeapon(int nCommand
                 {
                     pClientCreature->GetAnimationBase()->SetOverlayAnimation(
                         pClientCreature->GetAnimationBase()->ServerToClientAnimation(CREATURE_ANIMATION_OVERLAY_DRAW), 1);
-                    pClientCreature->m_n464 = 1000;
+                    pClientCreature->m_nWeaponSwitchDelay = 1000;
                     return 0;
                 }
                 pClientCreature->InsertFireForgetAnimation(10158, 1500, 1.0f, NULL, 0);
-                pClientCreature->m_n464 = 1000;
+                pClientCreature->m_nWeaponSwitchDelay = 1000;
             }
         }
     }
@@ -20167,7 +20167,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddPartyPuppet(int nCommand, int nA
             CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidPuppet);
             if (pClientCreature != NULL)
             {
-                pClientCreature->m_n46C = 1;
+                pClientCreature->m_bPuppet = 1;
             }
             if (pCreature != NULL)
             {
@@ -20454,7 +20454,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisplayMessageBox(int nCommand, int
         pMessageBox->SetCallback(NULL, NULL, NULL);
         pMessageBox->SetIcon(sIcon);
         pMessageBox->SetMessage((unsigned long)nStrRef);
-        pMessageBox->m_n9C4 = 1;
+        pMessageBox->m_bPausedGame = 1;
         g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
         g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pMessageBox, 1, 0);
     }

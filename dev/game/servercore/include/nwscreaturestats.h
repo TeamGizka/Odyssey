@@ -446,15 +446,15 @@ public:
                                     int nExcludedFeat);
     int GetCreatureTalentRandomPower(int nFilter, int nSelection,
                                     int& nTalentType, int& nTalent,
-                                    unsigned char& nClass, int nUnknown,
+                                    unsigned char& nClass, int nExclusion,
                                     int nExcludedPower);
     int GetCreatureTalentRandomKnownPower(int nFilter, int nSelection,
                                          int& nTalentType, int& nTalent,
                                          unsigned char& nClass, int nClassIndex,
-                                         int nUnknown, int nExcludedPower);
+                                         int nExclusion, int nExcludedPower);
     int CheckPowerSuitability(int nPowerSuitability, int nFilter);
     int CheckPowerSuitability(int nTalent, CSWSpell* pSpell,
-                              int nPowerSuitability, int nUnknown1,
+                              int nPowerSuitability, int nSelection,
                               int nUnknown2, int nUnknown3, int nUnknown4,
                               int nInvalidTalent);
     int CanChooseSpell(unsigned long nSpell, unsigned char nMultiClass,
@@ -483,7 +483,7 @@ public:
 
     int m_nOriginalFactionId;
     unsigned char m_aUnmapped80[0x4];
-    float m_f84;
+    float m_fBlindSpot;
     float m_fChallengeRating;
     float GetChallengeRating() const { return m_fChallengeRating; }
     unsigned char m_nStartingPackage;
@@ -530,9 +530,9 @@ public:
     unsigned char m_nAttacksPerRound;
     unsigned char m_aUnmapped115[3];
     CCombatInformation* m_pCombatInformation;
-    char m_c120;
+    char m_nFuryDamageBonus;
     unsigned char m_aUnmapped121A[3];
-    int m_n124;
+    int m_nFuryVideoEffect;
     unsigned char m_nArcaneSpellFailure;
 
     unsigned char m_nBaseArmorArcaneSpellFailure;
@@ -546,7 +546,7 @@ public:
     short m_nTemporaryForcePoints;
     CExoArrayList<CSWSStats_SpellLikeAbility>* m_pSpellLikeAbilities;
 
-    unsigned short m_nEffectIndex12C;
+    unsigned short m_nTemporaryHitPointsEffectIndex;
     unsigned short m_nACEffectIndex;
     unsigned short m_nAttackEffectIndex;
     unsigned short m_nDamageReductionEffectIndex;
@@ -604,7 +604,7 @@ public:
             nValue = 0;
         m_nGoodEvilAlignment = nValue;
     }
-    short m_n18C;
+    short m_nBaseCNPCAlignment;
     unsigned char m_aUnmapped180[2];
     unsigned char m_nSkinColor;
     unsigned char m_nHairColor;

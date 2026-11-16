@@ -539,7 +539,7 @@ void CSWPartyTable::CreateParty()
                 pServerExoApp->GetCreatureByGameObjectID(oidPuppet);
             if (pClientCreature != NULL)
             {
-                pClientCreature->m_n46C = 1;
+                pClientCreature->m_bPuppet = 1;
             }
             if (pCreature != NULL)
             {
@@ -1998,7 +1998,7 @@ int CSWPartyTable::AddPuppet(int nPUP, unsigned long oidPuppet)
                 oidPuppet);
         if (pClientCreature != NULL)
         {
-            pClientCreature->m_n46C = 1;
+            pClientCreature->m_bPuppet = 1;
         }
         if (pCreature != NULL)
         {

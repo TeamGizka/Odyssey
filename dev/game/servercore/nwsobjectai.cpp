@@ -1265,7 +1265,7 @@ int CSWSObject::AIActionSwitchWeapons(CSWSObjectActionNode* pNode)
         }
         if (pCreature->m_bCombatState && pCreature->m_nItemUseState == 1)
         {
-            unsigned long oidTarget = pCreature->m_pcCombatRound->m_oidUnknown9CC;
+            unsigned long oidTarget = pCreature->m_pcCombatRound->m_oidRoundTarget;
             if (oidTarget != OBJECT_INVALID)
             {
                 pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0, 0, 1, 10009,

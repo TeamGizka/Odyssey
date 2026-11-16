@@ -198,7 +198,7 @@ public:
     int GetInputClass();
     int GetInFreeLook();
     CExoString GetDisplayCharacterForKey(int nKey);
-    int GetPazaakResults(int* pnResult, int* pnUnused);
+    int GetPazaakResults(int* pnResult, int* pnWager);
     void SetEndGamePending(int bPending, float fDelay, int nC);
     void EnableVideoEffect(int nEffect);
     void DisableVideoEffect();
@@ -307,18 +307,18 @@ public:
     int Initialize();
     int Uninitialize();
 #ifndef _XBOX
-    int StartServices(int nServices, const CExoString& sArg2,
-                      const CExoString& sArg3, const CExoString& sArg4,
-                      unsigned long nArg5);
+    int StartServices(int nServices, const CExoString& sModule,
+                      const CExoString& sLoadMusic, const CExoString& sLoadScreen,
+                      unsigned long nPlayerId);
 #endif
     void StopServices();
     void SetLoadStep(int nStep, unsigned char cValue);
     void SetLoadBarProgress(int nProgress, int bUpdateHint);
     void BeginIntro();
-    void DisplayMainMenu(int bUnknown);
+    void DisplayMainMenu(int bScanContent);
 #ifdef _XBOX
 
-    void StartServices(int nServices, const CExoString& sArg2, const CExoString& sArg3, const CExoString& sArg4, unsigned long nArg5);
+    void StartServices(int nServices, const CExoString& sModule, const CExoString& sLoadMusic, const CExoString& sLoadScreen, unsigned long nPlayerId);
     void DisplayStartScreen();
     void ShutDownLegalScreen();
 #endif

@@ -4796,7 +4796,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             if (pCreature != NULL)
             {
                 pCreature->m_nConjuringSpell = nSpell;
-                pCreature->m_oidUnknown2C8 = oidConjuringTarget;
+                pCreature->m_oidConjuringTarget = oidConjuringTarget;
             }
         }
         if (nAnimation == CREATURE_ANIMATION_SPELLCAST_1 ||
@@ -4838,7 +4838,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     {
         nWayPointSequence = ReadBYTE(8);
         if (pCreature != NULL)
-            pCreature->m_nUnknown1F0 = nWayPointSequence;
+            pCreature->m_nWayPointSequence = nWayPointSequence;
         else
             bSkipMovement = 1;
     }
@@ -4855,7 +4855,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         if (bOrientation)
         {
             pCreature->SetDesiredOrientation(vOrientation);
-            if (pCreature->m_nUnknown214 &&
+            if (pCreature->m_bCustomSpeed &&
                 pCreature->GetObjectId() != g_pAppManager->GetClientExoApp()->GetPlayerCreatureId())
                 pCreature->SetMoveOrientation(vOrientation);
             pCreature->SetLockOrientationToObject(oidLockTarget, 0);
@@ -5006,8 +5006,8 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
                         fSpeed = ReadFLOAT(1.0f, 32);
                 }
             }
-            if ((!bCustomSpeed && !pCreature->m_nUnknown214) ||
-                !nWayPointSequence || pCreature->m_nUnknown1EF == nWayPointSequence)
+            if ((!bCustomSpeed && !pCreature->m_bCustomSpeed) ||
+                !nWayPointSequence || pCreature->m_nLastWayPointSequence == nWayPointSequence)
             {
                 pCreature->SetWayPoints(0, NULL);
                 for (int i = 0; i < nWayPointCount; ++i)
@@ -5021,8 +5021,8 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         }
         if (nWayPointCount > 0)
         {
-            pCreature->m_nUnknown214 = bCustomSpeed || pCreature->m_nUnknown214;
-            pCreature->m_fUnknown1FC = fSpeed;
+            pCreature->m_bCustomSpeed = bCustomSpeed || pCreature->m_bCustomSpeed;
+            pCreature->m_fCustomSpeed = fSpeed;
         }
         {
             Vector vGroundNormal;
@@ -5068,8 +5068,8 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
                 if (bOrientation && oidLockTarget == CGameObjectArray::INVALIDOBJID)
                     pCreature->SetLockOrientationToObject(oidLockTarget, 0);
             }
-            else if (!pCreature->m_nUnknown214 || !nWayPointSequence ||
-                     pCreature->m_nUnknown1EF == nWayPointSequence)
+            else if (!pCreature->m_bCustomSpeed || !nWayPointSequence ||
+                     pCreature->m_nLastWayPointSequence == nWayPointSequence)
             {
                 if (pCreature->m_pArea != NULL)
                     pCreature->ComputeZValue(pCreature->m_pArea, &vPosition,
@@ -5108,8 +5108,8 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
                     fSpeed = ReadFLOAT(1.0f, 32);
                 if (pCreature != NULL)
                 {
-                    pCreature->m_nUnknown214 = bCustomSpeed || pCreature->m_nUnknown214;
-                    pCreature->m_fUnknown1FC = fSpeed;
+                    pCreature->m_bCustomSpeed = bCustomSpeed || pCreature->m_bCustomSpeed;
+                    pCreature->m_fCustomSpeed = fSpeed;
                 }
             }
         }
@@ -5319,11 +5319,11 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             pCreature->GetPartyStatus()->m_nUnknown04 = bStatus2;
             pCreature->GetPartyStatus()->m_nUnknown08 = bStatus3;
             pCreature->GetPartyStatus()->m_nUnknown0C = bStatus4;
-            pCreature->GetPartyStatus()->m_nUnknown10 = bStatus5;
+            pCreature->GetPartyStatus()->m_bHasStatusObject = bStatus5;
             if (bStatus5)
             {
-                pCreature->GetPartyStatus()->m_nUnknown14 = oidStatus;
-                pCreature->GetPartyStatus()->m_sUnknown18 = sStatus;
+                pCreature->GetPartyStatus()->m_oidStatusObject = oidStatus;
+                pCreature->GetPartyStatus()->m_sStatusName = sStatus;
             }
         }
     }
@@ -5412,23 +5412,23 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         {
             if (nStates & 1)
             {
-                if (pCreature->m_nUnknown190 == 0)
+                if (pCreature->m_nDetectState == 0)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(83, pMessage, "");
                 }
-                pCreature->m_nUnknown190 = 1;
+                pCreature->m_nDetectState = 1;
             }
             else if (!(nStates & 1))
             {
-                if (pCreature->m_nUnknown190 == 1)
+                if (pCreature->m_nDetectState == 1)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(84, pMessage, "");
                 }
-                pCreature->m_nUnknown190 = 0;
+                pCreature->m_nDetectState = 0;
             }
             if (nStates & 2)
             {
@@ -5452,103 +5452,103 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             }
             if (nStates & 4)
             {
-                if (pCreature->m_nUnknown198 == 0)
+                if (pCreature->m_nParryState == 0)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(87, pMessage, "");
                 }
-                pCreature->m_nUnknown198 = 1;
+                pCreature->m_nParryState = 1;
             }
             else if (!(nStates & 4))
             {
-                if (pCreature->m_nUnknown198 == 1)
+                if (pCreature->m_nParryState == 1)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(88, pMessage, "");
                 }
-                pCreature->m_nUnknown198 = 0;
+                pCreature->m_nParryState = 0;
             }
             if (nStates & 8)
             {
-                if (pCreature->m_nUnknown19C == 0)
+                if (pCreature->m_nPowerAttackState == 0)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(89, pMessage, "");
                 }
-                pCreature->m_nUnknown19C = 1;
+                pCreature->m_nPowerAttackState = 1;
             }
             else if (!(nStates & 8))
             {
-                if (pCreature->m_nUnknown19C == 1)
+                if (pCreature->m_nPowerAttackState == 1)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(90, pMessage, "");
                 }
-                pCreature->m_nUnknown19C = 0;
+                pCreature->m_nPowerAttackState = 0;
             }
             if (nStates & 16)
             {
-                if (pCreature->m_nUnknown1A0 == 0)
+                if (pCreature->m_nImprovedPowerAttackState == 0)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(91, pMessage, "");
                 }
-                pCreature->m_nUnknown1A0 = 1;
+                pCreature->m_nImprovedPowerAttackState = 1;
             }
             else if (!(nStates & 16))
             {
-                if (pCreature->m_nUnknown1A0 == 1)
+                if (pCreature->m_nImprovedPowerAttackState == 1)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(92, pMessage, "");
                 }
-                pCreature->m_nUnknown1A0 = 0;
+                pCreature->m_nImprovedPowerAttackState = 0;
             }
             if (nStates & 64)
             {
-                if (pCreature->m_nUnknown1A8 == 0)
+                if (pCreature->m_nRapidShotState == 0)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(166, pMessage, "");
                 }
-                pCreature->m_nUnknown1A8 = 1;
+                pCreature->m_nRapidShotState = 1;
             }
             else if (!(nStates & 64))
             {
-                if (pCreature->m_nUnknown1A8 == 1)
+                if (pCreature->m_nRapidShotState == 1)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(167, pMessage, "");
                 }
-                pCreature->m_nUnknown1A8 = 0;
+                pCreature->m_nRapidShotState = 0;
             }
             if (nStates & 32)
             {
-                if (pCreature->m_nUnknown1AC == 0)
+                if (pCreature->m_nFlurryState == 0)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(168, pMessage, "");
                 }
-                pCreature->m_nUnknown1AC = 1;
+                pCreature->m_nFlurryState = 1;
             }
             else if (!(nStates & 32))
             {
-                if (pCreature->m_nUnknown1AC == 1)
+                if (pCreature->m_nFlurryState == 1)
                 {
                     CSWCCMessageData* pMessage = new CSWCCMessageData;
                     pMessage->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(169, pMessage, "");
                 }
-                pCreature->m_nUnknown1AC = 0;
+                pCreature->m_nFlurryState = 0;
             }
         }
     }
@@ -8888,7 +8888,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
             pCreature->m_nGold = nGold;
             pCreature->m_nItemComponent = nItemComponent;
             pCreature->m_nChemicals = nChemicals;
-            pCreature->m_nUnknown1B4 = nUnknown1B4;
+            pCreature->m_nEncumbranceState = nUnknown1B4;
         }
         g_pAppManager->m_pClientExoApp->GetPlayerCreatureId();
         CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -8963,143 +8963,143 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
         {
             if (nFlags & 0x1)
             {
-                if (pCreature->m_nUnknown190 == 0)
+                if (pCreature->m_nDetectState == 0)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         83, pData, "");
                 }
-                pCreature->m_nUnknown190 = 1;
+                pCreature->m_nDetectState = 1;
             }
             else
             {
-                if (pCreature->m_nUnknown190 == 1)
+                if (pCreature->m_nDetectState == 1)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         84, pData, "");
                 }
-                pCreature->m_nUnknown190 = 0;
+                pCreature->m_nDetectState = 0;
             }
 
             if (nFlags & 0x4)
             {
-                if (pCreature->m_nUnknown198 == 0)
+                if (pCreature->m_nParryState == 0)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         87, pData, "");
                 }
-                pCreature->m_nUnknown198 = 1;
+                pCreature->m_nParryState = 1;
             }
             else
             {
-                if (pCreature->m_nUnknown198 == 1)
+                if (pCreature->m_nParryState == 1)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         88, pData, "");
                 }
-                pCreature->m_nUnknown198 = 0;
+                pCreature->m_nParryState = 0;
             }
 
             if (nFlags & 0x8)
             {
-                if (pCreature->m_nUnknown19C == 0)
+                if (pCreature->m_nPowerAttackState == 0)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         89, pData, "");
                 }
-                pCreature->m_nUnknown19C = 1;
+                pCreature->m_nPowerAttackState = 1;
             }
             else
             {
-                if (pCreature->m_nUnknown19C == 1)
+                if (pCreature->m_nPowerAttackState == 1)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         90, pData, "");
                 }
-                pCreature->m_nUnknown19C = 0;
+                pCreature->m_nPowerAttackState = 0;
             }
 
             if (nFlags & 0x10)
             {
-                if (pCreature->m_nUnknown1A0 == 0)
+                if (pCreature->m_nImprovedPowerAttackState == 0)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         91, pData, "");
                 }
-                pCreature->m_nUnknown1A0 = 1;
+                pCreature->m_nImprovedPowerAttackState = 1;
             }
             else
             {
-                if (pCreature->m_nUnknown1A0 == 1)
+                if (pCreature->m_nImprovedPowerAttackState == 1)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         92, pData, "");
                 }
-                pCreature->m_nUnknown1A0 = 0;
+                pCreature->m_nImprovedPowerAttackState = 0;
             }
 
             if (nFlags & 0x40)
             {
-                if (pCreature->m_nUnknown1A8 == 0)
+                if (pCreature->m_nRapidShotState == 0)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         166, pData, "");
                 }
-                pCreature->m_nUnknown1A8 = 1;
+                pCreature->m_nRapidShotState = 1;
             }
             else
             {
-                if (pCreature->m_nUnknown1A8 == 1)
+                if (pCreature->m_nRapidShotState == 1)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         167, pData, "");
                 }
-                pCreature->m_nUnknown1A8 = 0;
+                pCreature->m_nRapidShotState = 0;
             }
 
             if (nFlags & 0x20)
             {
-                if (pCreature->m_nUnknown1AC == 0)
+                if (pCreature->m_nFlurryState == 0)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         168, pData, "");
                 }
-                pCreature->m_nUnknown1AC = 1;
+                pCreature->m_nFlurryState = 1;
             }
             else
             {
-                if (pCreature->m_nUnknown1AC == 1)
+                if (pCreature->m_nFlurryState == 1)
                 {
                     CSWCCMessageData* pData = new CSWCCMessageData();
                     pData->SetObjectID(0, pCreature->GetId());
                     g_pAppManager->GetClientExoApp()->AddFeedbackMessage(
                         169, pData, "");
                 }
-                pCreature->m_nUnknown1AC = 0;
+                pCreature->m_nFlurryState = 0;
             }
 
-            pCreature->m_nUnknown1B8 = (nFlags >> 7) & 1;
+            pCreature->m_bMovementSpeedLimited = (nFlags >> 7) & 1;
             if (nFlags & 0x100)
             {
                 pCreature->SetSpecialWalkAnimation(1);
@@ -9108,9 +9108,9 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
             {
                 pCreature->SetSpecialWalkAnimation(0);
             }
-            pCreature->m_nUnknown370 = (nFlags >> 10) & 1;
-            pCreature->m_nUnknown374 = (nFlags >> 11) & 1;
-            pCreature->m_nUnknown378 = (nFlags >> 12) & 1;
+            pCreature->m_bDisguised = (nFlags >> 10) & 1;
+            pCreature->m_bCommandable = (nFlags >> 11) & 1;
+            pCreature->m_bExcited = (nFlags >> 12) & 1;
             g_pAppManager->m_pClientExoApp->GetInGameGui();
             g_pAppManager->m_pClientExoApp->GetInGameGui();
         }

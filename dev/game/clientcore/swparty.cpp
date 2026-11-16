@@ -1498,7 +1498,7 @@ void CSWParty::Update(float fTime)
             }
             else
             {
-                int nFuryEffect = pServerLeader->GetStats()->m_n124;
+                int nFuryEffect = pServerLeader->GetStats()->m_nFuryVideoEffect;
                 g_pAppManager->m_pClientExoApp->EnableVideoEffect(nFuryEffect);
             }
         }

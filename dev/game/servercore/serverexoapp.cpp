@@ -589,7 +589,7 @@ void CServerExoApp::ClearAllActions(unsigned long oidObject)
     {
         pCreature->ClearAllActions(1);
         pCreature->m_pcCombatRound->RemoveAllActions();
-        pCreature->m_pcCombatRound->m_oidUnknown9CC = 2130706432;
+        pCreature->m_pcCombatRound->m_oidRoundTarget = 2130706432;
         pCreature->SetAttemptedAttackTarget(2130706432);
         pCreature->m_oidAttackTarget = 2130706432;
         pCreature->m_oidAttemptedSpellTarget = 2130706432;

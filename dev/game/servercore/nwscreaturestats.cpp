@@ -548,13 +548,13 @@ CSWSCreatureStats::CSWSCreatureStats(CSWSCreature* pCreature)
     m_nAttacksPerRound = 0;
     m_nExperience = 0;
     m_nGoodEvilAlignment = 0;
-    m_n18C = -1;
+    m_nBaseCNPCAlignment = -1;
     m_pCreature = pCreature;
     m_nDamageRoll = 0;
     m_nCriticalHitRoll = DEFAULT_CRITICAL_HIT_ROLL;
     m_nCriticalHitMultiplier = 0;
-    m_c120 = 0xFF;
-    m_n124 = 0;
+    m_nFuryDamageBonus = 0xFF;
+    m_nFuryVideoEffect = 0;
     m_nACArmorBonus = 0;
     m_nACArmorPenalty = 0;
     m_nACShieldBonus = 0;
@@ -575,7 +575,7 @@ CSWSCreatureStats::CSWSCreatureStats(CSWSCreature* pCreature)
     m_nDamageResistanceEffectIndex = 0;
     m_nDamageIncreaseEffectIndex = 0;
     m_nSetAIStateEffectIndex = 0;
-    m_nEffectIndex12C = 0;
+    m_nTemporaryHitPointsEffectIndex = 0;
     m_nEffectIconEffectIndex = 0;
     m_nSanctuaryEffectIndex = 0;
     m_nInvisibilityEffectIndex = 0;
@@ -635,7 +635,7 @@ CSWSCreatureStats::CSWSCreatureStats(CSWSCreature* pCreature)
     m_nTail = 0;
     m_nWings = 0;
     m_nFactionId = INVALID_FACTION;
-    m_f84 = 120.0f;
+    m_fBlindSpot = 120.0f;
     m_fChallengeRating = 0.0f;
     CExoArrayList<CSWSStats_SpellLikeAbility>* pAbilities =
         new CExoArrayList<CSWSStats_SpellLikeAbility>(0);
@@ -1556,7 +1556,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             }
         }
     }
-    pAttack->m_Extra1.m_nUnknown20 = nDualStrikeBonus;
+    pAttack->m_Extra1.m_nDualStrikeBonus = nDualStrikeBonus;
     nAttackBonus += nDualStrikeBonus;
 
     int nDexterityBonus = 0;
@@ -1678,8 +1678,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nTargetingBonus;
-    pAttack->m_Extra1.m_nUnknown21 = nTargetingFeat;
-    pAttack->m_Extra1.m_nUnknown22 += nTargetingBonus;
+    pAttack->m_Extra1.m_nTargetingFeat = nTargetingFeat;
+    pAttack->m_Extra1.m_nTargetingBonus += nTargetingBonus;
     if (g_bEnableCombatDebugging)
     {
         if (nWeaponFocusBonus != 0 || nLightsaberBonus != 0)
@@ -1753,8 +1753,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nCrushPenalty;
-    pAttack->m_Extra1.m_nUnknown23 += nCrushSpell;
-    pAttack->m_Extra1.m_nUnknown24 += nCrushPenalty;
+    pAttack->m_Extra1.m_nCrushOppositionSpell += nCrushSpell;
+    pAttack->m_Extra1.m_nCrushOppositionPenalty += nCrushPenalty;
     if (g_bEnableCombatDebugging && nCrushPenalty != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1818,8 +1818,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nInspireBonus;
-    pAttack->m_Extra1.m_nUnknown25 = nInspireSpell;
-    pAttack->m_Extra1.m_nUnknown26 += nInspireBonus;
+    pAttack->m_Extra1.m_nInspireFollowersSpell = nInspireSpell;
+    pAttack->m_Extra1.m_nInspireFollowersBonus += nInspireBonus;
     if (g_bEnableCombatDebugging && nInspireBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1856,8 +1856,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nFormBonus;
-    pAttack->m_Extra1.m_nUnknown28 = nForm;
-    pAttack->m_Extra1.m_nUnknown2C += nFormBonus;
+    pAttack->m_Extra1.m_nForm = nForm;
+    pAttack->m_Extra1.m_nFormBonus += nFormBonus;
     if (g_bEnableCombatDebugging && nFormBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1907,7 +1907,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nCharismaBonus;
-    pAttack->m_Extra1.m_nUnknown27 += nCharismaBonus;
+    pAttack->m_Extra1.m_nLeaderCharismaBonus += nCharismaBonus;
     if (g_bEnableCombatDebugging && nCharismaBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -2090,9 +2090,9 @@ char CSWSCreatureStats::GetDamageBonus(CSWSCreature* pTarget, int bOffHand, int 
             nBonus += 2;
         }
     }
-    if (m_c120 != -1)
+    if (m_nFuryDamageBonus != -1)
     {
-        nBonus += m_c120;
+        nBonus += m_nFuryDamageBonus;
     }
     int nFormBonus = 0;
     if (GetCreature()->IsWieldingLightsaber() && GetCreature()->m_nCurrentForm == CSWSpell::FORM_SABER_II_MAKASHI)
@@ -2464,7 +2464,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     int nEffectBonus = GetCreature()->GetTotalEffectBonus(CSWSCreature::EFFECT_BONUS_DAMAGE,
         pTarget, nCapped, 0, bMaxDamage, 0, 0,
         CSWSCreature::EFFECT_BONUS_FILTER_ALL, CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0, &nEffectDamage);
-    pAttack->m_DamageBreakdown.m_nUnknown10 = nEffectDamage;
+    pAttack->m_DamageBreakdown.m_nEffectDamage = nEffectDamage;
     nDamage += nEffectDamage;
     if (g_bEnableCombatDebugging && nEffectBonus)
     {
@@ -3054,9 +3054,9 @@ void CSWSCreatureStats::ModifyAlignment(short nAdjustment, int bNoPartyUpdate)
     }
     else if (m_pCreature->m_bInParty)
     {
-        short nAlignment = max(0, min(100, m_n18C + nAdjustment));
+        short nAlignment = max(0, min(100, m_nBaseCNPCAlignment + nAdjustment));
 
-        m_n18C = min(100, max(-1, nAlignment));
+        m_nBaseCNPCAlignment = min(100, max(-1, nAlignment));
 
         m_pCreature->HandleAlignmentInfluence();
     }
@@ -4213,7 +4213,7 @@ char CSWSCreatureStats::GetReflexSavingThrow(int bBaseOnly)
 }
 // PC 0x005F6600 GOG 0x005F65E0
 int CSWSCreatureStats::CheckPowerSuitability(
-    int nTalent, CSWSpell* pSpell, int nPowerSuitability, int nUnknown1,
+    int nTalent, CSWSpell* pSpell, int nPowerSuitability, int nSelection,
     int nUnknown2, int nUnknown3, int nUnknown4, int nInvalidTalent)
 {
     if (nTalent == nInvalidTalent)
@@ -4564,7 +4564,7 @@ int CSWSCreatureStats::ValidateLevelUp(CSWLevelStats* pLevelStats)
 // PC 0x005FAE70 GOG 0x005FAE50
 int CSWSCreatureStats::GetCreatureTalentRandomPower(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
-    unsigned char& nClass, int nUnknown, int nExcludedPower)
+    unsigned char& nClass, int nExclusion, int nExcludedPower)
 {
     int bFound = 0;
     for (int nClassIndex = 0; nClassIndex < m_nClassCount; ++nClassIndex)
@@ -4574,7 +4574,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomPower(
             {
                 bFound = GetCreatureTalentRandomKnownPower(
                     nFilter, nSelection, nTalentType, nTalent, nClass,
-                    nClassIndex, nUnknown, nExcludedPower);
+                    nClassIndex, nExclusion, nExcludedPower);
                 if (bFound == 1)
                 {
                     break;
@@ -4586,7 +4586,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomPower(
 // PC 0x005F7260 GOG 0x005F7240
 int CSWSCreatureStats::GetCreatureTalentRandomKnownPower(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
-    unsigned char& nClass, int nClassIndex, int nUnknown, int nExcludedPower)
+    unsigned char& nClass, int nClassIndex, int nExclusion, int nExcludedPower)
 {
     int nSpell = 0;
     CSWSpell* pSpell = NULL;
@@ -5048,8 +5048,8 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     if (nBaseAlignment == -1)
         nBaseAlignment = (char)m_nGoodEvilAlignment;
     short nBaseGoodEvil = nBaseAlignment;
-    m_n18C = min(100, max(-1, nBaseGoodEvil));
-    m_c120 = pRes->ReadFieldCHAR(pStruct, "FuryDamageBonus", bSuccess, -1);
+    m_nBaseCNPCAlignment = min(100, max(-1, nBaseGoodEvil));
+    m_nFuryDamageBonus = pRes->ReadFieldCHAR(pStruct, "FuryDamageBonus", bSuccess, -1);
     GetCreature()->m_nCurrentForm = pRes->ReadFieldDWORD(pStruct, "CurrentForm", bSuccess, 0);
     unsigned char nSkinColor = m_nSkinColor;
     m_nSkinColor = pRes->ReadFieldBYTE(pStruct, "Color_Skin", bSuccess, nSkinColor);
@@ -5078,8 +5078,8 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     m_nWings = 0;
     int nFactionId = m_nFactionId;
     m_nFactionId = pRes->ReadFieldWORD(pStruct, "FactionID", bSuccess, nFactionId);
-    float fBlindSpot = m_f84;
-    m_f84 = pRes->ReadFieldFLOAT(pStruct, "BlindSpot", bSuccess, fBlindSpot);
+    float fBlindSpot = m_fBlindSpot;
+    m_fBlindSpot = pRes->ReadFieldFLOAT(pStruct, "BlindSpot", bSuccess, fBlindSpot);
     m_fChallengeRating = pRes->ReadFieldFLOAT(pStruct, "ChallengeRating",
                                              bSuccess, GetChallengeRating());
     m_nAIState = pRes->ReadFieldINT(pStruct, "AIState", bSuccess, m_nAIState);
@@ -5587,9 +5587,9 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
         pRes->WriteFieldWORD(pStruct, m_pCreature->GetPortraitId(), "PortraitId");
     short nGoodEvil = m_nGoodEvilAlignment;
     pRes->WriteFieldBYTE(pStruct, nGoodEvil, "GoodEvil");
-    short nBaseGoodEvil = m_n18C;
+    short nBaseGoodEvil = m_nBaseCNPCAlignment;
     pRes->WriteFieldCHAR(pStruct, nBaseGoodEvil, "BaseCNPCAlignment");
-    char nFuryDamageBonus = m_c120;
+    char nFuryDamageBonus = m_nFuryDamageBonus;
     pRes->WriteFieldCHAR(pStruct, nFuryDamageBonus, "FuryDamageBonus");
     int nCurrentForm = GetCreature()->m_nCurrentForm;
     pRes->WriteFieldDWORD(pStruct, nCurrentForm, "CurrentForm");
@@ -5616,7 +5616,7 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, nWings, "Wings");
     int nFactionId = m_nFactionId;
     pRes->WriteFieldWORD(pStruct, nFactionId, "FactionID");
-    float fBlindSpot = m_f84;
+    float fBlindSpot = m_fBlindSpot;
     pRes->WriteFieldFLOAT(pStruct, fBlindSpot, "BlindSpot");
     pRes->WriteFieldFLOAT(pStruct, GetChallengeRating(), "ChallengeRating");
     pRes->WriteFieldINT(pStruct, m_nAIState, "AIState");

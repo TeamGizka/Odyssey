@@ -506,19 +506,19 @@ int CSWCCreatureStats::GetCombatModeAttackModifier(CSWCCreature* pCreature)
     {
         return 0;
     }
-    if (pCreature->m_nUnknown19C == 1)
+    if (pCreature->m_nPowerAttackState == 1)
     {
         return -5;
     }
-    if (pCreature->m_nUnknown1A0 == 1)
+    if (pCreature->m_nImprovedPowerAttackState == 1)
     {
         return -10;
     }
-    if (pCreature->m_nUnknown1A8 == 1)
+    if (pCreature->m_nRapidShotState == 1)
     {
         return -2;
     }
-    if (pCreature->m_nUnknown1AC == 1)
+    if (pCreature->m_nFlurryState == 1)
     {
         return -2;
     }
@@ -697,11 +697,11 @@ CExoString CSWCCreatureStats::GetGeneralDamageBonusString(CSWCCreature* pCreatur
 
 int CSWCCreatureStats::GetCombatModeDamageModifier(CSWCCreature* pCreature)
 {
-    if (pCreature->m_nUnknown19C == 1)
+    if (pCreature->m_nPowerAttackState == 1)
     {
         return 5;
     }
-    if (pCreature->m_nUnknown1A0 == 1)
+    if (pCreature->m_nImprovedPowerAttackState == 1)
     {
         return 10;
     }

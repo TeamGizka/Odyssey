@@ -678,7 +678,7 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     m_bShowButtons = 1;
     m_bHideButtons = 0;
     m_bHasIcon = 0;
-    m_n9BC = 0;
+    m_nStyle = 0;
     StartLoadFromLayout("confirm_p");
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
@@ -723,7 +723,7 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
 #ifndef _XBOX
     m_bFocusOk = 0;
 #endif
-    m_n9C4 = 0;
+    m_bPausedGame = 0;
     m_nOpenSound = 15;
 }
 // PC 0x00675540 GOG 0x006752E0
@@ -746,7 +746,7 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
     m_bShowButtons = 1;
     m_bHideButtons = 0;
     m_bHasIcon = 0;
-    m_n9BC = nStyle;
+    m_nStyle = nStyle;
     StartLoadFromLayout("datapad_p");
     SetBorderFillImage(m_pBorder->m_cParams, "", 0);
     InitControl(m_btnOk, "BTN_OK", 1);
@@ -949,7 +949,7 @@ void CSWGuiMessageBox::FixMessageLabel()
     }
 #endif
 
-    if (m_n9BC != 0)
+    if (m_nStyle != 0)
     {
         cPanel.m_nHeight = 300;
         cPanel.m_nWidth = 400;
@@ -959,7 +959,7 @@ void CSWGuiMessageBox::FixMessageLabel()
     }
     cMessage.m_nWidth += cPanel.m_nWidth - m_cPanelExtent.m_nWidth;
     SetExtent(cPanel);
-    if (m_n9BC != 0)
+    if (m_nStyle != 0)
     {
         cMessage.m_nHeight = 208;
         cMessage.m_nWidth = 334;
@@ -1048,7 +1048,7 @@ void CSWGuiMessageBox::FixMessageLabel()
     cControl = m_lblIcon.m_cExtent;
     cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
     m_lblIcon.SetExtent(cControl);
-    if (m_n9BC != 0)
+    if (m_nStyle != 0)
     {
         cControl.m_nTop = 245;
         cControl.m_nHeight = 28;
@@ -1760,7 +1760,7 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x00675AC
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             if (m_pCallbackObject != 0 && m_pCallback != 0)
                 (m_pCallbackObject->*m_pCallback)(m_pCallbackControl);
-            if (m_n9BC != 0)
+            if (m_nStyle != 0)
                 g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);
             break;
         }
@@ -1893,7 +1893,7 @@ void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
 // PC 0x00675E80 GOG 0x00675C20
 void CSWGuiMessageBox::OnPanelAdded()
 {
-    if (m_n9BC != 0)
+    if (m_nStyle != 0)
     {
         m_pBorder->m_cParams.SetFillImage("pnl_datapad", 0);
     }
@@ -1945,7 +1945,7 @@ void CSWGuiMessageBox::OnPanelRemoved()
     m_pCallback = 0;
     m_pCallbackObject = 0;
     m_pCallbackControl = 0;
-    if (m_n9BC != 0)
+    if (m_nStyle != 0)
     {
         m_pBorder->m_cParams.SetFillImage("pnl_datapad", 0);
     }
@@ -1964,15 +1964,15 @@ void CSWGuiMessageBox::OnPanelRemoved()
 #ifndef _XBOX
     m_bFocusOk = 0;
 #endif
-    if (m_n9BC == 0)
+    if (m_nStyle == 0)
     {
         SetMessageColors(CGuiInGame::COLOR_NEW_GREEN,
                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
     }
-    if (m_n9C4 != 0)
+    if (m_bPausedGame != 0)
     {
         g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);
-        m_n9C4 = 0;
+        m_bPausedGame = 0;
     }
 }
 // PC 0x006760D0 GOG 0x00675E70

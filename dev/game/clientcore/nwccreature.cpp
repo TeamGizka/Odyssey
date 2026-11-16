@@ -410,8 +410,8 @@ CSWCCreaturePartyStatus::CSWCCreaturePartyStatus()
     m_nUnknown04 = 1;
     m_nUnknown08 = 1;
     m_nUnknown0C = 0;
-    m_nUnknown14 = OBJECT_INVALID;
-    m_sUnknown18 = "";
+    m_oidStatusObject = OBJECT_INVALID;
+    m_sStatusName = "";
 }
 // PC 0x0065D2B0 GOG 0x0065D0C0
 void SwingShortEvent(CAurObject* pObject, char* sEvent, void* pData)
@@ -1656,11 +1656,11 @@ void CSWCCreature::UpdateRelativePerception(unsigned long oidObject)
 CSWCCreature::CSWCCreature()
     : CSWCObject(CGameObject::OBJECT_TYPE_CREATURE)
 {
-    m_n46C = 0;
+    m_bPuppet = 0;
     m_bCombatMode = 0;
     m_bLevelUpSent = 1;
     m_bInParty = 0;
-    m_n46C = 0;
+    m_bPuppet = 0;
     m_pSoundSet = NULL;
     m_nSoundSet = SOUNDSET_INVALID;
     m_pStats = new CSWCLevelUpStats(this);
@@ -1671,7 +1671,7 @@ CSWCCreature::CSWCCreature()
     m_bConjuringCreature = 0;
     m_bWeaponDrawBlocked = 0;
     m_nUnknown150 = 0;
-    m_nUnknown1B8 = 0;
+    m_bMovementSpeedLimited = 0;
     m_bOverrideLightsaberState = 0;
     m_oidVisibleRightWeapon = OBJECT_INVALID;
     m_oidVisibleLeftWeapon = OBJECT_INVALID;
@@ -1694,10 +1694,10 @@ CSWCCreature::CSWCCreature()
         return;
 
     m_nUnknown1EE = 0;
-    m_nUnknown1EF = 0;
-    m_nUnknown1F0 = 0;
+    m_nLastWayPointSequence = 0;
+    m_nWayPointSequence = 0;
     m_nSpeedRampMode = SPEED_RAMP_FAST;
-    m_nUnknown214 = 0;
+    m_bCustomSpeed = 0;
     m_vOrientation = Vector(1.0f, 0.0f, 0.0f);
     m_vMoveOrientation = Vector(1.0f, 0.0f, 0.0f);
     m_vDesiredOrientation = Vector(1.0f, 0.0f, 0.0f);
@@ -1713,14 +1713,14 @@ CSWCCreature::CSWCCreature()
     m_nWeaponOverlayState = 0xffff;
     m_nCombatState = 0;
     m_pOwnedObject15C = NULL;
-    m_nUnknown190 = 0;
+    m_nDetectState = 0;
     m_nStealthState = 0;
-    m_nUnknown198 = 0;
-    m_nUnknown19C = 0;
-    m_nUnknown1A0 = 0;
+    m_nParryState = 0;
+    m_nPowerAttackState = 0;
+    m_nImprovedPowerAttackState = 0;
     m_nUnknown1A4 = 0;
-    m_nUnknown1A8 = 0;
-    m_nUnknown1AC = 0;
+    m_nRapidShotState = 0;
+    m_nFlurryState = 0;
     m_bInvisibilityVisualApplied = 0;
     for (int j = 0; j < 12; ++j)
         m_apOwnedObjects[j] = NULL;
@@ -1740,13 +1740,13 @@ CSWCCreature::CSWCCreature()
     m_nMonkVisualState = 0;
     m_nMonkVisualTimer = 0;
     m_nHostile = HOSTILE_STATE_HOSTILE;
-    m_nUnknown1B4 = 0;
+    m_nEncumbranceState = 0;
     m_nUnknown308 = 200000;
     m_pPartyStatus = NULL;
     m_nGold = 0;
     m_nItemComponent = 0;
     m_nChemicals = 0;
-    m_oidUnknown2C8 = CGameObjectArray::INVALIDOBJID;
+    m_oidConjuringTarget = CGameObjectArray::INVALIDOBJID;
     m_nWeaponOverlayTimer = SWCCREATURE_WEAPON_OVERLAY_INTERVAL;
     m_nWeaponCheckTimer = 6000;
     m_pPendingAnimBase = NULL;
@@ -1754,15 +1754,15 @@ CSWCCreature::CSWCCreature()
     m_nCameraFollowDelay = 0;
     m_bCameraFollowPending = 0;
     m_bCameraFollowSnap = 0;
-    m_nUnknown370 = 0;
-    m_nUnknown374 = 0;
-    m_nUnknown378 = 0;
+    m_bDisguised = 0;
+    m_bCommandable = 0;
+    m_bExcited = 0;
     for (int nObject = 0; nObject < 4; ++nObject)
         m_aoidUnknown37C[nObject] = CGameObjectArray::INVALIDOBJID;
     m_nAmbientPauseTimer = 0;
     m_bAmbientPause = 0;
     m_nAmbientPauseDelay = 30000 * (rand() % 4 + 2);
-    m_fUnknown1FC = 1.0f;
+    m_fCustomSpeed = 1.0f;
     m_oidArea = CGameObjectArray::INVALIDOBJID;
     m_pSpellLikeAbilities = NULL;
     m_nMode = 0;
@@ -1792,8 +1792,8 @@ CSWCCreature::CSWCCreature()
 #ifndef _XBOX
     m_fFreeLookTurn = 0.0f;
 #endif
-    m_n464 = -1;
-    m_n468 = 0;
+    m_nWeaponSwitchDelay = -1;
+    m_nLastAIUpdateTime = 0;
 }
 // PC 0x00664960 GOG 0x00664700
 CSWCCreature::~CSWCCreature()
@@ -2208,7 +2208,7 @@ void CSWCCreature::ResetDesiredPositionTimer()
 }
 // PC 0x00658200 GOG 0x006580B0
 void CSWCCreature::ComputeZValue(CSWCArea* pArea, Vector* pPosition,
-                                 float fUnused, Vector* pUnused)
+                                 float fCurrentZ, Vector* pNormal)
 {
     if (g_pAppManager->GetServerExoApp() != NULL)
     {
@@ -2500,7 +2500,7 @@ int CSWCCreature::RequestAppearance(CCAppearanceInfo* pAppearance,
         m_pAppearance->RequestTailAppearance(pAppearance);
     if (nParts & APPEARANCE_PART_WING)
         m_pAppearance->RequestWingAppearance(pAppearance);
-    memcpy(m_aUnmapped31C, pAppearance, sizeof(CCAppearanceInfo));
+    memcpy(m_aRequestedAppearance, pAppearance, sizeof(CCAppearanceInfo));
     return 1;
 }
 // PC 0x00658CA0 GOG 0x00658B50
@@ -4477,7 +4477,7 @@ void CSWCCreature::GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, 
         lstActions.element[i].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuForm;
         lstActions.element[i].m_oidTarget = GetId();
         lstActions.element[i].m_nAction &= ~CSWGuiInterfaceAction::SPELL_ACTION_MASK;
-        lstActions.element[i].m_n38 = 1;
+        lstActions.element[i].m_bRevertActionBar = 1;
     }
 }
 // PC 0x006659F0 GOG 0x00665790
@@ -4650,7 +4650,7 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions[nEntry].m_oidTarget = GetId();
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_REGEN;
     lstActions[nEntry].m_resIcon = "ii_implant1_001";
-    lstActions[nEntry].m_n38 = 1;
+    lstActions[nEntry].m_bRevertActionBar = 1;
     nEntry++;
     lstActions.SetSize(nEntry + 1);
     lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_IMPLANT_NAME_STR);
@@ -4658,7 +4658,7 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions[nEntry].m_oidTarget = GetId();
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_STR;
     lstActions[nEntry].m_resIcon = "ii_implant3_003";
-    lstActions[nEntry].m_n38 = 1;
+    lstActions[nEntry].m_bRevertActionBar = 1;
     nEntry++;
     lstActions.SetSize(nEntry + 1);
     lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_IMPLANT_NAME_AGI);
@@ -4666,7 +4666,7 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions[nEntry].m_oidTarget = GetId();
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_AGI;
     lstActions[nEntry].m_resIcon = "ii_implant2_002";
-    lstActions[nEntry].m_n38 = 1;
+    lstActions[nEntry].m_bRevertActionBar = 1;
     nEntry++;
     lstActions.SetSize(nEntry + 1);
     lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_IMPLANT_NAME_END);
@@ -4674,7 +4674,7 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions[nEntry].m_oidTarget = GetId();
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_END;
     lstActions[nEntry].m_resIcon = "ii_implant3_004";
-    lstActions[nEntry].m_n38 = 1;
+    lstActions[nEntry].m_bRevertActionBar = 1;
 }
 // PC 0x00667220 GOG 0x00666FC0
 void CSWCCreature::GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
@@ -4944,7 +4944,7 @@ void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions
             lstActions.SetSize(nEntry + 1);
             lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(nNameStrRef);
             lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuSelectBehavior;
-            lstActions[nEntry].m_n38 = 1;
+            lstActions[nEntry].m_bRevertActionBar = 1;
             lstActions[nEntry].m_oidTarget = GetId();
             switch (nAIState)
             {
@@ -5513,7 +5513,7 @@ void CSWCCreature::EvaluateNewWayPoints(int nWayPointCount, Vector* pWayPoints,
     int nNewWayPointCount;
     Vector* pNewWayPoints;
 
-    if (m_nUnknown214 == 0 || nPathType == 0 || m_nUnknown1EF == nPathType)
+    if (m_bCustomSpeed == 0 || nPathType == 0 || m_nLastWayPointSequence == nPathType)
     {
         if (nWayPointCount > 0 && GetArea() != NULL)
         {
@@ -5636,7 +5636,7 @@ void CSWCCreature::ForceAppearanceUpdate()
     m_nCameraFollowDelay = 0;
     pModule = g_pAppManager->m_pClientExoApp->GetModule();
     m_pAppearance->m_nAppearance = m_nAppearance;
-    SetAppearance((CCAppearanceInfo*)m_aUnmapped31C, 0xEF, 1);
+    SetAppearance((CCAppearanceInfo*)m_aRequestedAppearance, 0xEF, 1);
     if (pModule != NULL)
     {
         pArea = pModule->m_pInfo;
@@ -7220,7 +7220,7 @@ void CSWCCreature::ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature*
 void CSWCCreature::ActionMenuSwitchWeapons(unsigned long nAction,
                                            CSWCCreature* pInstigator)
 {
-    if (m_n464 > 0)
+    if (m_nWeaponSwitchDelay > 0)
     {
         return;
     }
@@ -7237,7 +7237,7 @@ void CSWCCreature::ActionMenuSwitchWeapons(unsigned long nAction,
     }
     CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
     pMessage->SendPlayerToServerInput_SwitchWeapons(m_nId, bSecondSet);
-    m_n464 = SWITCH_WEAPONS_DELAY;
+    m_nWeaponSwitchDelay = SWITCH_WEAPONS_DELAY;
 }
 // PC 0x0065BF40 GOG 0x0065BDC0
 void CSWCCreature::SetOverrideLightsaberState(int bOverride, int bPowered,
@@ -7656,7 +7656,7 @@ void CSWCCreature::UpdateRollingFootstepSound()
     }
 }
 // PC 0x0065CD90 GOG 0x0065CBA0
-void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bUnknown)
+void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bForce)
 {
     if (g_pAppManager->m_pServerExoApp != NULL)
     {
@@ -7666,7 +7666,7 @@ void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bUnkn
         {
             return;
         }
-        if (bUnknown == 0)
+        if (bForce == 0)
         {
             if (pCreature->GetDead() != 0)
             {
@@ -8442,13 +8442,13 @@ void CSWCCreature::RegisterCallbacks()
 void CSWCCreature::AIUpdate()
 {
     unsigned long nTimer = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
-    if (m_n464 != -1)
+    if (m_nWeaponSwitchDelay != -1)
     {
-        m_n464 += m_n468 - nTimer;
-        if (m_n464 < 0)
-            m_n464 = 0;
+        m_nWeaponSwitchDelay += m_nLastAIUpdateTime - nTimer;
+        if (m_nWeaponSwitchDelay < 0)
+            m_nWeaponSwitchDelay = 0;
     }
-    m_n468 = nTimer;
+    m_nLastAIUpdateTime = nTimer;
 
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
     unsigned long nTime, nDay, nDeltaTime, nDeltaDay;

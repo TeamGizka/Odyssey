@@ -142,7 +142,7 @@ public:
         TIME_UPDATE_DAY = 0x04, TIME_UPDATE_MONTH = 0x08,
         TIME_UPDATE_YEAR = 0x10
     };
-    CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown);
+    CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveGame);
     virtual ~CSWSModule();
     virtual CSWSModule* AsSWSModule() { return this; }  // PC 0x00507D40 GOG 0x004FFDF0
 
@@ -310,7 +310,7 @@ public:
 
     int m_bIsSaveGame;
     CExoArrayList<CWorldJournalEntry> m_lstWorldJournal;
-    int m_n1D8;
+    int m_bModuleResReleased;
     CExoArrayList<unsigned long> m_lLimbo;
     CERFFile* m_pERFFile;
     CResStruct* m_pERFStruct;

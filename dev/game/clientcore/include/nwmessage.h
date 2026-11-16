@@ -337,20 +337,20 @@ public:
     unsigned char* m_pWriteBuffer;
     unsigned long m_nWriteBufferSize;
     unsigned long m_nWriteIndex;
-    unsigned char* m_pUnknown10;
-    unsigned long m_nUnknown14;
-    unsigned long m_nUnknown18;
+    unsigned char* m_pWriteFragmentsBuffer;
+    unsigned long m_nWriteFragmentsBufferSize;
+    unsigned long m_nWriteFragmentsIndex;
     unsigned long m_nTotalBytesWritten;
-    unsigned long m_nUnknown20;
+    unsigned long m_nWriteFragmentsBitPos;
     int m_bWritingMessage;
     unsigned char* m_pReadBuffer;
     unsigned long m_nReadBufferSize;
     unsigned long m_nReadIndex;
-    unsigned long m_nUnknown34;
-    unsigned long m_nUnknown38;
-    unsigned long m_nUnknown3C;
+    unsigned char* m_pReadFragmentsBuffer;
+    unsigned long m_nReadFragmentsBufferSize;
+    unsigned long m_nReadFragmentsIndex;
     unsigned long m_nUnknown40;
-    unsigned char m_bUnknown44; unsigned char m_bUnknown45;
+    unsigned char m_nReadFragmentsBitPos; unsigned char m_nLastByteBits;
 #ifndef _XBOX
     unsigned char m_aUnknown46[2];
 #endif
@@ -961,7 +961,7 @@ public:
                                                int nDelay);
     int SendServerToPlayerAmbientMusicChangeTrack(unsigned long nPlayerId,
                                                   int bDay, int nTrack,
-                                                  int bUnknown = 0);
+                                                  int bStreamingMusicForMovie = 0);
     int SendServerToPlayerAmbientBattleMusicPlay(unsigned long nPlayerId,
                                                  int bPlay);
     int SendServerToPlayerAmbientBattleMusicChange(unsigned long nPlayerId,
@@ -1339,7 +1339,7 @@ public:
     int SendServerToPlayerModule_EndStartNewModule(int bSuccess);
     int SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer,
                                        unsigned char nWeather, int bEnabled,
-                                       unsigned char nUnknown);
+                                       unsigned char nChanceRain);
     int SendServerToPlayerPopUpGUIPanel(unsigned long oidPC, int nGUIPanel,
                                         int bRespawnButtonEnabled,
                                         int bWaitForHelpButtonEnabled,
@@ -1348,7 +1348,7 @@ public:
     int HasValidString(CExoLocString& lsString, unsigned char nGender);
 
     void WriteGameObjUpdate_WorkRemaining(CSWSObject* pObject, CSWSArea* pArea,
-                                          int nValue, int nValue2);
+                                          int nValue, int nCompleteStage);
     void WriteRepositoryUpdate(CSWSPlayer* pPlayer, CSWSObject* pObject,
                                 CItemRepository* pRepository,
                                 CSWSPlayerLUOInventory* pLastUpdateInventory,

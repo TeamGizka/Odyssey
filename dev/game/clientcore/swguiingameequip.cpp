@@ -1522,7 +1522,7 @@ int CSWGuiInGameEquip::EquipItem(unsigned long oidItem, int nSlot,
                 if (pCreature->m_bCombatState != 0)
                 {
                     unsigned long oidTarget =
-                        pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                        pCreature->m_pcCombatRound->m_oidRoundTarget;
                     if (oidTarget != OBJECT_INVALID)
                     {
                         pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0,
@@ -1564,7 +1564,7 @@ void CSWGuiInGameEquip::UnequipItem(unsigned long oidItem, int bClearActions)
             if (pCreature->m_bCombatState != 0)
             {
                 unsigned long oidTarget =
-                    pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                    pCreature->m_pcCombatRound->m_oidRoundTarget;
                 if (oidTarget != OBJECT_INVALID)
                 {
                     pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0, 1, 1,

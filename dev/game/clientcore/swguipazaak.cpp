@@ -1905,12 +1905,12 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
 #endif
     m_nState = STATE_START_GAME;
     m_fTimer = -1.0f;
-    m_bUnknown86DC0 = 0;
+    m_bShownFlipCardHelp = 0;
     m_bShownFirstCardHelp = 0;
     m_bShownOpponentTurnHelp = 0;
     m_bShownGameStartHelp = 0;
     m_bShownTwentyHelp = 0;
-    m_nUnknown86DC5 = 0;
+    m_nFlagsUnused = 0;
 #ifndef _XBOX
     m_nPlayedCard = -1;
 #endif
@@ -2181,9 +2181,9 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
             }
             break;
         case 43:
-            if (m_bUnknown86DC0 == 0)
+            if (m_bShownFlipCardHelp == 0)
             {
-                m_bUnknown86DC0 = 1;
+                m_bShownFlipCardHelp = 1;
                 unsigned long aHelp[2];
                 aHelp[0] = STRREF_PAZAAK_HELP_FLIP_CARDS;
                 aHelp[1] = STRREF_PAZAAK_HELP_DECLARE_SIGN;

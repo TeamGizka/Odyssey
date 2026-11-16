@@ -201,7 +201,7 @@ public:
     void StartLoadFromLayout(const CResRef& cLayout, int bScalePosition = 1, int bScaleSize = 1);
     void StopLoadFromLayout();
     void InitControl(CSWGuiControl& cControl, const CExoString& sName,
-                     int bUnknown, int bScale = 1);
+                     int bRequired, int bScale = 1);
 
 #ifndef _XBOX
     int m_bUseFont;
@@ -315,7 +315,7 @@ public:
     unsigned long m_bUnknown1C1 : 1;
     unsigned long m_bCursorCentered : 1;
     unsigned long m_bToolTipShown : 1;
-    unsigned long m_nUnknown1CRest : 28;
+    unsigned long m_nMouseFlagsUnused : 28;
     CSWGuiScene* m_pMouseScene;
     CAurObject* m_pMouseCursor;
     CResRef m_resCursor;
@@ -355,7 +355,7 @@ public:
     void DeactivateSoftwareMouse();
 #endif
 #ifndef _XBOX
-    void SetSoftwareMouseCursor(int nCursor, int nArg2, int nArg3);
+    void SetSoftwareMouseCursor(int nCursor, int bCentered, int bForce);
 #endif
 #ifndef _XBOX
     int HandleLMouseDown(int nArg);
@@ -511,11 +511,11 @@ public:
     int m_nLblRAnalogRightOffset;
 #endif
     int m_nPreviousInputClass;
-    int m_n9BC;
+    int m_nStyle;
 #ifndef _XBOX
     int m_bFocusOk;
 #endif
-    int m_n9C4;
+    int m_bPausedGame;
 };
 
 struct CSWGuiTimedControl
@@ -585,7 +585,7 @@ public:
     unsigned long : 27;
 #ifndef _XBOX
     int m_nStackSize;
-    unsigned char m_n38;
+    unsigned char m_bRevertActionBar;
 #endif
 };
 #ifndef _XBOX

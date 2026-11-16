@@ -1542,9 +1542,9 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
             if (bRemainingDamage)
             {
                 CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-                pAttack->m_DamageBreakdown.m_nUnknown9 = nDamage;
-                pAttack->m_DamageBreakdown.m_nUnknown6 = nToughness;
-                pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
+                pAttack->m_DamageBreakdown.m_nToughnessDamage = nDamage;
+                pAttack->m_DamageBreakdown.m_nToughnessReduction = nToughness;
+                pAttack->m_DamageBreakdown.m_nResistedDamageType = nDamageType;
             }
         }
         int nEndurance = 0;
@@ -1570,9 +1570,9 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
         if (nEndurance > 0 && bRemainingDamage)
         {
             CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-            pAttack->m_DamageBreakdown.m_nUnknownA = nDamage;
-            pAttack->m_DamageBreakdown.m_nUnknown7 = nEndurance;
-            pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
+            pAttack->m_DamageBreakdown.m_nEnduranceDamage = nDamage;
+            pAttack->m_DamageBreakdown.m_nEnduranceReduction = nEndurance;
+            pAttack->m_DamageBreakdown.m_nResistedDamageType = nDamageType;
         }
     }
     return nDamage - nResistance > 0 ? nDamage - nResistance : 0;

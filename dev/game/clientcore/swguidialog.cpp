@@ -131,7 +131,7 @@ void CSWGuiDialog::Reset()
 // PC 0x0070F100 GOG 0x0070EA00
 void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
                               unsigned long* pReplyIndices, int nStartIndex,
-                              int bUnknown)
+                              int bShowReplies)
 {
     if (SWGUIDIALOG_DEBUG)
     {
@@ -173,7 +173,7 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
         }
         m_aReplyIndex[i] = pReplyIndices[i];
     }
-    if (bUnknown)
+    if (bShowReplies)
     {
         m_lbReplies.AddControls(lReplies, 0, 0, 1);
         m_lbReplies.SetEnabledFlag(1);
@@ -791,14 +791,14 @@ CSWGuiDialogCinematic::~CSWGuiDialogCinematic()
 // PC 0x0070F400 GOG 0x0070F150
 void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
                                        unsigned long* pReplyIndices,
-                                       int nStartIndex, int bUnknown)
+                                       int nStartIndex, int bShowReplies)
 {
-    if (bUnknown)
+    if (bShowReplies)
     {
         m_pTop->SetReply(m_sMessage);
     }
     CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
-                             bUnknown);
+                             bShowReplies);
     if (m_lbReplies.m_bEnabled)
     {
         CSWGuiExtent cExtent = m_lbReplies.m_cExtent;
@@ -806,7 +806,7 @@ void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
         cExtent.m_nHeight -= cExtent.m_nHeight % nFontHeight;
         m_lbReplies.SetExtent(cExtent);
     }
-    if (bUnknown && !m_pManager->PanelExists(m_pTop))
+    if (bShowReplies && !m_pManager->PanelExists(m_pTop))
     {
         m_pManager->AddPanel(m_pTop, 0, 1);
     }
@@ -895,11 +895,11 @@ void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
 // PC 0x0070FBB0 GOG 0x0070F900
 void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
                                       unsigned long* pReplyIndices,
-                                      int nStartIndex, int bUnknown)
+                                      int nStartIndex, int bShowReplies)
 {
     CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
-                             bUnknown);
-    if (bUnknown != 0)
+                             bShowReplies);
+    if (bShowReplies != 0)
     {
         m_lblMessage.SetEnabledFlag(1);
     }

@@ -32,7 +32,7 @@ public:
     virtual void Reset();
     virtual void SetReplies(int nCount, CExoString* pReplies,
                             unsigned long* pReplyIndices, int nStartIndex,
-                            int bUnknown);
+                            int bShowReplies);
     virtual unsigned long SetOwner(unsigned long nOwner)  // PC 0x0070E380 GOG 0x0070E110
     {
         m_nOwner = nOwner;
@@ -141,7 +141,7 @@ public:
     virtual void Reset();
     virtual void SetReplies(int nCount, CExoString* pReplies,
                             unsigned long* pReplyIndices, int nStartIndex,
-                            int bUnknown);
+                            int bShowReplies);
     virtual void ShowDialogMessage();
 
     CSWGuiDialogTop* m_pTop;
@@ -174,7 +174,7 @@ public:
     virtual void OnPanelRemoved();
     virtual void SetReplies(int nCount, CExoString* pReplies,
                             unsigned long* pReplyIndices, int nStartIndex,
-                            int bUnknown);
+                            int bShowReplies);
     virtual void SetDialogMessage(const CExoString& sMessage);
     SWGUI_PCVIRTUAL CExoString GetFullScreenBG();
 

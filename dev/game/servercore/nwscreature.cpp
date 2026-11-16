@@ -3598,7 +3598,7 @@ void CSWSCreature::UpdateCombatRoundTimer()
                             if (pMaster != NULL)
                                 pMaster->ResetCombatAnimations(nElapsedTime);
                         }
-                        unsigned long oidTarget = m_pcCombatRound->m_oidUnknown9CC;
+                        unsigned long oidTarget = m_pcCombatRound->m_oidRoundTarget;
                         CGameObject* pTarget = g_pAppManager->GetServerExoApp()
                             ->GetGameObject(oidTarget);
                         if (pTarget != NULL && pTarget->AsSWSObject() != NULL)
@@ -3632,7 +3632,7 @@ int CSWSCreature::ResetCombatAnimations(int nElapsedTime)
 
     if (!GetDead() && !GetIsPCDying() && !GetDeadTemp() &&
         AnimationStationary(GetAnimation()) && !IsDebilitated() &&
-        m_pcCombatRound->m_nUnknown940 == 0)
+        m_pcCombatRound->m_bUseAttackResult == 0)
     {
         SetAnimation(GetPauseReadyAnimation());
         bAnimationChanged = 1;
@@ -4079,7 +4079,7 @@ void CSWSCreature::HandleAlignmentInfluence()
 {
     if (m_sTag.CompareNoCase("kreia"))
     {
-        GetStats()->SetGoodEvilAlignment((char)GetStats()->m_n18C);
+        GetStats()->SetGoodEvilAlignment((char)GetStats()->m_nBaseCNPCAlignment);
         return;
     }
 
@@ -4111,7 +4111,7 @@ void CSWSCreature::HandleAlignmentInfluence()
     float fMultiplier = 1.0f;
     g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
         "G_PC_Align_Val", nPCAlignment);
-    short nBaseAlignment = GetStats()->m_n18C;
+    short nBaseAlignment = GetStats()->m_nBaseCNPCAlignment;
 
     for (int nCharacter = 0; nCharacter < 3; nCharacter++)
     {
@@ -6489,7 +6489,7 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
             vDirection = m_vOrientation;
         float fDot = vDirection * normalize(m_vOrientation);
         float fAngle = acos(fDot);
-        float fHalfAngle = GetStats()->m_f84 * 0.5f;
+        float fHalfAngle = GetStats()->m_fBlindSpot * 0.5f;
         float fMinAngle = 180.0f - fHalfAngle;
         float fMaxAngle = fHalfAngle + 180.0f;
         if (fMinAngle < 0.0f)
@@ -6637,7 +6637,7 @@ void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
         m_oidAttackTarget = OBJECT_INVALID;
         m_oidAttemptedSpellTarget = OBJECT_INVALID;
         m_oidSpellTarget = OBJECT_INVALID;
-        GetCombatRound()->m_oidUnknown9CC = OBJECT_INVALID;
+        GetCombatRound()->m_oidRoundTarget = OBJECT_INVALID;
 
         CSWSCombatRound* pCombatRound = m_pcCombatRound;
         if (GetRoundStarted(pCombatRound))
@@ -8210,7 +8210,7 @@ void CSWSCreature::DoDamage(int nDamage, int bSuppressFeedback)
         CExoArrayList<CGameEffect*>* pEffects = &AsSWSCreature()->m_lstEffects;
         if (pEffects->num > 0)
         {
-            for (i = m_pStats->m_nEffectIndex12C;
+            for (i = m_pStats->m_nTemporaryHitPointsEffectIndex;
                  i < pEffects->num; i++)
             {
                 CGameEffect* pEffect = (*pEffects)[i];
@@ -10544,7 +10544,7 @@ void CSWSCreature::CancelCombat(int bNotify)
                                              1);
     ClearHostileActionsVersus(NULL);
     m_pcCombatRound->EndCombatRound(bNotify);
-    m_pcCombatRound->m_oidUnknown9CC = OBJECT_INVALID;
+    m_pcCombatRound->m_oidRoundTarget = OBJECT_INVALID;
 
     pClientCreature = GetClientCreature();
     if (pClientCreature != NULL)

@@ -161,7 +161,7 @@ public:
     static const unsigned long FILL_MODE_MAP = 0;
 
     CSWGuiBorderParams(const CResRef& cCorner, const CResRef& cEdge,
-                       const CResRef& cFill, int nDimension, int nUnknown,
+                       const CResRef& cFill, int nDimension, int nBorderDim,
                        float fAlpha, const Vector& vColor, int bPulsing, int nInnerOffsetY = 0);
     void SetPulsingAlpha(int bPulsing, int nLow, int nHigh);
     void SetCornerImage(const CResRef& cImage, int bTile);

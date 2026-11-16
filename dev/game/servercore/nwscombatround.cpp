@@ -79,16 +79,16 @@ void CSWSCombatAttackData::ResolveAttackToMeleeSubAttack(
 }
 // PC 0x0052B060 GOG 0x0052B140
 void CSWSCombatAttackData::ResolveAttackToRangedSubAttack(
-    int nAttackNumber, unsigned long nAnimationTime, int nArg3, int nArg4,
-    int nArg5)
+    int nAttackNumber, unsigned long nAnimationTime, int bAttack, int bHit,
+    int nDischargeHand)
 {
     CSWSCombatSubAttack subAttack;
 
     subAttack.m_nAttackNumber = nAttackNumber;
     subAttack.m_nAnimationTime = nAnimationTime;
-    subAttack.m_nUnknown10 = nArg3;
-    subAttack.m_nUnknown14 = nArg4;
-    subAttack.m_nUnknown2C = nArg5;
+    subAttack.m_bAttacked = bAttack;
+    subAttack.m_bHit = bHit;
+    subAttack.m_nDischargeHand = nDischargeHand;
     subAttack.m_nAttackResult = m_nAttackResult;
     subAttack.m_nWeaponAttackType = m_nWeaponAttackType;
     subAttack.m_nAttackType = m_nAttackType;
@@ -118,7 +118,7 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_bSpellCastRound = 0;
     m_nSpellCastRound = 0;
     m_bRoundPaused = 0;
-    m_nUnknown940 = 0;
+    m_bUseAttackResult = 0;
     m_oidRoundPausedBy = OBJECT_INVALID;
     m_nPauseTimer = 0;
     m_bInfinitePause = 0;
@@ -139,7 +139,7 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_bDeflectArrow = 0;
     m_bWeaponSucks = 0;
     m_nTimer = 0;
-    m_nUnknown948 = 0;
+    m_bTargetDebilitated = 0;
     m_nRoundLength = 0;
     m_nBleedTimer = 0;
     m_nOverlapAmount = 0;
@@ -150,8 +150,8 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_bEngaged = 0;
     m_bMaster = 0;
     m_pCurrentAction = NULL;
-    m_cB1C = 0;
-    m_oidUnknown9CC = OBJECT_INVALID;
+    m_nCurrentRoundActionType = 0;
+    m_oidRoundTarget = OBJECT_INVALID;
     m_nUnknown9D4 = 0;
     m_nCurrentActionType = 0;
     m_nAttackGroup = 255;
@@ -226,7 +226,7 @@ void CSWSCombatRound::StartCombatRound(unsigned long oidTarget, int bEngaged,
     m_oidRoundPausedBy = OBJECT_INVALID;
     m_bSpellCastRound = 0;
     m_nSpellCastRound = 0;
-    m_nUnknown940 = nArg5;
+    m_bUseAttackResult = nArg5;
     m_nRoundLength = 3000;
 
     ClearAllAttacks();
@@ -235,11 +235,11 @@ void CSWSCombatRound::StartCombatRound(unsigned long oidTarget, int bEngaged,
 
     if (m_pBaseCreature->m_nId != oidTarget)
     {
-        m_oidUnknown9CC = oidTarget;
+        m_oidRoundTarget = oidTarget;
     }
     else
     {
-        m_oidUnknown9CC = OBJECT_INVALID;
+        m_oidRoundTarget = OBJECT_INVALID;
     }
     m_oidDodgeTarget = oidTarget;
     m_bDeflectArrow = 1;
@@ -319,9 +319,9 @@ void CSWSCombatRound::EndCombatRound(int bNotify)
 
     int bTargetDead = 0;
     unsigned long oidNextTarget = OBJECT_INVALID;
-    if (m_oidUnknown9CC != OBJECT_INVALID)
+    if (m_oidRoundTarget != OBJECT_INVALID)
     {
-        CGameObject* pTarget = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidUnknown9CC);
+        CGameObject* pTarget = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidRoundTarget);
         if (pTarget != NULL)
         {
             if (pTarget->AsSWSCreature() != NULL)
@@ -329,7 +329,7 @@ void CSWSCombatRound::EndCombatRound(int bNotify)
                 CSWSCreature* pTargetCreature = pTarget->AsSWSCreature();
                 if (pTargetCreature->GetDead() || pTargetCreature->GetDeadTemp())
                 {
-                    m_oidUnknown9CC = OBJECT_INVALID;
+                    m_oidRoundTarget = OBJECT_INVALID;
                     bTargetDead = 1;
                     if (m_bSpellCastRound)
                         oidNextTarget = m_pBaseCreature->m_oidAttemptedSpellTarget;
@@ -340,12 +340,12 @@ void CSWSCombatRound::EndCombatRound(int bNotify)
             else if ((pTarget->AsSWSDoor() != NULL && pTarget->AsSWSDoor()->m_nOpenState != CSWSDoor::OPEN_STATE_CLOSED) ||
                      (pTarget->AsSWSPlaceable() != NULL && pTarget->AsSWSPlaceable()->m_bOpen != 0))
             {
-                m_oidUnknown9CC = OBJECT_INVALID;
+                m_oidRoundTarget = OBJECT_INVALID;
             }
         }
         else
         {
-            m_oidUnknown9CC = OBJECT_INVALID;
+            m_oidRoundTarget = OBJECT_INVALID;
         }
     }
 
@@ -410,7 +410,7 @@ void CSWSCombatRound::EndCombatRound(int bNotify)
     }
 
     if (bNotify && bRunEndRoundScript && m_nSpellCastRound == 0 &&
-        m_nUnknown940 == 0 && !bPlayerCharacter &&
+        m_bUseAttackResult == 0 && !bPlayerCharacter &&
         !m_pBaseCreature->GetDead() && !m_pBaseCreature->GetDeadTemp())
     {
         g_pVirtualMachine->RunScript(&m_pBaseCreature->m_sScripts[CSWSCreature::SCRIPT_END_ROUND],
@@ -424,7 +424,7 @@ void CSWSCombatRound::EndCombatRound(int bNotify)
         pClient->SetAutoPaused(1, CClientExoApp::AUTOPAUSE_END_OF_COMBAT_ROUND);
     }
 
-    if (m_nUnknown940 == 0 && bPlayerCharacter && bNotify)
+    if (m_bUseAttackResult == 0 && bPlayerCharacter && bNotify)
     {
         m_pBaseCreature->CreateNewAttackActions(bTargetDead, m_bSpellCastRound, oidNextTarget);
     }
@@ -751,21 +751,21 @@ void CSWSCombatRoundAction::ClearData()
     m_nInventorySlot = 0;
     m_oidTargetRepository = OBJECT_INVALID;
     m_nSpellId = 0;
-    m_aUnmapped28[0] = 0;
-    m_aUnmapped28[1] = 0;
-    m_aUnmapped28[2] = 0;
-    m_aUnmapped28[3] = 0;
+    m_aSpellParams[0] = 0;
+    m_aSpellParams[1] = 0;
+    m_aSpellParams[2] = 0;
+    m_aSpellParams[3] = 0;
     m_oidSpellTarget = OBJECT_INVALID;
-    m_nUnknown48 = 0;
-    m_nUnknown4C = 0;
-    m_nUnknown50 = 0;
+    m_bTargetLocation = 0;
+    m_bFake = 0;
+    m_nProjectilePath = 0;
     m_nEquipFlags = 0;
     m_nUnknown58 = 0;
     m_nSpecialAttack = 0;
-    m_nUnknown60 = 0;
+    m_nSpellLikeClass = 0;
     m_oidSpellItem = OBJECT_INVALID;
-    m_nUnknown68 = 0;
-    m_nUnknown6C = 0;
+    m_nItemProperty = 0;
+    m_nItemOption = 0;
     m_nUnknown70 = 0;
     m_nUnknown72 = 0;
     m_bCutsceneAttack = 0;
@@ -942,7 +942,7 @@ int CSWSCombatAttackData::GetTotalDamage(int bIncludeBase)
 void CSWSCombatAttackData::ClearAttackData()
 {
     m_nAttackGroup = ATTACK_GROUP_INVALID;
-    m_nUnknown4 = 0;
+    m_bAttacked = 0;
     m_nAnimationLength = 0;
     m_nMissedBy = 0;
     for (int i = 0; i < DAMAGE_COUNT; i++)
@@ -976,14 +976,14 @@ void CSWSCombatAttackData::ClearAttackData()
         delete m_lstEffects[nEffect];
     }
     m_lstEffects.num = 0;
-    m_lstUnknown94.num = 0;
+    m_lstSpellImpacts.num = 0;
     m_lstFeedbackMessages.num = 0;
     m_lstSubAttacks.num = 0;
-    m_nUnknownB8 = 0;
-    m_nUnknownBC = 0;
+    m_bUseAttackResult = 0;
+    m_nForcedAttackResult = 0;
     m_Extra1.m_nUnknown0 = 0;
-    m_Extra1.m_nUnknown1 = 0;
-    m_Extra1.m_nUnknown2 = 0;
+    m_Extra1.m_nAttackRoll = 0;
+    m_Extra1.m_nAttackModifier = 0;
     m_Extra1.m_nStrengthModifier = 0;
     m_Extra1.m_nDexterityModifier = 0;
     m_Extra1.m_nUnknown5 = 0;
@@ -1000,25 +1000,25 @@ void CSWSCombatAttackData::ClearAttackData()
     m_Extra1.m_nOffensiveTrainingBonus = 0;
     m_Extra1.m_nWeaponFocusBonus = 0;
     m_Extra1.m_nEffectAttackBonus = 0;
-    m_Extra1.m_nUnknown18 = 0;
-    m_Extra1.m_nUnknown1C = 0;
-    m_Extra1.m_nUnknown20 = 0;
-    m_Extra1.m_nUnknown21 = 0;
-    m_Extra1.m_nUnknown22 = 0;
-    m_Extra1.m_nUnknown23 = 0;
-    m_Extra1.m_nUnknown24 = 0;
-    m_Extra1.m_nUnknown25 = 0;
-    m_Extra1.m_nUnknown26 = 0;
-    m_Extra1.m_nUnknown27 = 0;
-    m_Extra1.m_nUnknown28 = 0;
-    m_Extra1.m_nUnknown2C = 0;
-    m_Extra2.m_nUnknown0 = 0;
-    m_Extra2.m_nUnknown4 = 0;
-    m_Extra2.m_nUnknown8 = 0;
-    m_Extra2.m_nUnknownC = 0;
+    m_Extra1.m_bAutomaticHit = 0;
+    m_Extra1.m_bAutomaticMiss = 0;
+    m_Extra1.m_nDualStrikeBonus = 0;
+    m_Extra1.m_nTargetingFeat = 0;
+    m_Extra1.m_nTargetingBonus = 0;
+    m_Extra1.m_nCrushOppositionSpell = 0;
+    m_Extra1.m_nCrushOppositionPenalty = 0;
+    m_Extra1.m_nInspireFollowersSpell = 0;
+    m_Extra1.m_nInspireFollowersBonus = 0;
+    m_Extra1.m_nLeaderCharismaBonus = 0;
+    m_Extra1.m_nForm = 0;
+    m_Extra1.m_nFormBonus = 0;
+    m_Extra2.m_nThreatRange = 0;
+    m_Extra2.m_bThreat = 0;
+    m_Extra2.m_nCriticalRoll = 0;
+    m_Extra2.m_bCriticalConfirmed = 0;
     m_Extra2.m_nUnknown10 = 0;
-    m_Extra2.m_nUnknown11 = 0;
-    m_Flags.m_bUnknown0 = 0;
+    m_Extra2.m_nCriticalMultiplier = 0;
+    m_Flags.m_nArmorClass = 0;
     m_Flags.m_nArmorModifier = 0;
     m_Flags.m_nDexterityModifier = 0;
     m_Flags.m_nBaseDexterityModifier = 0;
@@ -1033,14 +1033,14 @@ void CSWSCombatAttackData::ClearAttackData()
     m_DamageBreakdown.m_nSneakAttackDamage = 0;
     m_DamageBreakdown.m_nStrengthDamage = 0;
     m_DamageBreakdown.m_nWeaponSpecializationDamage = 0;
-    m_DamageBreakdown.m_nUnknown6 = 0;
-    m_DamageBreakdown.m_nUnknown7 = 0;
-    m_DamageBreakdown.m_nUnknown8 = 0;
-    m_DamageBreakdown.m_nUnknown9 = 0;
-    m_DamageBreakdown.m_nUnknownA = 0;
+    m_DamageBreakdown.m_nToughnessReduction = 0;
+    m_DamageBreakdown.m_nEnduranceReduction = 0;
+    m_DamageBreakdown.m_nResistedDamageType = 0;
+    m_DamageBreakdown.m_nToughnessDamage = 0;
+    m_DamageBreakdown.m_nEnduranceDamage = 0;
     m_DamageBreakdown.m_nEffectDamageBonus = 0;
     m_DamageBreakdown.m_nUnknownC = 0x102;
-    m_DamageBreakdown.m_nUnknown10 = 0;
+    m_DamageBreakdown.m_nEffectDamage = 0;
     for (int nDamage = 0; nDamage < 15; nDamage++)
     {
         m_DamageBreakdown.m_nUnknownDamage[nDamage] = -1;
@@ -1056,7 +1056,7 @@ void CSWSCombatAttackData::ClearAttackData()
     m_Extra4.m_nSavingThrowDC = 0;
     m_Extra4.m_nSavingThrowResult = 0xFF;
     m_Extra4.m_bStateImmune = 0;
-    m_Extra4.m_nUnknown14 = 0;
+    m_Extra4.m_bEffectApplied = 0;
     m_Extra5.Clear();
 }
 // PC 0x00528670 GOG 0x005286F0
@@ -1312,7 +1312,7 @@ void CSWSCombatRound::ClearAllAttacks()
 }
 // PC 0x00528C30 GOG 0x00528CB0
 void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget,
-                                              int nArg1, int nArg2, int nArg3)
+                                              int nAnimation, int nAttackResult, int nDamage)
 {
     CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
 
@@ -1320,10 +1320,10 @@ void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget,
     pAction->m_oidTarget = oidTarget;
     pAction->m_nAnimation = 10009;
     pAction->m_nAnimationTime = (g_nCombatStretch + 3000) / 2;
-    pAction->m_nCutsceneArg1 = nArg1;
+    pAction->m_nCutsceneArg1 = nAnimation;
     pAction->m_bCutsceneAttack = 1;
-    pAction->m_nCutsceneArg2 = nArg2;
-    pAction->m_nCutsceneArg3 = nArg3;
+    pAction->m_nCutsceneArg2 = nAttackResult;
+    pAction->m_nCutsceneArg3 = nDamage;
     AddAction(pAction, -1);
 
     if (m_pBaseCreature->m_oidAttemptedAttackTarget == OBJECT_INVALID)
@@ -1334,7 +1334,7 @@ void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget,
 // PC 0x00528CD0 GOG 0x00528D50
 void CSWSCombatRound::AddAttackAction(unsigned long oidTarget,
                                       unsigned short nSpecialAttack,
-                                      int nAttackFlags, int nArg4,
+                                      int nAttackFlags, int nActionTime,
                                       int nNumAttacks)
 {
     CGameObject* pGameObject =
@@ -1399,12 +1399,12 @@ void CSWSCombatRound::AddStanceAction(int nNumAttacks, unsigned long oidTarget,
     AddAction(pAction, ACTION_POSITION_BY_TIME);
 }
 // PC 0x00528E90 GOG 0x00528F10
-void CSWSCombatRound::AddSWSpellAction(unsigned long oidCreator, int nArg2,
-                                       int nArg3, int nArg4, int nArg5,
+void CSWSCombatRound::AddSWSpellAction(unsigned long oidCreator, int nMultiClass,
+                                       int nSpellLevel, int nMetamagic, int bOverride,
                                        Vector vTarget, unsigned long oidItem,
-                                       int nArg8, int nArg9,
-                                       unsigned char nArg10, int nArg11,
-                                       int nArg12, unsigned char nArg13,
+                                       int bTargetLocation, int bFake,
+                                       unsigned char nProjectilePath, int bInstant,
+                                       int nFeat, unsigned char nSpellLikeClass,
                                        int nAttackFlags)
 {
     CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
@@ -1414,18 +1414,18 @@ void CSWSCombatRound::AddSWSpellAction(unsigned long oidCreator, int nArg2,
     pAction->m_nAnimationTime = 500;
     pAction->m_nAttackFlags = nAttackFlags;
     pAction->m_nSpellId = oidCreator;
-    pAction->m_aUnmapped28[0] = nArg2;
-    pAction->m_aUnmapped28[1] = nArg3;
-    pAction->m_aUnmapped28[2] = nArg4;
-    pAction->m_aUnmapped28[3] = nArg5;
+    pAction->m_aSpellParams[0] = nMultiClass;
+    pAction->m_aSpellParams[1] = nSpellLevel;
+    pAction->m_aSpellParams[2] = nMetamagic;
+    pAction->m_aSpellParams[3] = bOverride;
     pAction->m_vTarget = vTarget;
     pAction->m_oidSpellTarget = oidItem;
-    pAction->m_nUnknown48 = nArg8;
-    pAction->m_nUnknown4C = nArg9;
-    pAction->m_nUnknown50 = nArg10;
-    pAction->m_nEquipFlags = nArg11;
-    pAction->m_nSpecialAttack = nArg12;
-    pAction->m_nUnknown60 = nArg13;
+    pAction->m_bTargetLocation = bTargetLocation;
+    pAction->m_bFake = bFake;
+    pAction->m_nProjectilePath = nProjectilePath;
+    pAction->m_nEquipFlags = bInstant;
+    pAction->m_nSpecialAttack = nFeat;
+    pAction->m_nSpellLikeClass = nSpellLikeClass;
 
     if (m_pBaseCreature->m_oidAttemptedSpellTarget == OBJECT_INVALID)
     {
@@ -1445,21 +1445,21 @@ void CSWSCombatRound::AddSwitchWeaponsAction()
     AddAction(pAction, ACTION_POSITION_BY_TIME);
 }
 // PC 0x00528FC0 GOG 0x00529040
-void CSWSCombatRound::AddSWItemSpellAction(unsigned long oidCreator, int nArg2,
-                                           int nArg3, Vector vTarget,
-                                           unsigned long oidItem, int nArg6,
+void CSWSCombatRound::AddSWItemSpellAction(unsigned long oidCreator, int nItemProperty,
+                                           int nItemOption, Vector vTarget,
+                                           unsigned long oidItem, int bTargetLocation,
                                            int nAttackFlags)
 {
     CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
 
     pAction->m_nAttackFlags = nAttackFlags;
     pAction->m_oidSpellItem = oidCreator;
-    pAction->m_nUnknown68 = nArg2;
-    pAction->m_nUnknown6C = nArg3;
+    pAction->m_nItemProperty = nItemProperty;
+    pAction->m_nItemOption = nItemOption;
     pAction->m_vTarget = vTarget;
     pAction->m_nActionType = 10;
     pAction->m_oidSpellTarget = oidItem;
-    pAction->m_nUnknown48 = nArg6;
+    pAction->m_bTargetLocation = bTargetLocation;
 
     if (m_pBaseCreature->m_oidAttemptedSpellTarget == OBJECT_INVALID)
     {
@@ -1470,11 +1470,11 @@ void CSWSCombatRound::AddSWItemSpellAction(unsigned long oidCreator, int nArg2,
 }
 // PC 0x00529060 GOG 0x005290E0
 void CSWSCombatRound::AddCutsceneMoveActions(unsigned long oidTarget,
-                                             Vector vTarget, int nArg3)
+                                             Vector vTarget, int bRun)
 {
     CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
 
-    pAction->m_nEquipFlags = nArg3;
+    pAction->m_nEquipFlags = bRun;
     pAction->m_oidTarget = oidTarget;
     pAction->m_vTarget = vTarget;
     pAction->m_nActionType = 12;
@@ -1507,20 +1507,20 @@ void CSWSCombatRound::RemoveSpellAction()
 }
 // PC 0x00529160 GOG 0x005291E0
 void CSWSCombatRound::AddEquipAction(unsigned long oidItem, unsigned long nSlot,
-                                     int nArg3, int nArg4)
+                                     int nEquipFlags, int nAttackFlags)
 {
     if (g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem) != NULL)
     {
         DecrementRoundLength(1500, 1);
 
         CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
-        pAction->m_nAttackFlags = nArg4;
+        pAction->m_nAttackFlags = nAttackFlags;
         pAction->m_nActionType = 6;
         pAction->m_nActionTimer = 0;
         pAction->m_nAnimationTime = 1500;
         pAction->m_oidTarget = oidItem;
         pAction->m_nInventorySlot = nSlot;
-        pAction->m_nEquipFlags = nArg3;
+        pAction->m_nEquipFlags = nEquipFlags;
 
         if (m_pScheduledActions->GetHeadPos() != NULL)
         {
@@ -1535,7 +1535,7 @@ void CSWSCombatRound::AddEquipAction(unsigned long oidItem, unsigned long nSlot,
 }
 // PC 0x00529210 GOG 0x00529290
 void CSWSCombatRound::AddUnequipAction(unsigned long oidItem,
-                                       unsigned long nSlot, int nArg3)
+                                       unsigned long nSlot, int nEquipFlags)
 {
     CSWSItem* pItem =
         g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
@@ -1549,7 +1549,7 @@ void CSWSCombatRound::AddUnequipAction(unsigned long oidItem,
         pAction->m_nAnimationTime = 1500;
         pAction->m_oidTarget = oidItem;
         pAction->m_oidTargetRepository = nSlot;
-        pAction->m_nEquipFlags = nArg3;
+        pAction->m_nEquipFlags = nEquipFlags;
 
         if (m_pScheduledActions->GetHeadPos() != NULL)
         {
@@ -1811,7 +1811,7 @@ void CSWSCombatAttackData::ResolveSubAttackToAttack(
     m_nWeaponAttackType = subAttack.m_nWeaponAttackType;
     m_vRangedTarget = subAttack.m_vRangedTarget;
     m_nReactionDelay = subAttack.m_nReactionDelay;
-    m_nUnknown4 = subAttack.m_nUnknown10;
+    m_bAttacked = subAttack.m_bAttacked;
 
     for (int i = 0; i < 15; i++)
     {
@@ -2157,8 +2157,8 @@ int CSWSCombatRound::GetActualBonusEffectAttacks()
 void CSWSCombatAttackExtra1::Clear()
 {
     m_nUnknown0 = 0;
-    m_nUnknown1 = 0;
-    m_nUnknown2 = 0;
+    m_nAttackRoll = 0;
+    m_nAttackModifier = 0;
     m_nStrengthModifier = 0;
     m_nDexterityModifier = 0;
     m_nUnknown5 = 0;
@@ -2175,28 +2175,28 @@ void CSWSCombatAttackExtra1::Clear()
     m_nOffensiveTrainingBonus = 0;
     m_nWeaponFocusBonus = 0;
     m_nEffectAttackBonus = 0;
-    m_nUnknown18 = 0;
-    m_nUnknown1C = 0;
-    m_nUnknown20 = 0;
-    m_nUnknown21 = 0;
-    m_nUnknown22 = 0;
-    m_nUnknown23 = 0;
-    m_nUnknown24 = 0;
-    m_nUnknown25 = 0;
-    m_nUnknown26 = 0;
-    m_nUnknown27 = 0;
-    m_nUnknown28 = 0;
-    m_nUnknown2C = 0;
+    m_bAutomaticHit = 0;
+    m_bAutomaticMiss = 0;
+    m_nDualStrikeBonus = 0;
+    m_nTargetingFeat = 0;
+    m_nTargetingBonus = 0;
+    m_nCrushOppositionSpell = 0;
+    m_nCrushOppositionPenalty = 0;
+    m_nInspireFollowersSpell = 0;
+    m_nInspireFollowersBonus = 0;
+    m_nLeaderCharismaBonus = 0;
+    m_nForm = 0;
+    m_nFormBonus = 0;
 }
 // PC 0x00528230 GOG 0x00528290
 void CSWSCombatSubAttackThreat::Clear()
 {
-    m_nUnknown0 = 0;
-    m_nUnknown4 = 0;
-    m_nUnknown8 = 0;
-    m_nUnknownC = 0;
+    m_nThreatRange = 0;
+    m_bThreat = 0;
+    m_nCriticalRoll = 0;
+    m_bCriticalConfirmed = 0;
     m_nUnknown10 = 0;
-    m_nUnknown11 = 0;
+    m_nCriticalMultiplier = 0;
 }
 
 #ifndef _XBOX

@@ -47,7 +47,7 @@ inline CResIFO::CResIFO()
     strncpy(m_szFileType, "IFO ", 4);
 }
 // PC 0x00509340 GOG 0x005013F0
-CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown)
+CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveGame)
     : CGameObject(CGameObject::OBJECT_TYPE_MODULE, OBJECT_INVALID)
 {
     CExoString sResourceName;
@@ -97,7 +97,7 @@ CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown
     m_nTime = 0;
     m_nTime2 = 0;
     m_nTimeDawnDusk = 0;
-    m_n1D8 = 1;
+    m_bModuleResReleased = 1;
     m_pERFFile = NULL;
     m_pERFStruct = NULL;
     m_pModuleGFF = NULL;
@@ -216,7 +216,7 @@ void CSWSModule::EventHandler(unsigned long nEventId, unsigned long oidCaller,
 // PC 0x00507A30 GOG 0x004FFAE0
 CSWSModule::~CSWSModule()
 {
-    if (m_n1D8 == 0)
+    if (m_bModuleResReleased == 0)
         m_pRes->Release();
 
     while (m_lstPlayers.GetHeadPos() != NULL)
@@ -898,7 +898,7 @@ int CSWSModule::LoadModuleFinish()
     g_pAppManager->m_pServerExoApp->GetServerAIMaster()->
         LoadReputationAdjustments();
     m_pRes->Release();
-    m_n1D8 = 1;
+    m_bModuleResReleased = 1;
     if (g_nSetMovieFrameRate != 0)
     {
         SetFramesPerSecond("30");
@@ -2501,7 +2501,7 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
     pLoadStats->m_nProgressTotal = nAreasToLoad;
     g_pAppManager->GetServerExoApp()->GetSWSMessage()->
         SendServerToPlayerLoadBar_UpdateStallEvent(0, nAreasToLoad);
-    m_n1D8 = 0;
+    m_bModuleResReleased = 0;
     return LOAD_MODULE_SUCCESS;
 }
 // PC 0x0050B530 GOG 0x005035E0

@@ -3394,7 +3394,7 @@ void CSWGuiMainInterface::OnPersonalActionExit(CSWGuiControl* pControl)
                     break;
                 }
             }
-            if (pAction != NULL && pAction->m_n38)
+            if (pAction != NULL && pAction->m_bRevertActionBar)
             {
                 RevertActionBarStates();
             }

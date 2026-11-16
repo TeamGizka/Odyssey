@@ -7860,7 +7860,7 @@ void CClientExoAppInternal::AddDownloadedResources()  // PC 0x0063F6B0 GOG 0x006
 void CClientExoAppInternal::PlayerFlourishWeapons()
 {
     CSWCCreature* pPlayerCreature = GetPlayerCreature();
-    if (pPlayerCreature->m_n464 > 0)
+    if (pPlayerCreature->m_nWeaponSwitchDelay > 0)
     {
         return;
     }
@@ -7928,7 +7928,7 @@ void CClientExoAppInternal::PlayerFlourishWeapons()
         GetPlayerCreature()->InsertFireForgetAnimation(10158, 1500, 1.0f,
                                                        NULL, 0);
     }
-    pPlayerCreature->m_n464 = 1000;
+    pPlayerCreature->m_nWeaponSwitchDelay = 1000;
 }
 
 #ifdef _XBOX
