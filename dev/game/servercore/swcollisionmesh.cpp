@@ -7,6 +7,7 @@
 #include "ResBWM.h"
 #include "exoresman.h"
 #include "SWCollisionMesh.h"
+#include "aurdraw.h"
 
 #define SWCOLLISIONMESH_DEBUG 0
 
@@ -661,10 +662,11 @@ static inline float Dot7(const Vector& vFirst, const Vector& vSecond, const Vect
 {
     return Dot6(vFirst, vSecond, vExtra0);
 }
-static inline void MeshDebugLine(const Vector& vA, const Vector& vB, int)
+static inline void MeshDebugLine(const Vector& vA, const Vector& vB, int nColor)
 {
     Vector vFrom = vA + Vector(0.0f, 0.0f, 0.01f);
     Vector vTo = vB + Vector(0.0f, 0.0f, 0.01f);
+    AurDrawLine(vFrom, vTo, nColor);
 }
 // PC 0x00558390 GOG 0x005581B0
 int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
