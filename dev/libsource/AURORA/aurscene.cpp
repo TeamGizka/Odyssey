@@ -146,16 +146,6 @@ extern int enablefocusshadowing;
 extern float maxshadowdist;
 extern float shadowlength;
 
-void SetShadowStencilBuffer()
-{
-    int nStencilBits = AurGetAvailableStencilBits();
-    if (nStencilBits)
-    {
-        GLRender_ClearStencilValue((1 << (nStencilBits - 1)) - 1);
-    }
-    GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
-    GLRender::Clear(4);
-}
 // PC 0x0056FB90 GOG 0x0056FCC0
 void Scene::InitBSP(int, int, int, bool, float)
 {
@@ -2242,6 +2232,16 @@ void Scene::DoEmitterBucket()
         PartEmitter::StopEmitterLayer();
     }
 }
+void SetShadowStencilBuffer()
+{
+    int nStencilBits = AurGetAvailableStencilBits();
+    if (nStencilBits)
+    {
+        GLRender_ClearStencilValue((1 << (nStencilBits - 1)) - 1);
+    }
+    GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
+    GLRender_Clear(4);
+}
 // PC 0x00464D40 GOG 0x00464E50
 void Scene::DoTriggerBucket()
 {
@@ -2755,11 +2755,7 @@ void Scene::RenderSinglePass()
 #ifdef _XBOX
         ClearStencilBuffer();
 #else
-        int nStencilBits = AurGetAvailableStencilBits();
-        if (nStencilBits)
-            GLRender_ClearStencilValue((1 << (nStencilBits - 1)) - 1);
-        GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
-        GLRender_Clear(4);
+        SetShadowStencilBuffer();
 #endif
         DoTriggerBucket();
         DoHighlightTriggers(false);
@@ -2768,11 +2764,7 @@ void Scene::RenderSinglePass()
 #ifdef _XBOX
     ClearStencilBuffer();
 #else
-    int nStencilBits = AurGetAvailableStencilBits();
-    if (nStencilBits)
-        GLRender_ClearStencilValue((1 << (nStencilBits - 1)) - 1);
-    GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
-    GLRender_Clear(4);
+    SetShadowStencilBuffer();
 #endif
 #ifdef _XBOX
     if (enableshadows)
@@ -2794,11 +2786,7 @@ void Scene::RenderSinglePass()
 #ifdef _XBOX
         ClearStencilBuffer();
 #else
-        int nStencilBits = AurGetAvailableStencilBits();
-        if (nStencilBits)
-            GLRender_ClearStencilValue((1 << (nStencilBits - 1)) - 1);
-        GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
-        GLRender_Clear(4);
+        SetShadowStencilBuffer();
 #endif
         DoHighlightTriggers(true);
     }
