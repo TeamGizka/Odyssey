@@ -90,7 +90,6 @@ public:
     void RestoreDefaultColor(); void ReSetFont();
     void SetAlignment(int nAlignment); void SetColor(const Vector& vColor);
     void SetDefaultColor(const Vector& vColor);
-    const Vector& GetColor();
     void SetBaseFont(const CResRef& cFont);
     void SetFont(const CResRef& cFont);
     void SetFontRename();
@@ -239,7 +238,6 @@ public:
     int GetFontHeight();
 
     void WrapString();
-    CSWGuiExtent GetExtent();
     CSWGuiExtent GetIdealWidthAndHeight();
 #ifdef _XBOX
 

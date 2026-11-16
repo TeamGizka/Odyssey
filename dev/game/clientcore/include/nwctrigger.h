@@ -108,6 +108,11 @@ public:
     void RemoveFromRenderList();
     void SpecialDisplayTrigger(int bDisplay);
     void UpdateAreaTransitionDisplay();
+    void CheckWindingOrder();
+    int GetMineStrengthLevel(int nLevel);
+    int InTrigger(const Vector& vPoint);
+    void ReverseOrder();
+    void SetMineIcon(unsigned char nIcon);
 
     int m_nInitialValue;
     CExoString m_sName;

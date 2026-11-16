@@ -207,6 +207,21 @@ public:
 
     void Pack(unsigned char nFlag, unsigned long nSize);
     int WriteGFFFile(const CExoString& sFileName, unsigned short nResType);
+    unsigned long ByteSwap(unsigned long nValue);
+    unsigned __int64 ByteSwap64(unsigned __int64 nValue);
+    void* GetDataLayoutField(CResGFFField* pField, unsigned long& nSize);
+    unsigned long GetFieldCount(CResGFFStruct* pStruct);
+    char* GetFieldLabel(CResStruct* pStructure, unsigned long nIndex);
+    unsigned long GetFieldStringID(CResStruct* pStructure, unsigned long nIndex);
+    void GetGFFFileInfo(CExoString* psFileType, CExoString* psFileVersion);
+    char* GetLabel(CResStruct* pStructure, unsigned long nIndex);
+    int IsDataInPlace(unsigned long nType);
+    double ReadFieldDOUBLE(CResStruct* pStructure, char* szLabel, int& bSuccess, double fDefault);
+    __int64 ReadFieldINT64(CResStruct* pStructure, char* szLabel, int& bSuccess, __int64 nDefault);
+    void SetFieldINT(CResStruct* pStructure, char* szLabel, int& bSuccess, int nValue);
+    void SetFileType(char* szFileType);
+    BOOL WriteFieldDOUBLE(CResStruct* pStructure, double fValue, char* szLabel);
+    BOOL WriteFieldINT64(CResStruct* pStructure, __int64 nValue, char* szLabel);
 
     static char* VERSION;
 

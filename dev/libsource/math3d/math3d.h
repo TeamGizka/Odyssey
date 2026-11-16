@@ -101,7 +101,6 @@ public:
 
     float GetX() const { return m_fX; }
 
-    float GetZ() const;
     float m_fX;
     float m_fY;
     float m_fZ;
@@ -395,6 +394,7 @@ public:
         m_vSecond = vSecond;
         m_vThird = vThird;
     }
+    Quaternion getquaternion() const;
 
     Vector m_vFirst;
     Vector m_vSecond;

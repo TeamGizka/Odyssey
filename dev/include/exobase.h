@@ -434,6 +434,7 @@ public:
     int Seek(int offset, int origin);
     int SeekBeginning();
     int SeekEnd();
+    int Eof();
 
     CExoFileInternal* m_pInternal;
 };
@@ -555,6 +556,8 @@ public:
 
     void ChangePath(const CExoString& sAlias, const CExoString& sPath);
 #endif
+    void Clear();
+    void Delete(const CExoString& sAlias);
     const CExoString& GetAliasPath(const CExoString& sAlias, int nLength) const;
     CExoString ResolveFileName(const CExoString& sAlias,
                                unsigned short nResType) const;
@@ -965,6 +968,8 @@ public:
     CExoString GetString(unsigned short nLength);
     void ReSeed(unsigned long nSeed0, unsigned long nSeed1,
                 unsigned long nSeed2, unsigned long nSeed3);
+    void SignalEvent();
+    void SignalEvent(unsigned long nEvent);
 
     unsigned long m_anState[4];
     unsigned long m_anMask[4];
@@ -1149,8 +1154,6 @@ public:
                            float fRadius, unsigned char nGroup,
                            unsigned long nA, unsigned char nB, float fA,
                            float fB);
-    void PlaySound(CResRef& cResRef, unsigned char nType, unsigned long nA,
-                   unsigned char nB, float fA, float fB);
     int GetBestEAXAvailable();
     void SetMusicVolume(float fVolume, int bFade);
     void SetDialogVolume(float fVolume);

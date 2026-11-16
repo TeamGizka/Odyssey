@@ -37,6 +37,9 @@ public:
     virtual ~CSoundSet();
 
     int GetStrres(unsigned short nSound, STR_RES& strRes);
+    int Demand();
+    int GetData();
+    int Release();
 };
 
 class CSoundSetList
@@ -46,6 +49,8 @@ public:
     ~CSoundSetList();
 
     CResRef GetSoundSet(unsigned short nSoundSet);
+    int GetGender(unsigned short nSoundSet);
+    CExoString GetName(unsigned short nSoundSet);
 
     unsigned short m_nCount;
     CResRef* m_pResRefs;

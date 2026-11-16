@@ -264,6 +264,8 @@ public:
     unsigned char Delete(unsigned long oidObject);
     unsigned char GetGameObject(unsigned long oidObject,
                                 CGameObject** ppObject);
+    unsigned char AddCharacterObjectAtPos(unsigned long oidObject, CGameObject* pObject);
+    void Clean(unsigned short nType);
 
     static const unsigned long ARRAY_SIZE;
     static const unsigned char SUCCESS;

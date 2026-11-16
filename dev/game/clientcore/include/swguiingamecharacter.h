@@ -169,6 +169,8 @@ public:
     void SetStats();
     int ShowLevelUpGUI(int bAutomatic);
     void StartAutoLevelup();
+    void OnChangeCharacter(CSWGuiControl* pControl);
+    void UpdatePortraits();
 
 #ifdef _XBOX
     CSWGuiLabel m_lblName;

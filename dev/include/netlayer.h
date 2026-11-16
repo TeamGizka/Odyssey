@@ -111,6 +111,9 @@ public:
     int DisconnectPlayer(unsigned long nPlayerId, unsigned long nStrRef,
                          int bSendMessage);
     CExoString GetPlayerAddress(unsigned long nPlayerId);
+    int ConnectToSessionLoop();
+    int EndConnectToSession();
+    void SetDestNetLayer(CNetLayer* pNetLayer);
 
     char m_aBuffer[0x20000];
     unsigned long m_nReadPos;

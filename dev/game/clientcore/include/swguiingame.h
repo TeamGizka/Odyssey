@@ -327,6 +327,8 @@ public:
     void OnSkillsButtonPressed(CSWGuiControl* pControl);
 #endif
     void SetCharacter(CSWCCreature* pCreature);
+    void OnChangeCharacter(CSWGuiControl* pControl);
+    void UpdatePortraits();
 
     CExoArrayList<CSWGuiSkillStruct> m_lstSkills;
     CSWGuiInGameSkillEntry m_aSkillEntries[10];
@@ -434,6 +436,9 @@ public:
     void NotUseableOnHawk(CSWGuiControl* pControl);
     void FullHealth(CSWGuiControl* pControl);
     void SquadFullHealth(CSWGuiControl* pControl);
+    int HandleUseItemAccept(CSWGuiControl* pControl);
+    void OnChangeCharacter(CSWGuiControl* pControl);
+    void UpdatePortraits();
 
     static const int m_nFilterName[FILTER_MISC + 1];
 

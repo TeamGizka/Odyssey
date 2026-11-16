@@ -113,6 +113,8 @@ public:
     void GetDoorInterfaceMines(CSWCCreature* pCreature,
                                CExoArrayList<CSWGuiInterfaceAction>& lstActions);
 #endif
+    int ActionMenuExamine(unsigned long oidTarget, CSWCCreature* pCreature);
+    void SetMineIcon(unsigned char nIcon);
 };
 
 #endif

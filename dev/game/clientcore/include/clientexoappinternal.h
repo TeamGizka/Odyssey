@@ -781,7 +781,6 @@ public:
     CExoString GetDisplayCharacterForKey(int nKey);
     int GetSoundPausedByCombat();
     int DontUseThisSetPlayerCreature(unsigned long oidObject);
-    unsigned long GetLastAttachedCreature();
     void RemoveMoveToModuleMovies();
     void UpdateHostileHilite(float fElapsedTime);
 

@@ -112,8 +112,6 @@ public:
 
     CSWGuiExtent m_cExtent;
     int m_n14;
-    void OnYButtonEvent(CSWGuiControl* pControl);
-    void OnBlackButtonEvent(CSWGuiControl* pControl);
 };
 
 struct CSWGuiControlEvent
@@ -257,8 +255,6 @@ public:
                     float fScale);
     void Initialize(const CSWGuiExtent& cExtent, CSWGuiControl* pParent,
                     float fScale);
-    CSWGuiButtonToggle* GetButtonToggle();
-    CSWGuiSlider* GetSlider();
     CSWGuiControl* GetSelectableParent();
     void AddChildControl(CSWGuiControl* pChild);
     int GetIsChild(CSWGuiControl* pControl);
@@ -710,7 +706,6 @@ public:
     }
 #endif
 
-    int GetSelectedIndex();
     void ClearItems();
     void AddControls(CExoArrayList<CSWGuiControl*>& aControls, int nA,
                      int nB, int nC);

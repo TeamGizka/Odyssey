@@ -113,6 +113,8 @@ public:
     void OnCancelPressed(CSWGuiControl* pControl);
     CExoString GetCurrentName();
     virtual void HandleInputEvent(int nEvent, int nState);
+    void ClearFeats();
+    void PlayGame();
 };
 
 #endif

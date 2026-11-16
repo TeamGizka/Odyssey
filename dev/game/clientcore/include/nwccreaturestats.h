@@ -108,7 +108,6 @@ public:
 
     short GetBaseHitPoints() { return m_nHitPointsBase; }
     short GetCurrentHitPoints() { return m_nCurrentHitPoints; }
-    short GetHitPointBonus();
 
     unsigned char GetNumClasses()
     {
@@ -117,7 +116,6 @@ public:
 
     short GetBaseForcePoints() { return m_nForcePointsBase; }
     short GetForcePoints() { short nForcePoints = m_nCurrentForcePoints + m_nForcePointBonus; return nForcePoints; }
-    short GetForcePointBonus();
     short GetMaxForcePoints() { return m_nMaxForcePoints; }
     int GetAlignment()
     {

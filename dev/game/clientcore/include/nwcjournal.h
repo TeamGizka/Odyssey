@@ -39,6 +39,9 @@ public:
 
     CSWCSortedJournalArrayList();
 
+    SJournalEntry* GetEntryAt(int nIndex);
+    void UpdateEntry(int nIndex, const SJournalEntry& entry);
+
     void SortList();
     int SortItemsByDate(int nFirst, int nSecond);
     int SortItemsByName(int nFirst, int nSecond);
@@ -83,6 +86,9 @@ public:
     }
     void SetDoneSortBy(int nSortBy);
     void SetActiveSortBy(int nSortBy);
+    void CheckForUpdates();
+    void SetJournalPageClosed();
+    void SetJournalPageOpen();
 
     CSWCSortedJournalArrayList m_lstDone;
     CSWCSortedJournalArrayList m_lstActive;
@@ -107,6 +113,9 @@ public:
     void AddEntry(unsigned long nId, const CExoString& sText,
                   const CExoString& sName, unsigned long nCalendarDay,
                   unsigned long nTimeOfDay);
+    SJournalEntry* GetEntryAt(int nIndex);
+    int GetNumEntries();
+    void SetSortBy(int nSortBy);
 
     CExoArrayList<CWorldJournalEntry> m_lstEntries;
     CExoArrayList<int> m_lstOrder;

@@ -407,9 +407,7 @@ public:
     unsigned char GetTattoo2Color();
 
     unsigned char GetNumClasses() { return m_nClassCount; }
-    float GetLeaderWeight();
     short GetArmorClassVersus(CSWSCreature* pTarget, int bTouchAttack);
-    int GetIsPCFaction();
 
     int GetIsPC() { return m_bIsPC; }
 

@@ -160,13 +160,11 @@ public:
 
     int GetSelected();
     void SetSelectedSkill(unsigned long nSkill);
-    void SetNumColumns(unsigned char nColumns);
     void Add(unsigned long nSkill, unsigned char nState);
     void AddPowerSet(unsigned long nPower1, unsigned long nPower2,
                      unsigned long nPower3, int bSecret);
     void AddFeatSet(unsigned long nFeat1, unsigned long nFeat2,
                     unsigned long nFeat3);
-    unsigned long GetFirst();
 
     CExoArrayList<CSWGuiSkillFlow*> m_cFlows;
     unsigned char m_nSelectedCol;

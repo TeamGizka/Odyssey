@@ -99,6 +99,10 @@ public:
     void GetPlaceableInterfaceMines(CSWCCreature* pCreature,
                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions);
 #endif
+    int ActionMenuExamine(unsigned long oidTarget, CSWCCreature* pCreature);
+    int ActionMenuGiveItem(unsigned long oidTarget, CSWCCreature* pCreature);
+    int MenuActionUseComputerSpike(unsigned long oidTarget, CSWCCreature* pCreature);
+    void SetMineIcon(unsigned char nIcon);
 };
 
 #endif
