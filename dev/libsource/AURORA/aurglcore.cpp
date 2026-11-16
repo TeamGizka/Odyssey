@@ -10604,11 +10604,11 @@ void GLRender::RenderFuryATI(unsigned long nTexture)
     glDisable(GL_FRAGMENT_SHADER_ATI);
     glFlush();
 }
-inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
-{
-}
 // PC 0x00431DA0 GOG 0x00431EF0
 inline RequestPoolManager::~RequestPoolManager()
+{
+}
+inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
 {
 }
 // PC 0x00434E20 GOG 0x00434F70

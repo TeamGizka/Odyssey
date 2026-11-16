@@ -265,6 +265,97 @@ unsigned long CExoKeyTable::Hash(const CResRef& resRef, unsigned short nType)
 
     return nHash % m_nTableSize;
 }
+// PC 0x00410D70 GOG 0x00410D20
+int CExoKeyTable::AddDirectoryContents(int bFlag)
+{
+    CExoString sFile;
+    CExoArrayList<CExoString> lstFiles;
+    CExoArrayList<CExoString> lstSubDirectories;
+    CExoArrayList<CExoArrayList<CExoString> > lstSubDirectoryFiles;
+    int nSubDirectories = 0;
+    int nSubDirectoryFiles = 0;
+    int i;
+    int j;
+    CResRef resRef;
+
+    CExoString sOverride("OVERRIDE");
+    if (m_sResourceName.ComparePrefixNoCase(sOverride, sOverride.GetLength()))
+    {
+        g_pExoBase->GetDirectoryList(&lstSubDirectories, m_sResourceName,
+                                     RESTYPE_INVALID, 1, 0);
+        nSubDirectories = GetListCount(&lstSubDirectories);
+    }
+
+    CExoString sDirectory;
+    int n;
+    for (n = 0; n < nSubDirectories; n++)
+    {
+        sDirectory = CExoString("OVERRIDE:") + lstSubDirectories[n];
+
+        CExoArrayList<CExoString> lstSubFiles;
+        g_pExoBase->GetDirectoryList(&lstSubFiles, sDirectory, RESTYPE_INVALID,
+                                     0, 0);
+        lstSubDirectoryFiles.Add(lstSubFiles);
+        nSubDirectoryFiles += GetListCount(&lstSubDirectoryFiles[n]);
+    }
+
+    g_pExoBase->GetDirectoryList(&lstFiles, m_sResourceName, RESTYPE_INVALID, 0, 0);
+
+    int nFiles = lstFiles.num;
+
+    m_nTableSize = 2 * (nFiles + nSubDirectoryFiles) + 1;
+    m_pKeyTable = AllocateTable(m_nTableSize);
+
+    if (m_pKeyTable == NULL)
+    {
+        return 0;
+    }
+
+    for (i = 0; i < nFiles; i++)
+    {
+        sFile = lstFiles[i];
+
+        unsigned short nType = g_pExoResMan->GetResTypeFromFile(sFile);
+
+        if (nType != 0xFFFF)
+        {
+            g_pExoResMan->GetResRefFromFile(resRef, sFile);
+
+            if (resRef != "")
+            {
+                unsigned long nResId = (m_nId | 0xFFFFFC00) << 20;
+
+                AddKey(resRef, nType, nResId, bFlag, CExoString(""));
+            }
+        }
+    }
+
+    for (n = 0; n < nSubDirectories; n++)
+    {
+        sDirectory = lstSubDirectories[n];
+
+        for (j = 0; j < GetListCount(&lstSubDirectoryFiles[n]); j++)
+        {
+            sFile = lstSubDirectoryFiles[n][j];
+
+            unsigned short nType = g_pExoResMan->GetResTypeFromFile(sFile);
+
+            if (nType != 0xFFFF)
+            {
+                g_pExoResMan->GetResRefFromFile(resRef, sFile);
+
+                if (resRef != "")
+                {
+                    unsigned long nResId = (m_nId | 0xFFFFFC00) << 20;
+
+                    AddKey(resRef, nType, nResId, bFlag, sDirectory);
+                }
+            }
+        }
+    }
+
+    return 1;
+}
 // PC 0x0040DE90 GOG 0x0040DE40
 CExoPackedFile::~CExoPackedFile()
 {
@@ -1432,97 +1523,6 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
     }
 
     return 0;
-}
-// PC 0x00410D70 GOG 0x00410D20
-int CExoKeyTable::AddDirectoryContents(int bFlag)
-{
-    CExoString sFile;
-    CExoArrayList<CExoString> lstFiles;
-    CExoArrayList<CExoString> lstSubDirectories;
-    CExoArrayList<CExoArrayList<CExoString> > lstSubDirectoryFiles;
-    int nSubDirectories = 0;
-    int nSubDirectoryFiles = 0;
-    int i;
-    int j;
-    CResRef resRef;
-
-    CExoString sOverride("OVERRIDE");
-    if (m_sResourceName.ComparePrefixNoCase(sOverride, sOverride.GetLength()))
-    {
-        g_pExoBase->GetDirectoryList(&lstSubDirectories, m_sResourceName,
-                                     RESTYPE_INVALID, 1, 0);
-        nSubDirectories = GetListCount(&lstSubDirectories);
-    }
-
-    CExoString sDirectory;
-    int n;
-    for (n = 0; n < nSubDirectories; n++)
-    {
-        sDirectory = CExoString("OVERRIDE:") + lstSubDirectories[n];
-
-        CExoArrayList<CExoString> lstSubFiles;
-        g_pExoBase->GetDirectoryList(&lstSubFiles, sDirectory, RESTYPE_INVALID,
-                                     0, 0);
-        lstSubDirectoryFiles.Add(lstSubFiles);
-        nSubDirectoryFiles += GetListCount(&lstSubDirectoryFiles[n]);
-    }
-
-    g_pExoBase->GetDirectoryList(&lstFiles, m_sResourceName, RESTYPE_INVALID, 0, 0);
-
-    int nFiles = lstFiles.num;
-
-    m_nTableSize = 2 * (nFiles + nSubDirectoryFiles) + 1;
-    m_pKeyTable = AllocateTable(m_nTableSize);
-
-    if (m_pKeyTable == NULL)
-    {
-        return 0;
-    }
-
-    for (i = 0; i < nFiles; i++)
-    {
-        sFile = lstFiles[i];
-
-        unsigned short nType = g_pExoResMan->GetResTypeFromFile(sFile);
-
-        if (nType != 0xFFFF)
-        {
-            g_pExoResMan->GetResRefFromFile(resRef, sFile);
-
-            if (resRef != "")
-            {
-                unsigned long nResId = (m_nId | 0xFFFFFC00) << 20;
-
-                AddKey(resRef, nType, nResId, bFlag, CExoString(""));
-            }
-        }
-    }
-
-    for (n = 0; n < nSubDirectories; n++)
-    {
-        sDirectory = lstSubDirectories[n];
-
-        for (j = 0; j < GetListCount(&lstSubDirectoryFiles[n]); j++)
-        {
-            sFile = lstSubDirectoryFiles[n][j];
-
-            unsigned short nType = g_pExoResMan->GetResTypeFromFile(sFile);
-
-            if (nType != 0xFFFF)
-            {
-                g_pExoResMan->GetResRefFromFile(resRef, sFile);
-
-                if (resRef != "")
-                {
-                    unsigned long nResId = (m_nId | 0xFFFFFC00) << 20;
-
-                    AddKey(resRef, nType, nResId, bFlag, sDirectory);
-                }
-            }
-        }
-    }
-
-    return 1;
 }
 // PC 0x0040FC00 GOG 0x0040FBB0
 int CExoKeyTable::AddEncapsulatedContents(int bFlag)
