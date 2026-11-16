@@ -27,8 +27,6 @@
 #include "swguiingamegameplay.h"
 #include "swguiingameautopause.h"
 
-#define SWGUIOPTIONS_DEBUG 0
-
 #ifndef _XBOX
 void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)
 {
@@ -1096,26 +1094,6 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
-// PC 0x0074E890 GOG 0x0074EDF0
-void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
-{
-    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
-    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
-    m_lbDescription.ClearItems();
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (sText.GetLength() > 0)
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
-    }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-    m_lblDescription.SetExtent(cExtent);
-    CSWGuiControl* pControl = &m_lblDescription;
-    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
-    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
-}
 // PC 0x0074EEF0 GOG 0x0074D580
 void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
 {
@@ -1663,10 +1641,6 @@ void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
 void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
 {
     SetDescription(48722);
-    if (SWGUIOPTIONS_DEBUG)
-    {
-        SetUpOptions();
-    }
 }
 // PC 0x00750950 GOG 0x00750D80
 void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
@@ -1792,6 +1766,26 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     SetActiveButton(OPTION_HIDE_UNEQUIPPABLE);
     SetUpOptions();
 #endif
+}
+// PC 0x0074E890 GOG 0x0074EDF0
+void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
 // PC 0x0074F8D0 GOG 0x0074F900
 void CSWGuiOptionsMouse::SetUpOptions()
