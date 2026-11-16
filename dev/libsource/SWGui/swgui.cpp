@@ -1858,6 +1858,41 @@ void CSWGuiManager::SetTemporarilyDisableToolTip(int bDisable)  // PC 0x0040B700
     m_pToolTipDisabledControl = NULL;
 }
 #endif
+template <> inline void CExoArrayList<CSWGuiPanel*>::Allocate(int nSize)
+{
+    CSWGuiPanel** pOld = element;
+
+    array_size = nSize;
+    element = new CSWGuiPanel*[nSize];
+
+    for (int i = 0; i < num; i++)
+    {
+        element[i] = pOld[i];
+    }
+
+    if (pOld != NULL)
+    {
+        delete[] pOld;
+    }
+}
+template <> void CExoArrayList<CSWGuiPanel*>::Add(CSWGuiPanel* value)
+{
+    if (num == array_size)
+    {
+        Allocate(array_size != 0 ? array_size * 2 : EXOARRAYLIST_INITIAL_ALLOCATION);
+    }
+    element[num++] = value;
+}
+template <> void CExoArrayList<CSWGuiPanel*>::Insert(CSWGuiPanel* value, int nIndex)
+{
+    int nCount = num;
+    Add(value);
+    for (; nCount > nIndex; nCount--)
+    {
+        element[nCount] = element[nCount - 1];
+    }
+    element[nIndex] = value;
+}
 // PC 0x0040B7C0 GOG 0x0040B780
 CSWGuiPanel::CSWGuiPanel(CSWGuiManager* pManager)
     : m_lControls(0)

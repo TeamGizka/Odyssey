@@ -116,360 +116,6 @@ void CSWGuiMainInterfaceStatus::ShiftControl(int nOffset)
     m_cLabel.SetExtent(cExtent);
 }
 
-#ifdef _XBOX
-CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    CExoString sControl;
-    CSWGuiLabel lblMapview;
-    int nIndex;
-    CSWGuiFloatyText::m_pMainInterface = this;
-
-    StartLoadFromLayout("maininterface");
-
-    for (nIndex = 0; nIndex < 6; ++nIndex)
-        m_aPersonalActions[nIndex].Initialize(this, nIndex + 1);
-    for (nIndex = 0; nIndex < 3; ++nIndex)
-        m_aCharacters[nIndex].Initialize(this, nIndex + 1);
-    m_cTransitionCharacter.Initialize(this, 4);
-    for (nIndex = 0; nIndex < 4; ++nIndex)
-    {
-        sControl.Format("LBL_QUEUE%d", nIndex);
-        InitControl(m_aActionIcons[nIndex], sControl, 1);
-    }
-    for (nIndex = 0; nIndex < GUI_STATUS_COUNT; ++nIndex)
-        m_aEffects[nIndex].Initialize(this, nIndex);
-
-    InitControl(m_lblBg1, "LBL_BG1", 1);
-    InitControl(m_lblBg2, "LBL_BG2", 1);
-    InitControl(m_CSWGuiLabelHilight_6B1C, "LBL_HIGHLIGHT", 1);
-    InitControl(m_cActionText, "LBL_ACTIONDESC", 1);
-    InitControl(m_cActionTextBack, "LBL_ACTIONDESCBG", 1);
-    InitControl(m_lblActiondescbg2, "LBL_ACTIONDESCBG2", 1);
-    InitControl(m_lblSolomode, "LBL_SOLOMODE", 1);
-    m_cActionText.SetEnabledFlag(0);
-    m_cActionTextBack.SetEnabledFlag(0);
-    InitControl(m_lblName, "LBL_NAME", 1);
-    InitControl(m_lblIndicate, "LBL_INDICATE", 1);
-    InitControl(m_pbHealth, "PB_HEALTH", 1);
-    InitControl(m_lblMapborder, "LBL_MAPBORDER", 1);
-    InitControl(m_lblArrow, "LBL_ARROW", 0);
-    InitControl(m_lblMap, "LBL_MAP", 0);
-    InitControl(lblMapview, "LBL_MAPVIEW", 0);
-    StopLoadFromLayout();
-
-    int nSafeX, nSafeY;
-    GetManager()->GetSafeMargin(nSafeX, nSafeY);
-
-    m_lblCmbtmodemsg.Initialize(
-        CSWGuiExtent(nSafeX, nSafeY, m_pManager->m_nWidth - 2 * nSafeX, 20),
-        CSWGuiTextParams(42475, "fnt_d16x16", CGuiInGame::COLOR_RED,
-                         CSWGuiTextParams::ALIGNMENT_CENTER, 1.0f),
-        CSWGuiBorderParams(CResRef(), CResRef(), CResRef(), 0, 0, 1.0f,
-                           Vector(1.0f, 1.0f, 1.0f), 0));
-    m_cActionDescriptionState.m_bTargetChanged = 0;
-    m_cActionDescriptionState.m_bUnknown = 0;
-    m_nInterfaceOffset = 0;
-    m_fCombatMessageTime = -1.0f;
-    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42475);
-    m_nInterfaceOffset =
-        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
-    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42478);
-    m_nInterfaceOffset =
-        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
-    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42477);
-    m_nInterfaceOffset =
-        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
-    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42476);
-    m_nInterfaceOffset =
-        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
-    m_lblCmbtmodemsg.SetExtent(CSWGuiExtent(nSafeX, nSafeY,
-                                            m_pManager->m_nWidth - 2 * nSafeX,
-                                            m_nInterfaceOffset));
-
-    m_lblActionQueueBackground.m_cBorder.m_cParams.SetFillImage("dialog2", 0);
-    m_lblActionQueueBackground.m_cBorder.m_cParams.SetCornerImage("confirm1", 0);
-    m_lblActionQueueBackground.m_cBorder.m_cParams.SetEdgeImage("confirm2", 0);
-    m_nInterfaceOffset +=
-        m_lblActionQueueBackground.m_cBorder.m_cParams.GetBorderDim();
-    m_lblActionQueueBackground.SetExtent(
-        CSWGuiExtent(-10, -10, m_pManager->m_nWidth + 20,
-                     m_nInterfaceOffset + nSafeY));
-    m_lblActionQueueBackground.SetEnabledFlag(0);
-    m_nInterfaceOffset -= 8;
-    AddControl(&m_lblActionQueueBackground);
-    AddControl(&m_lblCmbtmodemsg);
-
-    m_nMapHeight = m_lblMap.m_cExtent.m_nHeight;
-    m_nMapWidth = m_lblMap.m_cExtent.m_nWidth;
-    m_cMapViewport = lblMapview.m_cExtent;
-    m_cActionTextBackExtent = m_cActionTextBack.m_cExtent;
-    m_nActionTextMargin =
-        m_cActionTextBackExtent.m_nHeight - m_cActionText.m_cExtent.m_nHeight;
-    CSWGuiExtent cArrowExtent = m_lblArrow.m_cExtent;
-    cArrowExtent.m_nLeft = (m_cMapViewport.m_nWidth - cArrowExtent.m_nWidth) / 2;
-    cArrowExtent.m_nTop = (m_cMapViewport.m_nHeight - cArrowExtent.m_nHeight) / 2;
-    m_lblArrow.SetExtent(cArrowExtent);
-
-    cArrowExtent = m_cActionText.m_cExtent;
-    cArrowExtent.m_nTop -= m_cActionTextBackExtent.m_nTop;
-    cArrowExtent.m_nLeft -= m_cActionTextBackExtent.m_nLeft;
-    m_cActionText.SetExtent(cArrowExtent);
-    cArrowExtent = m_cActionTextBackExtent;
-    cArrowExtent.m_nLeft = 0;
-    cArrowExtent.m_nTop = 0;
-    m_cActionTextBack.SetExtent(cArrowExtent);
-
-    CExoString sSoloMode = m_lblSolomode.m_cText.m_cParams.m_sText;
-    g_pTlkTable->ParseStr(sSoloMode);
-    m_lblSolomode.m_cText.m_cParams.SetText(sSoloMode);
-    int nInnerOffset = m_lblSolomode.m_cBorder.m_cParams.m_nInnerOffset;
-    cArrowExtent = m_lblSolomode.m_cExtent;
-    int nBorder =
-        m_lblSolomode.m_cBorder.m_cParams.GetBorderDim() - nInnerOffset;
-    cArrowExtent.m_nHeight =
-        m_lblSolomode.m_cText.GetIdealHeight() + nBorder * 2;
-    m_lblSolomode.SetExtent(cArrowExtent);
-
-    m_lblReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
-    AddControl(&m_lblReticle);
-    m_nTargetType = 0;
-    m_fTargetUpdateDelay = -1.0f;
-    m_fActionDescriptionTimer = -1.0f;
-    m_nTargetId = OBJECT_INVALID;
-    m_oidPlayerCharacter = OBJECT_INVALID;
-
-    for (nIndex = 0; nIndex < 6; nIndex++) m_aSelectedMenu[nIndex] = 0xff;
-    for (int nType = 0; nType < 5; nType++)
-        for (nIndex = 0; nIndex < 6; nIndex++)
-            m_aSelectedPersonalActions[nType][nIndex] = CSWGuiInterfaceAction::INVALID_ACTION;
-    m_nDefaultAction = CSWGuiInterfaceAction::INVALID_ACTION;
-    m_nSelectedAction = 0;
-    m_cActionDescriptionState.m_bEnabled = 1;
-    m_fPortraitTransitionTime = 0.0f;
-    ShowActionQueue(0);
-    m_nCombatMessage = 42475;
-}
-#else
-CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5170 GOG 0x006E4E30
-    : CSWGuiPanel(pManager)
-{
-    CExoString sControl;
-    CSWGuiLabel lblMapview;
-    int nIndex;
-    CSWGuiFloatyText::m_pMainInterface = this;
-
-    m_fScaleX = 1.0f;
-    m_fScaleY = 1.0f;
-    float fWidthScale = (float)pManager->m_nWidth;
-    fWidthScale /= (float)g_nGUIWidth;
-    float fHeightScale = (float)pManager->m_nHeight / (float)g_nGUIHeight;
-    m_fScaleX = fWidthScale;
-    m_fScaleY = fHeightScale;
-    StartLoadFromLayout("mipc28x6_p");
-
-#ifndef _XBOX
-    m_bPositioned = 1;
-#endif
-    for (nIndex = 0; nIndex < 6; ++nIndex)
-        m_aPersonalActions[nIndex].Initialize(this, nIndex, 0);
-    for (nIndex = 0; nIndex < 3; ++nIndex)
-        m_aCharacters[nIndex].Initialize(this, nIndex + 1);
-    m_cTransitionCharacter.Initialize(this, 4);
-    for (nIndex = 0; nIndex < 4; ++nIndex)
-    {
-        sControl.Format("LBL_QUEUE%d", nIndex);
-        InitControl(m_aActionIcons[nIndex], sControl, 1);
-    }
-    for (nIndex = 0; nIndex < GUI_STATUS_COUNT; ++nIndex)
-        m_aEffects[nIndex].Initialize(this, nIndex);
-    m_cTargetActionMenu.Initialize(this);
-    InitControl(m_aMoulding[0], "LBL_MOULDING1", 1);
-    InitControl(m_aMoulding[1], "LBL_MOULDING3", 1);
-    InitControl(m_aCombatbg[0], "LBL_COMBATBG2", 1);
-    InitControl(m_aCombatbg[1], "LBL_COMBATBG3", 1);
-
-    InitControl(m_btnClearone, "BTN_CLEARONE", 1);
-    InitControl(m_btnClearone2, "BTN_CLEARONE2", 1);
-    InitControl(m_btnClearall, "BTN_CLEARALL", 1);
-    InitControl(m_cActionText, "LBL_ACTIONDESC", 1);
-    InitControl(m_cActionTextBack, "LBL_ACTIONDESCBG", 1);
-    InitControl(m_lblMapborder, "LBL_MAPBORDER", 1);
-    InitControl(m_lblArrow, "LBL_ARROW", 0);
-    InitControl(m_lblMap, "LBL_MAP", 0);
-    InitControl(lblMapview, "LBL_MAPVIEW", 0);
-    InitControl(m_btnMinimap, "BTN_MINIMAP", 1);
-    InitControl(m_lblCmbtmodemsg, "LBL_CMBTMODEMSG", 1);
-    m_cToolTip.Initialize(m_lblCmbtmodemsg.m_cExtent, &m_lblCmbtmodemsg, 1.0f);
-    InitControl(m_cToolTipBackground, "LBL_CMBTMSGBG", 1);
-    m_lblCmbtmodemsg.SetEnabledFlag(0);
-    m_cToolTipBackground.SetEnabledFlag(0);
-    m_cToolTip.SetEnabledFlag(0);
-    m_cToolTip.m_cText.m_cParams.SetText(g_pTlkTable->GetSimpleString(STRREF_HOTKEY_HELP));
-    InitControl(m_btnEqu, "BTN_EQU", 1);
-    InitControl(m_btnInv, "BTN_INV", 1);
-    InitControl(m_btnChar, "BTN_CHAR", 1);
-    InitControl(m_btnAbi, "BTN_ABI", 1);
-    InitControl(m_btnMsg, "BTN_MSG", 1);
-    InitControl(m_btnJou, "BTN_JOU", 1);
-    InitControl(m_btnMap, "BTN_MAP", 1);
-    InitControl(m_btnOpt, "BTN_OPT", 1);
-    InitControl(m_lblMenubg, "LBL_MENUBG", 1);
-    InitControl(m_lblArrowMargin, "LBL_ARROW_MARGIN", 1);
-    InitControl(m_tbPause, "TB_PAUSE", 1);
-    InitControl(m_tbSolo, "TB_SOLO", 1);
-    InitControl(m_tbStealth, "TB_STEALTH", 1);
-    InitControl(m_btnSwapWeapons, "BTN_SWAPWEAPONS", 1);
-    StopLoadFromLayout();
-
-    {
-        CSWGuiExtent cBounds;
-        cBounds.m_nLeft = m_lblArrowMargin.m_cExtent.m_nLeft;
-        cBounds.m_nTop = m_lblMenubg.m_cExtent.GetBottom();
-        cBounds.m_nHeight = m_tbPause.m_cExtent.m_nTop - cBounds.m_nTop;
-        cBounds.m_nWidth = m_pManager->m_nWidth - 2 * cBounds.m_nLeft;
-        m_cTargetActionMenu.m_cBounds = cBounds;
-    }
-    AddControl(&m_cToolTip);
-    if (pManager->m_nWidth >= 1024)
-    {
-        CSWGuiExtent cExtent = m_cExtent;
-        cExtent.m_nHeight = g_nScreenHeight;
-        cExtent.m_nWidth = g_nScreenWidth;
-        CSWGuiPanel::SetExtent(cExtent);
-    }
-    int nSafeX, nSafeY;
-    GetManager()->GetSafeMargin(nSafeX, nSafeY);
-    m_nMapHeight = m_lblMap.m_cExtent.m_nHeight;
-    m_nMapWidth = m_lblMap.m_cExtent.m_nWidth;
-    m_cMapViewport = lblMapview.m_cExtent;
-    CSWGuiExtent cNewExtent = m_lblArrow.m_cExtent;
-    cNewExtent.m_nLeft = (m_cMapViewport.m_nWidth - cNewExtent.m_nWidth) / 2;
-    cNewExtent.m_nTop = (m_cMapViewport.m_nHeight - cNewExtent.m_nHeight) / 2;
-    m_nInterfaceOffset = 0;
-    m_fCombatMessageTime = -1.0f;
-    m_lblArrow.SetExtent(cNewExtent);
-
-    m_lblReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
-    CSWGuiLabel* pLabel = &m_lblReticle;
-#ifndef _XBOX
-    pLabel->m_bIgnoreMouse = 1;
-#endif
-    AddControl(pLabel);
-    pLabel = &m_lblStickyReticle;
-    pLabel->SetExtent(CSWGuiExtent(0, 0, 16, 16));
-    m_lblStickyReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
-#ifndef _XBOX
-    pLabel->m_bIgnoreMouse = 1;
-#endif
-    m_lblStickyReticle.SetEnabledFlag(0);
-    AddControl(pLabel);
-    m_oidStickyTarget = OBJECT_INVALID;
-    m_nTargetId = OBJECT_INVALID;
-    m_oidPlayerCharacter = OBJECT_INVALID;
-    m_fTargetUpdateDelay = -1.0f;
-    m_fActionDescriptionTimer = -1.0f;
-    for (nIndex = 0; nIndex < 7; nIndex++)
-        m_aSelectedPersonalActions[nIndex] = CSWGuiInterfaceAction::INVALID_ACTION;
-    m_cActionDescriptionState.m_bEnabled = 1;
-    m_fPortraitTransitionTime = 0.0f;
-    ShowActionQueue(0);
-    m_nCombatMessage = STRREF_COMBAT_MODE_ENGAGED;
-    m_bToolTipShown = 0;
-    m_btnEqu.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnInv.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnChar.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnAbi.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnJou.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnMsg.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnMap.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnOpt.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnMinimap.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
-    m_btnEqu.SetFocusable(0);
-    m_btnInv.SetFocusable(0);
-    m_btnChar.SetFocusable(0);
-    m_btnAbi.SetFocusable(0);
-    m_btnJou.SetFocusable(0);
-    m_btnMsg.SetFocusable(0);
-    m_btnMap.SetFocusable(0);
-    m_btnOpt.SetFocusable(0);
-    m_btnMinimap.SetFocusable(0);
-    m_btnClearone.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnClearOneButtonPressed);
-    m_btnClearone2.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnClearOneButtonPressed);
-    m_btnClearall.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnClearAllButtonPressed);
-    m_btnClearone.SetFocusable(0);
-    m_btnClearone2.SetFocusable(0);
-    m_btnClearall.SetFocusable(0);
-    m_lblArrowMargin.SetEnabledFlag(0);
-    m_lblArrowMargin.SetFocusable(0);
-    m_tbPause.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnPauseButtonPressed);
-    m_tbSolo.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnSoloButtonPressed);
-    m_tbStealth.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnStealthButtonPressed);
-    m_tbPause.SetFocusable(0);
-    m_tbSolo.SetFocusable(0);
-    m_tbStealth.SetFocusable(0);
-    m_btnSwapWeapons.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnSwapWeaponsPressed);
-    m_btnSwapWeapons.SetFocusable(0);
-    m_pBlackDot = NewCAurGUIImage("blackdot");
-    m_nDefaultAction = 0;
-    m_lblCmbtmodemsg.m_cText.m_cParams.SetText("");
-    m_nActionTextBottom = m_cActionText.m_cExtent.GetBottom();
-    SetActionDescription("");
-    UpdateActionDescription();
-    m_btnEqu.SetToolTip(STRREF_MENU_EQUIPMENT, GUIEVENT_MENU_EQUIPMENT);
-    m_btnInv.SetToolTip(STRREF_MENU_INVENTORY, GUIEVENT_MENU_INVENTORY);
-    m_btnChar.SetToolTip(STRREF_MENU_CHARACTER, GUIEVENT_MENU_CHARACTER);
-    m_btnMap.SetToolTip(STRREF_MENU_MAP, GUIEVENT_MENU_MAP);
-    m_btnMinimap.SetToolTip(STRREF_MENU_MAP, GUIEVENT_MENU_MAP);
-    m_btnAbi.SetToolTip(STRREF_MENU_ABILITIES, GUIEVENT_MENU_ABILITIES);
-    m_btnJou.SetToolTip(STRREF_MENU_JOURNAL, GUIEVENT_MENU_JOURNAL);
-    m_btnOpt.SetToolTip(STRREF_MENU_OPTIONS, GUIEVENT_MENU_OPTIONS);
-    m_btnMsg.SetToolTip(STRREF_MENU_MESSAGES, GUIEVENT_MENU_MESSAGES);
-    m_tbPause.SetToolTip(STRREF_PAUSE, GUIEVENT_PAUSE);
-    m_tbSolo.SetToolTip(STRREF_SOLO, GUIEVENT_SOLO);
-    m_tbStealth.SetToolTip(STRREF_STEALTH, GUIEVENT_STEALTH);
-    m_btnClearone.SetToolTip(STRREF_CLEAR_ONE, GUIEVENT_CLEAR_ONE);
-    m_btnClearone2.SetToolTip(STRREF_CLEAR_ONE, GUIEVENT_CLEAR_ONE);
-    m_btnClearall.SetToolTip(STRREF_CLEAR_ALL, GUIEVENT_CLEAR_ALL);
-    m_btnSwapWeapons.SetToolTip(STRREF_SWITCH_WEAPONS, GUIEVENT_SWITCH_WEAPONS);
-    m_bSelectingUseItemTarget = 0;
-    m_nUseItemTargetMember = 0;
-    m_oidUseItemPending = OBJECT_INVALID;
-    m_fFormMessageTime = 0.0f;
-    m_nFormMessage = 0;
-
-    float fScaleX = 1.0f;
-    float fScaleY = 1.0f;
-    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
-    {
-        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
-        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
-    }
-    cNewExtent.m_nLeft = (int)(fScaleX * CANCEL_ITEM_SELECT_LEFT);
-    cNewExtent.m_nTop = (int)(fScaleY * CANCEL_ITEM_SELECT_TOP);
-    cNewExtent.m_nHeight = (int)(fScaleY * CANCEL_ITEM_SELECT_HEIGHT);
-    cNewExtent.m_nWidth = (int)(fScaleX * CANCEL_ITEM_SELECT_WIDTH);
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.SetCornerImage("uibit_brdr_16bct", 0);
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.SetEdgeImage("uibit_brdr_16bet", 0);
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.SetFillImage("uibit_fill_2bt", 0);
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_nBorderDim = 16;
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_nInnerOffset = 10;
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_n8 = 12;
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetCornerImage("uibit_brdr_16bct", 0);
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetEdgeImage("uibit_brdr_16bet", 0);
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetFillImage("uibit_fill_2bt", 0);
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_nBorderDim = 16;
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_nInnerOffset = 10;
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_n8 = 12;
-    m_btnCancelPartyItemSelect.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnCancelPartyItemSelect);
-    m_btnCancelPartyItemSelect.SetFocusable(0);
-    m_btnCancelPartyItemSelect.SetExtent(cNewExtent);
-    AddControl(&m_btnCancelPartyItemSelect);
-    m_bPersonalActionScrolled = 0;
-}
-#endif
 
 
 #ifdef _XBOX
@@ -3759,82 +3405,6 @@ void CSWGuiMainInterface::OnPersonalActionExit(CSWGuiControl* pControl)
         m_bPersonalActionScrolled = 0;
     }
 }
-// PC 0x006E37E0 GOG 0x006E2450
-void CSWGuiMainInterface::RevertActionBarStates()
-{
-    int nImplantAction = -1;
-    CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
-    if (pPlayer == NULL)
-    {
-        return;
-    }
-    CSWSCreature* pServerCreature = pPlayer->GetServerCreature();
-    if (pServerCreature == NULL)
-    {
-        return;
-    }
-    char nImplant = 0;
-    if (pServerCreature->m_pStats->HasFeat(CSWFeat::FEAT_IMPLANT_SWITCHING))
-    {
-        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
-            "CANDEROUS_CUR_IMPLANT", nImplant);
-        switch (nImplant)
-        {
-        case CSWCCreature::CANDEROUS_IMPLANT_REGEN:
-            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_REGEN;
-            break;
-        case CSWCCreature::CANDEROUS_IMPLANT_STR:
-            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_STR;
-            break;
-        case CSWCCreature::CANDEROUS_IMPLANT_END:
-            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_END;
-            break;
-        case CSWCCreature::CANDEROUS_IMPLANT_AGI:
-            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_AGI;
-            break;
-        }
-    }
-    int nBehaviorAction;
-    switch (pServerCreature->m_pStats->m_nAIState)
-    {
-    case CSWCCreature::AI_STATE_AGGRESSIVE:
-        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_AGGRESSIVE;
-        break;
-    case CSWCCreature::AI_STATE_PASSIVE:
-        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_PASSIVE;
-        break;
-    case CSWCCreature::AI_STATE_RANGED:
-        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_RANGED;
-        break;
-    case CSWCCreature::AI_STATE_STATIONARY:
-        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_STATIONARY;
-        break;
-    case CSWCCreature::AI_STATE_SUPPORT:
-        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_SUPPORT;
-        break;
-    default:
-        nBehaviorAction = -1;
-        break;
-    }
-    int nFormAction = pServerCreature->m_n1110;
-    if (nFormAction > 0)
-    {
-        nFormAction &= ~ACTION_FORM_FLAG;
-    }
-    if (nImplantAction > 0)
-    {
-        m_aSelectedPersonalActions[CSWCCreature::PERSONAL_ACTION_FORCE_POWERS] = nImplantAction;
-    }
-    if (nBehaviorAction > 0)
-    {
-        m_aSelectedPersonalActions[CSWCCreature::PERSONAL_ACTION_BEHAVIORS] = nBehaviorAction;
-    }
-    if (nFormAction > 0)
-    {
-        m_aSelectedPersonalActions[CSWCCreature::PERSONAL_ACTION_STANCES] = nFormAction;
-    }
-    PopulateMenus(0);
-}
 #endif
 #ifndef _XBOX
 void CSWGuiMainInterface::SelectNextPersonalAction(int nMenu)  // PC 0x006E2BC0 GOG 0x006E0D10
@@ -4356,10 +3926,439 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x00
 }
 #endif
 
+// PC 0x006E37E0 GOG 0x006E2450
+void CSWGuiMainInterface::RevertActionBarStates()
+{
+    int nImplantAction = -1;
+    CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+    if (pPlayer == NULL)
+    {
+        return;
+    }
+    CSWSCreature* pServerCreature = pPlayer->GetServerCreature();
+    if (pServerCreature == NULL)
+    {
+        return;
+    }
+    char nImplant = 0;
+    if (pServerCreature->m_pStats->HasFeat(CSWFeat::FEAT_IMPLANT_SWITCHING))
+    {
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
+            "CANDEROUS_CUR_IMPLANT", nImplant);
+        switch (nImplant)
+        {
+        case CSWCCreature::CANDEROUS_IMPLANT_REGEN:
+            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_REGEN;
+            break;
+        case CSWCCreature::CANDEROUS_IMPLANT_STR:
+            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_STR;
+            break;
+        case CSWCCreature::CANDEROUS_IMPLANT_END:
+            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_END;
+            break;
+        case CSWCCreature::CANDEROUS_IMPLANT_AGI:
+            nImplantAction = CSWCCreature::ACTION_SWAP_IMPLANT_AGI;
+            break;
+        }
+    }
+    int nBehaviorAction;
+    switch (pServerCreature->m_pStats->m_nAIState)
+    {
+    case CSWCCreature::AI_STATE_AGGRESSIVE:
+        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_AGGRESSIVE;
+        break;
+    case CSWCCreature::AI_STATE_PASSIVE:
+        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_PASSIVE;
+        break;
+    case CSWCCreature::AI_STATE_RANGED:
+        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_RANGED;
+        break;
+    case CSWCCreature::AI_STATE_STATIONARY:
+        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_STATIONARY;
+        break;
+    case CSWCCreature::AI_STATE_SUPPORT:
+        nBehaviorAction = CSWCCreature::ACTION_BEHAVIOR_SUPPORT;
+        break;
+    default:
+        nBehaviorAction = -1;
+        break;
+    }
+    int nFormAction = pServerCreature->m_n1110;
+    if (nFormAction > 0)
+    {
+        nFormAction &= ~ACTION_FORM_FLAG;
+    }
+    if (nImplantAction > 0)
+    {
+        m_aSelectedPersonalActions[CSWCCreature::PERSONAL_ACTION_FORCE_POWERS] = nImplantAction;
+    }
+    if (nBehaviorAction > 0)
+    {
+        m_aSelectedPersonalActions[CSWCCreature::PERSONAL_ACTION_BEHAVIORS] = nBehaviorAction;
+    }
+    if (nFormAction > 0)
+    {
+        m_aSelectedPersonalActions[CSWCCreature::PERSONAL_ACTION_STANCES] = nFormAction;
+    }
+    PopulateMenus(0);
+}
+#ifdef _XBOX
+CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    CExoString sControl;
+    CSWGuiLabel lblMapview;
+    int nIndex;
+    CSWGuiFloatyText::m_pMainInterface = this;
+
+    StartLoadFromLayout("maininterface");
+
+    for (nIndex = 0; nIndex < 6; ++nIndex)
+        m_aPersonalActions[nIndex].Initialize(this, nIndex + 1);
+    for (nIndex = 0; nIndex < 3; ++nIndex)
+        m_aCharacters[nIndex].Initialize(this, nIndex + 1);
+    m_cTransitionCharacter.Initialize(this, 4);
+    for (nIndex = 0; nIndex < 4; ++nIndex)
+    {
+        sControl.Format("LBL_QUEUE%d", nIndex);
+        InitControl(m_aActionIcons[nIndex], sControl, 1);
+    }
+    for (nIndex = 0; nIndex < GUI_STATUS_COUNT; ++nIndex)
+        m_aEffects[nIndex].Initialize(this, nIndex);
+
+    InitControl(m_lblBg1, "LBL_BG1", 1);
+    InitControl(m_lblBg2, "LBL_BG2", 1);
+    InitControl(m_CSWGuiLabelHilight_6B1C, "LBL_HIGHLIGHT", 1);
+    InitControl(m_cActionText, "LBL_ACTIONDESC", 1);
+    InitControl(m_cActionTextBack, "LBL_ACTIONDESCBG", 1);
+    InitControl(m_lblActiondescbg2, "LBL_ACTIONDESCBG2", 1);
+    InitControl(m_lblSolomode, "LBL_SOLOMODE", 1);
+    m_cActionText.SetEnabledFlag(0);
+    m_cActionTextBack.SetEnabledFlag(0);
+    InitControl(m_lblName, "LBL_NAME", 1);
+    InitControl(m_lblIndicate, "LBL_INDICATE", 1);
+    InitControl(m_pbHealth, "PB_HEALTH", 1);
+    InitControl(m_lblMapborder, "LBL_MAPBORDER", 1);
+    InitControl(m_lblArrow, "LBL_ARROW", 0);
+    InitControl(m_lblMap, "LBL_MAP", 0);
+    InitControl(lblMapview, "LBL_MAPVIEW", 0);
+    StopLoadFromLayout();
+
+    int nSafeX, nSafeY;
+    GetManager()->GetSafeMargin(nSafeX, nSafeY);
+
+    m_lblCmbtmodemsg.Initialize(
+        CSWGuiExtent(nSafeX, nSafeY, m_pManager->m_nWidth - 2 * nSafeX, 20),
+        CSWGuiTextParams(42475, "fnt_d16x16", CGuiInGame::COLOR_RED,
+                         CSWGuiTextParams::ALIGNMENT_CENTER, 1.0f),
+        CSWGuiBorderParams(CResRef(), CResRef(), CResRef(), 0, 0, 1.0f,
+                           Vector(1.0f, 1.0f, 1.0f), 0));
+    m_cActionDescriptionState.m_bTargetChanged = 0;
+    m_cActionDescriptionState.m_bUnknown = 0;
+    m_nInterfaceOffset = 0;
+    m_fCombatMessageTime = -1.0f;
+    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42475);
+    m_nInterfaceOffset =
+        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
+    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42478);
+    m_nInterfaceOffset =
+        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
+    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42477);
+    m_nInterfaceOffset =
+        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
+    m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42476);
+    m_nInterfaceOffset =
+        max(m_nInterfaceOffset, m_lblCmbtmodemsg.m_cText.GetIdealHeight());
+    m_lblCmbtmodemsg.SetExtent(CSWGuiExtent(nSafeX, nSafeY,
+                                            m_pManager->m_nWidth - 2 * nSafeX,
+                                            m_nInterfaceOffset));
+
+    m_lblActionQueueBackground.m_cBorder.m_cParams.SetFillImage("dialog2", 0);
+    m_lblActionQueueBackground.m_cBorder.m_cParams.SetCornerImage("confirm1", 0);
+    m_lblActionQueueBackground.m_cBorder.m_cParams.SetEdgeImage("confirm2", 0);
+    m_nInterfaceOffset +=
+        m_lblActionQueueBackground.m_cBorder.m_cParams.GetBorderDim();
+    m_lblActionQueueBackground.SetExtent(
+        CSWGuiExtent(-10, -10, m_pManager->m_nWidth + 20,
+                     m_nInterfaceOffset + nSafeY));
+    m_lblActionQueueBackground.SetEnabledFlag(0);
+    m_nInterfaceOffset -= 8;
+    AddControl(&m_lblActionQueueBackground);
+    AddControl(&m_lblCmbtmodemsg);
+
+    m_nMapHeight = m_lblMap.m_cExtent.m_nHeight;
+    m_nMapWidth = m_lblMap.m_cExtent.m_nWidth;
+    m_cMapViewport = lblMapview.m_cExtent;
+    m_cActionTextBackExtent = m_cActionTextBack.m_cExtent;
+    m_nActionTextMargin =
+        m_cActionTextBackExtent.m_nHeight - m_cActionText.m_cExtent.m_nHeight;
+    CSWGuiExtent cArrowExtent = m_lblArrow.m_cExtent;
+    cArrowExtent.m_nLeft = (m_cMapViewport.m_nWidth - cArrowExtent.m_nWidth) / 2;
+    cArrowExtent.m_nTop = (m_cMapViewport.m_nHeight - cArrowExtent.m_nHeight) / 2;
+    m_lblArrow.SetExtent(cArrowExtent);
+
+    cArrowExtent = m_cActionText.m_cExtent;
+    cArrowExtent.m_nTop -= m_cActionTextBackExtent.m_nTop;
+    cArrowExtent.m_nLeft -= m_cActionTextBackExtent.m_nLeft;
+    m_cActionText.SetExtent(cArrowExtent);
+    cArrowExtent = m_cActionTextBackExtent;
+    cArrowExtent.m_nLeft = 0;
+    cArrowExtent.m_nTop = 0;
+    m_cActionTextBack.SetExtent(cArrowExtent);
+
+    CExoString sSoloMode = m_lblSolomode.m_cText.m_cParams.m_sText;
+    g_pTlkTable->ParseStr(sSoloMode);
+    m_lblSolomode.m_cText.m_cParams.SetText(sSoloMode);
+    int nInnerOffset = m_lblSolomode.m_cBorder.m_cParams.m_nInnerOffset;
+    cArrowExtent = m_lblSolomode.m_cExtent;
+    int nBorder =
+        m_lblSolomode.m_cBorder.m_cParams.GetBorderDim() - nInnerOffset;
+    cArrowExtent.m_nHeight =
+        m_lblSolomode.m_cText.GetIdealHeight() + nBorder * 2;
+    m_lblSolomode.SetExtent(cArrowExtent);
+
+    m_lblReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
+    AddControl(&m_lblReticle);
+    m_nTargetType = 0;
+    m_fTargetUpdateDelay = -1.0f;
+    m_fActionDescriptionTimer = -1.0f;
+    m_nTargetId = OBJECT_INVALID;
+    m_oidPlayerCharacter = OBJECT_INVALID;
+
+    for (nIndex = 0; nIndex < 6; nIndex++) m_aSelectedMenu[nIndex] = 0xff;
+    for (int nType = 0; nType < 5; nType++)
+        for (nIndex = 0; nIndex < 6; nIndex++)
+            m_aSelectedPersonalActions[nType][nIndex] = CSWGuiInterfaceAction::INVALID_ACTION;
+    m_nDefaultAction = CSWGuiInterfaceAction::INVALID_ACTION;
+    m_nSelectedAction = 0;
+    m_cActionDescriptionState.m_bEnabled = 1;
+    m_fPortraitTransitionTime = 0.0f;
+    ShowActionQueue(0);
+    m_nCombatMessage = 42475;
+}
+#else
+CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5170 GOG 0x006E4E30
+    : CSWGuiPanel(pManager)
+{
+    CExoString sControl;
+    CSWGuiLabel lblMapview;
+    int nIndex;
+    CSWGuiFloatyText::m_pMainInterface = this;
+
+    m_fScaleX = 1.0f;
+    m_fScaleY = 1.0f;
+    float fWidthScale = (float)pManager->m_nWidth;
+    fWidthScale /= (float)g_nGUIWidth;
+    float fHeightScale = (float)pManager->m_nHeight / (float)g_nGUIHeight;
+    m_fScaleX = fWidthScale;
+    m_fScaleY = fHeightScale;
+    StartLoadFromLayout("mipc28x6_p");
+
+#ifndef _XBOX
+    m_bPositioned = 1;
+#endif
+    for (nIndex = 0; nIndex < 6; ++nIndex)
+        m_aPersonalActions[nIndex].Initialize(this, nIndex, 0);
+    for (nIndex = 0; nIndex < 3; ++nIndex)
+        m_aCharacters[nIndex].Initialize(this, nIndex + 1);
+    m_cTransitionCharacter.Initialize(this, 4);
+    for (nIndex = 0; nIndex < 4; ++nIndex)
+    {
+        sControl.Format("LBL_QUEUE%d", nIndex);
+        InitControl(m_aActionIcons[nIndex], sControl, 1);
+    }
+    for (nIndex = 0; nIndex < GUI_STATUS_COUNT; ++nIndex)
+        m_aEffects[nIndex].Initialize(this, nIndex);
+    m_cTargetActionMenu.Initialize(this);
+    InitControl(m_aMoulding[0], "LBL_MOULDING1", 1);
+    InitControl(m_aMoulding[1], "LBL_MOULDING3", 1);
+    InitControl(m_aCombatbg[0], "LBL_COMBATBG2", 1);
+    InitControl(m_aCombatbg[1], "LBL_COMBATBG3", 1);
+
+    InitControl(m_btnClearone, "BTN_CLEARONE", 1);
+    InitControl(m_btnClearone2, "BTN_CLEARONE2", 1);
+    InitControl(m_btnClearall, "BTN_CLEARALL", 1);
+    InitControl(m_cActionText, "LBL_ACTIONDESC", 1);
+    InitControl(m_cActionTextBack, "LBL_ACTIONDESCBG", 1);
+    InitControl(m_lblMapborder, "LBL_MAPBORDER", 1);
+    InitControl(m_lblArrow, "LBL_ARROW", 0);
+    InitControl(m_lblMap, "LBL_MAP", 0);
+    InitControl(lblMapview, "LBL_MAPVIEW", 0);
+    InitControl(m_btnMinimap, "BTN_MINIMAP", 1);
+    InitControl(m_lblCmbtmodemsg, "LBL_CMBTMODEMSG", 1);
+    m_cToolTip.Initialize(m_lblCmbtmodemsg.m_cExtent, &m_lblCmbtmodemsg, 1.0f);
+    InitControl(m_cToolTipBackground, "LBL_CMBTMSGBG", 1);
+    m_lblCmbtmodemsg.SetEnabledFlag(0);
+    m_cToolTipBackground.SetEnabledFlag(0);
+    m_cToolTip.SetEnabledFlag(0);
+    m_cToolTip.m_cText.m_cParams.SetText(g_pTlkTable->GetSimpleString(STRREF_HOTKEY_HELP));
+    InitControl(m_btnEqu, "BTN_EQU", 1);
+    InitControl(m_btnInv, "BTN_INV", 1);
+    InitControl(m_btnChar, "BTN_CHAR", 1);
+    InitControl(m_btnAbi, "BTN_ABI", 1);
+    InitControl(m_btnMsg, "BTN_MSG", 1);
+    InitControl(m_btnJou, "BTN_JOU", 1);
+    InitControl(m_btnMap, "BTN_MAP", 1);
+    InitControl(m_btnOpt, "BTN_OPT", 1);
+    InitControl(m_lblMenubg, "LBL_MENUBG", 1);
+    InitControl(m_lblArrowMargin, "LBL_ARROW_MARGIN", 1);
+    InitControl(m_tbPause, "TB_PAUSE", 1);
+    InitControl(m_tbSolo, "TB_SOLO", 1);
+    InitControl(m_tbStealth, "TB_STEALTH", 1);
+    InitControl(m_btnSwapWeapons, "BTN_SWAPWEAPONS", 1);
+    StopLoadFromLayout();
+
+    {
+        CSWGuiExtent cBounds;
+        cBounds.m_nLeft = m_lblArrowMargin.m_cExtent.m_nLeft;
+        cBounds.m_nTop = m_lblMenubg.m_cExtent.GetBottom();
+        cBounds.m_nHeight = m_tbPause.m_cExtent.m_nTop - cBounds.m_nTop;
+        cBounds.m_nWidth = m_pManager->m_nWidth - 2 * cBounds.m_nLeft;
+        m_cTargetActionMenu.m_cBounds = cBounds;
+    }
+    AddControl(&m_cToolTip);
+    if (pManager->m_nWidth >= 1024)
+    {
+        CSWGuiExtent cExtent = m_cExtent;
+        cExtent.m_nHeight = g_nScreenHeight;
+        cExtent.m_nWidth = g_nScreenWidth;
+        CSWGuiPanel::SetExtent(cExtent);
+    }
+    int nSafeX, nSafeY;
+    GetManager()->GetSafeMargin(nSafeX, nSafeY);
+    m_nMapHeight = m_lblMap.m_cExtent.m_nHeight;
+    m_nMapWidth = m_lblMap.m_cExtent.m_nWidth;
+    m_cMapViewport = lblMapview.m_cExtent;
+    CSWGuiExtent cNewExtent = m_lblArrow.m_cExtent;
+    cNewExtent.m_nLeft = (m_cMapViewport.m_nWidth - cNewExtent.m_nWidth) / 2;
+    cNewExtent.m_nTop = (m_cMapViewport.m_nHeight - cNewExtent.m_nHeight) / 2;
+    m_nInterfaceOffset = 0;
+    m_fCombatMessageTime = -1.0f;
+    m_lblArrow.SetExtent(cNewExtent);
+
+    m_lblReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
+    CSWGuiLabel* pLabel = &m_lblReticle;
+#ifndef _XBOX
+    pLabel->m_bIgnoreMouse = 1;
+#endif
+    AddControl(pLabel);
+    pLabel = &m_lblStickyReticle;
+    pLabel->SetExtent(CSWGuiExtent(0, 0, 16, 16));
+    m_lblStickyReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
+#ifndef _XBOX
+    pLabel->m_bIgnoreMouse = 1;
+#endif
+    m_lblStickyReticle.SetEnabledFlag(0);
+    AddControl(pLabel);
+    m_oidStickyTarget = OBJECT_INVALID;
+    m_nTargetId = OBJECT_INVALID;
+    m_oidPlayerCharacter = OBJECT_INVALID;
+    m_fTargetUpdateDelay = -1.0f;
+    m_fActionDescriptionTimer = -1.0f;
+    for (nIndex = 0; nIndex < 7; nIndex++)
+        m_aSelectedPersonalActions[nIndex] = CSWGuiInterfaceAction::INVALID_ACTION;
+    m_cActionDescriptionState.m_bEnabled = 1;
+    m_fPortraitTransitionTime = 0.0f;
+    ShowActionQueue(0);
+    m_nCombatMessage = STRREF_COMBAT_MODE_ENGAGED;
+    m_bToolTipShown = 0;
+    m_btnEqu.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnInv.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnChar.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnAbi.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnJou.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnMsg.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnMap.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnOpt.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnMinimap.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnMenuButtonPressed);
+    m_btnEqu.SetFocusable(0);
+    m_btnInv.SetFocusable(0);
+    m_btnChar.SetFocusable(0);
+    m_btnAbi.SetFocusable(0);
+    m_btnJou.SetFocusable(0);
+    m_btnMsg.SetFocusable(0);
+    m_btnMap.SetFocusable(0);
+    m_btnOpt.SetFocusable(0);
+    m_btnMinimap.SetFocusable(0);
+    m_btnClearone.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnClearOneButtonPressed);
+    m_btnClearone2.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnClearOneButtonPressed);
+    m_btnClearall.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnClearAllButtonPressed);
+    m_btnClearone.SetFocusable(0);
+    m_btnClearone2.SetFocusable(0);
+    m_btnClearall.SetFocusable(0);
+    m_lblArrowMargin.SetEnabledFlag(0);
+    m_lblArrowMargin.SetFocusable(0);
+    m_tbPause.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnPauseButtonPressed);
+    m_tbSolo.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnSoloButtonPressed);
+    m_tbStealth.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnStealthButtonPressed);
+    m_tbPause.SetFocusable(0);
+    m_tbSolo.SetFocusable(0);
+    m_tbStealth.SetFocusable(0);
+    m_btnSwapWeapons.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnSwapWeaponsPressed);
+    m_btnSwapWeapons.SetFocusable(0);
+    m_pBlackDot = NewCAurGUIImage("blackdot");
+    m_nDefaultAction = 0;
+    m_lblCmbtmodemsg.m_cText.m_cParams.SetText("");
+    m_nActionTextBottom = m_cActionText.m_cExtent.GetBottom();
+    SetActionDescription("");
+    UpdateActionDescription();
+    m_btnEqu.SetToolTip(STRREF_MENU_EQUIPMENT, GUIEVENT_MENU_EQUIPMENT);
+    m_btnInv.SetToolTip(STRREF_MENU_INVENTORY, GUIEVENT_MENU_INVENTORY);
+    m_btnChar.SetToolTip(STRREF_MENU_CHARACTER, GUIEVENT_MENU_CHARACTER);
+    m_btnMap.SetToolTip(STRREF_MENU_MAP, GUIEVENT_MENU_MAP);
+    m_btnMinimap.SetToolTip(STRREF_MENU_MAP, GUIEVENT_MENU_MAP);
+    m_btnAbi.SetToolTip(STRREF_MENU_ABILITIES, GUIEVENT_MENU_ABILITIES);
+    m_btnJou.SetToolTip(STRREF_MENU_JOURNAL, GUIEVENT_MENU_JOURNAL);
+    m_btnOpt.SetToolTip(STRREF_MENU_OPTIONS, GUIEVENT_MENU_OPTIONS);
+    m_btnMsg.SetToolTip(STRREF_MENU_MESSAGES, GUIEVENT_MENU_MESSAGES);
+    m_tbPause.SetToolTip(STRREF_PAUSE, GUIEVENT_PAUSE);
+    m_tbSolo.SetToolTip(STRREF_SOLO, GUIEVENT_SOLO);
+    m_tbStealth.SetToolTip(STRREF_STEALTH, GUIEVENT_STEALTH);
+    m_btnClearone.SetToolTip(STRREF_CLEAR_ONE, GUIEVENT_CLEAR_ONE);
+    m_btnClearone2.SetToolTip(STRREF_CLEAR_ONE, GUIEVENT_CLEAR_ONE);
+    m_btnClearall.SetToolTip(STRREF_CLEAR_ALL, GUIEVENT_CLEAR_ALL);
+    m_btnSwapWeapons.SetToolTip(STRREF_SWITCH_WEAPONS, GUIEVENT_SWITCH_WEAPONS);
+    m_bSelectingUseItemTarget = 0;
+    m_nUseItemTargetMember = 0;
+    m_oidUseItemPending = OBJECT_INVALID;
+    m_fFormMessageTime = 0.0f;
+    m_nFormMessage = 0;
+
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    cNewExtent.m_nLeft = (int)(fScaleX * CANCEL_ITEM_SELECT_LEFT);
+    cNewExtent.m_nTop = (int)(fScaleY * CANCEL_ITEM_SELECT_TOP);
+    cNewExtent.m_nHeight = (int)(fScaleY * CANCEL_ITEM_SELECT_HEIGHT);
+    cNewExtent.m_nWidth = (int)(fScaleX * CANCEL_ITEM_SELECT_WIDTH);
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.SetCornerImage("uibit_brdr_16bct", 0);
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.SetEdgeImage("uibit_brdr_16bet", 0);
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.SetFillImage("uibit_fill_2bt", 0);
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_nBorderDim = 16;
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_nInnerOffset = 10;
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_n8 = 12;
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetCornerImage("uibit_brdr_16bct", 0);
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetEdgeImage("uibit_brdr_16bet", 0);
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetFillImage("uibit_fill_2bt", 0);
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_nBorderDim = 16;
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_nInnerOffset = 10;
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_n8 = 12;
+    m_btnCancelPartyItemSelect.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnCancelPartyItemSelect);
+    m_btnCancelPartyItemSelect.SetFocusable(0);
+    m_btnCancelPartyItemSelect.SetExtent(cNewExtent);
+    AddControl(&m_btnCancelPartyItemSelect);
+    m_bPersonalActionScrolled = 0;
+}
+#endif
 #ifndef _XBOX
 void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x006E3980 GOG 0x006E4670
 {
-    Swguimaininterfacepc2Trace2();
     if (pControl->m_bSelected != 0)
     {
         int nIndex = pControl->m_nIndex;
@@ -4377,7 +4376,7 @@ void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x
 #ifndef _XBOX
 void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3A70 GOG 0x006E3660
 {
-    Swguimaininterfacepc2Trace3();
+    Swguimaininterfacepc2Trace2();
     if (pControl->m_bSelected != 0)
     {
         ResetPartyMemberItemUse();
@@ -4398,7 +4397,7 @@ void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC
 #ifndef _XBOX
 void CSWGuiMainInterface::OnActionDownArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3AF0 GOG 0x006E36E0
 {
-    Swguimaininterfacepc2Trace3();
+    Swguimaininterfacepc2Trace2();
     if (pControl->m_bSelected != 0)
     {
         ResetPartyMemberItemUse();
