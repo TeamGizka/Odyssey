@@ -917,7 +917,7 @@ void CSWGuiPartySelection::OnPanelAdded()
         m_bCanChangeParty = 0;
         m_nCannotChangeStrRef = STRREF_CANNOT_CHANGE_PARTY;
     }
-    if (m_bCanChangeParty != 0 && !g_pAppManager->m_pClientExoApp->GetSWParty()->IsPartyTogether())
+    if (m_bCanChangeParty != 0 && !g_pAppManager->m_pClientExoApp->GetSWParty()->IsPartyHealthy())
     {
         m_bCanChangeParty = 0;
         m_nCannotChangeStrRef = STRREF_CANNOT_CHANGE_UNCONSCIOUS;

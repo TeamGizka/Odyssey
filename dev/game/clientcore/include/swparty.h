@@ -168,7 +168,7 @@ public:
     void SetFormation(int nFormation);
     float GetFollowRange();
     int PartyHasRace(unsigned short nRace);
-    int IsPartyTogether();
+    int IsPartyHealthy();
     int IsPartyInCombat();
     void SetLeader(int nIndex);
     void RecaulateFollowPoint();

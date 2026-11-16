@@ -117,7 +117,7 @@ void CSWGuiInGameAreaTransition::Draw(float fElapsed)
     SetExtent(extent);
 
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
-    if (pParty->IsPartyTogether() != 0)
+    if (pParty->IsPartyHealthy() != 0)
     {
         m_lblTextBackground.m_cBorder.m_cParams.m_vColor = m_v454;
         m_lblIcon.m_cBorder.m_cParams.m_vColor = m_v460;

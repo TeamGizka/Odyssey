@@ -277,7 +277,7 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned
                                (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
     m_btnCreateitems.SetFocusable(0);
     m_btnCreateitems.AddEvent(GUIEVENT_ACTIVATE, this,
-                              (CSWGuiHandler)&CSWGuiUpgradeSelection::OnCreateItems);
+                              (CSWGuiHandler)&CSWGuiUpgradeSelection::OnCreateItem);
     m_pSelectedType = 0;
     m_nFilter = 0;
     UpdateFilterButtons();
@@ -416,7 +416,7 @@ void CSWGuiUpgradeSelection::GetPlayerItems(CSWSCreature* pCreature,
     }
 }
 // PC 0x00723D50 GOG 0x00723A60
-void CSWGuiUpgradeSelection::OnCreateItems(CSWGuiControl* pControl)
+void CSWGuiUpgradeSelection::OnCreateItem(CSWGuiControl* pControl)
 {
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     m_pManager->AddPanel(m_pCreateItems, CSWGuiManager::PANEL_MODE_MODAL, 1);

@@ -250,7 +250,7 @@ void CSWGuiInGameMap::OnPanelAdded()
 
     if (m_bPartySelection)
     {
-        if (!g_pAppManager->GetClientExoApp()->GetSWParty()->IsPartyTogether())
+        if (!g_pAppManager->GetClientExoApp()->GetSWParty()->IsPartyHealthy())
         {
             m_nMessageStrRef = STRREF_REJOIN_PARTY;
             m_bPartySelection = 0;

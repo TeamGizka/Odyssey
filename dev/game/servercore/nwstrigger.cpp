@@ -633,7 +633,7 @@ void CSWSTrigger::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                                  g_pAppManager->GetServerExoApp()->GetPartyTable()
                                      ->GetIsLeader(pCreature->GetId()))
                         {
-                            if (g_pAppManager->GetClientExoApp()->GetSWParty()->IsPartyTogether())
+                            if (g_pAppManager->GetClientExoApp()->GetSWParty()->IsPartyHealthy())
                             {
                                 CScriptEvent* pTransitionEvent = new CScriptEvent;
                                 unsigned char nTransitionId = pArea->GetNextTransitionPendingID();

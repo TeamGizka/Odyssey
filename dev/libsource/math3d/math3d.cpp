@@ -1006,7 +1006,7 @@ Quaternion normalize(Quaternion quaternion)
 // PC 0x004D8B40 GOG 0x004D8C80
 Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
 {
-    float fDot = quaternionDot(first, second);
+    float fDot = dot(first, second);
     if (fDot < 0.0f)
     {
         first.m_fX = -first.m_fX;
@@ -1036,7 +1036,7 @@ Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
 
 Quaternion lerp(Quaternion first, const Quaternion& second, float fPosition)
 {
-    if (quaternionDot(first, second) < 0.99)
+    if (dot(first, second) < 0.99)
     {
         return slerp(first, second, fPosition);
     }

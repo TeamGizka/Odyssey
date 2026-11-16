@@ -336,7 +336,7 @@ public:
     }
     void AutoUpgradeDone();
     virtual void HandleInputEvent(int, int);
-    void OnCreateItems(CSWGuiControl*);
+    void OnCreateItem(CSWGuiControl*);
     void UpdateFilterButtons();
     void SetDescription(CExoString);
     void OnItemSelected(CSWGuiControl*);

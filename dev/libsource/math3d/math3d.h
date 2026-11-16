@@ -247,7 +247,7 @@ inline Quaternion operator+(const Quaternion& left, const Quaternion& right)
     return Quaternion(left.m_fW + right.m_fW, left.m_fX + right.m_fX,
                       left.m_fY + right.m_fY, left.m_fZ + right.m_fZ);
 }
-inline float quaternionDot(const Quaternion& left, const Quaternion& right)
+inline float dot(const Quaternion& left, const Quaternion& right)
 {
     return left.m_fW * right.m_fW + left.m_fX * right.m_fX +
            left.m_fY * right.m_fY + left.m_fZ * right.m_fZ;

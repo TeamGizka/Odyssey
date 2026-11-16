@@ -720,7 +720,7 @@ int CSWPartyFollowDataArray::GetPointBackFromStart(float fDistance,
     return 0;
 }
 // PC 0x0068AD40 GOG 0x0068AAB0
-int CSWParty::IsPartyTogether()
+int CSWParty::IsPartyHealthy()
 {
     CSWSCreature* pLeader;
     CSWSCreature* pMember;
