@@ -229,8 +229,8 @@ CSWSPlayerLUOInventory::~CSWSPlayerLUOInventory()
 // PC 0x00615BF0 GOG 0x00615BD0
 CLastUpdateObject::CLastUpdateObject()
 {
-    m_nUnknown2A = 0;
-    m_fUnknown50 = 1.0f;
+    m_nSoundSetFile = 0;
+    m_fAnimationSpeed = 1.0f;
     m_nAnimation = CSWSObject::ANIMATION_COMBAT_READY;
     memset(m_nClass, UNSET_SHORT_CACHE, sizeof(m_nClass));
     memset(m_nClassLevel, UNSET_SHORT_CACHE, sizeof(m_nClassLevel));

@@ -76,13 +76,13 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_EffectSpellId = -1;
     m_fBearing = 0.0f;
     m_bLightIsOn = 1;
-    m_n390 = 0;
+    m_bLightStateChanged = 0;
     m_bDynamic = 0;
     if (oidSelf == OBJECT_INVALID)
         m_bDynamic = 1;
     m_nBodyBag = 0;
     m_n438 = 0;
-    m_n43C = 0;
+    m_nComputerUseBonus = 0;
     m_bPreciseUse = 0;
     m_bIsBodyBag = 0;
     m_bIsBodyBagVisible = 1;
@@ -1153,7 +1153,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x005879B0 GOG 0x00587A3
         }
         if (!bFailed)
         {
-            m_n390 = 1;
+            m_bLightStateChanged = 1;
             m_bLightIsOn = bLightIsOn;
         }
     }
@@ -1242,7 +1242,7 @@ void CSWSPlaceable::OnEndDialog(CSWSObject* pObject)
 {
     g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONENDDIALOGUE], m_nId,
                                  1);
-    m_n43C = 0;
+    m_nComputerUseBonus = 0;
 }
 // PC 0x00587DB0 GOG 0x00587E30
 CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
@@ -1815,7 +1815,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)
     {
         return;
     }
-    m_n390 = 1;
+    m_bLightStateChanged = 1;
     m_bLightIsOn = bLightIsOn;
 }
 #endif

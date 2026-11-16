@@ -891,7 +891,7 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,
     cCorruptFile.Write("CORRUPT");                                                                    \
     cCorruptFile.Flush();                                                                             \
     g_pAppManager->m_pReentrantServerStats->StartStallEvent(1);                                       \
-    g_pAppManager->m_pReentrantServerStats->m_nUnknown56 = 4;                                         \
+    g_pAppManager->m_pReentrantServerStats->m_nError = 4;                                         \
     g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);          \
     g_pExoBase->m_pExoDebug->FlushScriptLogFile()
 

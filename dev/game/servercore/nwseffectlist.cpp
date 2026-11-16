@@ -2517,7 +2517,7 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
                     {
                         int nSpellId = pCreature->m_nLastSpellId;
                         CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpellId);
-                        if (pSpell != NULL && pSpell->m_nUnknown134 == 1)
+                        if (pSpell != NULL && pSpell->m_bUseConcentration == 1)
                         {
                             int nRoll = g_pRules->RollDice(1, 20);
                             pCreature->GetNearestEnemy(4.0f, OBJECT_INVALID, OBJECT_INVALID);

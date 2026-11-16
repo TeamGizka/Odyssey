@@ -2903,7 +2903,7 @@ void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bFromScri
             pPartySelection->m_sRunScript = sExitScript;
             pPartySelection->m_bPlaySound = bFromScript;
             pPartySelection->SetForcedNPC(nForceNPC1, nForceNPC2);
-            pPartySelection->m_n78 = bAllowCancel;
+            pPartySelection->m_bAllowCancel = bAllowCancel;
             pPartySelection->m_nInputClass = INPUT_CLASS_GAME;
             m_pGuiManager->AddPanel(pPartySelection, CSWGuiManager::PANEL_MODE_MODAL, 1);
 #ifdef _XBOX
@@ -4549,7 +4549,7 @@ void CGuiInGame::EnableCharacterChangeButtons(int bEnable)
 {
     if (m_pInGameMenu != 0)
     {
-        m_pInGameMenu->m_n3DCC = bEnable == 0;
+        m_pInGameMenu->m_bCharacterChangeDisabled = bEnable == 0;
     }
 }
 // PC 0x00682D60 GOG 0x00682B40

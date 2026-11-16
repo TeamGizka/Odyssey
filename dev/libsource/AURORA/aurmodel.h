@@ -605,17 +605,14 @@ public:
 
     List<Gob*> m_lstAttachments;
 
-#ifdef _XBOX
-
     int m_nVisiblePixels;
+#ifdef _XBOX
     bool IsVisibilityTested();
     void RenderVisibilityBounds();
     bool IsAlternateShadowCaster();
     bool IsEmitterBounds(); bool CheckEventCallBack(float fDelay, bool bRepeat);
-#else
-    int m_nUnused2;
 #endif
-    int m_n1F8;
+    int m_bSkipHierarchyAnimation;
     int m_n1FC;
 };
 

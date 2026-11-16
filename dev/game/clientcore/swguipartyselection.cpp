@@ -425,7 +425,7 @@ void CSWGuiPartySelection::OnPanelRemoved()
     }
     g_pAppManager->m_pClientExoApp->GetInGameGui()->EnableCharacterChangeButtons(1);
     m_bPlaySound = 0;
-    m_n78 = 0;
+    m_bAllowCancel = 0;
     CSWGuiPanel::OnPanelRemoved();
 }
 #ifndef _XBOX
@@ -761,7 +761,7 @@ void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
         case 40:
         case 46:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            if ((m_bPlaySound == 0 && m_bForcedNPC == 0) || m_n78 != 0)
+            if ((m_bPlaySound == 0 && m_bForcedNPC == 0) || m_bAllowCancel != 0)
             {
                 for (int nNPC = 0; nNPC < 12; ++nNPC)
                     m_aPartyMembers[nNPC].m_btnNPC.SetSelected(m_aPartyMembers[nNPC].m_nPartyIndex != -1);
@@ -932,7 +932,7 @@ void CSWGuiPartySelection::OnPanelAdded()
         m_bCanChangeParty = 1;
         m_nCannotChangeStrRef = STRREF_CANNOT_CHANGE_PARTY;
     }
-    if ((m_bForcedNPC != 0 || m_bPlaySound != 0) && m_n78 == 0)
+    if ((m_bForcedNPC != 0 || m_bPlaySound != 0) && m_bAllowCancel == 0)
     {
         m_btnBack.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
         m_btnBack.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
@@ -1168,7 +1168,7 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #endif
     m_bPlaySound = 0;
 #ifndef _XBOX
-    m_n78 = 0;
+    m_bAllowCancel = 0;
     m_nCannotChangeStrRef = STRREF_CANNOT_CHANGE_PARTY;
 #endif
 }

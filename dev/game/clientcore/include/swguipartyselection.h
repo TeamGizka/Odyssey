@@ -128,7 +128,7 @@ public:
     int m_nSelectedCount;
     int m_bForcedNPC;
     int m_bPlaySound;
-    int m_n78;
+    int m_bAllowCancel;
     CExoString m_sRunScript;
     CSWGuiPartySelectionData m_aPartyMembers[12];
     CSWGuiLabel m_lblCount;

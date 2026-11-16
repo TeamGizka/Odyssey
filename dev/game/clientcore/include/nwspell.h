@@ -125,7 +125,7 @@ public:
         FORCE_BODY_COST_PERCENT_2 = 30
     };
 
-    int m_n00;
+    int m_nSpellId;
     CExoString m_sLabel;
     unsigned long m_nNameStrRef;
     unsigned long m_nDescriptionStrRef;
@@ -169,12 +169,12 @@ public:
     CResRef m_resProjectileSound;
     unsigned char m_nProjectileOrientation;
     unsigned char m_bUnknown11E;
-    int m_nUnknown120;
+    int m_bImmunityItem;
     int m_nCategory;
     int m_nMaxCR;
     int* m_pSubRadialSpells;
     unsigned char m_nSubRadialSpellCount;
-    int m_nUnknown134;
+    int m_bUseConcentration;
     int m_nCounter1;
     int m_nCounter2;
     unsigned char m_nUserType;

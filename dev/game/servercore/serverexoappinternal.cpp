@@ -677,9 +677,9 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004EC6E0 GOG 0
     g_pAppManager->m_pReentrantServerStats->StartStallEvent(
         CSWReentrantServerStats::OPERATION_SAVE_GAME);
     CSWReentrantServerStats* pDirectoryStats = g_pAppManager->m_pReentrantServerStats;
-    pDirectoryStats->m_sUnknown24 = sDirectory;
+    pDirectoryStats->m_sName = sDirectory;
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-    pStats->m_sUnknown32 = sSaveFile;
+    pStats->m_sSourcePath = sSaveFile;
     CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
     pCompletedStats->m_nProgress = 0;
     CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
@@ -1017,8 +1017,8 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0 GOG 0x004EB75
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
     CExoString sDirectory;
     CExoString sSaveFile;
-    sDirectory = pStats->m_sUnknown24;
-    sSaveFile = pStats->m_sUnknown32;
+    sDirectory = pStats->m_sName;
+    sSaveFile = pStats->m_sSourcePath;
 
     g_pAppManager->GetServerExoApp()->GetSWSMessage()
         ->SendServerToPlayerModule_SaveGameStatus(CSWSMessage::SAVEGAME_STATUS_STARTED);
@@ -1273,7 +1273,7 @@ int CServerExoAppInternal::UnloadModule()
             }
             pPlayer->ClearPlayerOnDestroyGame();
             pPlayer->m_nAreaLoadState = 0;
-            pPlayer->m_n7C = 0;
+            pPlayer->m_bModuleLoaded = 0;
             pPlayer->m_oidLastControlledObject = OBJECT_INVALID;
             m_pSWSMessage->SendServerToPlayerGameObjUpdate_ObjControl(
                 pPlayer->GetPlayerId(), OBJECT_INVALID);
@@ -1404,7 +1404,7 @@ void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
 
     if (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_COMPLETE ||
         (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_PENDING &&
-         pPlayer->m_n7C == 1 && pPlayer->GetGameObject() != NULL &&
+         pPlayer->m_bModuleLoaded == 1 && pPlayer->GetGameObject() != NULL &&
          (pCreature = pPlayer->GetGameObject()->AsSWSCreature()) != NULL &&
          pCreature->m_oidDisappearTarget != OBJECT_INVALID))
     {
@@ -1668,11 +1668,11 @@ void CServerExoAppInternal::GetServerInfoFromIniFile()
     bFound = cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", sSection, "Game Type");
     if (bFound == 1)
     {
-        m_pServerInfo->m_nXboxUnmapped114 = sValue.AsINT();
+        m_pServerInfo->m_nGameType = sValue.AsINT();
     }
     else
     {
-        sEntry.Format("%d", m_pServerInfo->m_nXboxUnmapped114);
+        sEntry.Format("%d", m_pServerInfo->m_nGameType);
         cIni.WriteIniEntry(sEntry, "d:\\swplayer.ini", sSection, "Game Type");
     }
 
@@ -1705,15 +1705,15 @@ void CServerExoAppInternal::GetServerInfoFromIniFile()
     m_nAutoSaveElapsedTime = 0;
     m_pServerInfo->m_nPVP = 1;
 
-    m_pServerInfo->m_nXboxUnmapped0D4 = 1;
+    m_pServerInfo->m_bEnforceLegalCharacters = 1;
     bFound = cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Single Player Enforce Legal Characters");
     if (bFound)
     {
-        m_pServerInfo->m_nXboxUnmapped0D4 = sValue.AsINT();
+        m_pServerInfo->m_bEnforceLegalCharacters = sValue.AsINT();
     }
     else
     {
-        sEntry.Format("%d", m_pServerInfo->m_nXboxUnmapped0D4);
+        sEntry.Format("%d", m_pServerInfo->m_bEnforceLegalCharacters);
         cIni.WriteIniEntry(sEntry, "d:\\swplayer.ini", "Game Options", "Single Player Enforce Legal Characters");
     }
     m_pServerInfo->m_bItemLevelRestrictions = 1;
@@ -2797,8 +2797,8 @@ void CServerExoAppInternal::StallEventSaveGame()
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
     CExoString sDirectory;
     CExoString sSaveFile;
-    sDirectory = pStats->m_sUnknown24;
-    sSaveFile = pStats->m_sUnknown32;
+    sDirectory = pStats->m_sName;
+    sSaveFile = pStats->m_sSourcePath;
     sSaveDirectory = sDirectory + "\\";
 
     g_pAppManager->GetServerExoApp()->GetSWSMessage()
@@ -2992,9 +2992,9 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot,
     g_pAppManager->m_pReentrantServerStats->StartStallEvent(
         CSWReentrantServerStats::OPERATION_SAVE_GAME);
     CSWReentrantServerStats* pDirectoryStats = g_pAppManager->m_pReentrantServerStats;
-    pDirectoryStats->m_sUnknown24 = sDirectory;
+    pDirectoryStats->m_sName = sDirectory;
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-    pStats->m_sUnknown32 = sSaveFile;
+    pStats->m_sSourcePath = sSaveFile;
     CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
     pCompletedStats->m_nProgress = 0;
     CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
@@ -3046,7 +3046,7 @@ int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess
     }
     if (bSuccess != 0 && pPlayer->m_nModulePlayerIndex != -1)
     {
-        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_nXboxUnmapped0D0 == 1 &&
+        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_bOnePartyOnly == 1 &&
             pPlayer->GetGameObject() != NULL)
         {
             CSWSCreature* pOldCreature = pPlayer->GetGameObject()->AsSWSCreature();
@@ -4735,11 +4735,11 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
         }
 
         CSWReentrantServerStats* pModuleNameStats = g_pAppManager->m_pReentrantServerStats;
-        pModuleNameStats->m_sUnknown24 = sModuleName;
+        pModuleNameStats->m_sName = sModuleName;
         CSWReentrantServerStats* pSourceStats = g_pAppManager->m_pReentrantServerStats;
-        pSourceStats->m_sUnknown32 = sSourcePath;
+        pSourceStats->m_sSourcePath = sSourcePath;
         CSWReentrantServerStats* pDestinationStats = g_pAppManager->m_pReentrantServerStats;
-        pDestinationStats->m_sUnknown40 = sDestinationPath;
+        pDestinationStats->m_sDestinationPath = sDestinationPath;
         CSWReentrantServerStats* pTypeStats = g_pAppManager->m_pReentrantServerStats;
         pTypeStats->m_nResourceType = nModuleType;
         if (nModuleType == RESTYPE_SAV || nModuleType == RESTYPE_RSV)
@@ -4759,7 +4759,7 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
         CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
         pProgressStats->m_nProgressTotal = 0;
         CSWReentrantServerStats* pFinalNameStats = g_pAppManager->m_pReentrantServerStats;
-        pFinalNameStats->m_sUnknown24 = sModuleName;
+        pFinalNameStats->m_sName = sModuleName;
     }
     return 1;
 
@@ -4772,7 +4772,7 @@ void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
 
     UnloadModule();
-    pStats->m_nUnknown56 = nValue;
+    pStats->m_nError = nValue;
     pStats->m_bOperationEndPending = 1;
     if (g_nClientServerMode == 2)
     {
@@ -5303,21 +5303,21 @@ int CServerExoAppInternal::MainLoop()
         m_pNetLayer->ProcessReceivedFrames(0);
         m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_SERVER);
         CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-        if (pStats->m_nUnknown56 == 0)
+        if (pStats->m_nError == 0)
         {
             if (pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_MODULE ||
                 pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME)
             {
-                CExoString sModule(pStats->m_sUnknown24);
+                CExoString sModule(pStats->m_sName);
                 CSWSModule* pModule = GetModule();
                 int bLoadingSaveGame = 0;
                 if (m_bLoadFromSaveGame)
                     bLoadingSaveGame = 1;
                 if (pStats->m_nProgressTotal == 0)
                 {
-                    CExoString sModuleName(pStats->m_sUnknown24);
-                    CExoString sSource(pStats->m_sUnknown32);
-                    CExoString sDestination(pStats->m_sUnknown40);
+                    CExoString sModuleName(pStats->m_sName);
+                    CExoString sSource(pStats->m_sSourcePath);
+                    CExoString sDestination(pStats->m_sDestinationPath);
                     unsigned long nType = pStats->m_nResourceType;
                     if (!CopyModuleToCurrentGame(sSource, sDestination, nType))
                         DealWithLoadGameError(LOAD_GAME_ERROR_COPY_MODULE);

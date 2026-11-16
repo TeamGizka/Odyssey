@@ -1812,7 +1812,7 @@ int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer, unsigned
         if (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_PENDING &&
             g_pAppManager->m_pServerExoApp->GetServerMode() == CServerExoAppInternal::SERVER_MODE_RUNNING)
         {
-            pPlayer->m_n7C = 1;
+            pPlayer->m_bModuleLoaded = 1;
             g_pAppManager->m_pServerExoApp->InitiateModuleForPlayer(pPlayer);
             bResult = SendServerToPlayerPlayerList_Add(
                           CNetLayer::PLAYERID_ALL_PLAYERS, pPlayer) & 1;
@@ -2721,7 +2721,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
         unsigned long oidCreature = pPlayer->m_oidPCObject;
         CSWSCreature* pCreature =
             g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
-        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_nXboxUnmapped0D0 == 1)
+        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_bOnePartyOnly == 1)
         {
             if (pCreature != NULL)
             {
@@ -2766,7 +2766,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
     {
         unsigned long oidCreature = ReadOBJECTIDServer();
         CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
-        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_nXboxUnmapped0D0 == 1)
+        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_bOnePartyOnly == 1)
         {
             CSWCCMessageData* pData = new CSWCCMessageData;
             pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_UNKNOWN_197, NULL);

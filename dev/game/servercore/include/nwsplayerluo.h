@@ -150,15 +150,15 @@ public:
 
     unsigned char m_nObjectType;
     char m_nUnknown29;
-    unsigned short m_nUnknown2A;
+    unsigned short m_nSoundSetFile;
     unsigned long m_oidObject;
-    Vector m_vUnknown30;
-    int m_nUnknown3C;
+    Vector m_vPosition;
+    int m_oidArea;
 
     Vector m_vOrientation;
     int m_nAnimation;
-    float m_fUnknown50;
-    Vector m_vUnknown54;
+    float m_fAnimationSpeed;
+    Vector m_vPathDestination;
 
     unsigned char m_nClientSidePathType;
 
@@ -218,10 +218,10 @@ public:
     unsigned char m_nClassLevel[2];
     char m_nUnknown116[2];
     short m_nGoodEvilAlignment;
-    short m_n11A;
-    int m_n11C;
-    CExoString m_s120;
-    int m_nObjectF4;
+    short m_nBaseCNPCAlignment;
+    int m_nForm;
+    CExoString m_sCreatureTag;
+    int m_bDeadSelectable;
     int m_nAreaWaitState;
 
     unsigned char m_nStrengthBase;

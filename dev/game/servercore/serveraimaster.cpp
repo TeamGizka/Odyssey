@@ -921,10 +921,10 @@ CServerAIMaster::CServerAIMaster()
     m_pEffectHandler->InitializeEffects();
     m_pItemPropertyHandler = new CSWSItemPropertyHandler;
     m_pItemPropertyHandler->InitializeItemProperties();
-    m_pUnused80 = NULL;
-    m_pUnused84 = NULL;
-    m_pUnused88 = NULL;
-    m_pUnused8C = NULL;
+    m_pAttackRepAdjustments = NULL;
+    m_pTheftRepAdjustments = NULL;
+    m_pKillRepAdjustments = NULL;
+    m_pHelpRepAdjustments = NULL;
 }
 // PC 0x004DE0B0 GOG 0x004DE1D0
 BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)
@@ -1075,60 +1075,60 @@ void CServerAIMaster::LoadReputationAdjustments()
             switch (nRow)
             {
             case 0:
-                m_pUnused80 = new CExoArrayList<unsigned long>;
-                m_pUnused80->Add(nPersonalRep);
-                m_pUnused80->Add(nFactionRep);
-                m_pUnused80->Add(nWitnessFriendA);
-                m_pUnused80->Add(nWitnessFriendB);
-                m_pUnused80->Add(nWitnessFriendC);
-                m_pUnused80->Add(nWitnessNeutralA);
-                m_pUnused80->Add(nWitnessNeutralB);
-                m_pUnused80->Add(nWitnessNeutralC);
-                m_pUnused80->Add(nWitnessEnemyA);
-                m_pUnused80->Add(nWitnessEnemyB);
-                m_pUnused80->Add(nWitnessEnemyC);
+                m_pAttackRepAdjustments = new CExoArrayList<unsigned long>;
+                m_pAttackRepAdjustments->Add(nPersonalRep);
+                m_pAttackRepAdjustments->Add(nFactionRep);
+                m_pAttackRepAdjustments->Add(nWitnessFriendA);
+                m_pAttackRepAdjustments->Add(nWitnessFriendB);
+                m_pAttackRepAdjustments->Add(nWitnessFriendC);
+                m_pAttackRepAdjustments->Add(nWitnessNeutralA);
+                m_pAttackRepAdjustments->Add(nWitnessNeutralB);
+                m_pAttackRepAdjustments->Add(nWitnessNeutralC);
+                m_pAttackRepAdjustments->Add(nWitnessEnemyA);
+                m_pAttackRepAdjustments->Add(nWitnessEnemyB);
+                m_pAttackRepAdjustments->Add(nWitnessEnemyC);
                 break;
             case 1:
-                m_pUnused84 = new CExoArrayList<unsigned long>;
-                m_pUnused84->Add(nPersonalRep);
-                m_pUnused84->Add(nFactionRep);
-                m_pUnused84->Add(nWitnessFriendA);
-                m_pUnused84->Add(nWitnessFriendB);
-                m_pUnused84->Add(nWitnessFriendC);
-                m_pUnused84->Add(nWitnessNeutralA);
-                m_pUnused84->Add(nWitnessNeutralB);
-                m_pUnused84->Add(nWitnessNeutralC);
-                m_pUnused84->Add(nWitnessEnemyA);
-                m_pUnused84->Add(nWitnessEnemyB);
-                m_pUnused84->Add(nWitnessEnemyC);
+                m_pTheftRepAdjustments = new CExoArrayList<unsigned long>;
+                m_pTheftRepAdjustments->Add(nPersonalRep);
+                m_pTheftRepAdjustments->Add(nFactionRep);
+                m_pTheftRepAdjustments->Add(nWitnessFriendA);
+                m_pTheftRepAdjustments->Add(nWitnessFriendB);
+                m_pTheftRepAdjustments->Add(nWitnessFriendC);
+                m_pTheftRepAdjustments->Add(nWitnessNeutralA);
+                m_pTheftRepAdjustments->Add(nWitnessNeutralB);
+                m_pTheftRepAdjustments->Add(nWitnessNeutralC);
+                m_pTheftRepAdjustments->Add(nWitnessEnemyA);
+                m_pTheftRepAdjustments->Add(nWitnessEnemyB);
+                m_pTheftRepAdjustments->Add(nWitnessEnemyC);
                 break;
             case 2:
-                m_pUnused88 = new CExoArrayList<unsigned long>;
-                m_pUnused88->Add(nPersonalRep);
-                m_pUnused88->Add(nFactionRep);
-                m_pUnused88->Add(nWitnessFriendA);
-                m_pUnused88->Add(nWitnessFriendB);
-                m_pUnused88->Add(nWitnessFriendC);
-                m_pUnused88->Add(nWitnessNeutralA);
-                m_pUnused88->Add(nWitnessNeutralB);
-                m_pUnused88->Add(nWitnessNeutralC);
-                m_pUnused88->Add(nWitnessEnemyA);
-                m_pUnused88->Add(nWitnessEnemyB);
-                m_pUnused88->Add(nWitnessEnemyC);
+                m_pKillRepAdjustments = new CExoArrayList<unsigned long>;
+                m_pKillRepAdjustments->Add(nPersonalRep);
+                m_pKillRepAdjustments->Add(nFactionRep);
+                m_pKillRepAdjustments->Add(nWitnessFriendA);
+                m_pKillRepAdjustments->Add(nWitnessFriendB);
+                m_pKillRepAdjustments->Add(nWitnessFriendC);
+                m_pKillRepAdjustments->Add(nWitnessNeutralA);
+                m_pKillRepAdjustments->Add(nWitnessNeutralB);
+                m_pKillRepAdjustments->Add(nWitnessNeutralC);
+                m_pKillRepAdjustments->Add(nWitnessEnemyA);
+                m_pKillRepAdjustments->Add(nWitnessEnemyB);
+                m_pKillRepAdjustments->Add(nWitnessEnemyC);
                 break;
             case 3:
-                m_pUnused8C = new CExoArrayList<unsigned long>;
-                m_pUnused8C->Add(nPersonalRep);
-                m_pUnused8C->Add(nFactionRep);
-                m_pUnused8C->Add(nWitnessFriendA);
-                m_pUnused8C->Add(nWitnessFriendB);
-                m_pUnused8C->Add(nWitnessFriendC);
-                m_pUnused8C->Add(nWitnessNeutralA);
-                m_pUnused8C->Add(nWitnessNeutralB);
-                m_pUnused8C->Add(nWitnessNeutralC);
-                m_pUnused8C->Add(nWitnessEnemyA);
-                m_pUnused8C->Add(nWitnessEnemyB);
-                m_pUnused8C->Add(nWitnessEnemyC);
+                m_pHelpRepAdjustments = new CExoArrayList<unsigned long>;
+                m_pHelpRepAdjustments->Add(nPersonalRep);
+                m_pHelpRepAdjustments->Add(nFactionRep);
+                m_pHelpRepAdjustments->Add(nWitnessFriendA);
+                m_pHelpRepAdjustments->Add(nWitnessFriendB);
+                m_pHelpRepAdjustments->Add(nWitnessFriendC);
+                m_pHelpRepAdjustments->Add(nWitnessNeutralA);
+                m_pHelpRepAdjustments->Add(nWitnessNeutralB);
+                m_pHelpRepAdjustments->Add(nWitnessNeutralC);
+                m_pHelpRepAdjustments->Add(nWitnessEnemyA);
+                m_pHelpRepAdjustments->Add(nWitnessEnemyB);
+                m_pHelpRepAdjustments->Add(nWitnessEnemyC);
                 break;
             }
         }
@@ -1471,28 +1471,28 @@ CServerAIMaster::~CServerAIMaster()
         m_pItemPropertyHandler = NULL;
     }
 
-    if (m_pUnused80 != NULL)
+    if (m_pAttackRepAdjustments != NULL)
     {
-        delete m_pUnused80;
-        m_pUnused80 = NULL;
+        delete m_pAttackRepAdjustments;
+        m_pAttackRepAdjustments = NULL;
     }
 
-    if (m_pUnused84 != NULL)
+    if (m_pTheftRepAdjustments != NULL)
     {
-        delete m_pUnused84;
-        m_pUnused84 = NULL;
+        delete m_pTheftRepAdjustments;
+        m_pTheftRepAdjustments = NULL;
     }
 
-    if (m_pUnused88 != NULL)
+    if (m_pKillRepAdjustments != NULL)
     {
-        delete m_pUnused88;
-        m_pUnused88 = NULL;
+        delete m_pKillRepAdjustments;
+        m_pKillRepAdjustments = NULL;
     }
 
-    if (m_pUnused8C != NULL)
+    if (m_pHelpRepAdjustments != NULL)
     {
-        delete m_pUnused8C;
-        m_pUnused8C = NULL;
+        delete m_pHelpRepAdjustments;
+        m_pHelpRepAdjustments = NULL;
     }
 }
 

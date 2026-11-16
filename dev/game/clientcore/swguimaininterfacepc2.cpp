@@ -259,9 +259,9 @@ void CSWGuiButtonToggle::SetToggled(int bToggled)
 #ifndef _XBOX
 inline int CSWGuiMainInterfaceAction::GetActive()  // PC 0x006DCFF0 GOG 0x006DD660
 {
-    return m_CSWGuiButton_1C4.m_bActive != 0 ||
-           m_CSWGuiButton_388.m_bActive != 0 ||
-           m_CSWGuiButton_54C.m_bActive != 0 || m_CSWGuiButton_0.m_bActive != 0;
+    return m_btnIcon.m_bActive != 0 ||
+           m_btnUp.m_bActive != 0 ||
+           m_btnDown.m_bActive != 0 || m_btnAction.m_bActive != 0;
 }
 #endif
 
@@ -269,42 +269,42 @@ inline int CSWGuiMainInterfaceAction::GetActive()  // PC 0x006DCFF0 GOG 0x006DD6
 #ifndef _XBOX
 void CSWGuiMainInterfaceAction::Draw(float fElapsed)  // PC 0x006DD020 GOG 0x006DD690
 {
-    if (m_CSWGuiButton_0.m_bEnabled != 0)
+    if (m_btnAction.m_bEnabled != 0)
     {
-        m_CSWGuiButton_0.Draw(fElapsed);
+        m_btnAction.Draw(fElapsed);
     }
-    if (m_CSWGuiButton_388.m_bEnabled != 0)
+    if (m_btnUp.m_bEnabled != 0)
     {
-        m_CSWGuiButton_388.Draw(fElapsed);
+        m_btnUp.Draw(fElapsed);
     }
-    if (m_CSWGuiButton_54C.m_bEnabled != 0)
+    if (m_btnDown.m_bEnabled != 0)
     {
-        m_CSWGuiButton_54C.Draw(fElapsed);
+        m_btnDown.Draw(fElapsed);
     }
-    if (m_CSWGuiButton_1C4.m_bEnabled != 0)
+    if (m_btnIcon.m_bEnabled != 0)
     {
-        m_CSWGuiButton_1C4.Draw(fElapsed);
+        m_btnIcon.Draw(fElapsed);
     }
 }
 #endif
 CSWGuiControl* CSWGuiMainInterfaceAction::HitCheckMouse(int nX, int nY)  // PC 0x006DD090 GOG 0x006DCC90
 {
     CSWGuiControl* pControl = NULL;
-    if (m_CSWGuiButton_388.HitCheckMouse(nX, nY) != 0)
+    if (m_btnUp.HitCheckMouse(nX, nY) != 0)
     {
-        pControl = &m_CSWGuiButton_388;
+        pControl = &m_btnUp;
     }
-    else if (m_CSWGuiButton_54C.HitCheckMouse(nX, nY) != 0)
+    else if (m_btnDown.HitCheckMouse(nX, nY) != 0)
     {
-        pControl = &m_CSWGuiButton_54C;
+        pControl = &m_btnDown;
     }
-    else if (m_CSWGuiButton_1C4.HitCheckMouse(nX, nY) != 0)
+    else if (m_btnIcon.HitCheckMouse(nX, nY) != 0)
     {
-        pControl = &m_CSWGuiButton_1C4;
+        pControl = &m_btnIcon;
     }
-    else if (m_CSWGuiButton_0.HitCheckMouse(nX, nY) != 0)
+    else if (m_btnAction.HitCheckMouse(nX, nY) != 0)
     {
-        pControl = &m_CSWGuiButton_0;
+        pControl = &m_btnAction;
     }
     return pControl;
 }
@@ -382,8 +382,8 @@ void CSWGuiMainInterfaceAction::Update(float fElapsed)  // PC 0x006DD110 GOG 0x0
                 fAlpha = 1.0f - fAlpha;
             }
         }
-        m_CSWGuiButton_1C4.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
-        m_CSWGuiButton_1C4.m_cHilite.m_cParams.m_fHilightAlpha = fAlpha;
+        m_btnIcon.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        m_btnIcon.m_cHilite.m_cParams.m_fHilightAlpha = fAlpha;
     }
 }
 #endif
@@ -430,16 +430,16 @@ void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon,  // PC 0x006DD190 
                                         const CExoString& sToolTip,
                                         int bEnabled, unsigned char nFadeSteps)
 {
-    if (cIcon != m_CSWGuiButton_1C4.m_cBorder.m_cParams.m_cFillImage)
+    if (cIcon != m_btnIcon.m_cBorder.m_cParams.m_cFillImage)
     {
-        m_CSWGuiButton_1C4.m_cBorder.m_cParams.SetFillImage(cIcon, 0);
-        m_CSWGuiButton_1C4.m_cHilite.m_cParams.SetFillImage(cIcon, 0);
+        m_btnIcon.m_cBorder.m_cParams.SetFillImage(cIcon, 0);
+        m_btnIcon.m_cHilite.m_cParams.SetFillImage(cIcon, 0);
         m_nFadeSteps = 0;
     }
 
-    m_CSWGuiButton_1C4.m_cBorder.m_cParams.m_fHilightAlpha =
+    m_btnIcon.m_cBorder.m_cParams.m_fHilightAlpha =
         bEnabled != 0 ? 1.0f : 0.25f;
-    m_CSWGuiButton_1C4.m_cHilite.m_cParams.m_fHilightAlpha =
+    m_btnIcon.m_cHilite.m_cParams.m_fHilightAlpha =
         bEnabled != 0 ? 1.0f : 0.25f;
 }
 #endif
@@ -481,7 +481,7 @@ void CSWGuiTargetActionMenu::SetFriend(int bFriend, int bPoisoned)  // PC 0x006D
     for (int nAction = 0; nAction < 3; nAction++)
     {
         CResRef cScroll(sScroll);
-        m_aActions[nAction].m_CSWGuiButton_0.m_cBorder.m_cParams.SetFillImage(
+        m_aActions[nAction].m_btnAction.m_cBorder.m_cParams.SetFillImage(
             cScroll, 0);
     }
 }
@@ -541,10 +541,10 @@ char CSWGuiTargetActionMenu::IsTargetActionMenuControl(CSWGuiControl* pControl) 
 
     for (int nAction = 0; nAction < 3; nAction++)
     {
-        if (pControl == &m_aActions[nAction].m_CSWGuiButton_388 ||
-            pControl == &m_aActions[nAction].m_CSWGuiButton_54C ||
-            pControl == &m_aActions[nAction].m_CSWGuiButton_1C4 ||
-            pControl == &m_aActions[nAction].m_CSWGuiButton_0)
+        if (pControl == &m_aActions[nAction].m_btnUp ||
+            pControl == &m_aActions[nAction].m_btnDown ||
+            pControl == &m_aActions[nAction].m_btnIcon ||
+            pControl == &m_aActions[nAction].m_btnAction)
         {
             return 2;
         }
@@ -1755,7 +1755,7 @@ void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0
     {
         fBorderAlpha = 1.0f;
     }
-    m_CSWGuiButton_0.m_cBorder.m_cParams.m_fHilightAlpha = fBorderAlpha;
+    m_btnAction.m_cBorder.m_cParams.m_fHilightAlpha = fBorderAlpha;
 
     if (bEmpty != 0)
     {
@@ -1765,10 +1765,10 @@ void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0
     {
         fHiliteAlpha = 1.0f;
     }
-    m_CSWGuiButton_0.m_cHilite.m_cParams.m_fHilightAlpha = fHiliteAlpha;
+    m_btnAction.m_cHilite.m_cParams.m_fHilightAlpha = fHiliteAlpha;
 
-    m_CSWGuiButton_388.SetEnabledFlag(bEnabled);
-    m_CSWGuiButton_54C.SetEnabledFlag(bEnabled);
+    m_btnUp.SetEnabledFlag(bEnabled);
+    m_btnDown.SetEnabledFlag(bEnabled);
 }
 
 CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()  // PC 0x006DF7D0 GOG 0x006E18F0
@@ -1803,13 +1803,13 @@ void CSWGuiTargetActionMenu::SetNameLabel(const CExoString& sName)  // PC 0x006D
     m_cHealthBackground.SetExtent(cExtent);
 
     int nOffset = nBottom + m_nActionSpacing -
-                  m_aActions[0].m_CSWGuiButton_0.m_cExtent.m_nTop;
+                  m_aActions[0].m_btnAction.m_cExtent.m_nTop;
     for (int nAction = 0; nAction < 3; nAction++)
     {
-        CSWGuiButton& cButton0 = m_aActions[nAction].m_CSWGuiButton_0;
-        CSWGuiButton& cButton1 = m_aActions[nAction].m_CSWGuiButton_1C4;
-        CSWGuiButton& cButton2 = m_aActions[nAction].m_CSWGuiButton_388;
-        CSWGuiButton& cButton3 = m_aActions[nAction].m_CSWGuiButton_54C;
+        CSWGuiButton& cButton0 = m_aActions[nAction].m_btnAction;
+        CSWGuiButton& cButton1 = m_aActions[nAction].m_btnIcon;
+        CSWGuiButton& cButton2 = m_aActions[nAction].m_btnUp;
+        CSWGuiButton& cButton3 = m_aActions[nAction].m_btnDown;
 
         m_pMainInterface->ShiftControl(cButton1, nOffset);
 
@@ -1981,7 +1981,7 @@ void CSWGuiTargetActionMenu::PositionMenu(CSWCCreature* pCreature,  // PC 0x006E
         int nOldHeight = m_cExtent.m_nHeight;
         if (bActions)
             m_cExtent.m_nHeight =
-                m_aActions[0].m_CSWGuiButton_0.m_cExtent.GetBottom();
+                m_aActions[0].m_btnAction.m_cExtent.GetBottom();
         else
             m_cExtent.m_nHeight = m_cHealthBar.m_cExtent.GetBottom();
 
@@ -2396,7 +2396,7 @@ void CSWGuiMainInterface::Update(float fElapsed)
 #ifdef _XBOX
     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
         g_pAppManager->GetServerExoApp()->GetPlayerCreatureId());
-    if (!m_cActionDescriptionState.m_bUnknown)
+    if (!m_cActionDescriptionState.m_bAttackJustQueued)
     {
         if (pCreature != NULL &&
             pCreature->m_oidAttemptedAttackTarget == OBJECT_INVALID &&
@@ -2407,7 +2407,7 @@ void CSWGuiMainInterface::Update(float fElapsed)
     }
     else
     {
-        m_cActionDescriptionState.m_bUnknown = 0;
+        m_cActionDescriptionState.m_bAttackJustQueued = 0;
     }
     m_lblSolomode.m_bEnabled = g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bSoloMode;
 #else
@@ -2608,7 +2608,7 @@ void CSWGuiMainInterface::ShowActionQueue(int bShow)
 
 #ifdef _XBOX
     m_lblBg1.SetEnabledFlag(bShow);
-    m_CSWGuiLabelHilight_6B1C.SetEnabledFlag(bShow);
+    m_lblHighlight.SetEnabledFlag(bShow);
     m_lblActionQueueBackground.SetEnabledFlag(bShow);
     m_lblCmbtmodemsg.SetEnabledFlag(bShow);
 #else
@@ -2616,7 +2616,7 @@ void CSWGuiMainInterface::ShowActionQueue(int bShow)
     {
         m_aCombatbg[nIcon].SetEnabledFlag(bShow);
     }
-    m_CSWGuiLabelHilight_6B1C.SetEnabledFlag(bShow);
+    m_lblHighlight.SetEnabledFlag(bShow);
     m_lblActionQueueBackground.SetEnabledFlag(bShow);
     m_btnClearone.SetEnabledFlag(bShow);
     m_btnClearone2.SetEnabledFlag(bShow);
@@ -4025,7 +4025,7 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)
 
     InitControl(m_lblBg1, "LBL_BG1", 1);
     InitControl(m_lblBg2, "LBL_BG2", 1);
-    InitControl(m_CSWGuiLabelHilight_6B1C, "LBL_HIGHLIGHT", 1);
+    InitControl(m_lblHighlight, "LBL_HIGHLIGHT", 1);
     InitControl(m_cActionText, "LBL_ACTIONDESC", 1);
     InitControl(m_cActionTextBack, "LBL_ACTIONDESCBG", 1);
     InitControl(m_lblActiondescbg2, "LBL_ACTIONDESCBG2", 1);
@@ -4051,7 +4051,7 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)
         CSWGuiBorderParams(CResRef(), CResRef(), CResRef(), 0, 0, 1.0f,
                            Vector(1.0f, 1.0f, 1.0f), 0));
     m_cActionDescriptionState.m_bTargetChanged = 0;
-    m_cActionDescriptionState.m_bUnknown = 0;
+    m_cActionDescriptionState.m_bAttackJustQueued = 0;
     m_nInterfaceOffset = 0;
     m_fCombatMessageTime = -1.0f;
     m_lblCmbtmodemsg.m_cText.m_cParams.SetStrRef(42475);
@@ -4452,27 +4452,27 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface, 
 
     sControl.Format("BTN_%s%d", sType.CStr(), nAction);
     int bAddToPanel = !bTarget;
-    pMainInterface->InitControl(m_CSWGuiButton_0, sControl, bAddToPanel);
+    pMainInterface->InitControl(m_btnAction, sControl, bAddToPanel);
     sControl.Format("LBL_%s%d", sType.CStr(), nAction);
-    pMainInterface->InitControl(m_CSWGuiButton_1C4, sControl, bAddToPanel);
+    pMainInterface->InitControl(m_btnIcon, sControl, bAddToPanel);
     sControl.Format("BTN_%sUP%d", sType.CStr(), nAction);
-    pMainInterface->InitControl(m_CSWGuiButton_388, sControl, bAddToPanel);
+    pMainInterface->InitControl(m_btnUp, sControl, bAddToPanel);
     sControl.Format("BTN_%sDOWN%d", sType.CStr(), nAction);
-    pMainInterface->InitControl(m_CSWGuiButton_54C, sControl, bAddToPanel);
+    pMainInterface->InitControl(m_btnDown, sControl, bAddToPanel);
 
     if (m_bTarget)
     {
-        m_CSWGuiButton_0.AddChildControl(&m_CSWGuiButton_1C4);
+        m_btnAction.AddChildControl(&m_btnIcon);
 #ifndef _XBOX
-        m_CSWGuiButton_1C4.m_pParent = &m_CSWGuiButton_0;
+        m_btnIcon.m_pParent = &m_btnAction;
 #endif
-        m_CSWGuiButton_0.AddChildControl(&m_CSWGuiButton_388);
+        m_btnAction.AddChildControl(&m_btnUp);
 #ifndef _XBOX
-        m_CSWGuiButton_388.m_pParent = &m_CSWGuiButton_0;
+        m_btnUp.m_pParent = &m_btnAction;
 #endif
-        m_CSWGuiButton_0.AddChildControl(&m_CSWGuiButton_54C);
+        m_btnAction.AddChildControl(&m_btnDown);
 #ifndef _XBOX
-        m_CSWGuiButton_54C.m_pParent = &m_CSWGuiButton_0;
+        m_btnDown.m_pParent = &m_btnAction;
 #endif
         nAction += 6;
     }
@@ -4493,73 +4493,73 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface, 
         pFocus = (PFNGUIEVENT)&CSWGuiMainInterface::OnDefaultActionFocus;
     }
 
-    m_CSWGuiButton_1C4.SetFocusable(0);
-    m_CSWGuiButton_1C4.AddEvent(GUIEVENT_ACTIVATE, pMainInterface,
+    m_btnIcon.SetFocusable(0);
+    m_btnIcon.AddEvent(GUIEVENT_ACTIVATE, pMainInterface,
         (PFNGUIEVENT)&CSWGuiMainInterface::OnDefaultActionLeft);
-    m_CSWGuiButton_1C4.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
-    m_CSWGuiButton_1C4.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
-    m_CSWGuiButton_1C4.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
-    m_CSWGuiButton_1C4.m_nIndex = nAction;
+    m_btnIcon.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
+    m_btnIcon.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
+    m_btnIcon.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
+    m_btnIcon.m_nIndex = nAction;
 
-    m_CSWGuiButton_0.SetFocusable(0);
-    m_CSWGuiButton_0.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
-    m_CSWGuiButton_0.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
-    m_CSWGuiButton_0.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
-    m_CSWGuiButton_0.AddEvent(GUIEVENT_MOUSE_EXIT, pMainInterface,
+    m_btnAction.SetFocusable(0);
+    m_btnAction.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
+    m_btnAction.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
+    m_btnAction.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
+    m_btnAction.AddEvent(GUIEVENT_MOUSE_EXIT, pMainInterface,
         (PFNGUIEVENT)&CSWGuiMainInterface::OnPersonalActionExit);
-    m_CSWGuiButton_0.m_nIndex = nAction;
+    m_btnAction.m_nIndex = nAction;
 
-    m_CSWGuiButton_388.SetFocusable(0);
-    m_CSWGuiButton_388.AddEvent(GUIEVENT_ACTIVATE, pMainInterface, pUp);
-    m_CSWGuiButton_388.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
-    m_CSWGuiButton_388.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
-    m_CSWGuiButton_388.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
-    m_CSWGuiButton_388.m_nIndex = nAction;
+    m_btnUp.SetFocusable(0);
+    m_btnUp.AddEvent(GUIEVENT_ACTIVATE, pMainInterface, pUp);
+    m_btnUp.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
+    m_btnUp.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
+    m_btnUp.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
+    m_btnUp.m_nIndex = nAction;
 
-    m_CSWGuiButton_54C.SetFocusable(0);
-    m_CSWGuiButton_54C.AddEvent(GUIEVENT_ACTIVATE, pMainInterface, pDown);
-    m_CSWGuiButton_54C.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
-    m_CSWGuiButton_54C.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
-    m_CSWGuiButton_54C.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
-    m_CSWGuiButton_54C.m_cBorder.m_cParams.m_fRotation = 180.0f;
-    m_CSWGuiButton_54C.m_cHilite.m_cParams.m_fRotation = 180.0f;
-    m_CSWGuiButton_54C.m_nIndex = nAction;
+    m_btnDown.SetFocusable(0);
+    m_btnDown.AddEvent(GUIEVENT_ACTIVATE, pMainInterface, pDown);
+    m_btnDown.AddEvent(GUIEVENT_MOUSE_ENTER, pMainInterface, pFocus);
+    m_btnDown.AddEvent(GUIEVENT_MOUSE_WHEEL_UP, pMainInterface, pUp);
+    m_btnDown.AddEvent(GUIEVENT_MOUSE_WHEEL_DOWN, pMainInterface, pDown);
+    m_btnDown.m_cBorder.m_cParams.m_fRotation = 180.0f;
+    m_btnDown.m_cHilite.m_cParams.m_fRotation = 180.0f;
+    m_btnDown.m_nIndex = nAction;
 
-    m_CSWGuiButton_388.SetToolTip(STRREF_ACTION_MENU_UP, GUIEVENT_ACTION_MENU_UP);
-    m_CSWGuiButton_54C.SetToolTip(STRREF_ACTION_MENU_DOWN, GUIEVENT_ACTION_MENU_DOWN);
+    m_btnUp.SetToolTip(STRREF_ACTION_MENU_UP, GUIEVENT_ACTION_MENU_UP);
+    m_btnDown.SetToolTip(STRREF_ACTION_MENU_DOWN, GUIEVENT_ACTION_MENU_DOWN);
     switch (nAction)
     {
     case 4:
-        m_CSWGuiButton_1C4.m_nToolTipStrRef = STRREF_SELECT_BEHAVIOR;
+        m_btnIcon.m_nToolTipStrRef = STRREF_SELECT_BEHAVIOR;
         break;
     case 5:
-        m_CSWGuiButton_1C4.m_nToolTipStrRef = STRREF_ACTIVATE_FORM;
+        m_btnIcon.m_nToolTipStrRef = STRREF_ACTIVATE_FORM;
         break;
     case 0:
-        m_CSWGuiButton_1C4.SetToolTip(STRREF_ACTIVATE_FRIENDLY_POWER,
+        m_btnIcon.SetToolTip(STRREF_ACTIVATE_FRIENDLY_POWER,
                                     GUIEVENT_ACTIVATE_FRIENDLY_POWER);
         break;
     case 1:
-        m_CSWGuiButton_1C4.SetToolTip(STRREF_ACTIVATE_MEDICAL_ITEM,
+        m_btnIcon.SetToolTip(STRREF_ACTIVATE_MEDICAL_ITEM,
                                     GUIEVENT_ACTIVATE_MEDICAL_ITEM);
         break;
     case 2:
-        m_CSWGuiButton_1C4.SetToolTip(STRREF_ACTIVATE_NON_MEDICAL_ITEM,
+        m_btnIcon.SetToolTip(STRREF_ACTIVATE_NON_MEDICAL_ITEM,
                                     GUIEVENT_ACTIVATE_NON_MEDICAL_ITEM);
         break;
     case 3:
-        m_CSWGuiButton_1C4.SetToolTip(STRREF_ACTIVATE_MINE, GUIEVENT_ACTIVATE_MINE);
+        m_btnIcon.SetToolTip(STRREF_ACTIVATE_MINE, GUIEVENT_ACTIVATE_MINE);
         break;
     case 6:
-        m_CSWGuiButton_1C4.SetToolTip(STRREF_ACTIVATE_LEFT_ACTION,
+        m_btnIcon.SetToolTip(STRREF_ACTIVATE_LEFT_ACTION,
                                     GUIEVENT_ACTIVATE_LEFT_ACTION);
         break;
     case 7:
-        m_CSWGuiButton_1C4.SetToolTip(STRREF_ACTIVATE_MIDDLE_ACTION,
+        m_btnIcon.SetToolTip(STRREF_ACTIVATE_MIDDLE_ACTION,
                                     GUIEVENT_ACTIVATE_MIDDLE_ACTION);
         break;
     case 8:
-        m_CSWGuiButton_1C4.SetToolTip(STRREF_ACTIVATE_RIGHT_ACTION,
+        m_btnIcon.SetToolTip(STRREF_ACTIVATE_RIGHT_ACTION,
                                     GUIEVENT_ACTIVATE_RIGHT_ACTION);
         break;
     }
@@ -4785,7 +4785,7 @@ void CSWGuiTargetActionMenu::Initialize(CSWGuiMainInterface* pMainInterface)  //
     char nBottom = cNameExtent.m_nTop + cNameExtent.m_nHeight;
     m_nHealthBarSpacing = m_cHealthBar.m_cExtent.m_nTop - nBottom;
     m_nActionSpacing =
-        m_aActions[0].m_CSWGuiButton_0.m_cExtent.m_nTop - nBottom;
+        m_aActions[0].m_btnAction.m_cExtent.m_nTop - nBottom;
 
     SetNameLabel("");
 }
@@ -5160,7 +5160,7 @@ void CSWGuiMainInterface::OnCombatXButton(int nEvent)
                     {
                         if (m_aSelectedMenu[m_nTargetType] == 0 &&
                             m_cActionDescriptionState.m_bTargetChanged &&
-                            m_nXboxUnmapped5F18 == pAction->m_nAction)
+                            m_nQueuedAction == pAction->m_nAction)
                         {
                             m_pManager->PlayGuiSound(2);
                             SetCombatMessage(XBOX_STRREF_ATTACK_ALREADY_QUEUED);
@@ -5169,8 +5169,8 @@ void CSWGuiMainInterface::OnCombatXButton(int nEvent)
                         else
                         {
                             m_cActionDescriptionState.m_bTargetChanged = 1;
-                            m_nXboxUnmapped5F18 = pAction->m_nAction;
-                            m_cActionDescriptionState.m_bUnknown = 1;
+                            m_nQueuedAction = pAction->m_nAction;
+                            m_cActionDescriptionState.m_bAttackJustQueued = 1;
                             m_pManager->PlayGuiSound(6);
                             m_fCombatMessageTime = -1.0f;
                             SetCombatMessage(XBOX_STRREF_ATTACK_QUEUED);
@@ -5420,7 +5420,7 @@ void CSWGuiMainInterface::HandleInputEvent(int nEvent, int nState)
                     2);
                 m_fActionDescriptionTimer = -1.0f;
                 m_pManager->PlayGuiSound(7);
-                if (pClientApp->GetClientOptions()->m_nXboxUnmappedBit32 &&
+                if (pClientApp->GetClientOptions()->m_bPauseVertMenu &&
                     m_nTargetType == 4)
                 {
                     pClientApp->SetAutoPaused(1, 7);
@@ -5454,7 +5454,7 @@ void CSWGuiMainInterface::HandleInputEvent(int nEvent, int nState)
                     1);
                 m_fActionDescriptionTimer = -1.0f;
                 m_pManager->PlayGuiSound(7);
-                if (pClientApp->GetClientOptions()->m_nXboxUnmappedBit32 &&
+                if (pClientApp->GetClientOptions()->m_bPauseVertMenu &&
                     m_nTargetType == 4)
                 {
                     pClientApp->SetAutoPaused(1, 7);

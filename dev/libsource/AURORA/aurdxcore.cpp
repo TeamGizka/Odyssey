@@ -1394,7 +1394,7 @@ void GLRender::CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, i
     g_listTextures.m_pList[g_nCurrentTexture] = pTexture;
     g_pCurrentTexture = pTexture;
     cm_pCurrentTexture[cm_uiCurrentStage] = pTexture;
-    g_pCurrentTextureState->m_nUnknown0 = 4;
+    g_pCurrentTextureState->m_nComponents = 4;
     D3DSurface* pSurface;
     pTexture->GetSurfaceLevel(0, &pSurface);
     D3DLOCKED_RECT lock;
@@ -1456,7 +1456,7 @@ void GLRender::CreateMipMaps(int nTarget, int nComponents, int nWidth, int nHeig
                                 D3DPOOL_DEFAULT, &pTexture);
     cm_pCurrentTexture[cm_uiCurrentStage] = pTexture;
     g_pCurrentTexture = pTexture;
-    g_pCurrentTextureState->m_nUnknown0 = nComponents;
+    g_pCurrentTextureState->m_nComponents = nComponents;
     D3DBaseTexture* pOldTexture = g_listTextures.m_pList[g_nCurrentTexture];
     if (pOldTexture)
     {
@@ -4119,7 +4119,7 @@ void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int
         }
         g_pCurrentTextureState = g_listTextureStates.m_pList[g_nCurrentTexture];
         g_listTextureStates.m_pList[g_nCurrentTexture]->m_nType = nType;
-        g_listTextureStates.m_pList[g_nCurrentTexture]->m_nUnknown0 = 4;
+        g_listTextureStates.m_pList[g_nCurrentTexture]->m_nComponents = 4;
         g_listTextureStates.m_pList[g_nCurrentTexture]->m_nWrapS = nClamp & TEXTURE_CLAMP_S ? 2 : 3;
         g_listTextureStates.m_pList[g_nCurrentTexture]->m_nWrapT = g_pCurrentTextureState->m_nWrapS;
         int nMagFilter = bFilter ? 5 : 4;
@@ -4178,7 +4178,7 @@ void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int
         g_listTextureStates.m_pList[g_nCurrentTexture] = new DXTextureState;
     g_pCurrentTextureState = g_listTextureStates.m_pList[g_nCurrentTexture];
     g_listTextureStates.m_pList[g_nCurrentTexture]->m_nType = 1;
-    g_listTextureStates.m_pList[g_nCurrentTexture]->m_nUnknown0 = 4;
+    g_listTextureStates.m_pList[g_nCurrentTexture]->m_nComponents = 4;
     int nWrapS = nClamp & TEXTURE_CLAMP_S ? 2 : 3;
     g_listTextureStates.m_pList[g_nCurrentTexture]->m_nWrapS = nWrapS;
     g_listTextureStates.m_pList[g_nCurrentTexture]->m_nWrapT = g_pCurrentTextureState->m_nWrapS;

@@ -689,13 +689,13 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
     m_fF4 = 1.0f;
     m_fF8 = 1.0f;
     SetResRef(pArea->m_cAreaResRef, 0);
-    m_pFC = new C2DA("swoopupgrade", 0);
-    m_pFC->Load2DArray();
+    m_pSwoopUpgrade2DA = new C2DA("swoopupgrade", 0);
+    m_pSwoopUpgrade2DA->Load2DArray();
     for (int i = 0; i < 6; i++)
     {
         int nValue = 0;
         int nLevel = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetSwoopUpgrade(i);
-        m_pFC->GetINTEntry(nLevel, "level", &nValue);
+        m_pSwoopUpgrade2DA->GetINTEntry(nLevel, "level", &nValue);
         m_anSwoopUpgrades[i] = nValue;
     }
     m_fJumpSpeed = 0.0f;

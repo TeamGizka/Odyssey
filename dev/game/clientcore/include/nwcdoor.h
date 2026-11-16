@@ -85,7 +85,7 @@ public:
     CExoString m_sDescription;
 
     int m_bLocked;
-    int m_n108;
+    int m_bNotBlastable;
     int m_bLockable;
 
     int m_bNoVisibleModel;

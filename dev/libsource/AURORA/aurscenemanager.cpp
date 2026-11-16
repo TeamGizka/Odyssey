@@ -1594,7 +1594,7 @@ void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
             CAurRoom* pRoom =
                 pScene->m_pCurrentRoom->m_lstVisibleRooms.m_pList[i];
             bool bVisible = true;
-            if (!pRoom->m_bB8)
+            if (!pRoom->m_bHasBackground)
             {
                 for (int j = 0; j < lstPlanes.m_nCount; j++)
                 {

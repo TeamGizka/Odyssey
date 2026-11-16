@@ -98,19 +98,19 @@ static __int64 QueryTimer()
 // PC 0x00574D50 GOG 0x005751C0
 int CSWRoomSurfaceMeshHitInfo::ClearOutput()
 {
-    m_nField08 = 0;
-    m_nField1C = 0;
+    m_bHit = 0;
+    m_nHitMaterialMask = 0;
     m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
 // PC 0x00574D80 GOG 0x005751F0
 void CSWRoomSurfaceMeshHitInfo::ClearAll(unsigned long nMask)
 {
-    m_nField0C = -1;
-    m_nField00 = nMask;
-    m_nField04 = 0;
-    m_nField08 = 0;
-    m_nField1C = 0;
+    m_nHitFace = -1;
+    m_nMaterialMask = nMask;
+    m_nTraversalMask = 0;
+    m_bHit = 0;
+    m_nHitMaterialMask = 0;
     m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
 }
 // PC 0x00574DC0 GOG 0x00574E30
@@ -303,14 +303,14 @@ int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
         return 0;
     }
 
-    hitInfo.m_nField00 = m_nLOSMaterialMask;
+    hitInfo.m_nMaterialMask = m_nLOSMaterialMask;
     if (CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo) > 0)
     {
-        hitInfo.m_nField08 = 1;
+        hitInfo.m_bHit = 1;
         hitInfo.m_vHitPosition = vEnd;
     }
 
-    return hitInfo.m_nField08;
+    return hitInfo.m_bHit;
 }
 // PC 0x005760A0 GOG 0x00575F60
 int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
@@ -321,11 +321,11 @@ int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
         return 0;
     }
 
-    hitInfo.m_nField00 = m_nWalkCheckMaterialMask;
+    hitInfo.m_nMaterialMask = m_nWalkCheckMaterialMask;
 
     int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
 
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
 
@@ -337,11 +337,11 @@ int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
 
     if (nHits > 0)
     {
-        hitInfo.m_nField08 = 1;
+        hitInfo.m_bHit = 1;
         hitInfo.m_vHitPosition = vEnd;
     }
 
-    return hitInfo.m_nField08;
+    return hitInfo.m_bHit;
 }
 // PC 0x005761D0 GOG 0x00576090
 int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
@@ -354,11 +354,11 @@ int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
 
     __int64 nStartTime = QueryTimer();
 
-    hitInfo.m_nField00 = m_nAllMaterialsMask;
+    hitInfo.m_nMaterialMask = m_nAllMaterialsMask;
 
     int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
 
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
 
@@ -370,12 +370,12 @@ int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
 
     if (nHits > 0)
     {
-        hitInfo.m_nField08 = 1;
+        hitInfo.m_bHit = 1;
         hitInfo.m_vHitPosition = vEnd;
     }
 
     checkaabbtime = (float)(QueryTimer() - nStartTime);
-    return hitInfo.m_nField08;
+    return hitInfo.m_bHit;
 }
 // PC 0x005754B0 GOG 0x00575DA0
 int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
@@ -432,7 +432,7 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& v
         int nTriangle = m_lstAABBNodes[nNode].m_nTriangle;
         int nMaterialMask = 1 << m_pFaceMaterials[nTriangle];
         int nHits = 0;
-        if (!(hitInfo.m_nField00 & nMaterialMask))
+        if (!(hitInfo.m_nMaterialMask & nMaterialMask))
         {
             return 0;
         }
@@ -446,15 +446,15 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& v
 
         if (polyhit(avVertices, 3, vStart, vEnd, &vEnd, &vNormal))
         {
-            hitInfo.m_nField0C = nTriangle;
+            hitInfo.m_nHitFace = nTriangle;
             nHits = 1;
-            hitInfo.m_nField1C = nMaterialMask;
+            hitInfo.m_nHitMaterialMask = nMaterialMask;
         }
         return nHits;
     }
     else
     {
-        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nField04)
+        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nTraversalMask)
         {
             return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
         }
@@ -809,7 +809,7 @@ int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
         CheckAABBAll(vTop, vBottom, hitInfo);
     }
 
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         Vector vOffset = normalize(vDirection);
 
@@ -826,7 +826,7 @@ int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
         }
     }
 
-    return hitInfo.m_nField0C;
+    return hitInfo.m_nHitFace;
 }
 // PC 0x00576580 GOG 0x00576440
 int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
@@ -837,12 +837,12 @@ int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
     Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
 
     CheckAABBAll(vStart, vEnd, hitInfo);
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         return 0;
     }
 
-    return m_pFaceMaterials[hitInfo.m_nField0C];
+    return m_pFaceMaterials[hitInfo.m_nHitFace];
 }
 // PC 0x00576660 GOG 0x00576520
 int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
@@ -853,12 +853,12 @@ int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
     Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
 
     CheckAABBWalkable(vStart, vEnd, hitInfo);
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         return 0;
     }
 
-    return m_pFaceMaterials[hitInfo.m_nField0C];
+    return m_pFaceMaterials[hitInfo.m_nHitFace];
 }
 // PC 0x00576A70 GOG 0x00576AF0
 CSWRoomSurfaceMesh::~CSWRoomSurfaceMesh()

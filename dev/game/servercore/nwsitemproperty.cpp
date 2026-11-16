@@ -1498,7 +1498,7 @@ int CSWSItemPropertyHandler::ApplyDoorCutting(CSWSItem* pItem, CSWItemProperty* 
 {
     if (pItem != NULL)
     {
-        pItem->m_n2DC = 1;
+        pItem->m_bDoorCutting = 1;
     }
 
     return 0;
@@ -1508,7 +1508,7 @@ int CSWSItemPropertyHandler::ApplyDoorSabering(CSWSItem* pItem, CSWItemProperty*
 {
     if (pItem != NULL)
     {
-        pItem->m_n2E0 = 1;
+        pItem->m_bDoorSabering = 1;
     }
 
     return 0;
@@ -1518,7 +1518,7 @@ int CSWSItemPropertyHandler::ApplySniperBonus(CSWSItem* pItem, CSWItemProperty* 
 {
     if (pItem != NULL)
     {
-        pItem->m_n2E8 = 1;
+        pItem->m_bSniperBonus = 1;
     }
 
     return 0;
@@ -1528,7 +1528,7 @@ int CSWSItemPropertyHandler::ApplyRapidShotBonus(CSWSItem* pItem, CSWItemPropert
 {
     if (pItem != NULL)
     {
-        pItem->m_n2E4 = 1;
+        pItem->m_bRapidShotBonus = 1;
     }
 
     return 0;
@@ -1538,7 +1538,7 @@ int CSWSItemPropertyHandler::ApplyMaxDexBonus(CSWSItem* pItem, CSWItemProperty* 
 {
     if (pItem != NULL)
     {
-        pItem->m_n2EC += pProperty->m_nCostValue;
+        pItem->m_nMaxDexBonus += pProperty->m_nCostValue;
     }
 
     return 0;
@@ -1548,7 +1548,7 @@ int CSWSItemPropertyHandler::RemoveMaxDexBonus(CSWSItem* pItem, CSWItemProperty*
 {
     if (pItem != NULL)
     {
-        pItem->m_n2EC -= pProperty->m_nCostValue;
+        pItem->m_nMaxDexBonus -= pProperty->m_nCostValue;
     }
 
     return 0;

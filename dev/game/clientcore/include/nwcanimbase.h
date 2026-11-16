@@ -257,10 +257,10 @@ public:
     unsigned char m_nSpecialWalkAnimation;
     unsigned char m_aUnmappedC9[3];
     int m_bRunLooksAwful;
-    unsigned char m_nD0;
+    unsigned char m_bLightsaber;
     unsigned char m_aUnmappedD1[3];
-    int m_nD4;
-    int m_nD8;
+    int m_bComplexUnarmed;
+    int m_nCurrentForm;
     int m_bUseable;
     int m_bShadowBlobShown;
     float m_fLean;

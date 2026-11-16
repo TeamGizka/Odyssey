@@ -923,7 +923,7 @@ CSWSPlayer::CSWSPlayer(unsigned long nPlayerId)
     m_n60 = 1;
     m_nCharacterType = 0;
     m_cServerCharacter = "";
-    m_n7C = 0;
+    m_bModuleLoaded = 0;
     m_oidPCObject = CGameObjectArray::INVALIDOBJID;
     m_pLastUpdateObject = NULL;
     m_nPlayModuleCharacterListState = 0;

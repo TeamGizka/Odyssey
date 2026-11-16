@@ -102,7 +102,7 @@ public:
 
     CSWGuiButton m_aSlotButtons[NUM_EQUIPMENT_SLOTS];
     CSWGuiLabel m_aSlotLabels[NUM_EQUIPMENT_SLOTS];
-    int m_an2274[NUM_EQUIPMENT_SLOTS];
+    int m_anSlotLocked[NUM_EQUIPMENT_SLOTS];
     CExoArrayList<CSWGuiInGameItemEntry*> m_lItemEntries;
 
     CSWGuiLabel m_lblAtkl;
@@ -147,8 +147,8 @@ public:
     CSWSItem* m_pDescribedCopy;
     unsigned long m_oidCompared;
     CSWSItem* m_pComparedCopy;
-    float m_f50E4;
-    int m_n50E8;
+    float m_fSwapWeaponsDelay;
+    int m_bCanChangeCharacter;
     int m_nCharacter;
     CSWGuiButton m_btnPrevNpc;
     CSWGuiButton m_btnNextNpc;
@@ -298,8 +298,8 @@ public:
     CSWGuiBorder m_cCountBorder;
     CSWGuiText m_cCountText;
     int m_nCharacter;
-    int m_n3B0;
-    int m_n3B4;
+    int m_nUpgradeRow;
+    int m_bSkillRequirementMet;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
     enum { CHARACTER_NONE = -1 };
     CSWGuiStoreItemEntry();

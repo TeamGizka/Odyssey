@@ -601,7 +601,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
                 HandleServerToPlayerActiveItemProperties(oidObject);
                 CSWBaseItem* pBaseItem =
                     g_pRules->GetBaseItemArray()->GetBaseItem(pItem->GetBaseItemType());
-                if (pBaseItem->m_bUnknown18 == BASEITEM_MODEL_TYPE_BODY_VARIATION)
+                if (pBaseItem->m_nModelType == BASEITEM_MODEL_TYPE_BODY_VARIATION)
                 {
                     sAppearance.m_nBodyVariation = nBodyVariation;
                     sAppearance.m_nTextureVar = nTextureVariation;
@@ -647,12 +647,12 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
                     pItem->AttachToScene(NULL);
                     pCreature->GetArmourClass();
                     sAppearance.m_bUseBodyVariation = 1;
-                    sAppearance.m_anArmorModelPart[0] = pItem->m_aUnknown04[0];
-                    sAppearance.m_anArmorModelPart[1] = pItem->m_aUnknown04[1];
-                    sAppearance.m_anArmorModelPart[2] = pItem->m_aUnknown04[2];
-                    sAppearance.m_anArmorModelPart[3] = pItem->m_aUnknown04[3];
-                    sAppearance.m_anArmorModelPart[4] = pItem->m_aUnknown04[4];
-                    sAppearance.m_anArmorModelPart[5] = pItem->m_aUnknown04[5];
+                    sAppearance.m_anArmorModelPart[0] = pItem->m_anArmorModelPart[0];
+                    sAppearance.m_anArmorModelPart[1] = pItem->m_anArmorModelPart[1];
+                    sAppearance.m_anArmorModelPart[2] = pItem->m_anArmorModelPart[2];
+                    sAppearance.m_anArmorModelPart[3] = pItem->m_anArmorModelPart[3];
+                    sAppearance.m_anArmorModelPart[4] = pItem->m_anArmorModelPart[4];
+                    sAppearance.m_anArmorModelPart[5] = pItem->m_anArmorModelPart[5];
                     nPartMask |= CSWCCreature::APPEARANCE_PART_BODY;
                     pCreature->EquipToInventorySlot(INVENTORY_SLOT_ARMOUR, pItem, 0);
                 }
@@ -5643,7 +5643,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             pCreature->SetBaseCNPCAlignment(nBaseCNPCAlignment);
             CSWCAnimBase* pAnimBase = pCreature->GetAnimationBase();
             if (pAnimBase != NULL)
-                pAnimBase->m_nD8 = nD8;
+                pAnimBase->m_nCurrentForm = nD8;
             pCreature->UpdateFloatyText();
             pCreature->m_bDeadSelectable = bDeadSelectable;
             if (bDeadSelectable == 1)
@@ -6028,7 +6028,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
     pDoor->m_bLockable = bLockable;
     pDoor->m_bNoVisibleModel = bNoVisibleModel;
     pDoor->m_bLocked = bLocked;
-    pDoor->m_n108 = n108;
+    pDoor->m_bNotBlastable = n108;
     pDoor->SetIsAreaTransition(bAreaTransition);
     pDoor->m_nAppearanceType = nAppearanceType;
     pDoor->m_nGenericType = nGenericType;
@@ -6823,7 +6823,7 @@ int CSWCMessage::HandleServerToPlayerItemAppearance(
     }
     *pnModelVariation = ReadBYTE(8);
     unsigned long nBaseItem = *pnBaseItem;
-    if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_bUnknown18 == 1)
+    if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nModelType == 1)
     {
         *pnBodyVariation = ReadBYTE(8);
         *pnTextureVariation = ReadBYTE(8);
@@ -6858,7 +6858,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Add(int nMode, CSWCItem** ppItem
         CSWBaseItem* pBaseItem =
             g_pRules->GetBaseItemArray()->GetBaseItem(pItem->GetBaseItemType());
         if (pBaseItem != NULL &&
-            pBaseItem->m_bUnknown18 == BASEITEM_MODEL_TYPE_BODY_VARIATION)
+            pBaseItem->m_nModelType == BASEITEM_MODEL_TYPE_BODY_VARIATION)
         {
             g_pAppManager->GetClientExoApp()->GetPlayerCreature();
         }

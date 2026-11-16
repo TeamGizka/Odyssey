@@ -742,7 +742,7 @@ void CSWCCreature::BlurWeapon(int bBlur)
         else
         {
             g_pRules->m_pBaseItems->GetBaseItem(pItem->m_nBaseItem);
-            if (pItem->m_nUnknown198 != 1)
+            if (pItem->m_bVisualEffectLoaded != 1)
                 m_bBlurWeapon = bBlur;
         }
     }
@@ -1463,13 +1463,13 @@ void CSWCCreature::UpdateWeaponClass()
         }
     }
     GetAnimationBase()->m_nWieldClass = nWieldClass;
-    GetAnimationBase()->m_nD0 = bLightsaber;
+    GetAnimationBase()->m_bLightsaber = bLightsaber;
     if (GetServerCreature() != NULL && GetServerCreature()->GetStats() != NULL)
     {
         if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
-            GetAnimationBase()->m_nD4 = 1;
+            GetAnimationBase()->m_bComplexUnarmed = 1;
         else
-            GetAnimationBase()->m_nD4 = 0;
+            GetAnimationBase()->m_bComplexUnarmed = 0;
     }
 }
 // PC 0x00660250 GOG 0x00660060
@@ -6044,9 +6044,9 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
         {
             CSWRoomSurfaceMeshHitInfo cMeshHit(SWROOMSURFACEMESH_ALL_MATERIALS_MASK);
             pRoom->GetWalkMesh()->CheckAABBAll(vStart, vEnd, cMeshHit);
-            if (cMeshHit.m_nField0C != -1)
+            if (cMeshHit.m_nHitFace != -1)
             {
-                pRoom->GetWalkMesh()->GetTriangleVertices(0, cMeshHit.m_nField0C,
+                pRoom->GetWalkMesh()->GetTriangleVertices(0, cMeshHit.m_nHitFace,
                                                        &nFirst, &nSecond, &nThird);
                 pRoom->GetWalkMesh()->GetVertex(nFirst, &vFirst);
                 pRoom->GetWalkMesh()->GetVertex(nSecond, &vSecond);
@@ -7074,7 +7074,7 @@ void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigat
         return;
     }
     pServerCreature->m_nCurrentForm = nAction;
-    GetAnimationBase()->m_nD8 = nAction;
+    GetAnimationBase()->m_nCurrentForm = nAction;
     unsigned long nStrRef;
     switch (nAction)
     {

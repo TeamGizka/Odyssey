@@ -101,7 +101,7 @@ public:
 
     CExoString m_sName;
     Gob* m_pVisualEffect;
-    int m_nUnknown198;
+    int m_bVisualEffectLoaded;
     int m_bPowered;
     int m_nUnknown1A0;
     CExoSoundSource* m_pPowerSound;

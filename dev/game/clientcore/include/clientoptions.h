@@ -140,13 +140,13 @@ public:
     unsigned int m_bSubtitles : 1;
     unsigned int m_bMiniMap : 1;
     unsigned int m_bFloatingNumbers : 1;
-    unsigned int m_nXboxUnmappedBit26 : 1;
+    unsigned int m_bShowFloaty : 1;
     unsigned int m_bStatusSummary : 1;
     unsigned int m_bAutopauseEndOfCombatRound : 1;
     unsigned int m_bAutopauseEnemySighted : 1;
     unsigned int m_bAutopausePartyKilled : 1;
     unsigned int m_bAutopauseActionMenu : 1;
-    unsigned int m_nXboxUnmappedBit32 : 1;
+    unsigned int m_bPauseVertMenu : 1;
     unsigned int m_bAutopauseNewTargetSelected : 1;
     unsigned int m_nAutopauseBits : 30;
     unsigned char m_nGeometryFadeMode;
@@ -164,7 +164,7 @@ public:
     unsigned char m_nWindMode;
     unsigned char m_nGoreLevel;
     unsigned char m_nAmbientSoundOptions;
-    unsigned char m_nXboxUnmapped11;
+    unsigned char m_nAntiAliasingMode;
     unsigned char m_nDifficulty;
     unsigned char m_nBrightness;
     float m_fGammaMin;

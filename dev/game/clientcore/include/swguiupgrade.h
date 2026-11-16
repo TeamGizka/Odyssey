@@ -90,7 +90,7 @@ public:
 #ifndef _XBOX
     CSWGuiLabel m_lblTitle2;
 #endif
-    CSWGuiLabel m_CSWGuiLabel_1F60;
+    CSWGuiLabel m_cDescription;
     CSWGuiLabel m_cLabel20A0;
     CSWGuiLabel m_cDescriptionBackground;
     CSWGuiLabel m_cLightsaberDescriptionBackground;
@@ -117,7 +117,7 @@ public:
     CSWGuiButton m_btnBack;
 #endif
     unsigned long m_bItemListShown : 1;
-    unsigned long m_nPanelFlagsUnused : 31;
+    unsigned long m_nFlagsUnused : 31;
     unsigned char m_nItemListMode;
     char gap_2F4D[7];
 
@@ -209,7 +209,7 @@ public:
     CSWGui3DSceneView m_3dModel;
     CSWGui3DSceneView m_3dModelLs;
     unsigned long m_bItemListShown : 1;
-    unsigned long m_nPanelFlagsUnused : 31;
+    unsigned long m_nFlagsUnused : 31;
     unsigned char m_nItemListMode;
     char gap_4345[7];
     CSWSItem* m_pSelectedItem;
@@ -219,7 +219,7 @@ public:
     CSWSItem* m_apItemEntries[NUM_SWOOP_SLOTS];
     CExoString m_asUpgradeTemplates[NUM_SWOOP_SLOTS];
     int m_anUpgradeProperties[NUM_SWOOP_SLOTS];
-    int m_an43CC[NUM_SWOOP_SLOTS];
+    int m_anUpgradeRows[NUM_SWOOP_SLOTS];
     C2DA* m_pUpgradeTableEx;
     C2DA* m_pCrystalTable;
     C2DA* m_pUpgradeTable;
@@ -279,7 +279,7 @@ public:
     unsigned long m_bSecondWeaponSet : 1;
     unsigned long m_oidOtherWeapon;
 
-    int m_nC84;
+    int m_bExitAfterUpgrade;
     unsigned long m_nC88;
 
     CSWSItem* m_pPresetItem;
@@ -370,13 +370,13 @@ public:
     int m_n68;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
-    CSWGuiLabel m_lbl84;
-    CSWGuiLabel m_lbl1CC;
-    CSWGuiLabel m_lbl314;
-    CSWGuiLabel m_lbl45C;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblAccept;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblCancel;
     CSWGuiLabel m_lbl5A4;
-    CSWGuiLabel m_lbl6EC;
-    CSWGuiLabel m_lbl834;
+    CSWGuiLabel m_lblExamine;
+    CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblCost;
     CSWGuiLabel m_lblCostValue;
@@ -411,7 +411,7 @@ public:
     int m_bBuyMode;
     int m_nBreakdownFilter;
     CSWGuiUpgradeSelection* m_pUpgradeSelection;
-    CExoString m_s3EF0;
+    CExoString m_sCreateTable;
     void SetCreateTable(CExoString sTable);
 
     void PopulateStore();
@@ -468,13 +468,13 @@ public:
     int m_n68;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
-    CSWGuiLabel m_lbl84;
-    CSWGuiLabel m_lbl1CC;
-    CSWGuiLabel m_lbl314;
-    CSWGuiLabel m_lbl45C;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblAccept;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblCancel;
     CSWGuiLabel m_lbl5A4;
-    CSWGuiLabel m_lbl6EC;
-    CSWGuiLabel m_lbl834;
+    CSWGuiLabel m_lblExamine;
+    CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblTitle2;
@@ -554,10 +554,10 @@ public:
     unsigned int m_bShowItemSuffix : 1;
     unsigned int m_bDisabled : 1;
     int m_nUpgradeIndex;
-    CSWGuiBorder m_CSWGuiBorder_1D8;
-    CSWGuiBorder m_CSWGuiBorder_24C;
-    CSWGuiBorder m_CSWGuiBorder_2C0;
-    CSWGuiText m_CSWGuiText_334;
+    CSWGuiBorder m_cIconBorder;
+    CSWGuiBorder m_cIconHilite;
+    CSWGuiBorder m_cIcon;
+    CSWGuiText m_cCountText;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int, int);
     virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0 GOG 0x006049B0
     {

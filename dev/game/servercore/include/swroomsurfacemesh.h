@@ -46,12 +46,12 @@ public:
     int ClearOutput();
     void ClearAll(unsigned long nMask);
 
-    int m_nField00;
-    int m_nField04;
-    int m_nField08;
-    int m_nField0C;
+    int m_nMaterialMask;
+    int m_nTraversalMask;
+    int m_bHit;
+    int m_nHitFace;
     Vector m_vHitPosition;
-    int m_nField1C;
+    int m_nHitMaterialMask;
 };
 
 class CSWRoomSurfaceMeshCrossingFaces : public CExoArrayList<int>

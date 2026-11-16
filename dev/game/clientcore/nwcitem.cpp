@@ -49,7 +49,7 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
     m_nActivePropertyIndex = INVALID_ACTIVE_PROPERTY_INDEX;
     m_nBodyVariation = 0;
     m_pVisualEffect = 0;
-    m_nUnknown198 = 0;
+    m_bVisualEffectLoaded = 0;
     m_pPowerSound = 0;
     m_bPowered = 0;
     m_nUnknown1A0 = 0;
@@ -373,7 +373,7 @@ int CSWCItem::LoadVisualEffect(unsigned char nEffect)
     {
         return 0;
     }
-    m_nUnknown198 = 1;
+    m_bVisualEffectLoaded = 1;
     return 1;
 }
 // PC 0x0069D130 GOG 0x0069CF10

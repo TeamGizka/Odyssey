@@ -223,7 +223,7 @@ public:
     CResRef m_cTemplateResRef;
     unsigned long m_EffectSpellId;
     int m_bLightIsOn;
-    int m_n390;
+    int m_bLightStateChanged;
     unsigned char m_nBodyBag;
     char m_aUnmapped395[0x3];
     int m_bStatic;
@@ -232,7 +232,7 @@ public:
     CSWPlaceableSurfaceMesh m_cSurfaceMesh;
     Quaternion m_qOrientation;
     int m_n438;
-    int m_n43C;
+    int m_nComputerUseBonus;
     int m_bIsBodyBag;
     int m_bIsBodyBagVisible;
     unsigned long m_oidBodyBagCreature;

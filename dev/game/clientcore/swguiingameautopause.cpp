@@ -29,7 +29,7 @@ void CSWGuiInGameAutoPause::SetupOptions()
         unsigned int bActionMenu = pOptions->m_bAutopauseActionMenu;
         CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
         pToggle3->m_bToggled = bActionMenu;
-        unsigned int bVertMenu = pOptions->m_nXboxUnmappedBit32;
+        unsigned int bVertMenu = pOptions->m_bPauseVertMenu;
         CSWGuiButtonToggle* pToggle4 = m_aCheckboxes[4].AsButtonToggle();
         pToggle4->m_bToggled = bVertMenu;
 #else
@@ -65,7 +65,7 @@ void CSWGuiInGameAutoPause::SaveOptions()
             m_aCheckboxes[2].AsButtonToggle()->m_bToggled;
         pOptions->m_bAutopauseActionMenu =
             m_aCheckboxes[3].AsButtonToggle()->m_bToggled;
-        pOptions->m_nXboxUnmappedBit32 =
+        pOptions->m_bPauseVertMenu =
             m_aCheckboxes[4].AsButtonToggle()->m_bToggled;
 #else
         pOptions->m_bAutopauseMineSighted =

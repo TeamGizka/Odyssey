@@ -2839,7 +2839,7 @@ int main()
             else
             {
                 g_pAppManager->m_pReentrantServerStats->StartStallEvent(1);
-                g_pAppManager->m_pReentrantServerStats->m_nUnknown56 = 4;
+                g_pAppManager->m_pReentrantServerStats->m_nError = 4;
             }
         }
     }

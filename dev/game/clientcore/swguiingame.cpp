@@ -165,11 +165,11 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     }
     CSWSCreature* pServer = pCreature->GetServerCreature();
     CSWSCreatureStats* pStats = pServer->GetStats();
-    m_cChar2350.SetPortrait(pCreature->GetPortrait(1));
+    m_cChar1.SetPortrait(pCreature->GetPortrait(1));
     int nPoisonState = pServer->m_nPoisonState;
-    m_cChar2350.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1), nPoisonState);
+    m_cChar1.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1), nPoisonState);
     int nMaxForce = pServer->GetMaxForcePoints();
-    m_cChar2350.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);
+    m_cChar1.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);
     int nState = 0;
     int nBuffCount = 0;
     int nDebuffCount = 0;
@@ -229,9 +229,9 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
             g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
         m_lblTopClass2Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(1, 0));
     }
-    m_cChar2350.Show(1, nState, nBuffCount, nDebuffCount);
+    m_cChar1.Show(1, nState, nBuffCount, nDebuffCount);
     CSWGuiPanel::Draw(fElapsed);
-    m_cChar2350.DrawEffects(fElapsed, 1);
+    m_cChar1.DrawEffects(fElapsed, 1);
     int nCharacters = g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters();
     if (nCharacters == 1 || nCharacters == 0)
     {
@@ -1201,7 +1201,7 @@ CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     m_cStatusSummary.m_nMaxForcePointsGain = 0;
     m_cStatusSummary.m_nMaxForcePointsLost = 0;
     m_cStatusSummary.m_nSuppressed = 0;
-    m_n94 = 0;
+    m_bAlignmentShifted = 0;
 
 #ifndef _XBOX
     m_bPositioned = 1;
@@ -1349,7 +1349,7 @@ void CSWGuiStatusSummary::OnPanelAdded()
 
     PlayPendingSounds();
     if (m_cStatusSummary.m_nDarkShift || m_cStatusSummary.m_nLightShift)
-        m_n94 = 1;
+        m_bAlignmentShifted = 1;
 
     float fScaleX = 1.0f;
     float fScaleY = 1.0f;
@@ -2297,7 +2297,7 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     InitControl(m_lblTopClass1Level, "LBL_TOP_CLASS1LEVEL", 1);
     InitControl(m_lblTopClass2Level, "LBL_TOP_CLASS2LEVEL", 1);
     InitControl(m_lblCharName, "LBL_CHARNAME", 1);
-    m_cChar2350.Initialize((CSWGuiMainInterface*)this, 1);
+    m_cChar1.Initialize((CSWGuiMainInterface*)this, 1);
     InitControl(m_lblChar2, "LBL_CHAR2", 1);
     InitControl(m_lblLevelUp2, "LBL_LEVELUP2", 1);
     InitControl(m_lblBack2, "LBL_BACK2", 1);
@@ -2318,7 +2318,7 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     m_btnChange3.SetFocusable(0);
     m_btnChange3.AddEvent(CSWGuiControl::EVENT_SELECT, this,
         (CSWGuiHandler)&CSWGuiInGameMenu::OnChangeCharacter);
-    m_n3DCC = 0;
+    m_bCharacterChangeDisabled = 0;
 #endif
 
     m_LblhEqu.AddEvent(53, this,
@@ -2399,7 +2399,7 @@ void CSWGuiInGameMenu::OnChangeCharacter(CSWGuiControl* pControl)
     int nDirection = CHANGE_DIRECTION_NEXT;
     if (pControl->m_bSelected == 0)
         return;
-    if (m_n3DCC != 0)
+    if (m_bCharacterChangeDisabled != 0)
     {
         CSWGuiMessageBox* pMessageBox =
             g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMessageBox;

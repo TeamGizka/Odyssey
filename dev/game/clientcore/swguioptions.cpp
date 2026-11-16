@@ -444,10 +444,10 @@ void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
     {
 #ifdef _XBOX
         int bFloaty = (g_pAppManager->m_pClientExoApp->GetClientOptions()
-                           ->m_nXboxUnmappedBit26 == 0);
+                           ->m_bShowFloaty == 0);
         CClientOptions* pOptions =
             g_pAppManager->m_pClientExoApp->GetClientOptions();
-        pOptions->m_nXboxUnmappedBit26 = bFloaty;
+        pOptions->m_bShowFloaty = bFloaty;
 #else
         int bFloaty = (g_pAppManager->m_pClientExoApp->GetClientOptions()
                            ->m_bFloatingNumbers == 0);
@@ -502,7 +502,7 @@ void CSWGuiOptionsFeedback::SetUpOptions()
         unsigned int bMiniMap = pOptions->m_bMiniMap;
         CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
         pToggle3->m_bToggled = bMiniMap;
-        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        unsigned int bFloaty = pOptions->m_bShowFloaty;
         CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
         pToggle5->m_bToggled = bFloaty;
         unsigned int bRumble = pOptions->m_bFloatingNumbers;
@@ -1728,7 +1728,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
         unsigned int bMiniMap = pOptions->m_bMiniMap;
         CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
         pToggle3->m_bToggled = bMiniMap;
-        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        unsigned int bFloaty = pOptions->m_bShowFloaty;
         CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
         pToggle5->m_bToggled = bFloaty;
         unsigned int bRumble = pOptions->m_bFloatingNumbers;

@@ -61,7 +61,7 @@ CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace,
         pRoom = &m_pRooms[nLastRoom];
         if (pnFace != NULL)
         {
-            *pnFace = hitInfo.m_nField0C;
+            *pnFace = hitInfo.m_nHitFace;
         }
     }
     else
@@ -77,7 +77,7 @@ CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace,
                 pRoom = &m_pRooms[nRoom];
                 if (pnFace != NULL)
                 {
-                    *pnFace = hitInfo.m_nField0C;
+                    *pnFace = hitInfo.m_nHitFace;
                 }
                 if (pnRoomIndex != NULL)
                 {

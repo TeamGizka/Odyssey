@@ -44,7 +44,7 @@ public:
         return m_nBaseItem;
     }
 
-    unsigned char m_aUnknown04[6];
+    unsigned char m_anArmorModelPart[6];
     unsigned char m_aUnmapped0A[2];
     int m_nBaseItem;
 };
@@ -160,7 +160,7 @@ public:
     int m_nDamageFlags;
     int m_nMinRange;
     int m_nMaxRange;
-    unsigned char m_bUnknown18;
+    unsigned char m_nModelType;
     unsigned char m_nChargesStarting;
     unsigned char m_nRangedWeapon;
     unsigned char m_nWeaponSize;
@@ -170,7 +170,7 @@ public:
     unsigned char m_nCritHitMult;
     float m_fBaseCost;
     unsigned short m_nMaxStackSize;
-    unsigned char m_aUnmapped26[2];
+    unsigned char m_aStackSizeAlignment[2];
     int m_nDescription;
     unsigned char m_nMinProps;
     unsigned char m_nMaxProps;
@@ -233,7 +233,7 @@ public:
 
     int GetEquipableSlots() { return m_nEquipableSlots; }
     void SetCanRotateIcon(int value) { m_bCanRotateIcon = value; }
-    void SetModelType(unsigned char value) { m_bUnknown18 = value; }
+    void SetModelType(unsigned char value) { m_nModelType = value; }
     void SetGenderSpecific(unsigned char value) { m_nGenderSpecific = value; }
     void SetPartEnvMap(int value) { m_nPartEnvMap = value; }
     void SetDefaultModel(const CResRef& value) { m_resDefaultModel = value; }

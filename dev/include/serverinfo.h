@@ -92,8 +92,8 @@ public:
     int m_nLoseExpNum;
     int m_nLoseItemsNum;
     int m_bPauseAndPlay;
-    int m_nXboxUnmapped0D0;
-    int m_nXboxUnmapped0D4;
+    int m_bOnePartyOnly;
+    int m_bEnforceLegalCharacters;
     int m_bItemLevelRestrictions;
     int m_bResetOnVacant;
     int m_bResetOnVictory;
@@ -107,7 +107,7 @@ public:
     CPersistantWorldOptions m_PersistantWorldOptions;
 
 #ifdef _XBOX
-    short m_nXboxUnmapped114;
+    short m_nGameType;
 #endif
     int m_bPartyPicking;
     int m_bConversationMultiPlayer;

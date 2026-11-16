@@ -17,14 +17,14 @@ public:
 #ifdef _XBOX
         CErrorMessageData()
         {
-            m_nUnknown08 = 0;
-            m_nUnknown0C = 0;
+            m_bHideButtons = 0;
+            m_bAllowCancel = 0;
             m_pCallbackObject = 0;
             m_pfnCallback = 0;
         }
         CExoString m_sMessage;
-        int m_nUnknown08;
-        int m_nUnknown0C;
+        int m_bHideButtons;
+        int m_bAllowCancel;
         CSWGuiObject* m_pCallbackObject;
         CSWGuiHandler m_pfnCallback;
 #else

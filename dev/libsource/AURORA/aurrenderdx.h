@@ -27,7 +27,7 @@ struct DXTextureState
 {
     DXTextureState()
     {
-        m_nUnknown0 = 0;
+        m_nComponents = 0;
         m_nType = 0;
         m_nWrapR = 0;
         m_nWrapS = 3;
@@ -36,7 +36,7 @@ struct DXTextureState
         m_nMinFilter = 5;
         m_nMipFilter = 5;
     }
-    int m_nUnknown0;
+    int m_nComponents;
     int m_nType;
     int m_nWrapR;
     int m_nWrapS;

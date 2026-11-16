@@ -3857,12 +3857,8 @@ Gob::Gob(char* sName)
     m_bInCutscene = false;
     m_bHierarchyAnimated = false;
     m_pLightContainer = new CAurObjectLightContainer;
-#ifdef _XBOX
     m_nVisiblePixels = 1;
-#else
-    m_nUnused2 = 1;
-#endif
-    m_n1F8 = 0;
+    m_bSkipHierarchyAnimation = 0;
     m_n1FC = 0;
     gobs.Insert(this, FindGobIdx(m_sName));
 }

@@ -151,7 +151,7 @@ public:
 
     int m_bFloatyEffects;
     char m_nAreaLoadState;
-    char m_a25[3];
+    char m_aAreaLoadStateAlignment[3];
     unsigned long m_oidNWSObject;
 
 #ifdef _XBOX
@@ -174,7 +174,7 @@ public:
     char m_nCharacterType;
     CResRef m_cServerCharacter;
     char m_aUnmapped75[7];
-    int m_n7C;
+    int m_bModuleLoaded;
     int m_nPlayerIndex;
 
 public:
@@ -219,7 +219,7 @@ public:
     };
     unsigned long m_oidCreature;
     char m_nUpdateType;
-    char m_a05[3];
+    char m_aUpdateTypeAlignment[3];
     CSWCreatureStatsUpdate* m_pStatsUpdate;
     int m_nUpdateRequired;
     CSWSPlayerCharSheetGUI()  // PC 0x0059D5F0 GOG 0x0059D660

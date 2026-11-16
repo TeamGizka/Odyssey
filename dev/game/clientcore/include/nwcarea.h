@@ -129,7 +129,7 @@ public:
     Vector m_vDayAmbientColor;
     Vector m_vDayDiffuseColor;
     Vector m_vSunColor;
-    Vector m_vUnknown170;
+    Vector m_vDynAmbientColor;
 
 
     CExoString m_sAreaName;
@@ -143,7 +143,7 @@ public:
     unsigned long m_nVersion;
     int m_bDawning;
     int m_bDusking;
-    int m_nUnknown1BC;
+    int m_bDayNightTransitionStarted;
     int m_bLightingChanged;
     CExoArrayList<CSWCMapPin*> m_lstMapPins;
     CExoArrayList<unsigned long> m_lstSoundObjectIds;
@@ -161,10 +161,10 @@ public:
     unsigned long m_nWeatherDuration;
     unsigned char m_nWeatherType;
     unsigned char m_nNewWeatherType;
-    unsigned char m_aUnknown1F2[0x2];
+    unsigned char m_aWeatherTypeAlignment[0x2];
 
     float m_fWeatherStrength;
-    float m_fUnknown1F8;
+    float m_fWindGustTimer;
     unsigned long m_nCalendarDay;
     unsigned long m_nTimeOfDay;
     CExoLinkedList<CAurObject> m_lstHitCheckIgnoreObjects;
@@ -172,7 +172,7 @@ public:
     CExoArrayList<unsigned long> m_lstObjectIds;
     CExoArrayList<CSWCPlaceableObjectLight*> m_lstPlaceableLights;
     CExoArrayList<unsigned long> m_lstDeferredDeleteIds;
-    int m_nUnknown230;
+    int m_bLightCountChanged;
     int m_bIsDark;
 
 
@@ -182,7 +182,7 @@ public:
     unsigned char m_nGridX;
     unsigned char m_nGridY;
     unsigned char m_nGridZ;
-    unsigned char m_aUnknown257[0x1];
+    unsigned char m_aGridAlignment[0x1];
     int m_nGridCellCount;
     int m_nRoomCount;
     CSWCRoom* m_pRooms;
@@ -190,7 +190,7 @@ public:
     unsigned long m_anCorpseObjectIds[4];
     unsigned char m_nCorpseReadIndex;
     unsigned char m_nCorpseWriteIndex;
-    unsigned char m_aUnknown27A[0x2];
+    unsigned char m_aCorpseIndexAlignment[0x2];
     CSWSArea* m_pServerArea;
 #ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;

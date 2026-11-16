@@ -882,9 +882,9 @@ void CSWTrackFollower::PlayAnimation(char* szAnimation, float fSpeed, int nFlags
     }
 }
 // PC 0x006C2F50 GOG 0x006C2D80
-void CSWTrackFollower::OnDeath(int nReserved)
+void CSWTrackFollower::OnDeath(int bScript)
 {
-    if (nReserved == 0)
+    if (bScript == 0)
     {
         CResRef resScript = GetScriptName(SCRIPT_DEATH);
         if (resScript.IsValid())
@@ -990,11 +990,11 @@ int CSWTrackFollower::AttachGuns(CAurObject* pObject)
     return nAttached;
 }
 // PC 0x006C3270 GOG 0x006C30A0
-void CSWTrackFollower::OnHitObstacle(int nReserved)
+void CSWTrackFollower::OnHitObstacle(int bScript)
 {
     int nModels;
     int i;
-    if (nReserved == 0)
+    if (bScript == 0)
     {
         CResRef resScript = GetScriptName(8);
         if (resScript.IsValid())
@@ -1063,9 +1063,9 @@ int CSWTrackFollower::DoObstacleHitCheck(CSWMGObstacle* pObstacle)
     return 0;
 }
 // PC 0x006C3480 GOG 0x006C32B0
-void CSWTrackFollower::OnDamage(int nReserved)
+void CSWTrackFollower::OnDamage(int bScript)
 {
-    if (nReserved == 0)
+    if (bScript == 0)
     {
         CResRef resScript = GetScriptName(5);
         if (resScript.IsValid())

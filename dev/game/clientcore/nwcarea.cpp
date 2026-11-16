@@ -921,8 +921,8 @@ CSWCArea::CSWCArea()
     m_bDawning = 0;
     m_bDusking = 0;
     m_bIsNight = 0;
-    m_vUnknown170 = Vector();
-    m_nUnknown1BC = 0;
+    m_vDynAmbientColor = Vector();
+    m_bDayNightTransitionStarted = 0;
     m_bLightingChanged = 1;
     m_pAmbientSound = new CSWCAmbientSound(this);
     m_fLightningTimer = 0.0f;
@@ -932,14 +932,14 @@ CSWCArea::CSWCArea()
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
     m_fWeatherStrength = 0.0f;
-    m_fUnknown1F8 = 0.0f;
+    m_fWindGustTimer = 0.0f;
     unsigned long nDay;
     unsigned long nTime;
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
     m_nCalendarDay = nDay;
     m_nTimeOfDay = nTime;
     m_nUnknown208 = 0;
-    m_nUnknown230 = 0;
+    m_bLightCountChanged = 0;
     m_bIsDark = 0;
     m_pAreaGrid = 0;
     m_nGridX = GRID_COORDINATE_INVALID;
@@ -1342,10 +1342,10 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
         SetAsNight();
     else
         SetAsDay();
-    m_vUnknown170.m_fX = (m_nDynAmbientColor & 0xFF) * (1.0f / 255.0f);
-    m_vUnknown170.m_fY = ((m_nDynAmbientColor >> 8) & 0xFF) * (1.0f / 255.0f);
-    m_vUnknown170.m_fZ = ((m_nDynAmbientColor >> 16) & 0xFF) * (1.0f / 255.0f);
-    m_pScene->SetAmbient(m_vUnknown170);
+    m_vDynAmbientColor.m_fX = (m_nDynAmbientColor & 0xFF) * (1.0f / 255.0f);
+    m_vDynAmbientColor.m_fY = ((m_nDynAmbientColor >> 8) & 0xFF) * (1.0f / 255.0f);
+    m_vDynAmbientColor.m_fZ = ((m_nDynAmbientColor >> 16) & 0xFF) * (1.0f / 255.0f);
+    m_pScene->SetAmbient(m_vDynAmbientColor);
     m_pScene->FinishSceneGeometry();
     m_pScene->ComputeStaticLighting();
     pCamera->AttachToScene(m_pScene);
@@ -1445,7 +1445,7 @@ void CSWCArea::UnloadArea()
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
     m_fWeatherStrength = 0.0f;
-    m_fUnknown1F8 = 0.0f;
+    m_fWindGustTimer = 0.0f;
     ClearAllMapPins();
     if (m_pShadowLight != NULL)
     {
@@ -1712,7 +1712,7 @@ void CSWCArea::Update(float fTimeDelta)
 
     if (m_nWind == 1 || m_nWind == 2)
     {
-        if (m_fUnknown1F8 <= fTimeStep)
+        if (m_fWindGustTimer <= fTimeStep)
         {
             int nGust;
             switch (m_nWind)
@@ -1724,11 +1724,11 @@ void CSWCArea::Update(float fTimeDelta)
                 nGust = rand();
                 break;
             }
-            m_fUnknown1F8 = (rand() % WIND_GUST_DELAY_RANGE) / 1000.0f + 5.0f;
+            m_fWindGustTimer = (rand() % WIND_GUST_DELAY_RANGE) / 1000.0f + 5.0f;
         }
         else
         {
-            m_fUnknown1F8 -= fTimeStep;
+            m_fWindGustTimer -= fTimeStep;
         }
     }
 
@@ -1736,9 +1736,9 @@ void CSWCArea::Update(float fTimeDelta)
     {
         UpdateDayNightCycle(fTimeStep);
     }
-    if (m_bIsNight && m_nUnknown230)
+    if (m_bIsNight && m_bLightCountChanged)
     {
-        m_nUnknown230 = 0;
+        m_bLightCountChanged = 0;
     }
 
     if (m_nWeatherDuration > 0)
@@ -1829,7 +1829,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
     }
     float fDuration = pModule->m_fTimeOfDayHours;
     float fTime = pModule->m_fTimeOfDay;
-    if (!m_nUnknown1BC)
+    if (!m_bDayNightTransitionStarted)
     {
 
         if (m_bDawning)
@@ -1844,7 +1844,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
             {
             }
         }
-        m_nUnknown1BC = TRUE;
+        m_bDayNightTransitionStarted = TRUE;
     }
     if (m_bDawning)
     {
@@ -1852,7 +1852,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
         {
             projectionalpha = 0.05f;
             shadowalpha = m_nShadowOpacity * 0.01f;
-            m_nUnknown1BC = FALSE;
+            m_bDayNightTransitionStarted = FALSE;
             m_bDawning = FALSE;
             vAmbient = m_vDayAmbientColor;
             vDiffuse = m_vDayDiffuseColor;
@@ -1882,7 +1882,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
         {
             projectionalpha = 0.0f;
             shadowalpha = m_nShadowOpacity * 0.01f;
-            m_nUnknown1BC = FALSE;
+            m_bDayNightTransitionStarted = FALSE;
             m_bDusking = FALSE;
             vAmbient = m_vNightAmbientColor;
             vDiffuse = m_vNightDiffuseColor;

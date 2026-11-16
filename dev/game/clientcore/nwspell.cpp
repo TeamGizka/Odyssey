@@ -42,10 +42,10 @@ CSWSpell::CSWSpell()
     m_nCastTime = 0;
     m_nProjectileOrientation = 0;
     m_bUnknown11E = 0;
-    m_nUnknown120 = 0;
+    m_bImmunityItem = 0;
     m_pSubRadialSpells = 0;
     m_nSubRadialSpellCount = 0;
-    m_nUnknown134 = 0;
+    m_bUseConcentration = 0;
     m_nUserType = USERTYPE_NONE;
     m_nAltMessage = 0;
     m_bHostileSetting = 0;
@@ -177,7 +177,7 @@ void CSWSpellArray::Load()
     for (int i = 0; i < m_nNumSpells; i++)
     {
         int nValue;
-        { CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_n00 = i; }
+        { CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nSpellId = i; }
         p2DA->GetINTEntry(i, "Category", &nValue);
         { int nCategory = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nCategory = nCategory; }
         p2DA->GetINTEntry(i, "MaxCR", &nValue);

@@ -2397,18 +2397,18 @@ void CSWSArea::SavePlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x004E7650 GOG 0x004E7720
 void CSWSArea::UnloadArea()
 {
-    delete[] m_p34;
-    m_p34 = NULL;
-    delete[] m_p40;
-    m_p40 = NULL;
-    delete[] m_p1C;
-    m_p1C = NULL;
-    delete[] m_p20;
-    m_p20 = NULL;
-    delete[] m_p24;
-    m_p24 = NULL;
-    delete[] m_p28;
-    m_p28 = NULL;
+    delete[] m_pStaticTriangles;
+    m_pStaticTriangles = NULL;
+    delete[] m_pStaticVertices;
+    m_pStaticVertices = NULL;
+    delete[] m_pStaticObjectTriangleStarts;
+    m_pStaticObjectTriangleStarts = NULL;
+    delete[] m_pStaticObjectTriangleCounts;
+    m_pStaticObjectTriangleCounts = NULL;
+    delete[] m_pStaticObjectVertexStarts;
+    m_pStaticObjectVertexStarts = NULL;
+    delete[] m_pStaticObjectVertexCounts;
+    m_pStaticObjectVertexCounts = NULL;
 
     while (!m_lstExpansions.IsEmpty())
     {

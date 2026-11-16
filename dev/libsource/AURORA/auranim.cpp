@@ -1823,7 +1823,7 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0
             return;
         bAnimateHierarchy = false;
     }
-    if (m_n1F8)
+    if (m_bSkipHierarchyAnimation)
         bAnimateHierarchy = false;
     int nRun = m_lOutOfOrderAnimations.m_nCount;
     m_bFirstAnimate = false;

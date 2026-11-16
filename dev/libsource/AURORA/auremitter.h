@@ -430,7 +430,7 @@ public:
     Vector m_vHeading;
     Vector m_vDrift;
     Vector m_vOrigin;
-    char m_bReserved6C;
+    char m_bSettled;
     float m_fAge;
 };
 
@@ -548,8 +548,8 @@ public:
 
     float m_fBirthRateRandom;
 
-    float m_fReservedF4;
-    float m_fReservedF8;
+    float m_fLightningElapsed;
+    float m_fControlPointElapsed;
     float m_fTargetSize;
     float m_fNumControlPoints;
     float m_fControlPointRadius;
@@ -557,22 +557,22 @@ public:
     float m_fControlPointDelay;
     float m_fTangentSpread;
     float m_fTangentLength;
-    int m_nReserved114;
+    int m_nRenderMode;
     char m_abReserved118[4];
 
     Vector m_vColorMid;
     Vector m_vXAxis;
     Vector m_vYAxis;
     Vector m_vDirection;
-    Vector m_vReserved14C;
-    Vector m_vReserved158;
+    Vector m_vSpawnRemainder;
+    Vector m_vInheritPosition;
     Vector m_vOrigin;
     Vector m_vLastOrigin;
     void SetLastOrigin(Vector v);
     Vector m_vColorEnd;
 
     Vector m_vColorStart;
-    Quaternion m_qReserved194;
+    Quaternion m_qInheritOrientation;
     Quaternion m_qOrientation;
     Quaternion m_qWorldOrientation;
 
@@ -584,9 +584,9 @@ public:
     CHitInfo* m_pHitInfo;
     TileData* m_pTileData;
     CallBack* m_pEmitterTargetCallback;
-    short m_pReserved1F4;
+    short m_nEmitterType;
     char m_bDetonated;
-    char m_pReserved1F7;
+    char m_bStarted;
     bool m_bWeather;
 
     void RecursiveFractal(int nIndex, int nStep, int nCount,
@@ -628,21 +628,21 @@ class LightningEmitter : public PartEmitter
 {
 public:
 
-    Vector m_vReserved1F8;
+    Vector m_vTargetDirection;
 
     void SetReserved1F8(Vector v);
-    Vector m_vReserved204;
-    List<Vector> m_lstReserved210;
-    List<Vector> m_lstReserved21C;
-    List<Vector> m_lstReserved228;
-    List<Vector> m_lstReserved234;
-    List<Vector> m_lstReserved240;
-    List<Vector> m_lstReserved24C;
+    Vector m_vStart;
+    List<Vector> m_lstControlPoints;
+    List<Vector> m_lstPreviousPoints;
+    List<Vector> m_lstNextPoints;
+    List<Vector> m_lstTangents;
+    List<Vector> m_lstPreviousTangents;
+    List<Vector> m_lstNextTangents;
     List<LightningEmitter*> m_lstBranches;
     List<int> m_lstBranchIndices;
 
-    List<Vector> m_lstReserved270;
-    Vector m_vReserved27C;
+    List<Vector> m_lstFractalOffsets;
+    Vector m_vPerpendicular;
     int m_nBranches;
     char m_bBranch;
     char gap_28D[3];

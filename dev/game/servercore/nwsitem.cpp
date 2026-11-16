@@ -87,12 +87,12 @@ CSWSItem::CSWSItem(unsigned long oidItem)
     m_nUpgrades = 0;
     m_nBodyVariation = 0;
     m_nTextureVar = 0;
-    m_n2DC = 0;
-    m_n2E0 = 0;
+    m_bDoorCutting = 0;
+    m_bDoorSabering = 0;
     m_nUpgradeLevel = 0;
-    m_n2E8 = 0;
-    m_n2E4 = 0;
-    m_n2EC = 0;
+    m_bSniperBonus = 0;
+    m_bRapidShotBonus = 0;
+    m_nMaxDexBonus = 0;
     memset(m_anUpgradeSlot, 0, sizeof(m_anUpgradeSlot));
 }
 // PC 0x0055B890 GOG 0x0055B9B0
@@ -457,7 +457,7 @@ void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
 // PC 0x0055C3A0 GOG 0x0055C4C0
 int CSWSItem::ComputeArmorClass()
 {
-    if (GetBaseItem()->m_bUnknown18 != 1)
+    if (GetBaseItem()->m_nModelType != 1)
     {
         return 0;
     }
@@ -1149,7 +1149,7 @@ CResRef CSWSItem::GetIcon()
         return CResRef("");
     }
 
-    if (pBaseItem->m_bUnknown18 != 0)
+    if (pBaseItem->m_nModelType != 0)
     {
         return pBaseItem->GetIconResRef((unsigned char)m_nTextureVar, 'm');
     }
@@ -1177,7 +1177,7 @@ void CSWSItem::AddUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
         for (int nProperty = nOldProperties; nProperty < nNewProperties;
              nProperty++)
         {
-            GetPassiveProperty(nProperty)->m_n12 = (unsigned short)(nSlot + 1);
+            GetPassiveProperty(nProperty)->m_nPropUpgrade = (unsigned short)(nSlot + 1);
         }
     }
 }
@@ -1195,7 +1195,7 @@ void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
         CSWItemProperty* pProperty = &m_pPassiveProperties[nProperty];
         for (int nUpgrade = 0; nUpgrade < nUpgradeProperties; nUpgrade++)
         {
-            if (pProperty->m_n12 == nSlot + 1)
+            if (pProperty->m_nPropUpgrade == nSlot + 1)
             {
                 bUpgrade = 1;
             }
@@ -1351,7 +1351,7 @@ int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
                              "Useable");
         pRes->WriteFieldBYTE(&propertyStruct, pItemProperty->m_nUpgradeType,
                              "UpgradeType");
-        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_n12,
+        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_nPropUpgrade,
                              "PropUpgrade");
     }
 
@@ -1381,7 +1381,7 @@ int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
                              "Useable");
         pRes->WriteFieldBYTE(&propertyStruct, pItemProperty->m_nUpgradeType,
                              "UpgradeType");
-        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_n12,
+        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_nPropUpgrade,
                              "PropUpgrade");
     }
 
@@ -2055,7 +2055,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
             nModelVariation = 1;
     }
     m_nModelVariation = nModelVariation;
-    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_bUnknown18)
+    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_nModelType)
     {
     case BASEITEM_MODEL_TYPE_BODY_VARIATION:
         m_nBodyVariation = g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nBodyVar;
@@ -2133,7 +2133,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
                     unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
                     GetActiveProperty(nActiveProperty)->m_nUpgradeType = nUpgradeType;
                     unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetActiveProperty(nActiveProperty)->m_n12 = nPropUpgrade;
+                    GetActiveProperty(nActiveProperty)->m_nPropUpgrade = nPropUpgrade;
                     nActiveProperty++;
                     break;
                 }
@@ -2183,7 +2183,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
                     unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
                     GetPassiveProperty(nPassiveProperty)->m_nUpgradeType = nUpgradeType;
                     unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetPassiveProperty(nPassiveProperty)->m_n12 = nPropUpgrade;
+                    GetPassiveProperty(nPassiveProperty)->m_nPropUpgrade = nPropUpgrade;
                     nPassiveProperty++;
                     break;
                 }
@@ -3502,7 +3502,7 @@ int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bDropable, "Dropable");
     pRes->WriteFieldBYTE(pStruct, m_bPickpocketable, "Pickpocketable");
     pRes->WriteFieldBYTE(pStruct, m_nModelVariation, "ModelVariation");
-    switch (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_bUnknown18)
+    switch (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nModelType)
     {
     case BASEITEM_MODEL_TYPE_BODY_VARIATION:
         pRes->WriteFieldBYTE(pStruct, m_nBodyVariation, "BodyVariation");
@@ -3551,12 +3551,12 @@ CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
 {
     m_oidOwner = oidOwner;
     m_nNewItems = 0;
-    m_bUnknown08 = bFlag;
+    m_bPartyInventory = bFlag;
 }
 // PC 0x00567B40 GOG 0x00567C70
 void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
 {
-    if (m_bUnknown08)
+    if (m_bPartyInventory)
     {
         return;
     }
@@ -3660,7 +3660,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
     nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
     CExoString sName;
     CExoString sItemName;
-    if (m_bUnknown08)
+    if (m_bPartyInventory)
     {
         (*ppItem)->m_sLocalizedName.GetString(nLanguage, &sName, 0);
     }
@@ -3673,7 +3673,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
             pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
             if (pItem != NULL)
             {
-                if (m_bUnknown08 && !bFoundPosition)
+                if (m_bPartyInventory && !bFoundPosition)
                 {
                     pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
                     if ((unsigned long)(*ppItem)->m_nBaseItem <
@@ -3734,14 +3734,14 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
             }
         }
     }
-    else if (m_bUnknown08)
+    else if (m_bPartyInventory)
     {
         nItem = 0;
         while (nItem < m_lstItems.num)
         {
             unsigned long oidItem = m_lstItems[nItem];
             pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
-            if (pItem != NULL && m_bUnknown08)
+            if (pItem != NULL && m_bPartyInventory)
             {
                 pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
                 if (sName < sItemName)
@@ -3757,7 +3757,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
 
     CExoArrayList<CSWSItem*> lstAddedItems;
     lstAddedItems.Add(*ppItem);
-    if (m_bUnknown08)
+    if (m_bPartyInventory)
     {
         pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByPlayerId(0, 1);
         if (pPlayer != NULL)
@@ -3877,7 +3877,7 @@ int CSWSItem::CopyItem(CSWSItem* pItem)
     m_nBaseItem = pItem->GetBaseItemType();
     for (int i = 0; i < 6; i++)
     {
-        m_aUnknown04[i] = pItem->m_aUnknown04[i];
+        m_anArmorModelPart[i] = pItem->m_anArmorModelPart[i];
     }
     g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(
         m_sTag, GetId());

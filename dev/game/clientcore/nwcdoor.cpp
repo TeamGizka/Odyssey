@@ -71,7 +71,7 @@ CSWCDoor::CSWCDoor()
     m_bTrapDetected = 0;
     m_bTrap = 0;
     m_bLocked = 0;
-    m_n108 = 0;
+    m_bNotBlastable = 0;
     m_bHilighted = 0;
     m_bAreaTransition = 0;
     m_bUseable = 1;
@@ -407,7 +407,7 @@ void CSWCDoor::MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreat
 void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
                                      CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
-    int n108 = m_n108;
+    int n108 = m_bNotBlastable;
     if (n108)
     {
         return;
@@ -500,7 +500,7 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006
                 int bSaberWeapon = 0;
                 if (pWeapon != NULL)
                 {
-                    if (pWeapon->m_n2E0)
+                    if (pWeapon->m_bDoorSabering)
                     {
                         bSaberWeapon = 1;
                     }

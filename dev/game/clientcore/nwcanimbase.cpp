@@ -1035,7 +1035,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
 {
     unsigned short nClientAnimation = nAnimation;
     unsigned char nWieldClass = m_nWieldClass;
-    int bComplexUnarmed = m_nD4;
+    int bComplexUnarmed = m_bComplexUnarmed;
 
     if (m_nAnimSet == 1)
     {
@@ -1534,13 +1534,13 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             switch (nWieldClass)
             {
             case 2:
-                nClientAnimation = m_nD0 ? 109 : 455;
+                nClientAnimation = m_bLightsaber ? 109 : 455;
                 break;
             case 3:
-                nClientAnimation = m_nD0 ? 150 : 455;
+                nClientAnimation = m_bLightsaber ? 150 : 455;
                 break;
             case 4:
-                nClientAnimation = m_nD0 ? 191 : 455;
+                nClientAnimation = m_bLightsaber ? 191 : 455;
                 break;
             case 8:
                 nClientAnimation = bComplexUnarmed ? 492 : 455;
@@ -1554,13 +1554,13 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             switch (nWieldClass)
             {
             case 2:
-                nClientAnimation = m_nD0 ? 110 : 455;
+                nClientAnimation = m_bLightsaber ? 110 : 455;
                 break;
             case 3:
-                nClientAnimation = m_nD0 ? 151 : 455;
+                nClientAnimation = m_bLightsaber ? 151 : 455;
                 break;
             case 4:
-                nClientAnimation = m_nD0 ? 192 : 455;
+                nClientAnimation = m_bLightsaber ? 192 : 455;
                 break;
             case 8:
                 nClientAnimation = bComplexUnarmed ? 493 : 455;
@@ -1946,9 +1946,9 @@ CSWCAnimBase::CSWCAnimBase()
     m_nWieldClass = CSWCAnimBase::WIELD_CLASS_NONE;
     m_nAnimSet = 0;
     m_nOffHandType = 0;
-    m_nD0 = 0;
-    m_nD4 = 0;
-    m_nD8 = 0;
+    m_bLightsaber = 0;
+    m_bComplexUnarmed = 0;
+    m_nCurrentForm = 0;
     m_resLoadedModel = "";
     m_bPaletteReplaced = 0;
     m_nPaletteCount = 0;

@@ -433,8 +433,8 @@ inline void CSWGuiMainMenu::OnPanelAdded()
         }
         cMessage.m_sMessage = g_pTlkTable->GetSimpleString(42141);
         g_pTlkTable->ParseStr(cMessage.m_sMessage);
-        cMessage.m_nUnknown08 = 1;
-        cMessage.m_nUnknown0C = 1;
+        cMessage.m_bHideButtons = 1;
+        cMessage.m_bAllowCancel = 1;
         cMessage.m_pCallbackObject = this;
         cMessage.m_pfnCallback = (CSWGuiHandler)&CSWGuiMainMenu::LaunchDashboard;
         AddErrorMessage(cMessage);
@@ -916,8 +916,8 @@ void CSWGuiMainMenu::ShowErrorMessage()
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
     CErrorMessageData* pMessage = &m_lstErrorMessages[0];
     CSWGuiMessageBox* pMessageBox = pInGame->m_pMessageBox;
-    pMessageBox->SetAllowCancel(pMessage->m_nUnknown0C);
-    if (pMessage->m_nUnknown08 != 0)
+    pMessageBox->SetAllowCancel(pMessage->m_bAllowCancel);
+    if (pMessage->m_bHideButtons != 0)
     {
         pMessageBox->HideButtons();
     }

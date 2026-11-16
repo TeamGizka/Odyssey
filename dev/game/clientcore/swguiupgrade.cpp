@@ -178,7 +178,7 @@ void CSWGuiUpgrade::ShowItems(int bShow)
 // PC 0x00723C20 GOG 0x00723930
 void CSWGuiCreateItem::SetCreateTable(CExoString sTable)
 {
-    m_s3EF0 = sTable;
+    m_sCreateTable = sTable;
 }
 // PC 0x00723C70 GOG 0x00723980
 inline int CSWGuiUpgradeItemSelect::GetUpgradeItemEquipped()
@@ -306,18 +306,18 @@ void CSWGuiCreateMedicalItem::InitializeStoreType()
         switch (pStore->m_nBuySellFlag)
         {
         case CSWSStore::BuySellFlagBuy:
-            m_lbl834.SetEnabledFlag(0);
-            m_lbl6EC.SetEnabledFlag(0);
+            m_lblX.SetEnabledFlag(0);
+            m_lblExamine.SetEnabledFlag(0);
             ShowBuyGUI();
             return;
         case CSWSStore::BuySellFlagSell:
-            m_lbl834.SetEnabledFlag(0);
-            m_lbl6EC.SetEnabledFlag(0);
+            m_lblX.SetEnabledFlag(0);
+            m_lblExamine.SetEnabledFlag(0);
             ShowSellGUI();
             return;
         case CSWSStore::BuySellFlagBoth:
-            m_lbl834.SetEnabledFlag(1);
-            m_lbl6EC.SetEnabledFlag(1);
+            m_lblX.SetEnabledFlag(1);
+            m_lblExamine.SetEnabledFlag(1);
             ShowBuyGUI();
             return;
         }
@@ -373,7 +373,7 @@ void CSWGuiCreateMedicalItem::ShowBuyGUI()
         m_abtnCreateFilters[i].SetEnabledFlag(1);
     m_alblBars[1].SetEnabledFlag(1);
     m_alblBars[2].SetEnabledFlag(1);
-    m_lbl1CC.m_cText.m_cParams.SetStrRef(48379);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48379);
     m_btnExamine.m_cText.m_cParams.SetStrRef(48373);
     m_lblCost.m_cText.m_cParams.SetStrRef(48434);
     SetActiveControl(pActiveList, 0);
@@ -465,7 +465,7 @@ CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
 #endif
     m_nUpgradeType = 0;
     m_pPresetItem = 0;
-    m_nC84 = 0;
+    m_bExitAfterUpgrade = 0;
 #ifndef _XBOX
     SetActiveControl(&m_lbItems, 0);
     m_bDualWield = 0;
@@ -558,7 +558,7 @@ void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
                 int nType = pItem->GetUpgradableType(pTable);
                 m_pItemSelect->m_nUpgradeType = nType;
                 m_pItemSelect->m_pPresetItem = pItem;
-                m_pItemSelect->m_nC84 = 0;
+                m_pItemSelect->m_bExitAfterUpgrade = 0;
                 m_pManager->AddPanel(m_pItemSelect, CSWGuiManager::PANEL_MODE_MODAL, 1);
             }
         }
@@ -710,9 +710,9 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60 GOG 0x00
     m_cProperty.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
     m_lbItems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
 #ifndef _XBOX
-    m_CSWGuiLabel_1F60.Initialize(m_lbDesc.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDesc.m_pProtoItem, 1.0f);
+    m_cDescription.Initialize(m_lbDesc.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDesc.m_pProtoItem, 1.0f);
 #else
-    m_CSWGuiLabel_1F60.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem);
+    m_cDescription.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem);
 #endif
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
     pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
@@ -1170,7 +1170,7 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
 
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
-    if (m_s3EF0.IsEmpty())
+    if (m_sCreateTable.IsEmpty())
     {
         pTable = g_pRules->Get2DArrays()->m_pChemicalCreate;
     }
@@ -1221,7 +1221,7 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
             m_lblDescription.m_cText.m_cParams.SetText("");
         }
     }
-    if (!m_s3EF0.IsEmpty())
+    if (!m_sCreateTable.IsEmpty())
     {
         pTable->Unload2DArray();
         delete pTable;
@@ -1271,7 +1271,7 @@ void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
     {
         if (pControl->m_nEvent != 0)
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-        if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B4 == 0)
+        if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_bSkillRequirementMet == 0)
         {
             CSWGuiMessageBox* pMessageBox =
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
@@ -1344,25 +1344,25 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
     CSWGuiListBox* pListBox;
     CSWGuiControl* pControl;
 
-    m_CSWGuiLabel_1F60.m_cText.m_cParams.SetText(sDescription);
+    m_cDescription.m_cText.m_cParams.SetText(sDescription);
     pListBox = &m_lbDesc;
 #ifdef _XBOX
     CSWGuiLabel* pRanalog = &m_lblRanalog;
 #endif
     pListBox->ClearItems();
-    CSWGuiExtent cExtent = m_CSWGuiLabel_1F60.m_cExtent;
+    CSWGuiExtent cExtent = m_cDescription.m_cExtent;
     if (sDescription.GetLength() > 0)
     {
-        cExtent.m_nHeight = m_CSWGuiLabel_1F60.m_cText.GetIdealHeight();
+        cExtent.m_nHeight = m_cDescription.m_cText.GetIdealHeight();
     }
     else
     {
-        cExtent.m_nHeight = m_CSWGuiLabel_1F60.m_cText.GetFontHeight();
+        cExtent.m_nHeight = m_cDescription.m_cText.GetFontHeight();
     }
-    m_CSWGuiLabel_1F60.SetExtent(cExtent);
-    pControl = &m_CSWGuiLabel_1F60;
+    m_cDescription.SetExtent(cExtent);
+    pControl = &m_cDescription;
     pListBox->AddControls(&pControl, 1, 0, 0, 0);
-    pListBox->SetSelectedControl(&m_CSWGuiLabel_1F60, 0);
+    pListBox->SetSelectedControl(&m_cDescription, 0);
 #ifdef _XBOX
     pRanalog->SetEnabledFlag(pListBox->IsOversized());
 #endif
@@ -1371,14 +1371,14 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
 void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
 {
     C2DA* pTable;
-    if (m_s3EF0.IsEmpty())
+    if (m_sCreateTable.IsEmpty())
     {
         CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
         pTable = pArrays->m_pItemCreate;
     }
     else
     {
-        pTable = new C2DA(m_s3EF0, 0);
+        pTable = new C2DA(m_sCreateTable, 0);
         pTable->Load2DArray();
     }
 
@@ -1402,7 +1402,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
             {
                 m_lblCostValue.m_cText.m_cParams.SetText(
                     CExoString(GetItemBuyValue(pItem)));
-                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B0;
+                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nUpgradeRow;
                 int nBaseSkill = -1;
                 int nRank = -1;
                 if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
@@ -1418,7 +1418,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
                 sRank.Format("%d", nRank);
                 sText = sSkillName + " (" + sRank + ")";
                 m_lblRelatedSkill.m_cText.m_cParams.SetText(sText);
-                if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B4)
+                if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_bSkillRequirementMet)
                     m_lblRelatedSkill.m_cText.m_cParams.SetColor(
                         CGuiInGame::COLOR_UPGRADE_TEXT);
                 else
@@ -1477,7 +1477,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
 
             if (m_lbxStoreItems.m_bEnabled)
             {
-                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B0;
+                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nUpgradeRow;
                 int nSkill = -1;
                 int nBaseSkill = -1;
                 if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
@@ -1495,7 +1495,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
         }
     }
 
-    if (!m_s3EF0.IsEmpty())
+    if (!m_sCreateTable.IsEmpty())
     {
         pTable->Unload2DArray();
         delete pTable;
@@ -1542,13 +1542,13 @@ void CSWGuiCreateItem::SetItemList()
     CItemRepository* pRepository = m_pStore->m_pItemRepository;
     CSWSCreature* pCreature =
         g_pAppManager->m_pServerExoApp->GetPlayerCreature();
-    if (m_s3EF0.IsEmpty())
+    if (m_sCreateTable.IsEmpty())
     {
         pTable = g_pRules->Get2DArrays()->m_pItemCreate;
     }
     else
     {
-        pTable = new C2DA(m_s3EF0, 0);
+        pTable = new C2DA(m_sCreateTable, 0);
         pTable->Load2DArray();
         UpdateCreateFilters();
     }
@@ -1592,7 +1592,7 @@ void CSWGuiCreateItem::SetItemList()
                 m_pStore->AcquireItem(pItem, 1);
         }
     }
-    if (!m_s3EF0.IsEmpty())
+    if (!m_sCreateTable.IsEmpty())
     {
         pTable->Unload2DArray();
         delete pTable;
@@ -1637,8 +1637,8 @@ void CSWGuiCreateItem::ShowSellGUI()
     m_alblBars[1].SetEnabledFlag(0);
     m_alblBars[2].SetEnabledFlag(0);
     m_lblCost.m_cText.m_cParams.SetStrRef(115427);
-    m_lbl1CC.m_cText.m_cParams.SetStrRef(48380);
-    m_lbl6EC.m_cText.m_cParams.SetStrRef(48375);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48380);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(48375);
     m_lblCost.m_cText.m_cParams.SetStrRef(115427);
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
@@ -1930,7 +1930,7 @@ void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
     {
         if (pControl->m_nEvent != 0)
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-        if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B4 == 0)
+        if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_bSkillRequirementMet == 0)
         {
             CSWGuiMessageBox* pMessageBox =
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
@@ -2023,7 +2023,7 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
             {
                 m_lblCostValue.m_cText.m_cParams.SetText(
                     CExoString(GetItemBuyValue(pItem)));
-                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B0;
+                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nUpgradeRow;
                 int nBaseSkill = -1;
                 int nRank = -1;
                 if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
@@ -2038,7 +2038,7 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
                 CExoString sRank(nRank);
                 sText = sSkillName + " (" + sRank + ")";
                 m_lblRelatedSkill.m_cText.m_cParams.SetText(sText);
-                if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B4)
+                if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_bSkillRequirementMet)
                     m_lblRelatedSkill.m_cText.m_cParams.SetColor(
                         CGuiInGame::COLOR_UPGRADE_TEXT);
                 else
@@ -2088,7 +2088,7 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
             {
                 int nSkill = -1;
                 int nBaseSkill = -1;
-                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B0;
+                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nUpgradeRow;
                 if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
                     return;
                 if (!pTable->GetINTEntry(nRow, "skillLevel", &nSkill))
@@ -2324,7 +2324,7 @@ void CSWGuiCreateMedicalItem::ShowSellGUI()
         m_abtnCreateFilters[i].SetEnabledFlag(0);
     m_alblBars[1].SetEnabledFlag(0);
     m_alblBars[2].SetEnabledFlag(0);
-    m_lbl1CC.m_cText.m_cParams.SetStrRef(48380);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48380);
     m_btnExamine.m_cText.m_cParams.SetStrRef(48375);
     m_lblCost.m_cText.m_cParams.SetStrRef(115432);
     SetActiveControl(pActiveList, 0);
@@ -2421,19 +2421,19 @@ void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
         m_cExtent = cExtent;
         CSWGuiExtent cIconExtent(m_cExtent.m_nLeft, m_cExtent.m_nTop,
                                 ENTRY_HEIGHT, ENTRY_HEIGHT);
-        m_CSWGuiBorder_1D8.SetExtent(cIconExtent);
-        m_CSWGuiBorder_24C.SetExtent(cIconExtent);
-        m_CSWGuiBorder_2C0.SetExtent(cIconExtent);
+        m_cIconBorder.SetExtent(cIconExtent);
+        m_cIconHilite.SetExtent(cIconExtent);
+        m_cIcon.SetExtent(cIconExtent);
 
         CSWGuiExtent cCountExtent = cIconExtent;
-        if (m_CSWGuiText_334.m_cParams.m_sText.GetLength() > 2)
+        if (m_cCountText.m_cParams.m_sText.GetLength() > 2)
             cCountExtent.m_nWidth = 42;
         else
             cCountExtent.m_nWidth = 21;
         cCountExtent.m_nLeft += ENTRY_HEIGHT - cCountExtent.m_nWidth;
         cCountExtent.m_nTop += ENTRY_HEIGHT - COUNT_HEIGHT;
         cCountExtent.m_nHeight = COUNT_HEIGHT;
-        m_CSWGuiText_334.SetExtent(cCountExtent);
+        m_cCountText.SetExtent(cCountExtent);
 
         cIconExtent.m_nLeft += ENTRY_HEIGHT;
         cIconExtent.m_nWidth = m_cExtent.m_nWidth - ENTRY_HEIGHT;
@@ -2449,16 +2449,16 @@ void CSWUpgradeItemEntry::Draw(float fElapsed)
     if (m_bActive)
     {
         m_cHilite.Draw(fElapsed);
-        m_CSWGuiBorder_24C.Draw(fElapsed);
+        m_cIconHilite.Draw(fElapsed);
     }
     else
     {
         m_cBorder.Draw(fElapsed);
-        m_CSWGuiBorder_1D8.Draw(fElapsed);
+        m_cIconBorder.Draw(fElapsed);
     }
-    m_CSWGuiBorder_2C0.Draw(fElapsed);
+    m_cIcon.Draw(fElapsed);
     m_cText.Draw(fElapsed);
-    m_CSWGuiText_334.Draw(fElapsed);
+    m_cCountText.Draw(fElapsed);
 }
 // PC 0x0072E230 GOG 0x0072DF40
 void CSWGuiUpgradeItemSelect::OnPanelAdded()
@@ -2602,7 +2602,7 @@ void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
     else
         pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     pParams->SetPulsingAlpha(1, 1, 0);
-    pParams = &m_CSWGuiBorder_1D8.m_cParams;
+    pParams = &m_cIconBorder.m_cParams;
     {
 #ifndef _XBOX
         CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
@@ -2614,7 +2614,7 @@ void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
         else
             pParams->m_vColor = CGuiInGame::COLOR_DARK_TAN;
     }
-    pParams = &m_CSWGuiBorder_24C.m_cParams;
+    pParams = &m_cIconHilite.m_cParams;
     {
 #ifndef _XBOX
         CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
@@ -2692,47 +2692,47 @@ void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
             {
                 if (nCount >= 100)
                 {
-                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
-                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
+                    m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
                 }
                 else
                 {
-                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
-                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
+                    m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
                 }
                 sCount.Format("%d", nCount);
             }
             else
             {
-                m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
-                m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+                m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+                m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
             }
-            m_CSWGuiText_334.m_cParams = CSWGuiTextParams(sCount, "fnt_d16x16",
+            m_cCountText.m_cParams = CSWGuiTextParams(sCount, "fnt_d16x16",
                 CGuiInGame::COLOR_UPGRADE_TEXT, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
-            m_CSWGuiText_334.m_cParams.SetText(sCount);
+            m_cCountText.m_cParams.SetText(sCount);
             cIcon = pItem->GetIcon();
         }
         else
         {
-            m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
-            m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+            m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+            m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
             m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRREF_NONE));
-            m_CSWGuiText_334.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
+            m_cCountText.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
                 CGuiInGame::COLOR_UPGRADE_TEXT, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
-            m_CSWGuiText_334.m_cParams.SetText("");
+            m_cCountText.m_cParams.SetText("");
             cIcon = "inone_blue";
         }
     }
     else
     {
-        m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
-        m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+        m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+        m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
         m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRREF_NONE));
-        m_CSWGuiText_334.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
+        m_cCountText.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
             CGuiInGame::COLOR_BLUE, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
         cIcon = "inone_blue";
     }
-    CSWGuiBorderParams* pParams = &m_CSWGuiBorder_2C0.m_cParams;
+    CSWGuiBorderParams* pParams = &m_cIcon.m_cParams;
     pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
     pParams->SetFillImage(cIcon, 0);
 }
@@ -3138,7 +3138,7 @@ void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
                 break;
             }
         }
-        m_an43CC[nSlot] = nUpgradeRow;
+        m_anUpgradeRows[nSlot] = nUpgradeRow;
         m_apItemEntries[nSlot] = pItem;
         m_anUpgradeProperties[nSlot] = pEntry->m_nUpgradeIndex;
     }
@@ -3229,18 +3229,18 @@ void CSWGuiCreateItem::InitializeStoreType()
         switch (pStore->m_nBuySellFlag)
         {
         case CSWSStore::BuySellFlagBuy:
-            m_lbl834.SetEnabledFlag(0);
-            m_lbl6EC.SetEnabledFlag(0);
+            m_lblX.SetEnabledFlag(0);
+            m_lblExamine.SetEnabledFlag(0);
             ShowBuyGUI();
             return;
         case CSWSStore::BuySellFlagSell:
-            m_lbl834.SetEnabledFlag(0);
-            m_lbl6EC.SetEnabledFlag(0);
+            m_lblX.SetEnabledFlag(0);
+            m_lblExamine.SetEnabledFlag(0);
             ShowSellGUI();
             return;
         case CSWSStore::BuySellFlagBoth:
-            m_lbl834.SetEnabledFlag(1);
-            m_lbl6EC.SetEnabledFlag(1);
+            m_lblX.SetEnabledFlag(1);
+            m_lblExamine.SetEnabledFlag(1);
             ShowBuyGUI();
             return;
         }
@@ -3612,7 +3612,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
     {
         pServer->GetPartyTable()->GetPartyItems()->AddItem(&pItem, 1, 0, 0);
     }
-    if (m_pPresetItem != 0 && m_nC84 != 0)
+    if (m_pPresetItem != 0 && m_bExitAfterUpgrade != 0)
     {
         SetModal(0);
         m_pManager->PopModalPanel();
@@ -3982,9 +3982,9 @@ void CSWGuiSwoopUpgrade::OnAssemble(CSWGuiControl* pControl)
         }
         for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
         {
-            if (m_an43CC[i] != 0)
+            if (m_anUpgradeRows[i] != 0)
             {
-                g_pAppManager->m_pServerExoApp->GetPartyTable()->SetSwoopUpgrade(i, m_an43CC[i]);
+                g_pAppManager->m_pServerExoApp->GetPartyTable()->SetSwoopUpgrade(i, m_anUpgradeRows[i]);
             }
         }
         g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSwoopUpgradeScreen();
@@ -4035,13 +4035,13 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
     if (bInventory == 0)
     {
         C2DA* pTable;
-        if (m_s3EF0.IsEmpty())
+        if (m_sCreateTable.IsEmpty())
         {
             pTable = g_pRules->Get2DArrays()->m_pItemCreate;
         }
         else
         {
-            pTable = new C2DA(m_s3EF0, 0);
+            pTable = new C2DA(m_sCreateTable, 0);
             pTable->Load2DArray();
         }
         if (pTable == 0)
@@ -4066,7 +4066,7 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
         }
         if (nFoundRow != -1)
         {
-            pEntry->m_n3B0 = nFoundRow;
+            pEntry->m_nUpgradeRow = nFoundRow;
             int nBaseSkill = -1;
             int nSkill = -1;
             if (!pTable->GetINTEntry(nFoundRow, "base_skill", &nBaseSkill))
@@ -4080,7 +4080,7 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
                 pEntry->SetColors(CGuiInGame::DISABLED_TEXT, CGuiInGame::DISABLED_TEXT,
                                   CGuiInGame::COLOR_NEW_HIGHLIGHT,
                                   CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                pEntry->m_n3B4 = 0;
+                pEntry->m_bSkillRequirementMet = 0;
             }
             else
             {
@@ -4088,7 +4088,7 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
                                   CGuiInGame::COLOR_UPGRADE_TEXT,
                                   CGuiInGame::COLOR_UPGRADE_TEXT,
                                   CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                pEntry->m_n3B4 = 1;
+                pEntry->m_bSkillRequirementMet = 1;
             }
         }
         else
@@ -4096,7 +4096,7 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
             CExoString sError = "CreateItem::CreateItemEntry() -- Could not find a row for an item. Major error: ";
             sError = sError + sTemplate;
         }
-        if (!m_s3EF0.IsEmpty())
+        if (!m_sCreateTable.IsEmpty())
         {
             pTable->Unload2DArray();
             delete pTable;
@@ -4307,8 +4307,8 @@ void CSWGuiCreateItem::ShowBuyGUI()
     m_alblBars[1].SetEnabledFlag(1);
     m_alblBars[2].SetEnabledFlag(1);
     m_lblCost.m_cText.m_cParams.SetStrRef(48376);
-    m_lbl1CC.m_cText.m_cParams.SetStrRef(48379);
-    m_lbl6EC.m_cText.m_cParams.SetStrRef(48373);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48379);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(48373);
     m_lblCost.m_cText.m_cParams.SetStrRef(48376);
     SetActiveControl(pActiveList, 0);
     PopulateStoreItemListBox();
@@ -5198,7 +5198,7 @@ int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
         }
         if (nFoundRow != -1)
         {
-            pEntry->m_n3B0 = nFoundRow;
+            pEntry->m_nUpgradeRow = nFoundRow;
             int nBaseSkill = -1;
             int nSkill = -1;
             if (!pTable->GetINTEntry(nFoundRow, "base_skill", &nBaseSkill))
@@ -5212,7 +5212,7 @@ int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
                 pEntry->SetColors(CGuiInGame::DISABLED_TEXT, CGuiInGame::DISABLED_TEXT,
                                   CGuiInGame::COLOR_NEW_HIGHLIGHT,
                                   CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                pEntry->m_n3B4 = 0;
+                pEntry->m_bSkillRequirementMet = 0;
             }
             else
             {
@@ -5220,7 +5220,7 @@ int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
                                   CGuiInGame::COLOR_UPGRADE_TEXT,
                                   CGuiInGame::COLOR_UPGRADE_TEXT,
                                   CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                pEntry->m_n3B4 = 1;
+                pEntry->m_bSkillRequirementMet = 1;
             }
         }
 
@@ -5321,7 +5321,7 @@ CSWGuiSwoopUpgrade::CSWGuiSwoopUpgrade(CSWGuiManager* pManager)
     for (int j = 0; j < NUM_SWOOP_SLOTS; j++)
     {
         m_apItemEntries[j] = 0;
-        m_an43CC[j] = 0;
+        m_anUpgradeRows[j] = 0;
     }
     if (g_bDo3DGUIs != 0)
     {
@@ -5526,7 +5526,7 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
                 m_apItemEntries[nSlot]->LoadFromTemplate(sTemplate);
                 CSWSItem* pUpgradeItem = m_apItemEntries[nSlot];
                 pUpgradeItem->m_anUpgradeSlot[nSlot] = nRow;
-                m_an43CC[nSlot] = nRow;
+                m_anUpgradeRows[nSlot] = nRow;
             }
             else if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems()->FindItemWithTag(
                          m_asUpgradeTemplates[nSlot]) == OBJECT_INVALID)
@@ -5556,7 +5556,7 @@ void CSWGuiUpgradeSelection::OnPanelAdded()
         int nType = pItem->GetUpgradableType(pTable);
         m_pItemSelect->m_nUpgradeType = nType;
         m_pItemSelect->m_pPresetItem = pItem;
-        m_pItemSelect->m_nC84 = 1;
+        m_pItemSelect->m_bExitAfterUpgrade = 1;
         m_pManager->AddPanel(m_pItemSelect, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
     else

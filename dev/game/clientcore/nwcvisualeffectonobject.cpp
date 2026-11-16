@@ -81,7 +81,7 @@ CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
     m_pSoundSource = 0;
     m_bRumblePerformed = 0;
     m_bHardCodedEffectApplied = 0;
-    m_nF8 = 0;
+    m_bAttachToHead = 0;
 }
 // PC 0x00700A20 GOG 0x00700400
 int CSWCVisualEffectOnObject::IsDone()
@@ -1922,7 +1922,7 @@ void CSWCVisualEffectOnObject::ApplyModelAttachment(
             Gob* pModel = GetTargetCSWCObject()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1);
             if (pModel != 0)
             {
-                m_nF8 = 1;
+                m_bAttachToHead = 1;
             }
             else
             {
@@ -2285,7 +2285,7 @@ void CSWCVisualEffectOnObject::ReAttachVisualEffect()
         return;
     }
     CAurObject* pTargetModel;
-    if (m_nF8)
+    if (m_bAttachToHead)
     {
         pTargetModel = pObject->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1);
     }

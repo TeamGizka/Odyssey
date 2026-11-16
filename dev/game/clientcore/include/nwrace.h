@@ -139,7 +139,7 @@ public:
     unsigned char m_nFavoredClass;
     int m_bPlayerRace;
     unsigned short m_nFirstLevelGrantedFeatCount;
-    unsigned char m_aUnmapped26[2];
+    unsigned char m_aFeatCountAlignment[2];
     unsigned short* m_pFirstLevelGrantedFeats;
     int m_nAge;
 

@@ -1021,11 +1021,11 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
         m_lblDef.SetShown(0);
         m_lblDefText.SetShown(0);
         m_lblDefBack.SetShown(0);
-        if (!m_n50E8)
+        if (!m_bCanChangeCharacter)
         {
             m_btnSwapWeapons.SetShown(0);
         }
-        if (m_n50E8)
+        if (m_bCanChangeCharacter)
         {
             m_btnPrevNpc.SetShown(0);
             m_btnNextNpc.SetShown(0);
@@ -1063,11 +1063,11 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
         m_lblDef.SetShown(1);
         m_lblDefText.SetShown(1);
         m_lblDefBack.SetShown(1);
-        if (!m_n50E8)
+        if (!m_bCanChangeCharacter)
         {
             m_btnSwapWeapons.SetShown(1);
         }
-        if (m_n50E8)
+        if (m_bCanChangeCharacter)
         {
             m_btnPrevNpc.SetShown(1);
             m_btnNextNpc.SetShown(1);
@@ -1137,28 +1137,28 @@ void CSWGuiInGameEquip::UpdateSlotLocks()
         {
             nSlotsLocked = 0;
         }
-        m_an2274[LEFTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_LEFTHAND;
-        m_an2274[RIGHTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_RIGHTHAND;
-        m_an2274[2] = nSlotsLocked & INVENTORY_SLOT_HEAD;
-        m_an2274[3] = nSlotsLocked & INVENTORY_SLOT_RIGHTRING;
-        m_an2274[4] = nSlotsLocked & INVENTORY_SLOT_NECK;
-        m_an2274[5] = nSlotsLocked & INVENTORY_SLOT_ARMOUR;
-        m_an2274[6] = nSlotsLocked & INVENTORY_SLOT_HANDS;
-        m_an2274[7] = nSlotsLocked & INVENTORY_SLOT_BELT;
-        m_an2274[8] = nSlotsLocked & INVENTORY_SLOT_ARMS;
-        m_an2274[LEFTHAND2_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_LEFTHAND2;
-        m_an2274[RIGHTHAND2_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_RIGHTHAND2;
-        if (m_an2274[LEFTHAND_ITEM_INDEX])
+        m_anSlotLocked[LEFTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_LEFTHAND;
+        m_anSlotLocked[RIGHTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_RIGHTHAND;
+        m_anSlotLocked[2] = nSlotsLocked & INVENTORY_SLOT_HEAD;
+        m_anSlotLocked[3] = nSlotsLocked & INVENTORY_SLOT_RIGHTRING;
+        m_anSlotLocked[4] = nSlotsLocked & INVENTORY_SLOT_NECK;
+        m_anSlotLocked[5] = nSlotsLocked & INVENTORY_SLOT_ARMOUR;
+        m_anSlotLocked[6] = nSlotsLocked & INVENTORY_SLOT_HANDS;
+        m_anSlotLocked[7] = nSlotsLocked & INVENTORY_SLOT_BELT;
+        m_anSlotLocked[8] = nSlotsLocked & INVENTORY_SLOT_ARMS;
+        m_anSlotLocked[LEFTHAND2_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_LEFTHAND2;
+        m_anSlotLocked[RIGHTHAND2_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_RIGHTHAND2;
+        if (m_anSlotLocked[LEFTHAND_ITEM_INDEX])
         {
-            m_an2274[LEFTHAND2_ITEM_INDEX] = 1;
+            m_anSlotLocked[LEFTHAND2_ITEM_INDEX] = 1;
         }
-        if (m_an2274[RIGHTHAND_ITEM_INDEX])
+        if (m_anSlotLocked[RIGHTHAND_ITEM_INDEX])
         {
-            m_an2274[RIGHTHAND2_ITEM_INDEX] = 1;
+            m_anSlotLocked[RIGHTHAND2_ITEM_INDEX] = 1;
         }
         for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
         {
-            if (m_an2274[nSlot])
+            if (m_anSlotLocked[nSlot])
             {
                 m_aSlotButtons[nSlot].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
             }
@@ -1176,17 +1176,17 @@ int CSWGuiInGameEquip::IsSlotLocked(int nSlot)
 {
     switch (nSlot)
     {
-    case INVENTORY_SLOT_LEFTHAND: return m_an2274[LEFTHAND_ITEM_INDEX];
-    case INVENTORY_SLOT_RIGHTHAND: return m_an2274[RIGHTHAND_ITEM_INDEX];
-    case INVENTORY_SLOT_HEAD: return m_an2274[2];
-    case INVENTORY_SLOT_RIGHTRING: return m_an2274[3];
-    case INVENTORY_SLOT_NECK: return m_an2274[4];
-    case INVENTORY_SLOT_ARMOUR: return m_an2274[ARMOUR_ITEM_INDEX];
-    case INVENTORY_SLOT_HANDS: return m_an2274[6];
-    case INVENTORY_SLOT_BELT: return m_an2274[7];
-    case INVENTORY_SLOT_ARMS: return m_an2274[8];
-    case INVENTORY_SLOT_LEFTHAND2: return m_an2274[LEFTHAND2_ITEM_INDEX];
-    case INVENTORY_SLOT_RIGHTHAND2: return m_an2274[RIGHTHAND2_ITEM_INDEX];
+    case INVENTORY_SLOT_LEFTHAND: return m_anSlotLocked[LEFTHAND_ITEM_INDEX];
+    case INVENTORY_SLOT_RIGHTHAND: return m_anSlotLocked[RIGHTHAND_ITEM_INDEX];
+    case INVENTORY_SLOT_HEAD: return m_anSlotLocked[2];
+    case INVENTORY_SLOT_RIGHTRING: return m_anSlotLocked[3];
+    case INVENTORY_SLOT_NECK: return m_anSlotLocked[4];
+    case INVENTORY_SLOT_ARMOUR: return m_anSlotLocked[ARMOUR_ITEM_INDEX];
+    case INVENTORY_SLOT_HANDS: return m_anSlotLocked[6];
+    case INVENTORY_SLOT_BELT: return m_anSlotLocked[7];
+    case INVENTORY_SLOT_ARMS: return m_anSlotLocked[8];
+    case INVENTORY_SLOT_LEFTHAND2: return m_anSlotLocked[LEFTHAND2_ITEM_INDEX];
+    case INVENTORY_SLOT_RIGHTHAND2: return m_anSlotLocked[RIGHTHAND2_ITEM_INDEX];
     default: return 0;
     }
 }
@@ -1593,8 +1593,8 @@ void CSWGuiInGameEquip::ShowCantEquipMessage(int bShow, unsigned long nStrRef)
 CSWGuiStoreItemEntry::CSWGuiStoreItemEntry()
 {
     m_oidItem = OBJECT_INVALID;
-    m_n3B0 = -1;
-    m_n3B4 = 0;
+    m_nUpgradeRow = -1;
+    m_bSkillRequirementMet = 0;
 }
 
 // PC 0x00714560 GOG 0x00714250
@@ -1698,7 +1698,7 @@ CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0 
                     sButtonPrefix + SLOT_INFO[nSlot].sButton, 1);
         InitControl(m_aSlotLabels[nSlot],
                     sLabelPrefix + SLOT_INFO[nSlot].sButton, 1);
-        m_an2274[nSlot] = 0;
+        m_anSlotLocked[nSlot] = 0;
         m_aSlotButtons[nSlot].AddEvent(GUIEVENT_ACTIVATE, this,
             (CSWGuiHandler)&CSWGuiInGameEquip::OnSelectSlot);
         m_aSlotButtons[nSlot].AddEvent(GUIEVENT_MOUSE_ENTER, this,
@@ -1774,8 +1774,8 @@ CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0 
                              (CSWGuiHandler)&CSWGuiPanel::OnXButtonPressed);
     CSWGuiPanel* pPanel = this;
     pPanel->SetActiveControl(&m_aSlotButtons[ARMOUR_ITEM_INDEX], 0);
-    m_f50E4 = 0;
-    m_n50E8 = 0;
+    m_fSwapWeaponsDelay = 0;
+    m_bCanChangeCharacter = 0;
     m_nCharacter = CHARACTER_PLAYER;
     m_btnPrevNpc.AddEvent(GUIEVENT_ACTIVATE, this,
                          (CSWGuiHandler)&CSWGuiInGameEquip::OnPrevNPCClicked);
@@ -1818,7 +1818,7 @@ void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
     {
         return;
     }
-    if (!m_n50E8)
+    if (!m_bCanChangeCharacter)
     {
         return;
     }
@@ -1911,16 +1911,16 @@ void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
 // PC 0x007197B0 GOG 0x007194A0
 void CSWGuiInGameEquip::Draw(float fElapsed)
 {
-    if (!m_n50E8)
+    if (!m_bCanChangeCharacter)
     {
         SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
     }
     UpdateInventory();
-    if (m_f50E4 > 0.0f)
+    if (m_fSwapWeaponsDelay > 0.0f)
     {
-        m_f50E4 -= fElapsed;
+        m_fSwapWeaponsDelay -= fElapsed;
     }
-    if (m_f50E4 > 0.0f)
+    if (m_fSwapWeaponsDelay > 0.0f)
     {
         m_btnSwapWeapons.SetEnabled(0);
     }
@@ -2022,7 +2022,7 @@ void CSWGuiInGameEquip::OnPanelAdded()
     m_nCharacter = CHARACTER_PLAYER;
     if (bNotPrologue)
     {
-        m_n50E8 = 1;
+        m_bCanChangeCharacter = 1;
         g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
         m_btnNextNpc.SetShown(1);
         m_btnPrevNpc.SetShown(1);
@@ -2030,7 +2030,7 @@ void CSWGuiInGameEquip::OnPanelAdded()
     }
     else
     {
-        m_n50E8 = 0;
+        m_bCanChangeCharacter = 0;
         m_btnNextNpc.SetShown(0);
         m_btnPrevNpc.SetShown(0);
         m_btnSwapWeapons.SetShown(1);
@@ -2741,7 +2741,7 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
             OnEnterSlot(m_pActiveControl);
     }
 
-    if (m_n50E8)
+    if (m_bCanChangeCharacter)
     {
         CExoString sDefense(m_pCreature->GetStats()->GetArmorClass(1));
         m_lblDef.m_cText.m_cParams.SetText(sDefense);
@@ -2871,7 +2871,7 @@ void CSWGuiInGameEquip::OnPanelRemoved()
 {
     int i;
 
-    if (m_n50E8)
+    if (m_bCanChangeCharacter)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
     }
@@ -3072,7 +3072,7 @@ void CSWGuiInGameEquip::OnPrevNPCClicked(CSWGuiControl* pControl)
     {
         return;
     }
-    if (!m_n50E8)
+    if (!m_bCanChangeCharacter)
     {
         return;
     }
@@ -3198,7 +3198,7 @@ void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
                 }
             }
             else if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND2 &&
-                     m_an2274[LEFTHAND2_ITEM_INDEX])
+                     m_anSlotLocked[LEFTHAND2_ITEM_INDEX])
             {
                 CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
                 CSWSItem* pItem = pServer->GetItemByGameObjectID(
@@ -3503,7 +3503,7 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
             if (!m_bDescriptionShown)
             {
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-                if (m_n50E8)
+                if (m_bCanChangeCharacter)
                 {
                     OnNextNPCClicked(NULL);
                 }
@@ -3543,13 +3543,13 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
             break;
 
         case GUIEVENT_TOGGLE_MODE:
-            if (!m_bDescriptionShown && !m_n50E8)
+            if (!m_bDescriptionShown && !m_bCanChangeCharacter)
             {
                 if (m_pCreature != NULL)
                 {
                     m_pCreature->ActionMenuSwitchWeapons(0xFFFFFFFF, NULL);
                 }
-                m_f50E4 = 1.0f;
+                m_fSwapWeaponsDelay = 1.0f;
             }
             break;
         }

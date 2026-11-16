@@ -55,7 +55,7 @@ public:
     CSWGuiLabel m_lblTopClass1Level;
     CSWGuiLabel m_lblTopClass2Level;
     CSWGuiLabel m_lblCharName;
-    CSWGuiMainInterfaceChar m_cChar2350;
+    CSWGuiMainInterfaceChar m_cChar1;
     CSWGuiLabel m_lblChar2;
     CSWGuiLabel m_lblLevelUp2;
     CSWGuiLabel m_lblBack2;
@@ -65,7 +65,7 @@ public:
     CSWGuiLabel m_lblBack3;
     CSWGuiButton m_btnChange3;
     CSWGuiLabel m_lblSecTitle;
-    int m_n3DCC;
+    int m_bCharacterChangeDisabled;
     int m_nTopMenuOverrideCharacter;
     virtual void HandleInputEvent(int, int);
     void SetActiveControlID(int nControl, int bActive);
@@ -209,7 +209,7 @@ public:
     CStatusSummary m_cStatusSummary;
     unsigned int m_bWasPaused : 1;
     unsigned int m_nStatusFlagsUnused : 31;
-    int m_n94;
+    int m_bAlignmentShifted;
 #ifdef _XBOX
     CSWGuiLabel m_lblA; CSWGuiLabel m_lblOk;
 #else
@@ -442,7 +442,7 @@ public:
 
     static const int m_nFilterName[FILTER_MISC + 1];
 
-    CSWGuiLabel m_lblUnknown64;
+    CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblInv;
     CSWGuiLabel m_lblCredits;
     CSWGuiLabel m_lblCreditsValue;
@@ -493,7 +493,7 @@ public:
 
     int m_nEntryIndex;
     unsigned long m_bEncouraged : 1;
-    unsigned long m_nUnknown1C8Rest : 31;
+    unsigned long m_nEncouragedFlagsUnused : 31;
 };
 
 class CSWGuiInGameJournal : public CSWGuiPanel
@@ -697,7 +697,7 @@ public:
 
     static const int m_nFilterName[6];
 
-    CSWGuiLabel m_lblUnknown64;
+    CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblStart;

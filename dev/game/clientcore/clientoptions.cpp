@@ -1084,7 +1084,7 @@ void CClientOptions::SetDefaultVideoOptions()
 
 void CClientOptions::SetDefaults()
 {
-    m_nXboxUnmappedBit32 = 0;
+    m_bPauseVertMenu = 0;
     m_bAutopauseNewTargetSelected = 1;
     m_nDifficulty = 1;
     m_bAutoLevelUpNPCs = 0;
@@ -1097,7 +1097,7 @@ void CClientOptions::SetDefaults()
     m_bSubtitles = 1;
     m_bMiniMap = 1;
     m_bFloatingNumbers = 1;
-    m_nXboxUnmappedBit26 = 1;
+    m_bShowFloaty = 1;
     m_bStatusSummary = 1;
     m_bAutopauseEndOfCombatRound = 0;
     m_bAutopauseEnemySighted = 1;
@@ -1140,8 +1140,8 @@ void CClientOptions::LoadFromGFF(CResGFF* pGFF, CResStruct* pStruct)
         pGFF->ReadFieldBYTE(pStruct, "ShowMiniMap", bSuccess, m_bMiniMap);
     m_bFloatingNumbers =
         pGFF->ReadFieldBYTE(pStruct, "Rumble", bSuccess, m_bFloatingNumbers);
-    m_nXboxUnmappedBit26 =
-        pGFF->ReadFieldBYTE(pStruct, "ShowFloaty", bSuccess, m_nXboxUnmappedBit26);
+    m_bShowFloaty =
+        pGFF->ReadFieldBYTE(pStruct, "ShowFloaty", bSuccess, m_bShowFloaty);
     m_bStatusSummary =
         pGFF->ReadFieldBYTE(pStruct, "ShowSummary", bSuccess, m_bStatusSummary);
     m_bAutopauseEndOfCombatRound =
@@ -1152,8 +1152,8 @@ void CClientOptions::LoadFromGFF(CResGFF* pGFF, CResStruct* pStruct)
         pGFF->ReadFieldBYTE(pStruct, "PausePartyKilled", bSuccess, m_bAutopausePartyKilled);
     m_bAutopauseActionMenu =
         pGFF->ReadFieldBYTE(pStruct, "PauseHorzMenu", bSuccess, m_bAutopauseActionMenu);
-    m_nXboxUnmappedBit32 =
-        pGFF->ReadFieldBYTE(pStruct, "PauseVertMenu", bSuccess, m_nXboxUnmappedBit32);
+    m_bPauseVertMenu =
+        pGFF->ReadFieldBYTE(pStruct, "PauseVertMenu", bSuccess, m_bPauseVertMenu);
     m_bAutopauseNewTargetSelected =
         pGFF->ReadFieldBYTE(pStruct, "PauseTriggers", bSuccess, m_bAutopauseNewTargetSelected);
     nDefault = m_nBrightness;
@@ -1193,13 +1193,13 @@ void CClientOptions::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)
     pGFF->WriteFieldBYTE(pStruct, m_bSubtitles, "ShowSubtitles");
     pGFF->WriteFieldBYTE(pStruct, m_bMiniMap, "ShowMiniMap");
     pGFF->WriteFieldBYTE(pStruct, m_bFloatingNumbers, "Rumble");
-    pGFF->WriteFieldBYTE(pStruct, m_nXboxUnmappedBit26, "ShowFloaty");
+    pGFF->WriteFieldBYTE(pStruct, m_bShowFloaty, "ShowFloaty");
     pGFF->WriteFieldBYTE(pStruct, m_bStatusSummary, "ShowSummary");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopauseEndOfCombatRound, "PauseEndRound");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopauseEnemySighted, "PauseEnemy");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopausePartyKilled, "PausePartyKilled");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopauseActionMenu, "PauseHorzMenu");
-    pGFF->WriteFieldBYTE(pStruct, m_nXboxUnmappedBit32, "PauseVertMenu");
+    pGFF->WriteFieldBYTE(pStruct, m_bPauseVertMenu, "PauseVertMenu");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopauseNewTargetSelected, "PauseTriggers");
     pGFF->WriteFieldBYTE(pStruct, m_nBrightness, "Gamma");
     pGFF->WriteFieldBYTE(pStruct, m_nMusicVolume, "VolumeMusic");
@@ -1223,13 +1223,13 @@ void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)
     pData->m_bShowSubtitles = m_bSubtitles;
     pData->m_bShowMiniMap = m_bMiniMap;
     pData->m_bRumble = m_bFloatingNumbers;
-    pData->m_bShowFloaty = m_nXboxUnmappedBit26;
+    pData->m_bShowFloaty = m_bShowFloaty;
     pData->m_bShowSummary = m_bStatusSummary;
     pData->m_bEndRound = m_bAutopauseEndOfCombatRound;
     pData->m_bEnemySighted = m_bAutopauseEnemySighted;
     pData->m_bPartyKilled = m_bAutopausePartyKilled;
     pData->m_bUseHorzMenu = m_bAutopauseActionMenu;
-    pData->m_bUseVertMenu = m_nXboxUnmappedBit32;
+    pData->m_bUseVertMenu = m_bPauseVertMenu;
     pData->m_bTrigger = m_bAutopauseNewTargetSelected;
     pData->m_nGamma = m_nBrightness;
     pData->m_nVolumeMusic = m_nMusicVolume;
@@ -1252,13 +1252,13 @@ void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)
     m_bSubtitles = pData->m_bShowSubtitles;
     m_bMiniMap = pData->m_bShowMiniMap;
     m_bFloatingNumbers = pData->m_bRumble;
-    m_nXboxUnmappedBit26 = pData->m_bShowFloaty;
+    m_bShowFloaty = pData->m_bShowFloaty;
     m_bStatusSummary = pData->m_bShowSummary;
     m_bAutopauseEndOfCombatRound = pData->m_bEndRound;
     m_bAutopauseEnemySighted = pData->m_bEnemySighted;
     m_bAutopausePartyKilled = pData->m_bPartyKilled;
     m_bAutopauseActionMenu = pData->m_bUseHorzMenu;
-    m_nXboxUnmappedBit32 = pData->m_bUseVertMenu;
+    m_bPauseVertMenu = pData->m_bUseVertMenu;
     m_bAutopauseNewTargetSelected = pData->m_bTrigger;
     m_nBrightness = pData->m_nGamma;
     m_nMusicVolume = pData->m_nVolumeMusic;
@@ -1328,7 +1328,7 @@ void CClientOptions::SetNumShadowCastingLights(unsigned char nLights)
         CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
         if (pModule != NULL && pModule->GetArea() != NULL)
         {
-            pModule->GetArea()->m_nUnknown230 = 1;
+            pModule->GetArea()->m_bLightCountChanged = 1;
         }
     }
 }
@@ -1357,12 +1357,12 @@ void CClientOptions::SetAntiAliasingMode(unsigned char nMode)
 {
     switch (nMode)
     {
-    case 0: m_nXboxUnmapped11 = 0; break;
-    case 1: m_nXboxUnmapped11 = 1; break;
-    case 2: m_nXboxUnmapped11 = 2; break;
-    case 3: m_nXboxUnmapped11 = 3; break;
-    case 4: m_nXboxUnmapped11 = 4; break;
-    default: m_nXboxUnmapped11 = 0; break;
+    case 0: m_nAntiAliasingMode = 0; break;
+    case 1: m_nAntiAliasingMode = 1; break;
+    case 2: m_nAntiAliasingMode = 2; break;
+    case 3: m_nAntiAliasingMode = 3; break;
+    case 4: m_nAntiAliasingMode = 4; break;
+    default: m_nAntiAliasingMode = 0; break;
     }
 }
 

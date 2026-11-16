@@ -2491,7 +2491,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
         nDamage = pTarget->DoDamageResistance(GetCreature(), nDamage, nDamageFlags, bMaxDamage, 1, 1);
         nDamage = pTarget->DoDamageReduction(GetCreature(), nDamage, nDamagePower, bMaxDamage, 1);
         if ((pTarget->AsSWSDoor() != NULL || pTarget->AsSWSPlaceable() != NULL) &&
-            pWeapon != NULL && pWeapon->m_n2DC)
+            pWeapon != NULL && pWeapon->m_bDoorCutting)
         {
             nDamage = pTarget->GetMaxHitPoints(1);
         }
@@ -3614,7 +3614,7 @@ char CSWSCreatureStats::GetSkillRank(unsigned char nSkill, CSWSObject* pTarget,
             }
             if (pPlaceable != NULL)
             {
-                nRank += pPlaceable->m_n43C;
+                nRank += pPlaceable->m_nComputerUseBonus;
             }
             break;
         case CSWRules::SKILL_DEMOLITIONS:
@@ -7016,7 +7016,7 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
     case CSWFeat::FEAT_SNIPER_SHOT:
     case CSWFeat::FEAT_MASTER_SNIPER_SHOT:
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
-        if (pWeapon != NULL && pWeapon->m_n2E8)
+        if (pWeapon != NULL && pWeapon->m_bSniperBonus)
         {
             nBonus = 4;
         }
@@ -7024,7 +7024,7 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
     case CSWFeat::FEAT_RAPID_SHOT:
         nBonus = -4;
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
-        if (pWeapon != NULL && pWeapon->m_n2E4)
+        if (pWeapon != NULL && pWeapon->m_bRapidShotBonus)
         {
             nBonus = -3;
         }
@@ -7044,7 +7044,7 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
     case CSWFeat::FEAT_IMPROVED_RAPID_SHOT:
         nBonus = -2;
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
-        if (pWeapon != NULL && pWeapon->m_n2E4)
+        if (pWeapon != NULL && pWeapon->m_bRapidShotBonus)
         {
             nBonus = -1;
         }
@@ -7052,7 +7052,7 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
     case CSWFeat::FEAT_MULTI_SHOT:
         nBonus = -1;
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
-        if (pWeapon != NULL && pWeapon->m_n2E4)
+        if (pWeapon != NULL && pWeapon->m_bRapidShotBonus)
         {
             nBonus = 0;
         }
@@ -7276,7 +7276,7 @@ char CSWSCreatureStats::GetDEXMod(int bWithEffects)
             {
                 CSWBaseItem* pBaseItem = pArmor->GetBaseItem();
                 unsigned char nArmorDex = pBaseItem->m_nDexBonus;
-                int nArmorBonus = pArmor->m_n2EC;
+                int nArmorBonus = pArmor->m_nMaxDexBonus;
                 nDexBonus = nArmorDex + nArmorBonus;
                 bUseArmorLimit = 1;
             }

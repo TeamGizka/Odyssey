@@ -848,7 +848,7 @@ void Scene::SetFogColor(const Vector& vColor)
 {
     m_vFogColor = vColor;
     Vector& vFog = m_vFogColor;
-    m_v80.m_fX = m_v80.m_fY = m_v80.m_fZ =
+    m_vDesaturatedFogColor.m_fX = m_vDesaturatedFogColor.m_fY = m_vDesaturatedFogColor.m_fZ =
         (vFog.m_fX * 0.3f + vFog.m_fY * 0.59f + vFog.m_fZ * 0.11f) * g_DesatureFactor;
 }
 
@@ -890,7 +890,7 @@ CAurRoom::CAurRoom(char* sName)
 {
     strcpy(m_sName, sName);
     m_pRoomObject = 0;
-    m_bB8 = 0;
+    m_bHasBackground = 0;
 }
 // PC 0x0046C210 GOG 0x0046C370
 CHitInfo::CHitInfo(int nType, int nFlags, int nMask)
@@ -2348,7 +2348,7 @@ void Scene::DoFog()
             }
             else if (g_ForceSight)
             {
-                GLRender_SetFogModev(FOG_COLOR, m_v80);
+                GLRender_SetFogModev(FOG_COLOR, m_vDesaturatedFogColor);
             }
             else
             {
@@ -3306,7 +3306,7 @@ Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
                 }
                 else
                 {
-                    pRoom->m_bB8 = 1;
+                    pRoom->m_bHasBackground = 1;
                 }
             }
             pModel->AddRef((Gob*)0);
@@ -3392,7 +3392,7 @@ Scene::Scene(char* sName)
     m_bFog = 0;
     m_nFogMode = FOG_MODE_LINEAR;
     m_vFogColor = Vector(1.0f, 1.0f, 1.0f);
-    m_v80 = Vector(g_DesatureFactor * 0.3f, g_DesatureFactor * 0.59f,
+    m_vDesaturatedFogColor = Vector(g_DesatureFactor * 0.3f, g_DesatureFactor * 0.59f,
                    g_DesatureFactor * 0.11f);
     m_fFogNear = 5.0f;
     m_fFogFar = 40.0f;

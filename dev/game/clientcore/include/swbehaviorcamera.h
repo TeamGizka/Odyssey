@@ -78,7 +78,7 @@ public:
     int m_nStyle;
     int m_nHeightMode;
     float m_fPitch;
-    int m_nReserved1C;
+    int m_nMode;
 #ifndef _XBOX
     float m_fDesiredPitch;
 #endif
@@ -199,18 +199,18 @@ public:
     float m_fShakeYaw;
     float m_fShakePitch;
 
-    float m_fReserved98;
+    float m_fTargetMoveDelay;
 
     float m_fPositionInterpSpeed;
 
     float m_fOrientationInterpAmount;
-    int m_nReservedA4;
+    int m_bFollowingMove;
 #ifdef _XBOX
     int m_bTargetTowardCamera;
 #else
     char m_aReservedA8[4];
 #endif
-    int m_nReservedAC;
+    int m_bKeepManualYaw;
 #ifndef _XBOX
     int m_bMouseCameraRotateToggle;
     CSWRK4SplitAcceleration m_integrator;
@@ -305,9 +305,9 @@ public:
     float m_fLogYaw;
     float m_fLogPitch;
     float m_fLogDistance;
-    float m_fReserved34;
-    float m_fReserved38;
-    float m_fReserved3C;
+    float m_fHeight;
+    float m_fDesiredHeight;
+    float m_fLogHeight;
 };
 
 #endif

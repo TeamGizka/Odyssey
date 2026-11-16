@@ -161,7 +161,7 @@ public:
     unsigned short m_nSubtype;
     unsigned short GetSubtype();
     unsigned char m_nCostTable;
-    unsigned char m_aUnmapped05[1];
+    unsigned char m_aCostTableAlignment[1];
     unsigned short m_nCostValue;
     unsigned short GetCostValue();
     unsigned char m_nParam1;
@@ -171,7 +171,7 @@ public:
     int m_bUseable;
     unsigned char m_nUsesPerDay;
     unsigned char m_nUpgradeType;
-    unsigned short m_n12;
+    unsigned short m_nPropUpgrade;
 
     unsigned long m_nLastUseDay;
     unsigned long m_nLastUseTime;
@@ -365,11 +365,11 @@ public:
 
     unsigned short m_nInventoryIndex;
     unsigned char m_aUnmapped29A[2];
-    int m_n2DC;
-    int m_n2E0;
-    int m_n2E4;
-    int m_n2E8;
-    int m_n2EC;
+    int m_bDoorCutting;
+    int m_bDoorSabering;
+    int m_bRapidShotBonus;
+    int m_bSniperBonus;
+    int m_nMaxDexBonus;
     int m_nUpgradeLevel;
     int m_anUpgradeSlot[6];
 
@@ -421,7 +421,7 @@ public:
 
     unsigned long m_oidOwner;
     unsigned long m_nNewItems;
-    unsigned long m_bUnknown08 : 1;
+    unsigned long m_bPartyInventory : 1;
     unsigned long m_nUnknown09 : 31;
     CExoArrayList<unsigned long> m_lstItems;
     int FindItemWithBaseItemType(unsigned char nItemType, int nIndex);

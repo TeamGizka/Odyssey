@@ -1716,7 +1716,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         if (!CompareVisualEffectLists(&pLastUpdateObject->m_lstLoopingVisualEffects,
                                       &pCreature->m_lstLoopingVisualEffects))
             nUpdateMask |= OBJECT_UPDATE_VISUAL_EFFECTS;
-        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fUnknown50 ||
+        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fAnimationSpeed ||
             pLastUpdateObject->m_nAnimation != pCreature->m_nAnimation)
             nUpdateMask |= OBJECT_UPDATE_ANIMATION;
 
@@ -1744,10 +1744,10 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
             pCreature->m_pStats->m_nSubraceIndex != pLastUpdateObject->m_nSubraceIndex ||
             pCreature->m_pStats->m_nGender != pLastUpdateObject->m_nGender ||
             pCreature->m_pStats->m_nGoodEvilAlignment != pLastUpdateObject->m_nGoodEvilAlignment ||
-            pCreature->GetStats()->m_nBaseCNPCAlignment != pLastUpdateObject->m_n11A ||
-            pCreature->m_bDeadSelectable != pLastUpdateObject->m_nObjectF4 ||
-            pCreature->GetForm() != pLastUpdateObject->m_n11C ||
-            pCreature->GetTag() != pLastUpdateObject->m_s120)
+            pCreature->GetStats()->m_nBaseCNPCAlignment != pLastUpdateObject->m_nBaseCNPCAlignment ||
+            pCreature->m_bDeadSelectable != pLastUpdateObject->m_bDeadSelectable ||
+            pCreature->GetForm() != pLastUpdateObject->m_nForm ||
+            pCreature->GetTag() != pLastUpdateObject->m_sCreatureTag)
         {
             nUpdateMask |= OBJECT_UPDATE_CHARACTER_DETAILS;
         }
@@ -1761,7 +1761,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
                 Vector vDestination(pWayPoints[2 * nWayPoints - 2],
                                     pWayPoints[2 * nWayPoints - 1], 0.0f);
                 Vector vDifference;
-                vDifference = vDestination - pLastUpdateObject->m_vUnknown54;
+                vDifference = vDestination - pLastUpdateObject->m_vPathDestination;
                 float fDistanceSquared = vDifference * vDifference;
                 if (fDistanceSquared >= OBJECT_UPDATE_DISTANCE_SQUARED ||
                     pPath->m_bForceLocationUpdate != 0)
@@ -1780,9 +1780,9 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
                 nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
             else
             {
-                Vector vDifference = pLastUpdateObject->m_vUnknown30 - pCreature->m_vPosition;
+                Vector vDifference = pLastUpdateObject->m_vPosition - pCreature->m_vPosition;
                 if (vDifference * vDifference >= OBJECT_UPDATE_DISTANCE_SQUARED ||
-                    (pCreature->GetArea() != NULL && pCreature->GetArea()->GetId() != pLastUpdateObject->m_nUnknown3C) ||
+                    (pCreature->GetArea() != NULL && pCreature->GetArea()->GetId() != pLastUpdateObject->m_oidArea) ||
                     pLastUpdateObject->m_vOrientation * pCreature->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
                     nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
             }
@@ -1858,18 +1858,18 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         pObject->m_nObjectType == CGameObject::OBJECT_TYPE_AREAOFEFFECTOBJECT ||
         pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
     {
-        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fUnknown50)
+        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fAnimationSpeed)
             nUpdateMask |= OBJECT_UPDATE_ANIMATION;
         if (pLastUpdateObject->m_nAnimation != pObject->m_nAnimation)
             nUpdateMask |= OBJECT_UPDATE_ANIMATION;
-        Vector vDifference = pLastUpdateObject->m_vUnknown30 - pObject->m_vPosition;
+        Vector vDifference = pLastUpdateObject->m_vPosition - pObject->m_vPosition;
         if (vDifference * vDifference >= OBJECT_UPDATE_DISTANCE_SQUARED)
             nUpdateMask |= OBJECT_UPDATE_LOCATION;
         if (pLastUpdateObject->m_vOrientation * pObject->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
             nUpdateMask |= OBJECT_UPDATE_ORIENTATION;
         if (pLastUpdateObject->m_nPortraitId != pObject->GetPortraitId() || pLastUpdateObject->m_resRef != pObject->GetPortrait())
             nUpdateMask |= OBJECT_UPDATE_PORTRAIT;
-        if (pObject->GetArea() != NULL && pObject->GetArea()->GetId() != pLastUpdateObject->m_nUnknown3C)
+        if (pObject->GetArea() != NULL && pObject->GetArea()->GetId() != pLastUpdateObject->m_oidArea)
             nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
         if (!CompareVisualEffectLists(&pLastUpdateObject->m_lstLoopingVisualEffects, &pObject->m_lstLoopingVisualEffects))
             nUpdateMask |= OBJECT_UPDATE_VISUAL_EFFECTS;
@@ -3198,7 +3198,7 @@ void CSWSMessage::AddItemAppearanceToMessage(CSWSItem* pItem)
 #endif
     {
         WriteBYTE(pItem->m_nModelVariation, 8);
-        if (pBaseItem->m_bUnknown18 == 1)
+        if (pBaseItem->m_nModelType == 1)
         {
             WriteBYTE(pItem->m_nBodyVariation, 8);
             WriteBYTE(pItem->m_nTextureVar, 8);
@@ -3271,7 +3271,7 @@ unsigned long CSWSMessage::ComputeAppearanceUpdateRequired(
     {
         nAppearanceMask |= APPEARANCE_UPDATE_EQUIPMENT;
     }
-    if (pLastUpdateObject->m_nUnknown2A != pCreature->m_nSoundSetFile)
+    if (pLastUpdateObject->m_nSoundSetFile != pCreature->m_nSoundSetFile)
     {
         nAppearanceMask |= APPEARANCE_UPDATE_FLAGS;
     }
@@ -6746,7 +6746,7 @@ CLastUpdateObject* CSWSMessage::CreateNewLastUpdateObject(CSWSPlayer* pPlayer,
         pLastUpdateObject->m_oidAppearanceRightHand = pCreature->m_cAppearanceInfo.m_oidAppearanceRightHand;
         pLastUpdateObject->m_nAppearanceState = pCreature->m_cAppearanceInfo.m_bUseBackupHead;
         pLastUpdateObject->m_nAppearanceVariant = pCreature->m_cAppearanceInfo.m_nAppearanceHead;
-        pLastUpdateObject->m_nUnknown2A = pCreature->m_nSoundSetFile;
+        pLastUpdateObject->m_nSoundSetFile = pCreature->m_nSoundSetFile;
         for (int i = 0; i < CLastUpdateObjectRecord::NUM_RECORDS; i++)
         {
             pLastUpdateObject->m_aRecords[i].m_nUnknown4 = 0;
@@ -7676,16 +7676,16 @@ void CSWSMessage::UpdateLastUpdateObject(
 {
     pLastUpdateObject->m_nObjectType = pObject->m_nObjectType;
     if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
-        pLastUpdateObject->m_fUnknown50 = pObject->GetAnimationSpeed();
+        pLastUpdateObject->m_fAnimationSpeed = pObject->GetAnimationSpeed();
     if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
         pLastUpdateObject->m_nAnimation = pObject->m_nAnimation;
     if (nUpdateMask & OBJECT_UPDATE_LOCATION)
     {
-        pLastUpdateObject->m_vUnknown30 = pObject->m_vPosition;
+        pLastUpdateObject->m_vPosition = pObject->m_vPosition;
         if (pObject->GetArea() != NULL)
-            pLastUpdateObject->m_nUnknown3C = pObject->GetArea()->GetId();
+            pLastUpdateObject->m_oidArea = pObject->GetArea()->GetId();
         else
-            pLastUpdateObject->m_nUnknown3C = OBJECT_INVALID;
+            pLastUpdateObject->m_oidArea = OBJECT_INVALID;
     }
     if (nUpdateMask & OBJECT_UPDATE_ORIENTATION)
     {
@@ -7776,7 +7776,7 @@ void CSWSMessage::UpdateLastUpdateObject(
             CPathfindInformation* pPath = pCreature->m_pPathfindInformation;
             unsigned short nPoints = pPath->m_nWayPointCount / 2;
             if (pPath->m_pWayPoints != NULL && nPoints != 0)
-                pLastUpdateObject->m_vUnknown54 = Vector(
+                pLastUpdateObject->m_vPathDestination = Vector(
                     pPath->m_pWayPoints[(nPoints - 1) * 2],
                     pPath->m_pWayPoints[(nPoints - 1) * 2 + 1], 0.0f);
         }
@@ -7848,10 +7848,10 @@ void CSWSMessage::UpdateLastUpdateObject(
             pLastUpdateObject->m_nSubraceIndex = pCreature->m_pStats->m_nSubraceIndex;
             pLastUpdateObject->m_nGender = pCreature->m_pStats->m_nGender;
             pLastUpdateObject->m_nGoodEvilAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
-            pLastUpdateObject->m_n11A = pCreature->m_pStats->m_nBaseCNPCAlignment;
-            pLastUpdateObject->m_n11C = pCreature->m_nCurrentForm;
-            pLastUpdateObject->m_s120 = pCreature->m_sTag;
-            pLastUpdateObject->m_nObjectF4 = pCreature->m_bDeadSelectable;
+            pLastUpdateObject->m_nBaseCNPCAlignment = pCreature->m_pStats->m_nBaseCNPCAlignment;
+            pLastUpdateObject->m_nForm = pCreature->m_nCurrentForm;
+            pLastUpdateObject->m_sCreatureTag = pCreature->m_sTag;
+            pLastUpdateObject->m_bDeadSelectable = pCreature->m_bDeadSelectable;
             for (int i = 0; i < pCreature->m_pStats->GetNumClasses(); i++)
             {
                 pLastUpdateObject->m_nClass[i] = pCreature->m_pStats->GetClass(i);

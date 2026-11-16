@@ -215,7 +215,7 @@ inline CExoImeUI::CExoImeUI()
       m_sCandidate()
 {
     m_nCompositionActive = 0;
-    m_nUnknown104 = 0;
+    m_nPreviousKeyboardLayout = 0;
 }
 // PC 0x00639770 GOG 0x00639670
 void CSWCPlayer::SetPrimaryPCPortrait(CResRef cPortrait)
@@ -8710,7 +8710,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
              g_pAppManager->m_pReentrantServerStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME))
         {
             m_nAreaNotReadyToDisplay = 1;
-            if (g_pAppManager->m_pReentrantServerStats->m_nUnknown56 == 4)
+            if (g_pAppManager->m_pReentrantServerStats->m_nError == 4)
             {
                 DeltaT = (int)m_pWorldTimer->GetSnapshotTimeDifference() / 1000000.0f;
                 ProcessInput(DeltaT);
@@ -10623,7 +10623,7 @@ int CClientExoAppInternal::MainLoop()
              pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME))
         {
             m_nAreaNotReadyToDisplay = 1;
-            if (g_pAppManager->m_pReentrantServerStats->m_nUnknown56 == 4)
+            if (g_pAppManager->m_pReentrantServerStats->m_nError == 4)
             {
                 DeltaT = (int)m_pWorldTimer->GetSnapshotTimeDifference() / 1000000.0f;
                 ProcessInput(DeltaT);

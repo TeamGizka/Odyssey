@@ -278,7 +278,7 @@ public:
     CExoSoundSource* m_pSoundSource;
     int m_bRumblePerformed;
     int m_bHardCodedEffectApplied;
-    unsigned char m_nF8;
+    unsigned char m_bAttachToHead;
 
     int IsDone();
     void ApplySelfIlluminationPulse(unsigned short);

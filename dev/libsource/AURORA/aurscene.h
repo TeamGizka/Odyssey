@@ -275,7 +275,7 @@ public:
     int m_nFogMode;
     float m_fFogDensity;
     Vector m_vFogColor;
-    Vector m_v80;
+    Vector m_vDesaturatedFogColor;
     LightManager* m_pLightManager;
     WindManager* m_pWindManager;
     Vector m_vAmbient;
@@ -385,7 +385,7 @@ public:
     List<Gob*> m_lstAnimatedObjects;
     Gob* m_pRoomObject;
     char m_sName[64];
-    char m_bB8;
+    char m_bHasBackground;
     ~CAurRoom();
     CAurRoom(char*);
 };

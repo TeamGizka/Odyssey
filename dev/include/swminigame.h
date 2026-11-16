@@ -303,7 +303,7 @@ public:
     float m_fF0;
     float m_fF4;
     float m_fF8;
-    C2DA* m_pFC;
+    C2DA* m_pSwoopUpgrade2DA;
     int m_anSwoopUpgrades[6];
     float m_fJumpSpeed;
 };
@@ -576,11 +576,11 @@ public:
     void Stop();
     void Hit();
     void AdjustHitPoints(int nHitPoints);
-    void OnHitObstacle(int nReserved);
-    void OnHitWorld(int nReserved);
-    void OnDamage(int nReserved);
+    void OnHitObstacle(int bScript);
+    void OnHitWorld(int bScript);
+    void OnDamage(int bScript);
     int DoObstacleHitCheck(CSWMGObstacle* pObstacle);
-    void OnDeath(int nReserved);
+    void OnDeath(int bScript);
     void RemoveGunBank(CSWMGGunBank* pGunBank);
     void Go();
     int AttachGuns(CAurObject* pObject);
