@@ -257,6 +257,7 @@ public:
     virtual void OnPanelAdded();
     virtual void OnPanelRemoved();
     virtual void Draw(float fDeltaTime);
+    virtual void HandleInputEvent(int nEvent, int nState);
     void OnQuitPressed(CSWGuiControl* pControl);
     void OnLoadGamePressed(CSWGuiControl* pControl);
     void OnLastSavePressed(CSWGuiControl* pControl);

@@ -5620,6 +5620,11 @@ void CSWGuiSwoopUpgrade::SetDescription(const CExoString& sDescription)
     pListBox->SetSelectedControl(&m_cDescription, 0);
     pRanalog->SetEnabledFlag(pListBox->IsOversized());
 }
+// PC 0x006D39B0 GOG 0x007203F0
+void CSWGuiSwoopUpgrade::Draw(float fElapsed)
+{
+    CSWGuiPanel::Draw(fElapsed);
+}
 // PC 0x00733E60 GOG 0x00733B70
 void CSWGuiCreateMedicalItem::OnPanelAdded()
 {

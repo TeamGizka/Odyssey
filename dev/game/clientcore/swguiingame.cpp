@@ -2221,6 +2221,10 @@ void CSWGuiDeathDisplay::Draw(float fDeltaTime)
     }
     CSWGuiPanel::Draw(fDeltaTime);
 }
+// PC 0x006049D0 GOG 0x006049B0
+void CSWGuiDeathDisplay::HandleInputEvent(int nEvent, int nState)
+{
+}
 // PC 0x006768B0 GOG 0x00676650
 void CSWGuiDeathDisplay::OnQuitPressed(CSWGuiControl* pControl)
 {

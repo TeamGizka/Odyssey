@@ -41,6 +41,11 @@
 static const int MODULE_SAVE_BASE_RESOURCES = 3;
 
 void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender);
+// PC 0x00504120 GOG 0x004FC200
+inline CResIFO::CResIFO()
+{
+    strncpy(m_szFileType, "IFO ", 4);
+}
 // PC 0x00509340 GOG 0x005013F0
 CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown)
     : CGameObject(CGameObject::OBJECT_TYPE_MODULE, OBJECT_INVALID)
@@ -309,11 +314,6 @@ int CSWSModule::GenerateInterAreaDFSSuccessors(
     *ppSuccessors = new unsigned long[nCount];
     return pArea->CountAreaTransitionTriggers(
         *ppSuccessors, pPathfind->GetAreaListCount(), pPathfind->GetAreaList());
-}
-// PC 0x00504120 GOG 0x004FC200
-inline CResIFO::CResIFO()
-{
-    strncpy(m_szFileType, "IFO ", 4);
 }
 // PC 0x00504150 GOG 0x004FC230
 CSWSArea* CSWSModule::GetArea()

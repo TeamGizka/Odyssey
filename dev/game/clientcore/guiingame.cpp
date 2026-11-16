@@ -64,6 +64,7 @@
 
 #include "nwcplaceable.h"
 #include "nwsplaceable.h"
+#include "swguiingame.inl"
 #ifdef _XBOX
 
 #undef SWGUI_PANEL_MODE_OVERLAY
@@ -5905,7 +5906,6 @@ int CGuiInGame::GetCurrentEquipScreenNPC()
 }
 #endif
 
-#include "swguiingame.inl"
 // PC 0x00685B20 GOG 0x00685890
 void CGuiInGame::InitializeGlobal()
 {

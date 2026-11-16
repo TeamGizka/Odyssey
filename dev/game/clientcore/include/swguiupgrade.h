@@ -236,6 +236,7 @@ public:
     ~CSWGuiSwoopUpgrade();
     virtual void OnPanelAdded();
     void SetDescription(CExoString const&);
+    virtual void Draw(float);
     void CancelPanel();
     void OnControlEntered(CSWGuiControl*);
     void OnUpgradeSelected(CSWGuiControl*);
