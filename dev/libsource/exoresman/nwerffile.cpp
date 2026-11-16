@@ -15,6 +15,51 @@ int CERFRes::Read(CExoFile& file)
     file.Read(&m_nSize, 4, 1);
     return 1;
 }
+// PC 0x0062AFA0 GOG 0x0062AE70
+void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
+                                 const CExoString& sDirectory, void* pUnused,
+                                 int (*pfnProgress)(int, int, int, int),
+                                 int nArg1, int nArg2)
+{
+    if (NWERFFILE_DEBUG)
+    {
+        SetNumEntries(0);
+    }
+
+    CExoFile file(sFileName, 2057, "rb");
+
+    if (file.FileOpened())
+    {
+        CExoString sPath;
+        CExoLinkedListNode* pKeyPos = m_lstKeys.GetHeadPos();
+        CExoLinkedListNode* pResPos = m_lstResources.GetHeadPos();
+
+        for (unsigned long i = 0; i < m_nEntryCount; i++)
+        {
+            CERFKey* pKey = m_lstKeys.GetAtPos(pKeyPos);
+            CERFRes* pRes = m_lstResources.GetAtPos(pResPos);
+            sPath = sDirectory + pKey->m_sResRef;
+            CExoFile* pOut = new CExoFile(sPath, pKey->m_nResType, "wb");
+            pRes->CopyToFile(&file, pOut, pUnused);
+            pOut->Flush();
+
+            if (pfnProgress != NULL)
+            {
+                pfnProgress(i, m_nEntryCount, nArg1, nArg2);
+            }
+
+            delete pOut;
+            m_lstKeys.GetNext(pKeyPos);
+            m_lstResources.GetNext(pResPos);
+        }
+
+        if (pfnProgress != NULL)
+        {
+            pfnProgress(m_nEntryCount, m_nEntryCount, nArg1, nArg2);
+        }
+        return;
+    }
+}
 // PC 0x0062B200 GOG 0x0062B0D0
 void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
                           int (*pfnProgress)(int, int, int, int), int nArg1,
@@ -231,46 +276,6 @@ int CERFString::Write(CExoFile& file)
     file.Write(&m_nLength, 4, 1);
     file.Write(m_pText, m_nLength, 1);
     return 1;
-}
-// PC 0x0062AFA0 GOG 0x0062AE70
-void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
-                                 const CExoString& sDirectory, void* pUnused,
-                                 int (*pfnProgress)(int, int, int, int),
-                                 int nArg1, int nArg2)
-{
-    CExoFile file(sFileName, 2057, "rb");
-
-    if (file.FileOpened())
-    {
-        CExoString sPath;
-        CExoLinkedListNode* pKeyPos = m_lstKeys.GetHeadPos();
-        CExoLinkedListNode* pResPos = m_lstResources.GetHeadPos();
-
-        for (unsigned long i = 0; i < m_nEntryCount; i++)
-        {
-            CERFKey* pKey = m_lstKeys.GetAtPos(pKeyPos);
-            CERFRes* pRes = m_lstResources.GetAtPos(pResPos);
-            sPath = sDirectory + pKey->m_sResRef;
-            CExoFile* pOut = new CExoFile(sPath, pKey->m_nResType, "wb");
-            pRes->CopyToFile(&file, pOut, pUnused);
-            pOut->Flush();
-
-            if (pfnProgress != NULL)
-            {
-                pfnProgress(i, m_nEntryCount, nArg1, nArg2);
-            }
-
-            delete pOut;
-            m_lstKeys.GetNext(pKeyPos);
-            m_lstResources.GetNext(pResPos);
-        }
-
-        if (pfnProgress != NULL)
-        {
-            pfnProgress(m_nEntryCount, m_nEntryCount, nArg1, nArg2);
-        }
-        return;
-    }
 }
 // PC 0x0062A730 GOG 0x0062A600
 inline CERFKey::~CERFKey()
