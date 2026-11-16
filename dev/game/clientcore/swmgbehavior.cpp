@@ -3,6 +3,11 @@
 #include "nwcanimbase.h"
 #include "swminigame.h"
 #include "exobase.h"
+
+static inline float Square(float fValue)
+{
+    return fValue * fValue;
+}
 // PC 0x00748CC0 GOG 0x00748B60
 CSWMGBehaviorFire::CSWMGBehaviorFire(CAurObject* pObject,
                                      CAurObject* pParent,
@@ -58,6 +63,115 @@ void CSWMGBehaviorFire::SetRateOfFire(float fRateOfFire)
     }
     m_fRateOfFire = fRateOfFire;
 }
+// PC 0x00749800 GOG 0x00749650
+CSWMGBehaviorTrack::CSWMGBehaviorTrack(CAurObject* pObject,
+                                     CAurObject* pParent,
+                                     CAurPart* pPart,
+                                     CAurObject* pModel)
+    : CAurBehaviorAttach(pObject, pParent, pPart)
+{
+    m_bTargetting = false;
+    m_pModel = pModel;
+    AddDependency(pModel);
+}
+// PC 0x00749080 GOG 0x00748EF0
+int CSWMGBehaviorTrack::Control(float fTimeStep)
+{
+    m_bTargetting = false;
+    if (CAurBehaviorAttach::Control(fTimeStep) == 0)
+    {
+        return 0;
+    }
+    if (m_pModel == NULL)
+    {
+        ((Gob*)m_pObject)->SetBehavior(NULL);
+        return 0;
+    }
+    Quaternion qOrientation = ((Gob*)m_pObject)->GetOrientation();
+    Vector vOffset =
+        -qOrientation *
+        (qOrientation * ((Gob*)m_pObject)->GetPosition() + m_vTarget);
+    Vector vLocal =
+        -qOrientation * (((Gob*)(CAurObject*)m_pModel)->GetPosition() - vOffset);
+    if (!(Square(m_params.m_fSensingRadius) < vLocal * vLocal))
+    {
+        float fPitch = Pitch(vLocal);
+        float fYaw = Yaw(vLocal);
+        m_bTargetting = true;
+        if (m_params.m_fHorizontalSpread < fabs(fYaw))
+        {
+            m_bTargetting = false;
+            if (fYaw < 0.0f)
+            {
+                fYaw = -m_params.m_fHorizontalSpread;
+            }
+            else
+            {
+                fYaw = m_params.m_fHorizontalSpread;
+            }
+        }
+        if (m_params.m_fVerticalSpread < fabs(fPitch))
+        {
+            m_bTargetting = false;
+            if (fPitch < 0.0f)
+            {
+                fPitch = -m_params.m_fVerticalSpread;
+            }
+            else
+            {
+                fPitch = m_params.m_fVerticalSpread;
+            }
+        }
+        ((Gob*)m_pObject)
+            ->SetOrientation(YawPitchRoll(fYaw, -fPitch, Roll(qOrientation)) *
+                             qOrientation);
+    }
+    return 1;
+}
+// PC 0x007498A0 GOG 0x00749710
+CSWMGBehaviorTrackAndFire::CSWMGBehaviorTrackAndFire(CAurObject* pObject,
+                                                      CAurObject* pParent,
+                                                      CAurPart* pPart,
+                                                      CAurObject* pModel)
+    : CSWMGBehaviorTrack(pObject, pParent, pPart, pModel),
+      m_resFireSound(),
+      m_fTimeToFire(0.0f)
+{
+}
+
+// PC 0x007496D0 GOG 0x00749540
+int CSWMGBehaviorTrackAndFire::Control(float fTimeStep)
+{
+    int nResult = CSWMGBehaviorTrack::Control(fTimeStep);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    if (m_fTimeToFire > 0.0)
+    {
+        float fTime = m_fTimeToFire - fTimeStep;
+        if (0.0f > fTime)
+        {
+            fTime = 0.0f;
+        }
+        m_fTimeToFire = fTime;
+    }
+    if (m_bTargetting && m_fTimeToFire == 0.0)
+    {
+        m_fTimeToFire = m_fRateOfFire;
+        ((Gob*)m_pObject)->PlayAnimation("fire", 1.0f, 1, 0.0f);
+        ((Gob*)m_pObject)->PlayAnimation("ready", 1.0f, 32, 0.0f);
+        if (m_resFireSound.IsValid())
+        {
+            CResRef resSound(
+                reinterpret_cast<char*>(m_resFireSound.GetResRef()));
+            g_pExoSound->Play3DOneShotSound(resSound,
+                                            ((Gob*)m_pObject)->GetPosition(),
+                                            0.0f, 24, 0, 0, 0.0f, 0.0f);
+        }
+    }
+    return 1;
+}
 // PC 0x00748E70 GOG 0x00748D10
 void CSWMGBehaviorTrackAndFire::SetRateOfFire(float fRateOfFire)
 {
@@ -95,114 +209,3 @@ int CSWMGBehaviorBullet::Control(float fTimeStep)
                           (fTimeStep * m_bullet.m_fSpeed));
     return 1;
 }
-// PC 0x00749080 GOG 0x00748EF0
-int CSWMGBehaviorTrack::Control(float fTimeStep)
-{
-    m_bTargetting = false;
-    if (CAurBehaviorAttach::Control(fTimeStep) == 0)
-    {
-        return 0;
-    }
-    Gob* pGob = (Gob*)m_pObject;
-    if (m_pModel.m_pObject == NULL)
-    {
-        pGob->SetBehavior(NULL);
-        return 0;
-    }
-    Quaternion qOrientation = pGob->GetOrientation();
-    Vector vOffset =
-        -qOrientation *
-        (qOrientation * ((Gob*)m_pObject)->GetPosition() + m_vTarget);
-    Vector vLocal =
-        -qOrientation * (((Gob*)m_pModel.m_pObject)->GetPosition() - vOffset);
-    if (!(m_params.m_fSensingRadius * m_params.m_fSensingRadius <
-          vLocal * vLocal))
-    {
-        float fPitch = Pitch(vLocal);
-        float fYaw = Yaw(vLocal);
-        m_bTargetting = true;
-        if (m_params.m_fHorizontalSpread < fabs(fYaw))
-        {
-            m_bTargetting = false;
-            if (fYaw < 0.0f)
-            {
-                fYaw = -m_params.m_fHorizontalSpread;
-            }
-            else
-            {
-                fYaw = m_params.m_fHorizontalSpread;
-            }
-        }
-        if (m_params.m_fVerticalSpread < fabs(fPitch))
-        {
-            m_bTargetting = false;
-            if (fPitch < 0.0f)
-            {
-                fPitch = -m_params.m_fVerticalSpread;
-            }
-            else
-            {
-                fPitch = m_params.m_fVerticalSpread;
-            }
-        }
-        ((Gob*)m_pObject)
-            ->SetOrientation(YawPitchRoll(fYaw, -fPitch, Roll(qOrientation)) *
-                             qOrientation);
-    }
-    return 1;
-}
-// PC 0x007496D0 GOG 0x00749540
-int CSWMGBehaviorTrackAndFire::Control(float fTimeStep)
-{
-    int nResult = CSWMGBehaviorTrack::Control(fTimeStep);
-    if (nResult == 0)
-    {
-        return nResult;
-    }
-    if (m_fTimeToFire > 0.0)
-    {
-        float fTime = m_fTimeToFire - fTimeStep;
-        if (0.0f > fTime)
-        {
-            fTime = 0.0f;
-        }
-        m_fTimeToFire = fTime;
-    }
-    if (m_bTargetting && m_fTimeToFire == 0.0)
-    {
-        m_fTimeToFire = m_fRateOfFire;
-        ((Gob*)m_pObject)->PlayAnimation("fire", 1.0f, 1, 0.0f);
-        ((Gob*)m_pObject)->PlayAnimation("ready", 1.0f, 32, 0.0f);
-        if (m_resFireSound.IsValid())
-        {
-            CResRef resSound(
-                reinterpret_cast<char*>(m_resFireSound.GetResRef()));
-            g_pExoSound->Play3DOneShotSound(resSound,
-                                            ((Gob*)m_pObject)->GetPosition(),
-                                            0.0f, 24, 0, 0, 0.0f, 0.0f);
-        }
-    }
-    return 1;
-}
-// PC 0x00749800 GOG 0x00749650
-CSWMGBehaviorTrack::CSWMGBehaviorTrack(CAurObject* pObject,
-                                     CAurObject* pParent,
-                                     CAurPart* pPart,
-                                     CAurObject* pModel)
-    : CAurBehaviorAttach(pObject, pParent, pPart)
-{
-    m_bTargetting = false;
-    m_pModel = pModel;
-    AddDependency(pModel);
-}
-// PC 0x007498A0 GOG 0x00749710
-CSWMGBehaviorTrackAndFire::CSWMGBehaviorTrackAndFire(CAurObject* pObject,
-                                                      CAurObject* pParent,
-                                                      CAurPart* pPart,
-                                                      CAurObject* pModel)
-    : CSWMGBehaviorTrack(pObject, pParent, pPart, pModel),
-      m_resFireSound(),
-      m_fTimeToFire(0.0f)
-{
-}
-
