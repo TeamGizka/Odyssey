@@ -1,3 +1,20 @@
+# Keeper-election dead filler (debt keeper-election-dead-filler). appmanager.cpp includes keeperfill_appmanager.inc in
+# front of its first function: dead functions (never referenced, discarded by /OPT:REF) that steer the ICF keeper
+# elections of LINK 7.00 (.text and .text$x) until every folded group keeps the original's member. The text is about
+# 86 MB, so it is generated at configure time from scripts/keeperfill/levers.json and ignored by git.
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/keeperfill/generate.py" "${CMAKE_CURRENT_SOURCE_DIR}"
+  RESULT_VARIABLE keeperfill_result
+  OUTPUT_VARIABLE keeperfill_output
+  ERROR_VARIABLE keeperfill_error)
+if(NOT keeperfill_result EQUAL 0)
+  message(FATAL_ERROR "swmain: keeper-election filler generation failed (${keeperfill_result}): ${keeperfill_output} ${keeperfill_error}")
+endif()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${CMAKE_SOURCE_DIR}/scripts/keeperfill/generate.py"
+  "${CMAKE_SOURCE_DIR}/scripts/keeperfill/levers.json")
+
 # swmain: the game executable, swkotor2.exe (default.exe on Xbox).
 set(sources
   appmanager.cpp

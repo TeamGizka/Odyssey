@@ -22,6 +22,7 @@ extern int g_nReInitializing;
 
 const int LARGE_TEMP_BUFFER_SIZE = 0x40000;
 
+#include "keeperfill_appmanager.inc"
 void FreeAppObjectTables(CAppManager* pManager)
 {
     unsigned long nTable;
