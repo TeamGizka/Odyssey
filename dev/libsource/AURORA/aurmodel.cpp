@@ -952,23 +952,6 @@ MdlNodeTriMesh_PostProcess::~MdlNodeTriMesh_PostProcess()
     }
     m_lstVertices.SetSize(0);
 }
-// PC 0x004597E0 GOG 0x00459980
-PartLightsaber::~PartLightsaber()
-{
-    m_nSegments = 0;
-    m_nFirstSegment = 0;
-    m_nNextSegment = 0;
-}
-inline CAurObjectLightContainer::CAurObjectLightContainer()
-    : m_lstLights(0), m_lstFadeIntensities(0)
-{
-    m_pShadowLight = 0;
-    m_fShadowFade = 0.0f;
-}
-// PC 0x00459830 GOG 0x004599D0
-inline CAurObjectLightContainer::~CAurObjectLightContainer()
-{
-}
 // PC 0x0045CB60 GOG 0x0045CCA0
 void MdlNode::DestructorDispatch()
 {
@@ -1387,6 +1370,23 @@ PartLightsaber::PartLightsaber(MdlNode* pNode)
     m_nSegments = 0;
     m_nFirstSegment = 0;
     m_nNextSegment = 0;
+}
+// PC 0x004597E0 GOG 0x00459980
+PartLightsaber::~PartLightsaber()
+{
+    m_nSegments = 0;
+    m_nFirstSegment = 0;
+    m_nNextSegment = 0;
+}
+inline CAurObjectLightContainer::CAurObjectLightContainer()
+    : m_lstLights(0), m_lstFadeIntensities(0)
+{
+    m_pShadowLight = 0;
+    m_fShadowFade = 0.0f;
+}
+// PC 0x00459830 GOG 0x004599D0
+inline CAurObjectLightContainer::~CAurObjectLightContainer()
+{
 }
 // PC 0x0045BC10 GOG 0x0045BDB0
 PartDanglyMesh::PartDanglyMesh(MdlNode* pNode)
