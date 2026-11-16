@@ -139,58 +139,6 @@ int CSWGuiKeyMapButton::UpdateEvent(unsigned long nKey)
     }
     return nResult;
 }
-// PC 0x0075FB00 GOG 0x0075F890
-CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager),
-      m_bCapturing(0)
-{
-    g_pExoInput->SetCaptureKeyboardKeys(0);
-    m_nFilter = FILTER_MOVE;
-    m_pCaptureButton = 0;
-
-    StartLoadFromLayout("OPTKeyMapping_p");
-    InitControl(m_lblTitle, "LBL_Title", 1);
-    InitControl(m_btnDefault, "BTN_Default", 1);
-    InitControl(m_btnAccept, "BTN_Accept", 1);
-    InitControl(m_btnCancel, "BTN_Cancel", 1);
-    InitControl(m_btnFilterMove, "BTN_Filter_Move", 1);
-    InitControl(m_btnFilterGame, "BTN_Filter_Game", 1);
-    InitControl(m_btnFilterMini, "BTN_Filter_Mini", 1);
-    InitControl(m_alblBar[0], "LBL_BAR1", 1);
-    InitControl(m_alblBar[1], "LBL_BAR2", 1);
-    InitControl(m_alblBar[2], "LBL_BAR3", 1);
-    InitControl(m_lstEvents, "LST_EventList", 1);
-    StopLoadFromLayout();
-
-    m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-    FillListWithEvents();
-    FillListBox(m_nFilter);
-
-    m_btnDefault.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                         (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnDefaultClick);
-    m_btnAccept.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                        (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnAcceptClick);
-    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                        (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-
-    m_btnFilterMove.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnFilterMove);
-    m_btnFilterMove.AddEvent(CSWGuiControl::EVENT_EXIT, this,
-                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::FixFilterColors);
-    m_btnFilterMove.SetFocusable(0);
-    m_btnFilterGame.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnFilterGame);
-    m_btnFilterGame.AddEvent(CSWGuiControl::EVENT_EXIT, this,
-                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::FixFilterColors);
-    m_btnFilterGame.SetFocusable(0);
-    m_btnFilterMini.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnFilterMini);
-    m_btnFilterMini.AddEvent(CSWGuiControl::EVENT_EXIT, this,
-                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::FixFilterColors);
-    m_btnFilterMini.SetFocusable(0);
-
-    SetActiveControl(&m_lstEvents, 0);
-}
 // PC 0x0075DF00 GOG 0x0075E010
 void CSWGuiInGameOptKeyMappings::HandleInputEvent(int nEvent, int nState)
 {
@@ -333,6 +281,58 @@ void CSWGuiKeyMapButton::onEventClicked(CSWGuiControl* pControl)
     {
         m_pParent->SetCaptureEvent(this);
     }
+}
+// PC 0x0075FB00 GOG 0x0075F890
+CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager),
+      m_bCapturing(0)
+{
+    g_pExoInput->SetCaptureKeyboardKeys(0);
+    m_nFilter = FILTER_MOVE;
+    m_pCaptureButton = 0;
+
+    StartLoadFromLayout("OPTKeyMapping_p");
+    InitControl(m_lblTitle, "LBL_Title", 1);
+    InitControl(m_btnDefault, "BTN_Default", 1);
+    InitControl(m_btnAccept, "BTN_Accept", 1);
+    InitControl(m_btnCancel, "BTN_Cancel", 1);
+    InitControl(m_btnFilterMove, "BTN_Filter_Move", 1);
+    InitControl(m_btnFilterGame, "BTN_Filter_Game", 1);
+    InitControl(m_btnFilterMini, "BTN_Filter_Mini", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_lstEvents, "LST_EventList", 1);
+    StopLoadFromLayout();
+
+    m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    FillListWithEvents();
+    FillListBox(m_nFilter);
+
+    m_btnDefault.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnDefaultClick);
+    m_btnAccept.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                        (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnAcceptClick);
+    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                        (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+
+    m_btnFilterMove.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnFilterMove);
+    m_btnFilterMove.AddEvent(CSWGuiControl::EVENT_EXIT, this,
+                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::FixFilterColors);
+    m_btnFilterMove.SetFocusable(0);
+    m_btnFilterGame.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnFilterGame);
+    m_btnFilterGame.AddEvent(CSWGuiControl::EVENT_EXIT, this,
+                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::FixFilterColors);
+    m_btnFilterGame.SetFocusable(0);
+    m_btnFilterMini.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::OnFilterMini);
+    m_btnFilterMini.AddEvent(CSWGuiControl::EVENT_EXIT, this,
+                            (CSWGuiHandler)&CSWGuiInGameOptKeyMappings::FixFilterColors);
+    m_btnFilterMini.SetFocusable(0);
+
+    SetActiveControl(&m_lstEvents, 0);
 }
 // PC 0x0075F3A0 GOG 0x0075EBD0
 void CSWGuiInGameOptKeyMappings::FillListBox(int nFilter)

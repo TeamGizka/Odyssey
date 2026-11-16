@@ -475,6 +475,98 @@ CSWSArea::CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea)
     m_nCurrentTransitionPendingId = 0;
     m_pClientArea = NULL;
 }
+// PC 0x004E95C0 GOG 0x004E9690
+int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
+{
+    CGameObjectArray* pObjectArray =
+        g_pAppManager->m_pServerExoApp->GetObjectArray();
+    CGameObject* pGameObject;
+    if (pObjectArray->GetGameObject(oidObject, &pGameObject) !=
+        CGameObjectArray::SUCCESS)
+    {
+        return 0;
+    }
+
+    if (m_lstObjectIds.Contains(oidObject))
+    {
+        RemoveObjectFromArea(oidObject);
+    }
+
+    float fX = ((CSWSObject*)pGameObject)->m_vPosition.m_fX;
+    int nIndex;
+    if (GetFirstObjectIndiceByX(&nIndex, fX))
+    {
+        m_lstObjectIds.Insert(oidObject, nIndex);
+    }
+    else
+    {
+        m_lstObjectIds.Add(oidObject);
+    }
+
+    CGameObject* pCreatureObject;
+    if (pObjectArray->GetGameObject(oidObject, &pCreatureObject) ==
+            CGameObjectArray::SUCCESS &&
+        pCreatureObject != NULL &&
+        pCreatureObject->AsSWSCreature() != NULL)
+    {
+        if (g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(oidObject) != NULL)
+        {
+            IncrementPlayersInArea();
+        }
+        if (bLoadingGame == 1)
+        {
+            CScriptEvent* pEvent = new CScriptEvent;
+            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OBJECT_ENTER;
+            pEvent->SetInteger(0,
+                g_pAppManager->m_pServerExoApp->GetLoadFromSaveGame());
+            CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+            unsigned long oidArea = m_nId;
+            pServer->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, oidObject, oidArea, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+        }
+    }
+    return 1;
+}
+// PC 0x004E9780 GOG 0x004E9850
+int CSWSArea::LoadArea(int bLoadingGame)
+{
+    if (m_pRes->Demand() == NULL)
+    {
+        return 0;
+    }
+
+    CResStruct cTopLevelStruct;
+
+    m_pRes->GetTopLevelStruct(&cTopLevelStruct);
+    LoadAreaHeader(&cTopLevelStruct);
+    LoadRoomInfo(&cTopLevelStruct);
+    for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
+    {
+        for (int nAudio = 0; nAudio < m_nRoomAudioCount; nAudio++)
+        {
+            if (m_psRoomAudio[nAudio].CompareNoCase(
+                    m_pRooms[nRoom].GetResRef().GetResRefStr()))
+            {
+                m_pnRoomAudioIndex[nRoom] = (unsigned char)nAudio;
+                break;
+            }
+        }
+    }
+    LoadGIT(bLoadingGame);
+    LoadPathPoints(&cTopLevelStruct);
+    m_pRes->Release();
+
+    unsigned long oidArea = m_nId;
+    CServerExoApp* pServerApp = g_pAppManager->m_pServerExoApp;
+    pServerApp->GetModule()->AddObjectToLookupTable(m_sTag, oidArea);
+
+    int nHeight = m_nHeight;
+    int nWidth = m_nWidth;
+    m_nGridMaskBytes = (unsigned char)ceil(nWidth * nHeight / 8.0f);
+
+    return 1;
+}
+
 // PC 0x004E8920 GOG 0x004E89F0
 CSWSArea::~CSWSArea()
 {
@@ -3651,97 +3743,6 @@ int CSWSArea::NoNonWalkPolysInDoors(
             }
         }
     }
-    return 1;
-}
-// PC 0x004E95C0 GOG 0x004E9690
-int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
-{
-    CGameObjectArray* pObjectArray =
-        g_pAppManager->m_pServerExoApp->GetObjectArray();
-    CGameObject* pGameObject;
-    if (pObjectArray->GetGameObject(oidObject, &pGameObject) !=
-        CGameObjectArray::SUCCESS)
-    {
-        return 0;
-    }
-
-    if (m_lstObjectIds.Contains(oidObject))
-    {
-        RemoveObjectFromArea(oidObject);
-    }
-
-    float fX = ((CSWSObject*)pGameObject)->m_vPosition.m_fX;
-    int nIndex;
-    if (GetFirstObjectIndiceByX(&nIndex, fX))
-    {
-        m_lstObjectIds.Insert(oidObject, nIndex);
-    }
-    else
-    {
-        m_lstObjectIds.Add(oidObject);
-    }
-
-    CGameObject* pCreatureObject;
-    if (pObjectArray->GetGameObject(oidObject, &pCreatureObject) ==
-            CGameObjectArray::SUCCESS &&
-        pCreatureObject != NULL &&
-        pCreatureObject->AsSWSCreature() != NULL)
-    {
-        if (g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(oidObject) != NULL)
-        {
-            IncrementPlayersInArea();
-        }
-        if (bLoadingGame == 1)
-        {
-            CScriptEvent* pEvent = new CScriptEvent;
-            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OBJECT_ENTER;
-            pEvent->SetInteger(0,
-                g_pAppManager->m_pServerExoApp->GetLoadFromSaveGame());
-            CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-            unsigned long oidArea = m_nId;
-            pServer->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, oidObject, oidArea, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-        }
-    }
-    return 1;
-}
-// PC 0x004E9780 GOG 0x004E9850
-int CSWSArea::LoadArea(int bLoadingGame)
-{
-    if (m_pRes->Demand() == NULL)
-    {
-        return 0;
-    }
-
-    CResStruct cTopLevelStruct;
-
-    m_pRes->GetTopLevelStruct(&cTopLevelStruct);
-    LoadAreaHeader(&cTopLevelStruct);
-    LoadRoomInfo(&cTopLevelStruct);
-    for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
-    {
-        for (int nAudio = 0; nAudio < m_nRoomAudioCount; nAudio++)
-        {
-            if (m_psRoomAudio[nAudio].CompareNoCase(
-                    m_pRooms[nRoom].GetResRef().GetResRefStr()))
-            {
-                m_pnRoomAudioIndex[nRoom] = (unsigned char)nAudio;
-                break;
-            }
-        }
-    }
-    LoadGIT(bLoadingGame);
-    LoadPathPoints(&cTopLevelStruct);
-    m_pRes->Release();
-
-    unsigned long oidArea = m_nId;
-    CServerExoApp* pServerApp = g_pAppManager->m_pServerExoApp;
-    pServerApp->GetModule()->AddObjectToLookupTable(m_sTag, oidArea);
-
-    int nHeight = m_nHeight;
-    int nWidth = m_nWidth;
-    m_nGridMaskBytes = (unsigned char)ceil(nWidth * nHeight / 8.0f);
-
     return 1;
 }
 

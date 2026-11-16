@@ -441,22 +441,6 @@ int CSWCSoundObject::AddToArea(CSWCArea* pArea, CGameObjectArray* pObjectArray)
     }
     return 1;
 }
-// PC 0x0069EB40 GOG 0x0069E920
-void CSWCSoundObject::ShuffleList()
-{
-    CExoArrayList<CResRef>* pSounds = new CExoArrayList<CResRef>(0);
-    int nSounds = m_pSounds->num;
-
-    for (int i = 0; i < nSounds; i++)
-    {
-        int nSound = rand() % (nSounds - i);
-
-        pSounds->Add(m_pSounds->element[nSound]);
-        m_pSounds->DelIndex(nSound);
-    }
-    delete m_pSounds;
-    m_pSounds = pSounds;
-}
 // PC 0x0069EC90 GOG 0x0069EA70
 CResRef CSWCSoundObject::GetNextSound()
 {
@@ -487,6 +471,22 @@ CResRef CSWCSoundObject::GetNextSound()
         cResRef = "0";
     }
     return cResRef;
+}
+// PC 0x0069EB40 GOG 0x0069E920
+void CSWCSoundObject::ShuffleList()
+{
+    CExoArrayList<CResRef>* pSounds = new CExoArrayList<CResRef>(0);
+    int nSounds = m_pSounds->num;
+
+    for (int i = 0; i < nSounds; i++)
+    {
+        int nSound = rand() % (nSounds - i);
+
+        pSounds->Add(m_pSounds->element[nSound]);
+        m_pSounds->DelIndex(nSound);
+    }
+    delete m_pSounds;
+    m_pSounds = pSounds;
 }
 // PC 0x0069ED90 GOG 0x0069EB70
 void CSWCSoundObject::AIUpdate()

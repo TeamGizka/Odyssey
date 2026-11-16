@@ -310,6 +310,89 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
 
 
 
+// PC 0x0073A700 GOG 0x0073A460
+void CSWGuiInGameInventory::PopulateItemListBox()
+{
+    CSWCCreature* pCreature =
+        g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
+    m_lblCreditsValue.m_cText.m_cParams.SetText(
+        CExoString(pServerCreature->GetGold()));
+
+    CExoArrayList<CSWGuiControl*> lControls;
+    int nItem = 0;
+    int nSelectedItem = -1;
+    for (unsigned long nSlot = 0; nSlot < CSWInventory::TOTAL_SLOT_COUNT; ++nSlot)
+    {
+        unsigned long nInventorySlot = 1 << nSlot;
+        if (nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON1 ||
+            nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON2 ||
+            nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON3 ||
+            nInventorySlot == INVENTORY_SLOT_CREATUREARMOUR)
+        {
+            continue;
+        }
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+        CSWCItem* pClientItem = pClient->GetItemByGameObjectID(
+            pCreature->GetEquippedItemID(nInventorySlot));
+        if (pClientItem != NULL)
+        {
+            CSWSItem* pItem = pClientItem->GetServerItem();
+            int bSquadItem = nInventorySlot == INVENTORY_SLOT_RIGHTRING ||
+                nInventorySlot == INVENTORY_SLOT_NECK ||
+                nInventorySlot == INVENTORY_SLOT_ARMS;
+            if (pItem != NULL && !pItem->m_bDeleting &&
+                CheckFilter(pItem, pServerCreature, bSquadItem) != 0)
+            {
+                if (m_oidSelectedItem == pItem->GetId())
+                {
+                    nSelectedItem = nItem;
+                    m_oidSelectedItem = OBJECT_INVALID;
+                }
+                CreateItemEntry(pCreature, nItem, lControls, pItem, bSquadItem, 1);
+            }
+        }
+    }
+    for (unsigned long i = 0; i < pRepository->GetNumItems(); ++i)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != NULL && !pItem->m_bDeleting &&
+            CheckFilter(pItem, pServerCreature, 0) != 0)
+        {
+            if (m_oidSelectedItem == pItem->GetId())
+            {
+                nSelectedItem = nItem;
+                m_oidSelectedItem = OBJECT_INVALID;
+            }
+            CreateItemEntry(pCreature, nItem, lControls, pItem, 0, 0);
+        }
+    }
+
+    m_lbxItems.AddControls(lControls, 0, 1, 0);
+    if (lControls.num > 0)
+    {
+        if (m_bRestoreSelection)
+        {
+            m_lbxItems.SetTopVisible(m_nSavedTopItem);
+            m_lbxItems.SetSelectedControl(min((int)m_nSavedSelected, lControls.num - 1), 0);
+            m_bRestoreSelection = 0;
+        }
+        else
+        {
+            m_lbxItems.SetSelectedControl(nSelectedItem == -1 ? 0 : nSelectedItem, 0);
+        }
+    }
+    else
+    {
+        m_btnUseItem.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+        m_btnUseItem.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
+        m_lbxItems.SetSelectedControl(-1, 0);
+        CExoString sEmpty("");
+        m_lblUnknown64.m_cText.m_cParams.SetText(sEmpty);
+    }
+    m_bUpdateItems = 0;
+}
 // PC 0x00739440 GOG 0x007391A0
 CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -683,89 +766,6 @@ void CSWGuiInGameInventory::CreateItemEntry(
     pItemEntry->SetActive(0);
     lControls.Add(pItemEntry);
     ++nItem;
-}
-// PC 0x0073A700 GOG 0x0073A460
-void CSWGuiInGameInventory::PopulateItemListBox()
-{
-    CSWCCreature* pCreature =
-        g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
-    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
-    CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
-    m_lblCreditsValue.m_cText.m_cParams.SetText(
-        CExoString(pServerCreature->GetGold()));
-
-    CExoArrayList<CSWGuiControl*> lControls;
-    int nItem = 0;
-    int nSelectedItem = -1;
-    for (unsigned long nSlot = 0; nSlot < CSWInventory::TOTAL_SLOT_COUNT; ++nSlot)
-    {
-        unsigned long nInventorySlot = 1 << nSlot;
-        if (nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON1 ||
-            nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON2 ||
-            nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON3 ||
-            nInventorySlot == INVENTORY_SLOT_CREATUREARMOUR)
-        {
-            continue;
-        }
-        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-        CSWCItem* pClientItem = pClient->GetItemByGameObjectID(
-            pCreature->GetEquippedItemID(nInventorySlot));
-        if (pClientItem != NULL)
-        {
-            CSWSItem* pItem = pClientItem->GetServerItem();
-            int bSquadItem = nInventorySlot == INVENTORY_SLOT_RIGHTRING ||
-                nInventorySlot == INVENTORY_SLOT_NECK ||
-                nInventorySlot == INVENTORY_SLOT_ARMS;
-            if (pItem != NULL && !pItem->m_bDeleting &&
-                CheckFilter(pItem, pServerCreature, bSquadItem) != 0)
-            {
-                if (m_oidSelectedItem == pItem->GetId())
-                {
-                    nSelectedItem = nItem;
-                    m_oidSelectedItem = OBJECT_INVALID;
-                }
-                CreateItemEntry(pCreature, nItem, lControls, pItem, bSquadItem, 1);
-            }
-        }
-    }
-    for (unsigned long i = 0; i < pRepository->GetNumItems(); ++i)
-    {
-        CSWSItem* pItem = pRepository->ItemListGetItem(i);
-        if (pItem != NULL && !pItem->m_bDeleting &&
-            CheckFilter(pItem, pServerCreature, 0) != 0)
-        {
-            if (m_oidSelectedItem == pItem->GetId())
-            {
-                nSelectedItem = nItem;
-                m_oidSelectedItem = OBJECT_INVALID;
-            }
-            CreateItemEntry(pCreature, nItem, lControls, pItem, 0, 0);
-        }
-    }
-
-    m_lbxItems.AddControls(lControls, 0, 1, 0);
-    if (lControls.num > 0)
-    {
-        if (m_bRestoreSelection)
-        {
-            m_lbxItems.SetTopVisible(m_nSavedTopItem);
-            m_lbxItems.SetSelectedControl(min((int)m_nSavedSelected, lControls.num - 1), 0);
-            m_bRestoreSelection = 0;
-        }
-        else
-        {
-            m_lbxItems.SetSelectedControl(nSelectedItem == -1 ? 0 : nSelectedItem, 0);
-        }
-    }
-    else
-    {
-        m_btnUseItem.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-        m_btnUseItem.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
-        m_lbxItems.SetSelectedControl(-1, 0);
-        CExoString sEmpty("");
-        m_lblUnknown64.m_cText.m_cParams.SetText(sEmpty);
-    }
-    m_bUpdateItems = 0;
 }
 // PC 0x0073AA70 GOG 0x0073A7D0
 void CSWGuiInGameInventory::Draw(float fElapsed)

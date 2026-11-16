@@ -1096,120 +1096,6 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
-// PC 0x00752430 GOG 0x007529A0
-CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-#ifdef _XBOX
-    StartLoadFromLayout("optfeedback");
-    InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
-    InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
-    InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
-    InitControl(m_aCheckboxes[3], "CB_MINIMAP", 1);
-    InitControl(m_aCheckboxes[4], "CB_RUMBLE", 1);
-    InitControl(m_aCheckboxes[5], "CB_FLOATY", 1);
-    InitControl(m_aCheckboxes[6], "CB_SUMMARY", 1);
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblSelect, "LBL_SELECT", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    StopLoadFromLayout();
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
-    m_aCheckboxes[0].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
-    m_aCheckboxes[1].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
-    m_aCheckboxes[2].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
-    m_aCheckboxes[3].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
-    m_aCheckboxes[4].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
-    m_aCheckboxes[5].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
-    m_aCheckboxes[6].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
-    m_aCheckboxes[0].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
-    m_aCheckboxes[1].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
-    m_aCheckboxes[2].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
-    m_aCheckboxes[3].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
-    m_aCheckboxes[4].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
-    m_aCheckboxes[5].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
-    m_aCheckboxes[6].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
-    for (int i = 0; i < 7; i++)
-    {
-        m_aCheckboxes[i].AddEvent(
-            0, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnterSlot);
-    }
-    CSWGuiPanel* pPanel = this;
-    pPanel->SetActiveControl(&m_aCheckboxes[0], 0);
-    CClientOptions* pOptions =
-        g_pAppManager->m_pClientExoApp->GetClientOptions();
-    if (pOptions != 0)
-    {
-        unsigned int bHide = pOptions->m_bHideUnequippable;
-        CSWGuiButtonToggle* pToggle0 = m_aCheckboxes[0].AsButtonToggle();
-        pToggle0->m_bToggled = bHide;
-        unsigned int bTutorial = pOptions->m_bTutorialPopups;
-        CSWGuiButtonToggle* pToggle1 = m_aCheckboxes[1].AsButtonToggle();
-        pToggle1->m_bToggled = bTutorial;
-        unsigned int bSubtitles = pOptions->m_bSubtitles;
-        CSWGuiButtonToggle* pToggle2 = m_aCheckboxes[2].AsButtonToggle();
-        pToggle2->m_bToggled = bSubtitles;
-        unsigned int bMiniMap = pOptions->m_bMiniMap;
-        CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
-        pToggle3->m_bToggled = bMiniMap;
-        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
-        CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
-        pToggle5->m_bToggled = bFloaty;
-        unsigned int bRumble = pOptions->m_bFloatingNumbers;
-        CSWGuiButtonToggle* pToggle4 = m_aCheckboxes[4].AsButtonToggle();
-        pToggle4->m_bToggled = bRumble;
-        unsigned int bSummary = pOptions->m_bStatusSummary;
-        CSWGuiButtonToggle* pToggle6 = m_aCheckboxes[6].AsButtonToggle();
-        pToggle6->m_bToggled = bSummary;
-    }
-#else
-    StartLoadFromLayout("optfeedback_p");
-    InitControl(m_lbOptions, "LB_OPTIONS", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    InitControl(m_btnBack, "BTN_BACK", 1);
-    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
-    InitControl(m_alblBar[0], "LBL_BAR1", 1);
-    InitControl(m_alblBar[1], "LBL_BAR2", 1);
-    InitControl(m_alblBar[2], "LBL_BAR3", 1);
-    StopLoadFromLayout();
-    PopulateOptionsListbox();
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
-    CSWGuiButton* pDefault = &m_btnDefault;
-    pDefault->AddEvent(39, this,
-                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
-    pDefault->m_bFocusable = 0;
-    pDefault->AddEvent(45, this,
-                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
-    CSWGuiButton* pBack = &m_btnBack;
-    pBack->m_bFocusable = 0;
-    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-    SetActiveControl(&m_lbOptions, 0);
-    SetActiveButton(OPTION_HIDE_UNEQUIPPABLE);
-    SetUpOptions();
-#endif
-}
 // PC 0x0074E890 GOG 0x0074EDF0
 void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
 {
@@ -1792,6 +1678,120 @@ void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
         pOptions->SetDefaultMouseOptions();
         SetUpOptions();
     }
+}
+// PC 0x00752430 GOG 0x007529A0
+CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+#ifdef _XBOX
+    StartLoadFromLayout("optfeedback");
+    InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
+    InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
+    InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
+    InitControl(m_aCheckboxes[3], "CB_MINIMAP", 1);
+    InitControl(m_aCheckboxes[4], "CB_RUMBLE", 1);
+    InitControl(m_aCheckboxes[5], "CB_FLOATY", 1);
+    InitControl(m_aCheckboxes[6], "CB_SUMMARY", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_aCheckboxes[0].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+    m_aCheckboxes[1].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+    m_aCheckboxes[2].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+    m_aCheckboxes[3].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+    m_aCheckboxes[4].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
+    m_aCheckboxes[5].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+    m_aCheckboxes[6].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+    m_aCheckboxes[0].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+    m_aCheckboxes[1].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+    m_aCheckboxes[2].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+    m_aCheckboxes[3].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+    m_aCheckboxes[4].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
+    m_aCheckboxes[5].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+    m_aCheckboxes[6].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+    for (int i = 0; i < 7; i++)
+    {
+        m_aCheckboxes[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnterSlot);
+    }
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_aCheckboxes[0], 0);
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        unsigned int bHide = pOptions->m_bHideUnequippable;
+        CSWGuiButtonToggle* pToggle0 = m_aCheckboxes[0].AsButtonToggle();
+        pToggle0->m_bToggled = bHide;
+        unsigned int bTutorial = pOptions->m_bTutorialPopups;
+        CSWGuiButtonToggle* pToggle1 = m_aCheckboxes[1].AsButtonToggle();
+        pToggle1->m_bToggled = bTutorial;
+        unsigned int bSubtitles = pOptions->m_bSubtitles;
+        CSWGuiButtonToggle* pToggle2 = m_aCheckboxes[2].AsButtonToggle();
+        pToggle2->m_bToggled = bSubtitles;
+        unsigned int bMiniMap = pOptions->m_bMiniMap;
+        CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
+        pToggle3->m_bToggled = bMiniMap;
+        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
+        pToggle5->m_bToggled = bFloaty;
+        unsigned int bRumble = pOptions->m_bFloatingNumbers;
+        CSWGuiButtonToggle* pToggle4 = m_aCheckboxes[4].AsButtonToggle();
+        pToggle4->m_bToggled = bRumble;
+        unsigned int bSummary = pOptions->m_bStatusSummary;
+        CSWGuiButtonToggle* pToggle6 = m_aCheckboxes[6].AsButtonToggle();
+        pToggle6->m_bToggled = bSummary;
+    }
+#else
+    StartLoadFromLayout("optfeedback_p");
+    InitControl(m_lbOptions, "LB_OPTIONS", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    StopLoadFromLayout();
+    PopulateOptionsListbox();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(45, this,
+                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    SetActiveControl(&m_lbOptions, 0);
+    SetActiveButton(OPTION_HIDE_UNEQUIPPABLE);
+    SetUpOptions();
+#endif
 }
 // PC 0x0074F8D0 GOG 0x0074F900
 void CSWGuiOptionsMouse::SetUpOptions()

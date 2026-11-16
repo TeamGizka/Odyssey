@@ -29,6 +29,32 @@
 #include "../../libsource/AURORA/aurpointer.h"
 
 #include <math.h>
+// PC 0x0069CF50 GOG 0x0069CD30
+void CSWCDoor::UnloadModel(unsigned char nModel)
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel(nModel);
+    }
+}
+// PC 0x006DBDD0 GOG 0x006DBA90
+void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
+                           CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    int nFirstAction = lstActions.num;
+    if (m_bLockable && pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+    {
+        if (pServerCreature != NULL)
+            pServerCreature->GetSpikeDetails(lstActions, 1);
+        for (int i = nFirstAction; i < lstActions.num; ++i)
+        {
+            lstActions[i].m_pfnAction =
+                (PFNMENUACTION)&CSWCObject::MenuActionUseSecuritySpike;
+            lstActions[i].m_oidTarget = GetId();
+        }
+    }
+}
 // PC 0x006DB510 GOG 0x006DB100
 CSWCDoor::CSWCDoor()
     : CSWCObject(CGameObject::OBJECT_TYPE_DOOR)
@@ -68,14 +94,6 @@ void CSWCDoor::UnloadModel()
 // PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWCDoor::HilightDoor(int)
 {
-}
-// PC 0x0069CF50 GOG 0x0069CD30
-void CSWCDoor::UnloadModel(unsigned char nModel)
-{
-    if (m_pAnimBase != NULL)
-    {
-        m_pAnimBase->UnloadModel(nModel);
-    }
 }
 // PC 0x006DB630 GOG 0x006DB250
 void CSWCDoor::SetIsAreaTransition(int bAreaTransition)
@@ -383,24 +401,6 @@ void CSWCDoor::MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreat
     if (g_pAppManager->GetClientExoApp()->ShowTutorialWindow(TUTORIAL_SET_MINE, GetId(), oidItem, 0) == 0)
     {
         pCreature->PerformUseItem(oidItem, 0, GetId(), m_vPosition);
-    }
-}
-// PC 0x006DBDD0 GOG 0x006DBA90
-void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
-                           CExoArrayList<CSWGuiInterfaceAction>& lstActions)
-{
-    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
-    int nFirstAction = lstActions.num;
-    if (m_bLockable && pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
-    {
-        if (pServerCreature != NULL)
-            pServerCreature->GetSpikeDetails(lstActions, 1);
-        for (int i = nFirstAction; i < lstActions.num; ++i)
-        {
-            lstActions[i].m_pfnAction =
-                (PFNMENUACTION)&CSWCObject::MenuActionUseSecuritySpike;
-            lstActions[i].m_oidTarget = GetId();
-        }
     }
 }
 // PC 0x006DBE90 GOG 0x006DBB50

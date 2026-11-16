@@ -33,6 +33,50 @@ void CSWGuiInGameCredits::Initialize()
     m_lblCredit.m_cText.m_cParams.m_fAlpha = 0.0f;
 }
 
+// PC 0x006E8960 GOG 0x006E8580
+void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
+{
+    if (SWGUIINGAMECREDITS_DEBUG)
+    {
+        UpdateScrolling(0.0f);
+    }
+    CSWGuiExtent cExtent;
+#ifndef _XBOX
+    if (m_bFading)
+#endif
+    {
+        m_lblCredit.m_cText.m_cParams.SetStrRef(nStrRef);
+    }
+#ifndef _XBOX
+    else
+    {
+        STR_RES strRes; CExoString sText; CExoString sPadding;
+        g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
+        int nPaddingLines = (int)((float)m_lblCredit.m_cExtent.m_nHeight /
+            ((float)m_lblCredit.m_cText.GetFontHeight() * m_cExtent.m_nHeight / 480.0f)) + 1;
+        sPadding = "";
+        for (int i = 0; i < nPaddingLines; ++i)
+        {
+            sPadding = sPadding + "\n";
+        }
+        sText = sPadding + strRes.m_sString + sPadding;
+        m_lblCredit.m_cText.m_cParams.SetText(sText);
+    }
+#endif
+    m_lbxCredits.ClearItems();
+    if (bLastText)
+    {
+        cExtent = m_lblCredit.m_cExtent;
+        cExtent.m_nHeight = m_lblCredit.m_cText.GetIdealHeight();
+        m_lblCredit.SetExtent(cExtent);
+    }
+    CSWGuiControl* pControl = &m_lblCredit;
+    m_lbxCredits.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbxCredits.SetSelectedControl(&m_lblCredit, 0);
+    cExtent = m_lbxCredits.m_cExtent;
+    m_lbxCredits.m_fScrollStep = (float)cExtent.m_nHeight;
+}
+
 #ifdef _XBOX
 CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -306,49 +350,6 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0 GOG 0x006E82C0
     g_pAppManager->GetClientExoApp()->ShowMouse(128);
 }
 #endif
-// PC 0x006E8960 GOG 0x006E8580
-void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
-{
-    if (SWGUIINGAMECREDITS_DEBUG)
-    {
-        UpdateScrolling(0.0f);
-    }
-    CSWGuiExtent cExtent;
-#ifndef _XBOX
-    if (m_bFading)
-#endif
-    {
-        m_lblCredit.m_cText.m_cParams.SetStrRef(nStrRef);
-    }
-#ifndef _XBOX
-    else
-    {
-        STR_RES strRes; CExoString sText; CExoString sPadding;
-        g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
-        int nPaddingLines = (int)((float)m_lblCredit.m_cExtent.m_nHeight /
-            ((float)m_lblCredit.m_cText.GetFontHeight() * m_cExtent.m_nHeight / 480.0f)) + 1;
-        sPadding = "";
-        for (int i = 0; i < nPaddingLines; ++i)
-        {
-            sPadding = sPadding + "\n";
-        }
-        sText = sPadding + strRes.m_sString + sPadding;
-        m_lblCredit.m_cText.m_cParams.SetText(sText);
-    }
-#endif
-    m_lbxCredits.ClearItems();
-    if (bLastText)
-    {
-        cExtent = m_lblCredit.m_cExtent;
-        cExtent.m_nHeight = m_lblCredit.m_cText.GetIdealHeight();
-        m_lblCredit.SetExtent(cExtent);
-    }
-    CSWGuiControl* pControl = &m_lblCredit;
-    m_lbxCredits.AddControls(&pControl, 1, 0, 0, 0);
-    m_lbxCredits.SetSelectedControl(&m_lblCredit, 0);
-    cExtent = m_lbxCredits.m_cExtent;
-    m_lbxCredits.m_fScrollStep = (float)cExtent.m_nHeight;
-}
 // PC 0x006E8C10 GOG 0x006E88D0
 void CSWGuiInGameCredits::SetNextText()
 {
