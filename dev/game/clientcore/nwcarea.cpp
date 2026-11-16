@@ -60,8 +60,6 @@ int RyanLevelTotalParts = 0;
 
 
 
-int RyanUnused1 = 0;
-int RyanUnused2 = 0;
 extern int countpart;
 
 

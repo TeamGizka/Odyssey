@@ -1033,6 +1033,15 @@ Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
         second * (float)(sin(fAngle * fPosition) / fSine);
     return result;
 }
+
+Quaternion lerp(Quaternion first, const Quaternion& second, float fPosition)
+{
+    if (quaternionDot(first, second) < 0.99)
+    {
+        return slerp(first, second, fPosition);
+    }
+    return normalize(first * (1.0f - fPosition) + second * fPosition);
+}
 // PC 0x004D8CA0 GOG 0x004D8DE0
 float Pitch(const Quaternion& quaternion)
 {

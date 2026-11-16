@@ -21,6 +21,8 @@
 #include <string.h>
 
 float g_fFPS = 1.0f;
+int g_bDontClearChatPrompt = 0;
+int g_bEnableMovieNotification = 0;
 int g_bEnableLiveContentIgnore = 0;
 
 int g_bProcessModuleMemUsage = 0;

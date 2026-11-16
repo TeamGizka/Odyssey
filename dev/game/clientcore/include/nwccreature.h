@@ -369,6 +369,10 @@ public:
     void ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigator);
     void ActionSwapImplant(int nAction);
     void ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature* pInstigator);
+#ifdef NWCCREATURE_MINES
+    void GetMines(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void ActionMenuSetMine(unsigned long oidItem, CSWCCreature* pTarget);
+#endif
     void GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
     void GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, int nMenu);
     void GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
@@ -873,8 +877,6 @@ public:
                                CSWSItem* pItem, int bEquipped);
     void GetUsableItems(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
     void GetNonCombatFeatsSkills(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
-    void GetMines(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
-    void ActionMenuSetMine(unsigned long oidItem, CSWCCreature* pTarget);
 #endif
 };
 

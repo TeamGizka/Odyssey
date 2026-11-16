@@ -1,3 +1,4 @@
+#define NWCCREATURE_MINES
 #include <aurlist.h>
 #include "nwccreature.h"
 #include "pathfindinfo.h"
@@ -4837,6 +4838,82 @@ void CSWCCreature::GetHostileForcePowers(
         }
     }
 }
+enum
+{
+    XBOX_STRREF_STEALTH = 325,
+    XBOX_STRREF_SET_MINE = 38008,
+    XBOX_STRREF_CANNOT_SET_MINE = 47861,
+    XBOX_ACTION_STEALTH = 1021
+};
+
+void CSWCCreature::GetMines(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    CSWSCreature* pCreature = GetServerCreature();
+    if (pCreature != NULL &&
+        pCreature->GetArea()->GetPlayerRestrictMode() == 0 &&
+        GetStats()->GetCanUseSkill(CSWSkill::SKILL_DEMOLITIONS))
+    {
+        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+        int nEntry = lstActions.num;
+        int nLanguage = pClientExoApp->GetClientLanguage();
+        CItemRepository* pRepository = pCreature->GetItemRepository(1);
+        CExoString sName;
+        CExoString sStack;
+        CExoString sSet;
+        sSet.Format(" (%s)", pClientExoApp->GetGUIString(XBOX_STRREF_SET_MINE));
+        for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
+        {
+            CSWSItem* pItem = pRepository->ItemListGetItem(i);
+            if (!pItem->m_bPlotObject &&
+                pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_MINE)
+            {
+                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+                if (pItem->m_nStackSize > 1)
+                    sStack.Format(" (%d)", pItem->m_nStackSize);
+                else
+                    sStack = "";
+                sName = sName + sSet + sStack;
+                lstActions.SetSize(nEntry + 1);
+                lstActions[nEntry].m_sName = sName;
+                lstActions[nEntry].m_pfnAction =
+                    static_cast<PFNMENUACTION>(&CSWCCreature::ActionMenuSetMine);
+                lstActions[nEntry].m_oidTarget = (unsigned long)this;
+                lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+                lstActions[nEntry].m_resIcon = pItem->GetIcon();
+                nEntry++;
+            }
+        }
+    }
+}
+
+void CSWCCreature::ActionMenuSetMine(unsigned long oidItem, CSWCCreature* pTarget)
+{
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pPlayer =
+        pServerExoApp->GetCreatureByGameObjectID(pServerExoApp->GetPlayerCreatureId());
+    if (pPlayer != NULL && pPlayer->GetArea() != NULL &&
+        !pPlayer->GetArea()->GetPlayerCanSetMines())
+    {
+        CSWGuiMessageBox* pMessageBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+        pMessageBox->SetAllowCancel(0);
+        pMessageBox->SetMessage(XBOX_STRREF_CANNOT_SET_MINE);
+        pMessageBox->SetCallback(NULL, NULL, NULL);
+        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(pMessageBox, 1, 1);
+        return;
+    }
+    oidItem &= ~OBJECT_LISTTYPE_MASK;
+    if (!g_pAppManager->m_pClientExoApp->ShowTutorialWindow(2, m_nId, oidItem, 0))
+    {
+        CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+        if (pMessage != NULL)
+        {
+            pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, OBJECT_INVALID,
+                                                     m_vPosition);
+        }
+    }
+}
+
 // PC 0x00667810 GOG 0x006675B0
 void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -8814,82 +8891,6 @@ enum
     XBOX_TARGET_MENU_SELF_FORCE_POWERS = 4,
     XBOX_TARGET_MENU_USABLE_ITEMS = 5
 };
-enum
-{
-    XBOX_STRREF_STEALTH = 325,
-    XBOX_STRREF_SET_MINE = 38008,
-    XBOX_STRREF_CANNOT_SET_MINE = 47861,
-    XBOX_ACTION_STEALTH = 1021
-};
-
-void CSWCCreature::ActionMenuSetMine(unsigned long oidItem, CSWCCreature* pTarget)
-{
-    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-    CSWSCreature* pPlayer =
-        pServerExoApp->GetCreatureByGameObjectID(pServerExoApp->GetPlayerCreatureId());
-    if (pPlayer != NULL && pPlayer->GetArea() != NULL &&
-        !pPlayer->GetArea()->GetPlayerCanSetMines())
-    {
-        CSWGuiMessageBox* pMessageBox =
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
-        pMessageBox->SetAllowCancel(0);
-        pMessageBox->SetMessage(XBOX_STRREF_CANNOT_SET_MINE);
-        pMessageBox->SetCallback(NULL, NULL, NULL);
-        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(pMessageBox, 1, 1);
-        return;
-    }
-    oidItem &= ~OBJECT_LISTTYPE_MASK;
-    if (!g_pAppManager->m_pClientExoApp->ShowTutorialWindow(2, m_nId, oidItem, 0))
-    {
-        CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
-        if (pMessage != NULL)
-        {
-            pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, OBJECT_INVALID,
-                                                     m_vPosition);
-        }
-    }
-}
-
-void CSWCCreature::GetMines(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
-{
-    CSWSCreature* pCreature = GetServerCreature();
-    if (pCreature != NULL &&
-        pCreature->GetArea()->GetPlayerRestrictMode() == 0 &&
-        GetStats()->GetCanUseSkill(CSWSkill::SKILL_DEMOLITIONS))
-    {
-        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-        int nEntry = lstActions.num;
-        int nLanguage = pClientExoApp->GetClientLanguage();
-        CItemRepository* pRepository = pCreature->GetItemRepository(1);
-        CExoString sName;
-        CExoString sStack;
-        CExoString sSet;
-        sSet.Format(" (%s)", pClientExoApp->GetGUIString(XBOX_STRREF_SET_MINE));
-        for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
-        {
-            CSWSItem* pItem = pRepository->ItemListGetItem(i);
-            if (!pItem->m_bPlotObject &&
-                pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_MINE)
-            {
-                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
-                if (pItem->m_nStackSize > 1)
-                    sStack.Format(" (%d)", pItem->m_nStackSize);
-                else
-                    sStack = "";
-                sName = sName + sSet + sStack;
-                lstActions.SetSize(nEntry + 1);
-                lstActions[nEntry].m_sName = sName;
-                lstActions[nEntry].m_pfnAction =
-                    static_cast<PFNMENUACTION>(&CSWCCreature::ActionMenuSetMine);
-                lstActions[nEntry].m_oidTarget = (unsigned long)this;
-                lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
-                lstActions[nEntry].m_resIcon = pItem->GetIcon();
-                nEntry++;
-            }
-        }
-    }
-}
-
 void CSWCCreature::CreateUsableItemEntry(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWSItem* pItem, int bEquipped)
 {
