@@ -1234,264 +1234,6 @@ void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)  // PC 0x006D495
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x006D4AF0 GOG 0x006D49E0
-CSWGuiPazaakStart::~CSWGuiPazaakStart()
-{
-    if (m_pWagerPopup != NULL)
-    {
-        delete m_pWagerPopup;
-        m_pWagerPopup = NULL;
-    }
-    if (m_pPazaak != NULL)
-    {
-        delete m_pPazaak;
-        m_pPazaak = NULL;
-    }
-}
-#ifndef _XBOX
-void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x006D4C50 GOG 0x006D4B40
-{
-    SwguipazaakTrace2();
-    m_btnAtext.SetEnabled(m_bSideDeckFull);
-    if (!m_bSideDeckFull)
-    {
-        m_btnAtext.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_DARK_TAN);
-        m_btnAtext.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_DARK_TAN;
-    }
-    else
-    {
-        m_btnAtext.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_PAZAAK_GOLD);
-        m_btnAtext.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PAZAAK_GOLD;
-    }
-}
-#endif
-#ifndef _XBOX
-#endif
-
-#ifndef _XBOX
-// PC 0x006D4CE0 GOG 0x006D4BD0
-void CSWGuiPazaakStart::UpdateHelpText(int nCardType)
-{
-    SwguipazaakTrace2();
-    unsigned long nStrRef = 0xFFFFFFFF;
-    if (nCardType != -1)
-    {
-        if (nCardType >= 0 && nCardType < CPazaakCard::CARD_TYPE_NEGATIVE_BASE)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS;
-        else if (nCardType >= CPazaakCard::CARD_TYPE_NEGATIVE_BASE &&
-                 nCardType < CPazaakCard::CARD_TYPE_FLIPPABLE_BASE)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_MINUS;
-        else if (nCardType >= CPazaakCard::CARD_TYPE_FLIPPABLE_BASE &&
-                 nCardType < CPazaakCard::CARD_TYPE_TIEBREAKER)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS_MINUS;
-        else if (nCardType == CPazaakCard::CARD_TYPE_TIEBREAKER)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_TIEBREAKER;
-        else if (nCardType == CPazaakCard::CARD_TYPE_DOUBLE)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_DOUBLE;
-        else if (nCardType == CPazaakCard::CARD_TYPE_FLIP_2_4)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_FLIP_2_4;
-        else if (nCardType == CPazaakCard::CARD_TYPE_FLIP_3_6)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_FLIP_3_6;
-        else if (nCardType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2)
-            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS_MINUS_1_2;
-    }
-    CSWGuiControl* pControl = m_pActiveControl;
-    int bAvail = (pControl->m_nID >= 0 && pControl->m_nID < AvailCardCount)
-                     ? (pControl == &m_cAvail[pControl->m_nID]) : 0;
-    if (bAvail && m_anAvailCount[nCardType] == -1)
-        nStrRef = 0xFFFFFFFF;
-    int bChosen = (pControl->m_nID >= 0 && pControl->m_nID < ChosenCardCount)
-                      ? (pControl == &m_cChosen[pControl->m_nID]) : 0;
-    if (!bChosen && nStrRef != 0xFFFFFFFF)
-        m_lblHelp.m_cText.m_cParams.SetStrRef(nStrRef);
-    else
-        m_lblHelp.m_cText.m_cParams.SetText("");
-}
-#endif
-// PC 0x006D4E50 GOG 0x006D4D40
-void CSWGuiPazaakStart::OnChosenCardEntered(CSWGuiControl* pControl)
-{
-#ifndef _XBOX
-    UpdateHelpText(pControl->m_nID);
-#endif
-    ShowDisabledButtons();
-}
-// PC 0x006D4E50 GOG 0x006D4D40
-void CSWGuiPazaakStart::OnAvailCardEntered(CSWGuiControl* pControl)
-{
-#ifndef _XBOX
-    UpdateHelpText(pControl->m_nID);
-#endif
-    ShowDisabledButtons();
-}
-CSWGuiPazaakGame::~CSWGuiPazaakGame()  // PC 0x006D4E70 GOG 0x006D4D60
-{
-    if (m_pPazaak != NULL)
-    {
-        delete m_pPazaak;
-        m_pPazaak = NULL;
-    }
-}
-
-#ifdef _XBOX
-
-void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
-{
-    if (nState != 0)
-    {
-        switch (nEvent)
-        {
-        case 40:
-        case 46:
-        {
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            CSWGuiMessageBox* pMessageBox =
-                g_pAppManager->m_pClientExoApp->GetInGameGui()
-                    ->m_pMessageBox;
-            pMessageBox->SetAllowCancel(1);
-            pMessageBox->SetCallback(
-                this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleQuitDialog,
-                NULL);
-            pMessageBox->SetMessage(STRREF_PAZAAK_CONFIRM_FORFEIT);
-            m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-            break;
-        }
-        case 41:
-            if (m_nState == 3 && m_pActiveControl != NULL)
-            {
-                int nIndex = m_pActiveControl->m_nID;
-                if (nIndex >= 0 && nIndex < 4 &&
-                    m_pActiveControl == &m_cPlayerHand[nIndex])
-                {
-                    if (m_pPazaak->CanUsePlayerSidedeckCard(nIndex) != 0)
-                    {
-                        m_btnX.StartFlash(CGuiInGame::COLOR_CYAN);
-                        if (m_cTutorial.m_bEnabled != 0 &&
-                            m_pPazaak->GetPlayerTotal() <= 12)
-                        {
-                            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                            m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_PLAY_CARD, STRREF_PAZAAK_PLAY_CARD, STRREF_PAZAAK_CANCEL);
-                        }
-                        else
-                        {
-                            m_pPazaak->UsePlayerSidedeckCard(nIndex);
-                            CResRef cSound(m_szPlaySideSound);
-                            g_pExoSound->PlayOneShotSound(cSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
-                            m_nState = 4;
-                            m_fTimer = 0.4f;
-                            RefreshDisplay();
-                            ReconnectSidedeckButtons();
-                        }
-                    }
-                }
-            }
-            break;
-        case 43:
-            if (m_bUnknown86DC0 == 0)
-            {
-                m_bUnknown86DC0 = 1;
-                unsigned long aHelp[2];
-                aHelp[0] = STRREF_PAZAAK_HELP_FLIP_CARDS;
-                aHelp[1] = STRREF_PAZAAK_HELP_DECLARE_SIGN;
-                m_cTutorial.ShowMultipleHelp(aHelp, 2);
-            }
-            if (m_pActiveControl != NULL)
-            {
-                int nCard = m_pActiveControl->m_nID;
-                if (nCard >= 0 && nCard < 4 &&
-                    m_pActiveControl == &m_cPlayerHand[nCard])
-                {
-                    CPazaakCard cCard = m_pPazaak->m_cPlayer.m_aSideDeck[nCard];
-                    if (cCard.m_nType >= 12 && cCard.m_nType < 18)
-                    {
-                        m_btnBlack.StartFlash(CGuiInGame::COLOR_CYAN);
-                        m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped =
-                            m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped == 0;
-                        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                        RefreshDisplay();
-                    }
-                }
-            }
-            break;
-        case 39:
-        case 45:
-            if (m_pPazaak->m_cPlayer.m_bStanding == 0)
-            {
-                if (m_nState == 3 || m_nState == 4)
-                {
-                    m_btnContinue.StartFlash(CGuiInGame::COLOR_CYAN);
-                    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                    if (m_cTutorial.m_bEnabled != 0 &&
-                        m_pPazaak->GetPlayerTotal() >= 16)
-                    {
-                        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_END_TURN, STRREF_PAZAAK_END_TURN, STRREF_PAZAAK_CANCEL);
-                    }
-                    else
-                    {
-                        m_nState = 5;
-                        m_fTimer = 0.4f;
-                        RefreshDisplay();
-                    }
-                }
-            }
-            break;
-        case 42:
-            if (m_pPazaak->m_cPlayer.m_bStanding == 0)
-            {
-                if (m_nState == 3 || m_nState == 4)
-                {
-                    m_btnStand.StartFlash(CGuiInGame::COLOR_CYAN);
-                    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                    if (m_cTutorial.m_bEnabled != 0 &&
-                        m_pPazaak->GetPlayerTotal() <= 13)
-                    {
-                        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_STAND, STRREF_PAZAAK_STAND, STRREF_PAZAAK_CANCEL);
-                    }
-                    else
-                    {
-                        m_pPazaak->m_cPlayer.m_bStanding = 1;
-                        m_nState = 5;
-                        m_fTimer = 0.4f;
-                        RefreshDisplay();
-                    }
-                }
-            }
-            break;
-        }
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-#else
-void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)  // PC 0x006D50F0 GOG 0x006D5060
-{
-    if (nState != 0)
-    {
-        if (nEvent == 40 || nEvent == 46)
-        {
-            if (m_nHandAction != 0)
-            {
-                CancelHandAction();
-            }
-            else
-            {
-                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                CSWGuiMessageBox* pMessageBox =
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()
-                        ->m_pMessageBox;
-                pMessageBox->SetAllowCancel(1);
-                pMessageBox->SetCallback(
-                    this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleQuitDialog,
-                    NULL);
-                pMessageBox->SetMessage(STRREF_PAZAAK_CONFIRM_FORFEIT);
-                pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
-                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-            }
-        }
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-#endif
 // PC 0x006D53A0 GOG 0x006D46B0
 void CSWGuiTutorial::ShowHelp(unsigned long nHelpStrRef,
                               unsigned long nTitleStrRef,
@@ -1622,6 +1364,230 @@ CSWGuiWagerPopup::CSWGuiWagerPopup(CSWGuiManager* pManager,
 }
 #ifndef _XBOX
 #endif
+// PC 0x006D8CD0 GOG 0x006D89C0
+CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
+                                     int nSideDeck, int bTutorial,
+                                     unsigned long oidOpponent)
+    : CSWGuiPanel(pManager),
+      m_cMessageBox(pManager),
+      m_cTutorial(pManager)
+{
+    m_pWagerPopup = NULL;
+#ifdef _XBOX
+    m_bChosenActive = 0;
+#endif
+    m_bSideDeckFull = 0;
+    m_pChosenCards = &m_cChosen[0];
+#ifndef _XBOX
+    m_pAvailCards = &m_cAvail[0];
+#endif
+    for (int i = 0; i < AvailCardCount; i++)
+    {
+        m_anAvailCount[i] = 0;
+    }
+    for (int i = 0; i < 10; i++)
+    {
+        m_aChosen[i] = CPazaakCard(-1);
+    }
+    m_cTutorial.m_bEnabled = bTutorial;
+    m_pPazaak = new CSWPazaak;
+    m_pPazaak->m_nWager = nWager;
+    CSWPazaak* pPazaak = m_pPazaak;
+    pPazaak->m_oidOpponent = oidOpponent;
+    if (nWager > 0)
+    {
+        CSWPazaak& cPazaak = *m_pPazaak;
+        cPazaak.m_nWager = 1;
+        m_pWagerPopup = new CSWGuiWagerPopup(pManager, this, nWager);
+    }
+    CPazaakCard aSideDeck[10];
+    m_pPazaak->LoadInitialSideDeck(nSideDeck, aSideDeck);
+    pPazaak = m_pPazaak;
+    pPazaak->m_cOpponent.ChooseSidedeck(aSideDeck);
+
+#ifdef _XBOX
+    StartLoadFromLayout("pazaaksetup_x");
+#else
+    StartLoadFromLayout("pazaaksetup_p");
+#endif
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+#ifdef _XBOX
+    InitControl(m_lblYbutton, "LBL_YBUTTON", 1);
+    InitControl(m_btnMove, "LBL_YTEXT", 1);
+    InitControl(m_lblAbutton, "LBL_ABUTTON", 1);
+    InitControl(m_btnAtext, "LBL_ATEXT", 1);
+    InitControl(m_lblLbutton, "LBL_LBUTTON", 1);
+#else
+    InitControl(m_btnAtext, "BTN_ATEXT", 1);
+    InitControl(m_btnClearCards, "BTN_CLEARCARDS", 1);
+#endif
+    InitControl(m_lblLtext, "LBL_LTEXT", 1);
+#ifdef _XBOX
+    InitControl(m_lblRbutton, "LBL_RBUTTON", 1);
+#endif
+    InitControl(m_lblRtext, "LBL_RTEXT", 1);
+    char szChosenButton[16];
+    char szChosenLabel[16];
+    strcpy(szChosenButton, "BTN_CHOSENx    ");
+    strcpy(szChosenLabel, "LBL_CHOSENx    ");
+    for (int i = 0; i < 10; i++)
+    {
+        sprintf(&szChosenButton[10], "%d", i);
+        sprintf(&szChosenLabel[10], "%d", i);
+        InitControl(m_cChosen[i], szChosenButton, 1);
+        InitControl(m_cChosen[i].m_lblCard, szChosenLabel, 1);
+        m_cChosen[i].m_nID = i;
+        m_cChosen[i].AddEvent(
+            GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnChosenCardEntered);
+#ifndef _XBOX
+        m_cChosen[i].AddEvent(
+            CSWGuiPazaakCard::EVENT_CARD_DROP, this,
+            (CSWGuiHandler)&CSWGuiPazaakStart::HandleChosenCardDrop);
+#endif
+#ifndef _XBOX
+        m_cChosen[i].AddEvent(
+            GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakStart::HandleMoveCard);
+#endif
+    }
+    char szAvailButton[16];
+    char szAvailLabel[16];
+    char szAvailCount[16];
+    strcpy(szAvailButton, "BTN_AVAILxx    ");
+    strcpy(szAvailLabel, "LBL_AVAILxx    ");
+    strcpy(szAvailCount, "LBL_AVAILNUMxx ");
+    for (int i = 0; i < AvailCardCount; i++)
+    {
+        CSWGuiLabel* pCount = &m_lblAvailCount[i];
+        int nRow = i / 6;
+        int nColumn = i % 6;
+        sprintf(&szAvailButton[9], "%d%d", nRow, nColumn);
+        sprintf(&szAvailLabel[9], "%d%d", nRow, nColumn);
+        sprintf(&szAvailCount[12], "%d%d", nRow, nColumn);
+        InitControl(m_cAvail[i], szAvailButton, 1);
+        InitControl(m_cAvail[i].m_lblCard, szAvailLabel, 1);
+        InitControl(*pCount, szAvailCount, 1);
+        m_cAvail[i].m_nID = i;
+        m_cAvail[i].AddEvent(
+            GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnAvailCardEntered);
+#ifndef _XBOX
+        m_cAvail[i].AddEvent(
+            CSWGuiPazaakCard::EVENT_CARD_DROP, this,
+            (CSWGuiHandler)&CSWGuiPazaakStart::HandleAvailCardDrop);
+#endif
+#ifndef _XBOX
+        m_cAvail[i].AddEvent(GUIEVENT_ACTIVATE, this,
+                             (CSWGuiHandler)&CSWGuiPazaakStart::HandleMoveCard);
+#endif
+#ifndef _XBOX
+        pCount->m_bIgnoreMouse = 1;
+#endif
+    }
+#ifndef _XBOX
+    InitControl(m_lblHelp, "LBL_HELP", 1);
+#endif
+    StopLoadFromLayout();
+#ifndef _XBOX
+    m_btnAtext.AddEvent(GUIEVENT_ACTIVATE, this,
+                         (CSWGuiHandler)&CSWGuiPazaakStart::HandleAcceptButton);
+    m_btnAtext.SetFocusable(0);
+    m_btnClearCards.AddEvent(GUIEVENT_ACTIVATE, this,
+                             (CSWGuiHandler)&CSWGuiPazaakStart::ClearSideDeck);
+    m_btnClearCards.SetFocusable(0);
+#endif
+#ifndef _XBOX
+    m_nBackground = PC_BACKGROUND_SUFFIX_PAZAAK;
+#endif
+}
+// PC 0x006D4AF0 GOG 0x006D49E0
+CSWGuiPazaakStart::~CSWGuiPazaakStart()
+{
+    if (m_pWagerPopup != NULL)
+    {
+        delete m_pWagerPopup;
+        m_pWagerPopup = NULL;
+    }
+    if (m_pPazaak != NULL)
+    {
+        delete m_pPazaak;
+        m_pPazaak = NULL;
+    }
+}
+#ifndef _XBOX
+void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x006D4C50 GOG 0x006D4B40
+{
+    SwguipazaakTrace2();
+    m_btnAtext.SetEnabled(m_bSideDeckFull);
+    if (!m_bSideDeckFull)
+    {
+        m_btnAtext.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_DARK_TAN);
+        m_btnAtext.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_DARK_TAN;
+    }
+    else
+    {
+        m_btnAtext.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_PAZAAK_GOLD);
+        m_btnAtext.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PAZAAK_GOLD;
+    }
+}
+#endif
+#ifndef _XBOX
+#endif
+
+#ifndef _XBOX
+// PC 0x006D4CE0 GOG 0x006D4BD0
+void CSWGuiPazaakStart::UpdateHelpText(int nCardType)
+{
+    SwguipazaakTrace2();
+    unsigned long nStrRef = 0xFFFFFFFF;
+    if (nCardType != -1)
+    {
+        if (nCardType >= 0 && nCardType < CPazaakCard::CARD_TYPE_NEGATIVE_BASE)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS;
+        else if (nCardType >= CPazaakCard::CARD_TYPE_NEGATIVE_BASE &&
+                 nCardType < CPazaakCard::CARD_TYPE_FLIPPABLE_BASE)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_MINUS;
+        else if (nCardType >= CPazaakCard::CARD_TYPE_FLIPPABLE_BASE &&
+                 nCardType < CPazaakCard::CARD_TYPE_TIEBREAKER)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS_MINUS;
+        else if (nCardType == CPazaakCard::CARD_TYPE_TIEBREAKER)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_TIEBREAKER;
+        else if (nCardType == CPazaakCard::CARD_TYPE_DOUBLE)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_DOUBLE;
+        else if (nCardType == CPazaakCard::CARD_TYPE_FLIP_2_4)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_FLIP_2_4;
+        else if (nCardType == CPazaakCard::CARD_TYPE_FLIP_3_6)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_FLIP_3_6;
+        else if (nCardType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS_MINUS_1_2;
+    }
+    CSWGuiControl* pControl = m_pActiveControl;
+    int bAvail = (pControl->m_nID >= 0 && pControl->m_nID < AvailCardCount)
+                     ? (pControl == &m_cAvail[pControl->m_nID]) : 0;
+    if (bAvail && m_anAvailCount[nCardType] == -1)
+        nStrRef = 0xFFFFFFFF;
+    int bChosen = (pControl->m_nID >= 0 && pControl->m_nID < ChosenCardCount)
+                      ? (pControl == &m_cChosen[pControl->m_nID]) : 0;
+    if (!bChosen && nStrRef != 0xFFFFFFFF)
+        m_lblHelp.m_cText.m_cParams.SetStrRef(nStrRef);
+    else
+        m_lblHelp.m_cText.m_cParams.SetText("");
+}
+#endif
+// PC 0x006D4E50 GOG 0x006D4D40
+void CSWGuiPazaakStart::OnChosenCardEntered(CSWGuiControl* pControl)
+{
+#ifndef _XBOX
+    UpdateHelpText(pControl->m_nID);
+#endif
+    ShowDisabledButtons();
+}
+// PC 0x006D4E50 GOG 0x006D4D40
+void CSWGuiPazaakStart::OnAvailCardEntered(CSWGuiControl* pControl)
+{
+#ifndef _XBOX
+    UpdateHelpText(pControl->m_nID);
+#endif
+    ShowDisabledButtons();
+}
 // PC 0x006D5D10 GOG 0x006D60C0
 void CSWGuiPazaakStart::OnPanelAdded()
 {
@@ -1918,6 +1884,406 @@ void CSWGuiPazaakStart::ShowDisabledButtons()
     }
 }
 #else
+#endif
+// PC 0x006D7950 GOG 0x006D7480
+CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
+                                   int bTutorial, unsigned long oidOpponent)
+    : CSWGuiPanel(pManager),
+      m_cMessageBox(pManager),
+      m_cTutorial(pManager)
+{
+#ifndef _XBOX
+    m_pPazaak = pPazaak;
+#endif
+    m_szStartTurnSound = "mgs_startturn";
+    m_szDrawMainSound = "mgs_drawmain";
+    m_szPlaySideSound = "mgs_playside";
+    m_szWarnBustSound = "mgs_warnbust";
+#ifdef _XBOX
+    m_pPazaak = pPazaak;
+#endif
+    m_nState = STATE_START_GAME;
+    m_fTimer = -1.0f;
+    m_bUnknown86DC0 = 0;
+    m_bShownFirstCardHelp = 0;
+    m_bShownOpponentTurnHelp = 0;
+    m_bShownGameStartHelp = 0;
+    m_bShownTwentyHelp = 0;
+    m_nUnknown86DC5 = 0;
+#ifndef _XBOX
+    m_nPlayedCard = -1;
+#endif
+    m_szEndSound = NULL;
+#ifndef _XBOX
+    m_nHandAction = 0;
+#endif
+    m_cTutorial.SetCallback(
+        this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleTutorialClose, NULL);
+    m_cTutorial.m_bEnabled = bTutorial;
+    m_cMessageBox.SetAllowCancel(0);
+
+#ifdef _XBOX
+    StartLoadFromLayout("pazaakgame_x");
+#else
+    StartLoadFromLayout("pazaakgame_p");
+#endif
+    InitControl(m_lblPlayerName, "LBL_PLRNAME", 1);
+    InitControl(m_lblNpcName, "LBL_NPCNAME", 1);
+    InitControl(m_lblPlayerTotal, "LBL_PLRTOTAL", 1);
+    InitControl(m_lblNpcTotal, "LBL_NPCTOTAL", 1);
+    InitControl(m_lblPlayerSideDeck, "LBL_PLRSIDEDECK", 1);
+    InitControl(m_lblNpcSideDeck, "LBL_NPCSIDEDECK", 1);
+    InitControl(m_lblPlayerTurn, "LBL_PLRTURN", 1);
+    InitControl(m_lblNpcTurn, "LBL_NPCTURN", 1);
+    m_lblPlayerTurn.m_cBorder.m_cParams.SetFillImage("PZ_PLAYERLITEOFF", 0);
+    m_lblNpcTurn.m_cBorder.m_cParams.SetFillImage("PZ_PLAYERLITEOFF", 0);
+    InitControl(m_lblPlayerScore[0], "LBL_PLRSCORE0", 1);
+    InitControl(m_lblPlayerScore[1], "LBL_PLRSCORE1", 1);
+    InitControl(m_lblPlayerScore[2], "LBL_PLRSCORE2", 1);
+    InitControl(m_lblNpcScore[0], "LBL_NPCSCORE0", 1);
+    InitControl(m_lblNpcScore[1], "LBL_NPCSCORE1", 1);
+    InitControl(m_lblNpcScore[2], "LBL_NPCSCORE2", 1);
+#ifndef _XBOX
+    InitControl(m_lblFlipIcon, "LBL_FLIPICON", 1);
+    InitControl(m_lblFlipLegend, "LBL_FLIPLEGEND", 1);
+    InitControl(m_lblChangeIcon, "LBL_CHANGEICON", 1);
+    InitControl(m_lblChangeLegend, "LBL_CHANGELEGEND", 1);
+    InitControl(m_btnForfeitGame, "BTN_FORFEITGAME", 1);
+#endif
+    int i;
+    {
+        char szPlayerButton[16];
+        char szNpcButton[16];
+        char szPlayerLabel[16];
+        char szNpcLabel[16];
+        strcpy(szPlayerButton, "BTN_PLRx       ");
+        strcpy(szNpcButton, "BTN_NPCx       ");
+        strcpy(szPlayerLabel, "LBL_PLRx       ");
+        strcpy(szNpcLabel, "LBL_NPCx       ");
+        for (i = 0; i < 9; i++)
+        {
+#ifndef _XBOX
+            CSWGuiPazaakCard* pNpcCard = &m_cNpcBoard[i];
+#endif
+            sprintf(&szPlayerButton[7], "%d", i);
+            sprintf(&szNpcButton[7], "%d", i);
+            sprintf(&szPlayerLabel[7], "%d", i);
+            sprintf(&szNpcLabel[7], "%d", i);
+            InitControl(m_cPlayerBoard[i], szPlayerButton, 1);
+            InitControl(m_cPlayerBoard[i].m_lblCard, szPlayerLabel, 1);
+#ifdef _XBOX
+            InitControl(m_cNpcBoard[i], szNpcButton, 1);
+            InitControl(m_cNpcBoard[i].m_lblCard, szNpcLabel, 1);
+#else
+            InitControl(*pNpcCard, szNpcButton, 1);
+            InitControl(pNpcCard->m_lblCard, szNpcLabel, 1);
+#endif
+#ifndef _XBOX
+            pNpcCard->m_bIgnoreMouse = 1;
+#endif
+#ifndef _XBOX
+            m_cPlayerBoard[i].SetEnabled(0);
+#endif
+#ifndef _XBOX
+            m_cPlayerBoard[i].m_bDraggable = 0;
+#endif
+        }
+    }
+    {
+        char szHandButton[16];
+        char szNpcHandButton[16];
+        char szHandLabel[16];
+        char szNpcHandLabel[16];
+#ifndef _XBOX
+        char szFlipButton[16];
+        char szChangeButton[16];
+#endif
+        strcpy(szHandButton, "BTN_PLRSIDEx   ");
+        strcpy(szNpcHandButton, "BTN_NPCSIDEx   ");
+        strcpy(szHandLabel, "LBL_PLRSIDEx   ");
+        strcpy(szNpcHandLabel, "LBL_NPCSIDEx   ");
+#ifndef _XBOX
+        strcpy(szFlipButton, "BTN_FLIPx      ");
+        strcpy(szChangeButton, "BTN_CHANGEx    ");
+#endif
+        for (i = 0; i < 4; i++)
+        {
+#ifndef _XBOX
+            CSWGuiPazaakCard* pNpcCard = &m_cNpcHand[i];
+            CSWGuiButton* pChangeButton = &m_btnChange[i];
+#endif
+            sprintf(&szHandButton[11], "%d", i);
+            sprintf(&szNpcHandButton[11], "%d", i);
+            sprintf(&szHandLabel[11], "%d", i);
+            sprintf(&szNpcHandLabel[11], "%d", i);
+#ifndef _XBOX
+            sprintf(&szFlipButton[8], "%d", i);
+            sprintf(&szChangeButton[10], "%d", i);
+#endif
+            InitControl(m_cPlayerHand[i], szHandButton, 1);
+            InitControl(m_cPlayerHand[i].m_lblCard, szHandLabel, 1);
+#ifndef _XBOX
+            InitControl(m_btnFlip[i], szFlipButton, 1);
+            InitControl(*pChangeButton, szChangeButton, 1);
+            m_btnFlip[i].m_nID = i;
+            pChangeButton->m_nID = i;
+#endif
+            m_cPlayerHand[i].m_nID = i;
+#ifdef _XBOX
+            InitControl(m_cNpcHand[i], szNpcHandButton, 1);
+            InitControl(m_cNpcHand[i].m_lblCard, szNpcHandLabel, 1);
+#else
+            InitControl(*pNpcCard, szNpcHandButton, 1);
+            InitControl(pNpcCard->m_lblCard, szNpcHandLabel, 1);
+#endif
+#ifdef _XBOX
+            m_cPlayerHand[i].AddEvent(
+                GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakGame::OnHandCardEntered);
+#else
+            m_cPlayerHand[i].AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandcardAction);
+#ifndef _XBOX
+            m_cPlayerHand[i].AddEvent(
+                98283, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandCardDrop);
+#endif
+            m_cPlayerHand[i].AddEvent(
+                505, this,
+                (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandCardDoubleClick);
+            m_cPlayerHand[i].AddEvent(
+                68, this,
+                (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandCardRightClick);
+            m_cPlayerHand[i].m_bFocusable = 0;
+            pNpcCard->m_bIgnoreMouse = 1;
+            m_btnFlip[i].AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleFlipButtons);
+            pChangeButton->AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleChangeButtons);
+            m_btnFlip[i].m_bFocusable = 0;
+            pChangeButton->m_bFocusable = 0;
+#endif
+        }
+    }
+#ifdef _XBOX
+    InitControl(m_lblXbutton, "LBL_XBUTTON", 1);
+    InitControl(m_btnContinue, "LBL_XTEXT", 1);
+    InitControl(m_lblYbutton, "LBL_YBUTTON", 1);
+    InitControl(m_btnStand, "LBL_YTEXT", 1);
+    InitControl(m_lblAbutton, "LBL_ABUTTON", 1);
+    InitControl(m_btnX, "LBL_ATEXT", 1);
+    InitControl(m_lblBbutton, "LBL_BBUTTON", 1);
+    InitControl(m_btnBlack, "LBL_BTEXT", 1);
+#else
+    InitControl(m_btnContinue, "BTN_XTEXT", 1);
+    InitControl(m_btnStand, "BTN_YTEXT", 1);
+#endif
+    StopLoadFromLayout();
+#ifndef _XBOX
+    m_btnContinue.AddEvent(GUIEVENT_ACTIVATE, this,
+                           (CSWGuiHandler)&CSWGuiPazaakGame::HandleContinue);
+    m_btnStand.AddEvent(GUIEVENT_ACTIVATE, this,
+                        (CSWGuiHandler)&CSWGuiPazaakGame::HandleStand);
+    m_btnX.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleXButton);
+    m_btnBlack.AddEvent(GUIEVENT_ACTIVATE, this,
+                        (CSWGuiHandler)&CSWGuiPazaakGame::HandleBlackButton);
+    m_btnForfeitGame.AddEvent(GUIEVENT_ACTIVATE, this,
+                              (CSWGuiHandler)&CSWGuiPazaakGame::HandleForfeitButton);
+    m_btnContinue.SetFocusable(0);
+    m_btnStand.SetFocusable(0);
+    m_btnX.SetFocusable(0);
+    m_btnBlack.SetFocusable(0);
+    m_btnForfeitGame.SetFocusable(0);
+#endif
+    CSWSCreature* pCreature =
+        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidOpponent);
+    if (pCreature != NULL)
+    {
+        CExoString sName = pCreature->GetStats()->GetFullName();
+        g_pSWTlkTable->ParseStr(sName, (CGameObject*)pCreature, 0, 1);
+        m_lblNpcName.m_cText.m_cParams.SetText(sName);
+    }
+#ifndef _XBOX
+    if (m_btnContinue.m_cText.GetIdealHeight() >
+        m_btnContinue.m_cExtent.m_nHeight)
+    {
+        m_btnContinue.m_cText.m_cParams.SetAlignment(10);
+    }
+    if (m_btnStand.m_cText.GetIdealHeight() > m_btnStand.m_cExtent.m_nHeight)
+    {
+        m_btnStand.m_cText.m_cParams.SetAlignment(10);
+    }
+#endif
+#ifndef _XBOX
+    m_nBackground = PC_BACKGROUND_SUFFIX_PAZAAK;
+#endif
+    m_bPlayerStarts = 1;
+}
+CSWGuiPazaakGame::~CSWGuiPazaakGame()  // PC 0x006D4E70 GOG 0x006D4D60
+{
+    if (m_pPazaak != NULL)
+    {
+        delete m_pPazaak;
+        m_pPazaak = NULL;
+    }
+}
+
+#ifdef _XBOX
+
+void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 40:
+        case 46:
+        {
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            CSWGuiMessageBox* pMessageBox =
+                g_pAppManager->m_pClientExoApp->GetInGameGui()
+                    ->m_pMessageBox;
+            pMessageBox->SetAllowCancel(1);
+            pMessageBox->SetCallback(
+                this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleQuitDialog,
+                NULL);
+            pMessageBox->SetMessage(STRREF_PAZAAK_CONFIRM_FORFEIT);
+            m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+            break;
+        }
+        case 41:
+            if (m_nState == 3 && m_pActiveControl != NULL)
+            {
+                int nIndex = m_pActiveControl->m_nID;
+                if (nIndex >= 0 && nIndex < 4 &&
+                    m_pActiveControl == &m_cPlayerHand[nIndex])
+                {
+                    if (m_pPazaak->CanUsePlayerSidedeckCard(nIndex) != 0)
+                    {
+                        m_btnX.StartFlash(CGuiInGame::COLOR_CYAN);
+                        if (m_cTutorial.m_bEnabled != 0 &&
+                            m_pPazaak->GetPlayerTotal() <= 12)
+                        {
+                            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                            m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_PLAY_CARD, STRREF_PAZAAK_PLAY_CARD, STRREF_PAZAAK_CANCEL);
+                        }
+                        else
+                        {
+                            m_pPazaak->UsePlayerSidedeckCard(nIndex);
+                            CResRef cSound(m_szPlaySideSound);
+                            g_pExoSound->PlayOneShotSound(cSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
+                            m_nState = 4;
+                            m_fTimer = 0.4f;
+                            RefreshDisplay();
+                            ReconnectSidedeckButtons();
+                        }
+                    }
+                }
+            }
+            break;
+        case 43:
+            if (m_bUnknown86DC0 == 0)
+            {
+                m_bUnknown86DC0 = 1;
+                unsigned long aHelp[2];
+                aHelp[0] = STRREF_PAZAAK_HELP_FLIP_CARDS;
+                aHelp[1] = STRREF_PAZAAK_HELP_DECLARE_SIGN;
+                m_cTutorial.ShowMultipleHelp(aHelp, 2);
+            }
+            if (m_pActiveControl != NULL)
+            {
+                int nCard = m_pActiveControl->m_nID;
+                if (nCard >= 0 && nCard < 4 &&
+                    m_pActiveControl == &m_cPlayerHand[nCard])
+                {
+                    CPazaakCard cCard = m_pPazaak->m_cPlayer.m_aSideDeck[nCard];
+                    if (cCard.m_nType >= 12 && cCard.m_nType < 18)
+                    {
+                        m_btnBlack.StartFlash(CGuiInGame::COLOR_CYAN);
+                        m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped =
+                            m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped == 0;
+                        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                        RefreshDisplay();
+                    }
+                }
+            }
+            break;
+        case 39:
+        case 45:
+            if (m_pPazaak->m_cPlayer.m_bStanding == 0)
+            {
+                if (m_nState == 3 || m_nState == 4)
+                {
+                    m_btnContinue.StartFlash(CGuiInGame::COLOR_CYAN);
+                    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                    if (m_cTutorial.m_bEnabled != 0 &&
+                        m_pPazaak->GetPlayerTotal() >= 16)
+                    {
+                        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_END_TURN, STRREF_PAZAAK_END_TURN, STRREF_PAZAAK_CANCEL);
+                    }
+                    else
+                    {
+                        m_nState = 5;
+                        m_fTimer = 0.4f;
+                        RefreshDisplay();
+                    }
+                }
+            }
+            break;
+        case 42:
+            if (m_pPazaak->m_cPlayer.m_bStanding == 0)
+            {
+                if (m_nState == 3 || m_nState == 4)
+                {
+                    m_btnStand.StartFlash(CGuiInGame::COLOR_CYAN);
+                    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                    if (m_cTutorial.m_bEnabled != 0 &&
+                        m_pPazaak->GetPlayerTotal() <= 13)
+                    {
+                        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_STAND, STRREF_PAZAAK_STAND, STRREF_PAZAAK_CANCEL);
+                    }
+                    else
+                    {
+                        m_pPazaak->m_cPlayer.m_bStanding = 1;
+                        m_nState = 5;
+                        m_fTimer = 0.4f;
+                        RefreshDisplay();
+                    }
+                }
+            }
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+#else
+void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)  // PC 0x006D50F0 GOG 0x006D5060
+{
+    if (nState != 0)
+    {
+        if (nEvent == 40 || nEvent == 46)
+        {
+            if (m_nHandAction != 0)
+            {
+                CancelHandAction();
+            }
+            else
+            {
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                CSWGuiMessageBox* pMessageBox =
+                    g_pAppManager->m_pClientExoApp->GetInGameGui()
+                        ->m_pMessageBox;
+                pMessageBox->SetAllowCancel(1);
+                pMessageBox->SetCallback(
+                    this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleQuitDialog,
+                    NULL);
+                pMessageBox->SetMessage(STRREF_PAZAAK_CONFIRM_FORFEIT);
+                pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+            }
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
 #endif
 // PC 0x006D6640 GOG 0x006D4FE0
 void CSWGuiPazaakGame::StartNewGame()
@@ -2711,238 +3077,6 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006D77
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x006D7950 GOG 0x006D7480
-CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
-                                   int bTutorial, unsigned long oidOpponent)
-    : CSWGuiPanel(pManager),
-      m_cMessageBox(pManager),
-      m_cTutorial(pManager)
-{
-#ifndef _XBOX
-    m_pPazaak = pPazaak;
-#endif
-    m_szStartTurnSound = "mgs_startturn";
-    m_szDrawMainSound = "mgs_drawmain";
-    m_szPlaySideSound = "mgs_playside";
-    m_szWarnBustSound = "mgs_warnbust";
-#ifdef _XBOX
-    m_pPazaak = pPazaak;
-#endif
-    m_nState = STATE_START_GAME;
-    m_fTimer = -1.0f;
-    m_bUnknown86DC0 = 0;
-    m_bShownFirstCardHelp = 0;
-    m_bShownOpponentTurnHelp = 0;
-    m_bShownGameStartHelp = 0;
-    m_bShownTwentyHelp = 0;
-    m_nUnknown86DC5 = 0;
-#ifndef _XBOX
-    m_nPlayedCard = -1;
-#endif
-    m_szEndSound = NULL;
-#ifndef _XBOX
-    m_nHandAction = 0;
-#endif
-    m_cTutorial.SetCallback(
-        this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleTutorialClose, NULL);
-    m_cTutorial.m_bEnabled = bTutorial;
-    m_cMessageBox.SetAllowCancel(0);
-
-#ifdef _XBOX
-    StartLoadFromLayout("pazaakgame_x");
-#else
-    StartLoadFromLayout("pazaakgame_p");
-#endif
-    InitControl(m_lblPlayerName, "LBL_PLRNAME", 1);
-    InitControl(m_lblNpcName, "LBL_NPCNAME", 1);
-    InitControl(m_lblPlayerTotal, "LBL_PLRTOTAL", 1);
-    InitControl(m_lblNpcTotal, "LBL_NPCTOTAL", 1);
-    InitControl(m_lblPlayerSideDeck, "LBL_PLRSIDEDECK", 1);
-    InitControl(m_lblNpcSideDeck, "LBL_NPCSIDEDECK", 1);
-    InitControl(m_lblPlayerTurn, "LBL_PLRTURN", 1);
-    InitControl(m_lblNpcTurn, "LBL_NPCTURN", 1);
-    m_lblPlayerTurn.m_cBorder.m_cParams.SetFillImage("PZ_PLAYERLITEOFF", 0);
-    m_lblNpcTurn.m_cBorder.m_cParams.SetFillImage("PZ_PLAYERLITEOFF", 0);
-    InitControl(m_lblPlayerScore[0], "LBL_PLRSCORE0", 1);
-    InitControl(m_lblPlayerScore[1], "LBL_PLRSCORE1", 1);
-    InitControl(m_lblPlayerScore[2], "LBL_PLRSCORE2", 1);
-    InitControl(m_lblNpcScore[0], "LBL_NPCSCORE0", 1);
-    InitControl(m_lblNpcScore[1], "LBL_NPCSCORE1", 1);
-    InitControl(m_lblNpcScore[2], "LBL_NPCSCORE2", 1);
-#ifndef _XBOX
-    InitControl(m_lblFlipIcon, "LBL_FLIPICON", 1);
-    InitControl(m_lblFlipLegend, "LBL_FLIPLEGEND", 1);
-    InitControl(m_lblChangeIcon, "LBL_CHANGEICON", 1);
-    InitControl(m_lblChangeLegend, "LBL_CHANGELEGEND", 1);
-    InitControl(m_btnForfeitGame, "BTN_FORFEITGAME", 1);
-#endif
-    int i;
-    {
-        char szPlayerButton[16];
-        char szNpcButton[16];
-        char szPlayerLabel[16];
-        char szNpcLabel[16];
-        strcpy(szPlayerButton, "BTN_PLRx       ");
-        strcpy(szNpcButton, "BTN_NPCx       ");
-        strcpy(szPlayerLabel, "LBL_PLRx       ");
-        strcpy(szNpcLabel, "LBL_NPCx       ");
-        for (i = 0; i < 9; i++)
-        {
-#ifndef _XBOX
-            CSWGuiPazaakCard* pNpcCard = &m_cNpcBoard[i];
-#endif
-            sprintf(&szPlayerButton[7], "%d", i);
-            sprintf(&szNpcButton[7], "%d", i);
-            sprintf(&szPlayerLabel[7], "%d", i);
-            sprintf(&szNpcLabel[7], "%d", i);
-            InitControl(m_cPlayerBoard[i], szPlayerButton, 1);
-            InitControl(m_cPlayerBoard[i].m_lblCard, szPlayerLabel, 1);
-#ifdef _XBOX
-            InitControl(m_cNpcBoard[i], szNpcButton, 1);
-            InitControl(m_cNpcBoard[i].m_lblCard, szNpcLabel, 1);
-#else
-            InitControl(*pNpcCard, szNpcButton, 1);
-            InitControl(pNpcCard->m_lblCard, szNpcLabel, 1);
-#endif
-#ifndef _XBOX
-            pNpcCard->m_bIgnoreMouse = 1;
-#endif
-#ifndef _XBOX
-            m_cPlayerBoard[i].SetEnabled(0);
-#endif
-#ifndef _XBOX
-            m_cPlayerBoard[i].m_bDraggable = 0;
-#endif
-        }
-    }
-    {
-        char szHandButton[16];
-        char szNpcHandButton[16];
-        char szHandLabel[16];
-        char szNpcHandLabel[16];
-#ifndef _XBOX
-        char szFlipButton[16];
-        char szChangeButton[16];
-#endif
-        strcpy(szHandButton, "BTN_PLRSIDEx   ");
-        strcpy(szNpcHandButton, "BTN_NPCSIDEx   ");
-        strcpy(szHandLabel, "LBL_PLRSIDEx   ");
-        strcpy(szNpcHandLabel, "LBL_NPCSIDEx   ");
-#ifndef _XBOX
-        strcpy(szFlipButton, "BTN_FLIPx      ");
-        strcpy(szChangeButton, "BTN_CHANGEx    ");
-#endif
-        for (i = 0; i < 4; i++)
-        {
-#ifndef _XBOX
-            CSWGuiPazaakCard* pNpcCard = &m_cNpcHand[i];
-            CSWGuiButton* pChangeButton = &m_btnChange[i];
-#endif
-            sprintf(&szHandButton[11], "%d", i);
-            sprintf(&szNpcHandButton[11], "%d", i);
-            sprintf(&szHandLabel[11], "%d", i);
-            sprintf(&szNpcHandLabel[11], "%d", i);
-#ifndef _XBOX
-            sprintf(&szFlipButton[8], "%d", i);
-            sprintf(&szChangeButton[10], "%d", i);
-#endif
-            InitControl(m_cPlayerHand[i], szHandButton, 1);
-            InitControl(m_cPlayerHand[i].m_lblCard, szHandLabel, 1);
-#ifndef _XBOX
-            InitControl(m_btnFlip[i], szFlipButton, 1);
-            InitControl(*pChangeButton, szChangeButton, 1);
-            m_btnFlip[i].m_nID = i;
-            pChangeButton->m_nID = i;
-#endif
-            m_cPlayerHand[i].m_nID = i;
-#ifdef _XBOX
-            InitControl(m_cNpcHand[i], szNpcHandButton, 1);
-            InitControl(m_cNpcHand[i].m_lblCard, szNpcHandLabel, 1);
-#else
-            InitControl(*pNpcCard, szNpcHandButton, 1);
-            InitControl(pNpcCard->m_lblCard, szNpcHandLabel, 1);
-#endif
-#ifdef _XBOX
-            m_cPlayerHand[i].AddEvent(
-                GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakGame::OnHandCardEntered);
-#else
-            m_cPlayerHand[i].AddEvent(
-                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandcardAction);
-#ifndef _XBOX
-            m_cPlayerHand[i].AddEvent(
-                98283, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandCardDrop);
-#endif
-            m_cPlayerHand[i].AddEvent(
-                505, this,
-                (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandCardDoubleClick);
-            m_cPlayerHand[i].AddEvent(
-                68, this,
-                (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandCardRightClick);
-            m_cPlayerHand[i].m_bFocusable = 0;
-            pNpcCard->m_bIgnoreMouse = 1;
-            m_btnFlip[i].AddEvent(
-                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleFlipButtons);
-            pChangeButton->AddEvent(
-                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleChangeButtons);
-            m_btnFlip[i].m_bFocusable = 0;
-            pChangeButton->m_bFocusable = 0;
-#endif
-        }
-    }
-#ifdef _XBOX
-    InitControl(m_lblXbutton, "LBL_XBUTTON", 1);
-    InitControl(m_btnContinue, "LBL_XTEXT", 1);
-    InitControl(m_lblYbutton, "LBL_YBUTTON", 1);
-    InitControl(m_btnStand, "LBL_YTEXT", 1);
-    InitControl(m_lblAbutton, "LBL_ABUTTON", 1);
-    InitControl(m_btnX, "LBL_ATEXT", 1);
-    InitControl(m_lblBbutton, "LBL_BBUTTON", 1);
-    InitControl(m_btnBlack, "LBL_BTEXT", 1);
-#else
-    InitControl(m_btnContinue, "BTN_XTEXT", 1);
-    InitControl(m_btnStand, "BTN_YTEXT", 1);
-#endif
-    StopLoadFromLayout();
-#ifndef _XBOX
-    m_btnContinue.AddEvent(GUIEVENT_ACTIVATE, this,
-                           (CSWGuiHandler)&CSWGuiPazaakGame::HandleContinue);
-    m_btnStand.AddEvent(GUIEVENT_ACTIVATE, this,
-                        (CSWGuiHandler)&CSWGuiPazaakGame::HandleStand);
-    m_btnX.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleXButton);
-    m_btnBlack.AddEvent(GUIEVENT_ACTIVATE, this,
-                        (CSWGuiHandler)&CSWGuiPazaakGame::HandleBlackButton);
-    m_btnForfeitGame.AddEvent(GUIEVENT_ACTIVATE, this,
-                              (CSWGuiHandler)&CSWGuiPazaakGame::HandleForfeitButton);
-    m_btnContinue.SetFocusable(0);
-    m_btnStand.SetFocusable(0);
-    m_btnX.SetFocusable(0);
-    m_btnBlack.SetFocusable(0);
-    m_btnForfeitGame.SetFocusable(0);
-#endif
-    CSWSCreature* pCreature =
-        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidOpponent);
-    if (pCreature != NULL)
-    {
-        CExoString sName = pCreature->GetStats()->GetFullName();
-        g_pSWTlkTable->ParseStr(sName, (CGameObject*)pCreature, 0, 1);
-        m_lblNpcName.m_cText.m_cParams.SetText(sName);
-    }
-#ifndef _XBOX
-    if (m_btnContinue.m_cText.GetIdealHeight() >
-        m_btnContinue.m_cExtent.m_nHeight)
-    {
-        m_btnContinue.m_cText.m_cParams.SetAlignment(10);
-    }
-    if (m_btnStand.m_cText.GetIdealHeight() > m_btnStand.m_cExtent.m_nHeight)
-    {
-        m_btnStand.m_cText.m_cParams.SetAlignment(10);
-    }
-#endif
-#ifndef _XBOX
-    m_nBackground = PC_BACKGROUND_SUFFIX_PAZAAK;
-#endif
-    m_bPlayerStarts = 1;
-}
 // PC 0x006D8A90 GOG 0x006D8780
 void CSWGuiPazaakStart::HandleStartDialog(CSWGuiControl* pControl)
 {
@@ -2994,138 +3128,4 @@ void CSWGuiPazaakStart::HandleAcceptButton(CSWGuiControl* pControl)
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         }
     }
-}
-// PC 0x006D8CD0 GOG 0x006D89C0
-CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
-                                     int nSideDeck, int bTutorial,
-                                     unsigned long oidOpponent)
-    : CSWGuiPanel(pManager),
-      m_cMessageBox(pManager),
-      m_cTutorial(pManager)
-{
-    m_pWagerPopup = NULL;
-#ifdef _XBOX
-    m_bChosenActive = 0;
-#endif
-    m_bSideDeckFull = 0;
-    m_pChosenCards = &m_cChosen[0];
-#ifndef _XBOX
-    m_pAvailCards = &m_cAvail[0];
-#endif
-    for (int i = 0; i < AvailCardCount; i++)
-    {
-        m_anAvailCount[i] = 0;
-    }
-    for (int i = 0; i < 10; i++)
-    {
-        m_aChosen[i] = CPazaakCard(-1);
-    }
-    m_cTutorial.m_bEnabled = bTutorial;
-    m_pPazaak = new CSWPazaak;
-    m_pPazaak->m_nWager = nWager;
-    CSWPazaak* pPazaak = m_pPazaak;
-    pPazaak->m_oidOpponent = oidOpponent;
-    if (nWager > 0)
-    {
-        CSWPazaak& cPazaak = *m_pPazaak;
-        cPazaak.m_nWager = 1;
-        m_pWagerPopup = new CSWGuiWagerPopup(pManager, this, nWager);
-    }
-    CPazaakCard aSideDeck[10];
-    m_pPazaak->LoadInitialSideDeck(nSideDeck, aSideDeck);
-    pPazaak = m_pPazaak;
-    pPazaak->m_cOpponent.ChooseSidedeck(aSideDeck);
-
-#ifdef _XBOX
-    StartLoadFromLayout("pazaaksetup_x");
-#else
-    StartLoadFromLayout("pazaaksetup_p");
-#endif
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-#ifdef _XBOX
-    InitControl(m_lblYbutton, "LBL_YBUTTON", 1);
-    InitControl(m_btnMove, "LBL_YTEXT", 1);
-    InitControl(m_lblAbutton, "LBL_ABUTTON", 1);
-    InitControl(m_btnAtext, "LBL_ATEXT", 1);
-    InitControl(m_lblLbutton, "LBL_LBUTTON", 1);
-#else
-    InitControl(m_btnAtext, "BTN_ATEXT", 1);
-    InitControl(m_btnClearCards, "BTN_CLEARCARDS", 1);
-#endif
-    InitControl(m_lblLtext, "LBL_LTEXT", 1);
-#ifdef _XBOX
-    InitControl(m_lblRbutton, "LBL_RBUTTON", 1);
-#endif
-    InitControl(m_lblRtext, "LBL_RTEXT", 1);
-    char szChosenButton[16];
-    char szChosenLabel[16];
-    strcpy(szChosenButton, "BTN_CHOSENx    ");
-    strcpy(szChosenLabel, "LBL_CHOSENx    ");
-    for (int i = 0; i < 10; i++)
-    {
-        sprintf(&szChosenButton[10], "%d", i);
-        sprintf(&szChosenLabel[10], "%d", i);
-        InitControl(m_cChosen[i], szChosenButton, 1);
-        InitControl(m_cChosen[i].m_lblCard, szChosenLabel, 1);
-        m_cChosen[i].m_nID = i;
-        m_cChosen[i].AddEvent(
-            GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnChosenCardEntered);
-#ifndef _XBOX
-        m_cChosen[i].AddEvent(
-            CSWGuiPazaakCard::EVENT_CARD_DROP, this,
-            (CSWGuiHandler)&CSWGuiPazaakStart::HandleChosenCardDrop);
-#endif
-#ifndef _XBOX
-        m_cChosen[i].AddEvent(
-            GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakStart::HandleMoveCard);
-#endif
-    }
-    char szAvailButton[16];
-    char szAvailLabel[16];
-    char szAvailCount[16];
-    strcpy(szAvailButton, "BTN_AVAILxx    ");
-    strcpy(szAvailLabel, "LBL_AVAILxx    ");
-    strcpy(szAvailCount, "LBL_AVAILNUMxx ");
-    for (int i = 0; i < AvailCardCount; i++)
-    {
-        CSWGuiLabel* pCount = &m_lblAvailCount[i];
-        int nRow = i / 6;
-        int nColumn = i % 6;
-        sprintf(&szAvailButton[9], "%d%d", nRow, nColumn);
-        sprintf(&szAvailLabel[9], "%d%d", nRow, nColumn);
-        sprintf(&szAvailCount[12], "%d%d", nRow, nColumn);
-        InitControl(m_cAvail[i], szAvailButton, 1);
-        InitControl(m_cAvail[i].m_lblCard, szAvailLabel, 1);
-        InitControl(*pCount, szAvailCount, 1);
-        m_cAvail[i].m_nID = i;
-        m_cAvail[i].AddEvent(
-            GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnAvailCardEntered);
-#ifndef _XBOX
-        m_cAvail[i].AddEvent(
-            CSWGuiPazaakCard::EVENT_CARD_DROP, this,
-            (CSWGuiHandler)&CSWGuiPazaakStart::HandleAvailCardDrop);
-#endif
-#ifndef _XBOX
-        m_cAvail[i].AddEvent(GUIEVENT_ACTIVATE, this,
-                             (CSWGuiHandler)&CSWGuiPazaakStart::HandleMoveCard);
-#endif
-#ifndef _XBOX
-        pCount->m_bIgnoreMouse = 1;
-#endif
-    }
-#ifndef _XBOX
-    InitControl(m_lblHelp, "LBL_HELP", 1);
-#endif
-    StopLoadFromLayout();
-#ifndef _XBOX
-    m_btnAtext.AddEvent(GUIEVENT_ACTIVATE, this,
-                         (CSWGuiHandler)&CSWGuiPazaakStart::HandleAcceptButton);
-    m_btnAtext.SetFocusable(0);
-    m_btnClearCards.AddEvent(GUIEVENT_ACTIVATE, this,
-                             (CSWGuiHandler)&CSWGuiPazaakStart::ClearSideDeck);
-    m_btnClearCards.SetFocusable(0);
-#endif
-#ifndef _XBOX
-    m_nBackground = PC_BACKGROUND_SUFFIX_PAZAAK;
-#endif
 }
