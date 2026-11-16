@@ -3000,8 +3000,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
     }
     if (RenderPartyFollow)
     {
-        g_pAppManager->m_pClientExoApp->GetSWParty();
-        g_pAppManager->m_pClientExoApp->GetSWParty();
+        EXOLOG("Party follow: leader at %f %f\n", g_pAppManager->m_pClientExoApp->GetSWParty()->m_vLeaderFollowPosition.m_fX,
+            g_pAppManager->m_pClientExoApp->GetSWParty()->m_vLeaderFollowPosition.m_fY);
         CreaturePartyIndex = nMember;
         EXOLOG("Party follow: %s\n", m_sTag.CStr());
         EXOLOG("Party follow: formation distance %f\n", magnitude(pMember->m_vFormationPosition - pMember->m_vFollowPosition));
@@ -4312,8 +4312,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_WaitingForPath(
                 Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fFacing)) *
                     pMember->m_vFormationOffset;
             {
-                float fRadius = m_pPathfindInformation->m_fStepScale;
-                fRadius -= NWSCREATURE_FOLLOW_LINE_RADIUS_MARGIN;
+                float fRadius = m_pPathfindInformation->m_fStepScale - NWSCREATURE_FOLLOW_LINE_RADIUS_MARGIN;
                 float fWidth = m_pPathfindInformation->m_fHalfStep;
                 if (CSWSObject::GetArea()->TestDirectLine(pMember->m_vLastPosition,
                         vFormationPosition, fRadius, fWidth, 0, &hitInfo) ==

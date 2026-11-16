@@ -5030,7 +5030,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             {
                 if (bAnimation)
                 {
-                    const unsigned short nReceivedWayPointCount = nWayPointCount;
+                    unsigned short nReceivedWayPointCount = nWayPointCount;
                     Vector* pWayPoints = new Vector[nReceivedWayPointCount];
                     if (pWayPoints == NULL)
                         return 0;

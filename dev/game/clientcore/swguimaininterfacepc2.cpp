@@ -4757,8 +4757,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
             int bLarge = nPortrait == 0;
             m_aCharacters[nPortrait].DrawEffects(fElapsed, bLarge);
         }
-        CSWGuiMainInterfaceChar* pTransitionCharacter = &m_cTransitionCharacter;
-        pTransitionCharacter->DrawEffects(fElapsed, 0);
+        m_cTransitionCharacter.DrawEffects(fElapsed, 0);
 #ifdef _XBOX
         for (int nAction = 0; nAction < 6; ++nAction)
             m_aPersonalActions[nAction].Draw(fElapsed);
