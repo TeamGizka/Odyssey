@@ -84,56 +84,107 @@ int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
     return psEntry->GetLength() > 0;
 }
 
-int C2DA::SetINTEntry(int nRow, int nColumn, int nValue)
+int C2DA::SetCExoStringEntry(int nRow, int nColumn, const CExoString& sValue)
 {
-    if (!m_bLoaded || nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
     {
         return 0;
     }
-    m_ppEntries[nRow][nColumn] = CExoString(nValue);
+
+    m_ppEntries[nRow][nColumn] = sValue;
     return 1;
-}
-
-int C2DA::SetINTEntry(int nRow, const CExoString& sColumn, int nValue)
-{
-    return SetINTEntry(nRow, GetColumnIndex(sColumn), nValue);
-}
-
-int C2DA::SetINTEntry(const CExoString& sRow, const CExoString& sColumn, int nValue)
-{
-    return SetINTEntry(GetRowIndex(sRow), GetColumnIndex(sColumn), nValue);
-}
-
-int C2DA::SetINTEntry(const CExoString& sRow, int nColumn, int nValue)
-{
-    return SetINTEntry(GetRowIndex(sRow), nColumn, nValue);
 }
 
 int C2DA::SetFLOATEntry(int nRow, int nColumn, float fValue)
 {
-    if (!m_bLoaded || nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    char szValue[32];
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
     {
         return 0;
     }
-    m_ppEntries[nRow][nColumn] = CExoString(fValue);
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+
+int C2DA::SetFLOATEntry(const CExoString& sRow, const CExoString& sColumn, float fValue)
+{
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow == -1 || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
     return 1;
 }
 
 int C2DA::SetFLOATEntry(int nRow, const CExoString& sColumn, float fValue)
 {
-    return SetFLOATEntry(nRow, GetColumnIndex(sColumn), fValue);
-}
+    char szValue[32];
+    int nColumn = GetColumnIndex(sColumn);
 
-int C2DA::SetFLOATEntry(const CExoString& sRow, const CExoString& sColumn, float fValue)
-{
-    return SetFLOATEntry(GetRowIndex(sRow), GetColumnIndex(sColumn), fValue);
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
 }
 
 int C2DA::SetFLOATEntry(const CExoString& sRow, int nColumn, float fValue)
 {
-    return SetFLOATEntry(GetRowIndex(sRow), nColumn, fValue);
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+
+    if (nRow == -1 || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
 }
 
+int C2DA::SetINTEntry(const CExoString& sRow, const CExoString& sColumn, int nValue)
+{
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow == -1 || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+
+int C2DA::SetINTEntry(const CExoString& sRow, int nColumn, int nValue)
+{
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+
+    if (nRow == -1 || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
 // PC 0x0041D1F0 GOG 0x0041D1E0
 int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
                              CExoString* psEntry)
@@ -292,6 +343,35 @@ int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
     }
 
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
+    return 1;
+}
+
+int C2DA::SetINTEntry(int nRow, int nColumn, int nValue)
+{
+    char szValue[32];
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+
+int C2DA::SetINTEntry(int nRow, const CExoString& sColumn, int nValue)
+{
+    char szValue[32];
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
     return 1;
 }
 // PC 0x0041D7B0 GOG 0x0041D7A0
@@ -645,22 +725,6 @@ int C2DA::SkipNewLines(char** ppData, unsigned long* pnSize)
     return nSkipped > 0;
 }
 
-static unsigned long GetLineLength(char* pData, unsigned long nSize)
-{
-    unsigned long nLength;
-
-    for (nLength = 0; nLength < nSize; nLength++)
-    {
-        if (*pData == '\n' || *pData == '\r')
-        {
-            break;
-        }
-
-        pData++;
-    }
-
-    return nLength;
-}
 // PC 0x0041E570 GOG 0x0041E560
 int C2DA::Load2DArray()
 {

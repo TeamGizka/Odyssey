@@ -57,6 +57,7 @@ public:
                            CExoString* psEntry);
     int GetCExoStringEntry(const CExoString& sRow, int nColumn,
                            CExoString* psEntry);
+    int SetCExoStringEntry(int nRow, int nColumn, const CExoString& sValue);
     int GetFLOATEntry(int nRow, int nColumn, float* pfEntry);
     int GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry);
     int GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
@@ -103,8 +104,6 @@ public:
     unsigned short* m_pRowLabelOffsets;
     unsigned short* m_pColumnLabelOffsets;
 
-
-    int GetFLOATEntry(int nRow, CExoString* psColumn, float* pfValue);
 };
 
 #endif

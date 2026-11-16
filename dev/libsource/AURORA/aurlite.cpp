@@ -23,7 +23,7 @@ PAINTSTRUCT paint;
 int inputlength;
 char inputline[500];
 
-LRESULT CALLBACK AurLiteWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK AurWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (nMsg)
     {
