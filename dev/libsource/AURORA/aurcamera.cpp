@@ -188,6 +188,10 @@ void Camera::SetBehavior(CAurBehavior* pBehavior)
 // PC 0x00471500 GOG 0x00471640
 inline CAurCamera::~CAurCamera()
 {
+    if (AURCAMERA_DEBUG)
+    {
+        Vector vPosition;
+    }
 }
 // PC 0x00471530 GOG 0x00471670
 inline void GLRender::SetViewPort(double fFieldOfView, double fAspect,
@@ -437,6 +441,10 @@ Vector Camera::MouseDir(int nX, int nY)
 // PC 0x00472C20 GOG 0x00472DB0
 Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 {
+    if (AURCAMERA_DEBUG)
+    {
+        Camera::HitCheck(0, 0, NULL, NULL);
+    }
 
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)

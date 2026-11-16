@@ -519,6 +519,22 @@ void CAurTriangleBin::AddTriangle(const MaxFace& face, PartTriMesh* pTriMesh,
         m_vMaximum = (m_vBoundingBoxMinimum + m_vBoundingBoxMaximum) * 0.5f;
     }
 }
+// PC 0x004D4F60 GOG 0x004D50A0
+template <>
+inline List<CAurTriangleListElem>::List(List<CAurTriangleListElem>& other)
+{
+    if (AURGRASS_DEBUG)
+    {
+        SafePointer<CAurTexture> pTexture;
+    }
+    m_nCount = 0;
+    m_nAllocated = 0;
+    m_pList = 0;
+    for (int i = 0; i < other.m_nCount; i++)
+    {
+        Add(other.m_pList[i]);
+    }
+}
 // PC 0x004D5060 GOG 0x004D51A0
 CAurTriangleBin::CAurTriangleBin()
 {

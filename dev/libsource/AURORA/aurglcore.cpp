@@ -1,3 +1,4 @@
+#define AURGLCORE_TEXTURESTAGE
 #include <math.h>
 #include "../math3d/math3d.h"
 #include <new>
@@ -852,11 +853,4759 @@ void SetShaderConstant(unsigned int nConstant, float* pValues, int nCount)
             glCombinerParameterfvNV(GL_CONSTANT_COLOR1_NV, pValues);
     }
 }
+// PC 0x00425700 GOG 0x00425810
+inline void GLRender::ActivateTextureStage(unsigned long nStage)
+{
+    if (AurMultiTextureAvailable())
+    {
+        glClientActiveTextureARB(nStage + 33984);
+    }
+    GLRender::cm_uiCurrentStage = nStage;
+}
+// PC 0x00425730 GOG 0x00425840
+void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVTC), pVertices->color);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVTC), &pVertices->u);
+        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVTC), pVertices);
+        glDrawArrays(GL_QUADS, 0, nVertices);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    }
+    else
+    {
+        glBegin(GL_QUADS);
+        for (int i = 0; i < nVertices; ++i)
+        {
+            glColor4ubv(pVertices[i].color);
+            glTexCoord2f(pVertices[i].u, pVertices[i].v);
+            glVertex3fv(pVertices[i].position);
+        }
+        glEnd();
+    }
+}
+// PC 0x00425820 GOG 0x00425930
+void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVT), &pVertices->u);
+        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVT), pVertices);
+        glDrawArrays(GL_QUADS, 0, nVertices);
+    }
+    else
+    {
+        glBegin(GL_QUADS);
+        for (int i = 0; i < nVertices; ++i)
+        {
+            glTexCoord2f(pVertices[i].u, pVertices[i].v);
+            glVertex3fv(pVertices[i].position);
+        }
+        glEnd();
+    }
+}
+// PC 0x004258E0 GOG 0x004259F0
+void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
+                                RenderVertexVC* pVertices, int nVertices)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        EnableClientState(GL_VERTEX_ARRAY);
+        EnableClientState(GL_COLOR_ARRAY);
+        DisableClientState(GL_TEXTURE_COORD_ARRAY);
+        DisableClientState(GL_NORMAL_ARRAY);
+        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVC), pVertices->color);
+        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVC), pVertices);
+        glDrawArrays(primTypeTranslationTable[nPrimitive], 0, nVertices);
+    }
+    else
+    {
+        glBegin(primTypeTranslationTable[nPrimitive]);
+        for (int i = 0; i < nVertices; ++i)
+        {
+            glColor4ubv(pVertices[i].color);
+            glVertex3fv(pVertices[i].position);
+        }
+        glEnd();
+    }
+}
 
+inline void DrawPrimitive(unsigned int nMode, int nFirst, int nCount)
+{
+    glDrawArrays(nMode, nFirst, nCount);
+}
+
+inline void DrawIndexedPrimitive(unsigned int nMode, int nCount, const void* pIndices)
+{
+    glDrawElements(nMode, nCount, GL_UNSIGNED_SHORT, pIndices);
+}
+
+void GLRender::RenderObjectsVTC(Aurora::AuroraPrimitiveTypes nPrimitive,
+                                unsigned long nPool, int nVertices)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, manRef->GetPool(nPool));
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVTC), 0);
+        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVTC), (const GLvoid*)12);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVTC), (const GLvoid*)16);
+        glDrawArrays(primTypeTranslationTable[nPrimitive], 0, nVertices);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glDisableClientState(GL_COLOR_ARRAY);
+    }
+    else
+    {
+        glBegin(primTypeTranslationTable[nPrimitive]);
+        RenderVertexVTC* pVertices =
+            (RenderVertexVTC*)manRef->GetPool(nPool);
+        for (int i = 0; i < nVertices; ++i)
+        {
+            glColor4ubv(pVertices[i].color);
+            glTexCoord2f(pVertices[i].u, pVertices[i].v);
+            glVertex3fv(pVertices[i].position);
+        }
+        glEnd();
+    }
+}
+// PC 0x004259B0 GOG 0x00425AC0
+void GLRender::MakeLookUpTexture(float fGamma)
+{
+    if (!glIsTexture(lookup))
+    {
+        unsigned char* pPixels = new unsigned char[256 * 256 * 2];
+        unsigned char* pPixel = pPixels;
+        for (int i = 0; i < 256; ++i)
+        {
+            unsigned char nGamma =
+                (unsigned char)(pow(i / 255.0, fGamma) * 255.99);
+            for (int j = 0; j < 256; ++j)
+            {
+                float fValue = j / 255.0f;
+                *pPixel++ = (unsigned char)(fValue * 255.99001f);
+                *pPixel++ = nGamma;
+            }
+        }
+        glGenTextures(1, &lookup);
+        glBindTexture(GL_TEXTURE_2D, lookup);
+        cm_nGLCurrentTID[cm_uiCurrentStage] = 0;
+        gluBuild2DMipmaps(GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, 256, 256,
+                          GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pPixels);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                        GL_LINEAR_MIPMAP_LINEAR);
+        delete[] pPixels;
+    }
+}
+
+int GLRender::SetSpecularMode(int bSeparateSpecular)
+{
+    if (bSeparateSpecular)
+    {
+        if (!CheckExtension("GL_EXT_separate_specular_color",
+                            glGetString(GL_EXTENSIONS)))
+        {
+            return 0;
+        }
+        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT,
+                      GL_SEPARATE_SPECULAR_COLOR_EXT);
+        return 1;
+    }
+    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
+    return 1;
+}
+// PC 0x00425B10 GOG 0x00425C20
+unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType,
+                           unsigned long nSize, unsigned long nUsage,
+                           unsigned long nPoolFlags, unsigned long* pnPool)
+{
+    return *pnPool = manRef->RequestPoolGeneric(nType, nSize, nUsage);
+}
+// PC 0x00425B40 GOG 0x00425C50
+void* GLRender::LockPool(unsigned long nPool, unsigned long nOffset,
+                         unsigned long nSize, unsigned long nCount)
+{
+    return manRef->LockPool(nPool, nCount);
+}
+// PC 0x00425B60 GOG 0x00425C70
+void GLRender::UnlockPool(unsigned long nPool)
+{
+    manRef->UnlockPool(nPool);
+}
+// PC 0x00425B80 GOG 0x00425C90
+void GLRender::DeletePool(unsigned long nPool)
+{
+    if (nPool != (unsigned int)-1)
+    {
+        manRef->DeletePool(nPool);
+    }
+}
+// PC 0x00425BA0 GOG 0x00425CB0
+void GLRender::ResizePool(unsigned long nPool, unsigned long nSize)
+{
+    manRef->ResizePool(nPool, nSize);
+}
+// PC 0x00425BC0 GOG 0x00425CD0
+void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
+                                 int nIndex)
+{
+    static int s1[6] = {1, 0, 2, 3, 4, 5};
+    static int numrotations[6] = {3, 1, 0, 2, 2, 0};
+
+    for (int i = 0; i < 6; i++)
+    {
+        int nWidth = pTexture->GetWidth();
+        int nHeight = pTexture->GetHeight();
+        int nBPP = pTexture->GetBPP();
+        int nFaceHeight = nHeight / 6;
+        int nTarget = 0x8515 + s1[i];
+        unsigned char* pFace =
+            pTexture->GetImage() + nWidth * i * nFaceHeight * nBPP;
+        int nSubWidth = nWidth / pTexture->GetNumX();
+        int nSubHeight = nFaceHeight / pTexture->GetNumY();
+        int nX = nIndex % pTexture->GetNumX() * nSubWidth;
+        int nY = nIndex / pTexture->GetNumX() * nSubHeight;
+        unsigned char* pSubImage;
+        if (pTexture->GetNumX() == 1 && pTexture->GetNumY() == 1)
+        {
+            pSubImage = pFace;
+        }
+        else
+        {
+            pSubImage = ImageGetSubImage(pFace, nWidth, nFaceHeight, nBPP, nX, nY,
+                                         nSubWidth, nSubHeight);
+        }
+        unsigned char* pRotated =
+            ImageQuarterRotated(pSubImage, nSubWidth, nSubHeight,
+                                pTexture->GetBPP(), numrotations[i]);
+        int nComponents = pTexture->GetBPP();
+        int nFormat;
+        if (nComponents == 4)
+        {
+            nFormat = GL_RGBA;
+        }
+        else if (nComponents == 3)
+        {
+            nFormat = GL_RGB;
+        }
+        else if (nComponents == 2)
+        {
+            nFormat = GL_LUMINANCE_ALPHA;
+        }
+        else
+        {
+            nFormat = GL_LUMINANCE;
+        }
+        if (pTexture->GetMipMap())
+        {
+            gluBuild2DMipmaps(nTarget, nComponents, nSubWidth, nSubHeight,
+                              nFormat, GL_UNSIGNED_BYTE, pRotated);
+        }
+        else if (bMipMaps)
+        {
+            glTexSubImage2D(nTarget, 0, 0, 0, nSubWidth, nSubHeight, nFormat,
+                            GL_UNSIGNED_BYTE, pRotated);
+        }
+        else
+        {
+            glTexImage2D(nTarget, 0, nComponents, nSubWidth, nSubHeight, 0,
+                         nFormat, GL_UNSIGNED_BYTE, pRotated);
+        }
+        if (pRotated != pSubImage)
+        {
+            delete pRotated;
+        }
+        if (pSubImage != pFace)
+        {
+            delete pSubImage;
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R_EXT, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER,
+                    pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
+    if (pTexture->GetMipMap())
+    {
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
+                        pTexture->GetFilter() ? GL_LINEAR_MIPMAP_LINEAR
+                                              : GL_NEAREST_MIPMAP_NEAREST);
+    }
+    else
+    {
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
+                        pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
+    }
+}
+// PC 0x00425E60 GOG 0x00425F70
+void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
+                                          int nIndex)
+{
+    int nWidth = pTexture->GetWidth();
+    int nHeight = pTexture->GetHeight() / 6;
+    int nBPP = pTexture->GetBPP();
+    int bMipMap = pTexture->GetMipMap();
+    unsigned char* pImage = pTexture->GetImage();
+    int nTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
+    for (int nFace = 0; nFace < 6; nFace++, nTarget++)
+    {
+        if (pTexture->GetCompressedSize() > 0)
+        {
+            int nLevel = 0;
+            int nBlockSize = nBPP == 4 ? 16 : 8;
+            glCompressedTexImage2DARB(nTarget, 0,
+                textureFormatTranslationTable[pTexture->GetCompressionFormat()],
+                nWidth, nHeight, 0, pTexture->GetCompressedSize(), pImage);
+            if (bMipMap)
+            {
+                int nSize = pTexture->GetCompressedSize();
+                int nMipWidth = nWidth >> 1;
+                int nMipHeight = nHeight >> 1;
+                while (nMipWidth || nMipHeight)
+                {
+                    if (nMipWidth == 0)
+                        nMipWidth = 1;
+                    if (nMipHeight == 0)
+                        nMipHeight = 1;
+                    nLevel++;
+                    pImage += nSize;
+                    nSize = ((nMipWidth + 3) / 4) * ((nMipHeight + 3) / 4) * nBlockSize;
+                    glCompressedTexImage2DARB(nTarget, nLevel,
+                        textureFormatTranslationTable[pTexture->GetCompressionFormat()],
+                        nMipWidth, nMipHeight, 0, nSize, pImage);
+                    nMipWidth >>= 1;
+                    nMipHeight >>= 1;
+                }
+                pImage += nSize;
+            }
+        }
+        else
+        {
+            int nFormat = nBPP == 4 ? GL_RGBA : GL_RGB;
+            if (bMipMap)
+            {
+                int nLevel = 0;
+                if (bSubImage)
+                    glTexSubImage2D(nTarget, 0, 0, 0, nWidth, nHeight, nFormat,
+                                    GL_UNSIGNED_BYTE, pImage);
+                else
+                    glTexImage2D(nTarget, 0, nBPP, nWidth, nHeight, 0, nFormat,
+                                 GL_UNSIGNED_BYTE, pImage);
+                int nSize = nWidth * nHeight * nBPP;
+                int nMipWidth = nWidth >> 1;
+                int nMipHeight = nHeight >> 1;
+                for (int nMip = pTexture->GetNumMipMaps() - 1; nMip > 0; nMip--)
+                {
+                    if (nMipWidth == 0)
+                        nMipWidth = 1;
+                    if (nMipHeight == 0)
+                        nMipHeight = 1;
+                    nLevel++;
+                    pImage += nSize;
+                    nSize = nMipWidth * nMipHeight * nBPP;
+                    if (bSubImage)
+                        glTexSubImage2D(nTarget, nLevel, 0, 0, nMipWidth, nMipHeight,
+                                        nFormat, GL_UNSIGNED_BYTE, pImage);
+                    else
+                        glTexImage2D(nTarget, nLevel, nBPP, nMipWidth, nMipHeight, 0,
+                                     nFormat, GL_UNSIGNED_BYTE, pImage);
+                    nMipWidth >>= 1;
+                    nMipHeight >>= 1;
+                }
+                pImage += nSize;
+            }
+            else if (bSubImage)
+                glTexSubImage2D(nTarget, 0, 0, 0, nWidth, nHeight, nFormat,
+                                GL_UNSIGNED_BYTE, pImage);
+            else
+                glTexImage2D(nTarget, 0, nBPP, nWidth, nHeight, 0, nFormat,
+                             GL_UNSIGNED_BYTE, pImage);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R_EXT, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER,
+                     pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
+    if (pTexture->GetMipMap())
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
+                         pTexture->GetFilter() ? GL_LINEAR_MIPMAP_LINEAR
+                                               : GL_NEAREST_MIPMAP_NEAREST);
+    else
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
+                         pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
+}
+// PC 0x004261B0 GOG 0x004262C0
+void AurBuild2DMipMaps(int nSrcWidth, int nSrcHeight, int nBPP,
+                       unsigned char* pImage, bool bSubImage)
+{
+    int nWidth = nSrcWidth;
+    int nHeight = nSrcHeight;
+    unsigned char* pMipImage;
+    if (nWidth != nHeight)
+    {
+        int nSize = nWidth > nHeight ? nWidth : nHeight;
+        pMipImage = ImageScale(pImage, nWidth, nHeight, nBPP, nSize, nSize);
+        nHeight = nWidth = nSize;
+    }
+    else
+    {
+        pMipImage = new unsigned char[nWidth * nHeight * nBPP];
+        memcpy(pMipImage, pImage, nWidth * nHeight * nBPP);
+    }
+
+    int nLevel = 0;
+    int nType = nBPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4 : GL_UNSIGNED_BYTE;
+    int nFormat;
+    if (nBPP == 4)
+        nFormat = GL_RGBA;
+    else if (nBPP == 3)
+        nFormat = GL_RGB;
+    else if (nBPP == 2)
+        nFormat = GL_RGBA;
+    else
+        nFormat = GL_LUMINANCE;
+
+    if (!bSubImage)
+        glTexImage2D(GL_TEXTURE_2D, nLevel, nBPP, nWidth, nHeight, 0,
+                     nFormat, nType, pMipImage);
+    else
+        glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nWidth, nHeight,
+                        nFormat, nType, pMipImage);
+
+    while (nWidth * nHeight > 1)
+    {
+        unsigned char* pNextImage = new unsigned char[(nWidth / 2) * (nHeight / 2) * nBPP];
+        for (int nY = 0; nY < nHeight / 2; nY++)
+        {
+            for (int nX = 0; nX < nWidth / 2; nX++)
+            {
+                if (nBPP == 2)
+                {
+                    int nTopLeft = pMipImage[(nY * nWidth + nX) * 4];
+                    int nTopRight = pMipImage[(nY * nWidth + nX) * 4 + 2];
+                    int nBottomLeft = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2];
+                    int nBottomRight = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2 + 2];
+                    pNextImage[(nY * (nWidth / 2) + nX) * 2] =
+                        (((nTopLeft & AUR_MIPMAP_COMPONENT_MASK) +
+                          (nTopRight & AUR_MIPMAP_COMPONENT_MASK) +
+                          (nBottomLeft & AUR_MIPMAP_COMPONENT_MASK) +
+                          (nBottomRight & AUR_MIPMAP_COMPONENT_MASK)) / 4) |
+                        ((((nTopLeft >> 4) + (nTopRight >> 4) +
+                           (nBottomLeft >> 4) + (nBottomRight >> 4)) / 4) << 4);
+                    nTopLeft = pMipImage[(nY * nWidth + nX) * 4 + 1];
+                    nTopRight = pMipImage[(nY * nWidth + nX) * 4 + 3];
+                    nBottomLeft = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2 + 1];
+                    nBottomRight = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2 + 3];
+                    pNextImage[(nY * (nWidth / 2) + nX) * 2 + 1] =
+                        (((nTopLeft & AUR_MIPMAP_COMPONENT_MASK) +
+                          (nTopRight & AUR_MIPMAP_COMPONENT_MASK) +
+                          (nBottomLeft & AUR_MIPMAP_COMPONENT_MASK) +
+                          (nBottomRight & AUR_MIPMAP_COMPONENT_MASK)) / 4) |
+                        ((((nTopLeft >> 4) + (nTopRight >> 4) +
+                           (nBottomLeft >> 4) + (nBottomRight >> 4)) / 4) << 4);
+                }
+                else
+                {
+                    for (int nComponent = 0; nComponent < nBPP; nComponent++)
+                    {
+                        pNextImage[(nY * (nWidth / 2) + nX) * nBPP + nComponent] =
+                            (pMipImage[(nY * nWidth + nX) * 2 * nBPP + nComponent] +
+                             pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * nBPP + nComponent] +
+                             pMipImage[((nY * 2 + 1) * nWidth + nX * 2 + 1) * nBPP + nComponent] +
+                             pMipImage[((nY * nWidth + nX) * 2 + 1) * nBPP + nComponent]) / 4;
+                    }
+                }
+            }
+        }
+        delete pMipImage;
+        pMipImage = pNextImage;
+        nWidth >>= 1;
+        nHeight >>= 1;
+        nLevel++;
+        if (!bSubImage)
+            glTexImage2D(GL_TEXTURE_2D, nLevel, nBPP, nWidth, nHeight, 0,
+                         nFormat, nType, pMipImage);
+        else
+            glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nWidth, nHeight,
+                            nFormat, nType, pMipImage);
+    }
+    delete pMipImage;
+}
+// PC 0x00426570 GOG 0x00426680
+void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex)
+{
+    int nHeight = pTexture->GetHeight();
+    int nBPP = pTexture->GetBPP();
+    unsigned char* pImage = pTexture->GetImage();
+    int nNumX = pTexture->GetNumX();
+    int nNumY = pTexture->GetNumY();
+    int nWidth = pTexture->GetWidth();
+    int nSubWidth = nWidth / nNumX;
+    int nSubHeight = nHeight / nNumY;
+    int nX = nIndex % nNumX * nSubWidth;
+    int nY = nIndex / nNumX * nSubHeight;
+    unsigned char* pSubImage;
+    if (nNumX == 1 && nNumY == 1)
+        pSubImage = pImage;
+    else
+        pSubImage = ImageGetSubImage(pImage, nWidth, nHeight, nBPP, nX, nY,
+                                    nSubWidth, nSubHeight);
+
+    if (pTexture->IsBumpMap())
+    {
+        if (AurBumpMapAvailable())
+            BuildTextureNormalMap(pSubImage, pTexture->GetBumpMapScaling(),
+                                  nSubWidth, nSubHeight, nBPP, 0,
+                                  pTexture->IsNormalMap());
+        if (pSubImage != pImage)
+            delete pSubImage;
+        return;
+    }
+
+    int bMipMap = pTexture->GetMipMap();
+    if (pTexture->GetCompressedSize() > 0)
+    {
+        int nLevel = 0;
+        int nBlockSize = nBPP == 4 ? 16 : 8;
+        unsigned char* pMipImage = pTexture->GetImage();
+        glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
+            textureFormatTranslationTable[pTexture->GetCompressionFormat()],
+            nWidth, nHeight, 0, pTexture->GetCompressedSize(), pTexture->GetImage());
+        if (pTexture->GetMipMap())
+        {
+            int nSize = pTexture->GetCompressedSize();
+            int nMipWidth = nWidth >> 1;
+            int nMipHeight = nHeight >> 1;
+            while (nMipWidth || nMipHeight)
+            {
+                if (nMipWidth == 0)
+                    nMipWidth = 1;
+                if (nMipHeight == 0)
+                    nMipHeight = 1;
+                nLevel++;
+                pMipImage += nSize;
+                nSize = ((nMipWidth + 3) / 4) * ((nMipHeight + 3) / 4) * nBlockSize;
+                glCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
+                    textureFormatTranslationTable[pTexture->GetCompressionFormat()],
+                    nMipWidth, nMipHeight, 0, nSize, pMipImage);
+                nMipWidth >>= 1;
+                nMipHeight >>= 1;
+            }
+        }
+    }
+    else
+    {
+        int nFormat;
+        if (nBPP == 4)
+            nFormat = GL_RGBA;
+        else if (nBPP == 3)
+            nFormat = GL_RGB;
+        else
+            nFormat = nBPP == 2 ? GL_RGBA : GL_LUMINANCE;
+        int nType;
+        int nComponents;
+        if (nBPP == 2)
+        {
+            nType = GL_UNSIGNED_SHORT_4_4_4_4;
+            nComponents = 4;
+        }
+        else
+        {
+            nType = GL_UNSIGNED_BYTE;
+            nComponents = nBPP;
+        }
+        if (bMipMap)
+        {
+            if (AurSGIMipmapAvailable())
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+                glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
+                             0, nFormat, nType, pSubImage);
+            }
+            else if (!bSubImage && nBPP != 2)
+                gluBuild2DMipmaps(GL_TEXTURE_2D, nComponents, nSubWidth, nSubHeight,
+                                  nFormat, nType, pSubImage);
+            else
+                AurBuild2DMipMaps(nSubWidth, nSubHeight, nBPP, pSubImage, bSubImage);
+        }
+        else if (bSubImage)
+        {
+            if (pTexture->GetDepth())
+                glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, nSubWidth, nSubHeight,
+                                pTexture->GetDepth(), nFormat, GL_UNSIGNED_BYTE, pSubImage);
+            else
+                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nSubWidth, nSubHeight,
+                                nFormat, GL_UNSIGNED_BYTE, pSubImage);
+        }
+        else
+        {
+            if (pTexture->GetDepth())
+                glTexImage3D(GL_TEXTURE_3D, 0, nComponents, nSubWidth, nSubHeight,
+                             pTexture->GetDepth(), 0, nFormat, nType, pSubImage);
+            else
+                glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
+                             0, nFormat, nType, pSubImage);
+        }
+    }
+
+    int nClamp = pTexture->GetClamp();
+    int bFilter = pTexture->GetFilter();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                     nClamp & TEXTURE_CLAMP_S ? GL_CLAMP : GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                     nClamp & TEXTURE_CLAMP_T ? GL_CLAMP : GL_REPEAT);
+    int nMagFilter = bFilter ? GL_LINEAR : GL_NEAREST;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nMagFilter);
+    int nMinFilter;
+    if (bMipMap)
+        nMinFilter = bFilter ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
+    else
+        nMinFilter = nMagFilter;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nMinFilter);
+    if (pSubImage != pImage)
+        delete pSubImage;
+}
+// PC 0x004269B0 GOG 0x00426AC0
+int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
+{
+    int nMipWidth = nWidth;
+    int nBlockSize = nBytesPerPixel == 4 ? 16 : 8;
+    int nSize = nBlockSize * ((nWidth + 3) / 4) * ((nWidth + 3) / 4);
+
+    while (nMipWidth > 1)
+    {
+        nMipWidth >>= 1;
+        nSize += nBlockSize * ((nMipWidth + 3) / 4) * ((nMipWidth + 3) / 4);
+    }
+
+    return nIndex * nSize;
+}
+// PC 0x00426A10 GOG 0x00426B20
+void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage,
+                                      int nIndex)
+{
+    int nContactSheetIndex = nIndex;
+    int nHeight = pTexture->GetHeight();
+    int nBPP = pTexture->GetBPP();
+    unsigned char* pImage = pTexture->GetImage();
+    int nNumX = pTexture->GetNumX();
+    int nNumY = pTexture->GetNumY();
+    int nWidth = pTexture->GetWidth();
+    int nSubWidth = nWidth / nNumX;
+    int nSubHeight = nHeight / nNumY;
+    unsigned char* pSubImage;
+    if (nNumX == 1 && nNumY == 1)
+        pSubImage = pImage;
+    else
+        pSubImage = pImage + GetCompressedContactSheetOffset(nContactSheetIndex, nSubWidth, nBPP);
+
+    int bMipMap = pTexture->GetMipMap();
+    if (pTexture->IsBumpMap() && nBPP == 1)
+    {
+        if (AurBumpMapAvailable())
+            BuildTextureNormalMap(pSubImage, pTexture->GetBumpMapScaling(),
+                                  nSubWidth, nSubHeight, nBPP, 0,
+                                  pTexture->IsNormalMap());
+        if (pSubImage != pImage)
+            delete pSubImage;
+        return;
+    }
+
+    if (pTexture->GetCompressedSize() > 0)
+    {
+        int nLevel = 0;
+        unsigned char* pMipImage = pSubImage;
+        int nBlockSize = nBPP == 4 ? 16 : 8;
+        int nSize = ((nSubWidth + 3) / 4) * ((nSubHeight + 3) / 4) * nBlockSize;
+        glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
+            textureFormatTranslationTable[pTexture->GetCompressionFormat()],
+            nSubWidth, nSubHeight, 0, nSize, pMipImage);
+        if (pTexture->GetMipMap())
+        {
+            int nMipWidth = nSubWidth >> 1;
+            int nMipHeight = nSubHeight >> 1;
+            while (nMipWidth || nMipHeight)
+            {
+                if (nMipWidth == 0)
+                    nMipWidth = 1;
+                if (nMipHeight == 0)
+                    nMipHeight = 1;
+                nLevel++;
+                pMipImage += nSize;
+                nSize = ((nMipWidth + 3) / 4) * ((nMipHeight + 3) / 4) * nBlockSize;
+                glCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
+                    textureFormatTranslationTable[pTexture->GetCompressionFormat()],
+                    nMipWidth, nMipHeight, 0, nSize, pMipImage);
+                nMipWidth >>= 1;
+                nMipHeight >>= 1;
+            }
+        }
+    }
+    else
+    {
+        int nFormat;
+        if (nBPP == 4)
+            nFormat = GL_RGBA;
+        else if (nBPP == 3)
+            nFormat = GL_RGB;
+        else
+            nFormat = nBPP == 2 ? GL_RGBA : GL_LUMINANCE;
+        int nType;
+        int nComponents;
+        if (nBPP == 2)
+        {
+            nType = GL_UNSIGNED_SHORT_4_4_4_4;
+            nComponents = 4;
+        }
+        else
+        {
+            nType = GL_UNSIGNED_BYTE;
+            nComponents = nBPP;
+        }
+        if (bMipMap)
+        {
+            int nLevel = 0;
+            unsigned char* pMipImage = pTexture->GetImage();
+            if (bSubImage)
+                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nSubWidth, nSubHeight,
+                                nFormat, GL_UNSIGNED_BYTE, pMipImage);
+            else
+                glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
+                             0, nFormat, nType, pMipImage);
+            if (pTexture->GetMipMap())
+            {
+                int nSize = nSubWidth * nSubHeight * nBPP;
+                int nMipWidth = nSubWidth >> 1;
+                int nMipHeight = nSubHeight >> 1;
+                for (int nMip = pTexture->GetNumMipMaps() - 1; nMip > 0; nMip--)
+                {
+                    if (nMipWidth == 0)
+                        nMipWidth = 1;
+                    if (nMipHeight == 0)
+                        nMipHeight = 1;
+                    nLevel++;
+                    pMipImage += nSize;
+                    nSize = nMipWidth * nMipHeight * nBPP;
+                    if (bSubImage)
+                        glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nMipWidth, nMipHeight,
+                                        nFormat, nType, pMipImage);
+                    else
+                        glTexImage2D(GL_TEXTURE_2D, nLevel, nComponents, nMipWidth, nMipHeight,
+                                     0, nFormat, nType, pMipImage);
+                    nMipWidth >>= 1;
+                    nMipHeight >>= 1;
+                }
+            }
+        }
+        else if (bSubImage)
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nSubWidth, nSubHeight,
+                            nFormat, GL_UNSIGNED_BYTE, pSubImage);
+        else
+            glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
+                         0, nFormat, nType, pSubImage);
+    }
+
+    if (!pTexture->IsBumpMap())
+    {
+        int nClamp = pTexture->GetClamp();
+        int bFilter = pTexture->GetFilter();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                         nClamp & TEXTURE_CLAMP_S ? GL_CLAMP : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                         nClamp & TEXTURE_CLAMP_T ? GL_CLAMP : GL_REPEAT);
+        int nMagFilter = bFilter ? GL_LINEAR : GL_NEAREST;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nMagFilter);
+        int nMinFilter;
+        if (bMipMap)
+            nMinFilter = bFilter ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
+        else
+            nMinFilter = nMagFilter;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nMinFilter);
+    }
+}
+// PC 0x00426E90 GOG 0x00426FA0
+void GLRender::SetLightmapTexCoordToStage0(unsigned long nStride, int nFlags,
+                                         unsigned long nPool, int nVertexCount,
+                                         MdlNodeTriMesh* pMesh,
+                                         unsigned long nOffset)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nPoolBuffer = manRef->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nPoolBuffer);
+        ActivateTextureStage(0);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nOffset));
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nOffset));
+        ActivateTextureStage(0);
+    }
+    else
+    {
+        unsigned long nBuffer = manRef->GetPool(nPool) + nOffset;
+        ActivateTextureStage(0);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nBuffer));
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nBuffer));
+        ActivateTextureStage(0);
+    }
+}
+// PC 0x00426FE0 GOG 0x004270F0
+void GLRender::SetDecalTexCoordToStage0(unsigned long nStride, int nFlags,
+                                      unsigned long nPool, int nVertexCount,
+                                      MdlNodeTriMesh* pMesh,
+                                      unsigned long nOffset)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nPoolBuffer = manRef->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nPoolBuffer);
+        ActivateTextureStage(0);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nOffset));
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nOffset));
+        ActivateTextureStage(0);
+    }
+    else
+    {
+        unsigned long nBuffer = manRef->GetPool(nPool) + nOffset;
+        ActivateTextureStage(0);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nBuffer));
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nBuffer));
+        ActivateTextureStage(0);
+    }
+}
+// PC 0x00427130 GOG 0x00427240
+void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags,
+                                   unsigned long nPool, int nVertexCount,
+                                   MdlNodeTriMesh* pMesh, unsigned long nOffset)
+{
+    unsigned long nBuffer;
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nPoolBuffer = manRef->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nPoolBuffer);
+        nBuffer = nOffset;
+    }
+    else
+    {
+        nBuffer = manRef->GetPool(nPool) + nOffset;
+    }
+
+    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_POSITION)
+        glVertexPointer(3, GL_FLOAT, pMesh->m_nVertexStride,
+                        (const GLvoid*)(pMesh->m_nPositionOffset + nBuffer));
+    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_NORMAL)
+        glNormalPointer(GL_FLOAT, pMesh->m_nVertexStride,
+                        (const GLvoid*)(pMesh->m_nNormalOffset + nBuffer));
+    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_COLOR)
+        glColorPointer(4, GL_UNSIGNED_BYTE, pMesh->m_nVertexStride,
+                       (const GLvoid*)(pMesh->m_nColorOffset + nBuffer));
+    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD0)
+    {
+        ActivateTextureStage(0);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nBuffer));
+    }
+    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD1)
+    {
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nBuffer));
+    }
+    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD2)
+    {
+        ActivateTextureStage(2);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord2Offset + nBuffer));
+    }
+    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD3)
+    {
+        ActivateTextureStage(3);
+        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
+                          (const GLvoid*)(pMesh->m_nTexCoord3Offset + nBuffer));
+    }
+    ActivateTextureStage(0);
+
+    if (AurVertexProgramsAvailable())
+    {
+        if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TANGENT_BASIS)
+        {
+            {
+                const GLvoid* pBasis = (const GLvoid*)(pMesh->m_TangentBases + nBuffer);
+                int nVertexStride = pMesh->m_nVertexStride;
+                if (usearbvertexprograms)
+                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_TANGENT_BASIS0, 3,
+                        GL_FLOAT, GL_FALSE, nVertexStride, pBasis);
+                else if (usevertexprograms && AurVertexProgramsAvailable())
+                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_TANGENT_BASIS0, 3,
+                        GL_FLOAT, nVertexStride, pBasis);
+            }
+            {
+                const GLvoid* pBasis = (const GLvoid*)(pMesh->m_TangentBases + nBuffer + 12);
+                int nVertexStride = pMesh->m_nVertexStride;
+                if (usearbvertexprograms)
+                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_TANGENT_BASIS1, 3,
+                        GL_FLOAT, GL_FALSE, nVertexStride, pBasis);
+                else if (usevertexprograms && AurVertexProgramsAvailable())
+                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_TANGENT_BASIS1, 3,
+                        GL_FLOAT, nVertexStride, pBasis);
+            }
+            {
+                const GLvoid* pBasis = (const GLvoid*)(pMesh->m_TangentBases + nBuffer + 24);
+                int nVertexStride = pMesh->m_nVertexStride;
+                if (usearbvertexprograms)
+                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_TANGENT_BASIS2, 3,
+                        GL_FLOAT, GL_FALSE, nVertexStride, pBasis);
+                else if (usevertexprograms && AurVertexProgramsAvailable())
+                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_TANGENT_BASIS2, 3,
+                        GL_FLOAT, nVertexStride, pBasis);
+            }
+            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS0);
+            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS1);
+            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS2);
+        }
+        else
+        {
+            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS0);
+            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS1);
+            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS2);
+        }
+
+        if (pMesh->AsMdlNodeSkin())
+        {
+            {
+                const GLvoid* pWeights = (const GLvoid*)(pMesh->AsMdlNodeSkin()->m_nSkinWeightOffset + nBuffer);
+                int nVertexStride = pMesh->m_nVertexStride;
+                if (usearbvertexprograms)
+                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_SKIN_WEIGHT, 4,
+                        GL_FLOAT, GL_FALSE, nVertexStride, pWeights);
+                else if (usevertexprograms && AurVertexProgramsAvailable())
+                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_SKIN_WEIGHT, 4,
+                        GL_FLOAT, nVertexStride, pWeights);
+            }
+            {
+                const GLvoid* pIndices = (const GLvoid*)(pMesh->AsMdlNodeSkin()->m_nBoneIndexOffset + nBuffer);
+                int nVertexStride = pMesh->m_nVertexStride;
+                if (usearbvertexprograms)
+                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_BONE_INDEX, 4,
+                        GL_FLOAT, GL_FALSE, nVertexStride, pIndices);
+                else if (usevertexprograms && AurVertexProgramsAvailable())
+                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_BONE_INDEX, 4,
+                        GL_FLOAT, nVertexStride, pIndices);
+            }
+            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_SKIN_WEIGHT);
+            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_BONE_INDEX);
+        }
+        else
+        {
+            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_SKIN_WEIGHT);
+            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_BONE_INDEX);
+        }
+    }
+}
+// PC 0x00427510 GOG 0x00427620
+void GLRender::SetVertexBuffer(unsigned long nStride, unsigned long nOffset,
+                               unsigned long nPool, int nUsage)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
+        glVertexPointer(3, GL_FLOAT, nStride, (const GLvoid*)nOffset);
+    }
+    else
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glVertexPointer(3, GL_FLOAT, nStride,
+                        (const GLvoid*)(nOffset + nBuffer));
+    }
+}
+// PC 0x00427580 GOG 0x00427690
+void GLRender::SetColorBuffer(unsigned long nStride, unsigned long nOffset,
+                              unsigned long nPool, int nUsage)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, nStride, (const GLvoid*)nOffset);
+    }
+    else
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glColorPointer(4, GL_UNSIGNED_BYTE, nStride,
+                       (const GLvoid*)(nOffset + nBuffer));
+    }
+}
+// PC 0x004275F0 GOG 0x00427700
+void GLRender::SetNormalBuffer(unsigned int nStride, unsigned int nOffset,
+                               unsigned int nPool, int nUsage)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
+        glNormalPointer(GL_FLOAT, nStride, (const GLvoid*)nOffset);
+    }
+    else
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glNormalPointer(GL_FLOAT, nStride, (const GLvoid*)(nOffset + nBuffer));
+    }
+}
+// PC 0x00427650 GOG 0x00427760
+void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOffset,
+                                 unsigned long nPool, int nUsage)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
+        glTexCoordPointer(2, GL_FLOAT, nStride, (const GLvoid*)nOffset);
+    }
+    else
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glTexCoordPointer(2, GL_FLOAT, nStride,
+                          (const GLvoid*)(nOffset + nBuffer));
+    }
+}
+// PC 0x004276C0 GOG 0x004277D0
+void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive,
+                            unsigned long nCount, unsigned long nOffset,
+                            unsigned long nPool)
+{
+    int nIndexPool = manRef->GetIndexPool(nPool);
+    glDrawElements(primTypeTranslationTable[nPrimitive], nCount,
+                   GL_UNSIGNED_SHORT,
+                   (const GLvoid*)(nIndexPool + 2 * nOffset));
+}
+// PC 0x00427700 GOG 0x00427810
+void ImposterManager::AllocateImposter(unsigned long nRecord, int nVertices,
+                                      float* pVertices)
+{
+    HDC hOldDC = GLRender::m_hDC;
+    HGLRC hOldContext = GLRender::m_hGLRC;
+    Record* pRecord = &m_pImposters[nRecord];
+    pRecord->m_bAllocated = true;
+    pRecord->m_nVertices = nVertices;
+    pRecord->m_pVertices = new float[nVertices * 3];
+    memcpy(pRecord->m_pVertices, pVertices, nVertices * 3 * sizeof(float));
+
+    unsigned int nTexture;
+    glGenTextures(1, &nTexture);
+    pRecord->m_nTexture = nTexture;
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+
+    float fFloatAttributes[1];
+    int nPixelFormat;
+    unsigned int nNumFormats;
+    int nPbufferAttributes[3];
+    int nPixelFormatAttributes[5] = {WGL_DRAW_TO_PBUFFER_ARB, 1,
+                                    WGL_SUPPORT_OPENGL_ARB, 1, 0};
+    fFloatAttributes[0] = 0.0f;
+    wglChoosePixelFormatARB(hOldDC, nPixelFormatAttributes, fFloatAttributes, 1,
+                            &nPixelFormat, &nNumFormats);
+    nPbufferAttributes[0] = WGL_PBUFFER_LARGEST_ARB;
+    nPbufferAttributes[1] = 1;
+    nPbufferAttributes[2] = 0;
+    PBUFFERARB* pBuffer = wglCreatePBufferARB(hOldDC, nPixelFormat, 256, 256,
+                                            nPbufferAttributes);
+    HDC hBufferDC = wglGetPBufferDCARB(pBuffer);
+    HGLRC hContext = wglCreateContext(hBufferDC);
+    wglShareLists(hOldContext, hContext);
+    wglMakeCurrent(hBufferDC, hContext);
+    pRecord->m_hContext = hContext;
+    pRecord->m_hBufferDC = hBufferDC;
+    pRecord->m_pBuffer = pBuffer;
+    wglMakeCurrent(hOldDC, hOldContext);
+}
+
+void BeginImposterRender(unsigned long nRecord)
+{
+    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
+    if (!wglMakeCurrent(pRecord->m_hBufferDC, pRecord->m_hContext))
+        gluErrorString(glGetError());
+
+    glViewport(0, 0, 256, 256);
+    glClearColor(0.5f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 0.01, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluErrorString(glGetError());
+}
+
+void GLRender::RenderPausePlane()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glBegin(GL_QUADS);
+    glColor4ubv((GLubyte*)&g_rgbaPauseOverlayColor);
+    glVertex2f(-1.0f, 1.0f);
+    glVertex2f(-1.0f, -1.0f);
+    glVertex2f(1.0f, -1.0f);
+    glVertex2f(1.0f, 1.0f);
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+}
+
+void EndImposterRender(unsigned long nRecord)
+{
+    gluErrorString(glGetError());
+    GLRender::SetActiveTexture(0);
+    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
+    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
+    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glFinish();
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 128, 128, 0);
+    gluErrorString(glGetError());
+    wglMakeCurrent(GLRender::m_hDC, GLRender::m_hGLRC);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
+    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(4.0f, 0.0f, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(4.0f, 4.0f, 0.0f);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(0.0f, 4.0f, 0.0f);
+    glEnd();
+}
+// PC 0x00427840 GOG 0x00427950
+int GLRender::InitRenderSystem()
+{
+    GLRender::m_hGLRC = wglGetCurrentContext();
+    GLRender::m_hDC = wglGetCurrentDC();
+    memset(GLRender::cm_nGLCurrentTID, 0, sizeof(GLRender::cm_nGLCurrentTID));
+    GLRender::cm_uiCurrentStage = 0;
+    return 0;
+}
+// PC 0x00427870 GOG 0x00427980
+void GLRender::Shutdown(int bReleaseRenderer)
+{
+    if (manRef)
+        manRef->BackUpPoolManager();
+
+    if (cm_hSoftShadowHDC)
+    {
+        if (AurATISoftShadowsAvailable())
+        {
+            wglMakeContextCurrentARB(cm_hSoftShadowHDC, cm_hSoftShadowHDC,
+                                    cm_hSoftShadowHGLRC);
+            glDeleteTextures(1, &cm_nSoftShadowRenderTexture);
+            wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+            wglReleasePBufferDCARB(cm_hSoftShadowPBuffer, cm_hSoftShadowHDC);
+            wglDestroyPBufferARB(cm_hSoftShadowPBuffer);
+            cm_hSoftShadowHDC = 0;
+            cm_hSoftShadowHGLRC = 0;
+            cm_hSoftShadowPBuffer = 0;
+            cm_nSoftShadowRenderTexture = 0;
+
+            wglMakeContextCurrentARB(cm_hSoftShadowTargetHDC,
+                                    cm_hSoftShadowTargetHDC,
+                                    cm_hSoftShadowTargetHGLRC);
+            glDeleteTextures(1, &cm_nSoftShadowTargetRenderTexture);
+            wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+            wglReleasePBufferDCARB(cm_hSoftShadowTargetPBuffer,
+                                  cm_hSoftShadowTargetHDC);
+            wglDestroyPBufferARB(cm_hSoftShadowTargetPBuffer);
+            cm_hSoftShadowTargetHDC = 0;
+            cm_hSoftShadowTargetHGLRC = 0;
+            cm_hSoftShadowTargetPBuffer = 0;
+            cm_nSoftShadowTargetRenderTexture = 0;
+            glDeleteTextures(1, &cm_nBufferRegionTexture);
+            cm_nBufferRegionTexture = 0;
+        }
+        else
+        {
+            wglMakeCurrent(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC);
+            glDeleteTextures(1, &cm_nSoftShadowRenderTexture);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+            wglDeleteContext(cm_hSoftShadowHGLRC);
+            wglReleasePBufferDCARB(cm_hSoftShadowPBuffer, cm_hSoftShadowHDC);
+            wglDestroyPBufferARB(cm_hSoftShadowPBuffer);
+            cm_hSoftShadowHDC = 0;
+            cm_hSoftShadowHGLRC = 0;
+            cm_hSoftShadowPBuffer = 0;
+            cm_nSoftShadowRenderTexture = 0;
+
+            wglMakeCurrent(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC);
+            glDeleteTextures(1, &cm_nSoftShadowTargetRenderTexture);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+            wglDeleteContext(cm_hSoftShadowTargetHGLRC);
+            wglReleasePBufferDCARB(cm_hSoftShadowTargetPBuffer,
+                                  cm_hSoftShadowTargetHDC);
+            wglDestroyPBufferARB(cm_hSoftShadowTargetPBuffer);
+            cm_hSoftShadowTargetHDC = 0;
+            cm_hSoftShadowTargetHGLRC = 0;
+            cm_hSoftShadowTargetPBuffer = 0;
+            cm_nSoftShadowTargetRenderTexture = 0;
+            glDeleteTextures(1, &cm_nBufferRegionTexture);
+            cm_nBufferRegionTexture = 0;
+        }
+    }
+
+    if (cm_nTargetTexture)
+    {
+        glDeleteTextures(1, &cm_nTargetTexture);
+        cm_nTargetTexture = 0;
+    }
+    if (cm_nRedTexture)
+    {
+        glDeleteTextures(1, &cm_nRedTexture);
+        cm_nRedTexture = 0;
+    }
+    if (cm_nGreenTexture)
+    {
+        glDeleteTextures(1, &cm_nGreenTexture);
+        cm_nGreenTexture = 0;
+    }
+    if (cm_nBlueTexture)
+    {
+        glDeleteTextures(1, &cm_nBlueTexture);
+        cm_nBlueTexture = 0;
+    }
+    if (cm_nOverbrightenRed)
+    {
+        glDeleteTextures(1, &cm_nOverbrightenRed);
+        cm_nOverbrightenRed = 0;
+    }
+    if (cm_nOverbrightenGreen)
+    {
+        glDeleteTextures(1, &cm_nOverbrightenGreen);
+        cm_nOverbrightenGreen = 0;
+    }
+    if (cm_nOverbrightenBlue)
+    {
+        glDeleteTextures(1, &cm_nOverbrightenBlue);
+        cm_nOverbrightenBlue = 0;
+    }
+    if (cm_nPerPixelFlareShader)
+    {
+        glDeleteProgramsARB(1, &cm_nPerPixelFlareShader);
+        cm_nPerPixelFlareShader = 0;
+    }
+
+    if (cm_bPBuffersAllocated == true)
+    {
+        if (AurATIFrameBufferModificationsAvailable())
+        {
+            for (int i = 0; i < CONVOLUTION_BUFFER_COUNT; ++i)
+            {
+                wglMakeContextCurrentARB(cm_hConvolutionHDC[i],
+                                        cm_hConvolutionHDC[i],
+                                        cm_hConvolutionHGLRC[i]);
+                glDeleteTextures(1, &cm_nConvolutionRenderTexture[i]);
+                wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+                wglReleasePBufferDCARB(cm_hConvolutionPBuffer[i],
+                                      cm_hConvolutionHDC[i]);
+                wglDestroyPBufferARB(cm_hConvolutionPBuffer[i]);
+                cm_hConvolutionHDC[i] = 0;
+                cm_hConvolutionHGLRC[i] = 0;
+                cm_hConvolutionPBuffer[i] = 0;
+                cm_nConvolutionRenderTexture[i] = 0;
+            }
+            wglMakeContextCurrentARB(cm_hAccumulationHDC,
+                                    cm_hAccumulationHDC,
+                                    cm_hAccumulationHGLRC);
+            glDeleteTextures(1, &cm_nAccumulationBlur);
+            wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+            wglReleasePBufferDCARB(cm_hAccumulationPBuffer,
+                                  cm_hAccumulationHDC);
+            wglDestroyPBufferARB(cm_hAccumulationPBuffer);
+            cm_hAccumulationHDC = 0;
+            cm_hAccumulationHGLRC = 0;
+            cm_hAccumulationPBuffer = 0;
+            cm_nAccumulationBlur = 0;
+        }
+        else
+        {
+            for (int i = 0; i < CONVOLUTION_BUFFER_COUNT; ++i)
+            {
+                wglMakeCurrent(cm_hConvolutionHDC[i], cm_hConvolutionHGLRC[i]);
+                glDeleteTextures(1, &cm_nConvolutionRenderTexture[i]);
+                wglMakeCurrent(m_hDC, m_hGLRC);
+                wglDeleteContext(cm_hConvolutionHGLRC[i]);
+                wglReleasePBufferDCARB(cm_hConvolutionPBuffer[i],
+                                      cm_hConvolutionHDC[i]);
+                wglDestroyPBufferARB(cm_hConvolutionPBuffer[i]);
+                cm_hConvolutionHDC[i] = 0;
+                cm_hConvolutionHGLRC[i] = 0;
+                cm_hConvolutionPBuffer[i] = 0;
+                cm_nConvolutionRenderTexture[i] = 0;
+            }
+            if (cm_hAccumulationPBuffer)
+            {
+                wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
+                glDeleteTextures(1, &cm_nAccumulationBlur);
+                wglMakeCurrent(m_hDC, m_hGLRC);
+                wglDeleteContext(cm_hAccumulationHGLRC);
+                wglReleasePBufferDCARB(cm_hAccumulationPBuffer,
+                                      cm_hAccumulationHDC);
+                wglDestroyPBufferARB(cm_hAccumulationPBuffer);
+                cm_hAccumulationHDC = 0;
+                cm_hAccumulationHGLRC = 0;
+                cm_hAccumulationPBuffer = 0;
+                cm_nAccumulationBlur = 0;
+            }
+        }
+        cm_bPBuffersAllocated = false;
+    }
+    if (cm_pHeatDistortionVertexProg)
+    {
+        glDeleteProgramsARB(1, &cm_pHeatDistortionVertexProg);
+        cm_pHeatDistortionVertexProg = 0;
+    }
+    if (cm_nPerPixelFlareShaderATI)
+    {
+        glDeleteFragmentShaderATI(cm_nPerPixelFlareShaderATI);
+        cm_nPerPixelFlareShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nDecalShaderATI);
+        cm_nDecalShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_n4DecalShaderATI);
+        cm_n4DecalShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nSaturationShaderATI);
+        cm_nSaturationShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nAccumulationBlurShaderATI);
+        cm_nAccumulationBlurShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nFilmNoiseShaderATI);
+        cm_nFilmNoiseShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nForceDistortionShaderATI);
+        cm_nForceDistortionShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nOverbrightenShaderATI);
+        cm_nOverbrightenShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nDreamDistortShaderATI);
+        cm_nDreamDistortShaderATI = 0;
+    }
+    ReleaseDC(g_hRenderWnd, m_hDC);
+    if (bReleaseRenderer)
+    {
+        delete manRef;
+        manRef = 0;
+    }
+}
+
+void GLRender::RenderBox(Vector& vMinimum, Vector& vMaximum)
+{
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_QUADS);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glEnd();
+}
+// PC 0x00427E20 GOG 0x00427F30
+int GLRender::GetFogArraysInfoRef()
+{
+    int nPool = manRef->RequestPoolGeneric(0, 8, 2);
+    int* pFogArrays = (int*)manRef->LockPool(nPool, 1);
+    RequestPoolManager* pPoolManager = manRef;
+    pFogArrays[0] = 0;
+    pFogArrays[1] = 0;
+    pPoolManager->UnlockPool(nPool);
+    return nPool;
+}
+// PC 0x00427E60 GOG 0x00427F70
+void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    if (multmatrix != 0)
+    {
+        Vector vOrigin;
+        float fMatrix[16];
+        MakeMatrix4x4(fMatrix, vOrigin, -qOrientation);
+        MultMatrix(fMatrix);
+    }
+    else
+    {
+        Vector vAxis = qOrientation.axis();
+        float fAngle = (float)(acos(qOrientation.m_fW) * 2.0) * -RAD_TO_DEG;
+        Rotate(fAngle, vAxis.m_fX, vAxis.m_fY, vAxis.m_fZ);
+    }
+    Translate(-vPosition.m_fX, -vPosition.m_fY, -vPosition.m_fZ);
+}
+// PC 0x00427F50 GOG 0x00428060
+static void CalculateCubeMapNormal(int nFace, int nSize, int nX, int nY,
+                                   float* pNormal)
+{
+    float s = 2.0f * ((nX + 0.5f) / nSize) - 1.0f;
+    float t = 2.0f * ((nY + 0.5f) / nSize) - 1.0f;
+    switch (nFace)
+    {
+    case 0: pNormal[0] = 1.0f; pNormal[1] = -t; pNormal[2] = -s; break;
+    case 1: pNormal[0] = -1.0f; pNormal[1] = -t; pNormal[2] = s; break;
+    case 2: pNormal[0] = s; pNormal[1] = 1.0f; pNormal[2] = t; break;
+    case 3: pNormal[0] = s; pNormal[1] = -1.0f; pNormal[2] = -t; break;
+    case 4: pNormal[0] = s; pNormal[1] = -t; pNormal[2] = 1.0f; break;
+    case 5: pNormal[0] = -s; pNormal[1] = -t; pNormal[2] = -1.0f; break;
+    }
+    float fScale = 1.0f / (float)sqrt(pNormal[0] * pNormal[0] +
+                             pNormal[1] * pNormal[1] +
+                             pNormal[2] * pNormal[2]);
+    pNormal[0] *= fScale;
+    pNormal[1] *= fScale;
+    pNormal[2] *= fScale;
+}
+// PC 0x00428070 GOG 0x00428180
+void GLRender::MakeNormalizationCubeMap(int nSize)
+{
+
+    static int mapping[6] = {2, 3, 4, 5, 6, 7};
+    unsigned char* pPixels = new unsigned char[nSize * nSize * 3];
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    for (int nFace = 0; nFace < 6; ++nFace)
+    {
+        for (int y = 0; y < nSize; ++y)
+        {
+            for (int x = 0; x < nSize; ++x)
+            {
+                float normal[3];
+                CalculateCubeMapNormal(nFace, nSize, x, y, normal);
+                pPixels[3 * (y * nSize + x) + 0] = (unsigned char)(normal[0] * 127.0f + 128.0f);
+                pPixels[3 * (y * nSize + x) + 1] = (unsigned char)(normal[1] * 127.0f + 128.0f);
+                pPixels[3 * (y * nSize + x) + 2] = (unsigned char)(normal[2] * 127.0f + 128.0f);
+            }
+        }
+        gluBuild2DMipmaps(texParamTargetTranslationTable[mapping[nFace]],
+                          3, nSize, nSize, GL_RGB, GL_UNSIGNED_BYTE, pPixels);
+    }
+    delete[] pPixels;
+}
+// PC 0x004281D0 GOG 0x004282E0
+void GLRender::RenderSquares(unsigned int nPool)
+{
+    int nVBOAvailable = AurVertexBufferObjectARBAvailable();
+    RequestPoolManager* pPoolManager = manRef;
+    if (nVBOAvailable != 0)
+    {
+        int nBuffer = pPoolManager->GetPool(nPool);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
+        glVertexPointer(3, GL_FLOAT, 16, 0);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 16, (const GLvoid*)12);
+        DrawPrimitive(GL_LINE_LOOP, 0, 4);
+    }
+    else
+    {
+        int nVertexData = pPoolManager->GetPool(nPool);
+        glBegin(GL_LINE_LOOP);
+        glColor4ubv((const GLubyte*)(nVertexData + 12));
+        for (int i = 0; i < 4; ++i)
+        {
+            glVertex3fv((const GLfloat*)nVertexData);
+            nVertexData += 16;
+        }
+        glEnd();
+    }
+}
+// PC 0x00428270 GOG 0x00428380
+void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
+    unsigned char* pHeightField, int nWidth, int nHeight, int nRowWidth,
+    int nRowCount, float fScale, int bUpdate, bool bNormalMap)
+{
+    Normal* pNormalMap;
+    if (bNormalMap)
+    {
+        pNormalMap = new Normal[nWidth * nHeight];
+        memcpy(pNormalMap, pHeightField, nWidth * nHeight * 4);
+    }
+    else
+    {
+        pNormalMap = convertHeightFieldToNormalMap(
+            pHeightField, nWidth, nHeight, nRowWidth, nRowCount, fScale);
+    }
+
+    int nLevel = 0;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0,
+                 GL_BGRA_EXT, GL_UNSIGNED_BYTE, pNormalMap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, cm_nAnisotropy);
+
+    while (nWidth > 1 || nHeight > 1)
+    {
+        ++nLevel;
+        int nNewWidth = nWidth >> 1;
+        int nNewHeight = nHeight >> 1;
+        if (nNewWidth == 0)
+            nNewWidth = 1;
+        if (nNewHeight == 0)
+            nNewHeight = 1;
+        pNormalMap = downSampleNormalMap(pNormalMap, nWidth, nHeight,
+                                          nNewWidth, nNewHeight);
+        if (bUpdate)
+        {
+            glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nNewWidth,
+                            nNewHeight, GL_RGBA, GL_UNSIGNED_BYTE, pNormalMap);
+        }
+        else
+        {
+            glTexImage2D(GL_TEXTURE_2D, nLevel, GL_RGBA8, nNewWidth,
+                         nNewHeight, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE,
+                         pNormalMap);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                             cm_nAnisotropy);
+        }
+        nWidth = nNewWidth;
+        nHeight = nNewHeight;
+    }
+    delete[] pNormalMap;
+}
+// PC 0x00428400 GOG 0x00428510
+void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
+                                    void* pIndices, int nStride, int nFirst,
+                                    int nQuads)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glVertexPointer(3, GL_FLOAT, nVertexStride, pVertices);
+        glNormalPointer(GL_FLOAT, nStride, (float*)pVertices + nQuads * 12);
+        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 3);
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 5);
+        ActivateTextureStage(0);
+        glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    }
+    else
+    {
+        glVertexPointer(3, GL_FLOAT, nVertexStride, pVertices);
+        glNormalPointer(GL_FLOAT, nStride, (float*)pVertices + nQuads * 12);
+        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 3);
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 5);
+        ActivateTextureStage(0);
+        glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
+    }
+}
+// PC 0x00428590 GOG 0x004286A0
+void GLRender::InitAttenuationTexture()
+{
+    unsigned char pixels[64 * 64 * 4];
+
+    for (int y = 0; y < 64; y++)
+    {
+        for (int x = 0; x < 64; x++)
+        {
+            float fX = (float)(x - 32) * 0.125f;
+            float fY = (float)(y - 32) * 0.125f;
+            float fValue = 1.0f / ((fX * fX + fY * fY) * 4.5f + 1.0f);
+            if (x == 0 || y == 0 || x == 63 || y == 63)
+            {
+                fValue = 0.0f;
+            }
+            unsigned char nValue = (unsigned char)(fValue * 255.0f);
+            pixels[(y * 64 + x) * 4 + 0] = nValue;
+            pixels[(y * 64 + x) * 4 + 1] = nValue;
+            pixels[(y * 64 + x) * 4 + 2] = nValue;
+            pixels[(y * 64 + x) * 4 + 3] = 0xFF;
+        }
+    }
+
+    glGenTextures(1, &cm_tidAttenuationTexture);
+    BindTexture(ENABLE_TEXTURE_2D, cm_tidAttenuationTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 64, 64, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, pixels);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, cm_nAnisotropy);
+}
+// PC 0x00428720 GOG 0x00428830
+int GLRender::SetCurrentStageTID(unsigned long nStage, unsigned int nTID)
+{
+    GLRender::cm_nGLCurrentTID[nStage] = nTID;
+    return nTID;
+}
+// PC 0x00428730 GOG 0x00428840
+PBUFFERARB* GLRender::CreatePBuffer(int nWidth, int nHeight)
+{
+    HDC hDC = m_hDC;
+    float fFloatAttributes;
+    int nPixelFormat;
+    unsigned int nNumFormats;
+    int nPbufferAttributes[6];
+    int nPixelFormatAttributes[17] = {8208, 1, 8237, 1, 8305, 1,
+                                      8213, 8, 8215, 8, 8217, 8,
+                                      8219, 8, 8209, 0, 0};
+
+    fFloatAttributes = 0.0f;
+    wglChoosePixelFormatARB(hDC, nPixelFormatAttributes, &fFloatAttributes, 1,
+                            &nPixelFormat, &nNumFormats);
+
+    nPbufferAttributes[0] = 8306;
+    nPbufferAttributes[1] = 8310;
+    nPbufferAttributes[2] = 8307;
+    nPbufferAttributes[3] = 8314;
+    nPbufferAttributes[4] = 0;
+    nPbufferAttributes[5] = 0;
+    return wglCreatePBufferARB(hDC, nPixelFormat, nWidth, nHeight,
+                               nPbufferAttributes);
+}
+// PC 0x00428820 GOG 0x00428930
+void GLRender::SetDirtyTexture(int nIndex, CAurTexture* pTexture)
+{
+    m_pDirtyTexture[nIndex] = pTexture;
+}
+// PC 0x00428830 GOG 0x00428940
+void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
+{
+    GLRender::cm_pFilmNoiseTexture = pTexture;
+}
+// PC 0x00428840 GOG 0x00428950
+void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
+{
+    static unsigned short* indexToken = new unsigned short[AUR_SHADOW_INDEX_COUNT];
+    unsigned short* pIndex = indexToken;
+    if (nEdges == 0)
+        return;
+
+    unsigned short* indices = pIndex;
+    int nNear = nVertices * 2;
+    int nFar = nNear + 1;
+    for (int i = 0; i < nEdges; ++i)
+    {
+        int nFirst = m_UsedVertices[PartTriMesh::m_VertexIndices[i * 2]] * 2 - 2;
+        int nSecond = m_UsedVertices[PartTriMesh::m_VertexIndices[i * 2 + 1]] * 2 - 2;
+        if (i % 2 == 0)
+        {
+            *pIndex++ = nNear;
+            *pIndex++ = nFirst;
+            *pIndex++ = nSecond;
+            *pIndex++ = nFirst + 1;
+            *pIndex++ = nSecond + 1;
+            *pIndex++ = nFar;
+        }
+        else
+        {
+            *pIndex++ = nFar;
+            *pIndex++ = nSecond + 1;
+            *pIndex++ = nFirst + 1;
+            *pIndex++ = nSecond;
+            *pIndex++ = nFirst;
+            *pIndex++ = nNear;
+        }
+    }
+
+    if (AurVertexBufferObjectARBAvailable())
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    glVertexPointer(3, GL_FLOAT, 12, cm_pUserShadowData);
+
+    if (usetwosidedshadows && AurTwoSidedStencilAvailable())
+    {
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+        glActiveStencilFaceEXT(GL_BACK);
+        SetStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT);
+        SetStencilMask(-1);
+        SetStencilFunc(GL_ALWAYS, 0, -1);
+        glActiveStencilFaceEXT(GL_FRONT);
+        SetStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT);
+        SetStencilMask(-1);
+        if (AurVertexBufferObjectARBAvailable())
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+        DrawIndexedPrimitive(GL_TRIANGLE_STRIP, nEdges * 6, indices);
+        glEnable(GL_CULL_FACE);
+        SetFrontFace(GL_CCW);
+        glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+    }
+    else
+    {
+        glFrontFace(GL_CW);
+        glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+        if (AurVertexBufferObjectARBAvailable())
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+        glDrawElements(GL_TRIANGLE_STRIP, nEdges * 6, GL_UNSIGNED_SHORT, indices);
+        glFrontFace(GL_CCW);
+        glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+        if (AurVertexBufferObjectARBAvailable())
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+        glDrawElements(GL_TRIANGLE_STRIP, nEdges * 6, GL_UNSIGNED_SHORT, indices);
+    }
+    countfaces += nEdges * 8;
+}
+// PC 0x00428B20 GOG 0x00428C30
+char* AllocateShadowMemory(int nSize)
+{
+    static char* data = new char[nSize];
+    static int c_size = nSize;
+
+    if (nSize > maxshadowvar)
+    {
+        maxshadowvar = nSize;
+    }
+
+    if (nSize > c_size)
+    {
+        delete[] data;
+        data = new char[nSize];
+        c_size = nSize;
+    }
+
+    return data;
+}
+// PC 0x00428BD0 GOG 0x00428CE0
+int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
+                               const Plane& plane, const Vector& vNearCap,
+                               const Vector& vFarCap, int nVertices,
+                               RenderVertexV* pVertices)
+{
+    static Vector light2temp;
+    static Vector scratch[2];
+    int nUsed = 0;
+    for (int i = 0; i < nVertices; ++i)
+    {
+        if (m_UsedVertices[i] == SHADOW_VERTEX_USED)
+            m_UsedVertices[i] = ++nUsed;
+    }
+    int nSize = nUsed * sizeof(scratch);
+    cm_pUserShadowData = (float*)AllocateShadowMemory(nSize + sizeof(scratch));
+    char* pShadowData = (char*)cm_pUserShadowData;
+    for (int iVertex = 0; iVertex < nVertices; ++iVertex)
+    {
+        int nOffset = m_UsedVertices[iVertex] * 6 - 6;
+        if (m_UsedVertices[iVertex] > 0)
+        {
+            scratch[0] = pVertices[iVertex].position;
+            light2temp = normalize(scratch[0] - vLight);
+            scratch[1] = vLight + light2temp * fRadius;
+            if (!noclipshadows)
+            {
+                ClipProjection(scratch[0], vLight, plane);
+                ClipProjection(scratch[1], vLight, plane);
+            }
+            if (dontprotectagainstclip &&
+                (scratch[0] - scratch[1]) * light2temp > 0.0f)
+                scratch[1] = scratch[0];
+            memcpy(pShadowData + nOffset * sizeof(float), scratch, sizeof(scratch));
+        }
+    }
+    char* pCap = pShadowData + nSize;
+    *(Vector*)pCap = vNearCap;
+    pCap += sizeof(Vector);
+    *(Vector*)pCap = vFarCap;
+    return nUsed;
+}
+// PC 0x00428EA0 GOG 0x00428FB0
+void GLRender::InitializeImageSpaceSoftShadows()
+{
+    if (AurSoftShadowsAvailable() && cm_bSetUpImageSpaceShadows && enablesoftshadows)
+    {
+        if (cm_nTargetTexture == 0)
+        {
+            glGenTextures(1, &cm_nTargetTexture);
+            glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
+            glCopyTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA8, 0, 0,
+                             g_nScreenWidth, g_nScreenHeight, 0);
+            glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+        }
+        glGenTextures(1, &cm_nBufferRegionTexture);
+        glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
+        glCopyTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA8, 0, 0,
+                         g_nScreenWidth, g_nScreenHeight, 0);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        cm_hSoftShadowPBuffer = CreatePBuffer(512, 512);
+        cm_hSoftShadowHDC = wglGetPBufferDCARB(cm_hSoftShadowPBuffer);
+        cm_hSoftShadowHGLRC = wglCreateContext(cm_hSoftShadowHDC);
+        wglShareLists(m_hGLRC, cm_hSoftShadowHGLRC);
+        wglMakeCurrent(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC);
+        glGenTextures(1, &cm_nSoftShadowRenderTexture);
+        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowRenderTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        cm_hSoftShadowTargetPBuffer = CreatePBuffer(512, 512);
+        cm_hSoftShadowTargetHDC = wglGetPBufferDCARB(cm_hSoftShadowTargetPBuffer);
+        cm_hSoftShadowTargetHGLRC = wglCreateContext(cm_hSoftShadowTargetHDC);
+        wglShareLists(m_hGLRC, cm_hSoftShadowTargetHGLRC);
+        wglMakeCurrent(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC);
+        glGenTextures(1, &cm_nSoftShadowTargetRenderTexture);
+        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowTargetRenderTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        wglMakeCurrent(m_hDC, m_hGLRC);
+    }
+    else if (AurATISoftShadowsAvailable() && cm_bSetUpImageSpaceShadows && enablesoftshadows)
+    {
+
+        void FindSmallestPowerOf2WidthHeight(unsigned int, unsigned int, unsigned long&, unsigned long&);
+        FindSmallestPowerOf2WidthHeight(g_nScreenWidth, g_nScreenHeight, cm_nScreenWidthPow2, cm_nScreenHeightPow2);
+        if (cm_nTargetTexture == 0)
+        {
+            glGenTextures(1, &cm_nTargetTexture);
+            glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, cm_nScreenWidthPow2, cm_nScreenHeightPow2, 0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        glGenTextures(1, &cm_nBufferRegionTexture);
+        glBindTexture(GL_TEXTURE_2D, cm_nBufferRegionTexture);
+        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, cm_nScreenWidthPow2, cm_nScreenHeightPow2, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        cm_hSoftShadowPBuffer = CreatePBuffer(512, 512);
+        cm_hSoftShadowHDC = wglGetPBufferDCARB(cm_hSoftShadowPBuffer);
+        cm_hSoftShadowHGLRC = m_hGLRC;
+        wglMakeContextCurrentARB(cm_hSoftShadowHDC, cm_hSoftShadowHDC, m_hGLRC);
+        glGenTextures(1, &cm_nSoftShadowRenderTexture);
+        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowRenderTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+        cm_hSoftShadowTargetPBuffer = CreatePBuffer(512, 512);
+        cm_hSoftShadowTargetHDC = wglGetPBufferDCARB(cm_hSoftShadowTargetPBuffer);
+        cm_hSoftShadowTargetHGLRC = m_hGLRC;
+        wglMakeContextCurrentARB(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHDC, m_hGLRC);
+        glGenTextures(1, &cm_nSoftShadowTargetRenderTexture);
+        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowTargetRenderTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        cm_nSoftShadowShaderATI = glGenFragmentShadersATI(1);
+        glBindFragmentShaderATI(cm_nSoftShadowShaderATI);
+        glBeginFragmentShaderATI();
+        glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+        glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+        glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+        glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+        glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 0, 0,
+                              GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
+        glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 0,
+                              GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
+        glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 0, 0,
+                              GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0,
+                              GL_REG_4_ATI, 0, 0);
+        glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 0,
+                              GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0,
+                              GL_REG_4_ATI, 0, 0);
+        glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0, 0,
+                              GL_REG_2_ATI, 0, 0, GL_CON_2_ATI, 0, 0,
+                              GL_REG_4_ATI, 0, 0);
+        glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0,
+                              GL_REG_2_ATI, 0, 0, GL_CON_2_ATI, 0, 0,
+                              GL_REG_4_ATI, 0, 0);
+        glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0,
+                              GL_REG_3_ATI, 0, 0, GL_CON_3_ATI, 0, 0,
+                              GL_REG_1_ATI, 0, 0);
+        glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0,
+                              GL_REG_3_ATI, 0, 0, GL_CON_3_ATI, 0, 0,
+                              GL_REG_1_ATI, 0, 0);
+        glEndFragmentShaderATI();
+        glDisable(GL_FRAGMENT_SHADER_ATI);
+    }
+}
+// PC 0x004295C0 GOG 0x004296D0
+unsigned int log2integer(unsigned int x)
+{
+    x |= (x >> 1);
+    x |= (x >> 2);
+    x |= (x >> 4);
+    x |= (x >> 8);
+    x |= (x >> 16);
+    return ones32popcount(x >> 1);
+}
+// PC 0x00429630 GOG 0x00429740
+void FindSmallestPowerOf2WidthHeight(unsigned int nWidth, unsigned int nHeight,
+                                    unsigned long& nWidthPow2,
+                                    unsigned long& nHeightPow2)
+{
+    nWidthPow2 = 1 << (log2integer(nWidth) + 1);
+    nHeightPow2 = 1 << (log2integer(nHeight) + 1);
+}
+// PC 0x00429670 GOG 0x00429780
+void GLRender::InitializeFrameBufferModificationFragmentShadersATI()
+{
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    cm_nOverbrightenShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nOverbrightenShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_2_ATI, 0, 0);
+    glPassTexCoordATI(GL_REG_0_ATI, GL_REG_0_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_REG_1_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_REG_2_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_REG_3_ATI, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glEndFragmentShaderATI();
+    cm_nForceDistortionShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nForceDistortionShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glPassTexCoordATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glPassTexCoordATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_RED_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_GREEN_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_2_ATI, 0, 0);
+    glPassTexCoordATI(GL_REG_0_ATI, GL_REG_0_ATI, GL_SWIZZLE_STR_ATI);
+    glPassTexCoordATI(GL_REG_1_ATI, GL_REG_1_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_REG_4_ATI, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glEndFragmentShaderATI();
+    cm_nFilmNoiseShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nFilmNoiseShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, 0, GL_COMP_BIT_ATI);
+    glEndFragmentShaderATI();
+    cm_nAccumulationBlurShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nAccumulationBlurShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_CON_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+    cm_nSaturationShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nSaturationShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_1_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_CON_3_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0, GL_CON_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_2_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0, GL_CON_5_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glEndFragmentShaderATI();
+    cm_nPerPixelFlareShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nPerPixelFlareShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_2_ATI, 0, 0);
+    glPassTexCoordATI(GL_REG_0_ATI, GL_REG_0_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_REG_1_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_REG_2_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_REG_3_ATI, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, 0, GL_COMP_BIT_ATI);
+    glEndFragmentShaderATI();
+    cm_nDecalShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nDecalShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, 0, GL_COMP_BIT_ATI);
+    glEndFragmentShaderATI();
+    cm_n4DecalShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_n4DecalShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_2_ATI, 0, 0, GL_REG_2_ATI, 0, 0, GL_CON_2_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0, GL_CON_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+    cm_nDreamDistortShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glPassTexCoordATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glPassTexCoordATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_RED_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_GREEN_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_2_ATI, 0, 0);
+    glSampleMapATI(GL_REG_2_ATI, GL_REG_4_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp3ATI(GL_CND_ATI, GL_REG_1_ATI, 0, GL_ONE, GL_ALPHA, 0, GL_ZERO, 0, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, GL_RED_BIT_ATI | GL_GREEN_BIT_ATI | GL_BLUE_BIT_ATI, 0, GL_REG_2_ATI, 0, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+    glDisable(GL_FRAGMENT_SHADER_ATI);
+}
+// PC 0x00429FF0 GOG 0x0042A100
+void GLRender::InitializeFrameBufferModifications()
+{
+    if (doframebuffer && cm_bSetUpFrameBuffer)
+    {
+        if (AurFrameBufferModificationsAvailable())
+        {
+            if (cm_nTargetTexture == 0)
+            {
+                glGenTextures(1, &cm_nTargetTexture);
+                glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
+                glCopyTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA8, 0, 0,
+                                 g_nScreenWidth, g_nScreenHeight, 0);
+                glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+            }
+            unsigned int nRed[FRAMEBUFFER_LOOKUP_SIZE];
+            unsigned int nGreen[FRAMEBUFFER_LOOKUP_SIZE];
+            unsigned int nBlue[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                if (i < FRAMEBUFFER_RED_THRESHOLD)
+                    nRed[i] = 0;
+                else
+                {
+                    float fLookup = (i - FRAMEBUFFER_RED_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_RED_THRESHOLD - 1);
+                    nRed[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN);
+                }
+            }
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                if (i < FRAMEBUFFER_GREEN_THRESHOLD)
+                    nGreen[i] = 0;
+                else
+                {
+                    float fLookup = (i - FRAMEBUFFER_GREEN_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_GREEN_THRESHOLD - 1);
+                    nGreen[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_GREEN_SHIFT;
+                }
+            }
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                if (i < FRAMEBUFFER_BLUE_THRESHOLD)
+                    nBlue[i] = 0;
+                else
+                {
+                    float fLookup = (i - FRAMEBUFFER_BLUE_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_BLUE_THRESHOLD - 1);
+                    nBlue[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_BLUE_SHIFT;
+                }
+            }
+            glGenTextures(1, &cm_nRedTexture);
+            glBindTexture(GL_TEXTURE_2D, cm_nRedTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nRed);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nGreenTexture);
+            glBindTexture(GL_TEXTURE_2D, cm_nGreenTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FRAMEBUFFER_LOOKUP_SIZE, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nGreen);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nBlueTexture);
+            glBindTexture(GL_TEXTURE_2D, cm_nBlueTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nBlue);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            memset(cm_nConvolutionRenderTexture, 0, sizeof(cm_nConvolutionRenderTexture));
+            memset(cm_hConvolutionHGLRC, 0, sizeof(cm_hConvolutionHGLRC));
+            memset(cm_hConvolutionHDC, 0, sizeof(cm_hConvolutionHDC));
+            memset(cm_hConvolutionPBuffer, 0, sizeof(cm_hConvolutionPBuffer));
+            cm_bPBuffersAllocated = true;
+
+            cm_hConvolutionPBuffer[0] = CreatePBuffer(64, 64);
+            cm_hConvolutionHDC[0] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[0]);
+            cm_hConvolutionHGLRC[0] = wglCreateContext(cm_hConvolutionHDC[0]);
+            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[0]);
+            wglMakeCurrent(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[0]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[0]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[1] = CreatePBuffer(128, 128);
+            cm_hConvolutionHDC[1] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[1]);
+            cm_hConvolutionHGLRC[1] = wglCreateContext(cm_hConvolutionHDC[1]);
+            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[1]);
+            wglMakeCurrent(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[1]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[1]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[2] = CreatePBuffer(256, 256);
+            cm_hConvolutionHDC[2] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[2]);
+            cm_hConvolutionHGLRC[2] = wglCreateContext(cm_hConvolutionHDC[2]);
+            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[2]);
+            wglMakeCurrent(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[2]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[2]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[3] = CreatePBuffer(512, 512);
+            cm_hConvolutionHDC[3] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[3]);
+            cm_hConvolutionHGLRC[3] = wglCreateContext(cm_hConvolutionHDC[3]);
+            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[3]);
+            wglMakeCurrent(cm_hConvolutionHDC[3], cm_hConvolutionHGLRC[3]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[3]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[3]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[4] = CreatePBuffer(256, 256);
+            cm_hConvolutionHDC[4] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[4]);
+            cm_hConvolutionHGLRC[4] = wglCreateContext(cm_hConvolutionHDC[4]);
+            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[4]);
+            wglMakeCurrent(cm_hConvolutionHDC[4], cm_hConvolutionHGLRC[4]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[4]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[4]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[5] = CreatePBuffer(256, 256);
+            cm_hConvolutionHDC[5] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[5]);
+            cm_hConvolutionHGLRC[5] = wglCreateContext(cm_hConvolutionHDC[5]);
+            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[5]);
+            wglMakeCurrent(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[5]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[5]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hAccumulationHDC = 0;
+            cm_hAccumulationHGLRC = 0;
+            cm_hAccumulationPBuffer = 0;
+            cm_nAccumulationBlur = 0;
+            cm_bFirstFrameBufferFrame = true;
+            cm_hAccumulationPBuffer = CreatePBuffer(128, 128);
+            cm_hAccumulationHDC = wglGetPBufferDCARB(cm_hAccumulationPBuffer);
+            cm_hAccumulationHGLRC = wglCreateContext(cm_hAccumulationHDC);
+            wglShareLists(m_hGLRC, cm_hAccumulationHGLRC);
+            wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
+            glGenTextures(1, &cm_nAccumulationBlur);
+            glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            static char szForceDistortProg[] =
+                "!!ARBvp1.0\n"
+                "TEMP vReg0;\n"
+                "TEMP vReg1;\n"
+                "TEMP vReg2;\n"
+                "TEMP vReg4, vReg3;\n"
+                "DP4   result.position.x, state.matrix.mvp.row[0], vertex.position;\n"
+                "DP4   result.position.y, state.matrix.mvp.row[1], vertex.position;\n"
+                "DP4   result.position.z, state.matrix.mvp.row[2], vertex.position;\n"
+                "DP4   result.position.w, state.matrix.mvp.row[3], vertex.position;\n"
+                "MOV result.texcoord[0], vertex.texcoord[0];\n"
+                "MOV vReg1, vertex.texcoord[1];\n"
+                "MOV vReg2, vertex.texcoord[2];\n"
+                "MOV vReg3.x, vReg1.x;\n"
+                "MOV vReg3.y, program.env[15].x;\n"
+                "MOV vReg3.z, vReg2.x;\n"
+                "MOV vReg4.x, program.env[15].x;\n"
+                "MOV vReg4.y, vReg1.y;\n"
+                "MOV vReg4.z, vReg2.y;\n"
+                "MOV result.texcoord[1].xyz, vReg3;\n"
+                "MOV result.texcoord[2].xyz, vReg4;\n"
+                "MOV result.color.primary, program.env[15].y;\n"
+                "END";
+            glEnable(GL_VERTEX_PROGRAM_ARB);
+            glGenProgramsARB(1, &cm_pHeatDistortionVertexProg);
+            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, cm_pHeatDistortionVertexProg);
+            glProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
+                               strlen(szForceDistortProg), szForceDistortProg);
+            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
+            glDisable(GL_VERTEX_PROGRAM_ARB);
+            AurGetVertexProgramARBError(szForceDistortProg);
+
+            unsigned int nOverbrightenRed[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
+                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+                    fIntensity = aquadraticterm * fIntensity * fIntensity * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
+                else
+                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
+                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
+                nOverbrightenRed[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX);
+            }
+            unsigned int nOverbrightenGreen[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
+                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+                {
+                    fIntensity *= fIntensity;
+                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
+                }
+                else
+                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
+                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
+                nOverbrightenGreen[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_GREEN_SHIFT;
+            }
+            unsigned int nOverbrightenBlue[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
+                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+                {
+                    fIntensity *= fIntensity;
+                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
+                }
+                else
+                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
+                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
+                nOverbrightenBlue[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_BLUE_SHIFT;
+            }
+            glGenTextures(1, &cm_nOverbrightenRed);
+            glBindTexture(GL_TEXTURE_2D, cm_nOverbrightenRed);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenRed);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nOverbrightenGreen);
+            glBindTexture(GL_TEXTURE_2D, cm_nOverbrightenGreen);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenGreen);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nOverbrightenBlue);
+            glBindTexture(GL_TEXTURE_2D, cm_nOverbrightenBlue);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenBlue);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+        if (AurATIFrameBufferModificationsAvailable())
+        {
+            InitializeFrameBufferModificationFragmentShadersATI();
+            FindSmallestPowerOf2WidthHeight(g_nScreenWidth, g_nScreenHeight,
+                                             cm_nScreenWidthPow2, cm_nScreenHeightPow2);
+            if (cm_nTargetTexture == 0)
+            {
+                glGenTextures(1, &cm_nTargetTexture);
+                glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
+                glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0,
+                                 cm_nScreenWidthPow2, cm_nScreenHeightPow2, 0);
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
+            unsigned int nRed[FRAMEBUFFER_LOOKUP_SIZE];
+            unsigned int nGreen[FRAMEBUFFER_LOOKUP_SIZE];
+            unsigned int nBlue[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                if (i < FRAMEBUFFER_RED_THRESHOLD)
+                    nRed[i] = 0;
+                else
+                {
+                    float fLookup = (i - FRAMEBUFFER_RED_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_RED_THRESHOLD - 1);
+                    nRed[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN);
+                }
+            }
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                if (i < FRAMEBUFFER_GREEN_THRESHOLD)
+                    nGreen[i] = 0;
+                else
+                {
+                    float fLookup = (i - FRAMEBUFFER_GREEN_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_GREEN_THRESHOLD - 1);
+                    nGreen[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_GREEN_SHIFT;
+                }
+            }
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                if (i < FRAMEBUFFER_BLUE_THRESHOLD)
+                    nBlue[i] = 0;
+                else
+                {
+                    float fLookup = (i - FRAMEBUFFER_BLUE_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_BLUE_THRESHOLD - 1);
+                    nBlue[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_BLUE_SHIFT;
+                }
+            }
+            glGenTextures(1, &cm_nRedTexture);
+            glBindTexture(GL_TEXTURE_1D, cm_nRedTexture);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nRed);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nGreenTexture);
+            glBindTexture(GL_TEXTURE_1D, cm_nGreenTexture);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nGreen);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nBlueTexture);
+            glBindTexture(GL_TEXTURE_1D, cm_nBlueTexture);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nBlue);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            HDC hOriginalDC = m_hDC;
+            HGLRC hOriginalContext = m_hGLRC;
+            memset(cm_nConvolutionRenderTexture, 0, sizeof(cm_nConvolutionRenderTexture));
+            memset(cm_hConvolutionHGLRC, 0, sizeof(cm_hConvolutionHGLRC));
+            memset(cm_hConvolutionHDC, 0, sizeof(cm_hConvolutionHDC));
+            memset(cm_hConvolutionPBuffer, 0, sizeof(cm_hConvolutionPBuffer));
+            cm_bPBuffersAllocated = true;
+
+            cm_hConvolutionPBuffer[0] = CreatePBuffer(64, 64);
+            cm_hConvolutionHDC[0] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[0]);
+            cm_hConvolutionHGLRC[0] = m_hGLRC;
+            wglMakeCurrent(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[0]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[0]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[1] = CreatePBuffer(128, 128);
+            cm_hConvolutionHDC[1] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[1]);
+            cm_hConvolutionHGLRC[1] = m_hGLRC;
+            wglMakeCurrent(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[1]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[1]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[2] = CreatePBuffer(256, 256);
+            cm_hConvolutionHDC[2] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[2]);
+            cm_hConvolutionHGLRC[2] = m_hGLRC;
+            wglMakeCurrent(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[2]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[2]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[3] = CreatePBuffer(512, 512);
+            cm_hConvolutionHDC[3] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[3]);
+            cm_hConvolutionHGLRC[3] = m_hGLRC;
+            wglMakeCurrent(cm_hConvolutionHDC[3], cm_hConvolutionHGLRC[3]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[3]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[3]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[4] = CreatePBuffer(256, 256);
+            cm_hConvolutionHDC[4] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[4]);
+            cm_hConvolutionHGLRC[4] = m_hGLRC;
+            wglMakeCurrent(cm_hConvolutionHDC[4], cm_hConvolutionHGLRC[4]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[4]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[4]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hConvolutionPBuffer[5] = CreatePBuffer(256, 256);
+            cm_hConvolutionHDC[5] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[5]);
+            cm_hConvolutionHGLRC[5] = m_hGLRC;
+            wglMakeCurrent(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5]);
+            glGenTextures(1, &cm_nConvolutionRenderTexture[5]);
+            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[5]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(m_hDC, m_hGLRC);
+
+            cm_hAccumulationHDC = 0;
+            cm_hAccumulationHGLRC = 0;
+            cm_hAccumulationPBuffer = 0;
+            cm_nAccumulationBlur = 0;
+            cm_bFirstFrameBufferFrame = true;
+            cm_hAccumulationPBuffer = CreatePBuffer(128, 128);
+            cm_hAccumulationHDC = wglGetPBufferDCARB(cm_hAccumulationPBuffer);
+            cm_hAccumulationHGLRC = m_hGLRC;
+            wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
+            glGenTextures(1, &cm_nAccumulationBlur);
+            glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            wglMakeCurrent(hOriginalDC, hOriginalContext);
+
+            static char szForceDistortProg[] =
+                "!!ARBvp1.0\n"
+                "TEMP vReg0;\n"
+                "TEMP vReg1;\n"
+                "TEMP vReg2;\n"
+                "TEMP vReg4, vReg3;\n"
+                "DP4   result.position.x, state.matrix.mvp.row[0], vertex.position;\n"
+                "DP4   result.position.y, state.matrix.mvp.row[1], vertex.position;\n"
+                "DP4   result.position.z, state.matrix.mvp.row[2], vertex.position;\n"
+                "DP4   result.position.w, state.matrix.mvp.row[3], vertex.position;\n"
+                "MOV result.texcoord[0], vertex.texcoord[0];\n"
+                "MOV vReg1, vertex.texcoord[1];\n"
+                "MOV vReg2, vertex.texcoord[2];\n"
+                "MOV vReg3.x, vReg1.x;\n"
+                "MOV vReg3.y, program.env[15].x;\n"
+                "MOV vReg3.z, vReg2.x;\n"
+                "MOV vReg4.x, program.env[15].x;\n"
+                "MOV vReg4.y, vReg1.y;\n"
+                "MOV vReg4.z, vReg2.y;\n"
+                "MOV result.texcoord[1].xyz, vReg3;\n"
+                "MOV result.texcoord[2].xyz, vReg4;\n"
+                "MOV result.color.primary, program.env[15].y;\n"
+                "END";
+            glEnable(GL_VERTEX_PROGRAM_ARB);
+            glGenProgramsARB(1, &cm_pHeatDistortionVertexProg);
+            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, cm_pHeatDistortionVertexProg);
+            glProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
+                               strlen(szForceDistortProg), szForceDistortProg);
+            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
+            glDisable(GL_VERTEX_PROGRAM_ARB);
+            AurGetVertexProgramARBError(szForceDistortProg);
+
+            unsigned int nOverbrightenRed[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
+                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+                {
+                    fIntensity *= fIntensity;
+                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
+                }
+                else
+                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
+                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
+                nOverbrightenRed[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX);
+            }
+            unsigned int nOverbrightenGreen[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
+                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+                {
+                    fIntensity *= fIntensity;
+                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
+                }
+                else
+                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
+                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
+                nOverbrightenGreen[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_GREEN_SHIFT;
+            }
+            unsigned int nOverbrightenBlue[FRAMEBUFFER_LOOKUP_SIZE];
+            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
+            {
+                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
+                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+                {
+                    fIntensity *= fIntensity;
+                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
+                }
+                else
+                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
+                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
+                nOverbrightenBlue[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_BLUE_SHIFT;
+            }
+            glGenTextures(1, &cm_nOverbrightenRed);
+            glBindTexture(GL_TEXTURE_1D, cm_nOverbrightenRed);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenRed);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nOverbrightenGreen);
+            glBindTexture(GL_TEXTURE_1D, cm_nOverbrightenGreen);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenGreen);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenTextures(1, &cm_nOverbrightenBlue);
+            glBindTexture(GL_TEXTURE_1D, cm_nOverbrightenBlue);
+            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenBlue);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+    }
+}
+// PC 0x0042B750 GOG 0x0042B860
+void GLRender::FrameBufferModificationPixelShadersATI(unsigned long nMode,
+    unsigned long nTexture0, unsigned long nTexture1,
+    unsigned long nTexture2, unsigned long nTexture3)
+{
+    switch (nMode)
+    {
+    case FRAMEBUFFER_SHADER_SATURATION:
+    {
+        static float c4define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+        static float c5define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+        static float c6define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
+        glSetFragmentShaderConstantATI(GL_CON_3_ATI, c4define);
+        glSetFragmentShaderConstantATI(GL_CON_4_ATI, c5define);
+        glSetFragmentShaderConstantATI(GL_CON_5_ATI, c6define);
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nSaturationShaderATI);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_CONVOLUTION:
+    {
+        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, nTexture1);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, nTexture2);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, nTexture3);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nPerPixelFlareShaderATI);
+        glSetFragmentShaderConstantATI(GL_CON_0_ATI, c0define);
+        glSetFragmentShaderConstantATI(GL_CON_1_ATI, c1define);
+        glSetFragmentShaderConstantATI(GL_CON_2_ATI, c2define);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_COPY:
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nDecalShaderATI);
+        break;
+    case FRAMEBUFFER_SHADER_FOUR_DECALS:
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_n4DecalShaderATI);
+        break;
+    case FRAMEBUFFER_SHADER_DISABLE:
+        glDisable(GL_FRAGMENT_SHADER_ATI);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glDisable(GL_TEXTURE_1D);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+        glBindTexture(GL_TEXTURE_1D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_1D);
+        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+        glBindTexture(GL_TEXTURE_1D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_1D);
+        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_1D, 0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, 0);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        break;
+    case FRAMEBUFFER_SHADER_FILM_NOISE:
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nFilmNoiseShaderATI);
+        break;
+    case FRAMEBUFFER_SHADER_ACCUMULATION_BLUR:
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nAccumulationBlurShaderATI);
+        break;
+    case FRAMEBUFFER_SHADER_FORCE_DISTORTION:
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nForceDistortionShaderATI);
+        break;
+    case FRAMEBUFFER_SHADER_SOFT_SHADOW:
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nSoftShadowShaderATI);
+        break;
+    case FRAMEBUFFER_SHADER_OVERBRIGHTEN:
+    {
+        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, nTexture1);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, nTexture2);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, nTexture3);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nOverbrightenShaderATI);
+        glSetFragmentShaderConstantATI(GL_CON_0_ATI, c0define);
+        glSetFragmentShaderConstantATI(GL_CON_1_ATI, c1define);
+        glSetFragmentShaderConstantATI(GL_CON_2_ATI, c2define);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_DREAM_DISTORTION:
+    {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_2D);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+        glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+        break;
+    }
+    }
+}
+// PC 0x0042BDD0 GOG 0x0042BEE0
+void GLRender::FrameBufferModificationPixelShaders(unsigned long nMode,
+    unsigned long nTexture0, unsigned long nTexture1,
+    unsigned long nTexture2, unsigned long nTexture3)
+{
+    switch (nMode)
+    {
+    case FRAMEBUFFER_SHADER_SATURATION:
+    {
+        static float c4define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+        static float c5define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+        static float c6define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 4);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_SPARE1_NV, GL_DISCARD_NV, 0, 0, GL_TRUE, GL_TRUE, GL_FALSE);
+        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, c4define);
+        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR1_NV, c5define);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_SPARE1_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_TRUE, GL_FALSE, GL_FALSE);
+        glCombinerStageParameterfvNV(GL_COMBINER3_NV, GL_CONSTANT_COLOR0_NV, c6define);
+        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER3_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_CONVOLUTION:
+    {
+        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_RECTANGLE_NV);
+        glBindTexture(GL_TEXTURE_RECTANGLE_NV, nTexture0);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_RECTANGLE_NV);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture1);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_AR_TEXTURE_2D_NV);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture2);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture3);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 2);
+        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, c0define);
+        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR1_NV, c1define);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, c2define);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_COPY:
+    {
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_FOUR_DECALS:
+    {
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 3);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_PRIMARY_COLOR_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_DISABLE:
+    {
+        glDisable(GL_REGISTER_COMBINERS_NV);
+        glDisable(GL_PER_STAGE_CONSTANTS_NV);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glDisable(GL_TEXTURE_RECTANGLE_NV);
+        glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+        glDisable(GL_TEXTURE_SHADER_NV);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_SHADER_NV);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_SHADER_NV);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_SHADER_NV);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_FILM_NOISE:
+    {
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_ACCUMULATION_BLUR:
+    {
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 2);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_FORCE_DISTORTION:
+    {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_RECTANGLE_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_TEXTURE_RECTANGLE_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_SOFT_SHADOW:
+    {
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 3);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_ALPHA, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerOutputNV(GL_COMBINER1_NV, GL_ALPHA, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerOutputNV(GL_COMBINER2_NV, GL_ALPHA, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_OVERBRIGHTEN:
+    {
+        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_RECTANGLE_NV);
+        glBindTexture(GL_TEXTURE_RECTANGLE_NV, nTexture0);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_RECTANGLE_NV);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture1);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_AR_TEXTURE_2D_NV);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture2);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, nTexture3);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 3);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, c0define);
+        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, c1define);
+        glCombinerStageParameterfvNV(GL_COMBINER2_NV, GL_CONSTANT_COLOR0_NV, c2define);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_PRIMARY_COLOR_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        break;
+    }
+    case FRAMEBUFFER_SHADER_DREAM_DISTORTION:
+    {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_TEXTURE_2D_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        float c0define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, c0define);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_ALPHA, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        break;
+    }
+    }
+}
+// PC 0x0042DA50 GOG 0x0042DB60
+void GLRender::MipmapFilterATI(HDC hDC, HGLRC hContext, float fWidth,
+                              float fHeight, PBUFFERARB* pBuffer,
+                              unsigned long nTexture, float fSourceSize)
+{
+    wglMakeContextCurrentARB(hDC, hDC, hContext);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, (int)fWidth, (int)fHeight);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
+    glEnable(GL_BLEND);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
+        float y = (i == 0 || i == 3) ? fHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : fWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glFlush();
+}
+// PC 0x0042DCB0 GOG 0x0042DDC0
+void GLRender::MipmapFilter(HDC hDC, HGLRC hContext, float fWidth,
+                            float fHeight, PBUFFERARB* pBuffer,
+                            unsigned long nTexture, float fSourceSize)
+{
+    wglMakeCurrent(hDC, hContext);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, (int)fWidth, (int)fHeight);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? fHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : fWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glFlush();
+}
+// PC 0x0042DEF0 GOG 0x0042E000
+void GLRender::BloomFilterATI(HDC hDC, HGLRC hContext, float fWidth,
+                           float fHeight, PBUFFERARB* pBuffer,
+                           unsigned long nTexture, float fSourceSize,
+                           int bSoftShadows)
+{
+    static float filter[28] = {
+        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
+        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
+        0.29f, 0.58f, 0.67f, 0.58f, 0.29f,
+        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
+        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
+        0.0f, 0.0f, 0.0f
+    };
+    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    wglMakeContextCurrentARB(hDC, hDC, hContext);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, (int)fWidth, (int)fHeight);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    if (bSoftShadows)
+    {
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        glBindFragmentShaderATI(cm_nSoftShadowShaderATI);
+    }
+    else
+        FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_FOUR_DECALS, 0, 0, 0, 0);
+    int nRow = 0;
+    int nColumn = 0;
+    glEnable(GL_BLEND);
+    float fInverseSize = 1.0f / fSourceSize;
+    for (int nSample = 0; nSample < 25; nSample += 4)
+    {
+        for (int nStage = 0; nStage < 4; ++nStage)
+        {
+            float color[4];
+            if (bSoftShadows)
+                color[3] = color[2] = color[1] = color[0] =
+                    softshadowdarkeningfactor * filter[nSample + nStage];
+            else
+            {
+                color[0] = filter[nSample + nStage];
+                color[1] = filter[nSample + nStage];
+                color[2] = filter[nSample + nStage];
+                color[3] = filter[nSample + nStage];
+            }
+            if (nStage == 0)
+                glSetFragmentShaderConstantATI(GL_CON_0_ATI, color);
+            else if (nStage == 1)
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, color);
+            else if (nStage == 2)
+            {
+                color[0] = color[1] = color[2] = color[3] = 0.0f;
+                glSetFragmentShaderConstantATI(GL_CON_2_ATI, color);
+            }
+            else
+                glSetFragmentShaderConstantATI(GL_CON_3_ATI, color);
+        }
+        glBegin(GL_QUADS);
+        for (int i = 0; i < 4; ++i)
+        {
+            glColor4f(1.0f, 1.0f, 1.0f, multiplier);
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+            float tBase = (i == 0 || i == 3) ? (nRow + fSourceSize - pixeloffset) * fInverseSize : (nRow - pixeloffset) * fInverseSize;
+            float s = (i == 0 || i == 1) ? (float)(0.0 + (nColumn - pixeloffset) * fInverseSize) : (nColumn + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, tBase);
+            int nTextureRow = (nColumn + 1 > 4) ? nRow + 1 : nRow;
+            int nTextureColumn = (nColumn + 1) % 5;
+            glActiveTextureARB(GL_TEXTURE1_ARB);
+            float t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE1_ARB, s, t);
+            nTextureRow = (nColumn + 2 > 4) ? nRow + 1 : nRow;
+            nTextureColumn = (nColumn + 2) % 5;
+            glActiveTextureARB(GL_TEXTURE2_ARB);
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE2_ARB, s, t);
+            nTextureRow = (nColumn + 3 > 4) ? nRow + 1 : nRow;
+            nTextureColumn = (nColumn + 3) % 5;
+            glActiveTextureARB(GL_TEXTURE3_ARB);
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE3_ARB, s, t);
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+            float y = (i == 0 || i == 3) ? fHeight : 0.0f;
+            float x = (i == 0 || i == 1) ? 0.0f : fWidth;
+            glVertex3f(x, y, 0.0f);
+        }
+        glEnd();
+        if (nColumn + 4 > 4)
+            ++nRow;
+        nColumn = (nColumn + 4) % 5;
+    }
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glDisable(GL_TEXTURE_2D);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glDisable(GL_TEXTURE_2D);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glDisable(GL_TEXTURE_2D);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glFlush();
+}
+// PC 0x0042E680 GOG 0x0042E790
+void GLRender::BloomFilter(HDC hDC, HGLRC hContext, float fWidth,
+                           float fHeight, PBUFFERARB* pBuffer,
+                           unsigned long nTexture, float fSourceSize,
+                           int bSoftShadows)
+{
+    static float filter[28] = {
+        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
+        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
+        0.29f, 0.58f, 0.67f, 0.58f, 0.29f,
+        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
+        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
+        0.0f, 0.0f, 0.0f
+    };
+    wglMakeCurrent(hDC, hContext);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, (int)fWidth, (int)fHeight);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_PER_STAGE_CONSTANTS_NV);
+    if (bSoftShadows)
+        FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_SOFT_SHADOW, 0, 0, 0, 0);
+    else
+        FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_FOUR_DECALS, 0, 0, 0, 0);
+    int nRow = 0;
+    int nColumn = 0;
+    glEnable(GL_BLEND);
+    float fInverseSize = 1.0f / fSourceSize;
+    for (int nSample = 0; nSample < 25; nSample += 4)
+    {
+        for (int nStage = 0; nStage < 4; ++nStage)
+        {
+            float color[4];
+            if (bSoftShadows)
+                color[3] = color[2] = color[1] = color[0] =
+                    filter[nSample + nStage] * softshadowdarkeningfactor;
+            else
+            {
+                color[0] = filter[nSample + nStage];
+                color[1] = filter[nSample + nStage];
+                color[2] = filter[nSample + nStage];
+                color[3] = filter[nSample + nStage];
+            }
+            if (nStage == 0)
+                glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, color);
+            else if (nStage == 1)
+                glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR1_NV, color);
+            else if (nStage == 2)
+                glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, color);
+            else
+                glCombinerStageParameterfvNV(GL_COMBINER2_NV, GL_CONSTANT_COLOR0_NV, color);
+        }
+        glBegin(GL_QUADS);
+        for (int i = 0; i < 4; ++i)
+        {
+            glColor4f(1.0f, 1.0f, 1.0f, multiplier);
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+            float tBase = (i == 0 || i == 3) ? (nRow + fSourceSize - pixeloffset) * fInverseSize : (nRow - pixeloffset) * fInverseSize;
+            float s = (i == 0 || i == 1) ? (float)(0.0 + (nColumn - pixeloffset) * fInverseSize) : (nColumn + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, tBase);
+            int nTextureRow = (nColumn + 1 > 4) ? nRow + 1 : nRow;
+            int nTextureColumn = (nColumn + 1) % 5;
+            glActiveTextureARB(GL_TEXTURE1_ARB);
+            float t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE1_ARB, s, t);
+            nTextureRow = (nColumn + 2 > 4) ? nRow + 1 : nRow;
+            nTextureColumn = (nColumn + 2) % 5;
+            glActiveTextureARB(GL_TEXTURE2_ARB);
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE2_ARB, s, t);
+            nTextureRow = (nColumn + 3 > 4) ? nRow + 1 : nRow;
+            nTextureColumn = (nColumn + 3) % 5;
+            glActiveTextureARB(GL_TEXTURE3_ARB);
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE3_ARB, s, t);
+            float y = (i == 0 || i == 3) ? fHeight : 0.0f;
+            float x = (i == 0 || i == 1) ? 0.0f : fWidth;
+            glVertex3f(x, y, 0.0f);
+        }
+        glEnd();
+        if (nColumn + 4 > 4)
+            ++nRow;
+        nColumn = (nColumn + 4) % 5;
+    }
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glFlush();
+}
+// PC 0x0042EDE0 GOG 0x0042EEF0
+void GLRender::RenderOverlayConvolutionATI(unsigned long nTexture)
+{
+    if (!renderregular)
+    {
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    HDC hOldDC = m_hDC;
+    HGLRC hOldContext = m_hGLRC;
+    wglMakeContextCurrentARB(cm_hConvolutionHDC[3], cm_hConvolutionHDC[3],
+                             cm_hConvolutionHGLRC[3]);
+    glDrawBuffer(GL_FRONT);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 512.0, 0.0, 512.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, 512, 512);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(enableTranslationTable[ENABLE_LIGHTING]);
+    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_CONVOLUTION,
+                                           nTexture, cm_nRedTexture,
+                                           cm_nGreenTexture, cm_nBlueTexture);
+    float fMaxS = (float)g_nScreenWidth / (float)cm_nScreenWidthPow2;
+    float fMaxT = (float)g_nScreenHeight / (float)cm_nScreenHeightPow2;
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? fMaxT : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : fMaxS;
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
+        float y = (i == 0 || i == 3) ? 512.0f : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : 512.0f;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glFlush();
+    wglMakeContextCurrentARB(hOldDC, hOldDC, hOldContext);
+    MipmapFilterATI(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2],
+                    256.0f, 256.0f, cm_hConvolutionPBuffer[3],
+                    cm_nConvolutionRenderTexture[3], 512.0f);
+    MipmapFilterATI(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1],
+                    128.0f, 128.0f, cm_hConvolutionPBuffer[2],
+                    cm_nConvolutionRenderTexture[2], 256.0f);
+    MipmapFilterATI(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0],
+                    64.0f, 64.0f, cm_hConvolutionPBuffer[1],
+                    cm_nConvolutionRenderTexture[1], 128.0f);
+    BloomFilterATI(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5],
+                   256.0f, 256.0f, cm_hConvolutionPBuffer[baselayer],
+                   cm_nConvolutionRenderTexture[baselayer], basesize, 0);
+    wglMakeContextCurrentARB(hOldDC, hOldDC, hOldContext);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[displaylayer]);
+    wglBindTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
+    glDrawBuffer(GL_BACK);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
+    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+}
+// PC 0x0042F360 GOG 0x0042F470
+void GLRender::RenderOverlayConvolution(unsigned long nTexture)
+{
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    wglMakeCurrent(cm_hConvolutionHDC[3], cm_hConvolutionHGLRC[3]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 512.0, 0.0, 512.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, 512, 512);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(enableTranslationTable[ENABLE_LIGHTING]);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_CONVOLUTION,
+        nTexture, cm_nRedTexture, cm_nGreenTexture, cm_nBlueTexture);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? 512.0f : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : 512.0f;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glFlush();
+    MipmapFilter(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2],
+        256.0f, 256.0f, cm_hConvolutionPBuffer[3],
+        cm_nConvolutionRenderTexture[3], 512.0f);
+    MipmapFilter(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1],
+        128.0f, 128.0f, cm_hConvolutionPBuffer[2],
+        cm_nConvolutionRenderTexture[2], 256.0f);
+    MipmapFilter(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0],
+        64.0f, 64.0f, cm_hConvolutionPBuffer[1],
+        cm_nConvolutionRenderTexture[1], 128.0f);
+    BloomFilter(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5],
+        256.0f, 256.0f, cm_hConvolutionPBuffer[baselayer],
+        cm_nConvolutionRenderTexture[baselayer], basesize, 0);
+    wglMakeCurrent(m_hDC, m_hGLRC);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[displaylayer]);
+    wglBindTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+}
+
+void GLRender::SetUpSoftShadowsARB()
+{
+    glEnable(GL_TEXTURE_RECTANGLE_NV);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0, g_nScreenWidth, g_nScreenHeight);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+// PC 0x0042F840 GOG 0x0042F950
+void GLRender::SetUpSoftShadowsATI()
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nBufferRegionTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, cm_nScreenWidthPow2, cm_nScreenHeightPow2);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFlush();
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+// PC 0x0042F8C0 GOG 0x0042F9D0
+void GLRender::SetUpSoftShadows()
+{
+    if (AurATISoftShadowsAvailable())
+    {
+        GLRender::SetUpSoftShadowsATI();
+        return;
+    }
+    glEnable(GL_TEXTURE_RECTANGLE_NV);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, GLRender::cm_nBufferRegionTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0, g_nScreenWidth, g_nScreenHeight);
+    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+    glFlush();
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+// PC 0x0042F950 GOG 0x0042FA60
+void GLRender::FinishSoftShadowsATI()
+{
+    glDisable(enableTranslationTable[ENABLE_DEPTH_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glDisable(GL_STENCIL_TEST);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+                       cm_nScreenWidthPow2, cm_nScreenHeightPow2);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glFlush();
+    glClear(GL_COLOR_BUFFER_BIT);
+    wglMakeContextCurrentARB(cm_hSoftShadowHDC, cm_hSoftShadowHDC,
+                            cm_hSoftShadowHGLRC);
+    glDrawBuffer(GL_FRONT);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
+    glDisable(GL_LIGHTING);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    glViewport(0, 0, 512, 512);
+    float fMaxS = (float)g_nScreenWidth / (float)cm_nScreenWidthPow2;
+    float fMaxT = (float)g_nScreenHeight / (float)cm_nScreenHeightPow2;
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? fMaxT : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : fMaxS;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+    glDrawBuffer(GL_BACK);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nBufferRegionTexture);
+    glDisable(GL_LIGHTING);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? fMaxT : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : fMaxS;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LIGHTING_BIT);
+    wglMakeContextCurrentARB(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHDC,
+                            cm_hSoftShadowTargetHGLRC);
+    glDrawBuffer(GL_FRONT);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glViewport(0, 0, 512, 512);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ZERO);
+    BloomFilterATI(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC, 512.0f, 512.0f,
+                   cm_hSoftShadowPBuffer, cm_nSoftShadowRenderTexture,
+                   512.0f, 1);
+    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glFlush();
+    wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
+    glDrawBuffer(GL_BACK);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowTargetRenderTexture);
+    wglBindTexImageARB(cm_hSoftShadowTargetPBuffer, WGL_FRONT_LEFT_ARB);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    wglReleaseTexImageARB(cm_hSoftShadowTargetPBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glPopAttrib();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glEnable(enableTranslationTable[ENABLE_DEPTH_TEST]);
+    glDisable(GL_STENCIL_TEST);
+    SetDepthMask(GL_TRUE);
+    glStencilMask(STENCIL_WRITE_MASK);
+    glDisable(GL_FRAGMENT_SHADER_ATI);
+}
+// PC 0x004300A0 GOG 0x004301B0
+void GLRender::FinishSoftShadows()
+{
+    if (AurATISoftShadowsAvailable())
+    {
+        FinishSoftShadowsATI();
+        return;
+    }
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_RECTANGLE_NV);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0,
+                       g_nScreenWidth, g_nScreenHeight);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glFlush();
+    wglMakeCurrent(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_RECTANGLE_NV);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_STENCIL_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glViewport(0, 0, 512, 512);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    wglMakeCurrent(m_hDC, m_hGLRC);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_RECTANGLE_NV);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
+    glDisable(GL_LIGHTING);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glDisable(GL_STENCIL_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glDepthMask(GL_FALSE);
+    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LIGHTING_BIT);
+    wglMakeCurrent(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
+            (double)g_nScreenHeight, -1.0, 1.0);
+    glViewport(0, 0, 512, 512);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glEnable(GL_BLEND);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    BloomFilter(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC, 512.0f, 512.0f,
+                cm_hSoftShadowTargetPBuffer, cm_nSoftShadowTargetRenderTexture,
+                512.0f, 1);
+    wglMakeCurrent(m_hDC, m_hGLRC);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowRenderTexture);
+    wglBindTexImageARB(cm_hSoftShadowPBuffer, WGL_FRONT_LEFT_ARB);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        glTexCoord2f(s, t);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
+        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        glVertex3f(x, y, 0.0f);
+    }
+    glEnd();
+    wglReleaseTexImageARB(cm_hSoftShadowPBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glPopAttrib();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glEnable(enableTranslationTable[ENABLE_DEPTH_TEST]);
+    glDisable(GL_STENCIL_TEST);
+    SetDepthMask(GL_TRUE);
+    glStencilMask(STENCIL_WRITE_MASK);
+}
+// PC 0x00430740 GOG 0x00430850
+int GLRender::InitializeAntiAliasing()
+{
+
+    static char szClassName[] = "Test GL Window";
+    HGLRC hContext;
+    WNDCLASSA windowClass;
+    PIXELFORMATDESCRIPTOR pixelFormat;
+    OSVERSIONINFOA version;
+
+    windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+    windowClass.lpfnWndProc = DefWindowProcA;
+    windowClass.cbClsExtra = 0;
+    windowClass.cbWndExtra = 0;
+    windowClass.hInstance = g_hInst;
+    windowClass.hIcon = 0;
+    windowClass.hCursor = 0;
+    windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    windowClass.lpszMenuName = 0;
+    windowClass.lpszClassName = szClassName;
+    RegisterClassA(&windowClass);
+
+    HWND hWindow = CreateWindowExA(0, szClassName, "Exo Base Window",
+                                   WS_CLIPCHILDREN | WS_CLIPSIBLINGS, 0, 0,
+                                   CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, 0, 0);
+
+    memset(&pixelFormat, 0, sizeof(pixelFormat));
+    pixelFormat.nSize = sizeof(pixelFormat);
+    pixelFormat.nVersion = 1;
+    pixelFormat.dwFlags =
+        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    pixelFormat.iPixelType = PFD_TYPE_RGBA;
+    pixelFormat.cDepthBits = 24;
+    pixelFormat.cColorBits = 32;
+    pixelFormat.iLayerType = PFD_MAIN_PLANE;
+    pixelFormat.cStencilBits = 8;
+
+    HDC hDC = GetDC(hWindow);
+    int nPixelFormat = ChoosePixelFormat(hDC, &pixelFormat);
+    if (!SetPixelFormat(hDC, nPixelFormat, 0))
+    {
+        return ReleaseDC(hWindow, hDC);
+    }
+
+    DescribePixelFormat(hDC, nPixelFormat, sizeof(pixelFormat), &pixelFormat);
+    hContext = wglCreateContext(hDC);
+    wglMakeCurrent(hDC, hContext);
+
+    wglGetExtensionsStringARB =
+        (AurWglGetExtensionsStringProc)wglGetProcAddress(
+            "wglGetExtensionsStringARB");
+    wglChoosePixelFormatARB = (AurWglChoosePixelFormatProc)wglGetProcAddress(
+        "wglChoosePixelFormatARB");
+
+    const unsigned char* pExtensions = glGetString(GL_EXTENSIONS);
+    int bATIFragmentShader = 0;
+    if (CheckExtension("GL_ATI_fragment_shader", pExtensions))
+    {
+        bATIFragmentShader = 1;
+    }
+    if (wglGetExtensionsStringARB != 0)
+    {
+        const unsigned char* pWglExtensions = wglGetExtensionsStringARB(hDC);
+        wglExtensions = pWglExtensions;
+        if (pWglExtensions != 0 &&
+            CheckExtension("WGL_ARB_multisample", pWglExtensions))
+        {
+            if (bATIFragmentShader == 1)
+            {
+                memset(&version, 0, sizeof(version));
+                version.dwOSVersionInfoSize = sizeof(version);
+                if (GetVersionExA(&version) && version.dwMajorVersion > 4)
+                {
+                    existingextensions |= WGL_ARB_MULTISAMPLE_BIT;
+                }
+            }
+            else
+            {
+                existingextensions |= WGL_ARB_MULTISAMPLE_BIT;
+            }
+        }
+    }
+
+    wglDeleteContext(hContext);
+    ReleaseDC(hWindow, hDC);
+    return DestroyWindow(hWindow);
+}
+// PC 0x00430940 GOG 0x00430A50
+void GLRender::EnableDreamDistortion(bool bLetterbox)
+{
+    m_bDreamDistortEnabled = true;
+    m_bDreamDistortLetterbox = bLetterbox;
+}
+// PC 0x00430960 GOG 0x00430A70
+void GLRender::DisableDreamDistortion()
+{
+    m_bDreamDistortEnabled = false;
+}
+// PC 0x00430970 GOG 0x00430A80
+void GLRender::EnableFury(short nLevel)
+{
+    if (nLevel > 3)
+        nLevel = 3;
+    else if (nLevel < 0)
+        nLevel = 0;
+    if (nLevel != 0)
+    {
+        if (m_FuryLevel != nLevel)
+        {
+            if (m_pFuryTexture != 0)
+            {
+                SetCurrentStageTID(3, 0);
+                AurTextureRelease(m_pFuryTexture);
+            }
+            switch (nLevel)
+            {
+                case 2:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury02", 0);
+                    break;
+                case 3:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury03", 0);
+                    break;
+                default:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury01", 0);
+                    break;
+            }
+            m_FuryLevel = nLevel;
+        }
+    }
+    else
+    {
+        if (m_pFuryTexture != 0)
+        {
+            SetActiveTexture(3);
+            glDisable(enableTranslationTable[ENABLE_TEXTURE_2D]);
+            SetActiveTexture(0);
+            AurTextureRelease(m_pFuryTexture);
+            m_pFuryTexture = 0;
+        }
+        m_FuryLevel = 0;
+    }
+}
+// PC 0x00430A60 GOG 0x00430B70
+void GLRender::RenderDreamDistortion(unsigned long nTexture)
+{
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pDreamDistortTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DREAM_DISTORTION,
+                                        0, 0, 0, 0);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glFlush();
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+}
+// PC 0x00430EB0 GOG 0x00430FC0
+void GLRender::RenderDreamDistortionATI(unsigned long nTexture)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0, (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pDreamDistortTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glDisable(GL_FRAGMENT_SHADER_ATI);
+    glFlush();
+}
+// PC 0x00431400 GOG 0x00431510
+void GLRender::RenderFury(unsigned long nTexture)
+{
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pFuryTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DREAM_DISTORTION,
+                                        0, 0, 0, 0);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glFlush();
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+}
+// PC 0x00431850 GOG 0x00431960
+void GLRender::RenderFuryATI(unsigned long nTexture)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0, (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pFuryTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glDisable(GL_FRAGMENT_SHADER_ATI);
+    glFlush();
+}
+// PC 0x00431DA0 GOG 0x00431EF0
+inline RequestPoolManager::~RequestPoolManager()
+{
+}
+inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
+{
+}
+// PC 0x00434E20 GOG 0x00434F70
+RequestPoolManagerVBO::RequestPoolManagerVBO()
+{
+    m_nPoolCount = 100;
+    for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
+    {
+        m_lstFreePools.Add(nPool);
+        m_lstPoolUsage.Add(0);
+        m_lstPoolLocks.Add(0);
+        m_lstPools.Add(0);
+        m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
+    }
+}
+// PC 0x004350B0 GOG 0x00435200
+RequestPoolManagerVBO::~RequestPoolManagerVBO()
+{
+    for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
+    {
+        if (m_lstPools[nPool] != 0)
+        {
+            glDeleteBuffersARB(1, (unsigned int*)&m_lstPools[nPool]);
+            m_lstPools[nPool] = 0;
+        }
+    }
+
+    for (int nBackup = 0; nBackup < m_lstPoolBackup.m_nCount; nBackup++)
+    {
+        delete[] m_lstPoolBackup[nBackup];
+    }
+
+    m_lstPoolBackup.SetSize(0);
+    m_lstPoolBackupSize.SetSize(0);
+    m_lstPoolTypes.SetSize(0);
+}
+// PC 0x00435200 GOG 0x00435350
+int RequestPoolManagerVBO::RequestPoolGeneric(int nType, int nSize, int nUsage)
+{
+    if (nSize == 0)
+    {
+        return INVALID_POOL;
+    }
+    static unsigned long totalAllocs = 0;
+    totalAllocs += nSize;
+
+    if (m_lstFreePools.m_nCount != 0)
+    {
+        int nPool = m_lstFreePools[m_lstFreePools.m_nCount - 1];
+        m_lstFreePools.DelIndex(m_lstFreePools.m_nCount - 1);
+        m_lstPoolLocks[nPool] = 0;
+        m_lstPoolUsage[nPool] = nUsage;
+        m_lstPools[nPool] = 0;
+        glGenBuffersARB(1, (unsigned int*)&m_lstPools[nPool]);
+        if (nType == Aurora::POOL_VERTEX)
+        {
+            m_lstPoolTypes[nPool] = GL_ARRAY_BUFFER_ARB;
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_lstPools[nPool]);
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
+            return nPool;
+        }
+        else
+        {
+            m_lstPoolTypes[nPool] = GL_ELEMENT_ARRAY_BUFFER_ARB;
+            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_lstPools[nPool]);
+            glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
+            return nPool;
+        }
+    }
+
+    m_lstPoolLocks.Add(0);
+    m_lstPoolUsage.Add(0);
+    m_lstPools.Add(0);
+    m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
+
+    for (unsigned int nPool = m_nPoolCount + 1;
+         nPool < (unsigned int)(2 * m_nPoolCount); ++nPool)
+    {
+        m_lstFreePools.Add(nPool);
+        m_lstPoolLocks.Add(0);
+        m_lstPoolUsage.Add(0);
+        m_lstPools.Add(0);
+        m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
+    }
+
+    glGenBuffersARB(1, (unsigned int*)&m_lstPools[m_nPoolCount]);
+    if (nType == Aurora::POOL_VERTEX)
+    {
+        m_lstPoolTypes[m_nPoolCount] = GL_ARRAY_BUFFER_ARB;
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_lstPools[m_nPoolCount]);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
+    }
+    else
+    {
+        m_lstPoolTypes[m_nPoolCount] = GL_ELEMENT_ARRAY_BUFFER_ARB;
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_lstPools[m_nPoolCount]);
+        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
+    }
+    int nResult = m_nPoolCount;
+    m_nPoolCount *= 2;
+    return nResult;
+}
+// PC 0x00435560 GOG 0x004356B0
+void RequestPoolManagerVBO::DeletePool(unsigned int nPool)
+{
+    if (nPool == INVALID_POOL)
+    {
+        return;
+    }
+
+    m_lstFreePools.Add(nPool);
+    m_lstPoolLocks[nPool] = 0;
+    unsigned int nBuffer = m_lstPools[nPool];
+    glDeleteBuffersARB(1, &nBuffer);
+    m_lstPools[nPool] = 0;
+}
+// PC 0x004355D0 GOG 0x00435720
+RequestPoolManagerSys::RequestPoolManagerSys()
+{
+    m_nPoolCount = 100;
+    m_ppPools = new char*[m_nPoolCount];
+    m_pPoolSize = new unsigned long[m_nPoolCount];
+    memset(m_pPoolSize, 0, 4 * m_nPoolCount);
+    memset(m_ppPools, 0, 4 * m_nPoolCount);
+    for (int nPool = 0; nPool < 100; nPool++)
+    {
+        m_lstFreePools.Add(nPool);
+        m_lstPoolLocks.Add(0);
+    }
+}
+// PC 0x00435780 GOG 0x004358D0
+int RequestPoolManagerSys::RequestPoolGeneric(int nType, int nSize, int nUsage)
+{
+    totalvertexpool += nSize;
+    totalvertexpool4k += (nSize + 4095) & 0xFFFFF000;
+    if (nSize == 0)
+    {
+        return -1;
+    }
+    static unsigned long totalAllocs = 0;
+    totalAllocs += nSize;
+
+    if (m_lstFreePools.m_nCount != 0)
+    {
+        char* pPool = new char[nSize];
+        int nPool = m_lstFreePools[m_lstFreePools.m_nCount - 1];
+        m_lstFreePools.DelIndex(m_lstFreePools.m_nCount - 1);
+        m_ppPools[nPool] = pPool;
+        m_pPoolSize[nPool] = nSize;
+        return nPool;
+    }
+
+    m_lstPoolLocks.Add(0);
+
+    for (unsigned int nPool = m_nPoolCount + 1;
+         nPool < (unsigned int)(2 * m_nPoolCount); ++nPool)
+    {
+        m_lstFreePools.Add(nPool);
+        m_lstPoolLocks.Add(0);
+    }
+
+    char** ppPools = new char*[2 * m_nPoolCount];
+    unsigned long* pPoolSizes = new unsigned long[2 * m_nPoolCount];
+    memset(ppPools, 0, 8 * m_nPoolCount);
+    memcpy(ppPools, m_ppPools, 4 * m_nPoolCount);
+    delete[] m_ppPools;
+    memset(pPoolSizes, 0, 8 * m_nPoolCount);
+    memcpy(pPoolSizes, m_pPoolSize, 4 * m_nPoolCount);
+    delete[] m_pPoolSize;
+    m_ppPools = ppPools;
+    m_pPoolSize = pPoolSizes;
+    m_ppPools[m_nPoolCount] = new char[nSize];
+    m_pPoolSize[m_nPoolCount] = nSize;
+    int nResult = m_nPoolCount;
+    m_nPoolCount *= 2;
+    return nResult;
+}
+// PC 0x00435980 GOG 0x00435AD0
+void RequestPoolManagerSys::DeletePool(unsigned int nPool)
+{
+    if (nPool == INVALID_POOL)
+    {
+        return;
+    }
+
+    m_lstFreePools.Add(nPool);
+    totalvertexpool -= m_pPoolSize[nPool];
+    totalvertexpool4k -=
+        (m_pPoolSize[nPool] + POOL_PAGE_ROUNDING) & POOL_PAGE_MASK;
+    m_lstPoolLocks[nPool] = 0;
+    if (m_ppPools[nPool] != 0)
+    {
+        delete[] m_ppPools[nPool];
+    }
+    m_ppPools[nPool] = 0;
+    m_pPoolSize[nPool] = 0;
+}
+static inline void AurGLCoreTrace();
+// PC 0x00435A30 GOG 0x00435B80
 void GLRender::EnableCombiners(int nShader, CAurTexture* pTexture0,
                                CAurTexture* pTexture1, CAurTexture* pTexture2,
                                CAurTexture* pTexture3)
 {
+    AurGLCoreTrace();
     switch (nShader)
     {
         case MODEL_SHADER_DISABLE:
@@ -6069,4742 +10818,9 @@ void GLRender::EnableCombiners(int nShader, CAurTexture* pTexture0,
     }
     glEnable(GL_REGISTER_COMBINERS_NV);
 }
-// PC 0x00425730 GOG 0x00425840
-void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVTC), pVertices->color);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVTC), &pVertices->u);
-        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVTC), pVertices);
-        glDrawArrays(GL_QUADS, 0, nVertices);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-    }
-    else
-    {
-        glBegin(GL_QUADS);
-        for (int i = 0; i < nVertices; ++i)
-        {
-            glColor4ubv(pVertices[i].color);
-            glTexCoord2f(pVertices[i].u, pVertices[i].v);
-            glVertex3fv(pVertices[i].position);
-        }
-        glEnd();
-    }
-}
-// PC 0x00425820 GOG 0x00425930
-void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_COLOR_ARRAY);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVT), &pVertices->u);
-        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVT), pVertices);
-        glDrawArrays(GL_QUADS, 0, nVertices);
-    }
-    else
-    {
-        glBegin(GL_QUADS);
-        for (int i = 0; i < nVertices; ++i)
-        {
-            glTexCoord2f(pVertices[i].u, pVertices[i].v);
-            glVertex3fv(pVertices[i].position);
-        }
-        glEnd();
-    }
-}
-// PC 0x004258E0 GOG 0x004259F0
-void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
-                                RenderVertexVC* pVertices, int nVertices)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        EnableClientState(GL_VERTEX_ARRAY);
-        EnableClientState(GL_COLOR_ARRAY);
-        DisableClientState(GL_TEXTURE_COORD_ARRAY);
-        DisableClientState(GL_NORMAL_ARRAY);
-        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVC), pVertices->color);
-        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVC), pVertices);
-        glDrawArrays(primTypeTranslationTable[nPrimitive], 0, nVertices);
-    }
-    else
-    {
-        glBegin(primTypeTranslationTable[nPrimitive]);
-        for (int i = 0; i < nVertices; ++i)
-        {
-            glColor4ubv(pVertices[i].color);
-            glVertex3fv(pVertices[i].position);
-        }
-        glEnd();
-    }
-}
-
-inline void DrawPrimitive(unsigned int nMode, int nFirst, int nCount)
-{
-    glDrawArrays(nMode, nFirst, nCount);
-}
-
-inline void DrawIndexedPrimitive(unsigned int nMode, int nCount, const void* pIndices)
-{
-    glDrawElements(nMode, nCount, GL_UNSIGNED_SHORT, pIndices);
-}
-
-void GLRender::RenderObjectsVTC(Aurora::AuroraPrimitiveTypes nPrimitive,
-                                unsigned long nPool, int nVertices)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, manRef->GetPool(nPool));
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVTC), 0);
-        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVTC), (const GLvoid*)12);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVTC), (const GLvoid*)16);
-        glDrawArrays(primTypeTranslationTable[nPrimitive], 0, nVertices);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        glDisableClientState(GL_COLOR_ARRAY);
-    }
-    else
-    {
-        glBegin(primTypeTranslationTable[nPrimitive]);
-        RenderVertexVTC* pVertices =
-            (RenderVertexVTC*)manRef->GetPool(nPool);
-        for (int i = 0; i < nVertices; ++i)
-        {
-            glColor4ubv(pVertices[i].color);
-            glTexCoord2f(pVertices[i].u, pVertices[i].v);
-            glVertex3fv(pVertices[i].position);
-        }
-        glEnd();
-    }
-}
-// PC 0x004259B0 GOG 0x00425AC0
-void GLRender::MakeLookUpTexture(float fGamma)
-{
-    if (!glIsTexture(lookup))
-    {
-        unsigned char* pPixels = new unsigned char[256 * 256 * 2];
-        unsigned char* pPixel = pPixels;
-        for (int i = 0; i < 256; ++i)
-        {
-            unsigned char nGamma =
-                (unsigned char)(pow(i / 255.0, fGamma) * 255.99);
-            for (int j = 0; j < 256; ++j)
-            {
-                float fValue = j / 255.0f;
-                *pPixel++ = (unsigned char)(fValue * 255.99001f);
-                *pPixel++ = nGamma;
-            }
-        }
-        glGenTextures(1, &lookup);
-        glBindTexture(GL_TEXTURE_2D, lookup);
-        cm_nGLCurrentTID[cm_uiCurrentStage] = 0;
-        gluBuild2DMipmaps(GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, 256, 256,
-                          GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pPixels);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                        GL_LINEAR_MIPMAP_LINEAR);
-        delete[] pPixels;
-    }
-}
-
-int GLRender::SetSpecularMode(int bSeparateSpecular)
-{
-    if (bSeparateSpecular)
-    {
-        if (!CheckExtension("GL_EXT_separate_specular_color",
-                            glGetString(GL_EXTENSIONS)))
-        {
-            return 0;
-        }
-        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT,
-                      GL_SEPARATE_SPECULAR_COLOR_EXT);
-        return 1;
-    }
-    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
-    return 1;
-}
-// PC 0x00425B10 GOG 0x00425C20
-unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType,
-                           unsigned long nSize, unsigned long nUsage,
-                           unsigned long nPoolFlags, unsigned long* pnPool)
-{
-    return *pnPool = manRef->RequestPoolGeneric(nType, nSize, nUsage);
-}
-// PC 0x00425B40 GOG 0x00425C50
-void* GLRender::LockPool(unsigned long nPool, unsigned long nOffset,
-                         unsigned long nSize, unsigned long nCount)
-{
-    return manRef->LockPool(nPool, nCount);
-}
-// PC 0x00425B60 GOG 0x00425C70
-void GLRender::UnlockPool(unsigned long nPool)
-{
-    manRef->UnlockPool(nPool);
-}
-// PC 0x00425B80 GOG 0x00425C90
-void GLRender::DeletePool(unsigned long nPool)
-{
-    if (nPool != (unsigned int)-1)
-    {
-        manRef->DeletePool(nPool);
-    }
-}
-// PC 0x00425BA0 GOG 0x00425CB0
-void GLRender::ResizePool(unsigned long nPool, unsigned long nSize)
-{
-    manRef->ResizePool(nPool, nSize);
-}
-// PC 0x00425BC0 GOG 0x00425CD0
-void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
-                                 int nIndex)
-{
-    static int s1[6] = {1, 0, 2, 3, 4, 5};
-    static int numrotations[6] = {3, 1, 0, 2, 2, 0};
-
-    for (int i = 0; i < 6; i++)
-    {
-        int nWidth = pTexture->GetWidth();
-        int nHeight = pTexture->GetHeight();
-        int nBPP = pTexture->GetBPP();
-        int nFaceHeight = nHeight / 6;
-        int nTarget = 0x8515 + s1[i];
-        unsigned char* pFace =
-            pTexture->GetImage() + nWidth * i * nFaceHeight * nBPP;
-        int nSubWidth = nWidth / pTexture->GetNumX();
-        int nSubHeight = nFaceHeight / pTexture->GetNumY();
-        int nX = nIndex % pTexture->GetNumX() * nSubWidth;
-        int nY = nIndex / pTexture->GetNumX() * nSubHeight;
-        unsigned char* pSubImage;
-        if (pTexture->GetNumX() == 1 && pTexture->GetNumY() == 1)
-        {
-            pSubImage = pFace;
-        }
-        else
-        {
-            pSubImage = ImageGetSubImage(pFace, nWidth, nFaceHeight, nBPP, nX, nY,
-                                         nSubWidth, nSubHeight);
-        }
-        unsigned char* pRotated =
-            ImageQuarterRotated(pSubImage, nSubWidth, nSubHeight,
-                                pTexture->GetBPP(), numrotations[i]);
-        int nComponents = pTexture->GetBPP();
-        int nFormat;
-        if (nComponents == 4)
-        {
-            nFormat = GL_RGBA;
-        }
-        else if (nComponents == 3)
-        {
-            nFormat = GL_RGB;
-        }
-        else if (nComponents == 2)
-        {
-            nFormat = GL_LUMINANCE_ALPHA;
-        }
-        else
-        {
-            nFormat = GL_LUMINANCE;
-        }
-        if (pTexture->GetMipMap())
-        {
-            gluBuild2DMipmaps(nTarget, nComponents, nSubWidth, nSubHeight,
-                              nFormat, GL_UNSIGNED_BYTE, pRotated);
-        }
-        else if (bMipMaps)
-        {
-            glTexSubImage2D(nTarget, 0, 0, 0, nSubWidth, nSubHeight, nFormat,
-                            GL_UNSIGNED_BYTE, pRotated);
-        }
-        else
-        {
-            glTexImage2D(nTarget, 0, nComponents, nSubWidth, nSubHeight, 0,
-                         nFormat, GL_UNSIGNED_BYTE, pRotated);
-        }
-        if (pRotated != pSubImage)
-        {
-            delete pRotated;
-        }
-        if (pSubImage != pFace)
-        {
-            delete pSubImage;
-        }
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R_EXT, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER,
-                    pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
-    if (pTexture->GetMipMap())
-    {
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
-                        pTexture->GetFilter() ? GL_LINEAR_MIPMAP_LINEAR
-                                              : GL_NEAREST_MIPMAP_NEAREST);
-    }
-    else
-    {
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
-                        pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
-    }
-}
-// PC 0x00425E60 GOG 0x00425F70
-void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
-                                          int nIndex)
-{
-    int nWidth = pTexture->GetWidth();
-    int nHeight = pTexture->GetHeight() / 6;
-    int nBPP = pTexture->GetBPP();
-    int bMipMap = pTexture->GetMipMap();
-    unsigned char* pImage = pTexture->GetImage();
-    int nTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
-    for (int nFace = 0; nFace < 6; nFace++, nTarget++)
-    {
-        if (pTexture->GetCompressedSize() > 0)
-        {
-            int nLevel = 0;
-            int nBlockSize = nBPP == 4 ? 16 : 8;
-            glCompressedTexImage2DARB(nTarget, 0,
-                textureFormatTranslationTable[pTexture->GetCompressionFormat()],
-                nWidth, nHeight, 0, pTexture->GetCompressedSize(), pImage);
-            if (bMipMap)
-            {
-                int nSize = pTexture->GetCompressedSize();
-                int nMipWidth = nWidth >> 1;
-                int nMipHeight = nHeight >> 1;
-                while (nMipWidth || nMipHeight)
-                {
-                    if (nMipWidth == 0)
-                        nMipWidth = 1;
-                    if (nMipHeight == 0)
-                        nMipHeight = 1;
-                    nLevel++;
-                    pImage += nSize;
-                    nSize = ((nMipWidth + 3) / 4) * ((nMipHeight + 3) / 4) * nBlockSize;
-                    glCompressedTexImage2DARB(nTarget, nLevel,
-                        textureFormatTranslationTable[pTexture->GetCompressionFormat()],
-                        nMipWidth, nMipHeight, 0, nSize, pImage);
-                    nMipWidth >>= 1;
-                    nMipHeight >>= 1;
-                }
-                pImage += nSize;
-            }
-        }
-        else
-        {
-            int nFormat = nBPP == 4 ? GL_RGBA : GL_RGB;
-            if (bMipMap)
-            {
-                int nLevel = 0;
-                if (bSubImage)
-                    glTexSubImage2D(nTarget, 0, 0, 0, nWidth, nHeight, nFormat,
-                                    GL_UNSIGNED_BYTE, pImage);
-                else
-                    glTexImage2D(nTarget, 0, nBPP, nWidth, nHeight, 0, nFormat,
-                                 GL_UNSIGNED_BYTE, pImage);
-                int nSize = nWidth * nHeight * nBPP;
-                int nMipWidth = nWidth >> 1;
-                int nMipHeight = nHeight >> 1;
-                for (int nMip = pTexture->GetNumMipMaps() - 1; nMip > 0; nMip--)
-                {
-                    if (nMipWidth == 0)
-                        nMipWidth = 1;
-                    if (nMipHeight == 0)
-                        nMipHeight = 1;
-                    nLevel++;
-                    pImage += nSize;
-                    nSize = nMipWidth * nMipHeight * nBPP;
-                    if (bSubImage)
-                        glTexSubImage2D(nTarget, nLevel, 0, 0, nMipWidth, nMipHeight,
-                                        nFormat, GL_UNSIGNED_BYTE, pImage);
-                    else
-                        glTexImage2D(nTarget, nLevel, nBPP, nMipWidth, nMipHeight, 0,
-                                     nFormat, GL_UNSIGNED_BYTE, pImage);
-                    nMipWidth >>= 1;
-                    nMipHeight >>= 1;
-                }
-                pImage += nSize;
-            }
-            else if (bSubImage)
-                glTexSubImage2D(nTarget, 0, 0, 0, nWidth, nHeight, nFormat,
-                                GL_UNSIGNED_BYTE, pImage);
-            else
-                glTexImage2D(nTarget, 0, nBPP, nWidth, nHeight, 0, nFormat,
-                             GL_UNSIGNED_BYTE, pImage);
-        }
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R_EXT, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER,
-                     pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
-    if (pTexture->GetMipMap())
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
-                         pTexture->GetFilter() ? GL_LINEAR_MIPMAP_LINEAR
-                                               : GL_NEAREST_MIPMAP_NEAREST);
-    else
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
-                         pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
-}
-// PC 0x004261B0 GOG 0x004262C0
-void AurBuild2DMipMaps(int nSrcWidth, int nSrcHeight, int nBPP,
-                       unsigned char* pImage, bool bSubImage)
-{
-    int nWidth = nSrcWidth;
-    int nHeight = nSrcHeight;
-    unsigned char* pMipImage;
-    if (nWidth != nHeight)
-    {
-        int nSize = nWidth > nHeight ? nWidth : nHeight;
-        pMipImage = ImageScale(pImage, nWidth, nHeight, nBPP, nSize, nSize);
-        nHeight = nWidth = nSize;
-    }
-    else
-    {
-        pMipImage = new unsigned char[nWidth * nHeight * nBPP];
-        memcpy(pMipImage, pImage, nWidth * nHeight * nBPP);
-    }
-
-    int nLevel = 0;
-    int nType = nBPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4 : GL_UNSIGNED_BYTE;
-    int nFormat;
-    if (nBPP == 4)
-        nFormat = GL_RGBA;
-    else if (nBPP == 3)
-        nFormat = GL_RGB;
-    else if (nBPP == 2)
-        nFormat = GL_RGBA;
-    else
-        nFormat = GL_LUMINANCE;
-
-    if (!bSubImage)
-        glTexImage2D(GL_TEXTURE_2D, nLevel, nBPP, nWidth, nHeight, 0,
-                     nFormat, nType, pMipImage);
-    else
-        glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nWidth, nHeight,
-                        nFormat, nType, pMipImage);
-
-    while (nWidth * nHeight > 1)
-    {
-        unsigned char* pNextImage = new unsigned char[(nWidth / 2) * (nHeight / 2) * nBPP];
-        for (int nY = 0; nY < nHeight / 2; nY++)
-        {
-            for (int nX = 0; nX < nWidth / 2; nX++)
-            {
-                if (nBPP == 2)
-                {
-                    int nTopLeft = pMipImage[(nY * nWidth + nX) * 4];
-                    int nTopRight = pMipImage[(nY * nWidth + nX) * 4 + 2];
-                    int nBottomLeft = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2];
-                    int nBottomRight = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2 + 2];
-                    pNextImage[(nY * (nWidth / 2) + nX) * 2] =
-                        (((nTopLeft & AUR_MIPMAP_COMPONENT_MASK) +
-                          (nTopRight & AUR_MIPMAP_COMPONENT_MASK) +
-                          (nBottomLeft & AUR_MIPMAP_COMPONENT_MASK) +
-                          (nBottomRight & AUR_MIPMAP_COMPONENT_MASK)) / 4) |
-                        ((((nTopLeft >> 4) + (nTopRight >> 4) +
-                           (nBottomLeft >> 4) + (nBottomRight >> 4)) / 4) << 4);
-                    nTopLeft = pMipImage[(nY * nWidth + nX) * 4 + 1];
-                    nTopRight = pMipImage[(nY * nWidth + nX) * 4 + 3];
-                    nBottomLeft = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2 + 1];
-                    nBottomRight = pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * 2 + 3];
-                    pNextImage[(nY * (nWidth / 2) + nX) * 2 + 1] =
-                        (((nTopLeft & AUR_MIPMAP_COMPONENT_MASK) +
-                          (nTopRight & AUR_MIPMAP_COMPONENT_MASK) +
-                          (nBottomLeft & AUR_MIPMAP_COMPONENT_MASK) +
-                          (nBottomRight & AUR_MIPMAP_COMPONENT_MASK)) / 4) |
-                        ((((nTopLeft >> 4) + (nTopRight >> 4) +
-                           (nBottomLeft >> 4) + (nBottomRight >> 4)) / 4) << 4);
-                }
-                else
-                {
-                    for (int nComponent = 0; nComponent < nBPP; nComponent++)
-                    {
-                        pNextImage[(nY * (nWidth / 2) + nX) * nBPP + nComponent] =
-                            (pMipImage[(nY * nWidth + nX) * 2 * nBPP + nComponent] +
-                             pMipImage[((nY * 2 + 1) * nWidth + nX * 2) * nBPP + nComponent] +
-                             pMipImage[((nY * 2 + 1) * nWidth + nX * 2 + 1) * nBPP + nComponent] +
-                             pMipImage[((nY * nWidth + nX) * 2 + 1) * nBPP + nComponent]) / 4;
-                    }
-                }
-            }
-        }
-        delete pMipImage;
-        pMipImage = pNextImage;
-        nWidth >>= 1;
-        nHeight >>= 1;
-        nLevel++;
-        if (!bSubImage)
-            glTexImage2D(GL_TEXTURE_2D, nLevel, nBPP, nWidth, nHeight, 0,
-                         nFormat, nType, pMipImage);
-        else
-            glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nWidth, nHeight,
-                            nFormat, nType, pMipImage);
-    }
-    delete pMipImage;
-}
-// PC 0x00426570 GOG 0x00426680
-void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex)
-{
-    int nHeight = pTexture->GetHeight();
-    int nBPP = pTexture->GetBPP();
-    unsigned char* pImage = pTexture->GetImage();
-    int nNumX = pTexture->GetNumX();
-    int nNumY = pTexture->GetNumY();
-    int nWidth = pTexture->GetWidth();
-    int nSubWidth = nWidth / nNumX;
-    int nSubHeight = nHeight / nNumY;
-    int nX = nIndex % nNumX * nSubWidth;
-    int nY = nIndex / nNumX * nSubHeight;
-    unsigned char* pSubImage;
-    if (nNumX == 1 && nNumY == 1)
-        pSubImage = pImage;
-    else
-        pSubImage = ImageGetSubImage(pImage, nWidth, nHeight, nBPP, nX, nY,
-                                    nSubWidth, nSubHeight);
-
-    if (pTexture->IsBumpMap())
-    {
-        if (AurBumpMapAvailable())
-            BuildTextureNormalMap(pSubImage, pTexture->GetBumpMapScaling(),
-                                  nSubWidth, nSubHeight, nBPP, 0,
-                                  pTexture->IsNormalMap());
-        if (pSubImage != pImage)
-            delete pSubImage;
-        return;
-    }
-
-    int bMipMap = pTexture->GetMipMap();
-    if (pTexture->GetCompressedSize() > 0)
-    {
-        int nLevel = 0;
-        int nBlockSize = nBPP == 4 ? 16 : 8;
-        unsigned char* pMipImage = pTexture->GetImage();
-        glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
-            textureFormatTranslationTable[pTexture->GetCompressionFormat()],
-            nWidth, nHeight, 0, pTexture->GetCompressedSize(), pTexture->GetImage());
-        if (pTexture->GetMipMap())
-        {
-            int nSize = pTexture->GetCompressedSize();
-            int nMipWidth = nWidth >> 1;
-            int nMipHeight = nHeight >> 1;
-            while (nMipWidth || nMipHeight)
-            {
-                if (nMipWidth == 0)
-                    nMipWidth = 1;
-                if (nMipHeight == 0)
-                    nMipHeight = 1;
-                nLevel++;
-                pMipImage += nSize;
-                nSize = ((nMipWidth + 3) / 4) * ((nMipHeight + 3) / 4) * nBlockSize;
-                glCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
-                    textureFormatTranslationTable[pTexture->GetCompressionFormat()],
-                    nMipWidth, nMipHeight, 0, nSize, pMipImage);
-                nMipWidth >>= 1;
-                nMipHeight >>= 1;
-            }
-        }
-    }
-    else
-    {
-        int nFormat;
-        if (nBPP == 4)
-            nFormat = GL_RGBA;
-        else if (nBPP == 3)
-            nFormat = GL_RGB;
-        else
-            nFormat = nBPP == 2 ? GL_RGBA : GL_LUMINANCE;
-        int nType;
-        int nComponents;
-        if (nBPP == 2)
-        {
-            nType = GL_UNSIGNED_SHORT_4_4_4_4;
-            nComponents = 4;
-        }
-        else
-        {
-            nType = GL_UNSIGNED_BYTE;
-            nComponents = nBPP;
-        }
-        if (bMipMap)
-        {
-            if (AurSGIMipmapAvailable())
-            {
-                glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-                glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
-                             0, nFormat, nType, pSubImage);
-            }
-            else if (!bSubImage && nBPP != 2)
-                gluBuild2DMipmaps(GL_TEXTURE_2D, nComponents, nSubWidth, nSubHeight,
-                                  nFormat, nType, pSubImage);
-            else
-                AurBuild2DMipMaps(nSubWidth, nSubHeight, nBPP, pSubImage, bSubImage);
-        }
-        else if (bSubImage)
-        {
-            if (pTexture->GetDepth())
-                glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, nSubWidth, nSubHeight,
-                                pTexture->GetDepth(), nFormat, GL_UNSIGNED_BYTE, pSubImage);
-            else
-                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nSubWidth, nSubHeight,
-                                nFormat, GL_UNSIGNED_BYTE, pSubImage);
-        }
-        else
-        {
-            if (pTexture->GetDepth())
-                glTexImage3D(GL_TEXTURE_3D, 0, nComponents, nSubWidth, nSubHeight,
-                             pTexture->GetDepth(), 0, nFormat, nType, pSubImage);
-            else
-                glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
-                             0, nFormat, nType, pSubImage);
-        }
-    }
-
-    int nClamp = pTexture->GetClamp();
-    int bFilter = pTexture->GetFilter();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                     nClamp & TEXTURE_CLAMP_S ? GL_CLAMP : GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                     nClamp & TEXTURE_CLAMP_T ? GL_CLAMP : GL_REPEAT);
-    int nMagFilter = bFilter ? GL_LINEAR : GL_NEAREST;
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nMagFilter);
-    int nMinFilter;
-    if (bMipMap)
-        nMinFilter = bFilter ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
-    else
-        nMinFilter = nMagFilter;
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nMinFilter);
-    if (pSubImage != pImage)
-        delete pSubImage;
-}
-// PC 0x004269B0 GOG 0x00426AC0
-int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
-{
-    int nMipWidth = nWidth;
-    int nBlockSize = nBytesPerPixel == 4 ? 16 : 8;
-    int nSize = nBlockSize * ((nWidth + 3) / 4) * ((nWidth + 3) / 4);
-
-    while (nMipWidth > 1)
-    {
-        nMipWidth >>= 1;
-        nSize += nBlockSize * ((nMipWidth + 3) / 4) * ((nMipWidth + 3) / 4);
-    }
-
-    return nIndex * nSize;
-}
-// PC 0x00426A10 GOG 0x00426B20
-void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage,
-                                      int nIndex)
-{
-    int nContactSheetIndex = nIndex;
-    int nHeight = pTexture->GetHeight();
-    int nBPP = pTexture->GetBPP();
-    unsigned char* pImage = pTexture->GetImage();
-    int nNumX = pTexture->GetNumX();
-    int nNumY = pTexture->GetNumY();
-    int nWidth = pTexture->GetWidth();
-    int nSubWidth = nWidth / nNumX;
-    int nSubHeight = nHeight / nNumY;
-    unsigned char* pSubImage;
-    if (nNumX == 1 && nNumY == 1)
-        pSubImage = pImage;
-    else
-        pSubImage = pImage + GetCompressedContactSheetOffset(nContactSheetIndex, nSubWidth, nBPP);
-
-    int bMipMap = pTexture->GetMipMap();
-    if (pTexture->IsBumpMap() && nBPP == 1)
-    {
-        if (AurBumpMapAvailable())
-            BuildTextureNormalMap(pSubImage, pTexture->GetBumpMapScaling(),
-                                  nSubWidth, nSubHeight, nBPP, 0,
-                                  pTexture->IsNormalMap());
-        if (pSubImage != pImage)
-            delete pSubImage;
-        return;
-    }
-
-    if (pTexture->GetCompressedSize() > 0)
-    {
-        int nLevel = 0;
-        unsigned char* pMipImage = pSubImage;
-        int nBlockSize = nBPP == 4 ? 16 : 8;
-        int nSize = ((nSubWidth + 3) / 4) * ((nSubHeight + 3) / 4) * nBlockSize;
-        glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
-            textureFormatTranslationTable[pTexture->GetCompressionFormat()],
-            nSubWidth, nSubHeight, 0, nSize, pMipImage);
-        if (pTexture->GetMipMap())
-        {
-            int nMipWidth = nSubWidth >> 1;
-            int nMipHeight = nSubHeight >> 1;
-            while (nMipWidth || nMipHeight)
-            {
-                if (nMipWidth == 0)
-                    nMipWidth = 1;
-                if (nMipHeight == 0)
-                    nMipHeight = 1;
-                nLevel++;
-                pMipImage += nSize;
-                nSize = ((nMipWidth + 3) / 4) * ((nMipHeight + 3) / 4) * nBlockSize;
-                glCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
-                    textureFormatTranslationTable[pTexture->GetCompressionFormat()],
-                    nMipWidth, nMipHeight, 0, nSize, pMipImage);
-                nMipWidth >>= 1;
-                nMipHeight >>= 1;
-            }
-        }
-    }
-    else
-    {
-        int nFormat;
-        if (nBPP == 4)
-            nFormat = GL_RGBA;
-        else if (nBPP == 3)
-            nFormat = GL_RGB;
-        else
-            nFormat = nBPP == 2 ? GL_RGBA : GL_LUMINANCE;
-        int nType;
-        int nComponents;
-        if (nBPP == 2)
-        {
-            nType = GL_UNSIGNED_SHORT_4_4_4_4;
-            nComponents = 4;
-        }
-        else
-        {
-            nType = GL_UNSIGNED_BYTE;
-            nComponents = nBPP;
-        }
-        if (bMipMap)
-        {
-            int nLevel = 0;
-            unsigned char* pMipImage = pTexture->GetImage();
-            if (bSubImage)
-                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nSubWidth, nSubHeight,
-                                nFormat, GL_UNSIGNED_BYTE, pMipImage);
-            else
-                glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
-                             0, nFormat, nType, pMipImage);
-            if (pTexture->GetMipMap())
-            {
-                int nSize = nSubWidth * nSubHeight * nBPP;
-                int nMipWidth = nSubWidth >> 1;
-                int nMipHeight = nSubHeight >> 1;
-                for (int nMip = pTexture->GetNumMipMaps() - 1; nMip > 0; nMip--)
-                {
-                    if (nMipWidth == 0)
-                        nMipWidth = 1;
-                    if (nMipHeight == 0)
-                        nMipHeight = 1;
-                    nLevel++;
-                    pMipImage += nSize;
-                    nSize = nMipWidth * nMipHeight * nBPP;
-                    if (bSubImage)
-                        glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nMipWidth, nMipHeight,
-                                        nFormat, nType, pMipImage);
-                    else
-                        glTexImage2D(GL_TEXTURE_2D, nLevel, nComponents, nMipWidth, nMipHeight,
-                                     0, nFormat, nType, pMipImage);
-                    nMipWidth >>= 1;
-                    nMipHeight >>= 1;
-                }
-            }
-        }
-        else if (bSubImage)
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nSubWidth, nSubHeight,
-                            nFormat, GL_UNSIGNED_BYTE, pSubImage);
-        else
-            glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nSubWidth, nSubHeight,
-                         0, nFormat, nType, pSubImage);
-    }
-
-    if (!pTexture->IsBumpMap())
-    {
-        int nClamp = pTexture->GetClamp();
-        int bFilter = pTexture->GetFilter();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                         nClamp & TEXTURE_CLAMP_S ? GL_CLAMP : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                         nClamp & TEXTURE_CLAMP_T ? GL_CLAMP : GL_REPEAT);
-        int nMagFilter = bFilter ? GL_LINEAR : GL_NEAREST;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nMagFilter);
-        int nMinFilter;
-        if (bMipMap)
-            nMinFilter = bFilter ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
-        else
-            nMinFilter = nMagFilter;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nMinFilter);
-    }
-}
-// PC 0x00426E90 GOG 0x00426FA0
-void GLRender::SetLightmapTexCoordToStage0(unsigned long nStride, int nFlags,
-                                         unsigned long nPool, int nVertexCount,
-                                         MdlNodeTriMesh* pMesh,
-                                         unsigned long nOffset)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        int nPoolBuffer = manRef->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nPoolBuffer);
-        ActivateTextureStage(0);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nOffset));
-        ActivateTextureStage(1);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nOffset));
-        ActivateTextureStage(0);
-    }
-    else
-    {
-        unsigned long nBuffer = manRef->GetPool(nPool) + nOffset;
-        ActivateTextureStage(0);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nBuffer));
-        ActivateTextureStage(1);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nBuffer));
-        ActivateTextureStage(0);
-    }
-}
-// PC 0x00426FE0 GOG 0x004270F0
-void GLRender::SetDecalTexCoordToStage0(unsigned long nStride, int nFlags,
-                                      unsigned long nPool, int nVertexCount,
-                                      MdlNodeTriMesh* pMesh,
-                                      unsigned long nOffset)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        int nPoolBuffer = manRef->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nPoolBuffer);
-        ActivateTextureStage(0);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nOffset));
-        ActivateTextureStage(1);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nOffset));
-        ActivateTextureStage(0);
-    }
-    else
-    {
-        unsigned long nBuffer = manRef->GetPool(nPool) + nOffset;
-        ActivateTextureStage(0);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nBuffer));
-        ActivateTextureStage(1);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nBuffer));
-        ActivateTextureStage(0);
-    }
-}
-// PC 0x00427130 GOG 0x00427240
-void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags,
-                                   unsigned long nPool, int nVertexCount,
-                                   MdlNodeTriMesh* pMesh, unsigned long nOffset)
-{
-    unsigned long nBuffer;
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        int nPoolBuffer = manRef->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nPoolBuffer);
-        nBuffer = nOffset;
-    }
-    else
-    {
-        nBuffer = manRef->GetPool(nPool) + nOffset;
-    }
-
-    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_POSITION)
-        glVertexPointer(3, GL_FLOAT, pMesh->m_nVertexStride,
-                        (const GLvoid*)(pMesh->m_nPositionOffset + nBuffer));
-    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_NORMAL)
-        glNormalPointer(GL_FLOAT, pMesh->m_nVertexStride,
-                        (const GLvoid*)(pMesh->m_nNormalOffset + nBuffer));
-    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_COLOR)
-        glColorPointer(4, GL_UNSIGNED_BYTE, pMesh->m_nVertexStride,
-                       (const GLvoid*)(pMesh->m_nColorOffset + nBuffer));
-    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD0)
-    {
-        ActivateTextureStage(0);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord0Offset + nBuffer));
-    }
-    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD1)
-    {
-        ActivateTextureStage(1);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord1Offset + nBuffer));
-    }
-    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD2)
-    {
-        ActivateTextureStage(2);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord2Offset + nBuffer));
-    }
-    if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD3)
-    {
-        ActivateTextureStage(3);
-        glTexCoordPointer(2, GL_FLOAT, pMesh->m_nVertexStride,
-                          (const GLvoid*)(pMesh->m_nTexCoord3Offset + nBuffer));
-    }
-    ActivateTextureStage(0);
-
-    if (AurVertexProgramsAvailable())
-    {
-        if (nFlags & MdlNodeTriMesh::VERTEX_ARRAY_TANGENT_BASIS)
-        {
-            {
-                const GLvoid* pBasis = (const GLvoid*)(pMesh->m_TangentBases + nBuffer);
-                int nVertexStride = pMesh->m_nVertexStride;
-                if (usearbvertexprograms)
-                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_TANGENT_BASIS0, 3,
-                        GL_FLOAT, GL_FALSE, nVertexStride, pBasis);
-                else if (usevertexprograms && AurVertexProgramsAvailable())
-                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_TANGENT_BASIS0, 3,
-                        GL_FLOAT, nVertexStride, pBasis);
-            }
-            {
-                const GLvoid* pBasis = (const GLvoid*)(pMesh->m_TangentBases + nBuffer + 12);
-                int nVertexStride = pMesh->m_nVertexStride;
-                if (usearbvertexprograms)
-                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_TANGENT_BASIS1, 3,
-                        GL_FLOAT, GL_FALSE, nVertexStride, pBasis);
-                else if (usevertexprograms && AurVertexProgramsAvailable())
-                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_TANGENT_BASIS1, 3,
-                        GL_FLOAT, nVertexStride, pBasis);
-            }
-            {
-                const GLvoid* pBasis = (const GLvoid*)(pMesh->m_TangentBases + nBuffer + 24);
-                int nVertexStride = pMesh->m_nVertexStride;
-                if (usearbvertexprograms)
-                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_TANGENT_BASIS2, 3,
-                        GL_FLOAT, GL_FALSE, nVertexStride, pBasis);
-                else if (usevertexprograms && AurVertexProgramsAvailable())
-                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_TANGENT_BASIS2, 3,
-                        GL_FLOAT, nVertexStride, pBasis);
-            }
-            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS0);
-            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS1);
-            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS2);
-        }
-        else
-        {
-            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS0);
-            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS1);
-            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_TANGENT_BASIS2);
-        }
-
-        if (pMesh->AsMdlNodeSkin())
-        {
-            {
-                const GLvoid* pWeights = (const GLvoid*)(pMesh->AsMdlNodeSkin()->m_nSkinWeightOffset + nBuffer);
-                int nVertexStride = pMesh->m_nVertexStride;
-                if (usearbvertexprograms)
-                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_SKIN_WEIGHT, 4,
-                        GL_FLOAT, GL_FALSE, nVertexStride, pWeights);
-                else if (usevertexprograms && AurVertexProgramsAvailable())
-                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_SKIN_WEIGHT, 4,
-                        GL_FLOAT, nVertexStride, pWeights);
-            }
-            {
-                const GLvoid* pIndices = (const GLvoid*)(pMesh->AsMdlNodeSkin()->m_nBoneIndexOffset + nBuffer);
-                int nVertexStride = pMesh->m_nVertexStride;
-                if (usearbvertexprograms)
-                    glVertexAttribPointerARB(VERTEX_ATTRIBUTE_BONE_INDEX, 4,
-                        GL_FLOAT, GL_FALSE, nVertexStride, pIndices);
-                else if (usevertexprograms && AurVertexProgramsAvailable())
-                    glVertexAttribPointerNV(VERTEX_ATTRIBUTE_BONE_INDEX, 4,
-                        GL_FLOAT, nVertexStride, pIndices);
-            }
-            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_SKIN_WEIGHT);
-            glEnableVertexAttribArrayARB(VERTEX_ATTRIBUTE_BONE_INDEX);
-        }
-        else
-        {
-            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_SKIN_WEIGHT);
-            glDisableVertexAttribArrayARB(VERTEX_ATTRIBUTE_BONE_INDEX);
-        }
-    }
-}
-// PC 0x00427510 GOG 0x00427620
-void GLRender::SetVertexBuffer(unsigned long nStride, unsigned long nOffset,
-                               unsigned long nPool, int nUsage)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
-        glVertexPointer(3, GL_FLOAT, nStride, (const GLvoid*)nOffset);
-    }
-    else
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glVertexPointer(3, GL_FLOAT, nStride,
-                        (const GLvoid*)(nOffset + nBuffer));
-    }
-}
-// PC 0x00427580 GOG 0x00427690
-void GLRender::SetColorBuffer(unsigned long nStride, unsigned long nOffset,
-                              unsigned long nPool, int nUsage)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
-        glColorPointer(4, GL_UNSIGNED_BYTE, nStride, (const GLvoid*)nOffset);
-    }
-    else
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glColorPointer(4, GL_UNSIGNED_BYTE, nStride,
-                       (const GLvoid*)(nOffset + nBuffer));
-    }
-}
-// PC 0x004275F0 GOG 0x00427700
-void GLRender::SetNormalBuffer(unsigned int nStride, unsigned int nOffset,
-                               unsigned int nPool, int nUsage)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
-        glNormalPointer(GL_FLOAT, nStride, (const GLvoid*)nOffset);
-    }
-    else
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glNormalPointer(GL_FLOAT, nStride, (const GLvoid*)(nOffset + nBuffer));
-    }
-}
-// PC 0x00427650 GOG 0x00427760
-void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOffset,
-                                 unsigned long nPool, int nUsage)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
-        glTexCoordPointer(2, GL_FLOAT, nStride, (const GLvoid*)nOffset);
-    }
-    else
-    {
-        int nBuffer = manRef->GetPool(nPool);
-        glTexCoordPointer(2, GL_FLOAT, nStride,
-                          (const GLvoid*)(nOffset + nBuffer));
-    }
-}
-// PC 0x004276C0 GOG 0x004277D0
-void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive,
-                            unsigned long nCount, unsigned long nOffset,
-                            unsigned long nPool)
-{
-    int nIndexPool = manRef->GetIndexPool(nPool);
-    glDrawElements(primTypeTranslationTable[nPrimitive], nCount,
-                   GL_UNSIGNED_SHORT,
-                   (const GLvoid*)(nIndexPool + 2 * nOffset));
-}
-// PC 0x00427700 GOG 0x00427810
-void ImposterManager::AllocateImposter(unsigned long nRecord, int nVertices,
-                                      float* pVertices)
-{
-    HDC hOldDC = GLRender::m_hDC;
-    HGLRC hOldContext = GLRender::m_hGLRC;
-    Record* pRecord = &m_pImposters[nRecord];
-    pRecord->m_bAllocated = true;
-    pRecord->m_nVertices = nVertices;
-    pRecord->m_pVertices = new float[nVertices * 3];
-    memcpy(pRecord->m_pVertices, pVertices, nVertices * 3 * sizeof(float));
-
-    unsigned int nTexture;
-    glGenTextures(1, &nTexture);
-    pRecord->m_nTexture = nTexture;
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
-
-    float fFloatAttributes[1];
-    int nPixelFormat;
-    unsigned int nNumFormats;
-    int nPbufferAttributes[3];
-    int nPixelFormatAttributes[5] = {WGL_DRAW_TO_PBUFFER_ARB, 1,
-                                    WGL_SUPPORT_OPENGL_ARB, 1, 0};
-    fFloatAttributes[0] = 0.0f;
-    wglChoosePixelFormatARB(hOldDC, nPixelFormatAttributes, fFloatAttributes, 1,
-                            &nPixelFormat, &nNumFormats);
-    nPbufferAttributes[0] = WGL_PBUFFER_LARGEST_ARB;
-    nPbufferAttributes[1] = 1;
-    nPbufferAttributes[2] = 0;
-    PBUFFERARB* pBuffer = wglCreatePBufferARB(hOldDC, nPixelFormat, 256, 256,
-                                            nPbufferAttributes);
-    HDC hBufferDC = wglGetPBufferDCARB(pBuffer);
-    HGLRC hContext = wglCreateContext(hBufferDC);
-    wglShareLists(hOldContext, hContext);
-    wglMakeCurrent(hBufferDC, hContext);
-    pRecord->m_hContext = hContext;
-    pRecord->m_hBufferDC = hBufferDC;
-    pRecord->m_pBuffer = pBuffer;
-    wglMakeCurrent(hOldDC, hOldContext);
-}
-
-void BeginImposterRender(unsigned long nRecord)
-{
-    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
-    if (!wglMakeCurrent(pRecord->m_hBufferDC, pRecord->m_hContext))
-        gluErrorString(glGetError());
-
-    glViewport(0, 0, 256, 256);
-    glClearColor(0.5f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0, 1.0, 0.01, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    gluErrorString(glGetError());
-}
-
-void GLRender::RenderPausePlane()
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glBegin(GL_QUADS);
-    glColor4ubv((GLubyte*)&g_rgbaPauseOverlayColor);
-    glVertex2f(-1.0f, 1.0f);
-    glVertex2f(-1.0f, -1.0f);
-    glVertex2f(1.0f, -1.0f);
-    glVertex2f(1.0f, 1.0f);
-    glEnd();
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
-}
-
-void EndImposterRender(unsigned long nRecord)
-{
-    gluErrorString(glGetError());
-    GLRender::SetActiveTexture(0);
-    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
-    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
-    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glFinish();
-    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 128, 128, 0);
-    gluErrorString(glGetError());
-    wglMakeCurrent(GLRender::m_hDC, GLRender::m_hGLRC);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
-    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
-    glNormal3f(0.0f, 0.0f, 1.0f);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(4.0f, 0.0f, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(4.0f, 4.0f, 0.0f);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(0.0f, 4.0f, 0.0f);
-    glEnd();
-}
-// PC 0x00427840 GOG 0x00427950
-int GLRender::InitRenderSystem()
-{
-    GLRender::m_hGLRC = wglGetCurrentContext();
-    GLRender::m_hDC = wglGetCurrentDC();
-    memset(GLRender::cm_nGLCurrentTID, 0, sizeof(GLRender::cm_nGLCurrentTID));
-    GLRender::cm_uiCurrentStage = 0;
-    return 0;
-}
-// PC 0x00427870 GOG 0x00427980
-void GLRender::Shutdown(int bReleaseRenderer)
-{
-    if (manRef)
-        manRef->BackUpPoolManager();
-
-    if (cm_hSoftShadowHDC)
-    {
-        if (AurATISoftShadowsAvailable())
-        {
-            wglMakeContextCurrentARB(cm_hSoftShadowHDC, cm_hSoftShadowHDC,
-                                    cm_hSoftShadowHGLRC);
-            glDeleteTextures(1, &cm_nSoftShadowRenderTexture);
-            wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-            wglReleasePBufferDCARB(cm_hSoftShadowPBuffer, cm_hSoftShadowHDC);
-            wglDestroyPBufferARB(cm_hSoftShadowPBuffer);
-            cm_hSoftShadowHDC = 0;
-            cm_hSoftShadowHGLRC = 0;
-            cm_hSoftShadowPBuffer = 0;
-            cm_nSoftShadowRenderTexture = 0;
-
-            wglMakeContextCurrentARB(cm_hSoftShadowTargetHDC,
-                                    cm_hSoftShadowTargetHDC,
-                                    cm_hSoftShadowTargetHGLRC);
-            glDeleteTextures(1, &cm_nSoftShadowTargetRenderTexture);
-            wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-            wglReleasePBufferDCARB(cm_hSoftShadowTargetPBuffer,
-                                  cm_hSoftShadowTargetHDC);
-            wglDestroyPBufferARB(cm_hSoftShadowTargetPBuffer);
-            cm_hSoftShadowTargetHDC = 0;
-            cm_hSoftShadowTargetHGLRC = 0;
-            cm_hSoftShadowTargetPBuffer = 0;
-            cm_nSoftShadowTargetRenderTexture = 0;
-            glDeleteTextures(1, &cm_nBufferRegionTexture);
-            cm_nBufferRegionTexture = 0;
-        }
-        else
-        {
-            wglMakeCurrent(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC);
-            glDeleteTextures(1, &cm_nSoftShadowRenderTexture);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-            wglDeleteContext(cm_hSoftShadowHGLRC);
-            wglReleasePBufferDCARB(cm_hSoftShadowPBuffer, cm_hSoftShadowHDC);
-            wglDestroyPBufferARB(cm_hSoftShadowPBuffer);
-            cm_hSoftShadowHDC = 0;
-            cm_hSoftShadowHGLRC = 0;
-            cm_hSoftShadowPBuffer = 0;
-            cm_nSoftShadowRenderTexture = 0;
-
-            wglMakeCurrent(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC);
-            glDeleteTextures(1, &cm_nSoftShadowTargetRenderTexture);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-            wglDeleteContext(cm_hSoftShadowTargetHGLRC);
-            wglReleasePBufferDCARB(cm_hSoftShadowTargetPBuffer,
-                                  cm_hSoftShadowTargetHDC);
-            wglDestroyPBufferARB(cm_hSoftShadowTargetPBuffer);
-            cm_hSoftShadowTargetHDC = 0;
-            cm_hSoftShadowTargetHGLRC = 0;
-            cm_hSoftShadowTargetPBuffer = 0;
-            cm_nSoftShadowTargetRenderTexture = 0;
-            glDeleteTextures(1, &cm_nBufferRegionTexture);
-            cm_nBufferRegionTexture = 0;
-        }
-    }
-
-    if (cm_nTargetTexture)
-    {
-        glDeleteTextures(1, &cm_nTargetTexture);
-        cm_nTargetTexture = 0;
-    }
-    if (cm_nRedTexture)
-    {
-        glDeleteTextures(1, &cm_nRedTexture);
-        cm_nRedTexture = 0;
-    }
-    if (cm_nGreenTexture)
-    {
-        glDeleteTextures(1, &cm_nGreenTexture);
-        cm_nGreenTexture = 0;
-    }
-    if (cm_nBlueTexture)
-    {
-        glDeleteTextures(1, &cm_nBlueTexture);
-        cm_nBlueTexture = 0;
-    }
-    if (cm_nOverbrightenRed)
-    {
-        glDeleteTextures(1, &cm_nOverbrightenRed);
-        cm_nOverbrightenRed = 0;
-    }
-    if (cm_nOverbrightenGreen)
-    {
-        glDeleteTextures(1, &cm_nOverbrightenGreen);
-        cm_nOverbrightenGreen = 0;
-    }
-    if (cm_nOverbrightenBlue)
-    {
-        glDeleteTextures(1, &cm_nOverbrightenBlue);
-        cm_nOverbrightenBlue = 0;
-    }
-    if (cm_nPerPixelFlareShader)
-    {
-        glDeleteProgramsARB(1, &cm_nPerPixelFlareShader);
-        cm_nPerPixelFlareShader = 0;
-    }
-
-    if (cm_bPBuffersAllocated == true)
-    {
-        if (AurATIFrameBufferModificationsAvailable())
-        {
-            for (int i = 0; i < CONVOLUTION_BUFFER_COUNT; ++i)
-            {
-                wglMakeContextCurrentARB(cm_hConvolutionHDC[i],
-                                        cm_hConvolutionHDC[i],
-                                        cm_hConvolutionHGLRC[i]);
-                glDeleteTextures(1, &cm_nConvolutionRenderTexture[i]);
-                wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-                wglReleasePBufferDCARB(cm_hConvolutionPBuffer[i],
-                                      cm_hConvolutionHDC[i]);
-                wglDestroyPBufferARB(cm_hConvolutionPBuffer[i]);
-                cm_hConvolutionHDC[i] = 0;
-                cm_hConvolutionHGLRC[i] = 0;
-                cm_hConvolutionPBuffer[i] = 0;
-                cm_nConvolutionRenderTexture[i] = 0;
-            }
-            wglMakeContextCurrentARB(cm_hAccumulationHDC,
-                                    cm_hAccumulationHDC,
-                                    cm_hAccumulationHGLRC);
-            glDeleteTextures(1, &cm_nAccumulationBlur);
-            wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-            wglReleasePBufferDCARB(cm_hAccumulationPBuffer,
-                                  cm_hAccumulationHDC);
-            wglDestroyPBufferARB(cm_hAccumulationPBuffer);
-            cm_hAccumulationHDC = 0;
-            cm_hAccumulationHGLRC = 0;
-            cm_hAccumulationPBuffer = 0;
-            cm_nAccumulationBlur = 0;
-        }
-        else
-        {
-            for (int i = 0; i < CONVOLUTION_BUFFER_COUNT; ++i)
-            {
-                wglMakeCurrent(cm_hConvolutionHDC[i], cm_hConvolutionHGLRC[i]);
-                glDeleteTextures(1, &cm_nConvolutionRenderTexture[i]);
-                wglMakeCurrent(m_hDC, m_hGLRC);
-                wglDeleteContext(cm_hConvolutionHGLRC[i]);
-                wglReleasePBufferDCARB(cm_hConvolutionPBuffer[i],
-                                      cm_hConvolutionHDC[i]);
-                wglDestroyPBufferARB(cm_hConvolutionPBuffer[i]);
-                cm_hConvolutionHDC[i] = 0;
-                cm_hConvolutionHGLRC[i] = 0;
-                cm_hConvolutionPBuffer[i] = 0;
-                cm_nConvolutionRenderTexture[i] = 0;
-            }
-            if (cm_hAccumulationPBuffer)
-            {
-                wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
-                glDeleteTextures(1, &cm_nAccumulationBlur);
-                wglMakeCurrent(m_hDC, m_hGLRC);
-                wglDeleteContext(cm_hAccumulationHGLRC);
-                wglReleasePBufferDCARB(cm_hAccumulationPBuffer,
-                                      cm_hAccumulationHDC);
-                wglDestroyPBufferARB(cm_hAccumulationPBuffer);
-                cm_hAccumulationHDC = 0;
-                cm_hAccumulationHGLRC = 0;
-                cm_hAccumulationPBuffer = 0;
-                cm_nAccumulationBlur = 0;
-            }
-        }
-        cm_bPBuffersAllocated = false;
-    }
-    if (cm_pHeatDistortionVertexProg)
-    {
-        glDeleteProgramsARB(1, &cm_pHeatDistortionVertexProg);
-        cm_pHeatDistortionVertexProg = 0;
-    }
-    if (cm_nPerPixelFlareShaderATI)
-    {
-        glDeleteFragmentShaderATI(cm_nPerPixelFlareShaderATI);
-        cm_nPerPixelFlareShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_nDecalShaderATI);
-        cm_nDecalShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_n4DecalShaderATI);
-        cm_n4DecalShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_nSaturationShaderATI);
-        cm_nSaturationShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_nAccumulationBlurShaderATI);
-        cm_nAccumulationBlurShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_nFilmNoiseShaderATI);
-        cm_nFilmNoiseShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_nForceDistortionShaderATI);
-        cm_nForceDistortionShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_nOverbrightenShaderATI);
-        cm_nOverbrightenShaderATI = 0;
-        glDeleteFragmentShaderATI(cm_nDreamDistortShaderATI);
-        cm_nDreamDistortShaderATI = 0;
-    }
-    ReleaseDC(g_hRenderWnd, m_hDC);
-    if (bReleaseRenderer)
-    {
-        delete manRef;
-        manRef = 0;
-    }
-}
-
-void GLRender::RenderBox(Vector& vMinimum, Vector& vMaximum)
-{
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_QUADS);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glEnd();
-}
-// PC 0x00427E20 GOG 0x00427F30
-int GLRender::GetFogArraysInfoRef()
-{
-    int nPool = manRef->RequestPoolGeneric(0, 8, 2);
-    int* pFogArrays = (int*)manRef->LockPool(nPool, 1);
-    RequestPoolManager* pPoolManager = manRef;
-    pFogArrays[0] = 0;
-    pFogArrays[1] = 0;
-    pPoolManager->UnlockPool(nPool);
-    return nPool;
-}
-// PC 0x00427E60 GOG 0x00427F70
-void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
-{
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    if (multmatrix != 0)
-    {
-        Vector vOrigin;
-        float fMatrix[16];
-        MakeMatrix4x4(fMatrix, vOrigin, -qOrientation);
-        MultMatrix(fMatrix);
-    }
-    else
-    {
-        Vector vAxis = qOrientation.axis();
-        float fAngle = (float)(acos(qOrientation.m_fW) * 2.0) * -RAD_TO_DEG;
-        Rotate(fAngle, vAxis.m_fX, vAxis.m_fY, vAxis.m_fZ);
-    }
-    Translate(-vPosition.m_fX, -vPosition.m_fY, -vPosition.m_fZ);
-}
-// PC 0x00427F50 GOG 0x00428060
-static void CalculateCubeMapNormal(int nFace, int nSize, int nX, int nY,
-                                   float* pNormal)
-{
-    float s = 2.0f * ((nX + 0.5f) / nSize) - 1.0f;
-    float t = 2.0f * ((nY + 0.5f) / nSize) - 1.0f;
-    switch (nFace)
-    {
-    case 0: pNormal[0] = 1.0f; pNormal[1] = -t; pNormal[2] = -s; break;
-    case 1: pNormal[0] = -1.0f; pNormal[1] = -t; pNormal[2] = s; break;
-    case 2: pNormal[0] = s; pNormal[1] = 1.0f; pNormal[2] = t; break;
-    case 3: pNormal[0] = s; pNormal[1] = -1.0f; pNormal[2] = -t; break;
-    case 4: pNormal[0] = s; pNormal[1] = -t; pNormal[2] = 1.0f; break;
-    case 5: pNormal[0] = -s; pNormal[1] = -t; pNormal[2] = -1.0f; break;
-    }
-    float fScale = 1.0f / (float)sqrt(pNormal[0] * pNormal[0] +
-                             pNormal[1] * pNormal[1] +
-                             pNormal[2] * pNormal[2]);
-    pNormal[0] *= fScale;
-    pNormal[1] *= fScale;
-    pNormal[2] *= fScale;
-}
-// PC 0x00428070 GOG 0x00428180
-void GLRender::MakeNormalizationCubeMap(int nSize)
-{
-
-    static int mapping[6] = {2, 3, 4, 5, 6, 7};
-    unsigned char* pPixels = new unsigned char[nSize * nSize * 3];
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    for (int nFace = 0; nFace < 6; ++nFace)
-    {
-        for (int y = 0; y < nSize; ++y)
-        {
-            for (int x = 0; x < nSize; ++x)
-            {
-                float normal[3];
-                CalculateCubeMapNormal(nFace, nSize, x, y, normal);
-                pPixels[3 * (y * nSize + x) + 0] = (unsigned char)(normal[0] * 127.0f + 128.0f);
-                pPixels[3 * (y * nSize + x) + 1] = (unsigned char)(normal[1] * 127.0f + 128.0f);
-                pPixels[3 * (y * nSize + x) + 2] = (unsigned char)(normal[2] * 127.0f + 128.0f);
-            }
-        }
-        gluBuild2DMipmaps(texParamTargetTranslationTable[mapping[nFace]],
-                          3, nSize, nSize, GL_RGB, GL_UNSIGNED_BYTE, pPixels);
-    }
-    delete[] pPixels;
-}
-// PC 0x004281D0 GOG 0x004282E0
-void GLRender::RenderSquares(unsigned int nPool)
-{
-    int nVBOAvailable = AurVertexBufferObjectARBAvailable();
-    RequestPoolManager* pPoolManager = manRef;
-    if (nVBOAvailable != 0)
-    {
-        int nBuffer = pPoolManager->GetPool(nPool);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
-        glVertexPointer(3, GL_FLOAT, 16, 0);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 16, (const GLvoid*)12);
-        DrawPrimitive(GL_LINE_LOOP, 0, 4);
-    }
-    else
-    {
-        int nVertexData = pPoolManager->GetPool(nPool);
-        glBegin(GL_LINE_LOOP);
-        glColor4ubv((const GLubyte*)(nVertexData + 12));
-        for (int i = 0; i < 4; ++i)
-        {
-            glVertex3fv((const GLfloat*)nVertexData);
-            nVertexData += 16;
-        }
-        glEnd();
-    }
-}
-// PC 0x00428270 GOG 0x00428380
-void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
-    unsigned char* pHeightField, int nWidth, int nHeight, int nRowWidth,
-    int nRowCount, float fScale, int bUpdate, bool bNormalMap)
-{
-    Normal* pNormalMap;
-    if (bNormalMap)
-    {
-        pNormalMap = new Normal[nWidth * nHeight];
-        memcpy(pNormalMap, pHeightField, nWidth * nHeight * 4);
-    }
-    else
-    {
-        pNormalMap = convertHeightFieldToNormalMap(
-            pHeightField, nWidth, nHeight, nRowWidth, nRowCount, fScale);
-    }
-
-    int nLevel = 0;
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0,
-                 GL_BGRA_EXT, GL_UNSIGNED_BYTE, pNormalMap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, cm_nAnisotropy);
-
-    while (nWidth > 1 || nHeight > 1)
-    {
-        ++nLevel;
-        int nNewWidth = nWidth >> 1;
-        int nNewHeight = nHeight >> 1;
-        if (nNewWidth == 0)
-            nNewWidth = 1;
-        if (nNewHeight == 0)
-            nNewHeight = 1;
-        pNormalMap = downSampleNormalMap(pNormalMap, nWidth, nHeight,
-                                          nNewWidth, nNewHeight);
-        if (bUpdate)
-        {
-            glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nNewWidth,
-                            nNewHeight, GL_RGBA, GL_UNSIGNED_BYTE, pNormalMap);
-        }
-        else
-        {
-            glTexImage2D(GL_TEXTURE_2D, nLevel, GL_RGBA8, nNewWidth,
-                         nNewHeight, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE,
-                         pNormalMap);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                             cm_nAnisotropy);
-        }
-        nWidth = nNewWidth;
-        nHeight = nNewHeight;
-    }
-    delete[] pNormalMap;
-}
-// PC 0x00428400 GOG 0x00428510
-void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
-                                    void* pIndices, int nStride, int nFirst,
-                                    int nQuads)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        glVertexPointer(3, GL_FLOAT, nVertexStride, pVertices);
-        glNormalPointer(GL_FLOAT, nStride, (float*)pVertices + nQuads * 12);
-        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 3);
-        ActivateTextureStage(1);
-        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 5);
-        ActivateTextureStage(0);
-        glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-    }
-    else
-    {
-        glVertexPointer(3, GL_FLOAT, nVertexStride, pVertices);
-        glNormalPointer(GL_FLOAT, nStride, (float*)pVertices + nQuads * 12);
-        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 3);
-        ActivateTextureStage(1);
-        glTexCoordPointer(2, GL_FLOAT, nStride, (float*)pVertices + nQuads * 12 + 5);
-        ActivateTextureStage(0);
-        glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
-    }
-}
-// PC 0x00428590 GOG 0x004286A0
-void GLRender::InitAttenuationTexture()
-{
-    unsigned char pixels[64 * 64 * 4];
-
-    for (int y = 0; y < 64; y++)
-    {
-        for (int x = 0; x < 64; x++)
-        {
-            float fX = (float)(x - 32) * 0.125f;
-            float fY = (float)(y - 32) * 0.125f;
-            float fValue = 1.0f / ((fX * fX + fY * fY) * 4.5f + 1.0f);
-            if (x == 0 || y == 0 || x == 63 || y == 63)
-            {
-                fValue = 0.0f;
-            }
-            unsigned char nValue = (unsigned char)(fValue * 255.0f);
-            pixels[(y * 64 + x) * 4 + 0] = nValue;
-            pixels[(y * 64 + x) * 4 + 1] = nValue;
-            pixels[(y * 64 + x) * 4 + 2] = nValue;
-            pixels[(y * 64 + x) * 4 + 3] = 0xFF;
-        }
-    }
-
-    glGenTextures(1, &cm_tidAttenuationTexture);
-    BindTexture(ENABLE_TEXTURE_2D, cm_tidAttenuationTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE_EXT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 64, 64, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, pixels);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, cm_nAnisotropy);
-}
-// PC 0x00428720 GOG 0x00428830
-int GLRender::SetCurrentStageTID(unsigned long nStage, unsigned int nTID)
-{
-    GLRender::cm_nGLCurrentTID[nStage] = nTID;
-    return nTID;
-}
-// PC 0x00428730 GOG 0x00428840
-PBUFFERARB* GLRender::CreatePBuffer(int nWidth, int nHeight)
-{
-    HDC hDC = m_hDC;
-    float fFloatAttributes;
-    int nPixelFormat;
-    unsigned int nNumFormats;
-    int nPbufferAttributes[6];
-    int nPixelFormatAttributes[17] = {8208, 1, 8237, 1, 8305, 1,
-                                      8213, 8, 8215, 8, 8217, 8,
-                                      8219, 8, 8209, 0, 0};
-
-    fFloatAttributes = 0.0f;
-    wglChoosePixelFormatARB(hDC, nPixelFormatAttributes, &fFloatAttributes, 1,
-                            &nPixelFormat, &nNumFormats);
 
-    nPbufferAttributes[0] = 8306;
-    nPbufferAttributes[1] = 8310;
-    nPbufferAttributes[2] = 8307;
-    nPbufferAttributes[3] = 8314;
-    nPbufferAttributes[4] = 0;
-    nPbufferAttributes[5] = 0;
-    return wglCreatePBufferARB(hDC, nPixelFormat, nWidth, nHeight,
-                               nPbufferAttributes);
-}
-// PC 0x00428820 GOG 0x00428930
-void GLRender::SetDirtyTexture(int nIndex, CAurTexture* pTexture)
+static inline void AurGLCoreTrace()
 {
-    m_pDirtyTexture[nIndex] = pTexture;
-}
-// PC 0x00428830 GOG 0x00428940
-void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
-{
-    GLRender::cm_pFilmNoiseTexture = pTexture;
-}
-// PC 0x00428840 GOG 0x00428950
-void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
-{
-    static unsigned short* indexToken = new unsigned short[AUR_SHADOW_INDEX_COUNT];
-    unsigned short* pIndex = indexToken;
-    if (nEdges == 0)
-        return;
-
-    unsigned short* indices = pIndex;
-    int nNear = nVertices * 2;
-    int nFar = nNear + 1;
-    for (int i = 0; i < nEdges; ++i)
-    {
-        int nFirst = m_UsedVertices[PartTriMesh::m_VertexIndices[i * 2]] * 2 - 2;
-        int nSecond = m_UsedVertices[PartTriMesh::m_VertexIndices[i * 2 + 1]] * 2 - 2;
-        if (i % 2 == 0)
-        {
-            *pIndex++ = nNear;
-            *pIndex++ = nFirst;
-            *pIndex++ = nSecond;
-            *pIndex++ = nFirst + 1;
-            *pIndex++ = nSecond + 1;
-            *pIndex++ = nFar;
-        }
-        else
-        {
-            *pIndex++ = nFar;
-            *pIndex++ = nSecond + 1;
-            *pIndex++ = nFirst + 1;
-            *pIndex++ = nSecond;
-            *pIndex++ = nFirst;
-            *pIndex++ = nNear;
-        }
-    }
-
-    if (AurVertexBufferObjectARBAvailable())
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-    glVertexPointer(3, GL_FLOAT, 12, cm_pUserShadowData);
-
-    if (usetwosidedshadows && AurTwoSidedStencilAvailable())
-    {
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-        glActiveStencilFaceEXT(GL_BACK);
-        SetStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT);
-        SetStencilMask(-1);
-        SetStencilFunc(GL_ALWAYS, 0, -1);
-        glActiveStencilFaceEXT(GL_FRONT);
-        SetStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT);
-        SetStencilMask(-1);
-        if (AurVertexBufferObjectARBAvailable())
-            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-        DrawIndexedPrimitive(GL_TRIANGLE_STRIP, nEdges * 6, indices);
-        glEnable(GL_CULL_FACE);
-        SetFrontFace(GL_CCW);
-        glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-    }
-    else
-    {
-        glFrontFace(GL_CW);
-        glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
-        if (AurVertexBufferObjectARBAvailable())
-            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-        glDrawElements(GL_TRIANGLE_STRIP, nEdges * 6, GL_UNSIGNED_SHORT, indices);
-        glFrontFace(GL_CCW);
-        glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
-        if (AurVertexBufferObjectARBAvailable())
-            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-        glDrawElements(GL_TRIANGLE_STRIP, nEdges * 6, GL_UNSIGNED_SHORT, indices);
-    }
-    countfaces += nEdges * 8;
-}
-// PC 0x00428B20 GOG 0x00428C30
-char* AllocateShadowMemory(int nSize)
-{
-    static char* data = new char[nSize];
-    static int c_size = nSize;
-
-    if (nSize > maxshadowvar)
-    {
-        maxshadowvar = nSize;
-    }
-
-    if (nSize > c_size)
-    {
-        delete[] data;
-        data = new char[nSize];
-        c_size = nSize;
-    }
-
-    return data;
-}
-// PC 0x00428BD0 GOG 0x00428CE0
-int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
-                               const Plane& plane, const Vector& vNearCap,
-                               const Vector& vFarCap, int nVertices,
-                               RenderVertexV* pVertices)
-{
-    static Vector light2temp;
-    static Vector scratch[2];
-    int nUsed = 0;
-    for (int i = 0; i < nVertices; ++i)
-    {
-        if (m_UsedVertices[i] == SHADOW_VERTEX_USED)
-            m_UsedVertices[i] = ++nUsed;
-    }
-    int nSize = nUsed * sizeof(scratch);
-    cm_pUserShadowData = (float*)AllocateShadowMemory(nSize + sizeof(scratch));
-    char* pShadowData = (char*)cm_pUserShadowData;
-    for (int iVertex = 0; iVertex < nVertices; ++iVertex)
-    {
-        int nOffset = m_UsedVertices[iVertex] * 6 - 6;
-        if (m_UsedVertices[iVertex] > 0)
-        {
-            scratch[0] = pVertices[iVertex].position;
-            light2temp = normalize(scratch[0] - vLight);
-            scratch[1] = vLight + light2temp * fRadius;
-            if (!noclipshadows)
-            {
-                ClipProjection(scratch[0], vLight, plane);
-                ClipProjection(scratch[1], vLight, plane);
-            }
-            if (dontprotectagainstclip &&
-                (scratch[0] - scratch[1]) * light2temp > 0.0f)
-                scratch[1] = scratch[0];
-            memcpy(pShadowData + nOffset * sizeof(float), scratch, sizeof(scratch));
-        }
-    }
-    char* pCap = pShadowData + nSize;
-    *(Vector*)pCap = vNearCap;
-    pCap += sizeof(Vector);
-    *(Vector*)pCap = vFarCap;
-    return nUsed;
-}
-// PC 0x00428EA0 GOG 0x00428FB0
-void GLRender::InitializeImageSpaceSoftShadows()
-{
-    if (AurSoftShadowsAvailable() && cm_bSetUpImageSpaceShadows && enablesoftshadows)
-    {
-        if (cm_nTargetTexture == 0)
-        {
-            glGenTextures(1, &cm_nTargetTexture);
-            glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
-            glCopyTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA8, 0, 0,
-                             g_nScreenWidth, g_nScreenHeight, 0);
-            glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-        }
-        glGenTextures(1, &cm_nBufferRegionTexture);
-        glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
-        glCopyTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA8, 0, 0,
-                         g_nScreenWidth, g_nScreenHeight, 0);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        cm_hSoftShadowPBuffer = CreatePBuffer(512, 512);
-        cm_hSoftShadowHDC = wglGetPBufferDCARB(cm_hSoftShadowPBuffer);
-        cm_hSoftShadowHGLRC = wglCreateContext(cm_hSoftShadowHDC);
-        wglShareLists(m_hGLRC, cm_hSoftShadowHGLRC);
-        wglMakeCurrent(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC);
-        glGenTextures(1, &cm_nSoftShadowRenderTexture);
-        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowRenderTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        cm_hSoftShadowTargetPBuffer = CreatePBuffer(512, 512);
-        cm_hSoftShadowTargetHDC = wglGetPBufferDCARB(cm_hSoftShadowTargetPBuffer);
-        cm_hSoftShadowTargetHGLRC = wglCreateContext(cm_hSoftShadowTargetHDC);
-        wglShareLists(m_hGLRC, cm_hSoftShadowTargetHGLRC);
-        wglMakeCurrent(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC);
-        glGenTextures(1, &cm_nSoftShadowTargetRenderTexture);
-        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowTargetRenderTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        wglMakeCurrent(m_hDC, m_hGLRC);
-    }
-    else if (AurATISoftShadowsAvailable() && cm_bSetUpImageSpaceShadows && enablesoftshadows)
-    {
-
-        void FindSmallestPowerOf2WidthHeight(unsigned int, unsigned int, unsigned long&, unsigned long&);
-        FindSmallestPowerOf2WidthHeight(g_nScreenWidth, g_nScreenHeight, cm_nScreenWidthPow2, cm_nScreenHeightPow2);
-        if (cm_nTargetTexture == 0)
-        {
-            glGenTextures(1, &cm_nTargetTexture);
-            glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, cm_nScreenWidthPow2, cm_nScreenHeightPow2, 0);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
-        glGenTextures(1, &cm_nBufferRegionTexture);
-        glBindTexture(GL_TEXTURE_2D, cm_nBufferRegionTexture);
-        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, cm_nScreenWidthPow2, cm_nScreenHeightPow2, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        cm_hSoftShadowPBuffer = CreatePBuffer(512, 512);
-        cm_hSoftShadowHDC = wglGetPBufferDCARB(cm_hSoftShadowPBuffer);
-        cm_hSoftShadowHGLRC = m_hGLRC;
-        wglMakeContextCurrentARB(cm_hSoftShadowHDC, cm_hSoftShadowHDC, m_hGLRC);
-        glGenTextures(1, &cm_nSoftShadowRenderTexture);
-        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowRenderTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-        cm_hSoftShadowTargetPBuffer = CreatePBuffer(512, 512);
-        cm_hSoftShadowTargetHDC = wglGetPBufferDCARB(cm_hSoftShadowTargetPBuffer);
-        cm_hSoftShadowTargetHGLRC = m_hGLRC;
-        wglMakeContextCurrentARB(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHDC, m_hGLRC);
-        glGenTextures(1, &cm_nSoftShadowTargetRenderTexture);
-        glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowTargetRenderTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        cm_nSoftShadowShaderATI = glGenFragmentShadersATI(1);
-        glBindFragmentShaderATI(cm_nSoftShadowShaderATI);
-        glBeginFragmentShaderATI();
-        glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-        glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
-        glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
-        glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
-        glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 0, 0,
-                              GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
-        glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 0,
-                              GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
-        glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 0, 0,
-                              GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0,
-                              GL_REG_4_ATI, 0, 0);
-        glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 0,
-                              GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0,
-                              GL_REG_4_ATI, 0, 0);
-        glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0, 0,
-                              GL_REG_2_ATI, 0, 0, GL_CON_2_ATI, 0, 0,
-                              GL_REG_4_ATI, 0, 0);
-        glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0,
-                              GL_REG_2_ATI, 0, 0, GL_CON_2_ATI, 0, 0,
-                              GL_REG_4_ATI, 0, 0);
-        glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0,
-                              GL_REG_3_ATI, 0, 0, GL_CON_3_ATI, 0, 0,
-                              GL_REG_1_ATI, 0, 0);
-        glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0,
-                              GL_REG_3_ATI, 0, 0, GL_CON_3_ATI, 0, 0,
-                              GL_REG_1_ATI, 0, 0);
-        glEndFragmentShaderATI();
-        glDisable(GL_FRAGMENT_SHADER_ATI);
-    }
-}
-// PC 0x004295C0 GOG 0x004296D0
-unsigned int log2integer(unsigned int x)
-{
-    x |= (x >> 1);
-    x |= (x >> 2);
-    x |= (x >> 4);
-    x |= (x >> 8);
-    x |= (x >> 16);
-    return ones32popcount(x >> 1);
-}
-// PC 0x00429630 GOG 0x00429740
-void FindSmallestPowerOf2WidthHeight(unsigned int nWidth, unsigned int nHeight,
-                                    unsigned long& nWidthPow2,
-                                    unsigned long& nHeightPow2)
-{
-    nWidthPow2 = 1 << (log2integer(nWidth) + 1);
-    nHeightPow2 = 1 << (log2integer(nHeight) + 1);
-}
-// PC 0x00429670 GOG 0x00429780
-void GLRender::InitializeFrameBufferModificationFragmentShadersATI()
-{
-    glEnable(GL_FRAGMENT_SHADER_ATI);
-    cm_nOverbrightenShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nOverbrightenShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_2_ATI, 0, 0);
-    glPassTexCoordATI(GL_REG_0_ATI, GL_REG_0_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_1_ATI, GL_REG_1_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_2_ATI, GL_REG_2_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_3_ATI, GL_REG_3_ATI, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
-    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
-    glEndFragmentShaderATI();
-    cm_nForceDistortionShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nForceDistortionShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glPassTexCoordATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
-    glPassTexCoordATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_RED_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_1_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_GREEN_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_2_ATI, 0, 0);
-    glPassTexCoordATI(GL_REG_0_ATI, GL_REG_0_ATI, GL_SWIZZLE_STR_ATI);
-    glPassTexCoordATI(GL_REG_1_ATI, GL_REG_1_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_2_ATI, GL_REG_4_ATI, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
-    glEndFragmentShaderATI();
-    cm_nFilmNoiseShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nFilmNoiseShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
-    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, 0, GL_COMP_BIT_ATI);
-    glEndFragmentShaderATI();
-    cm_nAccumulationBlurShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nAccumulationBlurShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
-    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
-    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_CON_0_ATI, 0, 0);
-    glEndFragmentShaderATI();
-    cm_nSaturationShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nSaturationShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_1_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_CON_3_ATI, 0, 0);
-    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0, GL_CON_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_2_ATI, 0, 0);
-    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0, GL_CON_5_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
-    glEndFragmentShaderATI();
-    cm_nPerPixelFlareShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nPerPixelFlareShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_2_ATI, 0, 0);
-    glPassTexCoordATI(GL_REG_0_ATI, GL_REG_0_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_1_ATI, GL_REG_1_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_2_ATI, GL_REG_2_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_3_ATI, GL_REG_3_ATI, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
-    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, 0, GL_COMP_BIT_ATI);
-    glEndFragmentShaderATI();
-    cm_nDecalShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nDecalShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0);
-    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, 0, 0, GL_COMP_BIT_ATI);
-    glEndFragmentShaderATI();
-    cm_n4DecalShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_n4DecalShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, 0, GL_REG_0_ATI, 0, 0, GL_CON_0_ATI, 0, 0);
-    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_1_ATI, 0, 0, GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0, GL_REG_0_ATI, 0, 0);
-    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_2_ATI, 0, 0, GL_REG_2_ATI, 0, 0, GL_CON_2_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
-    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0, GL_CON_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
-    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
-    glEndFragmentShaderATI();
-    cm_nDreamDistortShaderATI = glGenFragmentShadersATI(1);
-    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
-    glBeginFragmentShaderATI();
-    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
-    glPassTexCoordATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
-    glPassTexCoordATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_RED_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_1_ATI, 0, 0);
-    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_GREEN_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_2_ATI, 0, 0);
-    glSampleMapATI(GL_REG_2_ATI, GL_REG_4_ATI, GL_SWIZZLE_STR_ATI);
-    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
-    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
-    glAlphaFragmentOp3ATI(GL_CND_ATI, GL_REG_1_ATI, 0, GL_ONE, GL_ALPHA, 0, GL_ZERO, 0, 0, GL_REG_0_ATI, GL_ALPHA, 0);
-    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, GL_RED_BIT_ATI | GL_GREEN_BIT_ATI | GL_BLUE_BIT_ATI, 0, GL_REG_2_ATI, 0, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_REG_3_ATI, 0, 0);
-    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0);
-    glEndFragmentShaderATI();
-    glDisable(GL_FRAGMENT_SHADER_ATI);
-}
-// PC 0x00429FF0 GOG 0x0042A100
-void GLRender::InitializeFrameBufferModifications()
-{
-    if (doframebuffer && cm_bSetUpFrameBuffer)
-    {
-        if (AurFrameBufferModificationsAvailable())
-        {
-            if (cm_nTargetTexture == 0)
-            {
-                glGenTextures(1, &cm_nTargetTexture);
-                glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
-                glCopyTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA8, 0, 0,
-                                 g_nScreenWidth, g_nScreenHeight, 0);
-                glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-            }
-            unsigned int nRed[FRAMEBUFFER_LOOKUP_SIZE];
-            unsigned int nGreen[FRAMEBUFFER_LOOKUP_SIZE];
-            unsigned int nBlue[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                if (i < FRAMEBUFFER_RED_THRESHOLD)
-                    nRed[i] = 0;
-                else
-                {
-                    float fLookup = (i - FRAMEBUFFER_RED_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_RED_THRESHOLD - 1);
-                    nRed[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN);
-                }
-            }
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                if (i < FRAMEBUFFER_GREEN_THRESHOLD)
-                    nGreen[i] = 0;
-                else
-                {
-                    float fLookup = (i - FRAMEBUFFER_GREEN_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_GREEN_THRESHOLD - 1);
-                    nGreen[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_GREEN_SHIFT;
-                }
-            }
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                if (i < FRAMEBUFFER_BLUE_THRESHOLD)
-                    nBlue[i] = 0;
-                else
-                {
-                    float fLookup = (i - FRAMEBUFFER_BLUE_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_BLUE_THRESHOLD - 1);
-                    nBlue[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_BLUE_SHIFT;
-                }
-            }
-            glGenTextures(1, &cm_nRedTexture);
-            glBindTexture(GL_TEXTURE_2D, cm_nRedTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nRed);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nGreenTexture);
-            glBindTexture(GL_TEXTURE_2D, cm_nGreenTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FRAMEBUFFER_LOOKUP_SIZE, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nGreen);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nBlueTexture);
-            glBindTexture(GL_TEXTURE_2D, cm_nBlueTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nBlue);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            memset(cm_nConvolutionRenderTexture, 0, sizeof(cm_nConvolutionRenderTexture));
-            memset(cm_hConvolutionHGLRC, 0, sizeof(cm_hConvolutionHGLRC));
-            memset(cm_hConvolutionHDC, 0, sizeof(cm_hConvolutionHDC));
-            memset(cm_hConvolutionPBuffer, 0, sizeof(cm_hConvolutionPBuffer));
-            cm_bPBuffersAllocated = true;
-
-            cm_hConvolutionPBuffer[0] = CreatePBuffer(64, 64);
-            cm_hConvolutionHDC[0] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[0]);
-            cm_hConvolutionHGLRC[0] = wglCreateContext(cm_hConvolutionHDC[0]);
-            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[0]);
-            wglMakeCurrent(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[0]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[0]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[1] = CreatePBuffer(128, 128);
-            cm_hConvolutionHDC[1] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[1]);
-            cm_hConvolutionHGLRC[1] = wglCreateContext(cm_hConvolutionHDC[1]);
-            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[1]);
-            wglMakeCurrent(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[1]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[1]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[2] = CreatePBuffer(256, 256);
-            cm_hConvolutionHDC[2] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[2]);
-            cm_hConvolutionHGLRC[2] = wglCreateContext(cm_hConvolutionHDC[2]);
-            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[2]);
-            wglMakeCurrent(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[2]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[2]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[3] = CreatePBuffer(512, 512);
-            cm_hConvolutionHDC[3] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[3]);
-            cm_hConvolutionHGLRC[3] = wglCreateContext(cm_hConvolutionHDC[3]);
-            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[3]);
-            wglMakeCurrent(cm_hConvolutionHDC[3], cm_hConvolutionHGLRC[3]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[3]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[3]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[4] = CreatePBuffer(256, 256);
-            cm_hConvolutionHDC[4] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[4]);
-            cm_hConvolutionHGLRC[4] = wglCreateContext(cm_hConvolutionHDC[4]);
-            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[4]);
-            wglMakeCurrent(cm_hConvolutionHDC[4], cm_hConvolutionHGLRC[4]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[4]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[4]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[5] = CreatePBuffer(256, 256);
-            cm_hConvolutionHDC[5] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[5]);
-            cm_hConvolutionHGLRC[5] = wglCreateContext(cm_hConvolutionHDC[5]);
-            wglShareLists(m_hGLRC, cm_hConvolutionHGLRC[5]);
-            wglMakeCurrent(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[5]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[5]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hAccumulationHDC = 0;
-            cm_hAccumulationHGLRC = 0;
-            cm_hAccumulationPBuffer = 0;
-            cm_nAccumulationBlur = 0;
-            cm_bFirstFrameBufferFrame = true;
-            cm_hAccumulationPBuffer = CreatePBuffer(128, 128);
-            cm_hAccumulationHDC = wglGetPBufferDCARB(cm_hAccumulationPBuffer);
-            cm_hAccumulationHGLRC = wglCreateContext(cm_hAccumulationHDC);
-            wglShareLists(m_hGLRC, cm_hAccumulationHGLRC);
-            wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
-            glGenTextures(1, &cm_nAccumulationBlur);
-            glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            static char szForceDistortProg[] =
-                "!!ARBvp1.0\n"
-                "TEMP vReg0;\n"
-                "TEMP vReg1;\n"
-                "TEMP vReg2;\n"
-                "TEMP vReg4, vReg3;\n"
-                "DP4   result.position.x, state.matrix.mvp.row[0], vertex.position;\n"
-                "DP4   result.position.y, state.matrix.mvp.row[1], vertex.position;\n"
-                "DP4   result.position.z, state.matrix.mvp.row[2], vertex.position;\n"
-                "DP4   result.position.w, state.matrix.mvp.row[3], vertex.position;\n"
-                "MOV result.texcoord[0], vertex.texcoord[0];\n"
-                "MOV vReg1, vertex.texcoord[1];\n"
-                "MOV vReg2, vertex.texcoord[2];\n"
-                "MOV vReg3.x, vReg1.x;\n"
-                "MOV vReg3.y, program.env[15].x;\n"
-                "MOV vReg3.z, vReg2.x;\n"
-                "MOV vReg4.x, program.env[15].x;\n"
-                "MOV vReg4.y, vReg1.y;\n"
-                "MOV vReg4.z, vReg2.y;\n"
-                "MOV result.texcoord[1].xyz, vReg3;\n"
-                "MOV result.texcoord[2].xyz, vReg4;\n"
-                "MOV result.color.primary, program.env[15].y;\n"
-                "END";
-            glEnable(GL_VERTEX_PROGRAM_ARB);
-            glGenProgramsARB(1, &cm_pHeatDistortionVertexProg);
-            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, cm_pHeatDistortionVertexProg);
-            glProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
-                               strlen(szForceDistortProg), szForceDistortProg);
-            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
-            glDisable(GL_VERTEX_PROGRAM_ARB);
-            AurGetVertexProgramARBError(szForceDistortProg);
-
-            unsigned int nOverbrightenRed[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
-                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
-                    fIntensity = aquadraticterm * fIntensity * fIntensity * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
-                else
-                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
-                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
-                nOverbrightenRed[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX);
-            }
-            unsigned int nOverbrightenGreen[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
-                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
-                {
-                    fIntensity *= fIntensity;
-                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
-                }
-                else
-                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
-                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
-                nOverbrightenGreen[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_GREEN_SHIFT;
-            }
-            unsigned int nOverbrightenBlue[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
-                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
-                {
-                    fIntensity *= fIntensity;
-                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
-                }
-                else
-                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
-                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
-                nOverbrightenBlue[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_BLUE_SHIFT;
-            }
-            glGenTextures(1, &cm_nOverbrightenRed);
-            glBindTexture(GL_TEXTURE_2D, cm_nOverbrightenRed);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenRed);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nOverbrightenGreen);
-            glBindTexture(GL_TEXTURE_2D, cm_nOverbrightenGreen);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenGreen);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nOverbrightenBlue);
-            glBindTexture(GL_TEXTURE_2D, cm_nOverbrightenBlue);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenBlue);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
-        if (AurATIFrameBufferModificationsAvailable())
-        {
-            InitializeFrameBufferModificationFragmentShadersATI();
-            FindSmallestPowerOf2WidthHeight(g_nScreenWidth, g_nScreenHeight,
-                                             cm_nScreenWidthPow2, cm_nScreenHeightPow2);
-            if (cm_nTargetTexture == 0)
-            {
-                glGenTextures(1, &cm_nTargetTexture);
-                glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
-                glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0,
-                                 cm_nScreenWidthPow2, cm_nScreenHeightPow2, 0);
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }
-            unsigned int nRed[FRAMEBUFFER_LOOKUP_SIZE];
-            unsigned int nGreen[FRAMEBUFFER_LOOKUP_SIZE];
-            unsigned int nBlue[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                if (i < FRAMEBUFFER_RED_THRESHOLD)
-                    nRed[i] = 0;
-                else
-                {
-                    float fLookup = (i - FRAMEBUFFER_RED_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_RED_THRESHOLD - 1);
-                    nRed[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN);
-                }
-            }
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                if (i < FRAMEBUFFER_GREEN_THRESHOLD)
-                    nGreen[i] = 0;
-                else
-                {
-                    float fLookup = (i - FRAMEBUFFER_GREEN_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_GREEN_THRESHOLD - 1);
-                    nGreen[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_GREEN_SHIFT;
-                }
-            }
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                if (i < FRAMEBUFFER_BLUE_THRESHOLD)
-                    nBlue[i] = 0;
-                else
-                {
-                    float fLookup = (i - FRAMEBUFFER_BLUE_THRESHOLD) / (float)(FRAMEBUFFER_LOOKUP_SIZE - FRAMEBUFFER_BLUE_THRESHOLD - 1);
-                    nBlue[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX * AUR_FRAMEBUFFER_LOOKUP_GAIN) << FRAMEBUFFER_BLUE_SHIFT;
-                }
-            }
-            glGenTextures(1, &cm_nRedTexture);
-            glBindTexture(GL_TEXTURE_1D, cm_nRedTexture);
-            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nRed);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nGreenTexture);
-            glBindTexture(GL_TEXTURE_1D, cm_nGreenTexture);
-            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nGreen);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nBlueTexture);
-            glBindTexture(GL_TEXTURE_1D, cm_nBlueTexture);
-            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nBlue);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            HDC hOriginalDC = m_hDC;
-            HGLRC hOriginalContext = m_hGLRC;
-            memset(cm_nConvolutionRenderTexture, 0, sizeof(cm_nConvolutionRenderTexture));
-            memset(cm_hConvolutionHGLRC, 0, sizeof(cm_hConvolutionHGLRC));
-            memset(cm_hConvolutionHDC, 0, sizeof(cm_hConvolutionHDC));
-            memset(cm_hConvolutionPBuffer, 0, sizeof(cm_hConvolutionPBuffer));
-            cm_bPBuffersAllocated = true;
-
-            cm_hConvolutionPBuffer[0] = CreatePBuffer(64, 64);
-            cm_hConvolutionHDC[0] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[0]);
-            cm_hConvolutionHGLRC[0] = m_hGLRC;
-            wglMakeCurrent(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[0]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[0]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[1] = CreatePBuffer(128, 128);
-            cm_hConvolutionHDC[1] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[1]);
-            cm_hConvolutionHGLRC[1] = m_hGLRC;
-            wglMakeCurrent(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[1]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[1]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[2] = CreatePBuffer(256, 256);
-            cm_hConvolutionHDC[2] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[2]);
-            cm_hConvolutionHGLRC[2] = m_hGLRC;
-            wglMakeCurrent(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[2]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[2]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[3] = CreatePBuffer(512, 512);
-            cm_hConvolutionHDC[3] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[3]);
-            cm_hConvolutionHGLRC[3] = m_hGLRC;
-            wglMakeCurrent(cm_hConvolutionHDC[3], cm_hConvolutionHGLRC[3]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[3]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[3]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[4] = CreatePBuffer(256, 256);
-            cm_hConvolutionHDC[4] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[4]);
-            cm_hConvolutionHGLRC[4] = m_hGLRC;
-            wglMakeCurrent(cm_hConvolutionHDC[4], cm_hConvolutionHGLRC[4]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[4]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[4]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hConvolutionPBuffer[5] = CreatePBuffer(256, 256);
-            cm_hConvolutionHDC[5] = wglGetPBufferDCARB(cm_hConvolutionPBuffer[5]);
-            cm_hConvolutionHGLRC[5] = m_hGLRC;
-            wglMakeCurrent(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5]);
-            glGenTextures(1, &cm_nConvolutionRenderTexture[5]);
-            glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[5]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(m_hDC, m_hGLRC);
-
-            cm_hAccumulationHDC = 0;
-            cm_hAccumulationHGLRC = 0;
-            cm_hAccumulationPBuffer = 0;
-            cm_nAccumulationBlur = 0;
-            cm_bFirstFrameBufferFrame = true;
-            cm_hAccumulationPBuffer = CreatePBuffer(128, 128);
-            cm_hAccumulationHDC = wglGetPBufferDCARB(cm_hAccumulationPBuffer);
-            cm_hAccumulationHGLRC = m_hGLRC;
-            wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
-            glGenTextures(1, &cm_nAccumulationBlur);
-            glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            wglMakeCurrent(hOriginalDC, hOriginalContext);
-
-            static char szForceDistortProg[] =
-                "!!ARBvp1.0\n"
-                "TEMP vReg0;\n"
-                "TEMP vReg1;\n"
-                "TEMP vReg2;\n"
-                "TEMP vReg4, vReg3;\n"
-                "DP4   result.position.x, state.matrix.mvp.row[0], vertex.position;\n"
-                "DP4   result.position.y, state.matrix.mvp.row[1], vertex.position;\n"
-                "DP4   result.position.z, state.matrix.mvp.row[2], vertex.position;\n"
-                "DP4   result.position.w, state.matrix.mvp.row[3], vertex.position;\n"
-                "MOV result.texcoord[0], vertex.texcoord[0];\n"
-                "MOV vReg1, vertex.texcoord[1];\n"
-                "MOV vReg2, vertex.texcoord[2];\n"
-                "MOV vReg3.x, vReg1.x;\n"
-                "MOV vReg3.y, program.env[15].x;\n"
-                "MOV vReg3.z, vReg2.x;\n"
-                "MOV vReg4.x, program.env[15].x;\n"
-                "MOV vReg4.y, vReg1.y;\n"
-                "MOV vReg4.z, vReg2.y;\n"
-                "MOV result.texcoord[1].xyz, vReg3;\n"
-                "MOV result.texcoord[2].xyz, vReg4;\n"
-                "MOV result.color.primary, program.env[15].y;\n"
-                "END";
-            glEnable(GL_VERTEX_PROGRAM_ARB);
-            glGenProgramsARB(1, &cm_pHeatDistortionVertexProg);
-            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, cm_pHeatDistortionVertexProg);
-            glProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
-                               strlen(szForceDistortProg), szForceDistortProg);
-            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
-            glDisable(GL_VERTEX_PROGRAM_ARB);
-            AurGetVertexProgramARBError(szForceDistortProg);
-
-            unsigned int nOverbrightenRed[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
-                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
-                {
-                    fIntensity *= fIntensity;
-                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
-                }
-                else
-                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
-                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
-                nOverbrightenRed[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX);
-            }
-            unsigned int nOverbrightenGreen[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
-                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
-                {
-                    fIntensity *= fIntensity;
-                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
-                }
-                else
-                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
-                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
-                nOverbrightenGreen[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_GREEN_SHIFT;
-            }
-            unsigned int nOverbrightenBlue[FRAMEBUFFER_LOOKUP_SIZE];
-            for (int i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; ++i)
-            {
-                float fIntensity = i / AUR_FRAMEBUFFER_CHANNEL_MAX;
-                if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
-                {
-                    fIntensity *= fIntensity;
-                    fIntensity = fIntensity * aquadraticterm * AUR_FRAMEBUFFER_QUADRATIC_GAIN;
-                }
-                else
-                    fIntensity = (float)sqrt((fIntensity - AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) *
-                                      AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE) + AUR_FRAMEBUFFER_OVERBRIGHTEN_KNEE;
-                nOverbrightenBlue[i] = (unsigned int)(fIntensity * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_BLUE_SHIFT;
-            }
-            glGenTextures(1, &cm_nOverbrightenRed);
-            glBindTexture(GL_TEXTURE_1D, cm_nOverbrightenRed);
-            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenRed);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nOverbrightenGreen);
-            glBindTexture(GL_TEXTURE_1D, cm_nOverbrightenGreen);
-            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenGreen);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glGenTextures(1, &cm_nOverbrightenBlue);
-            glBindTexture(GL_TEXTURE_1D, cm_nOverbrightenBlue);
-            glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, FRAMEBUFFER_LOOKUP_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, nOverbrightenBlue);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
-    }
-}
-// PC 0x0042B750 GOG 0x0042B860
-void GLRender::FrameBufferModificationPixelShadersATI(unsigned long nMode,
-    unsigned long nTexture0, unsigned long nTexture1,
-    unsigned long nTexture2, unsigned long nTexture3)
-{
-    switch (nMode)
-    {
-    case FRAMEBUFFER_SHADER_SATURATION:
-    {
-        static float c4define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
-        static float c5define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
-        static float c6define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glSetFragmentShaderConstantATI(GL_CON_3_ATI, c4define);
-        glSetFragmentShaderConstantATI(GL_CON_4_ATI, c5define);
-        glSetFragmentShaderConstantATI(GL_CON_5_ATI, c6define);
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nSaturationShaderATI);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_CONVOLUTION:
-    {
-        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
-        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
-        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, nTexture1);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, nTexture2);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, nTexture3);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nPerPixelFlareShaderATI);
-        glSetFragmentShaderConstantATI(GL_CON_0_ATI, c0define);
-        glSetFragmentShaderConstantATI(GL_CON_1_ATI, c1define);
-        glSetFragmentShaderConstantATI(GL_CON_2_ATI, c2define);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_COPY:
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nDecalShaderATI);
-        break;
-    case FRAMEBUFFER_SHADER_FOUR_DECALS:
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_n4DecalShaderATI);
-        break;
-    case FRAMEBUFFER_SHADER_DISABLE:
-        glDisable(GL_FRAGMENT_SHADER_ATI);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glDisable(GL_TEXTURE_1D);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-        glBindTexture(GL_TEXTURE_1D, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_TEXTURE_1D);
-        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-        glBindTexture(GL_TEXTURE_1D, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_TEXTURE_1D);
-        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindTexture(GL_TEXTURE_1D, 0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, 0);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        break;
-    case FRAMEBUFFER_SHADER_FILM_NOISE:
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nFilmNoiseShaderATI);
-        break;
-    case FRAMEBUFFER_SHADER_ACCUMULATION_BLUR:
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nAccumulationBlurShaderATI);
-        break;
-    case FRAMEBUFFER_SHADER_FORCE_DISTORTION:
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nForceDistortionShaderATI);
-        break;
-    case FRAMEBUFFER_SHADER_SOFT_SHADOW:
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nSoftShadowShaderATI);
-        break;
-    case FRAMEBUFFER_SHADER_OVERBRIGHTEN:
-    {
-        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
-        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
-        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, nTexture1);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, nTexture2);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, nTexture3);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nOverbrightenShaderATI);
-        glSetFragmentShaderConstantATI(GL_CON_0_ATI, c0define);
-        glSetFragmentShaderConstantATI(GL_CON_1_ATI, c1define);
-        glSetFragmentShaderConstantATI(GL_CON_2_ATI, c2define);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_DREAM_DISTORTION:
-    {
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_TEXTURE_2D);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
-        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
-        glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
-        break;
-    }
-    }
-}
-// PC 0x0042BDD0 GOG 0x0042BEE0
-void GLRender::FrameBufferModificationPixelShaders(unsigned long nMode,
-    unsigned long nTexture0, unsigned long nTexture1,
-    unsigned long nTexture2, unsigned long nTexture3)
-{
-    switch (nMode)
-    {
-    case FRAMEBUFFER_SHADER_SATURATION:
-    {
-        static float c4define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
-        static float c5define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
-        static float c6define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 4);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_SPARE1_NV, GL_DISCARD_NV, 0, 0, GL_TRUE, GL_TRUE, GL_FALSE);
-        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, c4define);
-        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR1_NV, c5define);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_SPARE1_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_TRUE, GL_FALSE, GL_FALSE);
-        glCombinerStageParameterfvNV(GL_COMBINER3_NV, GL_CONSTANT_COLOR0_NV, c6define);
-        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER3_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER3_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_CONVOLUTION:
-    {
-        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
-        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
-        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_RECTANGLE_NV);
-        glBindTexture(GL_TEXTURE_RECTANGLE_NV, nTexture0);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_RECTANGLE_NV);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture1);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_AR_TEXTURE_2D_NV);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture2);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture3);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 2);
-        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, c0define);
-        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR1_NV, c1define);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, c2define);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_COPY:
-    {
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_FOUR_DECALS:
-    {
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 3);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_PRIMARY_COLOR_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_DISABLE:
-    {
-        glDisable(GL_REGISTER_COMBINERS_NV);
-        glDisable(GL_PER_STAGE_CONSTANTS_NV);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glDisable(GL_TEXTURE_RECTANGLE_NV);
-        glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-        glDisable(GL_TEXTURE_SHADER_NV);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_SHADER_NV);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_SHADER_NV);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_SHADER_NV);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_FILM_NOISE:
-    {
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_ACCUMULATION_BLUR:
-    {
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 2);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_FORCE_DISTORTION:
-    {
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_RECTANGLE_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_TEXTURE_RECTANGLE_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_SOFT_SHADOW:
-    {
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 3);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_C_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR1_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_ALPHA, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_C_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_ALPHA, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerOutputNV(GL_COMBINER1_NV, GL_ALPHA, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE1_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_ALPHA, GL_VARIABLE_D_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerOutputNV(GL_COMBINER2_NV, GL_ALPHA, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_OVERBRIGHTEN:
-    {
-        static float c0define[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
-        static float c1define[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
-        static float c2define[4] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_TEXTURE_RECTANGLE_NV);
-        glBindTexture(GL_TEXTURE_RECTANGLE_NV, nTexture0);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_RECTANGLE_NV);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture1);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_AR_TEXTURE_2D_NV);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture2);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, nTexture3);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DEPENDENT_GB_TEXTURE_2D_NV);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 3);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, c0define);
-        glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, c1define);
-        glCombinerStageParameterfvNV(GL_COMBINER2_NV, GL_CONSTANT_COLOR0_NV, c2define);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE1_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER1_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER1_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_B_NV, GL_CONSTANT_COLOR0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_C_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER2_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER2_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_PRIMARY_COLOR_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        break;
-    }
-    case FRAMEBUFFER_SHADER_DREAM_DISTORTION:
-    {
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_TEXTURE_2D_NV);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glEnable(GL_TEXTURE_SHADER_NV);
-        glEnable(GL_TEXTURE_2D);
-        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
-        glEnable(GL_REGISTER_COMBINERS_NV);
-        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
-        glEnable(GL_PER_STAGE_CONSTANTS_NV);
-        float c0define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
-        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, c0define);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glCombinerOutputNV(GL_COMBINER0_NV, GL_ALPHA, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
-        glFinalCombinerInputNV(GL_VARIABLE_A_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
-        break;
-    }
-    }
-}
-// PC 0x0042DA50 GOG 0x0042DB60
-void GLRender::MipmapFilterATI(HDC hDC, HGLRC hContext, float fWidth,
-                              float fHeight, PBUFFERARB* pBuffer,
-                              unsigned long nTexture, float fSourceSize)
-{
-    wglMakeContextCurrentARB(hDC, hDC, hContext);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, (int)fWidth, (int)fHeight);
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
-    glEnable(GL_BLEND);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
-        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
-        float y = (i == 0 || i == 3) ? fHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : fWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glFlush();
-}
-// PC 0x0042DCB0 GOG 0x0042DDC0
-void GLRender::MipmapFilter(HDC hDC, HGLRC hContext, float fWidth,
-                            float fHeight, PBUFFERARB* pBuffer,
-                            unsigned long nTexture, float fSourceSize)
-{
-    wglMakeCurrent(hDC, hContext);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, (int)fWidth, (int)fHeight);
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? fHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : fWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glFlush();
-}
-// PC 0x0042DEF0 GOG 0x0042E000
-void GLRender::BloomFilterATI(HDC hDC, HGLRC hContext, float fWidth,
-                           float fHeight, PBUFFERARB* pBuffer,
-                           unsigned long nTexture, float fSourceSize,
-                           int bSoftShadows)
-{
-    static float filter[28] = {
-        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
-        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
-        0.29f, 0.58f, 0.67f, 0.58f, 0.29f,
-        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
-        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
-        0.0f, 0.0f, 0.0f
-    };
-    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-    wglMakeContextCurrentARB(hDC, hDC, hContext);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, (int)fWidth, (int)fHeight);
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    if (bSoftShadows)
-    {
-        glEnable(GL_FRAGMENT_SHADER_ATI);
-        glBindFragmentShaderATI(cm_nSoftShadowShaderATI);
-    }
-    else
-        FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_FOUR_DECALS, 0, 0, 0, 0);
-    int nRow = 0;
-    int nColumn = 0;
-    glEnable(GL_BLEND);
-    float fInverseSize = 1.0f / fSourceSize;
-    for (int nSample = 0; nSample < 25; nSample += 4)
-    {
-        for (int nStage = 0; nStage < 4; ++nStage)
-        {
-            float color[4];
-            if (bSoftShadows)
-                color[3] = color[2] = color[1] = color[0] =
-                    softshadowdarkeningfactor * filter[nSample + nStage];
-            else
-            {
-                color[0] = filter[nSample + nStage];
-                color[1] = filter[nSample + nStage];
-                color[2] = filter[nSample + nStage];
-                color[3] = filter[nSample + nStage];
-            }
-            if (nStage == 0)
-                glSetFragmentShaderConstantATI(GL_CON_0_ATI, color);
-            else if (nStage == 1)
-                glSetFragmentShaderConstantATI(GL_CON_1_ATI, color);
-            else if (nStage == 2)
-            {
-                color[0] = color[1] = color[2] = color[3] = 0.0f;
-                glSetFragmentShaderConstantATI(GL_CON_2_ATI, color);
-            }
-            else
-                glSetFragmentShaderConstantATI(GL_CON_3_ATI, color);
-        }
-        glBegin(GL_QUADS);
-        for (int i = 0; i < 4; ++i)
-        {
-            glColor4f(1.0f, 1.0f, 1.0f, multiplier);
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-            float tBase = (i == 0 || i == 3) ? (nRow + fSourceSize - pixeloffset) * fInverseSize : (nRow - pixeloffset) * fInverseSize;
-            float s = (i == 0 || i == 1) ? (float)(0.0 + (nColumn - pixeloffset) * fInverseSize) : (nColumn + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, tBase);
-            int nTextureRow = (nColumn + 1 > 4) ? nRow + 1 : nRow;
-            int nTextureColumn = (nColumn + 1) % 5;
-            glActiveTextureARB(GL_TEXTURE1_ARB);
-            float t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
-            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE1_ARB, s, t);
-            nTextureRow = (nColumn + 2 > 4) ? nRow + 1 : nRow;
-            nTextureColumn = (nColumn + 2) % 5;
-            glActiveTextureARB(GL_TEXTURE2_ARB);
-            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
-            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE2_ARB, s, t);
-            nTextureRow = (nColumn + 3 > 4) ? nRow + 1 : nRow;
-            nTextureColumn = (nColumn + 3) % 5;
-            glActiveTextureARB(GL_TEXTURE3_ARB);
-            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
-            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE3_ARB, s, t);
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-            float y = (i == 0 || i == 3) ? fHeight : 0.0f;
-            float x = (i == 0 || i == 1) ? 0.0f : fWidth;
-            glVertex3f(x, y, 0.0f);
-        }
-        glEnd();
-        if (nColumn + 4 > 4)
-            ++nRow;
-        nColumn = (nColumn + 4) % 5;
-    }
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glDisable(GL_TEXTURE_2D);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glDisable(GL_TEXTURE_2D);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glDisable(GL_TEXTURE_2D);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glFlush();
-}
-// PC 0x0042E680 GOG 0x0042E790
-void GLRender::BloomFilter(HDC hDC, HGLRC hContext, float fWidth,
-                           float fHeight, PBUFFERARB* pBuffer,
-                           unsigned long nTexture, float fSourceSize,
-                           int bSoftShadows)
-{
-    static float filter[28] = {
-        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
-        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
-        0.29f, 0.58f, 0.67f, 0.58f, 0.29f,
-        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
-        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
-        0.0f, 0.0f, 0.0f
-    };
-    wglMakeCurrent(hDC, hContext);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, (int)fWidth, (int)fHeight);
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, nTexture);
-    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_PER_STAGE_CONSTANTS_NV);
-    if (bSoftShadows)
-        FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_SOFT_SHADOW, 0, 0, 0, 0);
-    else
-        FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_FOUR_DECALS, 0, 0, 0, 0);
-    int nRow = 0;
-    int nColumn = 0;
-    glEnable(GL_BLEND);
-    float fInverseSize = 1.0f / fSourceSize;
-    for (int nSample = 0; nSample < 25; nSample += 4)
-    {
-        for (int nStage = 0; nStage < 4; ++nStage)
-        {
-            float color[4];
-            if (bSoftShadows)
-                color[3] = color[2] = color[1] = color[0] =
-                    filter[nSample + nStage] * softshadowdarkeningfactor;
-            else
-            {
-                color[0] = filter[nSample + nStage];
-                color[1] = filter[nSample + nStage];
-                color[2] = filter[nSample + nStage];
-                color[3] = filter[nSample + nStage];
-            }
-            if (nStage == 0)
-                glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, color);
-            else if (nStage == 1)
-                glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR1_NV, color);
-            else if (nStage == 2)
-                glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, color);
-            else
-                glCombinerStageParameterfvNV(GL_COMBINER2_NV, GL_CONSTANT_COLOR0_NV, color);
-        }
-        glBegin(GL_QUADS);
-        for (int i = 0; i < 4; ++i)
-        {
-            glColor4f(1.0f, 1.0f, 1.0f, multiplier);
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-            float tBase = (i == 0 || i == 3) ? (nRow + fSourceSize - pixeloffset) * fInverseSize : (nRow - pixeloffset) * fInverseSize;
-            float s = (i == 0 || i == 1) ? (float)(0.0 + (nColumn - pixeloffset) * fInverseSize) : (nColumn + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, tBase);
-            int nTextureRow = (nColumn + 1 > 4) ? nRow + 1 : nRow;
-            int nTextureColumn = (nColumn + 1) % 5;
-            glActiveTextureARB(GL_TEXTURE1_ARB);
-            float t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
-            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE1_ARB, s, t);
-            nTextureRow = (nColumn + 2 > 4) ? nRow + 1 : nRow;
-            nTextureColumn = (nColumn + 2) % 5;
-            glActiveTextureARB(GL_TEXTURE2_ARB);
-            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
-            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE2_ARB, s, t);
-            nTextureRow = (nColumn + 3 > 4) ? nRow + 1 : nRow;
-            nTextureColumn = (nColumn + 3) % 5;
-            glActiveTextureARB(GL_TEXTURE3_ARB);
-            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
-            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
-            glMultiTexCoord2fARB(GL_TEXTURE3_ARB, s, t);
-            float y = (i == 0 || i == 3) ? fHeight : 0.0f;
-            float x = (i == 0 || i == 1) ? 0.0f : fWidth;
-            glVertex3f(x, y, 0.0f);
-        }
-        glEnd();
-        if (nColumn + 4 > 4)
-            ++nRow;
-        nColumn = (nColumn + 4) % 5;
-    }
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glDisable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glDisable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glDisable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glFlush();
-}
-// PC 0x0042EDE0 GOG 0x0042EEF0
-void GLRender::RenderOverlayConvolutionATI(unsigned long nTexture)
-{
-    if (!renderregular)
-    {
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    HDC hOldDC = m_hDC;
-    HGLRC hOldContext = m_hGLRC;
-    wglMakeContextCurrentARB(cm_hConvolutionHDC[3], cm_hConvolutionHDC[3],
-                             cm_hConvolutionHGLRC[3]);
-    glDrawBuffer(GL_FRONT);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, 512.0, 0.0, 512.0, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, 512, 512);
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(enableTranslationTable[ENABLE_LIGHTING]);
-    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_CONVOLUTION,
-                                           nTexture, cm_nRedTexture,
-                                           cm_nGreenTexture, cm_nBlueTexture);
-    float fMaxS = (float)g_nScreenWidth / (float)cm_nScreenWidthPow2;
-    float fMaxT = (float)g_nScreenHeight / (float)cm_nScreenHeightPow2;
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? fMaxT : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : fMaxS;
-        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
-        float y = (i == 0 || i == 3) ? 512.0f : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : 512.0f;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-    glFlush();
-    wglMakeContextCurrentARB(hOldDC, hOldDC, hOldContext);
-    MipmapFilterATI(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2],
-                    256.0f, 256.0f, cm_hConvolutionPBuffer[3],
-                    cm_nConvolutionRenderTexture[3], 512.0f);
-    MipmapFilterATI(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1],
-                    128.0f, 128.0f, cm_hConvolutionPBuffer[2],
-                    cm_nConvolutionRenderTexture[2], 256.0f);
-    MipmapFilterATI(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0],
-                    64.0f, 64.0f, cm_hConvolutionPBuffer[1],
-                    cm_nConvolutionRenderTexture[1], 128.0f);
-    BloomFilterATI(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5],
-                   256.0f, 256.0f, cm_hConvolutionPBuffer[baselayer],
-                   cm_nConvolutionRenderTexture[baselayer], basesize, 0);
-    wglMakeContextCurrentARB(hOldDC, hOldDC, hOldContext);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[displaylayer]);
-    wglBindTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
-    glDrawBuffer(GL_BACK);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
-    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-}
-// PC 0x0042F360 GOG 0x0042F470
-void GLRender::RenderOverlayConvolution(unsigned long nTexture)
-{
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    wglMakeCurrent(cm_hConvolutionHDC[3], cm_hConvolutionHGLRC[3]);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, 512.0, 0.0, 512.0, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, 512, 512);
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(enableTranslationTable[ENABLE_LIGHTING]);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_CONVOLUTION,
-        nTexture, cm_nRedTexture, cm_nGreenTexture, cm_nBlueTexture);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? 512.0f : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : 512.0f;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-    glFlush();
-    MipmapFilter(cm_hConvolutionHDC[2], cm_hConvolutionHGLRC[2],
-        256.0f, 256.0f, cm_hConvolutionPBuffer[3],
-        cm_nConvolutionRenderTexture[3], 512.0f);
-    MipmapFilter(cm_hConvolutionHDC[1], cm_hConvolutionHGLRC[1],
-        128.0f, 128.0f, cm_hConvolutionPBuffer[2],
-        cm_nConvolutionRenderTexture[2], 256.0f);
-    MipmapFilter(cm_hConvolutionHDC[0], cm_hConvolutionHGLRC[0],
-        64.0f, 64.0f, cm_hConvolutionPBuffer[1],
-        cm_nConvolutionRenderTexture[1], 128.0f);
-    BloomFilter(cm_hConvolutionHDC[5], cm_hConvolutionHGLRC[5],
-        256.0f, 256.0f, cm_hConvolutionPBuffer[baselayer],
-        cm_nConvolutionRenderTexture[baselayer], basesize, 0);
-    wglMakeCurrent(m_hDC, m_hGLRC);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nConvolutionRenderTexture[displaylayer]);
-    wglBindTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_COPY, 0, 0, 0, 0);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-}
-
-void GLRender::SetUpSoftShadowsARB()
-{
-    glEnable(GL_TEXTURE_RECTANGLE_NV);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0, g_nScreenWidth, g_nScreenHeight);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-// PC 0x0042F840 GOG 0x0042F950
-void GLRender::SetUpSoftShadowsATI()
-{
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nBufferRegionTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, cm_nScreenWidthPow2, cm_nScreenHeightPow2);
-    glDisable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glFlush();
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-// PC 0x0042F8C0 GOG 0x0042F9D0
-void GLRender::SetUpSoftShadows()
-{
-    if (AurATISoftShadowsAvailable())
-    {
-        GLRender::SetUpSoftShadowsATI();
-        return;
-    }
-    glEnable(GL_TEXTURE_RECTANGLE_NV);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, GLRender::cm_nBufferRegionTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0, g_nScreenWidth, g_nScreenHeight);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-    glFlush();
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-// PC 0x0042F950 GOG 0x0042FA60
-void GLRender::FinishSoftShadowsATI()
-{
-    glDisable(enableTranslationTable[ENABLE_DEPTH_TEST]);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    glDisable(GL_STENCIL_TEST);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-                       cm_nScreenWidthPow2, cm_nScreenHeightPow2);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glFlush();
-    glClear(GL_COLOR_BUFFER_BIT);
-    wglMakeContextCurrentARB(cm_hSoftShadowHDC, cm_hSoftShadowHDC,
-                            cm_hSoftShadowHGLRC);
-    glDrawBuffer(GL_FRONT);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
-    glDisable(GL_LIGHTING);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    glViewport(0, 0, 512, 512);
-    float fMaxS = (float)g_nScreenWidth / (float)cm_nScreenWidthPow2;
-    float fMaxT = (float)g_nScreenHeight / (float)cm_nScreenHeightPow2;
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? fMaxT : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : fMaxS;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-    glDrawBuffer(GL_BACK);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nBufferRegionTexture);
-    glDisable(GL_LIGHTING);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? fMaxT : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : fMaxS;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LIGHTING_BIT);
-    wglMakeContextCurrentARB(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHDC,
-                            cm_hSoftShadowTargetHGLRC);
-    glDrawBuffer(GL_FRONT);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glViewport(0, 0, 512, 512);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ZERO);
-    BloomFilterATI(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC, 512.0f, 512.0f,
-                   cm_hSoftShadowPBuffer, cm_nSoftShadowRenderTexture,
-                   512.0f, 1);
-    FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glFlush();
-    wglMakeContextCurrentARB(m_hDC, m_hDC, m_hGLRC);
-    glDrawBuffer(GL_BACK);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowTargetRenderTexture);
-    wglBindTexImageARB(cm_hSoftShadowTargetPBuffer, WGL_FRONT_LEFT_ARB);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    wglReleaseTexImageARB(cm_hSoftShadowTargetPBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glPopAttrib();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glEnable(enableTranslationTable[ENABLE_DEPTH_TEST]);
-    glDisable(GL_STENCIL_TEST);
-    SetDepthMask(GL_TRUE);
-    glStencilMask(STENCIL_WRITE_MASK);
-    glDisable(GL_FRAGMENT_SHADER_ATI);
-}
-// PC 0x004300A0 GOG 0x004301B0
-void GLRender::FinishSoftShadows()
-{
-    if (AurATISoftShadowsAvailable())
-    {
-        FinishSoftShadowsATI();
-        return;
-    }
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_RECTANGLE_NV);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0,
-                       g_nScreenWidth, g_nScreenHeight);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
-    glFlush();
-    wglMakeCurrent(cm_hSoftShadowTargetHDC, cm_hSoftShadowTargetHGLRC);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_RECTANGLE_NV);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_STENCIL_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glViewport(0, 0, 512, 512);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    wglMakeCurrent(m_hDC, m_hGLRC);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_RECTANGLE_NV);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
-    glDisable(GL_LIGHTING);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    glBlendFunc(GL_ONE, GL_ZERO);
-    glDisable(GL_STENCIL_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
-    glDepthMask(GL_FALSE);
-    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LIGHTING_BIT);
-    wglMakeCurrent(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0,
-            (double)g_nScreenHeight, -1.0, 1.0);
-    glViewport(0, 0, 512, 512);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glEnable(GL_BLEND);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    BloomFilter(cm_hSoftShadowHDC, cm_hSoftShadowHGLRC, 512.0f, 512.0f,
-                cm_hSoftShadowTargetPBuffer, cm_nSoftShadowTargetRenderTexture,
-                512.0f, 1);
-    wglMakeCurrent(m_hDC, m_hGLRC);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nSoftShadowRenderTexture);
-    wglBindTexImageARB(cm_hSoftShadowPBuffer, WGL_FRONT_LEFT_ARB);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        float t = (i == 0 || i == 3) ? 1.0f : 0.0f;
-        float s = (i == 0 || i == 1) ? 0.0f : 1.0f;
-        glTexCoord2f(s, t);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
-    }
-    glEnd();
-    wglReleaseTexImageARB(cm_hSoftShadowPBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glPopAttrib();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glEnable(enableTranslationTable[ENABLE_DEPTH_TEST]);
-    glDisable(GL_STENCIL_TEST);
-    SetDepthMask(GL_TRUE);
-    glStencilMask(STENCIL_WRITE_MASK);
-}
-// PC 0x00430740 GOG 0x00430850
-int GLRender::InitializeAntiAliasing()
-{
-
-    static char szClassName[] = "Test GL Window";
-    HGLRC hContext;
-    WNDCLASSA windowClass;
-    PIXELFORMATDESCRIPTOR pixelFormat;
-    OSVERSIONINFOA version;
-
-    windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-    windowClass.lpfnWndProc = DefWindowProcA;
-    windowClass.cbClsExtra = 0;
-    windowClass.cbWndExtra = 0;
-    windowClass.hInstance = g_hInst;
-    windowClass.hIcon = 0;
-    windowClass.hCursor = 0;
-    windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    windowClass.lpszMenuName = 0;
-    windowClass.lpszClassName = szClassName;
-    RegisterClassA(&windowClass);
-
-    HWND hWindow = CreateWindowExA(0, szClassName, "Exo Base Window",
-                                   WS_CLIPCHILDREN | WS_CLIPSIBLINGS, 0, 0,
-                                   CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, 0, 0);
-
-    memset(&pixelFormat, 0, sizeof(pixelFormat));
-    pixelFormat.nSize = sizeof(pixelFormat);
-    pixelFormat.nVersion = 1;
-    pixelFormat.dwFlags =
-        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-    pixelFormat.iPixelType = PFD_TYPE_RGBA;
-    pixelFormat.cDepthBits = 24;
-    pixelFormat.cColorBits = 32;
-    pixelFormat.iLayerType = PFD_MAIN_PLANE;
-    pixelFormat.cStencilBits = 8;
-
-    HDC hDC = GetDC(hWindow);
-    int nPixelFormat = ChoosePixelFormat(hDC, &pixelFormat);
-    if (!SetPixelFormat(hDC, nPixelFormat, 0))
-    {
-        return ReleaseDC(hWindow, hDC);
-    }
-
-    DescribePixelFormat(hDC, nPixelFormat, sizeof(pixelFormat), &pixelFormat);
-    hContext = wglCreateContext(hDC);
-    wglMakeCurrent(hDC, hContext);
-
-    wglGetExtensionsStringARB =
-        (AurWglGetExtensionsStringProc)wglGetProcAddress(
-            "wglGetExtensionsStringARB");
-    wglChoosePixelFormatARB = (AurWglChoosePixelFormatProc)wglGetProcAddress(
-        "wglChoosePixelFormatARB");
-
-    const unsigned char* pExtensions = glGetString(GL_EXTENSIONS);
-    int bATIFragmentShader = 0;
-    if (CheckExtension("GL_ATI_fragment_shader", pExtensions))
-    {
-        bATIFragmentShader = 1;
-    }
-    if (wglGetExtensionsStringARB != 0)
-    {
-        const unsigned char* pWglExtensions = wglGetExtensionsStringARB(hDC);
-        wglExtensions = pWglExtensions;
-        if (pWglExtensions != 0 &&
-            CheckExtension("WGL_ARB_multisample", pWglExtensions))
-        {
-            if (bATIFragmentShader == 1)
-            {
-                memset(&version, 0, sizeof(version));
-                version.dwOSVersionInfoSize = sizeof(version);
-                if (GetVersionExA(&version) && version.dwMajorVersion > 4)
-                {
-                    existingextensions |= WGL_ARB_MULTISAMPLE_BIT;
-                }
-            }
-            else
-            {
-                existingextensions |= WGL_ARB_MULTISAMPLE_BIT;
-            }
-        }
-    }
-
-    wglDeleteContext(hContext);
-    ReleaseDC(hWindow, hDC);
-    return DestroyWindow(hWindow);
-}
-// PC 0x00430940 GOG 0x00430A50
-void GLRender::EnableDreamDistortion(bool bLetterbox)
-{
-    m_bDreamDistortEnabled = true;
-    m_bDreamDistortLetterbox = bLetterbox;
-}
-// PC 0x00430960 GOG 0x00430A70
-void GLRender::DisableDreamDistortion()
-{
-    m_bDreamDistortEnabled = false;
-}
-// PC 0x00430970 GOG 0x00430A80
-void GLRender::EnableFury(short nLevel)
-{
-    if (nLevel > 3)
-        nLevel = 3;
-    else if (nLevel < 0)
-        nLevel = 0;
-    if (nLevel != 0)
-    {
-        if (m_FuryLevel != nLevel)
-        {
-            if (m_pFuryTexture != 0)
-            {
-                SetCurrentStageTID(3, 0);
-                AurTextureRelease(m_pFuryTexture);
-            }
-            switch (nLevel)
-            {
-                case 2:
-                    m_pFuryTexture = AurTextureGetReference("fx_Fury02", 0);
-                    break;
-                case 3:
-                    m_pFuryTexture = AurTextureGetReference("fx_Fury03", 0);
-                    break;
-                default:
-                    m_pFuryTexture = AurTextureGetReference("fx_Fury01", 0);
-                    break;
-            }
-            m_FuryLevel = nLevel;
-        }
-    }
-    else
-    {
-        if (m_pFuryTexture != 0)
-        {
-            SetActiveTexture(3);
-            glDisable(enableTranslationTable[ENABLE_TEXTURE_2D]);
-            SetActiveTexture(0);
-            AurTextureRelease(m_pFuryTexture);
-            m_pFuryTexture = 0;
-        }
-        m_FuryLevel = 0;
-    }
-}
-// PC 0x00430A60 GOG 0x00430B70
-void GLRender::RenderDreamDistortion(unsigned long nTexture)
-{
-    glDisable(GL_DEPTH_TEST);
-    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    cm_pForceDistortionTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    cm_uiCurrentStage = 1;
-    if (AurMultiTextureAvailable())
-    {
-        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
-    }
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
-    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    m_pDreamDistortTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DREAM_DISTORTION,
-                                        0, 0, 0, 0);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
-                             (i == 0 || i == 1) ? 0.0f : 1.0f);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        if (g_bLetterBoxMode)
-        {
-            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
-                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
-                                          : (float)g_Letterbox_top - 25.0f,
-                       0.0f);
-        }
-        else
-        {
-            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
-            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
-            glVertex3f(x, y, 0.0f);
-        }
-    }
-    glEnd();
-    glFlush();
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-}
-// PC 0x00430EB0 GOG 0x00430FC0
-void GLRender::RenderDreamDistortionATI(unsigned long nTexture)
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0, (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    cm_pForceDistortionTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    cm_uiCurrentStage = 1;
-    if (AurMultiTextureAvailable())
-    {
-        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
-    }
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
-    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    m_pDreamDistortTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glEnable(GL_FRAGMENT_SHADER_ATI);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_FRAGMENT_SHADER_ATI);
-    float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
-    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
-    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
-                             (i == 0 || i == 1) ? 0.0f : 1.0f);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        if (g_bLetterBoxMode)
-        {
-            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
-                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
-                                          : (float)g_Letterbox_top - 25.0f,
-                       0.0f);
-        }
-        else
-        {
-            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
-            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
-            glVertex3f(x, y, 0.0f);
-        }
-    }
-    glEnd();
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glDisable(GL_FRAGMENT_SHADER_ATI);
-    glFlush();
-}
-// PC 0x00431400 GOG 0x00431510
-void GLRender::RenderFury(unsigned long nTexture)
-{
-    glDisable(GL_DEPTH_TEST);
-    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    cm_pForceDistortionTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    cm_uiCurrentStage = 1;
-    if (AurMultiTextureAvailable())
-    {
-        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
-    }
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
-    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    m_pFuryTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DREAM_DISTORTION,
-                                        0, 0, 0, 0);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
-                             (i == 0 || i == 1) ? 0.0f : 1.0f);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        if (g_bLetterBoxMode)
-        {
-            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
-                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
-                                          : (float)g_Letterbox_top - 25.0f,
-                       0.0f);
-        }
-        else
-        {
-            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
-            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
-            glVertex3f(x, y, 0.0f);
-        }
-    }
-    glEnd();
-    glFlush();
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-}
-// PC 0x00431850 GOG 0x00431960
-void GLRender::RenderFuryATI(unsigned long nTexture)
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, (double)g_nScreenWidth, 0.0, (double)g_nScreenHeight, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
-    glEnable(enableTranslationTable[ENABLE_BLEND]);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    cm_pForceDistortionTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    cm_uiCurrentStage = 1;
-    if (AurMultiTextureAvailable())
-    {
-        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
-    }
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
-    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    m_pFuryTexture->Bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glEnable(GL_FRAGMENT_SHADER_ATI);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_FRAGMENT_SHADER_ATI);
-    float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
-    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
-    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_QUADS);
-    for (int i = 0; i < 4; ++i)
-    {
-        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE1_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
-                             (i == 0 || i == 1) ? 0.0f : 1.0f);
-        glActiveTextureARB(GL_TEXTURE2_ARB);
-        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        glActiveTextureARB(GL_TEXTURE3_ARB);
-        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
-                             (i == 0 || i == 3) ? 1.0f : 0.0f);
-        if (g_bLetterBoxMode)
-        {
-            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
-                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
-                                          : (float)g_Letterbox_top - 25.0f,
-                       0.0f);
-        }
-        else
-        {
-            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
-            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
-            glVertex3f(x, y, 0.0f);
-        }
-    }
-    glEnd();
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE2_ARB);
-    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE3_ARB);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glDisable(GL_FRAGMENT_SHADER_ATI);
-    glFlush();
-}
-// PC 0x00431DA0 GOG 0x00431EF0
-inline RequestPoolManager::~RequestPoolManager()
-{
-}
-inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
-{
-}
-// PC 0x00434E20 GOG 0x00434F70
-RequestPoolManagerVBO::RequestPoolManagerVBO()
-{
-    m_nPoolCount = 100;
-    for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
-    {
-        m_lstFreePools.Add(nPool);
-        m_lstPoolUsage.Add(0);
-        m_lstPoolLocks.Add(0);
-        m_lstPools.Add(0);
-        m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
-    }
-}
-// PC 0x004350B0 GOG 0x00435200
-RequestPoolManagerVBO::~RequestPoolManagerVBO()
-{
-    for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
-    {
-        if (m_lstPools[nPool] != 0)
-        {
-            glDeleteBuffersARB(1, (unsigned int*)&m_lstPools[nPool]);
-            m_lstPools[nPool] = 0;
-        }
-    }
-
-    for (int nBackup = 0; nBackup < m_lstPoolBackup.m_nCount; nBackup++)
-    {
-        delete[] m_lstPoolBackup[nBackup];
-    }
-
-    m_lstPoolBackup.SetSize(0);
-    m_lstPoolBackupSize.SetSize(0);
-    m_lstPoolTypes.SetSize(0);
-}
-// PC 0x00435200 GOG 0x00435350
-int RequestPoolManagerVBO::RequestPoolGeneric(int nType, int nSize, int nUsage)
-{
-    if (nSize == 0)
-    {
-        return INVALID_POOL;
-    }
-    static unsigned long totalAllocs = 0;
-    totalAllocs += nSize;
-
-    if (m_lstFreePools.m_nCount != 0)
-    {
-        int nPool = m_lstFreePools[m_lstFreePools.m_nCount - 1];
-        m_lstFreePools.DelIndex(m_lstFreePools.m_nCount - 1);
-        m_lstPoolLocks[nPool] = 0;
-        m_lstPoolUsage[nPool] = nUsage;
-        m_lstPools[nPool] = 0;
-        glGenBuffersARB(1, (unsigned int*)&m_lstPools[nPool]);
-        if (nType == Aurora::POOL_VERTEX)
-        {
-            m_lstPoolTypes[nPool] = GL_ARRAY_BUFFER_ARB;
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_lstPools[nPool]);
-            glBufferDataARB(GL_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
-            return nPool;
-        }
-        else
-        {
-            m_lstPoolTypes[nPool] = GL_ELEMENT_ARRAY_BUFFER_ARB;
-            glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_lstPools[nPool]);
-            glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
-            return nPool;
-        }
-    }
-
-    m_lstPoolLocks.Add(0);
-    m_lstPoolUsage.Add(0);
-    m_lstPools.Add(0);
-    m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
-
-    for (unsigned int nPool = m_nPoolCount + 1;
-         nPool < (unsigned int)(2 * m_nPoolCount); ++nPool)
-    {
-        m_lstFreePools.Add(nPool);
-        m_lstPoolLocks.Add(0);
-        m_lstPoolUsage.Add(0);
-        m_lstPools.Add(0);
-        m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
-    }
-
-    glGenBuffersARB(1, (unsigned int*)&m_lstPools[m_nPoolCount]);
-    if (nType == Aurora::POOL_VERTEX)
-    {
-        m_lstPoolTypes[m_nPoolCount] = GL_ARRAY_BUFFER_ARB;
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_lstPools[m_nPoolCount]);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
-    }
-    else
-    {
-        m_lstPoolTypes[m_nPoolCount] = GL_ELEMENT_ARRAY_BUFFER_ARB;
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_lstPools[m_nPoolCount]);
-        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nSize, 0, GL_DYNAMIC_DRAW_ARB);
-    }
-    int nResult = m_nPoolCount;
-    m_nPoolCount *= 2;
-    return nResult;
-}
-// PC 0x00435560 GOG 0x004356B0
-void RequestPoolManagerVBO::DeletePool(unsigned int nPool)
-{
-    if (nPool == INVALID_POOL)
-    {
-        return;
-    }
-
-    m_lstFreePools.Add(nPool);
-    m_lstPoolLocks[nPool] = 0;
-    unsigned int nBuffer = m_lstPools[nPool];
-    glDeleteBuffersARB(1, &nBuffer);
-    m_lstPools[nPool] = 0;
-}
-// PC 0x004355D0 GOG 0x00435720
-RequestPoolManagerSys::RequestPoolManagerSys()
-{
-    m_nPoolCount = 100;
-    m_ppPools = new char*[m_nPoolCount];
-    m_pPoolSize = new unsigned long[m_nPoolCount];
-    memset(m_pPoolSize, 0, 4 * m_nPoolCount);
-    memset(m_ppPools, 0, 4 * m_nPoolCount);
-    for (int nPool = 0; nPool < 100; nPool++)
-    {
-        m_lstFreePools.Add(nPool);
-        m_lstPoolLocks.Add(0);
-    }
-}
-// PC 0x00435780 GOG 0x004358D0
-int RequestPoolManagerSys::RequestPoolGeneric(int nType, int nSize, int nUsage)
-{
-    totalvertexpool += nSize;
-    totalvertexpool4k += (nSize + 4095) & 0xFFFFF000;
-    if (nSize == 0)
-    {
-        return -1;
-    }
-    static unsigned long totalAllocs = 0;
-    totalAllocs += nSize;
-
-    if (m_lstFreePools.m_nCount != 0)
-    {
-        char* pPool = new char[nSize];
-        int nPool = m_lstFreePools[m_lstFreePools.m_nCount - 1];
-        m_lstFreePools.DelIndex(m_lstFreePools.m_nCount - 1);
-        m_ppPools[nPool] = pPool;
-        m_pPoolSize[nPool] = nSize;
-        return nPool;
-    }
-
-    m_lstPoolLocks.Add(0);
-
-    for (unsigned int nPool = m_nPoolCount + 1;
-         nPool < (unsigned int)(2 * m_nPoolCount); ++nPool)
-    {
-        m_lstFreePools.Add(nPool);
-        m_lstPoolLocks.Add(0);
-    }
-
-    char** ppPools = new char*[2 * m_nPoolCount];
-    unsigned long* pPoolSizes = new unsigned long[2 * m_nPoolCount];
-    memset(ppPools, 0, 8 * m_nPoolCount);
-    memcpy(ppPools, m_ppPools, 4 * m_nPoolCount);
-    delete[] m_ppPools;
-    memset(pPoolSizes, 0, 8 * m_nPoolCount);
-    memcpy(pPoolSizes, m_pPoolSize, 4 * m_nPoolCount);
-    delete[] m_pPoolSize;
-    m_ppPools = ppPools;
-    m_pPoolSize = pPoolSizes;
-    m_ppPools[m_nPoolCount] = new char[nSize];
-    m_pPoolSize[m_nPoolCount] = nSize;
-    int nResult = m_nPoolCount;
-    m_nPoolCount *= 2;
-    return nResult;
-}
-// PC 0x00435980 GOG 0x00435AD0
-void RequestPoolManagerSys::DeletePool(unsigned int nPool)
-{
-    if (nPool == INVALID_POOL)
-    {
-        return;
-    }
-
-    m_lstFreePools.Add(nPool);
-    totalvertexpool -= m_pPoolSize[nPool];
-    totalvertexpool4k -=
-        (m_pPoolSize[nPool] + POOL_PAGE_ROUNDING) & POOL_PAGE_MASK;
-    m_lstPoolLocks[nPool] = 0;
-    if (m_ppPools[nPool] != 0)
-    {
-        delete[] m_ppPools[nPool];
-    }
-    m_ppPools[nPool] = 0;
-    m_pPoolSize[nPool] = 0;
 }
 // PC 0x00446BA0 GOG 0x00446CF0
 void GLRender::AddSquareToRender(unsigned long nPool)

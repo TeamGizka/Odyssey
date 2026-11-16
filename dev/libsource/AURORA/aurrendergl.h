@@ -1202,6 +1202,7 @@ public:
     static void RenderDrawableSquares();
 
     static void RenderBox(Vector& vMinimum, Vector& vMaximum);
+#ifndef AURGLCORE_TEXTURESTAGE
     static void ActivateTextureStage(unsigned long nStage)  // PC 0x00425700 GOG 0x00425810
     {
         if (AurMultiTextureAvailable())
@@ -1210,6 +1211,9 @@ public:
         }
         GLRender::cm_uiCurrentStage = nStage;
     }
+#else
+    static void ActivateTextureStage(unsigned long nStage);
+#endif
 
     static void DrawLightmappedGrass(void* pVertices, int nVertexStride,
                                      void* pIndices, int nStride, int nFirst,
