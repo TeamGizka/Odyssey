@@ -95,36 +95,10 @@ CExoKeyTable::CExoKeyTable()
         m_nCRC32[i] = nValue;
     }
 }
-// PC 0x0040FB20 GOG 0x0040FAD0
-CExoKeyTable::~CExoKeyTable()
-{
-    if (m_pPackedFiles != NULL)
-    {
-        for (unsigned long i = 0; i < m_nPackedFileCount; i++)
-        {
-            if (m_pPackedFiles[i] != NULL)
-            {
-                m_pPackedFiles[i]->UnloadHeader();
-                delete m_pPackedFiles[i];
-            }
-        }
-        delete[] m_pPackedFiles;
-    }
-    if (m_pKeyTable != NULL)
-    {
-        delete[] m_pKeyTable;
-    }
 
-    m_bDestroying = 1;
-    m_nUnknown00 = 0;
-    m_nTableSize = 0;
-    m_pKeyTable = NULL;
-    m_nCollisions = 0;
-    m_nUnknown18 = 0xFFFFFFFF;
-    m_nTableType = 0;
-    m_sResourceName = "";
-    m_nPackedFileCount = 0;
-    m_pPackedFiles = NULL;
+static inline void DeleteKeyTable(CKeyTableEntry* pKeyTable)
+{
+    delete[] pKeyTable;
 }
 
 inline CKeyTableEntry::CKeyTableEntry()
@@ -1532,6 +1506,58 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
 
     return 0;
 }
+// PC 0x0040FAD0 GOG 0x0040FA80
+template <>
+inline CExoArrayList<CExoString>::CExoArrayList(
+    const CExoArrayList<CExoString>& list)
+{
+    if (EXORESFILE_DEBUG)
+    {
+        CExoArrayList<CExoString> lstFiles;
+    }
+    num = 0;
+    array_size = 0;
+    element = NULL;
+    for (int i = 0; i < list.num; i++)
+    {
+        Add(list[i]);
+    }
+}
+// PC 0x0040FB20 GOG 0x0040FAD0
+CExoKeyTable::~CExoKeyTable()
+{
+    if (EXORESFILE_DEBUG)
+    {
+        CExoArrayList<CExoString> lstFiles;
+    }
+    if (m_pPackedFiles != NULL)
+    {
+        for (unsigned long i = 0; i < m_nPackedFileCount; i++)
+        {
+            if (m_pPackedFiles[i] != NULL)
+            {
+                m_pPackedFiles[i]->UnloadHeader();
+                delete m_pPackedFiles[i];
+            }
+        }
+        delete[] m_pPackedFiles;
+    }
+    if (m_pKeyTable != NULL)
+    {
+        delete[] m_pKeyTable;
+    }
+
+    m_bDestroying = 1;
+    m_nUnknown00 = 0;
+    m_nTableSize = 0;
+    m_pKeyTable = NULL;
+    m_nCollisions = 0;
+    m_nUnknown18 = 0xFFFFFFFF;
+    m_nTableType = 0;
+    m_sResourceName = "";
+    m_nPackedFileCount = 0;
+    m_pPackedFiles = NULL;
+}
 // PC 0x0040FC00 GOG 0x0040FBB0
 int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 {
@@ -2234,4 +2260,41 @@ int CExoResourceImageFile::UnloadHeader()
 static inline int GetListCount(const CExoArrayList<CExoString>* pList)
 {
     return pList->num;
+}
+
+static inline void ExoResFileTrace();
+// PC 0x00410BE0 GOG 0x00410B90
+template <>
+inline CExoArrayList<CExoArrayList<CExoString> >::~CExoArrayList()
+{
+    delete[] element;
+    element = NULL;
+}
+// PC 0x00410C10 GOG 0x00410BC0
+template <>
+inline void CExoArrayList<CExoArrayList<CExoString> >::Allocate(int nSize)
+{
+    ExoResFileTrace();
+    CExoArrayList<CExoString>* pOld = element;
+
+    array_size = nSize;
+    element = new CExoArrayList<CExoString>[nSize];
+
+    for (int i = 0; i < num; i++)
+    {
+        element[i] = pOld[i];
+    }
+
+    if (pOld != NULL)
+    {
+        delete[] pOld;
+    }
+}
+
+static inline void ExoResFileTrace()
+{
+    if (EXORESFILE_DEBUG)
+    {
+        CExoArrayList<CExoString> lstFiles;
+    }
 }
