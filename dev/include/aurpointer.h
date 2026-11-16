@@ -50,7 +50,7 @@ public:
     __forceinline void SetPointer(T* pObject)
     {
         if (m_pObject) m_pObject->RemoveSafePointer(this);
-        m_pObject = pObject; if (pObject) pObject->AddSafePointer(this);
+        m_pObject = pObject; if (m_pObject) m_pObject->AddSafePointer(this);
     }
 
     T* m_pObject;
