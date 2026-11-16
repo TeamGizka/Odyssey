@@ -2717,7 +2717,7 @@ int CSWSCreature::AddAttackActions(unsigned long oidTarget,
         if (GetNodeById(ACTION_COMBAT) == NULL)
         {
             int bCombat = TRUE;
-            AddAction(ACTION_COMBAT, ACTION_GROUP_NEW,
+            AddActionToFront(ACTION_COMBAT, ACTION_GROUP_NEW,
                 ACTION_PARAM_INTEGER, &bCombat,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -3296,7 +3296,7 @@ int CSWSCreature::EquipItem(unsigned long nSlot, CSWSItem* pItem,
         if (sEntry[0] == '&')
         {
             sEntry = sEntry.SubString(1, -1);
-            int nAppearance = atol(sEntry.CStr());
+            int nAppearance = atoi(sEntry.CStr());
             if (nAppearance != 0 && GetStats()->m_nAppearance != nAppearance)
             {
                 Disguise(nAppearance, NULL, FALSE, TRUE);
@@ -3339,7 +3339,7 @@ int CSWSCreature::UnequipItem(CSWSItem* pItem)
         if (sEntry[0] == '&')
         {
             sEntry = sEntry.SubString(1, -1);
-            int nAppearance = atol(sEntry.CStr());
+            int nAppearance = atoi(sEntry.CStr());
             if (nAppearance != 0 && GetStats()->m_nAppearance != nAppearance)
             {
                 Disguise(nAppearance, NULL, FALSE, TRUE);
