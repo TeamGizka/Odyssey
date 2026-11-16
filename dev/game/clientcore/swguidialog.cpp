@@ -663,29 +663,6 @@ CSWGuiDialogTop::CSWGuiDialogTop(CSWGuiManager* pManager,
     m_bPositioned = 1;
 #endif
 }
-// PC 0x0070F400 GOG 0x0070F150
-void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
-                                       unsigned long* pReplyIndices,
-                                       int nStartIndex, int bUnknown)
-{
-    if (bUnknown)
-    {
-        m_pTop->SetReply(m_sMessage);
-    }
-    CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
-                             bUnknown);
-    if (m_lbReplies.m_bEnabled)
-    {
-        CSWGuiExtent cExtent = m_lbReplies.m_cExtent;
-        int nFontHeight = m_lblReply[0].m_cText.GetFontHeight();
-        cExtent.m_nHeight -= cExtent.m_nHeight % nFontHeight;
-        m_lbReplies.SetExtent(cExtent);
-    }
-    if (bUnknown && !m_pManager->PanelExists(m_pTop))
-    {
-        m_pManager->AddPanel(m_pTop, 0, 1);
-    }
-}
 // PC 0x0070DE50 GOG 0x0070E2A0
 int CSWGuiDialogCinematic::SelectReply(int nReply)
 {
@@ -809,6 +786,29 @@ CSWGuiDialogCinematic::~CSWGuiDialogCinematic()
     {
         delete m_pTop;
         m_pTop = 0;
+    }
+}
+// PC 0x0070F400 GOG 0x0070F150
+void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
+                                       unsigned long* pReplyIndices,
+                                       int nStartIndex, int bUnknown)
+{
+    if (bUnknown)
+    {
+        m_pTop->SetReply(m_sMessage);
+    }
+    CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
+                             bUnknown);
+    if (m_lbReplies.m_bEnabled)
+    {
+        CSWGuiExtent cExtent = m_lbReplies.m_cExtent;
+        int nFontHeight = m_lblReply[0].m_cText.GetFontHeight();
+        cExtent.m_nHeight -= cExtent.m_nHeight % nFontHeight;
+        m_lbReplies.SetExtent(cExtent);
+    }
+    if (bUnknown && !m_pManager->PanelExists(m_pTop))
+    {
+        m_pManager->AddPanel(m_pTop, 0, 1);
     }
 }
 // PC 0x0070F4D0 GOG 0x0070F220
