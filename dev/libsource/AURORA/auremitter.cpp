@@ -1130,11 +1130,10 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630 GOG 0x004BB740
     Quaternion qRotation;
     Quaternion qCamera;
     Vector vCameraX = CurrentCamera->m_qOrientation.xdir();
-    m_pNode = m_pNode;
     m_fFramesPerSecond = m_fFramesPerSecond;
     AurDrawLine(m_vOrigin, CurrentCamera->m_vPosition, 0);
-    Vector vCameraY = CurrentCamera->m_qOrientation.ydir();
     MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
+    Vector vCameraY = CurrentCamera->m_qOrientation.ydir();
     int bFog = 0;
     float fScale = 1.0f;
     float fStart = 0.0f;
