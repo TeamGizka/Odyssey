@@ -1,4 +1,3 @@
-#define NWCSENDMESSAGE_VISUALEFFECT
 #include "exobase.h"
 #include "appmanager.h"
 #include "clientexoapp.h"

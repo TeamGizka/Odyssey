@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#define VIRTUALMACHINE_DEBUG 0
+#define NWVMACHINEINTERNAL_DEBUG 0
 
 
 
@@ -57,7 +57,7 @@ void CVirtualMachineStack::AssignLocationToLocation(int nSource, int nDestinatio
 // PC 0x0061D9D0 GOG 0x0061D9A0
 int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 {
-    if (VIRTUALMACHINE_DEBUG)
+    if (NWVMACHINEINTERNAL_DEBUG)
     {
         AssignLocationToLocation(0, 0);
     }
@@ -107,7 +107,7 @@ int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 // PC 0x0061DB40 GOG 0x0061DB10
 int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 {
-    if (VIRTUALMACHINE_DEBUG)
+    if (NWVMACHINEINTERNAL_DEBUG)
     {
         SaveStack(pGFF, pStruct);
     }
@@ -168,7 +168,7 @@ int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 // PC 0x0061DD90 GOG 0x0061DD60
 void CVirtualMachineStack::ClearStack()
 {
-    if (VIRTUALMACHINE_DEBUG)
+    if (NWVMACHINEINTERNAL_DEBUG)
     {
         AssignLocationToLocation(0, 0);
     }
@@ -432,7 +432,7 @@ void CVirtualMachineInternal::SetCommandImplementer(
 // PC 0x0061DE40 GOG 0x0061DE10
 void CVirtualMachineStack::SetStackPointer(int nStackPointer)
 {
-    if (VIRTUALMACHINE_DEBUG)
+    if (NWVMACHINEINTERNAL_DEBUG)
     {
         ClearStack();
     }

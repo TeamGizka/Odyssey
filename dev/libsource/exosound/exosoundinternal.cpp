@@ -11,7 +11,7 @@
 
 
 #define EXOSOUND_RESERVED_STREAMING_HANDLES 8
-#define EXOSOUND_DEBUG 0
+#define EXOSOUNDINTERNAL_DEBUG 0
 
 int g_bDisableSound;
 int g_bSoundPaused;
@@ -958,7 +958,7 @@ void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,  /
 void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,  // PC 0x00623160 GOG 0x006230E0
                                             C2DVoice* p2DVoice)
 {
-    if (EXOSOUND_DEBUG)
+    if (EXOSOUNDINTERNAL_DEBUG)
     {
         int bPlaying = m_lstPlaying.Contains(pSource);
     }

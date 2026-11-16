@@ -873,7 +873,7 @@ int CClientExoApp::GetLastTarget()
 // PC 0x00638FF0 GOG 0x00638EF0
 void CClientExoApp::SetGuiGameSlow(int bSlow)
 {
-    m_pcExoAppInternal->m_nUnknown1B0 = bSlow;
+    m_pcExoAppInternal->m_bGuiGameSlow = bSlow;
 }
 
 void CClientExoApp::SetRunScript(const CExoString& sScript)

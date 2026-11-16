@@ -899,7 +899,7 @@ public:
     unsigned char m_aUnmapped1A5[3];
     int m_bEndGamePending;
     int m_nEndGamePendingUnknown;
-    int m_nUnknown1B0;
+    int m_bGuiGameSlow;
     unsigned char* m_pCharacterFile;
     unsigned long m_nCharacterFileSize;
     int m_nCharacterFileId;

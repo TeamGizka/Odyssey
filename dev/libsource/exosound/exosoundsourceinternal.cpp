@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define EXOSOUNDSOURCE_DEBUG 0
+#define EXOSOUNDSOURCEINTERNAL_DEBUG 0
 
 inline unsigned char CExoSoundPriorityGroup::GetMaxPlaying()
 {
@@ -409,7 +409,7 @@ int CExoSoundSourceInternal::IsPlaying()
 #else
 int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070 GOG 0x00627010
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bInRange = GetWithinRangeOfListener();
     }
@@ -430,7 +430,7 @@ int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070 GOG 0x00627010
 // PC 0x006270C0 GOG 0x00627060
 void CExoSoundSourceInternal::SetLooping(int bLooping)
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bPlaying = IsPlaying();
     }
@@ -613,7 +613,7 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)
 #else
 void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150 GOG 0x006270F0
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bPlaying = IsPlaying();
     }
@@ -695,7 +695,7 @@ void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // PC 0x0062
 // PC 0x00627260 GOG 0x00627200
 void CExoSoundSourceInternal::Set3D(int b3D)
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bPlaying = IsPlaying();
     }
@@ -779,7 +779,7 @@ int CExoSoundSourceInternal::IsPaused()
 #endif
 void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x00627300 GOG 0x006272A0
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bPlaying = IsPlaying();
     }
@@ -794,7 +794,7 @@ void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x006
 #ifndef _XBOX
 void CExoSoundSourceInternal::StoreRestartSoundPosition()  // PC 0x00627340 GOG 0x006272E0
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bPlaying = IsPlaying();
     }
@@ -1075,7 +1075,7 @@ void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,
 void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,  // PC 0x00627840 GOG 0x006277E0
                                         float fScale)
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         CalculatePitchVarianceFrequency();
     }
@@ -1299,7 +1299,7 @@ void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // PC 0x00627A8
 // PC 0x00627390 GOG 0x00627330
 void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bPlaying = IsPlaying();
     }
@@ -1332,7 +1332,7 @@ void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()
 #else
 void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // PC 0x00627410 GOG 0x006273B0
 {
-    if (EXOSOUNDSOURCE_DEBUG)
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
         int bPlaying = IsPlaying();
     }

@@ -66,7 +66,6 @@ void CSWSDialog::AddPlayer(CSWSDialogPlayer* pPlayer)
 }
 #include "nwsdialoginl.h"
 
-#define NWSOBJECT_DEBUG 0
 // PC 0x004F60C0 GOG 0x005058B0
 CSWSObjectActionNode::~CSWSObjectActionNode()
 {

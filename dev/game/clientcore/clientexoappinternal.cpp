@@ -3728,7 +3728,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_bShowLoadScreen = 0;
     m_nLoadFromIFO = 0;
     m_bRunScript = 0;
-    m_nUnknown1B0 = 0;
+    m_bGuiGameSlow = 0;
 #ifdef _XBOX
     m_bMinGlobalRim = 0;
 #endif
@@ -8758,7 +8758,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
             m_pGuiInGame->SetSWGuiStatus(CGuiInGame::GUISTATUS_DIALOG, 1);
         }
     }
-    int bSlowMotion = m_nUnknown1B0;
+    int bSlowMotion = m_bGuiGameSlow;
     if (bSlowMotion || SlowGame)
         SetGameSpeed(0.25f);
     else
@@ -10701,7 +10701,7 @@ int CClientExoAppInternal::MainLoop()
             ExoXboxLaunch(&cParams, g_pAppManager->m_pServerExoApp->GetModuleName().CStr());
         }
     }
-    int bSlowMotion = m_nUnknown1B0;
+    int bSlowMotion = m_bGuiGameSlow;
     if (bSlowMotion || SlowGame)
         SetGameSpeed(0.25f);
     else
