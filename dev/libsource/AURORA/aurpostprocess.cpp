@@ -1022,72 +1022,6 @@ void MdlNodeDanglyMesh::InternalGenVertices()
     m_lConstraints.SetSize(0);
     m_lConstraints = lConstraints;
 }
-// PC 0x0044DD70 GOG 0x0044DEB0
-void MdlNodeTriMesh::InternalRemoveTemporaryArrays()
-{
-    if (m_pPostProcess != 0)
-    {
-        for (int i = 0; i < m_pPostProcess->m_lstVertices.m_nCount; i++)
-        {
-            delete m_pPostProcess->m_lstVertices.m_pList[i];
-        }
-
-        m_pPostProcess->m_lstVertices.SetSize(0);
-    }
-
-    MaxFace_PostProcess::texindices1.m_nCount = 0;
-    MaxFace_PostProcess::texindices2.m_nCount = 0;
-    MaxFace_PostProcess::texindices3.m_nCount = 0;
-
-    delete m_pPostProcess;
-    m_pPostProcess = 0;
-}
-// PC 0x0044DE10 GOG 0x0044DF50
-void MdlNodeAnimMesh::InternalRemoveTemporaryArrays()
-{
-    for (int i = 0; i < m_pPostProcess->m_lstVertices.m_nCount; i++)
-    {
-        delete (NodeVertexAnim*)m_pPostProcess->m_lstVertices.m_pList[i];
-    }
-
-    m_pPostProcess->m_lstVertices.SetSize(0);
-    m_lAnimationVectors1.SetSize(0);
-    m_lAnimationVectors2.SetSize(0);
-    m_lAnimationVectors3.SetSize(0);
-
-    MdlNodeTriMesh::InternalRemoveTemporaryArrays();
-}
-// PC 0x0044DEF0 GOG 0x0044E030
-void MdlNodeDanglyMesh::InternalRemoveTemporaryArrays()
-{
-    List<NodeVertex*>* pVertexList;
-    int i;
-
-    for (i = 0; i < m_pPostProcess->m_lstVertices.m_nCount; i++)
-    {
-        delete m_pPostProcess->m_lstVertices.m_pList[i];
-    }
-
-#ifdef _XBOX
-    m_pPostProcess->m_lstVertices.SetSize(0);
-#else
-    pVertexList = &m_pPostProcess->m_lstVertices;
-    if (pVertexList->m_pList != 0)
-    {
-        delete[] pVertexList->m_pList;
-        pVertexList->m_pList = 0;
-    }
-    pVertexList->m_nAllocated = 0;
-    pVertexList->m_nCount = 0;
-#endif
-
-    return ((MdlNodeTriMesh*)this)->InternalRemoveTemporaryArrays();
-}
-// PC 0x0044DF60 GOG 0x0044E0A0
-void MdlNodeSkin::InternalRemoveTemporaryArrays()
-{
-    MdlNodeTriMesh::InternalRemoveTemporaryArrays();
-}
 // PC 0x0044E570 GOG 0x0044E6B0
 void MdlNodeTriMesh::BuildVertexIndices()
 {
@@ -1209,6 +1143,98 @@ void MdlNodeTriMesh::BuildVertexIndices()
         m_nAuxIndexPool = RequestPoolManager::INVALID_POOL;
 #endif
     }
+}
+template <class T> class NodeVertexAnimArrays : public NodeVertex
+{
+public:
+
+    List<T> m_lstPositions;
+    List<T> m_lstNormals;
+    List<T> m_lstTexCoords;
+    ~NodeVertexAnimArrays();
+};
+
+template <class T> NodeVertexAnimArrays<T>::~NodeVertexAnimArrays()
+{
+    m_lstPositions.SetSize(0);
+    m_lstNormals.SetSize(0);
+    m_lstTexCoords.SetSize(0);
+}
+
+void AurPostProcessNodeVertexAnimArraysDefiners(NodeVertexAnimArrays<Vector>* pArrays)
+{
+    delete pArrays;
+}
+
+void AurPostProcessNodeVertexAnimDefiners(NodeVertexAnim* pVertex)
+{
+    delete pVertex;
+}
+// PC 0x0044DD70 GOG 0x0044DEB0
+void MdlNodeTriMesh::InternalRemoveTemporaryArrays()
+{
+    if (m_pPostProcess != 0)
+    {
+        for (int i = 0; i < m_pPostProcess->m_lstVertices.m_nCount; i++)
+        {
+            delete m_pPostProcess->m_lstVertices.m_pList[i];
+        }
+
+        m_pPostProcess->m_lstVertices.SetSize(0);
+    }
+
+    MaxFace_PostProcess::texindices1.m_nCount = 0;
+    MaxFace_PostProcess::texindices2.m_nCount = 0;
+    MaxFace_PostProcess::texindices3.m_nCount = 0;
+
+    delete m_pPostProcess;
+    m_pPostProcess = 0;
+}
+// PC 0x0044DE10 GOG 0x0044DF50
+void MdlNodeAnimMesh::InternalRemoveTemporaryArrays()
+{
+    for (int i = 0; i < m_pPostProcess->m_lstVertices.m_nCount; i++)
+    {
+        delete (NodeVertexAnimArrays<Vector>*)m_pPostProcess->m_lstVertices.m_pList[i];
+    }
+
+    m_pPostProcess->m_lstVertices.SetSize(0);
+    m_lAnimationVectors1.SetSize(0);
+    m_lAnimationVectors2.SetSize(0);
+    m_lAnimationVectors3.SetSize(0);
+
+    MdlNodeTriMesh::InternalRemoveTemporaryArrays();
+}
+// PC 0x0044DEF0 GOG 0x0044E030
+void MdlNodeDanglyMesh::InternalRemoveTemporaryArrays()
+{
+    List<NodeVertex*>* pVertexList;
+    int i;
+
+    for (i = 0; i < m_pPostProcess->m_lstVertices.m_nCount; i++)
+    {
+        delete m_pPostProcess->m_lstVertices.m_pList[i];
+    }
+
+#ifdef _XBOX
+    m_pPostProcess->m_lstVertices.SetSize(0);
+#else
+    pVertexList = &m_pPostProcess->m_lstVertices;
+    if (pVertexList->m_pList != 0)
+    {
+        delete[] pVertexList->m_pList;
+        pVertexList->m_pList = 0;
+    }
+    pVertexList->m_nAllocated = 0;
+    pVertexList->m_nCount = 0;
+#endif
+
+    return ((MdlNodeTriMesh*)this)->InternalRemoveTemporaryArrays();
+}
+// PC 0x0044DF60 GOG 0x0044E0A0
+void MdlNodeSkin::InternalRemoveTemporaryArrays()
+{
+    MdlNodeTriMesh::InternalRemoveTemporaryArrays();
 }
 // PC 0x0044F070 GOG 0x0044F1B0
 void MdlNodeTriMesh::InternalPostProcess()
