@@ -1,5 +1,19 @@
 #define NWSAREA_SOURCE
+#define NWSAREA_EXOARRAYLIST_REMOVE
 #include "exobase.h"
+// PC 0x004E3B70
+template <class T> void CExoArrayList<T>::Remove(T value)
+{
+    int nIndex;
+    for (nIndex = 0; nIndex < num; nIndex++)
+    {
+        if ((*this)[nIndex] == value)
+            break;
+    }
+    if (nIndex == num)
+        return;
+    DelIndex(nIndex);
+}
 #include <windows.h>
 #include "resgff.h"
 #include "nwerffile.h"

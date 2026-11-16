@@ -604,6 +604,7 @@ public:
     int Contains(T value) const;
     int DerefContains(T value) const;
 
+#ifndef NWSAREA_EXOARRAYLIST_REMOVE
     void Remove(T value)
     {
         int nIndex;
@@ -620,6 +621,9 @@ public:
             element[nIndex] = element[nIndex + 1];
         }
     }
+#else
+    void Remove(T value);
+#endif
 
     void Allocate(int nSize)
     {
