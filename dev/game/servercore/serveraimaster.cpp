@@ -1038,11 +1038,15 @@ BOOL CServerAIMaster::LoadEventQueue(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
+static inline C2DA* GetReputationAdjustmentTable()
+{
+    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    return p2DArrays->m_pRepAdjustments;
+}
 // PC 0x004DE310 GOG 0x004DE430
 void CServerAIMaster::LoadReputationAdjustments()
 {
-    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-    C2DA* pRepAdjustments = p2DArrays->m_pRepAdjustments;
+    C2DA* pRepAdjustments = GetReputationAdjustmentTable();
     if (pRepAdjustments != NULL)
     {
         for (int nRow = 0; nRow < 4; nRow++)
