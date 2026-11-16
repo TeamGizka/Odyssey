@@ -2139,217 +2139,10 @@ unsigned __int64 CServerExoAppInternal::GetSystemTimeAsDWORD64()
 }
 
 #ifndef _XBOX
-// PC 0x004F1110 GOG 0x004F0C50
-void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
-
+static inline int SavePCAutosaveParams(CResGFF* pRes, CResStruct& stStruct)
 {
-    g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModule);
-    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(
-        g_pAppManager->GetClientExoApp()->GetNextLoadScreenHintSTRREF(sModule, 0));
-    g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 1, 1);
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(0, 0);
-    CClientExoAppInternal* pClient =
-        g_pAppManager->GetClientExoApp()->m_pcExoAppInternal;
-    pClient->UpdateRumble(0.0f);
-    g_pExoInput->PauseRumble();
-    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
-
-    g_pExoResMan->CreateDirectory2("SAVES:");
-    CExoString sDirectory;
-    sDirectory.Format("SAVES:%06d - %s", CSWGuiSaveLoadEntry::SAVE_SLOT_AUTO, "AUTOSAVE");
-    if (g_pExoResMan->CreateDirectory2(sDirectory) == 0)
-    {
-        g_pExoResMan->CleanDirectory(sDirectory, 0, 0);
-    }
-    int nLoadStep = g_pAppManager->GetClientExoApp()->GetLoadStep(0);
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(5 * nLoadStep / 100, 0);
-    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
-    m_partyTable.SaveTableInfo(sDirectory);
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(10 * nLoadStep / 100, 0);
-    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
-    m_globalVariableTable.Save(sDirectory);
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(15 * nLoadStep / 100, 0);
-    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
-
-    sDirectory = sDirectory + "\\";
-    CExoString sSaveInfo = sDirectory + "savenfo";
-    CResGFF* pGFF = new CResGFF;
-    CResStruct cRoot;
-    pGFF->CreateGFFFile(&cRoot, "NFO ", "V2.0");
-    CExoString sAreaName;
-    int nAreaName;
-    if (p2DA->GetINTEntry(sModule, "AreaName", &nAreaName))
-    {
-        sAreaName = g_pTlkTable->GetSimpleString(nAreaName);
-    }
-    CExoString sBMPResRef;
-    bool bMissingImage;
-    {
-        CExoString sColumn("BMPResRef");
-        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-        C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
-        bMissingImage = pLoadscreens->GetCExoStringEntry(
-            sModule, sColumn, &sBMPResRef) == 0;
-    }
-    if (bMissingImage)
-    {
-        sBMPResRef.Format("load_%s", sModule);
-        int nResourceExists;
-        {
-            CResRef cImage(sBMPResRef);
-            nResourceExists = g_pExoResMan->Exists(cImage, RESTYPE_TGA, (unsigned long*)NULL);
-        }
-        if (!nResourceExists)
-        {
-            CResRef cImage(sBMPResRef);
-            nResourceExists = g_pExoResMan->Exists(cImage, RESTYPE_TPC, (unsigned long*)NULL);
-        }
-        if (!nResourceExists)
-        {
-            CExoString sColumn("BMPResRef");
-            CExoString sDefault("DEFAULT");
-            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-            C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
-            pLoadscreens->GetCExoStringEntry(sDefault, sColumn, &sBMPResRef);
-        }
-    }
-    pGFF->WriteFieldCExoString(&cRoot, sAreaName, "AREANAME");
-    pGFF->WriteFieldCExoString(&cRoot, sModule, "LASTMODULE");
-    pGFF->WriteFieldDWORD(&cRoot, m_partyTable.GetTotalPlayedSeconds(), "TIMEPLAYED");
-#ifndef _XBOX
-    int bCheatUsed = m_partyTable.m_bCheatUsed;
-    pGFF->WriteFieldBYTE(&cRoot, bCheatUsed, "CHEATUSED");
-#endif
-    pGFF->WriteFieldBYTE(&cRoot, 1, "PCAUTOSAVE");
-    pGFF->WriteFieldCExoString(&cRoot, sBMPResRef, "SCREENSHOT");
-    {
-        SYSTEMTIME stLocalTime;
-        FILETIME ftTimeStamp;
-        GetLocalTime(&stLocalTime);
-        SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
-        unsigned __int64 nTimeStamp = ftTimeStamp.dwHighDateTime;
-        nTimeStamp <<= 32;
-        nTimeStamp |= ftTimeStamp.dwLowDateTime;
-        pGFF->WriteFieldDWORD64(&cRoot, nTimeStamp, "TIMESTAMP");
-    }
-    pGFF->WriteFieldCExoString(&cRoot, m_partyTable.GetPCName(), "PCNAME");
-    int nSaveNumber = m_partyTable.m_n248;
-    pGFF->WriteFieldDWORD(&cRoot, nSaveNumber, "SAVENUMBER");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
-                         "GAMEPLAYHINT");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(0),
-                         "STORYHINT0");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(1),
-                         "STORYHINT1");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(2),
-                         "STORYHINT2");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(3),
-                         "STORYHINT3");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(4),
-                         "STORYHINT4");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(5),
-                         "STORYHINT5");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(6),
-                         "STORYHINT6");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(7),
-                         "STORYHINT7");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(8),
-                         "STORYHINT8");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(9),
-                         "STORYHINT9");
-
     KOTOR_AUTOSAVE_PARAMS cParams;
-    cParams.m_sLoadMusic =
-        g_pAppManager->GetClientExoApp()->GetLoadMusicByModuleName(sModule);
-    CExoArrayList<CExoString> lstMovies(
-        *g_pAppManager->GetClientExoApp()->GetMoveToModuleMovies());
-    cParams.m_sMovie1 = lstMovies.num > 0 ? lstMovies[0] : CExoString("");
-    cParams.m_sMovie2 = lstMovies.num > 1 ? lstMovies[1] : CExoString("");
-    cParams.m_sMovie3 = lstMovies.num > 2 ? lstMovies[2] : CExoString("");
-    cParams.m_sMovie4 = lstMovies.num > 3 ? lstMovies[3] : CExoString("");
-    cParams.m_sMovie5 = lstMovies.num > 4 ? lstMovies[4] : CExoString("");
-    cParams.m_sMovie6 = lstMovies.num > 5 ? lstMovies[5] : CExoString("");
-    unsigned long nCalendarDay, nTimeOfDay;
-    unsigned long nHour, nMinute, nSecond, nMillisecond;
-    unsigned long nYear, nMonth, nDay, nTimeOfDay2;
-    unsigned char nDawnDusk;
-    g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
-        &nCalendarDay, &nTimeOfDay);
-    g_pAppManager->GetServerExoApp()->GetWorldTimer()->ConvertFromTimeOfDay(
-        nTimeOfDay, &nHour, &nMinute, &nSecond, &nMillisecond);
-    GetModule()->GetTime(&nYear, &nMonth, &nDay, &nHour, &nDawnDusk, &nTimeOfDay2);
-    cParams.m_nTimeYear = nYear;
-    cParams.m_nTimeMonth = nMonth;
-    cParams.m_nTimeDay = nDay;
-    cParams.m_nTimeHour = nHour;
-    cParams.m_nTimeMinute = nMinute;
-    cParams.m_nTimeSecond = nSecond;
-    cParams.m_nTimeMillisecond = nMillisecond;
-    cParams.m_nTimePauseDay = nCalendarDay;
-    cParams.m_nTimePauseTime = nTimeOfDay;
-    cParams.m_sStartWaypoint =
-        g_pAppManager->GetServerExoApp()->GetMoveToModuleStartWaypoint();
-    CStatusSummary cSummary;
-    g_pAppManager->GetClientExoApp()->GetInGameGui()->GetStatusSummary(cSummary);
-    cParams.m_cStatusSummary = cSummary;
-    CResStruct cAutoSaveParams;
-    if (pGFF->AddStructToStruct(&cAutoSaveParams, &cRoot, "AUTOSAVEPARAMS", 0))
-    {
-        cParams.SaveToGFF(pGFF, cAutoSaveParams);
-    }
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(20 * nLoadStep / 100, 0);
-    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
-
-    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-    CExoString sPortrait;
-    for (int nCharacter = 0; nCharacter < pParty->GetNumCharacters(); ++nCharacter)
-    {
-        CSWSCreature* pCreature = pParty->GetCharacter(nCharacter)->GetServerCreature();
-        if (pCreature != NULL)
-        {
-            sPortrait.Format("%s%d", "PORTRAIT", nCharacter);
-            CSWCCreature* pClientCreature = pCreature->GetClientCreature();
-            if (pClientCreature != NULL)
-            {
-                pGFF->WriteFieldCResRef(&cRoot, pClientCreature->GetPortrait(1),
-                                       sPortrait.CStr());
-            }
-            else
-            {
-                pGFF->WriteFieldCResRef(&cRoot, pCreature->GetPortrait(),
-                                       sPortrait.CStr());
-            }
-        }
-    }
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(25 * nLoadStep / 100, 0);
-    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
-    pGFF->WriteGFFFile(sSaveInfo, 0);
-    delete pGFF;
-
-    CERFFile* pERF = new CERFFile;
-    CExoString sSaveGame = sDirectory + "SAVEGAME";
-    pERF->Create(sSaveGame);
-    pERF->SetVersion("MOD V1.0");
-    pERF->WriteHeader();
-    pERF->WriteStringTable();
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(30 * nLoadStep / 100, 0);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
-    pERF->ImportFiles("GAMEINPROGRESS:", (void*)-1, UpdateLoadScreen,
-                      30 * nLoadStep / 100, 60 * nLoadStep / 100);
-    pERF->Finish();
-    delete pERF;
-
-    CExoString sPlayerInfo = sDirectory + "pifo";
-    g_pExoResMan->FileCopy("TEMP:pifo", sPlayerInfo, RESTYPE_IFO, RESTYPE_INVALID);
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(100 * nLoadStep / 100, 0);
-    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-    UpdateScreen(1.0f / 30.0f, 0, 0);
+    return cParams.SaveToGFF(pRes, stStruct);
 }
 #endif
 void CServerExoAppInternal::SetMoveToWorldTime(  // PC 0x004EBB30 GOG 0x004EA860
@@ -4011,6 +3804,16 @@ void CServerExoAppInternal::TempDeathUpdate()
         }
     }
 }
+#ifndef _XBOX
+template <> inline void CExoArrayList<CExoString>::Add(CExoString value)  // PC 0x00405A30 GOG 0x00405A30
+{
+    if (num == array_size)
+    {
+        Allocate(array_size != 0 ? array_size * 2 : EXOARRAYLIST_INITIAL_ALLOCATION);
+    }
+    element[num++] = value;
+}
+#endif
 // PC 0x0040FAD0 GOG 0x0040FA80
 template <> inline CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<CExoString>& list)
 {
@@ -4022,17 +3825,6 @@ template <> inline CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<
         Add(list[i]);
     }
 }
-
-#ifndef _XBOX
-template <> inline void CExoArrayList<CExoString>::Add(CExoString value)  // PC 0x00405A30 GOG 0x00405A30
-{
-    if (num == array_size)
-    {
-        Allocate(array_size != 0 ? array_size * 2 : EXOARRAYLIST_INITIAL_ALLOCATION);
-    }
-    element[num++] = value;
-}
-#endif
 // PC 0x004EF5C0 GOG 0x004ED830
 void CServerExoAppInternal::ForceRunAreaOnExitScripts()
 {
@@ -5589,3 +5381,228 @@ int CServerExoAppInternal::MainLoop()
     UpdateMainLoopTimeBudget(g_pExoBase->m_pExoTimers->GetHighResolutionTimer());
     return 0;
 }
+template <> inline int CExoArrayList<unsigned long>::Contains(unsigned long value) const
+{
+    int nCount = 0;
+    for (int i = 0; i < num; i++)
+    {
+        if (element[i] == value)
+            nCount++;
+    }
+    return nCount;
+}
+
+#ifndef _XBOX
+// PC 0x004F1110 GOG 0x004F0C50
+void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
+
+{
+    g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModule);
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(
+        g_pAppManager->GetClientExoApp()->GetNextLoadScreenHintSTRREF(sModule, 0));
+    g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 1, 1);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(0, 0);
+    CClientExoAppInternal* pClient =
+        g_pAppManager->GetClientExoApp()->m_pcExoAppInternal;
+    pClient->UpdateRumble(0.0f);
+    g_pExoInput->PauseRumble();
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+
+    g_pExoResMan->CreateDirectory2("SAVES:");
+    CExoString sDirectory;
+    sDirectory.Format("SAVES:%06d - %s", CSWGuiSaveLoadEntry::SAVE_SLOT_AUTO, "AUTOSAVE");
+    if (g_pExoResMan->CreateDirectory2(sDirectory) == 0)
+    {
+        g_pExoResMan->CleanDirectory(sDirectory, 0, 0);
+    }
+    int nLoadStep = g_pAppManager->GetClientExoApp()->GetLoadStep(0);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(5 * nLoadStep / 100, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    m_partyTable.SaveTableInfo(sDirectory);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(10 * nLoadStep / 100, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    m_globalVariableTable.Save(sDirectory);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(15 * nLoadStep / 100, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+
+    sDirectory = sDirectory + "\\";
+    CExoString sSaveInfo = sDirectory + "savenfo";
+    CResGFF* pGFF = new CResGFF;
+    CResStruct cRoot;
+    pGFF->CreateGFFFile(&cRoot, "NFO ", "V2.0");
+    CExoString sAreaName;
+    int nAreaName;
+    if (p2DA->GetINTEntry(sModule, "AreaName", &nAreaName))
+    {
+        sAreaName = g_pTlkTable->GetSimpleString(nAreaName);
+    }
+    CExoString sBMPResRef;
+    bool bMissingImage;
+    {
+        CExoString sColumn("BMPResRef");
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+        C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
+        bMissingImage = pLoadscreens->GetCExoStringEntry(
+            sModule, sColumn, &sBMPResRef) == 0;
+    }
+    if (bMissingImage)
+    {
+        sBMPResRef.Format("load_%s", sModule);
+        int nResourceExists;
+        {
+            CResRef cImage(sBMPResRef);
+            nResourceExists = g_pExoResMan->Exists(cImage, RESTYPE_TGA, (unsigned long*)NULL);
+        }
+        if (!nResourceExists)
+        {
+            CResRef cImage(sBMPResRef);
+            nResourceExists = g_pExoResMan->Exists(cImage, RESTYPE_TPC, (unsigned long*)NULL);
+        }
+        if (!nResourceExists)
+        {
+            CExoString sColumn("BMPResRef");
+            CExoString sDefault("DEFAULT");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
+            pLoadscreens->GetCExoStringEntry(sDefault, sColumn, &sBMPResRef);
+        }
+    }
+    pGFF->WriteFieldCExoString(&cRoot, sAreaName, "AREANAME");
+    pGFF->WriteFieldCExoString(&cRoot, sModule, "LASTMODULE");
+    pGFF->WriteFieldDWORD(&cRoot, m_partyTable.GetTotalPlayedSeconds(), "TIMEPLAYED");
+#ifndef _XBOX
+    int bCheatUsed = m_partyTable.m_bCheatUsed;
+    pGFF->WriteFieldBYTE(&cRoot, bCheatUsed, "CHEATUSED");
+#endif
+    pGFF->WriteFieldBYTE(&cRoot, 1, "PCAUTOSAVE");
+    pGFF->WriteFieldCExoString(&cRoot, sBMPResRef, "SCREENSHOT");
+    {
+        SYSTEMTIME stLocalTime;
+        FILETIME ftTimeStamp;
+        GetLocalTime(&stLocalTime);
+        SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
+        unsigned __int64 nTimeStamp = ftTimeStamp.dwHighDateTime;
+        nTimeStamp <<= 32;
+        nTimeStamp |= ftTimeStamp.dwLowDateTime;
+        pGFF->WriteFieldDWORD64(&cRoot, nTimeStamp, "TIMESTAMP");
+    }
+    pGFF->WriteFieldCExoString(&cRoot, m_partyTable.GetPCName(), "PCNAME");
+    int nSaveNumber = m_partyTable.m_n248;
+    pGFF->WriteFieldDWORD(&cRoot, nSaveNumber, "SAVENUMBER");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
+                         "GAMEPLAYHINT");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(0),
+                         "STORYHINT0");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(1),
+                         "STORYHINT1");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(2),
+                         "STORYHINT2");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(3),
+                         "STORYHINT3");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(4),
+                         "STORYHINT4");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(5),
+                         "STORYHINT5");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(6),
+                         "STORYHINT6");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(7),
+                         "STORYHINT7");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(8),
+                         "STORYHINT8");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(9),
+                         "STORYHINT9");
+
+    KOTOR_AUTOSAVE_PARAMS cParams;
+    cParams.m_sLoadMusic =
+        g_pAppManager->GetClientExoApp()->GetLoadMusicByModuleName(sModule);
+    CExoArrayList<CExoString> lstMovies(
+        *g_pAppManager->GetClientExoApp()->GetMoveToModuleMovies());
+    cParams.m_sMovie1 = lstMovies.num > 0 ? lstMovies[0] : CExoString("");
+    cParams.m_sMovie2 = lstMovies.num > 1 ? lstMovies[1] : CExoString("");
+    cParams.m_sMovie3 = lstMovies.num > 2 ? lstMovies[2] : CExoString("");
+    cParams.m_sMovie4 = lstMovies.num > 3 ? lstMovies[3] : CExoString("");
+    cParams.m_sMovie5 = lstMovies.num > 4 ? lstMovies[4] : CExoString("");
+    cParams.m_sMovie6 = lstMovies.num > 5 ? lstMovies[5] : CExoString("");
+    unsigned long nCalendarDay, nTimeOfDay;
+    unsigned long nHour, nMinute, nSecond, nMillisecond;
+    unsigned long nYear, nMonth, nDay, nTimeOfDay2;
+    unsigned char nDawnDusk;
+    g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
+        &nCalendarDay, &nTimeOfDay);
+    g_pAppManager->GetServerExoApp()->GetWorldTimer()->ConvertFromTimeOfDay(
+        nTimeOfDay, &nHour, &nMinute, &nSecond, &nMillisecond);
+    GetModule()->GetTime(&nYear, &nMonth, &nDay, &nHour, &nDawnDusk, &nTimeOfDay2);
+    cParams.m_nTimeYear = nYear;
+    cParams.m_nTimeMonth = nMonth;
+    cParams.m_nTimeDay = nDay;
+    cParams.m_nTimeHour = nHour;
+    cParams.m_nTimeMinute = nMinute;
+    cParams.m_nTimeSecond = nSecond;
+    cParams.m_nTimeMillisecond = nMillisecond;
+    cParams.m_nTimePauseDay = nCalendarDay;
+    cParams.m_nTimePauseTime = nTimeOfDay;
+    cParams.m_sStartWaypoint =
+        g_pAppManager->GetServerExoApp()->GetMoveToModuleStartWaypoint();
+    CStatusSummary cSummary;
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->GetStatusSummary(cSummary);
+    cParams.m_cStatusSummary = cSummary;
+    CResStruct cAutoSaveParams;
+    if (pGFF->AddStructToStruct(&cAutoSaveParams, &cRoot, "AUTOSAVEPARAMS", 0))
+    {
+        cParams.SaveToGFF(pGFF, cAutoSaveParams);
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(20 * nLoadStep / 100, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+
+    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+    CExoString sPortrait;
+    for (int nCharacter = 0; nCharacter < pParty->GetNumCharacters(); ++nCharacter)
+    {
+        CSWSCreature* pCreature = pParty->GetCharacter(nCharacter)->GetServerCreature();
+        if (pCreature != NULL)
+        {
+            sPortrait.Format("%s%d", "PORTRAIT", nCharacter);
+            CSWCCreature* pClientCreature = pCreature->GetClientCreature();
+            if (pClientCreature != NULL)
+            {
+                pGFF->WriteFieldCResRef(&cRoot, pClientCreature->GetPortrait(1),
+                                       sPortrait.CStr());
+            }
+            else
+            {
+                pGFF->WriteFieldCResRef(&cRoot, pCreature->GetPortrait(),
+                                       sPortrait.CStr());
+            }
+        }
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(25 * nLoadStep / 100, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    pGFF->WriteGFFFile(sSaveInfo, 0);
+    delete pGFF;
+
+    CERFFile* pERF = new CERFFile;
+    CExoString sSaveGame = sDirectory + "SAVEGAME";
+    pERF->Create(sSaveGame);
+    pERF->SetVersion("MOD V1.0");
+    pERF->WriteHeader();
+    pERF->WriteStringTable();
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(30 * nLoadStep / 100, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    pERF->ImportFiles("GAMEINPROGRESS:", (void*)-1, UpdateLoadScreen,
+                      30 * nLoadStep / 100, 60 * nLoadStep / 100);
+    pERF->Finish();
+    delete pERF;
+
+    CExoString sPlayerInfo = sDirectory + "pifo";
+    g_pExoResMan->FileCopy("TEMP:pifo", sPlayerInfo, RESTYPE_IFO, RESTYPE_INVALID);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(100 * nLoadStep / 100, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+}
+#endif
