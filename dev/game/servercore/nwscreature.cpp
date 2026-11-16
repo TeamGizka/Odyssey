@@ -3243,7 +3243,6 @@ int CSWSCreature::EquipItem(unsigned long nSlot, CSWSItem* pItem,
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, oidArea, oidArea, CServerAIMaster::EVENT_SIGNAL_EVENT,
                             pEvent);
-                        (void)0;
                     }
                 }
             }

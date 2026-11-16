@@ -87,7 +87,6 @@ void CSWGuiInGameOptKeyMappings::FillListWithEvents()
 // PC 0x0075FA70 GOG 0x0075FD20
 void CSWGuiInGameOptKeyMappings::Update(float fElapsed)
 {
-    (void)fElapsed;
     if (m_bCapturing == 1)
     {
         int nKey = g_pExoInput->GetLastCapturedKeyboardKey();
@@ -169,7 +168,6 @@ void CSWGuiInGameOptKeyMappings::FixFilterColors(CSWGuiControl* pControl)
 // PC 0x0075F010 GOG 0x0075F1C0
 void CSWGuiKeyMapButton::onControlEntered(CSWGuiControl* pControl)
 {
-    (void)pControl;
     m_pParent->SetCaptureEvent(0);
 }
 // PC 0x0075F030 GOG 0x0075F1E0

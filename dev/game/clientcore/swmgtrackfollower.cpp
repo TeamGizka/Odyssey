@@ -1850,8 +1850,7 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                      + vEnemyPosition - vPosition;
                             if (bRunScripts)
                             {
-                                int bIsInvulnerable = pEnemy->GetIsInvulnerable();
-                                if (!bIsInvulnerable)
+                                if (!pEnemy->GetIsInvulnerable())
                                 {
                                     pEnemy->Hit();
                                     pEnemy->AdjustHitPoints(-m_nBumpDamage);

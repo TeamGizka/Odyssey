@@ -5370,9 +5370,8 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
         }
         else
         {
-            char nWIS = GetWISMod();
             m_nCurrentForcePoints =
-                (nForcePoints + nWIS * GetLevel(0) <= GetLevel(0)) ? GetLevel(0) :
+                (nForcePoints + GetWISMod() * GetLevel(0) <= GetLevel(0)) ? GetLevel(0) :
                 nForce + GetWISMod() * GetLevel(0);
         }
     }
