@@ -9,16 +9,6 @@
 #define NWMESSAGE_DEBUG 0
 
 const int CSWMessage::DEFAULT_WRITE_BUFFER_SIZE = 128;
-// PC 0x0053F200 GOG 0x0052CAA0
-CExoString CSWCCMessageData::GetString(int nIndex)
-{
-    if (nIndex < m_lstStrings.num)
-    {
-        return m_lstStrings.element[nIndex];
-    }
-
-    return "";
-}
 // PC 0x00404E60 GOG 0x00404E60
 int CSWMessage::PeekAtWriteMessageSize()
 {
@@ -33,16 +23,6 @@ void CSWCCMessageData::SetInteger(int nIndex, int nValue)
     }
 
     m_lstIntegers.element[nIndex] = nValue;
-}
-// PC 0x0053F8D0 GOG 0x0052C150
-void CSWCCMessageData::SetFloat(int nIndex, float fValue)
-{
-    if (nIndex >= m_lstFloats.num)
-    {
-        m_lstFloats.SetSize(nIndex + 1);
-    }
-
-    m_lstFloats.element[nIndex] = fValue;
 }
 // PC 0x00540520 GOG 0x0052C1B0
 void CSWCCMessageData::SetObjectID(int nIndex, unsigned long oidValue)
@@ -327,6 +307,16 @@ void CSWCCMessageData::SetString(int nIndex, const CExoString& sValue)
 
     m_lstStrings.element[nIndex] = sValue;
 }
+// PC 0x0053F8D0 GOG 0x0052C150
+void CSWCCMessageData::SetFloat(int nIndex, float fValue)
+{
+    if (nIndex >= m_lstFloats.num)
+    {
+        m_lstFloats.SetSize(nIndex + 1);
+    }
+
+    m_lstFloats.element[nIndex] = fValue;
+}
 // PC 0x0053F930 GOG 0x0052C250
 int CSWCCMessageData::LoadData(CResGFF* pRes, CResStruct* pStruct)
 {
@@ -518,30 +508,6 @@ void CSWMessage::WriteDWORD(unsigned long nValue, int nBits)
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
 }
-// PC 0x0053F640 GOG 0x0052B8B0
-void CSWMessage::WriteBYTE(unsigned char cValue, int nBits)
-{
-    if (m_nWriteIndex + 1 > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(1);
-    }
-
-    m_pWriteBuffer[m_nWriteIndex] = cValue;
-    m_nWriteIndex += 1;
-    m_nTotalBytesWritten += 1;
-}
-// PC 0x0053F680 GOG 0x0052B8F0
-void CSWMessage::WriteWORD(unsigned short nValue, int nBits)
-{
-    if (m_nWriteIndex + 2 > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(2);
-    }
-
-    *(unsigned short*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
-    m_nWriteIndex += 2;
-    m_nTotalBytesWritten += 2;
-}
 
 void CSWMessage::WriteUnsigned(unsigned __int64 nValue, int nBits)
 {
@@ -601,18 +567,6 @@ void CSWMessage::WriteSigned(__int64 nValue, int nBits)
         WriteBits(0, 1);
         WriteUnsigned(nValue, nBits - 1);
     }
-}
-// PC 0x0053F6C0 GOG 0x0052B930
-void CSWMessage::WriteINT(int nValue, int nBits)
-{
-    if (m_nWriteIndex + 4 > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(4);
-    }
-
-    *(int*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
-    m_nWriteIndex += 4;
-    m_nTotalBytesWritten += 4;
 }
 // PC 0x0053F0C0 GOG 0x0052B970
 void CSWMessage::WriteCResRef(CResRef cResRef, int nLength)
@@ -683,6 +637,16 @@ unsigned long CSWCCMessageData::GetObjectID(int nIndex)
     }
 
     return OBJECT_INVALID;
+}
+// PC 0x0053F200 GOG 0x0052CAA0
+CExoString CSWCCMessageData::GetString(int nIndex)
+{
+    if (nIndex < m_lstStrings.num)
+    {
+        return m_lstStrings.element[nIndex];
+    }
+
+    return "";
 }
 // PC 0x0053F240 GOG 0x0052BAD0
 int CSWCCMessageData::SaveData(CResGFF* pRes, CResStruct* pStruct)
@@ -900,6 +864,42 @@ void CSWMessage::CreateWriteMessage(unsigned long nMsgLen,
     {
         ExtendWriteBuffer(nMsgLen - m_nWriteBufferSize);
     }
+}
+// PC 0x0053F640 GOG 0x0052B8B0
+void CSWMessage::WriteBYTE(unsigned char cValue, int nBits)
+{
+    if (m_nWriteIndex + 1 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(1);
+    }
+
+    m_pWriteBuffer[m_nWriteIndex] = cValue;
+    m_nWriteIndex += 1;
+    m_nTotalBytesWritten += 1;
+}
+// PC 0x0053F680 GOG 0x0052B8F0
+void CSWMessage::WriteWORD(unsigned short nValue, int nBits)
+{
+    if (m_nWriteIndex + 2 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(2);
+    }
+
+    *(unsigned short*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
+    m_nWriteIndex += 2;
+    m_nTotalBytesWritten += 2;
+}
+// PC 0x0053F6C0 GOG 0x0052B930
+void CSWMessage::WriteINT(int nValue, int nBits)
+{
+    if (m_nWriteIndex + 4 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(4);
+    }
+
+    *(int*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
+    m_nWriteIndex += 4;
+    m_nTotalBytesWritten += 4;
 }
 // PC 0x006EC0C0 GOG 0x0052BED0
 void CSWMessage::WriteBOOL(int bValue)

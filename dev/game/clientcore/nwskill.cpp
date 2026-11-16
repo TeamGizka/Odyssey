@@ -1,10 +1,6 @@
 #include "nwskill.h"
 #include "clientexoappinternal.h"
 #include "exotlktable.h"
-// PC 0x00619FE0 GOG 0x00619FC0
-CSWSkill::~CSWSkill()
-{
-}
 // PC 0x00619FB0 GOG 0x00619F90
 CSWSkill::CSWSkill()
 {
@@ -16,6 +12,10 @@ CSWSkill::CSWSkill()
     m_bDroidCanUse = 1;
     m_nNameStrRef = -1;
     m_nDescriptionStrRef = -1;
+}
+// PC 0x00619FE0 GOG 0x00619FC0
+CSWSkill::~CSWSkill()
+{
 }
 // PC 0x00619FF0 GOG 0x00619FD0
 CExoString CSWSkill::GetNameText()

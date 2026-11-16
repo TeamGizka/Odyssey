@@ -3860,6 +3860,25 @@ void CServerExoAppInternal::ForceRunAreaOnExitScripts()
         m_pPlayerList->GetNext(pNode);
     }
 }
+// PC 0x004EF660
+template <> inline void CExoArrayList<unsigned long>::SetSize(int nSize)
+{
+    if (nSize == 0)
+    {
+        if (element != NULL)
+        {
+            delete[] element;
+            element = NULL;
+            array_size = 0;
+        }
+    }
+    else
+    {
+        Allocate(nSize);
+    }
+
+    num = nSize;
+}
 // PC 0x004EF6A0 GOG 0x004EDEF0
 CServerExoAppInternal::CServerExoAppInternal()
 {

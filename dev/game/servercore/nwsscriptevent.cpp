@@ -35,16 +35,6 @@ float CScriptEvent::GetFloat(int nIndex)
         return 0.0;
     }
 }
-// PC 0x00540590 GOG 0x0052C220
-void CScriptEvent::SetString(int nIndex, const CExoString& sValue)
-{
-    if (nIndex >= m_lstStrings.num)
-    {
-        m_lstStrings.SetSize(nIndex + 1);
-    }
-
-    m_lstStrings[nIndex] = sValue;
-}
 // PC 0x00540090 GOG 0x0052C9B0
 int CScriptEvent::operator==(const CScriptEvent& sev) const
 {
@@ -199,6 +189,16 @@ void CScriptEvent::SetObjectID(int nIndex, unsigned long oidObject)
     }
 
     m_lstObjectIDs[nIndex] = oidObject;
+}
+// PC 0x00540590 GOG 0x0052C220
+void CScriptEvent::SetString(int nIndex, const CExoString& sValue)
+{
+    if (nIndex >= m_lstStrings.num)
+    {
+        m_lstStrings.SetSize(nIndex + 1);
+    }
+
+    m_lstStrings[nIndex] = sValue;
 }
 // PC 0x005405C0 GOG 0x0052CDF0
 void CScriptEvent::CopyScriptEvent(CScriptEvent* pEvent)

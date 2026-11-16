@@ -2271,11 +2271,6 @@ void* CRes::GetData()
 {
     return m_pResource;
 }
-// PC 0x00406600 GOG 0x004065D0
-unsigned long CRes::GetSize()
-{
-    return m_nSize;
-}
 // PC 0x004065C0 GOG 0x00406590
 int CRes::GetDemands()
 {
@@ -2286,6 +2281,11 @@ void CRes::GetResRef(CResRef& cResRef, unsigned short& nType)
 {
     cResRef = m_pKeyEntry->m_resRef;
     nType = m_pKeyEntry->m_nType;
+}
+// PC 0x00406600 GOG 0x004065D0
+unsigned long CRes::GetSize()
+{
+    return m_nSize;
 }
 // PC 0x00406610 GOG 0x004065E0
 void CExoResMan::AddResourceImageFilesAsync(const CExoString& sModuleName,

@@ -412,11 +412,6 @@ int CExoInput::SetPortBinding(unsigned long nBinding)
     return m_pExoInputInternal->SetPortBinding(nBinding);
 }
 #endif
-// PC 0x0062B870 GOG 0x00638C70
-void CExoInput::EndAttemptedBind()
-{
-    m_pExoInputInternal->EndAttemptedBind();
-}
 // PC 0x0062B860 GOG 0x0062B760
 int CExoInput::GetMainDeviceLost()
 {
@@ -429,6 +424,11 @@ void CExoInput::UpdateJoysticks()
     m_pExoInputInternal->UpdateJoysticks();
 }
 #endif
+// PC 0x0062B870 GOG 0x00638C70
+void CExoInput::EndAttemptedBind()
+{
+    m_pExoInputInternal->EndAttemptedBind();
+}
 // PC 0x0062B880 GOG 0x0062B770
 void CExoInput::PauseRumble()
 {

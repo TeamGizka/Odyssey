@@ -41,12 +41,6 @@ static inline void SwguipazaakTrace2()
 static inline void SwguipazaakTrace1()
 {
 }
-#ifndef _XBOX
-void CSWGuiWagerPopup::Draw(float fElapsed)
-{
-    CSWGuiPanel::Draw(fElapsed);
-}
-#endif
 
 CSWGuiActivatedButton::CSWGuiActivatedButton()
 {
@@ -696,6 +690,13 @@ void CSWGuiWagerPopup::UpdateWagerText()  // PC 0x006D3940 GOG 0x006D3720
     CExoString sWager(m_nWager);
     m_lblWagerval.m_cText.m_cParams.SetText(sWager);
 }
+#ifndef _XBOX
+// PC 0x006D39B0
+void CSWGuiWagerPopup::Draw(float fElapsed)
+{
+    CSWGuiPanel::Draw(fElapsed);
+}
+#endif
 // PC 0x006D39C0 GOG 0x006D3790
 void CSWGuiPazaakStart::HandleWagerExit(int nWager)
 {

@@ -6103,6 +6103,15 @@ void CSWSCreature::CleanInvitationLists()
         SetInvitedToParty(FALSE);
     }
 }
+// PC 0x0054A080
+template <> inline void CExoArrayList<CSWSInvitationDetails>::DelIndex(int nIndex)
+{
+    num--;
+    for (; nIndex < num; nIndex++)
+    {
+        element[nIndex] = element[nIndex + 1];
+    }
+}
 // PC 0x0054A0D0 GOG 0x0054A1F0
 CAvoidCreature::CAvoidCreature()
 {

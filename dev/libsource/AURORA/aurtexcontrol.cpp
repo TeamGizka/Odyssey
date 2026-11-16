@@ -41,11 +41,6 @@ const float WATER_DAMPING = 0.025f;
 const float WATER_DIRECTION_OFFSET = 0.0f;
 const float WATER_WAVE_HEIGHT_MARGIN = 40.0f;
 const float WATER_SPEED = 1.0f;
-// PC 0x004794F0 GOG 0x00479680
-void WaveTextureController::ParseField(char* sField)
-{
-    TextureController::ParseField(sField);
-}
 // PC 0x004015A0 GOG 0x004015A0
 void CycleTIDTextureController::Init()
 {
@@ -1580,6 +1575,11 @@ WaveTextureController::WaveTextureController(CAurTexture* pTexture)
 {
     m_pfWaveImage = 0;
     m_pfOffsetImage = 0;
+}
+// PC 0x004794F0 GOG 0x00479680
+void WaveTextureController::ParseField(char* sField)
+{
+    TextureController::ParseField(sField);
 }
 // PC 0x00479500 GOG 0x00479690
 ArturoTextureController::ArturoTextureController(CAurTexture* pTexture)

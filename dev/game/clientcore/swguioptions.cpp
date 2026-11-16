@@ -902,26 +902,6 @@ void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
     }
     m_bChanged = 1;
 }
-// PC 0x0074E890 GOG 0x0074EDF0
-void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
-{
-    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
-    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
-    m_lbDescription.ClearItems();
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (sText.GetLength() > 0)
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
-    }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-    m_lblDescription.SetExtent(cExtent);
-    CSWGuiControl* pControl = &m_lblDescription;
-    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
-    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
-}
 // PC 0x00750200 GOG 0x007507B0
 void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
 {
@@ -997,6 +977,26 @@ int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
     int bVSync = (m_bVSync == 0);
     m_bVSync = bVSync;
     return bVSync;
+}
+// PC 0x0074E890 GOG 0x0074EDF0
+void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
 // PC 0x0074E990 GOG 0x0074EEF0
 void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()

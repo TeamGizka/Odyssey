@@ -800,23 +800,6 @@ int CSWSEffectListHandler::OnRemoveSummonCreature(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052C5C0 GOG 0x0052E320
-int CSWSEffectListHandler::OnRemoveSummonParty(CSWSObject* pObject,
-                                               CGameEffect* pEffect)
-{
-    CServerExoApp* pServerExoApp;
-    unsigned int oidCreature;
-    CSWSCreature* pCreature;
-
-    pServerExoApp = g_pAppManager->m_pServerExoApp;
-    oidCreature = pEffect->GetObjectID(1);
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidCreature);
-    if (pCreature != NULL)
-    {
-        pCreature->UnsummonMyself();
-    }
-    return 1;
-}
 // PC 0x0052C340 GOG 0x0052E0A0
 int CSWSEffectListHandler::OnApplySummonParty(CSWSObject* pObject,
                                                CGameEffect* pEffect,
@@ -878,6 +861,23 @@ int CSWSEffectListHandler::OnApplySummonParty(CSWSObject* pObject,
         }
     }
     return 0;
+}
+// PC 0x0052C5C0 GOG 0x0052E320
+int CSWSEffectListHandler::OnRemoveSummonParty(CSWSObject* pObject,
+                                               CGameEffect* pEffect)
+{
+    CServerExoApp* pServerExoApp;
+    unsigned int oidCreature;
+    CSWSCreature* pCreature;
+
+    pServerExoApp = g_pAppManager->m_pServerExoApp;
+    oidCreature = pEffect->GetObjectID(1);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL)
+    {
+        pCreature->UnsummonMyself();
+    }
+    return 1;
 }
 // PC 0x0052C5F0 GOG 0x0052E350
 int CSWSEffectListHandler::OnApplySavingThrowIncrease(CSWSObject* pObject,

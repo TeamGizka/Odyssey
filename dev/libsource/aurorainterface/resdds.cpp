@@ -17,15 +17,6 @@ unsigned char* CResDDS::GetDDSDataPtr()
 {
     return m_pData;
 }
-// PC 0x00784760 GOG 0x00784610
-int CResDDS::OnResourceFreed()
-{
-    m_bServiced = 0;
-    m_nReserved = 0;
-    m_pData = 0;
-    m_pHeader = 0;
-    return 1;
-}
 // PC 0x00784710 GOG 0x007844E0
 int CResDDS::GetDDSAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnBpp, unsigned long* pnSize, float* pfAlpha)
 {
@@ -38,6 +29,15 @@ int CResDDS::GetDDSAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsig
     *pnBpp = ((unsigned char*)m_pHeader)[8];
     *pnSize = m_pHeader[3];
     *pfAlpha = ((float*)m_pHeader)[4];
+    return 1;
+}
+// PC 0x00784760 GOG 0x00784610
+int CResDDS::OnResourceFreed()
+{
+    m_bServiced = 0;
+    m_nReserved = 0;
+    m_pData = 0;
+    m_pHeader = 0;
     return 1;
 }
 // PC 0x00784780 GOG 0x00784530

@@ -809,15 +809,6 @@ int CAurTexture::GetTextureFormat()
     }
     return Aurora::TEXTURE_FORMAT_DXT1;
 }
-// PC 0x00420990 GOG 0x004209A0
-#ifdef _XBOX
-bool TextureController::IsLinear()
-#else
-char TextureController::IsLinear()
-#endif
-{
-    return 0;
-}
 // PC 0x00420920 GOG 0x00420930
 void CAurTexture::SetTextureFormat(Aurora::AuroraTextureFormats nFormat)
 {
@@ -846,6 +837,15 @@ void CAurTexture::IncrementTIDIndex(int nIndex)
     {
         pTexture->m_nTIDIndex = pTexture->m_pTextureIDs[nIndex];
     }
+}
+// PC 0x00420990 GOG 0x004209A0
+#ifdef _XBOX
+bool TextureController::IsLinear()
+#else
+char TextureController::IsLinear()
+#endif
+{
+    return 0;
 }
 // PC 0x004209C0 GOG 0x004209D0
 inline LifeTextureController::~LifeTextureController()

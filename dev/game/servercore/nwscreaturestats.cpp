@@ -6833,10 +6833,6 @@ unsigned char CSWSCreatureStats::GetUnarmedDamageDie()
     }
     return nDamageDie;
 }
-// PC 0x005EE1C0 GOG 0x005EE1A0
-void CSWSCreatureStats::SetArcaneSpellFailure(unsigned char nFailure)
-{
-}
 // PC 0x005ED3F0 GOG 0x005ED3D0
 int CSWSCreatureStats::GetUnarmedDamageRoll(CSWSObject* pTarget)
 {
@@ -7560,6 +7556,10 @@ unsigned char CSWSCreatureStats::GetACNaturalBase()
     }
 
     return m_nACNaturalBase;
+}
+// PC 0x005EE1C0 GOG 0x005EE1A0
+void CSWSCreatureStats::SetArcaneSpellFailure(unsigned char nFailure)
+{
 }
 int CSWSCreatureStats::EffectId2Effect2DAId(int nEffectId, int nEffectInteger)  // PC 0x005EE1D0 GOG 0x005EE1B0
 {

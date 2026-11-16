@@ -1,6 +1,17 @@
 #include "exoresman.h"
 
 #include <string.h>
+// PC 0x0077FA00 GOG 0x00628FE0
+int CLIP::UnloadLip()
+{
+    int nResult = m_bLipLoaded;
+    if (nResult != 0)
+    {
+        nResult = m_pRes->Release();
+        m_bLipLoaded = 0;
+    }
+    return nResult;
+}
 // PC 0x0077FA20 GOG 0x0077F820
 float CLIP::GetAnimLength()
 {
@@ -79,15 +90,4 @@ int CLIP::LoadLip(CExoString sLip)
     m_pLipData += 4;
     m_bLipLoaded = 1;
     return 1;
-}
-// PC 0x0077FA00 GOG 0x00628FE0
-int CLIP::UnloadLip()
-{
-    int nResult = m_bLipLoaded;
-    if (nResult != 0)
-    {
-        nResult = m_pRes->Release();
-        m_bLipLoaded = 0;
-    }
-    return nResult;
 }

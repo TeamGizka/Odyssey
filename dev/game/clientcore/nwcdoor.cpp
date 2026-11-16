@@ -81,16 +81,6 @@ CSWCDoor::CSWCDoor()
     m_nDoorData = 0;
     m_bStatic = 0;
 }
-// PC 0x006DB7A0 GOG 0x0069CD00
-void CSWCDoor::UnloadModel()
-{
-    if (m_pAnimBase != 0)
-    {
-        m_pAnimBase->UnloadModel();
-        delete m_pAnimBase;
-        m_pAnimBase = 0;
-    }
-}
 // PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWCDoor::HilightDoor(int)
 {
@@ -167,6 +157,16 @@ void CSWCDoor::ToggleDoorState(unsigned long oidDoor, CSWCCreature* pCreature)
              m_nCurrentAnimation == DOOR_ANIMATION_OPEN2)
     {
         pMessage->SendPlayerToServerInput_ChangeDoorState(m_nId, DOOR_ANIMATION_CLOSED);
+    }
+}
+// PC 0x006DB7A0 GOG 0x0069CD00
+void CSWCDoor::UnloadModel()
+{
+    if (m_pAnimBase != 0)
+    {
+        m_pAnimBase->UnloadModel();
+        delete m_pAnimBase;
+        m_pAnimBase = 0;
     }
 }
 // PC 0x006DB7D0 GOG 0x006DB3C0

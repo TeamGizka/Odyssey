@@ -3397,6 +3397,15 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
         }
     }
 }
+// PC 0x00567300
+template <> inline void CExoArrayList<CSWSItem*>::Add(CSWSItem* value)
+{
+    if (num == array_size)
+    {
+        Allocate(array_size != 0 ? array_size * 2 : EXOARRAYLIST_INITIAL_ALLOCATION);
+    }
+    element[num++] = value;
+}
 // PC 0x00567340 GOG 0x00567470
 void CSWSItem::AIUpdate()
 {

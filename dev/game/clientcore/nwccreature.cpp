@@ -7646,11 +7646,6 @@ void CSWCCreature::PlayDrawAnimation(unsigned short nValue)
         m_nDrawAnimation = -1;
     }
 }
-// PC 0x0065D0F0 GOG 0x0065CF00
-int CSWCCreature::CanSwapWeapons()
-{
-    return 1;
-}
 // PC 0x0065CF40 GOG 0x0065CD50
 int CSWCCreature::IsStealthCapable()
 {
@@ -7748,6 +7743,11 @@ void CSWCCreature::GetHostileItems(
         CSWSItem* pItem = pRepository->ItemListGetItem(i);
         CreateHostileItemEntry(lstActions, pItem, pTarget);
     }
+}
+// PC 0x0065D0F0 GOG 0x0065CF00
+int CSWCCreature::CanSwapWeapons()
+{
+    return 1;
 }
 // PC 0x0065D100 GOG 0x0065CF10
 int CSWCCreature::GetMatchingEquippedItemCount(CSWSItem* pItem)

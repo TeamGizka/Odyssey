@@ -52,11 +52,6 @@ const EAXLISTENERPROPERTIES CExoSoundInternal::CEXOSOUND_PRESETS[24] =
 
 
 extern float __stdcall GetObstructionFactor(Vector, Vector);
-// PC 0x00622290 GOG 0x00622260
-inline int CExoSoundSourceInternal::GetPlayWhenFree()
-{
-    return m_bPlayWhenFree;
-}
 
 #ifndef _XBOX
 void CExoSoundInternal::SetListenerOrientation(const Vector& vOrientation,  // PC 0x00622160 GOG 0x00622130
@@ -100,6 +95,11 @@ void CExoSoundInternal::SetListenerPosition(const Vector& vPosition)  // PC 0x00
     }
 }
 #endif
+// PC 0x00622290 GOG 0x00622260
+inline int CExoSoundSourceInternal::GetPlayWhenFree()
+{
+    return m_bPlayWhenFree;
+}
 // PC 0x006222A0 GOG 0x00622270
 inline unsigned long CExoSoundSourceInternal::GetOneShotDelay()
 {
