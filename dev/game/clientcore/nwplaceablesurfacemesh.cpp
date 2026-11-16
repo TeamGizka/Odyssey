@@ -2,11 +2,6 @@
 #include <string.h>
 
 #include "SWCollisionMesh.h"
-// PC 0x006161D0 GOG 0x006161B0
-void CSWPlaceableSurfaceMesh::SetUsePoint(int nIndex, const Vector& vPosition)
-{
-    m_avUsePoints[nIndex] = WorldToLocal(vPosition);
-}
 // PC 0x00616BF0 GOG 0x00616BD0
 CSWPlaceableSurfaceMesh::CSWPlaceableSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, 0x805)

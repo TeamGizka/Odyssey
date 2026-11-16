@@ -1739,3 +1739,9 @@ void CSWVirtualMachineCommands::InitializeSWMGCommands()
     m_pCommands[COMMAND_SWMG_PLAYER_APPLY_FORCE] =
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce;
 }
+
+CSWMGPhysicsState SWMGGetRestingPhysicsState()
+{
+    CSWMGPhysicsState state;
+    return state;
+}

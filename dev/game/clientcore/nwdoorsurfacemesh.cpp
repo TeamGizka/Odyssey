@@ -6,6 +6,11 @@
 inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
 {
 }
+// PC 0x006161D0 GOG 0x006161B0
+void CSWPlaceableSurfaceMesh::SetUsePoint(int nIndex, const Vector& vPosition)
+{
+    m_avUsePoints[nIndex] = WorldToLocal(vPosition);
+}
 
 const int CSWDoorSurfaceMesh::DOOR_STATE_CLOSED = 0;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN1 = 1;
