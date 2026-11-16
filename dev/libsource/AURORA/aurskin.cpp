@@ -959,6 +959,17 @@ static inline void SkinDebugSetup()
 static inline void SkinDebugTransform(const Vector& vPosition, const Vector& vTranslation)
 {
 }
+static inline void SkinDebugValue(float fValue)
+{
+    int nDebug1 = 0;
+}
+static inline void SkinDebugEnd(int nCount)
+{
+    int nDebug1 = 0;
+    int nDebug2 = 0;
+    int nDebug3 = 0;
+    int nDebug4 = 0;
+}
 static inline void SkinDebugBone()
 {
     int nDebug1 = 0;
@@ -1020,7 +1031,9 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         {
             pPart = pPart->m_pParent;
             Vector vLocal = -pPart->m_qOrientation * -pPart->m_vPosition;
-            vTranslation = vTranslation + qRotation * vLocal;
+            Vector vRotated = qRotation * vLocal;
+            vTranslation = vTranslation + vRotated;
+            SkinDebugValue(vRotated.m_fY);
             qRotation = qRotation * -pPart->m_qOrientation;
         }
         for (int i = 0; i < pNode->m_nBoneMap; i++)
@@ -1029,34 +1042,29 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             if (nBone == -1)
                 continue;
             {
-                const Vector& vFirst = mRotation.m_vFirst;
-                const Vector& vSecond = mRotation.m_vSecond;
+                const Vector* pAxes = &mRotation.m_vFirst;
                 SkinDebugBone();
                 Vector vBone = qRotation * (qbones.m_pList[i] * pNode->m_lstTBoneRefInv.m_pList[i]);
-                AurDrawLine(vTranslation, vBone);
                 Vector& vBoneTranslation = tbones.m_pList[i];
-                const Vector& vThird = mRotation.m_vThird;
-                if (&vBoneTranslation != &tbones.m_pList[i])
+                if (!pNode)
                     continue;
-                vBone = vTranslation + qRotation * vBoneTranslation + vBone;
+                Vector vRotated = qRotation * vBoneTranslation;
+                vBone = vTranslation + vRotated + vBone;
                 SkinDebugTransform(vBone, vBoneTranslation);
-                if (&vFirst != &mRotation.m_vFirst)
+                SkinDebugValue(vRotated.m_fY);
+                if (!pSkin || !pPrimitive || !pPart)
                     continue;
-                if (&vSecond != &mRotation.m_vSecond)
-                    continue;
-                if (&vThird != &mRotation.m_vThird)
-                    continue;
-                Quaternion qBone = qRotation * qbones.m_pList[i] * pNode->m_lstQBoneRefInv.m_pList[i];
-                mRotation = qBone.getmatrix();
+                mRotation = (qRotation * qbones.m_pList[i] * pNode->m_lstQBoneRefInv.m_pList[i]).getmatrix();
+                const Vector& vThird = pAxes[2];
                 nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
                 GLRender_SetVertexProgramParameter4f(nBone,
-                    vFirst.m_fX, vSecond.m_fX,
+                    pAxes[0].m_fX, pAxes[1].m_fX,
                     vThird.m_fX, vBone.m_fX);
                 GLRender_SetVertexProgramParameter4f(++nBone,
-                    vFirst.m_fY, vSecond.m_fY,
+                    pAxes[0].m_fY, pAxes[1].m_fY,
                     vThird.m_fY, vBone.m_fY);
                 GLRender_SetVertexProgramParameter4f(nBone + 1,
-                    vFirst.m_fZ, vSecond.m_fZ,
+                    pAxes[0].m_fZ, pAxes[1].m_fZ,
                     vThird.m_fZ, vBone.m_fZ);
             }
         }
@@ -1475,8 +1483,8 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     for (int nLight = 0; nLight < lstLights.m_nCount; nLight++)
                     {
                         skinvp->Enable(pSkin, false);
-                        Vector vLight = lstLights[nLight]->m_vWorldPosition;
-                        Vector& vColor = lstLights[nLight]->m_vColor;
+                        Vector vLight = lstLights.m_pList[nLight]->m_vWorldPosition;
+                        Vector& vColor = lstLights.m_pList[nLight]->m_vColor;
                         vLight = -qOrientation * (vLight - vPosition);
                         Vector vLightColor = cmul(vColor, vDiffuse * diffuseintensity);
                         if (usebumpdiffuse)
@@ -1486,7 +1494,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                             Vector vBlack;
                             SetBumpLightColor(vBlack);
                         }
-                        vLightColor = cmul(lstLights[nLight]->m_vColor,
+                        vLightColor = cmul(lstLights.m_pList[nLight]->m_vColor,
                             (vSpecular * specularintensity) *
                             pSkin->m_pMaterial->GetBumpMapIntensity());
                         if (usebumpspecular)
@@ -1500,7 +1508,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                             vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
                         AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
                             vEye.m_fX, vEye.m_fY, vEye.m_fZ, 1.0f);
-                        float fRadius = lstLights[nLight]->m_fRadius;
+                        float fRadius = lstLights.m_pList[nLight]->m_fRadius;
                         AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
                             1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
                         RenderFlat(pPrimitive);
@@ -1960,6 +1968,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             glDisable(GL_VERTEX_PROGRAM_ARB);
         else
             GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+        SkinDebugEnd((int)pNode->m_pfBoneMap[pNode->m_nBoneMap - 1]);
 #endif
     }
 }
