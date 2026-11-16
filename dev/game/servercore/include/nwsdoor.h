@@ -176,7 +176,6 @@ public:
     CExoLocString m_locName;
     CExoLocString m_locDescription;
     short m_nLoadScreenId;
-    char gap_3AE[2];
     Quaternion m_qOrientation;
     int m_bStatic;
 
@@ -187,6 +186,7 @@ public:
     int GetMeshOutline(Vector, Vector, Vector&, Vector&, Vector&, Vector&);
     int SaveDoor(CResGFF*, CResStruct*);
     int GetIsLinked();
+    unsigned short GetLoadScreenID();
     int NoNonWalkPolysInDoor(Vector const&, Vector const&, float const&,
                              float const&, float const&, CWalkHitInfo*);
     Vector GetActionPoint(int, unsigned char);

@@ -370,7 +370,6 @@ int CSWSDoor::OpenDoor(unsigned long oidOpener)  // PC 0x005801E0 GOG 0x00580260
     return g_pVirtualMachine->RunScript(&m_asScripts[0], m_nId, 1);
 }
 #endif
-inline unsigned short SWSDoorGetLoadScreenId(CSWSDoor* pDoor);
 // PC 0x005802B0 GOG 0x00580330
 int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
 {
@@ -484,7 +483,7 @@ int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldCExoString(pStruct, m_sLinkedTo, "LinkedTo");
     CResRef cModule((char*)m_sLinkedToModule.CStr());
     pRes->WriteFieldCResRef(pStruct, cModule, "LinkedToModule");
-    pRes->WriteFieldWORD(pStruct, SWSDoorGetLoadScreenId(this), "LoadScreenID");
+    pRes->WriteFieldWORD(pStruct, GetLoadScreenID(), "LoadScreenID");
     pRes->WriteFieldBYTE(pStruct, m_bUseTweakColor, "UseTweakColor");
     pRes->WriteFieldDWORD(pStruct, m_nTweakColor, "TweakColor");
     pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
@@ -1275,9 +1274,9 @@ void CSWSDoor::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
         }
     }
 }
-inline unsigned short SWSDoorGetLoadScreenId(CSWSDoor* pDoor)
+inline unsigned short CSWSDoor::GetLoadScreenID()
 {
-    return pDoor->m_nLoadScreenId;
+    return m_nLoadScreenId;
 }
 // PC 0x005825B0 GOG 0x00582630
 void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
@@ -1655,7 +1654,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                     CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(pEvent->GetObjectID(0));
                     if (pPlayer != NULL && m_nLoadScreenId != 0)
                     {
-                        pPlayer->SetAreaTransitionBMP(SWSDoorGetLoadScreenId(this), "");
+                        pPlayer->SetAreaTransitionBMP(GetLoadScreenID(), "");
                     }
                     g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_CLICK], m_nId, 1);
                 }
