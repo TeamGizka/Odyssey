@@ -1135,7 +1135,7 @@ void CSWGuiTextParams::SetFontRename()
     strcpy(szFont, m_szBaseFont);
     g_pGuiMan->GetUpdatedFontName(szFont);
     m_cFont.CopyToString(szCurrentFont);
-    if (strcmpi(szFont, szCurrentFont) != 0)
+    if (stricmp(szFont, szCurrentFont) != 0)
     {
         CResRef cFont(szFont);
         SetFont(cFont);

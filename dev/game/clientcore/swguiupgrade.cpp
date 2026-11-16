@@ -862,7 +862,7 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         {
             CExoString sTemplate;
             m_pUpgradeTable->GetCExoStringEntry(nRow, "Template", &sTemplate);
-            if (stricmp(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
+            if (strcmpi(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
             {
                 nUpgradeRow = nRow;
                 break;
