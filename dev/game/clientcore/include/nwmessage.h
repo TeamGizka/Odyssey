@@ -1657,7 +1657,6 @@ public:
                                                     int bNewCharacter);
     int SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
                                    CSWCLevelUpStats* pNewStats);
-    int SendPlayerToServerCheatLevelUp();
     int SendPlayerToServerCheat_CastSpell(unsigned long nSpellId, const Vector& vTarget, unsigned long oidTarget);
     int SendPlayerToServerCheat_Kill(unsigned long oidTarget, unsigned long oidKiller);
     int SendPlayerToServerCheat_MoveToArea(const CExoString& sArea, const Vector& vPosition);

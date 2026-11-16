@@ -35,7 +35,6 @@ static inline void Swguimaininterfacepc2Trace4();
 static inline void Swguimaininterfacepc2Trace3();
 static inline void Swguimaininterfacepc2Trace2();
 static inline void Swguimaininterfacepc2Trace1();
-#define SWGUIMAININTERFACEPC2_TRACE() Swguimaininterfacepc2Trace1()
 #define SWGUIMAININTERFACEPC2_DEBUG 0
 
 // PC 0x004015A0 GOG 0x004015A0
@@ -3981,7 +3980,7 @@ void CSWGuiMainInterface::RevertActionBarStates()
         nBehaviorAction = -1;
         break;
     }
-    int nFormAction = pServerCreature->m_n1110;
+    int nFormAction = pServerCreature->m_nCurrentForm;
     if (nFormAction > 0)
     {
         nFormAction &= ~ACTION_FORM_FLAG;
@@ -4339,14 +4338,14 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5
     m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_nBorderDim = 16;
     m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_nInnerOffset = 10;
-    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_n8 = 12;
+    m_btnCancelPartyItemSelect.m_cBorder.m_cParams.m_nInnerOffsetY = 12;
     m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetCornerImage("uibit_brdr_16bct", 0);
     m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetEdgeImage("uibit_brdr_16bet", 0);
     m_btnCancelPartyItemSelect.m_cHilite.m_cParams.SetFillImage("uibit_fill_2bt", 0);
     m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_nBorderDim = 16;
     m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_nInnerOffset = 10;
-    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_n8 = 12;
+    m_btnCancelPartyItemSelect.m_cHilite.m_cParams.m_nInnerOffsetY = 12;
     m_btnCancelPartyItemSelect.AddEvent(GUIEVENT_ACTIVATE, this, (PFNGUIEVENT)&CSWGuiMainInterface::OnCancelPartyItemSelect);
     m_btnCancelPartyItemSelect.SetFocusable(0);
     m_btnCancelPartyItemSelect.SetExtent(cNewExtent);

@@ -6479,9 +6479,9 @@ int CSWCMessage::HandleServerToPlayerGuiInventory(unsigned char nMinor)
     }
     return bSuccess;
 }
-inline CSWGuiStore* GetStorePanel(CGuiInGame* pInGameGui)
+inline CSWGuiStore* CClientExoApp::GetStorePanel()
 {
-    return pInGameGui->m_pStorePanel;
+    return GetInGameGui()->m_pStorePanel;
 }
 // PC 0x006A2A20 GOG 0x006A2800
 int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
@@ -6674,7 +6674,7 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                         {
                             if (pItem->m_nEquipSlot != INVENTORY_SLOT_HEAD ||
                                 (g_pGuiMan != NULL &&
-                                 g_pGuiMan->PanelExists(GetStorePanel(g_pAppManager->m_pClientExoApp->GetInGameGui()))))
+                                 g_pGuiMan->PanelExists(g_pAppManager->m_pClientExoApp->GetStorePanel())))
                             {
                                 pCreature->SetLastInstant(pItem->m_nEquipSlot, bInstant);
                                 pCreature->EquipToInventorySlot(pItem->m_nEquipSlot, NULL, bSuppressDraw);

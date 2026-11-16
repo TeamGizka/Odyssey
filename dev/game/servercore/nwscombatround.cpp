@@ -1295,7 +1295,7 @@ int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
     }
 
     if (m_pBaseCreature->IsWieldingLightsaber() &&
-        m_pBaseCreature->m_n1110 == 264)
+        m_pBaseCreature->m_nCurrentForm == 264)
     {
         m_nOnHandAttacks++;
     }

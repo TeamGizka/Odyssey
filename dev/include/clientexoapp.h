@@ -37,6 +37,7 @@ class CClientAIMaster;
 class CExoFile;
 class CExoStreamingSoundSource;
 class CGuiInGame;
+class CSWGuiStore;
 class CResRef;
 class CSoundSetList;
 class CSWCCMessageData;
@@ -153,6 +154,7 @@ public:
     CSWCModule* GetModule();
     CSWCMessage* GetSWCMessage();
     CGuiInGame* GetInGameGui();
+    CSWGuiStore* GetStorePanel();
     CSWGuiManager* GetSWGuiManager();
     CSWCCreature* GetCreatureByGameObjectID(unsigned long nId);
     CSWCAreaOfEffectObject* GetAreaOfEffectByGameObjectID(

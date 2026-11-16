@@ -229,7 +229,7 @@ void CSWCCreature::GetSelfForcePowers(
             }
         }
         nHitPoints = pServerCreature->GetCurrentHitPoints(0);
-        nForm = pServerCreature->m_n1110;
+        nForm = pServerCreature->m_nCurrentForm;
         nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
     }
     GetStats()->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER,
@@ -4818,7 +4818,7 @@ void CSWCCreature::GetHostileForcePowers(
                     }
                 }
                 nHitPoints = pServerCreature->GetCurrentHitPoints(0);
-                nForm = pServerCreature->m_n1110;
+                nForm = pServerCreature->m_nCurrentForm;
                 nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
             }
             GetStats()->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_HOSTILE_FORCE_POWER,
@@ -7073,7 +7073,7 @@ void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigat
     {
         return;
     }
-    pServerCreature->m_n1110 = nAction;
+    pServerCreature->m_nCurrentForm = nAction;
     GetAnimationBase()->m_nD8 = nAction;
     unsigned long nStrRef;
     switch (nAction)

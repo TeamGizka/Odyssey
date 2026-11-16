@@ -397,7 +397,7 @@ CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner,
                                        const CResRef& cEdge,
                                        const CResRef& cFill, int nFillMode,
                                        int nBorderDim, float fAlpha,
-                                       const Vector& vColor, int nInnerOffset, int n8)
+                                       const Vector& vColor, int nInnerOffset, int nInnerOffsetY)
 {
     m_cCornerImage = cCorner;
     m_cEdgeImage = cEdge;
@@ -412,7 +412,7 @@ CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner,
     m_pBorder = NULL;
     m_fRotation = 0.0f;
     m_nInnerOffset = nInnerOffset;
-    m_n8 = n8;
+    m_nInnerOffsetY = nInnerOffsetY;
 }
 
 // PC 0x004148F0 GOG 0x004148A0
@@ -432,7 +432,7 @@ CSWGuiBorderParams& CSWGuiBorderParams::operator=(const CSWGuiBorderParams& cPar
     m_bLowAlpha = cParams.m_bLowAlpha;
     m_bHighAlpha = cParams.m_bHighAlpha;
     m_nInnerOffset = cParams.m_nInnerOffset;
-    m_n8 = cParams.GetVerticalInnerOffset();
+    m_nInnerOffsetY = cParams.GetVerticalInnerOffset();
     SetBorder(m_pBorder);
     return *this;
 }
@@ -567,7 +567,7 @@ void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
                                                   bSuccess, 0);
         m_cParams.m_nInnerOffset = pGFF->ReadFieldINT(&cBorder, "INNEROFFSET",
                                                     bSuccess, 0);
-        m_cParams.m_n8 = pGFF->ReadFieldINT(&cBorder, "INNEROFFSETY",
+        m_cParams.m_nInnerOffsetY = pGFF->ReadFieldINT(&cBorder, "INNEROFFSETY",
                                           bSuccess, 0);
         m_cParams.m_vColor = pGFF->ReadFieldVector(&cBorder, "COLOR", bSuccess,
                                                  Vector(1.0f, 1.0f, 1.0f));

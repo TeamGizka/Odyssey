@@ -2188,7 +2188,7 @@ public:
     int m_n1108;
     unsigned char m_c110C;
     char m_aUnmapped110D[0x3];
-    int m_n1110;
+    int m_nCurrentForm;
 
 
 
@@ -2635,7 +2635,7 @@ public:
 
 
     int GetInParty() { return m_bInParty; }
-    int GetForm() { return m_n1110; }
+    int GetForm() { return m_nCurrentForm; }
     void SetInParty(int bInParty, int bFlag);
     int LoadCreature(CResGFF* pRes, CResStruct* pStruct, int nAreaId);
     int LoadFromTemplate(const CResRef& cResRef, int bFlag);

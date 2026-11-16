@@ -557,7 +557,7 @@ void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
                 break;
             }
         }
-        int nForm = pServerCreature->m_n1110;
+        int nForm = pServerCreature->m_nCurrentForm;
         CSWSCreatureStats* pServerStats = pServerCreature->m_pStats;
         int nCharismaModifier = pServerStats->m_nCharismaModifier;
         int nHitPoints = pServerCreature->GetCurrentHitPoints(0);

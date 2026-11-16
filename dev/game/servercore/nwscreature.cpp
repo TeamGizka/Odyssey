@@ -626,7 +626,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_bDiseased = 0;
     m_nPoisonEffectID = -1;
     m_c110C = 0xFF;
-    m_n1110 = 0;
+    m_nCurrentForm = 0;
     m_bHasLegs = 1;
     m_bHasArms = 1;
     m_nCreatureSize = 0;
@@ -3074,12 +3074,12 @@ void CSWSCreature::HandleFPRegeneration()
             {
                 pRegeneration->GetFLOATEntry("OutOfCombatFPBase", sValue, &fFPBase);
             }
-            else if (m_n1110 == CSWSpell::FORM_SABER_VI_NIMAN && IsWieldingLightsaber())
+            else if (m_nCurrentForm == CSWSpell::FORM_SABER_VI_NIMAN && IsWieldingLightsaber())
             {
                 pRegeneration->GetFLOATEntry("OutOfCombatFPBase", sValue, &fFPBase);
                 fFPBase *= 0.3f;
             }
-            else if (m_n1110 == CSWSpell::FORM_FORCE_III_AFFINITY)
+            else if (m_nCurrentForm == CSWSpell::FORM_FORCE_III_AFFINITY)
             {
                 pRegeneration->GetFLOATEntry("OutOfCombatFPBase", sValue, &fFPBase);
                 fFPBase *= 0.6f;
@@ -3114,7 +3114,7 @@ void CSWSCreature::HandleFPRegeneration()
                 }
             }
 
-            if (m_n1110 == CSWSpell::FORM_FORCE_I_FOCUS)
+            if (m_nCurrentForm == CSWSpell::FORM_FORCE_I_FOCUS)
             {
                 fFPBase += 0.5f;
             }

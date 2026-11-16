@@ -13124,7 +13124,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsFormActive(int nCommand, int nArg
             return -2001;
         }
         CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
-        if (pCreature != NULL && pCreature->m_n1110 == nForm &&
+        if (pCreature != NULL && pCreature->m_nCurrentForm == nForm &&
             (nForm < CSWSpell::FORM_SABER_I_SHII_CHO || nForm > CSWSpell::FORM_SABER_VII_JUYO || pCreature->IsWieldingLightsaber() != 0))
         {
             bActive = 1;
@@ -15384,7 +15384,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCurrentForm(int nCommand, int nA
         CSWSCreature* pCreature = pGameObject->AsSWSCreature();
         if (pCreature != NULL && pCreature->GetStats()->HasSpell(0, nForm, 0) != 0)
         {
-            pCreature->m_n1110 = nForm;
+            pCreature->m_nCurrentForm = nForm;
         }
     }
     return 0;

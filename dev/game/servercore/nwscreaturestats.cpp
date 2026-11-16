@@ -903,7 +903,7 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
     int nFormBonus = 0;
     if (m_pCreature->IsWieldingLightsaber())
     {
-        switch (m_pCreature->m_n1110)
+        switch (m_pCreature->m_nCurrentForm)
         {
         case CSWSpell::FORM_SABER_I_SHII_CHO:
             nFormBonus = 3;
@@ -1832,7 +1832,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     int nFormBonus = 0;
     if (m_pCreature->IsWieldingLightsaber())
     {
-        switch (GetCreature()->m_n1110)
+        switch (GetCreature()->m_nCurrentForm)
         {
         case CSWSpell::FORM_SABER_I_SHII_CHO:
             nForm = CSWSpell::FORM_SABER_I_SHII_CHO;
@@ -2095,7 +2095,7 @@ char CSWSCreatureStats::GetDamageBonus(CSWSCreature* pTarget, int bOffHand, int 
         nBonus += m_c120;
     }
     int nFormBonus = 0;
-    if (GetCreature()->IsWieldingLightsaber() && GetCreature()->m_n1110 == CSWSpell::FORM_SABER_II_MAKASHI)
+    if (GetCreature()->IsWieldingLightsaber() && GetCreature()->m_nCurrentForm == CSWSpell::FORM_SABER_II_MAKASHI)
     {
         nFormBonus = 3;
     }
@@ -5050,7 +5050,7 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     short nBaseGoodEvil = nBaseAlignment;
     m_n18C = min(100, max(-1, nBaseGoodEvil));
     m_c120 = pRes->ReadFieldCHAR(pStruct, "FuryDamageBonus", bSuccess, -1);
-    GetCreature()->m_n1110 = pRes->ReadFieldDWORD(pStruct, "CurrentForm", bSuccess, 0);
+    GetCreature()->m_nCurrentForm = pRes->ReadFieldDWORD(pStruct, "CurrentForm", bSuccess, 0);
     unsigned char nSkinColor = m_nSkinColor;
     m_nSkinColor = pRes->ReadFieldBYTE(pStruct, "Color_Skin", bSuccess, nSkinColor);
     unsigned char nHairColor = m_nHairColor;
@@ -5592,7 +5592,7 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldCHAR(pStruct, nBaseGoodEvil, "BaseCNPCAlignment");
     char nFuryDamageBonus = m_c120;
     pRes->WriteFieldCHAR(pStruct, nFuryDamageBonus, "FuryDamageBonus");
-    int nCurrentForm = GetCreature()->m_n1110;
+    int nCurrentForm = GetCreature()->m_nCurrentForm;
     pRes->WriteFieldDWORD(pStruct, nCurrentForm, "CurrentForm");
     unsigned char nSkinColor = m_nSkinColor;
     pRes->WriteFieldBYTE(pStruct, nSkinColor, "Color_Skin");
@@ -7252,7 +7252,7 @@ int CSWSCreatureStats::GetCriticalHitMultiplier(int bOffHand)
         break;
     }
 
-    if (GetCreature()->IsWieldingLightsaber() && GetCreature()->m_n1110 == 262)
+    if (GetCreature()->IsWieldingLightsaber() && GetCreature()->m_nCurrentForm == 262)
     {
         nCriticalHitMultiplier++;
     }

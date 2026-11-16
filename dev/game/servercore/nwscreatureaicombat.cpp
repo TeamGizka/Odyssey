@@ -610,7 +610,7 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
             }
             if (pCreature->IsWieldingLightsaber())
             {
-                int nForm = pCreature->m_n1110;
+                int nForm = pCreature->m_nCurrentForm;
                 switch (nForm)
                 {
                 case FORM_SABER_II_MAKASHI:
@@ -2097,12 +2097,12 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
                 else
                     pAttack->m_Extra1.m_nUnknown18 = 0;
                 int nThreatRoll = GetStats()->GetCriticalHitRoll(bOffHand);
-                if (m_n1110 == FORM_SABER_III_SORESU && IsWieldingLightsaber())
+                if (m_nCurrentForm == FORM_SABER_III_SORESU && IsWieldingLightsaber())
                 {
                     if (nThreatRoll < CSWRules::ATTACK_ROLL_AUTOMATIC_HIT)
                         nThreatRoll++;
                 }
-                else if (m_n1110 == FORM_SABER_IV_ATARU && IsWieldingLightsaber() &&
+                else if (m_nCurrentForm == FORM_SABER_IV_ATARU && IsWieldingLightsaber() &&
                          nThreatRoll > 1)
                 {
                     nThreatRoll--;
@@ -2113,7 +2113,7 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
                     pAttack->m_Extra2.m_nUnknown4 = 1;
                     int nCriticalRoll = g_pRules->RollDice(1, 20);
                     pAttack->m_Extra2.m_nUnknown8 = nCriticalRoll;
-                    if (m_n1110 == FORM_SABER_VII_JUYO && IsWieldingLightsaber())
+                    if (m_nCurrentForm == FORM_SABER_VII_JUYO && IsWieldingLightsaber())
                         nCriticalRoll += FORM_SABER_VII_JUYO_CRITICAL_BONUS;
                     if (nCriticalRoll + nModifier >= nArmorClass)
                     {

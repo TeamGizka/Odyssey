@@ -7658,7 +7658,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         WriteBYTE(pCreature->m_pStats->m_nGender, 8);
         WriteSHORT(pCreature->m_pStats->m_nGoodEvilAlignment, 16);
         WriteWORD(pCreature->m_pStats->m_n18C, 16);
-        WriteINT(pCreature->m_n1110, 32);
+        WriteINT(pCreature->m_nCurrentForm, 32);
         WriteCExoString(pCreature->m_sTag, 32);
         WriteBOOL(pObject->m_nF4);
         WriteBYTE(pCreature->m_pStats->m_nClassCount, 8);
@@ -7849,7 +7849,7 @@ void CSWSMessage::UpdateLastUpdateObject(
             pLastUpdateObject->m_nGender = pCreature->m_pStats->m_nGender;
             pLastUpdateObject->m_nGoodEvilAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
             pLastUpdateObject->m_n11A = pCreature->m_pStats->m_n18C;
-            pLastUpdateObject->m_n11C = pCreature->m_n1110;
+            pLastUpdateObject->m_n11C = pCreature->m_nCurrentForm;
             pLastUpdateObject->m_s120 = pCreature->m_sTag;
             pLastUpdateObject->m_nObjectF4 = pCreature->m_nF4;
             for (int i = 0; i < pCreature->m_pStats->GetNumClasses(); i++)
