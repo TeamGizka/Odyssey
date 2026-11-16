@@ -1860,7 +1860,7 @@ int CServerExoAppInternal::GetDifficultyOption(int nOption)
     return g_pRules->GetDifficultyOption(nOption, nDifficulty);
 }
 // PC 0x004EB250 GOG 0x004EA460
-int CServerExoAppInternal::UpdateMainLoopTimeBudget(unsigned __int64 nTime)
+int CServerExoAppInternal::UpdateLogHeartbeatTimer(unsigned __int64 nTime)
 {
     if (m_nLastMainLoopTime == 0)
     {
@@ -5397,7 +5397,7 @@ int CServerExoAppInternal::MainLoop()
         else
             g_pAppManager->DestroyServer();
     }
-    UpdateMainLoopTimeBudget(g_pExoBase->m_pExoTimers->GetHighResolutionTimer());
+    UpdateLogHeartbeatTimer(g_pExoBase->m_pExoTimers->GetHighResolutionTimer());
     return 0;
 }
 template <> inline int CExoArrayList<unsigned long>::Contains(unsigned long value) const

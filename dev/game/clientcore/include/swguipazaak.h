@@ -135,7 +135,7 @@ public:
 #else
     void SetActivated(int bActivated);
 #endif
-    void StartFlash(const Vector& vColor);
+    void ActivateLabel(const Vector& vColor);
 
     float m_fFlashTimer;
 #ifdef _XBOX

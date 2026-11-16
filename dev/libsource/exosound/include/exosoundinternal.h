@@ -335,7 +335,7 @@ public:
     float GetDesiredAmbientScale();
 
 
-    void SetRolloffFactor(float fFactor);
+    void SetRollOffFactor(float fFactor);
     unsigned char GetNumber2DVoices();
     unsigned char GetNumber3DVoices();
     void Set2D3DBias(float fBias);
@@ -443,7 +443,6 @@ public:
 
 
     void SetEnvironmentEffectLevel(float fLevel);
-    void SetRollOffFactor(float fFactor);
     void SetSpeakerType(char nSpeakerType);
     void EnableEnvironmentEffects(int bEnabled);
     LPDIRECTSOUND GetDirectSound();

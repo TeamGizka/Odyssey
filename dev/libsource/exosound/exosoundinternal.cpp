@@ -163,7 +163,7 @@ inline CExoSoundPriorityGroup* CExoSoundInternal::GetPriorityGroup(unsigned char
 
 
 #ifndef _XBOX
-inline void CExoSoundInternal::SetRolloffFactor(float fFactor)
+inline void CExoSoundInternal::SetRollOffFactor(float fFactor)
 {
     if (m_h3DProvider != NULL)
     {
@@ -2646,7 +2646,7 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790 GOG
         g_totalStreamingHandlesAvailable = m_n2DVoices / 2;
         g_generalStreamingHandlesAvailable =
             g_totalStreamingHandlesAvailable - EXOSOUND_RESERVED_STREAMING_HANDLES;
-        SetRolloffFactor(1.0f);
+        SetRollOffFactor(1.0f);
         SetEnvironment(0);
         while (lstRestart.Count() != 0)
         {

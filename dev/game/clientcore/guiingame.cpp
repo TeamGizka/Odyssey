@@ -3071,7 +3071,7 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
         {
             m_pDialogSound->SetFixedVariance(0.75f);
         }
-        SetDialogSound(oidSpeaker, cSound);
+        SetDialogLipSync(oidSpeaker, cSound);
     }
     m_oidDialogSoundObject = pClientObject->m_nId;
     return 1;
@@ -4398,7 +4398,7 @@ int CGuiInGame::GetCanClick()
     return nElapsedTime >= m_nNoClickDuration;
 }
 // PC 0x006827D0 GOG 0x006825B0
-void CGuiInGame::SetDialogSound(unsigned long nSoundId, const CResRef& cSound)
+void CGuiInGame::SetDialogLipSync(unsigned long nSoundId, const CResRef& cSound)
 {
     m_nDialogSoundId = nSoundId;
     m_cDialogSound = cSound;
@@ -5600,7 +5600,7 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
                 return 0;
             }
         }
-        SetDialogSound(oidSpeaker, cSound);
+        SetDialogLipSync(oidSpeaker, cSound);
     }
     m_oidDialogSoundObject = pClientObject->m_nId;
     return 1;

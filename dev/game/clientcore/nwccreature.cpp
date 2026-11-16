@@ -3413,37 +3413,37 @@ void CSWCCreature::ResolveSpecialAttackVisuals(int nAttackType, int nWieldClass,
     switch (nAttackType)
     {
     case CSWFeat::FEAT_IMPROVED_POWER_ATTACK:
-        nVisualEffect = SelectSpecialAttackAnimation(nWieldClass,
+        nVisualEffect = ResolveSpecialAttackVisualsMelee(nWieldClass,
             VFX_COM_POWER_ATTACK_IMPROVED_SABER,
             VFX_COM_POWER_ATTACK_IMPROVED_STAFF,
             VFX_COM_POWER_ATTACK_IMPROVED_SABER);
         break;
     case CSWFeat::FEAT_MASTER_POWER_ATTACK:
-        nVisualEffect = SelectSpecialAttackAnimation(nWieldClass,
+        nVisualEffect = ResolveSpecialAttackVisualsMelee(nWieldClass,
             VFX_COM_POWER_ATTACK_MASTERY_SABER,
             VFX_COM_POWER_ATTACK_MASTERY_STAFF,
             VFX_COM_POWER_ATTACK_MASTERY_SABER);
         break;
     case CSWFeat::FEAT_IMPROVED_CRITICAL_STRIKE:
-        nVisualEffect = SelectSpecialAttackAnimation(nWieldClass,
+        nVisualEffect = ResolveSpecialAttackVisualsMelee(nWieldClass,
             VFX_COM_CRITICAL_STRIKE_IMPROVED_SABER,
             VFX_COM_CRITICAL_STRIKE_IMPROVED_STAFF,
             VFX_COM_CRITICAL_STRIKE_IMPROVED_SABER);
         break;
     case CSWFeat::FEAT_MASTER_CRITICAL_STRIKE:
-        nVisualEffect = SelectSpecialAttackAnimation(nWieldClass,
+        nVisualEffect = ResolveSpecialAttackVisualsMelee(nWieldClass,
             VFX_COM_CRITICAL_STRIKE_MASTERY_SABER,
             VFX_COM_CRITICAL_STRIKE_MASTERY_STAFF,
             VFX_COM_CRITICAL_STRIKE_MASTERY_SABER);
         break;
     case CSWFeat::FEAT_IMPROVED_FLURRY:
-        nVisualEffect = SelectSpecialAttackAnimation(nWieldClass,
+        nVisualEffect = ResolveSpecialAttackVisualsMelee(nWieldClass,
             VFX_COM_FLURRY_IMPROVED_SABER,
             VFX_COM_FLURRY_IMPROVED_STAFF,
             VFX_COM_FLURRY_IMPROVED_SABER);
         break;
     case CSWFeat::FEAT_WHIRLWIND_ATTACK:
-        nVisualEffect = SelectSpecialAttackAnimation(nWieldClass,
+        nVisualEffect = ResolveSpecialAttackVisualsMelee(nWieldClass,
             VFX_COM_WHIRLWIND_STRIKE_SABER,
             VFX_COM_WHIRLWIND_STRIKE_STAFF,
             VFX_COM_WHIRLWIND_STRIKE_SABER);
@@ -3502,7 +3502,7 @@ void CSWCCreature::ResolveSpecialAttackVisuals(int nAttackType, int nWieldClass,
     }
 }
 // PC 0x006596B0 GOG 0x00659560
-int CSWCCreature::SelectSpecialAttackAnimation(int nAttackType,
+int CSWCCreature::ResolveSpecialAttackVisualsMelee(int nAttackType,
                                                int nType2Animation,
                                                int nType3Animation,
                                                int nType4Animation)

@@ -20,7 +20,7 @@ template <> inline SafePointer<CAurTexture>::~SafePointer()
 {
     if (m_pObject)
     {
-        m_pObject->RemoveSafePointer(this);
+        m_pObject->RemovePointer(this);
     }
 }
 #include "aurconsole.h"

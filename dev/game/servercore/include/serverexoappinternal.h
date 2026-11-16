@@ -291,7 +291,7 @@ public:
     int IsInjured(unsigned long oidObject);
     int UpdateAutoSaveTimer();
     int AutoSaveOnEnteringModule(const CExoString& sModule, C2DA* p2DA);
-    int UpdateMainLoopTimeBudget(unsigned __int64 nTime);
+    int UpdateLogHeartbeatTimer(unsigned __int64 nTime);
     int StartShutdownTimer(unsigned __int64 nTime, unsigned __int64 nDelay);
     int UpdateShutdownTimer(unsigned __int64 nTime);
     void UpdateMapData();

@@ -501,7 +501,7 @@ public:
     float GetHeadTurnHorizontal();
     float GetHeadTurnVertical();
     void SetNewLoopingCreatureSound(const CExoString& sSound);
-    int SelectSpecialAttackAnimation(int nAttackType, int nType2Animation,
+    int ResolveSpecialAttackVisualsMelee(int nAttackType, int nType2Animation,
                                      int nType3Animation, int nType4Animation);
     int StopAmbientPauseAnim();
     void DeleteLoopingCreatureSound();

@@ -194,7 +194,7 @@ public:
     void SetNameLabel(CExoString const&);
     void UpdateNameLabel(CSWCObject*);
     void Draw(float);
-    void Update(float fElapsed);
+    void UpdateTimers(float fElapsed);
     CSWGuiControl* HitCheckMouse(int, int);
     void PositionMenu(CSWCCreature*, CSWCObject*);
     void SelectNextAction(int nMenu);

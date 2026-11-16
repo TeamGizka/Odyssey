@@ -41,7 +41,7 @@ public:
 
     void RemovePointer()
     {
-        m_pObject->RemoveSafePointer(this);
+        m_pObject->RemovePointer(this);
     }
 
 
@@ -57,7 +57,7 @@ template <class T> class SafePointerList
 {
 public:
     SafePointerList() {}
-    void AddPointer(SafePointer<T>* pPointer); void RemoveSafePointer(SafePointer<T>* pPointer);
+    void AddPointer(SafePointer<T>* pPointer); void RemovePointer(SafePointer<T>* pPointer);
     ~SafePointerList();
 
     List<SafePointer<T>*> m_lstSafePointers;
@@ -128,7 +128,7 @@ template <class T> SafePointer<T>::SafePointer(const SafePointer& other)
 }
 
 
-template <class T> void SafePointerList<T>::RemoveSafePointer(SafePointer<T>* pPointer)
+template <class T> void SafePointerList<T>::RemovePointer(SafePointer<T>* pPointer)
 {
     m_lstSafePointers.Remove(pPointer);
 }

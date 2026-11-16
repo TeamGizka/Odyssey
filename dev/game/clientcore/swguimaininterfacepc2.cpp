@@ -488,7 +488,7 @@ void CSWGuiTargetActionMenu::SetFriend(int bFriend, int bPoisoned)  // PC 0x006D
 #endif
 
 #ifndef _XBOX
-inline void CSWGuiTargetActionMenu::Update(float fElapsed)  // PC 0x006DD320 GOG 0x006DCD10
+inline void CSWGuiTargetActionMenu::UpdateTimers(float fElapsed)  // PC 0x006DD320 GOG 0x006DCD10
 {
     if (m_fFeedbackTimer != -1.0f)
     {
@@ -4607,7 +4607,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
     UpdateGameMenu();
     float fIndicatorElapsed = m_pManager->m_fGuiScale;
     UpdateIndicator(fIndicatorElapsed);
-    m_cTargetActionMenu.Update(fElapsed);
+    m_cTargetActionMenu.UpdateTimers(fElapsed);
 #endif
     PopulateMenus(1);
 #ifndef _XBOX

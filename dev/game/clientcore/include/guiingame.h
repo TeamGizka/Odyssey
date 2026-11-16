@@ -488,7 +488,7 @@ public:
     void EnterControllerPauseState();
     void UpdateControllerPauseState();
     void SetGlobalDialogState(int nState);
-    void SetDialogSound(unsigned long nSoundId, const CResRef& cSound);
+    void SetDialogLipSync(unsigned long nSoundId, const CResRef& cSound);
     int HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound);
     void LoadCameraModelForDialog(const CResRef& cCameraModel);
     void SetStuntModelData(unsigned long nModel, unsigned long oidObject,

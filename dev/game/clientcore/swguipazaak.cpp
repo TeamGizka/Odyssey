@@ -241,7 +241,7 @@ inline void CSWGuiWagerPopup::HandleButtonWager(CSWGuiControl* pControl)
     HandleInputEvent(45, 1);
 }
 // PC 0x006D2FF0 GOG 0x006D2BE0
-inline void CSWGuiActivatedButton::StartFlash(const Vector& vColor)
+inline void CSWGuiActivatedButton::ActivateLabel(const Vector& vColor)
 {
     m_fFlashTimer = 0.8f;
     m_vFlashColor = vColor;
@@ -1012,7 +1012,7 @@ void CSWGuiPazaakGame::HandleFlipHandCard()
             CPazaakCard cCard = GetPazaak()->m_cPlayer.m_aSideDeck[nCard];
             if (cCard.IsFlippable() || cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2)
             {
-                m_btnBlack.StartFlash(CGuiInGame::COLOR_CYAN);
+                m_btnBlack.ActivateLabel(CGuiInGame::COLOR_CYAN);
                 m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped =
                     m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped == 0;
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
@@ -2159,7 +2159,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
                 {
                     if (m_pPazaak->CanUsePlayerSidedeckCard(nIndex) != 0)
                     {
-                        m_btnX.StartFlash(CGuiInGame::COLOR_CYAN);
+                        m_btnX.ActivateLabel(CGuiInGame::COLOR_CYAN);
                         if (m_cTutorial.m_bEnabled != 0 &&
                             m_pPazaak->GetPlayerTotal() <= 12)
                         {
@@ -2198,7 +2198,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
                     CPazaakCard cCard = m_pPazaak->m_cPlayer.m_aSideDeck[nCard];
                     if (cCard.m_nType >= 12 && cCard.m_nType < 18)
                     {
-                        m_btnBlack.StartFlash(CGuiInGame::COLOR_CYAN);
+                        m_btnBlack.ActivateLabel(CGuiInGame::COLOR_CYAN);
                         m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped =
                             m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped == 0;
                         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
@@ -2213,7 +2213,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
             {
                 if (m_nState == 3 || m_nState == 4)
                 {
-                    m_btnContinue.StartFlash(CGuiInGame::COLOR_CYAN);
+                    m_btnContinue.ActivateLabel(CGuiInGame::COLOR_CYAN);
                     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
                     if (m_cTutorial.m_bEnabled != 0 &&
                         m_pPazaak->GetPlayerTotal() >= 16)
@@ -2234,7 +2234,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
             {
                 if (m_nState == 3 || m_nState == 4)
                 {
-                    m_btnStand.StartFlash(CGuiInGame::COLOR_CYAN);
+                    m_btnStand.ActivateLabel(CGuiInGame::COLOR_CYAN);
                     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
                     if (m_cTutorial.m_bEnabled != 0 &&
                         m_pPazaak->GetPlayerTotal() <= 13)
@@ -2426,7 +2426,7 @@ void CSWGuiPazaakGame::HandleContinue(CSWGuiControl* pControl)  // PC 0x006D6940
             {
                 if (m_nHandAction == 0)
                 {
-                    m_btnContinue.StartFlash(CGuiInGame::COLOR_CYAN);
+                    m_btnContinue.ActivateLabel(CGuiInGame::COLOR_CYAN);
                     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
                     if (m_cTutorial.m_bEnabled != 0)
                     {
@@ -2485,7 +2485,7 @@ void CSWGuiPazaakGame::HandlePlayHandCard(int nIndex)
     {
         if (m_pPazaak->CanUsePlayerSidedeckCard(nIndex) != 0)
         {
-            m_btnX.StartFlash(CGuiInGame::COLOR_CYAN);
+            m_btnX.ActivateLabel(CGuiInGame::COLOR_CYAN);
             if (m_cTutorial.m_bEnabled != 0 &&
                 m_pPazaak->GetPlayerTotal() <= 12)
             {
@@ -2760,7 +2760,7 @@ int CSWGuiPazaakGame::DoGameSequence()
         }
         case 2:
         {
-            m_btnX.StartFlash(CGuiInGame::COLOR_RED);
+            m_btnX.ActivateLabel(CGuiInGame::COLOR_RED);
             g_pExoSound->PlayOneShotSound(m_szPlaySideSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
             break;
         }
@@ -2768,7 +2768,7 @@ int CSWGuiPazaakGame::DoGameSequence()
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             break;
         case 4:
-            m_btnContinue.StartFlash(CGuiInGame::COLOR_RED);
+            m_btnContinue.ActivateLabel(CGuiInGame::COLOR_RED);
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             break;
         default:

@@ -221,7 +221,7 @@ public:
 #endif
 
     CExoString GetGameDirectory();
-    CResRef GetPortrait(int nIndex);
+    CResRef GetPlayerPortrait(int nIndex);
     void LoadData(CExoString const&);
     void SetXboxTitle(CExoString const&);
 #ifndef _XBOX

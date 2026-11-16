@@ -538,7 +538,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
             }
             for (int nPortrait = 0; nPortrait < 3; ++nPortrait)
             {
-                CResRef* pPortrait = &pEntry->GetPortrait(nPortrait);
+                CResRef* pPortrait = &pEntry->GetPlayerPortrait(nPortrait);
                 m_aPartyMemberLabels[nPortrait].m_cBorder.m_cParams.SetFillImage(
                     *pPortrait, 0);
             }
@@ -1440,7 +1440,7 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
 }
 #endif
 // PC 0x00708210 GOG 0x00707E00
-inline CResRef CSWGuiSaveLoadEntry::GetPortrait(int nIndex)
+inline CResRef CSWGuiSaveLoadEntry::GetPlayerPortrait(int nIndex)
 {
     if (nIndex >= 0 && nIndex < 3)
     {
@@ -2151,7 +2151,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
             }
             for (int nPortrait = 0; nPortrait < 3; ++nPortrait)
             {
-                CResRef* pPortrait = &pEntry->GetPortrait(nPortrait);
+                CResRef* pPortrait = &pEntry->GetPlayerPortrait(nPortrait);
                 m_aPartyMemberLabels[nPortrait].m_cBorder.m_cParams.SetFillImage(
                     *pPortrait, 0);
             }
@@ -2441,9 +2441,9 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
     m_sUnknown1F8 = pEntry->m_sUnknown1F8;
     m_sXboxTitle = pEntry->m_sXboxTitle;
     m_sScreenshot = pEntry->m_sScreenshot;
-    m_aPortraits[0] = pEntry->GetPortrait(0);
-    m_aPortraits[1] = pEntry->GetPortrait(1);
-    m_aPortraits[2] = pEntry->GetPortrait(2);
+    m_aPortraits[0] = pEntry->GetPlayerPortrait(0);
+    m_aPortraits[1] = pEntry->GetPlayerPortrait(1);
+    m_aPortraits[2] = pEntry->GetPlayerPortrait(2);
     m_nTimeStamp = pEntry->GetTimeStamp();
     m_sPCName = pEntry->GetPCName();
     m_nSaveNumber = pEntry->GetSaveNumber();
