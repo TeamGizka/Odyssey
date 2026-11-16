@@ -454,6 +454,26 @@ public:
     }
 };
 
+class CScriptCompilerStructureEntry
+{
+public:
+    CExoString m_psName;
+    int m_nFieldStart;
+    int m_nFieldEnd;
+    int m_nByteSize;
+
+    CScriptCompilerStructureEntry()
+    {
+        m_nFieldStart = 0;
+        m_nFieldEnd = 0;
+        m_nByteSize = 0;
+    }
+    // PC 0x0061CDD0
+    ~CScriptCompilerStructureEntry()
+    {
+    }
+};
+
 class CScriptCompilerStructureFieldEntry
 {
 public:
@@ -531,22 +551,6 @@ public:
     // PC 0x0061CFC0 GOG 0x0061CF90
     ~CScriptCompilerIncludeFileStackEntry()
     {
-    }
-};
-
-class CScriptCompilerStructureEntry
-{
-public:
-    CExoString m_psName;
-    int m_nFieldStart;
-    int m_nFieldEnd;
-    int m_nByteSize;
-
-    CScriptCompilerStructureEntry()
-    {
-        m_nFieldStart = 0;
-        m_nFieldEnd = 0;
-        m_nByteSize = 0;
     }
 };
 
