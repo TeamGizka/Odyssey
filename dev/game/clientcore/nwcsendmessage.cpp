@@ -1,3 +1,4 @@
+#define NWCSENDMESSAGE_VISUALEFFECT
 #include "exobase.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
@@ -857,6 +858,7 @@ int CSWCMessage::SendPlayerToServerCheat_ComputeSafeLocation()
 {
     return SendPlayerToServerMessage(15, 32, NULL, 0);
 }
+#endif
 
 int CSWCMessage::SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarget,
                                                           unsigned short nVisualEffect,
@@ -879,6 +881,7 @@ int CSWCMessage::SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarge
     }
     return SendPlayerToServerMessage(15, 10, pBuffer, nSize);
 }
+#ifdef _XBOX
 
 int CSWCMessage::SendPlayerToServerCheat_DebugMode(int bDebugMode)
 {
@@ -931,6 +934,7 @@ char* DebugMode(char* szArgs)
     return cheatreturnvalue;
 }
 ConsoleFunc ConFDebugMode("DebugMode", DebugMode);
+#endif
 
 char* visualeffect(char* szArgs)
 {
@@ -964,6 +968,7 @@ char* visualeffect(char* szArgs)
                                                        fDuration, oidSource, 0);
     return "Success";
 }
+#ifdef _XBOX
 ConsoleFunc ConFvisualeffect("visualeffect", visualeffect);
 #endif
 

@@ -1657,8 +1657,25 @@ public:
                                                     int bNewCharacter);
     int SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
                                    CSWCLevelUpStats* pNewStats);
-#ifdef _XBOX
-
+    int SendPlayerToServerCheatLevelUp();
+    int SendPlayerToServerCheat_CastSpell(unsigned long nSpellId, const Vector& vTarget, unsigned long oidTarget);
+    int SendPlayerToServerCheat_Kill(unsigned long oidTarget, unsigned long oidKiller);
+    int SendPlayerToServerCheat_MoveToArea(const CExoString& sArea, const Vector& vPosition);
+    int SendPlayerToServerCheat_PlayerPathfindRule(unsigned char nRule);
+    int SendPlayerToServerCheat_PonyRide();
+    int SendPlayerToServerCheat_RainOfCows();
+    int SendPlayerToServerCheat_RunScript(const CExoString& sScript);
+    int SendPlayerToServerCheat_ShowServerMem();
+    int SendPlayerToServerCheat_SummonNasty(unsigned long oidArea, unsigned char nCount, const CResRef& cResRef);
+    int SendPlayerToServerCheat_ToggleCombatDebugging(int bEnable);
+    int SendPlayerToServerCheat_ToggleFloatyEffects();
+    int SendPlayerToServerCheat_ToggleMovementSpeedDebugging(int bEnable);
+    int SendPlayerToServerChat_Party(const CExoString& sMessage);
+    int SendPlayerToServerChat_Shout(const CExoString& sMessage);
+    int SendPlayerToServerChat_Talk(const CExoString& sMessage);
+    int SendPlayerToServerChat_Tell(unsigned long nPlayerId, const CExoString& sMessage);
+    int SendPlayerToServerChat_TellName(const CExoString& sName, const CExoString& sMessage);
+    int SendPlayerToServerChat_Whisper(const CExoString& sMessage);
     int SendPlayerToServerCheat_DebugMode(int bDebugMode);
     int SendPlayerToServerCheat_ComputeSafeLocation();
     int SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarget, unsigned short nVisualEffect,
@@ -1669,7 +1686,6 @@ public:
     int SendPlayerToServerItem_Add(unsigned long oidArea, const Vector& vPosition, const CResRef& cResRef,
                                    unsigned char nA, unsigned char nB, unsigned char nC);
     int SendPlayerToServerParty_Add(unsigned long oidArea, const Vector& vPosition, const CExoString& sTemplate);
-#endif
 };
 
 #endif
