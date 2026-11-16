@@ -281,12 +281,17 @@ int CSWCObject::AnimationRunning(unsigned short nAnimation)
     return 0;
 }
 // PC 0x006945B0 GOG 0x00694350
+static inline void NwcobjectTrace1();
 void CSWCObject::AttachToScene(CAurScene* pScene)
 {
+    NwcobjectTrace1();
     if (m_pAnimBase != NULL)
     {
         m_pAnimBase->AttachToScene(pScene);
     }
+}
+static inline void NwcobjectTrace1()
+{
 }
 // PC 0x006945C0 GOG 0x00694360
 int CSWCObject::SetLoopingAnimation(unsigned short nAnimation)

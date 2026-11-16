@@ -1098,20 +1098,6 @@ void Input::InputBinary::ResetTriggerLite(MdlNode* pNode,
 }
 #endif
 
-void Input::InputBinary::ResetMdlNodePartsLite(MdlNode* pNode,
-                                    unsigned char* pModelData,
-                                    unsigned char* pVertexData)
-{
-    int nChildren = pNode->m_lChildren.m_nCount;
-    if (nChildren != 0)
-    {
-        for (int i = 0; i < nChildren; ++i)
-        {
-            ResetMdlNodeLite(pNode->m_lChildren.m_pList[i], pModelData, pVertexData);
-            nChildren = pNode->m_lChildren.m_nCount;
-        }
-    }
-}
 
 void Input::InputBinary::ResetMdlNodeParts(MdlNode* pNode,
                                            unsigned char* pModelData,
@@ -1262,6 +1248,20 @@ MaxTree* Input::Read(FILE* pModelFile, FILE* pVertexFile)
     }
 }
 
+void Input::InputBinary::ResetMdlNodePartsLite(MdlNode* pNode,
+                                    unsigned char* pModelData,
+                                    unsigned char* pVertexData)
+{
+    int nChildren = pNode->m_lChildren.m_nCount;
+    if (nChildren != 0)
+    {
+        for (int i = 0; i < nChildren; ++i)
+        {
+            ResetMdlNodeLite(pNode->m_lChildren.m_pList[i], pModelData, pVertexData);
+            nChildren = pNode->m_lChildren.m_nCount;
+        }
+    }
+}
 void Input::InputBinary::ResetTriMeshParts(MdlNodeTriMesh* pNode,
                                           unsigned char* pModelData,
                                           unsigned char* pVertexData)

@@ -7,6 +7,8 @@ class CExoStreamingSoundSource;
 
 struct CMusicItemInfo
 {
+    CMusicItemInfo();
+
     CExoString m_sFileName;
     unsigned long m_nStrRef;
 };

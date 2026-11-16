@@ -90,6 +90,10 @@ void CSWGuiTitleMusic::HandleInputEvent(int nEvent, int nState)
     }
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+// PC 0x0074C290
+inline CMusicItemInfo::CMusicItemInfo()
+{
+}
 // PC 0x0074C2A0 GOG 0x0074C0E0
 void CSWGuiTitleMusic::OnLoopPicked(CSWGuiControl* pControl)
 {
