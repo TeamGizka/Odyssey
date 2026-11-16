@@ -541,7 +541,7 @@ BOOL CServerAIList::RemoveObject(unsigned long oidObject)
 {
     if (Contains(oidObject) != 0)
     {
-        int nIndex = IndexOf(oidObject);
+        int nIndex = CExoArrayList<unsigned long>::IndexOf(oidObject);
 
         if (nIndex != -1)
         {

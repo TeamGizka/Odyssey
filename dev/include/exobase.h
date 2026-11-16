@@ -595,13 +595,13 @@ public:
     }
 
     void Add(T element);
+    int Contains(T value) const;
     void AddUnique(T element);
     int IndexOf(T element) const;
     int IndexOf(void* pValue, int (*pCompare)(void*, T)) const;
     void Insert(T element, int nIndex);
     void DelIndex(int nIndex);
 
-    int Contains(T value) const;
     int DerefContains(T value) const;
 
 #ifndef NWSAREA_EXOARRAYLIST_REMOVE
