@@ -185,7 +185,7 @@ void PartTrigger::Draw(bool bRenderLast)
         GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
     }
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_TRIANGLES, m_lstTriangles);
-    GLRender_PopAttrib();
+    GLRender::PopAttrib();
 }
 // PC 0x004CAE00 GOG 0x004CAF10
 void PartTrigger::SetHighlighted(bool bHighlighted, float fOffset, bool bReverse)

@@ -251,7 +251,7 @@ void CAurGUIStringInternal::Draw(float fAlpha)
     }
 
     AsTexture(m_pFont)->Bind();
-    GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
+    GLRender::BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
     for (; nLine < m_lstLineLength.m_nCount; ++nLine)
     {
         unsigned char nChar;
@@ -401,7 +401,7 @@ void CAurGUIStringInternal::Draw(float fAlpha)
         if (fTop > 1.0f)
             break;
     }
-    GLRender_EndImmediatePrimitive();
+    GLRender::EndImmediatePrimitive();
     GLRender_Enable(ENABLE_LIGHTING);
 }
 float GetViewportAlpha();
@@ -738,13 +738,13 @@ int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
     {
         GLRender_Disable(ENABLE_TEXTURE_2D);
         GLRender_Disable(ENABLE_LIGHTING);
-        GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
+        GLRender::BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
         AurGUIColor(nColor);
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 0.0f, 0.0f, 0.0f, 1.0f);
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 1.0f, 0.0f, 0.0f, 1.0f);
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 1.0f, 1.0f, 0.0f, 1.0f);
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 0.0f, 1.0f, 0.0f, 1.0f);
-        GLRender_EndImmediatePrimitive();
+        GLRender::EndImmediatePrimitive();
         GLRender_Enable(ENABLE_TEXTURE_2D);
         GLRender_Enable(ENABLE_LIGHTING);
     }
@@ -830,7 +830,7 @@ void CAurGUIStringInternal::DrawBoundingRect(Vector vColor, float fAlpha)
             CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport]
                                           [VIEWPORT_WIDTH];
 
-        GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_LINE_LOOP);
+        GLRender::BeginImmediatePrimitive(Aurora::PRIMITIVE_LINE_LOOP);
         {
 #ifdef _XBOX
             unsigned int nColor = 0xFF66A5E5;
@@ -848,7 +848,7 @@ void CAurGUIStringInternal::DrawBoundingRect(Vector vColor, float fAlpha)
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fBottom, 0.0f, 1.0f);
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fTop, 0.0f, 1.0f);
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottom, 0.0f, 1.0f);
-        GLRender_EndImmediatePrimitive();
+        GLRender::EndImmediatePrimitive();
         GLRender_Enable(ENABLE_LIGHTING);
         GLRender_Enable(ENABLE_BLEND);
         GLRender_Enable(ENABLE_TEXTURE_2D);
@@ -1393,7 +1393,7 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
         fU3 *= fTexelsX;
         fV3 *= fTexelsY;
     }
-    GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
+    GLRender::BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
     unsigned int nColor;
     if (equal(vColor, Vector(-1.0f, -1.0f, -1.0f)))
     {
@@ -1430,7 +1430,7 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
     afTexCoords[nRotated[2]][1] = 0.0f;
     afTexCoords[nRotated[3]][0] = 1.0f;
     afTexCoords[nRotated[3]][1] = 1.0f;
-    GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
+    GLRender::BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
     if (equal(vColor, Vector(-1.0f, -1.0f, -1.0f)))
     {
         GLRender_SetColor4f(1.0f, 1.0f, 1.0f, GetViewportAlpha() * fAlpha);
@@ -1467,7 +1467,7 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
         GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - fY, 0.0f, 1.0f);
     }
 #endif
-    GLRender_EndImmediatePrimitive();
+    GLRender::EndImmediatePrimitive();
     GLRender_PopCurrentMatrix();
     GLRender_Enable(ENABLE_LIGHTING);
 }
