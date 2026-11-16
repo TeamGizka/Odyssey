@@ -9,12 +9,12 @@ class Part;
 class Plane;
 class Vector;
 class VertexPrimitiveFlat;
-#include "auremitter.h"
 #include "math3d.h"
 #include <aurlist.h>
 #include <aurpointer.h>
 #include "aurtexman.h"
 #include "aurrendergl.h"
+#include "auremitter.h"
 
 class Material;
 struct CAurFontInfo;

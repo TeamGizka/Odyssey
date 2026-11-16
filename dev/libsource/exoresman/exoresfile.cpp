@@ -1,3 +1,4 @@
+#define EXORESFILE_KEYTABLE
 #include "exoresman.h"
 #include "exobase.h"
 #include <ctype.h>
@@ -124,6 +125,33 @@ CExoKeyTable::~CExoKeyTable()
     m_sResourceName = "";
     m_nPackedFileCount = 0;
     m_pPackedFiles = NULL;
+}
+
+inline CKeyTableEntry::CKeyTableEntry()
+{
+    m_pRes = NULL;
+    m_nResId = 0;
+    m_sDirectory = "";
+}
+// PC 0x0040DA00 GOG 0x0040D9B0
+CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
+{
+    CKeyTableEntry* pTable = new CKeyTableEntry[nSize];
+    for (unsigned long i = 0; i < nSize; i++)
+    {
+        CKeyTableEntry* pEntry = &pTable[i];
+        if (pEntry != NULL)
+        {
+            pEntry->m_resRef = "";
+            pEntry->m_pRes = NULL;
+            pEntry->m_nResId = 0xFFFFFFFF;
+            pEntry->m_nReserved = 0;
+            pEntry->m_nType = 0xFFFF;
+            pEntry->m_sDirectory = "";
+        }
+    }
+
+    return pTable;
 }
 // PC 0x0040DAD0 GOG 0x0040DA80
 int CExoKeyTable::GetEntryCount(int bCountAll)
@@ -1340,26 +1368,6 @@ CKeyTableEntry* CExoKeyTable::AddKey(const CResRef& resRef,
 static CKeyTableEntry* AllocateKeyTableEntries(unsigned long nCount)
 {
     return new CKeyTableEntry[nCount];
-}
-// PC 0x0040DA00 GOG 0x0040D9B0
-CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
-{
-    CKeyTableEntry* pTable = new CKeyTableEntry[nSize];
-    for (unsigned long i = 0; i < nSize; i++)
-    {
-        CKeyTableEntry* pEntry = &pTable[i];
-        if (pEntry != NULL)
-        {
-            pEntry->m_resRef = "";
-            pEntry->m_pRes = NULL;
-            pEntry->m_nResId = 0xFFFFFFFF;
-            pEntry->m_nReserved = 0;
-            pEntry->m_nType = 0xFFFF;
-            pEntry->m_sDirectory = "";
-        }
-    }
-
-    return pTable;
 }
 // PC 0x0040F520 GOG 0x0040F4D0
 CKeyTableEntry* CExoKeyTable::FindKey(const CResRef& resRef,

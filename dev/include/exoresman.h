@@ -910,12 +910,16 @@ class CRes;
 class CKeyTableEntry
 {
 public:
+#ifndef EXORESFILE_KEYTABLE
     CKeyTableEntry()
     {
         m_pRes = NULL;
         m_nResId = 0;
         m_sDirectory = "";
     }
+#else
+    CKeyTableEntry();
+#endif
 
     CResRef m_resRef;
     CRes* m_pRes;

@@ -190,7 +190,7 @@ static __int64 QueryTimer()
     return 1000000 * nPerformanceCount.QuadPart / performanceFrequency;
 }
 
-#ifdef _XBOX
+int AurGetStencilClearValue();
 
 static void ClearStencilBuffer()
 {
@@ -198,7 +198,6 @@ static void ClearStencilBuffer()
     GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
     GLRender_Clear(4);
 }
-#endif
 // PC 0x004634B0 GOG 0x004635C0
 void Scene::EnableAnimations()
 {
@@ -572,8 +571,6 @@ void Scene::RenderGobBefore(CAurObject* pObject, CAurObject* pBefore)
     lstObjects.Remove(pGob);
     return lstObjects.Insert(pGob, nPosition);
 }
-
-int AurGetStencilClearValue();
 
 // PC 0x00468350 GOG 0x00468410
 void CollapsePartTree(Gob* pGob, Part* pPart, List<Part*>& lstParts,
