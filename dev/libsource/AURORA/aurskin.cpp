@@ -688,9 +688,6 @@ void PartSkin::PostProcess(Part* pRoot)
             char* pBuffer = (char*)GLRender::LockPool(nPool, 0, 0,
                 RequestPoolManager::POOL_LOCK_WRITE);
             int nStart = pNode->m_pModel->AsModel()->m_nVertexDataSize + nPadding;
-            m_qOrientation = m_qOrientation;
-            m_vMinimum = m_vMinimum;
-            m_vMaximum = m_vMaximum;
             pNode->m_nVertexDataOffset = nStart;
             pNode->m_pModel->AsModel()->m_nVertexDataSize +=
                 (pNode->m_nVertexCount + 1) * pNode->m_nVertexStride + nPadding;
@@ -956,9 +953,6 @@ static inline void SkinDebugSetup()
     int nDebug10 = 0;
     int nDebug11 = 0;
 }
-static inline void SkinDebugTransform(const Vector& vPosition, const Vector& vTranslation)
-{
-}
 static inline void SkinDebugValue(float fValue)
 {
     int nDebug1 = 0;
@@ -1050,7 +1044,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     continue;
                 Vector vRotated = qRotation * vBoneTranslation;
                 vBone = vTranslation + vRotated + vBone;
-                SkinDebugTransform(vBone, vBoneTranslation);
+                AurDrawLine(vBone, vBoneTranslation);
                 SkinDebugValue(vRotated.m_fY);
                 if (!pSkin || !pPrimitive || !pPart)
                     continue;
@@ -2087,7 +2081,6 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
         }
         GLRender_SetFrontFace(CULL_COUNTERCLOCKWISE);
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
-        EXOLOG("RenderSkinnedVPBlur: blur length %f\n", fBlurLength);
     }
 }
 

@@ -1002,7 +1002,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
                     fFrameAlpha = 1.0f;
             }
             Vector vVertical;
-            AurDrawLine(pParticle->m_vPosition, pParticle->m_vPosition, 1);
+            AurDrawLine(m_vOrigin, pParticle->m_vPosition, 1);
             if (m_nReserved114 == AlignedToParticleDir)
             {
                 vRight = pParticle->m_qOrientation.xdir();
@@ -1118,12 +1118,14 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630 GOG 0x004BB740
         m_pAurObject->m_pTileData->m_fFadeAlpha < 1.0f)
         return;
 
+    AurDrawLine(m_vOrigin, m_vOrigin + CurrentCamera->m_qOrientation.zdir());
     Vector vCameraDirection;
     Quaternion qRotation;
     Quaternion qCamera;
     Vector vCameraX = CurrentCamera->m_qOrientation.xdir();
     m_pNode = m_pNode;
     m_fFramesPerSecond = m_fFramesPerSecond;
+    AurDrawLine(m_vOrigin, CurrentCamera->m_vPosition, 0);
     Vector vCameraY = CurrentCamera->m_qOrientation.ydir();
     MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
     int bFog = 0;
@@ -1151,12 +1153,6 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630 GOG 0x004BB740
         fFrameTime = 0.0f;
     m_pEmitterMaterial->BindTexture0();
     m_pEmitterMaterial->SetBlendingMode(0);
-    if (EMITTER_MOTIONBLUR_DEBUG)
-    {
-        vCameraDirection.m_fX = 0.0f;
-        vCameraDirection.m_fY = 0.0f;
-        vCameraDirection.m_fZ = 0.0f;
-    }
     Quaternion& qOrientation = CurrentCamera->m_qOrientation;
     qOrientation.m_fZ = qOrientation.m_fZ;
     vCameraDirection = qOrientation.zdir();
@@ -1417,13 +1413,6 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630 GOG 0x004BB740
     GLRender_Enable(ENABLE_CULL_FACE);
     if (bFog)
         GLRender_Enable(ENABLE_FOG);
-    if (EMITTER_MOTIONBLUR_DEBUG)
-    {
-        qCamera.m_fW = 0.0f;
-        qCamera.m_fX = 0.0f;
-        qCamera.m_fY = 0.0f;
-        qCamera.m_fZ = 0.0f;
-    }
 }
 #endif
 void LightningEmitter::UpdateBranches()  // PC 0x004BC730 GOG 0x004BC840
@@ -1801,15 +1790,8 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
             }
         }
     }
-    if (EMITTER_P2P_DEBUG)
-    {
-        vPosition.m_fX = 0.0f;
-        vPosition.m_fY = 0.0f;
-        vPosition.m_fZ = 0.0f;
-        vTarget.m_fX = 0.0f;
-        vTarget.m_fY = 0.0f;
-        vTarget.m_fZ = 0.0f;
-    }
+    EXOLOG("moveParticleP2PBezier: %f %f %f %f %f %f\n", vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ,
+        vTarget.m_fX, vTarget.m_fY, vTarget.m_fZ);
 }
 // PC 0x004BF280 GOG 0x004BF390
 void PartEmitter::moveParticleP2PGrav(float fTimeStep)

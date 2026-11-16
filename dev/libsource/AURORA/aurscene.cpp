@@ -1813,7 +1813,7 @@ CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
         Gob* pGob = m_lstObjects.m_pList[i];
         if (pGob->m_pModel &&
 #ifdef _XBOX
-            (bool(pGob->m_pModel->m_Classification.m_bEmitterBounds) ||
+            (pGob->m_pModel->m_Classification.m_bEmitterBounds ||
              pGob->m_bDistortion ||
 #else
             ((bool(pGob->m_pModel->m_Classification.m_bEmitterBounds) &&
@@ -2091,7 +2091,7 @@ void Scene::DoGobShadowsForThisLight(PartLight& light)
 #ifdef _XBOX
 
         if (!pGob->m_bCastShadows || !pGob->m_bHasGeometry ||
-            !bool(pGob->m_pModel->m_Classification.m_bCharacter))
+            !pGob->m_pModel->m_Classification.m_bCharacter)
             continue;
 #else
 
