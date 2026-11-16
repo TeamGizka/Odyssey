@@ -223,7 +223,7 @@ void CSWSDialog::Cleanup()
     m_oidCurrentPlayer = OBJECT_INVALID;
     m_nCurrentPlayerGender = CTlkTable::GENDER_MALE;
     m_bMultiPCDialogViewOnly = 0;
-    m_n90 = 0;
+    m_nConversationType = 0;
 }
 // PC 0x005E59A0 GOG 0x005E59D0
 CSWSDialogStuntModel::CSWSDialogStuntModel()
@@ -1162,7 +1162,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
     }
     if (m_lstPlayers.GetHeadPos() != NULL)
     {
-        m_n98 = m_oidCurrentPlayer;
+        m_oidLastReplySpeaker = m_oidCurrentPlayer;
     }
     if (!bSkip)
     {
@@ -1310,7 +1310,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
         return pOwner->SendDialogEntry(m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex);
     }
     m_bEndOfDialog = 1;
-    m_n60 = 1;
+    m_bEndPending = 1;
     return 0;
 }
 // PC 0x005E83F0 GOG 0x005E8420
@@ -1367,16 +1367,16 @@ CSWSDialog::CSWSDialog()
     m_nSelectedReply = DIALOG_INDEX_INVALID;
     m_nCurrentPlayerGender = CTlkTable::GENDER_MALE;
     m_oidLastEntrySpeaker = OBJECT_INVALID;
-    m_n98 = OBJECT_INVALID;
+    m_oidLastReplySpeaker = OBJECT_INVALID;
     m_pSpeakers = NULL;
     m_nSpeakers = 0;
     m_bMultiPCDialogViewOnly = 0;
-    m_n90 = 0;
-    m_n60 = 0;
-    m_n40 = 0;
-    m_n44 = 0;
-    m_n3C = 0;
-    m_n64 = 0;
+    m_nConversationType = 0;
+    m_bEndPending = 0;
+    m_bUnequipItems = 0;
+    m_bUnequipHeadItem = 0;
+    m_bSkippable = 0;
+    m_bNodeUnskippable = 0;
     m_nPseudoRandomCameraAngle = 0;
     m_nPseudoRandomCameraStep = 1;
     m_bPseudoRandomCameraDirection = 0;
@@ -1421,14 +1421,14 @@ CSWSDialog::CSWSDialog()
     m_nPseudoRandomAlienVOVariations[16] = 3;
     m_nPseudoRandomAlienVOVariations[17] = 2;
     m_nPseudoRandomAlienVOVariations[18] = 2;
-    m_nF4 = 0;
-    m_nF8 = 0;
+    m_bFirstEntry = 0;
+    m_bFirstReply = 0;
     m_cAmbientTrack = "";
-    m_n10C = 0;
-    m_n110 = 0;
-    m_n170 = 0;
+    m_bEndScriptRun = 0;
+    m_bSuppressBark = 0;
+    m_bComputerConversation = 0;
     m_nAlienRaceOwner = 0;
-    m_n178 = 0;
+    m_pEmotionObject = 0;
     m_nAnimationRetryDelay = 0;
     m_nLastEntryDay = 0;
     m_nLastEntryTime = 0;
@@ -1441,8 +1441,8 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     int bFieldSuccess = 1;
     CResStruct resTop;
     InitializePsuedoRandomCameraAngles(pGFF);
-    m_nF4 = 1;
-    m_nF8 = 1;
+    m_bFirstEntry = 1;
+    m_bFirstReply = 1;
     InitializePseudoRandomAlienVOVariation(pGFF);
     Cleanup();
     pGFF->GetTopLevelStruct(&resTop);
@@ -1452,12 +1452,12 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     unsigned long nDelayReply = pGFF->ReadFieldDWORD(&resTop, "DelayReply", bSuccess, 0);
     m_cEndConversationScript = pGFF->ReadFieldCResRef(&resTop, "EndConversation", bFieldSuccess, "");
     m_cEndConversationAbortedScript = pGFF->ReadFieldCResRef(&resTop, "EndConverAbort", bFieldSuccess, "");
-    m_n3C = pGFF->ReadFieldBYTE(&resTop, "Skippable", bFieldSuccess, 1);
+    m_bSkippable = pGFF->ReadFieldBYTE(&resTop, "Skippable", bFieldSuccess, 1);
     int nConversationType = pGFF->ReadFieldINT(&resTop, "ConversationType", bFieldSuccess, 0);
     unsigned char nComputerType = pGFF->ReadFieldBYTE(&resTop, "ComputerType", bFieldSuccess, 0);
     m_cAmbientTrack = pGFF->ReadFieldCResRef(&resTop, "AmbientTrack", bFieldSuccess, "");
-    m_n40 = pGFF->ReadFieldBYTE(&resTop, "UnequipItems", bFieldSuccess, 0);
-    m_n44 = pGFF->ReadFieldBYTE(&resTop, "UnequipHItem", bFieldSuccess, 0);
+    m_bUnequipItems = pGFF->ReadFieldBYTE(&resTop, "UnequipItems", bFieldSuccess, 0);
+    m_bUnequipHeadItem = pGFF->ReadFieldBYTE(&resTop, "UnequipHItem", bFieldSuccess, 0);
     int bAnimatedCut = pGFF->ReadFieldBYTE(&resTop, "AnimatedCut", bFieldSuccess, 0);
     int bOldHitCheck = pGFF->ReadFieldBYTE(&resTop, "OldHitCheck", bFieldSuccess, 0);
     m_nAlienRaceOwner = pGFF->ReadFieldINT(&resTop, "AlienRaceOwner", bFieldSuccess, 0);
@@ -1465,11 +1465,11 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nDialogCameraType = bOldHitCheck;
     if (nConversationType == 2)
     {
-        m_n110 = 1;
+        m_bSuppressBark = 1;
     }
     if (nConversationType == CONVERSATION_TYPE_COMPUTER)
     {
-        m_n170 = nConversationType;
+        m_bComputerConversation = nConversationType;
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetConversationType(CONVERSATION_TYPE_COMPUTER, nComputerType);
     }
     else
@@ -1683,7 +1683,7 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
         {
             continue;
         }
-        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 0 && m_n110 == 0 && m_n170 == 0)
+        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 0 && m_bSuppressBark == 0 && m_bComputerConversation == 0)
         {
             BarkOneLine(m_pStartingEntries[nStart].m_nIndex);
             g_pVirtualMachine->SetScriptParams(
@@ -1710,7 +1710,7 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
         }
         else if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 1 &&
                  m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nEntries == 0 &&
-                 m_n110 == 0 && m_n170 == 0)
+                 m_bSuppressBark == 0 && m_bComputerConversation == 0)
         {
             BarkOneLine(m_pStartingEntries[nStart].m_nIndex);
             g_pVirtualMachine->SetScriptParams(
@@ -1855,9 +1855,9 @@ void CSWSDialog::RunEndConversationScript(CSWSObject* pObject, int bAborted)
     CGameObject* pGameObject;
     int i;
 
-    if (m_bEndOfDialog != 0 && m_n10C == 0)
+    if (m_bEndOfDialog != 0 && m_bEndScriptRun == 0)
     {
-        m_n10C = 1;
+        m_bEndScriptRun = 1;
         RunScript(pObject, m_cEndConversationScript);
         pObjectArray = g_pAppManager->m_pServerExoApp->GetObjectArray();
         pObjectArray->GetGameObject(m_oidDialogOwner, &pGameObject);
@@ -2202,12 +2202,12 @@ int CSWSDialog::SendDialogEntryNode(
         m_nPseudoRandomCameraAngle = PSEUDO_RANDOM_CAMERA_COUNT - 1;
     if (entry.m_nCameraAngle == 0)
     {
-        if (m_nF4)
+        if (m_bFirstEntry)
             entry.m_nCameraAngle = CAMERA_ANGLE_SECOND;
         else
             entry.m_nCameraAngle = nCameraAngle;
     }
-    m_nF4 = 0;
+    m_bFirstEntry = 0;
     int nAlienVOVariation = m_nPseudoRandomAlienVOVariations[m_nPseudoRandomAlienVO];
     if (m_bPseudoRandomAlienVODirection)
         m_nPseudoRandomAlienVO += m_nPseudoRandomAlienVOStep;
@@ -2219,7 +2219,7 @@ int CSWSDialog::SendDialogEntryNode(
         m_nPseudoRandomAlienVO = PSEUDO_RANDOM_ALIEN_VO_COUNT - 1;
     entry.m_nAlienVOVariation = nAlienVOVariation;
     CExoString sText = GetExoStringFromLocString(entry.m_lsText, nGender);
-    if (m_n40)
+    if (m_bUnequipItems)
     {
         UnequipItemsForDialog(oidSpeaker);
         UnequipItemsForDialog(oidListener);
@@ -2228,7 +2228,7 @@ int CSWSDialog::SendDialogEntryNode(
             UnequipItemsForDialog(g_pAppManager->GetServerExoApp()
                 ->ClientToServerObjectId(pAnimationObjects[i]));
     }
-    if (m_n44)
+    if (m_bUnequipHeadItem)
     {
         UnequipHItemForDialog(oidSpeaker);
         UnequipHItemForDialog(oidListener);
@@ -2638,7 +2638,7 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
         }
         if (pReplies[i].m_nCameraAngle == 0)
         {
-            if (m_nF8)
+            if (m_bFirstReply)
                 pReplies[i].m_nCameraAngle = CAMERA_ANGLE_SECOND;
             else
                 pReplies[i].m_nCameraAngle = nCameraAngle;
@@ -2657,8 +2657,8 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
         pfFadeDelay[i] = pReplies[i].m_fFadeDelay;
         pfFadeLength[i] = pReplies[i].m_fFadeLength;
     }
-    m_nF8 = 0;
-    if (m_n40)
+    m_bFirstReply = 0;
+    if (m_bUnequipItems)
     {
         for (int i = 0; i < nReplies; ++i)
         {
@@ -2667,7 +2667,7 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
                 UnequipItemsForDialog(ppoidAnimations[i][j]);
         }
     }
-    if (m_n44)
+    if (m_bUnequipHeadItem)
     {
         for (int i = 0; i < nReplies; ++i)
         {
@@ -2841,7 +2841,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         }
         else
             pSpeaker = pOwner;
-        m_n64 = m_pEntries[m_nCurrentEntry].m_bNodeUnskippable;
+        m_bNodeUnskippable = m_pEntries[m_nCurrentEntry].m_bNodeUnskippable;
         int bResult = SendDialogEntryNode(nPlayerId, pOwner->GetId(),
             pSpeaker->GetId(), oidListener, m_oidCurrentPlayer,
             m_nCurrentPlayerGender, pOwner, m_pEntries[m_nCurrentEntry], nResult);
@@ -3064,24 +3064,24 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         m_pEntries[nEntry].m_nActionParam5b,
         m_pEntries[nEntry].m_sActionParamStrB);
     RunScript(pOwner, m_pEntries[nEntry].m_cScript2);
-    m_n64 = m_pEntries[nEntry].m_bNodeUnskippable;
+    m_bNodeUnskippable = m_pEntries[nEntry].m_bNodeUnskippable;
     m_nCurrentEntry = nEntry;
     return pOwner->SendDialogReplies();
 }
 // PC 0x005ECD70 GOG 0x005ECD50
 inline CSWSDialog::~CSWSDialog()
 {
-    if (m_n178 != NULL)
+    if (m_pEmotionObject != NULL)
     {
-        if (m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN) != NULL)
+        if (m_pEmotionObject->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN) != NULL)
         {
-            m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN)->StopOutOfOrderAnimation("emotions");
+            m_pEmotionObject->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN)->StopOutOfOrderAnimation("emotions");
         }
-        if (m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD) != NULL)
+        if (m_pEmotionObject->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD) != NULL)
         {
-            m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD)->StopOutOfOrderAnimation("emotions");
+            m_pEmotionObject->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD)->StopOutOfOrderAnimation("emotions");
         }
-        m_n178 = NULL;
+        m_pEmotionObject = NULL;
     }
     ReEquipItemsForDialog();
     ReEquipHItemForDialog();

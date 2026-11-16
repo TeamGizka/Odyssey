@@ -270,7 +270,7 @@ void CSWCSoundObject::UpdateTimeOfDay()
 
         m_bActiveNow =
             (nHourMask &
-             (1 << g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeB0)) !=
+             (1 << g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeHour)) !=
             0;
     }
 }

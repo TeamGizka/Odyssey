@@ -2966,7 +2966,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDoDoorAction(int nCommand, int nArg
             break;
         case DOOR_ACTION_IGNORE:
             if (nCommand == COMMAND_DO_DOOR_ACTION)
-                pCreature->m_pPathfindInformation->m_nField_BC = oidTarget;
+                pCreature->m_pPathfindInformation->m_oidIgnoreDoor = oidTarget;
             break;
         case DOOR_ACTION_KNOCK:
             if (pObject->m_bPlotObject == 0)
@@ -11337,7 +11337,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPC(int nCommand, int nArgs)
     oidPlayer = OBJECT_INVALID;
     if (nCommand == 548)
     {
-        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_n254 = 0;
+        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nNextPCIndex = 0;
         g_pAppManager->m_pClientExoApp->GetSWParty();
         oidPlayer = g_pAppManager->m_pServerExoApp->GetFirstPCObject();
     }
@@ -18547,7 +18547,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFoundEnemyCreature(int nCommand,
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidTarget);
     if (pCreature != 0)
     {
-        oidResult = pCreature->m_pPathfindInformation->m_nField_264;
+        oidResult = pCreature->m_pPathfindInformation->m_oidFoundEnemyCreature;
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }

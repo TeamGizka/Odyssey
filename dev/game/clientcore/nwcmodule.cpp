@@ -56,25 +56,25 @@ CSWCModule::CSWCModule()
     m_nReserved44 = 0;
     m_pInfo = NULL;
     m_nCameraType = CAMERA_UNINITIALIZED;
-    m_nReserved80 = 0;
-    m_nReserved84 = 0;
-    m_nReserved88 = 0;
+    m_bCameraMoved = 0;
+    m_bCameraFollowTurning = 0;
+    m_bCameraFollowPaused = 0;
     m_vCameraOffset = Vector(0.0f, 0.0f, 1.0f);
     m_oidCameraTarget = CGameObjectArray::INVALIDOBJID;
     m_fCameraDistance = 0.0f;
     m_fCameraYaw = 0.0f;
     m_fCameraPitch = 0.0f;
-    m_nReserved90 = 0;
+    m_nCameraTurnPreference = 0;
     m_bCameraCollisionChanged = 0;
     m_fCameraTilt = 0.0f;
     m_fCameraTurn = 0.0f;
     m_fCameraZoom = 0.0f;
     m_sModuleTitle = "";
-    m_nTimeA4 = CWorldTimer::DEFAULT_YEAR;
-    m_nTimeA8 = 1;
-    m_nTimeAC = 1;
+    m_nTimeYear = CWorldTimer::DEFAULT_YEAR;
+    m_nTimeMonth = 1;
+    m_nTimeDay = 1;
     m_nTimeOfDayHour = 5;
-    m_nTimeB0 = 0;
+    m_nTimeHour = 0;
     m_nTimeOfDayState = TIME_DEFAULT;
     m_fTimeOfDay = 0.0f;
     m_fTimeOfDayHours = 0.0f;
@@ -90,9 +90,9 @@ CSWCModule::CSWCModule()
     m_nCameraBumpTime = 0;
     m_nCameraBumpDelay = 0;
     m_bCameraBumpChanged = 1;
-    m_nReservedFC = 1;
-    m_nReserved100 = 0;
-    m_nReserved104 = 0;
+    m_bPlayerWasIdle = 1;
+    m_bCameraTurnChanged = 0;
+    m_bCameraZoomChanged = 0;
     m_nReserved108 = 0;
     m_cameraSettings.m_bValid = 0;
     m_pAnimatedCamera = NULL;
@@ -156,7 +156,7 @@ int CSWCModule::LoadModule()
         m_sModuleTitle = pMessage->ReadCExoLocStringClient(CResRef(), NULL);
         m_nTimeOfDayHour = pMessage->ReadBYTE(8);
         m_resHak = pMessage->ReadCResRef(16);
-        m_resReserved28 = pMessage->ReadCResRef(16);
+        m_resStartMovie = pMessage->ReadCResRef(16);
         g_pAppManager->GetClientExoApp()->GetWorldTimer()->SetMinutesPerHour(
             m_nTimeOfDayHour);
 
@@ -362,7 +362,7 @@ void CSWCModule::TiltCamera(float fTilt)
         {
             bChanged = 0;
         }
-        m_nReserved80 |= bChanged;
+        m_bCameraMoved |= bChanged;
     }
 }
 
@@ -499,8 +499,8 @@ void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
         if (fTurn != 0.0f)
         {
             int bChanged = 1;
-            m_nReserved100 = bChanged;
-            m_nReserved80 |= bChanged;
+            m_bCameraTurnChanged = bChanged;
+            m_bCameraMoved |= bChanged;
         }
     }
 }
@@ -578,8 +578,8 @@ void CSWCModule::AcclTurnCamera(float fTurn, float fTimeStep)
         if (fTurn != 0.0f)
         {
             int bChanged = 1;
-            m_nReserved100 = bChanged;
-            m_nReserved80 |= bChanged;
+            m_bCameraTurnChanged = bChanged;
+            m_bCameraMoved |= bChanged;
         }
     }
 }
@@ -605,8 +605,8 @@ void CSWCModule::ZoomCamera(float fZoom)
     if (fZoom != 0.0f)
     {
         int bChanged = 1;
-        m_nReserved104 = bChanged;
-        m_nReserved80 |= bChanged;
+        m_bCameraZoomChanged = bChanged;
+        m_bCameraMoved |= bChanged;
     }
 }
 // PC 0x00697060 GOG 0x00696E10
@@ -619,7 +619,7 @@ void CSWCModule::ScrollCamera(Vector vScroll)
         vPosition = m_pModuleCamera->GetPosition();
         vPosition += vScroll;
         m_pModuleCamera->SetPosition(vPosition);
-        m_nReserved80 = 1;
+        m_bCameraMoved = 1;
     }
 }
 // PC 0x00697110 GOG 0x00696EC0
@@ -777,23 +777,23 @@ void CSWCModule::UpdateCameraModeChaseCam()
             pPlayer->GetCurrentAnimation() == 10086 ||
             pPlayer->GetCurrentAnimation() == 10087)
         {
-            if (m_nReservedFC != 0)
+            if (m_bPlayerWasIdle != 0)
             {
-                m_nReserved88 = 0;
-                m_nReservedFC = 0;
+                m_bCameraFollowPaused = 0;
+                m_bPlayerWasIdle = 0;
             }
         }
         else
         {
             m_vPlayerPosition = pPlayer->m_vPosition;
-            m_nReservedFC = 1;
+            m_bPlayerWasIdle = 1;
         }
-        if (m_nReserved80 != 0)
+        if (m_bCameraMoved != 0)
         {
-            m_nReserved88 = 1;
-            m_nReserved84 = 0;
+            m_bCameraFollowPaused = 1;
+            m_bCameraFollowTurning = 0;
         }
-        if (m_nReserved88 == 0 && m_nReserved80 == 0)
+        if (m_bCameraFollowPaused == 0 && m_bCameraMoved == 0)
         {
             fCameraYaw = Yaw(m_pModuleCamera->GetOrientation());
             fDelta = Yaw(pPlayer->m_vOrientation) - fCameraYaw;
@@ -807,11 +807,11 @@ void CSWCModule::UpdateCameraModeChaseCam()
             }
             if (pPlayer->m_nCombatState == 0)
             {
-                if (fDelta > 90.0f && m_nReserved90 == CAMERA_TURN_PREFER_NEGATIVE)
+                if (fDelta > 90.0f && m_nCameraTurnPreference == CAMERA_TURN_PREFER_NEGATIVE)
                 {
                     fDelta = -90.0f;
                 }
-                else if (fDelta < -90.0f && m_nReserved90 == CAMERA_TURN_PREFER_POSITIVE)
+                else if (fDelta < -90.0f && m_nCameraTurnPreference == CAMERA_TURN_PREFER_POSITIVE)
                 {
                     fDelta = 90.0f;
                 }
@@ -819,8 +819,8 @@ void CSWCModule::UpdateCameraModeChaseCam()
             if (fabs(fDelta) > 1.0)
             {
                 if (fabs(fDelta) > camerafollowangle &&
-                        m_nReserved84 == 0 ||
-                    m_nReserved84 != 0)
+                        m_bCameraFollowTurning == 0 ||
+                    m_bCameraFollowTurning != 0)
                 {
                     if (fDelta > 90.0f)
                     {
@@ -834,13 +834,13 @@ void CSWCModule::UpdateCameraModeChaseCam()
                     {
                         pFollow->m_fTurn = camerafollowspeedfactor * fDelta;
                     }
-                    m_nReserved80 = 1;
-                    m_nReserved84 = 1;
+                    m_bCameraMoved = 1;
+                    m_bCameraFollowTurning = 1;
                 }
             }
             else
             {
-                m_nReserved84 = 0;
+                m_bCameraFollowTurning = 0;
             }
         }
     }
@@ -932,23 +932,23 @@ void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
             pPlayer->GetCurrentAnimation() == 10086 ||
             pPlayer->GetCurrentAnimation() == 10087)
         {
-            if (m_nReservedFC != 0)
+            if (m_bPlayerWasIdle != 0)
             {
-                m_nReserved88 = 0;
-                m_nReservedFC = 0;
+                m_bCameraFollowPaused = 0;
+                m_bPlayerWasIdle = 0;
             }
         }
         else
         {
             m_vPlayerPosition = pPlayer->m_vPosition;
-            m_nReservedFC = 1;
+            m_bPlayerWasIdle = 1;
         }
-        if (m_nReserved80 != 0)
+        if (m_bCameraMoved != 0)
         {
-            m_nReserved88 = 1;
-            m_nReserved84 = 0;
+            m_bCameraFollowPaused = 1;
+            m_bCameraFollowTurning = 0;
         }
-        if (m_nReserved88 == 0 && m_nReserved80 == 0)
+        if (m_bCameraFollowPaused == 0 && m_bCameraMoved == 0)
         {
             float fCameraYaw = m_pModuleCamera->GetYaw();
             float fPlayerYaw = Yaw(pPlayer->m_vOrientation);
@@ -964,12 +964,12 @@ void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
             if (pPlayer->m_nCombatState == 0)
             {
                 if (fDelta > 90.0f &&
-                    m_nReserved90 == CAMERA_TURN_PREFER_NEGATIVE)
+                    m_nCameraTurnPreference == CAMERA_TURN_PREFER_NEGATIVE)
                 {
                     fDelta = -90.0f;
                 }
                 else if (fDelta < -90.0f &&
-                         m_nReserved90 == CAMERA_TURN_PREFER_POSITIVE)
+                         m_nCameraTurnPreference == CAMERA_TURN_PREFER_POSITIVE)
                 {
                     fDelta = 90.0f;
                 }
@@ -1004,12 +1004,12 @@ void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
                 {
                     pFollow->m_fTurn = camerafollowspeedfactor * fTurn;
                 }
-                m_nReserved80 = 1;
-                m_nReserved84 = 1;
+                m_bCameraMoved = 1;
+                m_bCameraFollowTurning = 1;
             }
             else
             {
-                m_nReserved84 = 0;
+                m_bCameraFollowTurning = 0;
             }
         }
     }
@@ -1855,7 +1855,7 @@ float CSWCModule::UpdateNormalCameraCollision(float fTimeDelta, float fZoom)
                     pFollow->m_fDistance = fCollisionDistance;
                     if (!bReturning)
                         fNewZoom = 0.0f;
-                    m_nReserved80 = 1;
+                    m_bCameraMoved = 1;
                 }
                 if (m_pModuleCamera->GetDist() <= g_fMinDist && fNewZoom > 0.0f)
                     fNewZoom = 0.0f;
@@ -1868,17 +1868,17 @@ float CSWCModule::UpdateNormalCameraCollision(float fTimeDelta, float fZoom)
     return fZoom;
 }
 // PC 0x0069AF90 GOG 0x0069AD40
-float CSWCModule::UpdateCameraCollision(float fTimeDelta, float fUnknown)
+float CSWCModule::UpdateCameraCollision(float fTimeDelta, float fZoom)
 {
     if (m_bCameraCollisionChanged != 0)
     {
-        return fUnknown;
+        return fZoom;
     }
     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCameraMode == CClientOptions::CAMERA_MODE_EQ)
     {
-        return UpdatePushCameraCollision(fTimeDelta, fUnknown);
+        return UpdatePushCameraCollision(fTimeDelta, fZoom);
     }
-    return UpdateNormalCameraCollision(fTimeDelta, fUnknown);
+    return UpdateNormalCameraCollision(fTimeDelta, fZoom);
 }
 // PC 0x0069A1D0 GOG 0x00699F80
 float CSWCModule::UpdatePushCameraCollision(float fTimeDelta, float fZoom)
@@ -2032,7 +2032,7 @@ float CSWCModule::UpdatePushCameraCollision(float fTimeDelta, float fZoom)
                     pFollow->m_fDistance = fCollisionDistance;
                     if (!bReturning)
                         fNewZoom = 0.0f;
-                    m_nReserved80 = 1;
+                    m_bCameraMoved = 1;
                 }
                 if (m_pModuleCamera->GetDist() <= g_fMinDist && fNewZoom > 0.0f)
                     fNewZoom = 0.0f;
@@ -2116,8 +2116,8 @@ int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
     {
         pFollow = NULL;
     }
-    m_nReserved88 = 1;
-    m_nReserved84 = 0;
+    m_bCameraFollowPaused = 1;
+    m_bCameraFollowTurning = 0;
     if (m_pInfo == NULL)
     {
         return 0;

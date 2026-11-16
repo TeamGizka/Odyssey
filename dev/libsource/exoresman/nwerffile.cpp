@@ -17,9 +17,9 @@ int CERFRes::Read(CExoFile& file)
 }
 // PC 0x0062AFA0 GOG 0x0062AE70
 void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
-                                 const CExoString& sDirectory, void* pUnused,
+                                 const CExoString& sDirectory, void* hSignature,
                                  int (*pfnProgress)(int, int, int, int),
-                                 int nArg1, int nArg2)
+                                 int nBase, int nRange)
 {
     if (NWERFFILE_DEBUG)
     {
@@ -40,12 +40,12 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
             CERFRes* pRes = m_lstResources.GetAtPos(pResPos);
             sPath = sDirectory + pKey->m_sResRef;
             CExoFile* pOut = new CExoFile(sPath, pKey->m_nResType, "wb");
-            pRes->CopyToFile(&file, pOut, pUnused);
+            pRes->CopyToFile(&file, pOut, hSignature);
             pOut->Flush();
 
             if (pfnProgress != NULL)
             {
-                pfnProgress(i, m_nEntryCount, nArg1, nArg2);
+                pfnProgress(i, m_nEntryCount, nBase, nRange);
             }
 
             delete pOut;
@@ -55,15 +55,15 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
 
         if (pfnProgress != NULL)
         {
-            pfnProgress(m_nEntryCount, m_nEntryCount, nArg1, nArg2);
+            pfnProgress(m_nEntryCount, m_nEntryCount, nBase, nRange);
         }
         return;
     }
 }
 // PC 0x0062B200 GOG 0x0062B0D0
-void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
-                          int (*pfnProgress)(int, int, int, int), int nArg1,
-                          int nArg2)
+void CERFFile::ImportFiles(const CExoString& sDirectory, void* hSignature,
+                          int (*pfnProgress)(int, int, int, int), int nBase,
+                          int nRange)
 {
     CExoArrayList<CExoString> lstFiles;
     CExoString sFile;
@@ -74,11 +74,11 @@ void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
     for (int i = 0; i < lstFiles.num; i++)
     {
         sFile.Format("%s%s", sDirectory.CStr(), lstFiles.element[i]);
-        WriteResource(sFile, pUnused);
+        WriteResource(sFile, hSignature);
 
         if (pfnProgress != NULL)
         {
-            pfnProgress(i, lstFiles.num, nArg1, nArg2);
+            pfnProgress(i, lstFiles.num, nBase, nRange);
         }
     }
 
@@ -357,7 +357,7 @@ int CERFFile::SetNumEntries(unsigned long nEntries)
     return 0;
 }
 // PC 0x0062A9F0 GOG 0x0062A8C0
-int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
+int CERFFile::WriteResource(const CExoString& sFileName, void* hSignature)
 {
     if (NWERFFILE_DEBUG)
     {
@@ -400,9 +400,9 @@ int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
 
             pIn->Read(pTemp, 1, nChunk);
 #ifdef _XBOX
-            if (pUnused != INVALID_HANDLE_VALUE)
+            if (hSignature != INVALID_HANDLE_VALUE)
             {
-                XCalculateSignatureUpdate((HANDLE)pUnused,
+                XCalculateSignatureUpdate((HANDLE)hSignature,
                                           (unsigned char*)pTemp, nChunk);
             }
 #endif
@@ -580,7 +580,7 @@ int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 }
 // PC 0x0062AD60 GOG 0x0062AC30
 int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
-                            int bIsGFF, void* pUnused)
+                            int bIsGFF, void* hSignature)
 {
     if (NWERFFILE_DEBUG)
     {
@@ -606,9 +606,9 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
         pGFF->Pack(0, 0);
         pGFF->GetTotalSize();
 #ifdef _XBOX
-        if (pUnused != INVALID_HANDLE_VALUE)
+        if (hSignature != INVALID_HANDLE_VALUE)
         {
-            XCalculateSignatureUpdate((HANDLE)pUnused,
+            XCalculateSignatureUpdate((HANDLE)hSignature,
                                       (unsigned char*)pGFF->GetData(),
                                       pGFF->GetSize());
         }
@@ -625,9 +625,9 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
         void* pData = new char[pRes->GetSize()];
         memcpy(pData, pRes->GetData(), pRes->GetSize());
 #ifdef _XBOX
-        if (pUnused != INVALID_HANDLE_VALUE)
+        if (hSignature != INVALID_HANDLE_VALUE)
         {
-            XCalculateSignatureUpdate((HANDLE)pUnused,
+            XCalculateSignatureUpdate((HANDLE)hSignature,
                                       (unsigned char*)pRes->GetData(),
                                       pRes->GetSize());
         }

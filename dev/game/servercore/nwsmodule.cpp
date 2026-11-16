@@ -270,14 +270,14 @@ int CSWSModule::ComputeInterAreaPath(CPathfindInformation* pPathfind)
 {
     int nDepth;
 
-    pPathfind->m_nField_A8 = 10;
+    pPathfind->m_nAreaPathLength = 10;
     pPathfind->m_pAreaPath = new int[10];
     pPathfind->m_pAreaPathCost = new int[9];
-    pPathfind->m_nField_A0 = 0;
+    pPathfind->m_bAreaPathFound = 0;
     nDepth = 1;
     do
     {
-        if (pPathfind->m_nField_A0 != 0)
+        if (pPathfind->m_bAreaPathFound != 0)
         {
             break;
         }
@@ -285,11 +285,11 @@ int CSWSModule::ComputeInterAreaPath(CPathfindInformation* pPathfind)
         ClearAreaVisitedFlags();
         if (InterAreaDFS(0, nDepth, pPathfind) == 1)
         {
-            pPathfind->m_nField_A0 = 1;
+            pPathfind->m_bAreaPathFound = 1;
         }
         nDepth++;
     } while (nDepth < 10);
-    if (pPathfind->m_nField_A0 == 0)
+    if (pPathfind->m_bAreaPathFound == 0)
     {
         return 0;
     }
@@ -377,10 +377,10 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
     }
     else
     {
-        ++pPathfind->m_nField_3C;
+        ++pPathfind->m_nPlotAttempts;
         pArea->m_pPathfindInformation = pPathfind;
         if (pPathfind->m_fStartDistance > NWSMODULE_PATH_GOAL_MARGIN &&
-            pPathfind->m_nField_240 == 0)
+            pPathfind->m_bStopAtUseRange == 0)
         {
             Vector vGoal(fEndX, fEndY, 0.0f);
             Vector vNewGoal = vGoal;
@@ -405,7 +405,7 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
             fEndX = vNewGoal.m_fX;
             fEndY = vNewGoal.m_fY;
         }
-        if (pPathfind->m_nField_3C == 1)
+        if (pPathfind->m_nPlotAttempts == 1)
         {
             nDirectLine = pArea->TestDirectLine(Vector(fStartX, fStartY, 0.0f),
                 Vector(fEndX, fEndY, 0.0f), fDistance, fWidth, 1, NULL);
@@ -415,10 +415,10 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
         {
             nDirectLine = pPathfind->m_nDirectLineResult;
         }
-        if (pPathfind->m_nField_198 == 1)
+        if (pPathfind->m_bPartialPathSearch == 1)
         {
             if (nDirectLine != CSWSArea::DIRECT_LINE_CLEAR &&
-                pPathfind->m_nField_84 == 0)
+                pPathfind->m_bPathReversed == 0)
             {
                 float fFraction = 0.5f;
                 float fStep = 0.25f;
@@ -460,8 +460,8 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
                     nDirectLine = PATH_PARTIAL_SEARCH_FAILED;
                 }
             }
-            pPathfind->m_nField_194 = 0;
-            pPathfind->m_nField_198 = 0;
+            pPathfind->m_bForceGridPath = 0;
+            pPathfind->m_bPartialPathSearch = 0;
         }
         if (nDirectLine == CSWSArea::DIRECT_LINE_CLEAR)
         {
@@ -486,7 +486,7 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
             {
 
                 int bRenderAi;
-                if (pPathfind->m_nField_194 != 0)
+                if (pPathfind->m_bForceGridPath != 0)
                 {
                     nResult = pArea->PlotGridPath(pPathfind, nFlags);
                     if (RenderAi)
@@ -529,7 +529,7 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
                     g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
                         oidCreature);
                 }
-                if (pPathfind->m_nField_3C > PATH_MAX_ATTEMPTS &&
+                if (pPathfind->m_nPlotAttempts > PATH_MAX_ATTEMPTS &&
                     nResult == CSWSObject::ACTION_IN_PROGRESS)
                     nResult = CSWSObject::ACTION_FAILED;
             }
@@ -542,7 +542,7 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
                 fStartY = pPathfind->m_fEndY;
                 Vector vEnd(pPathfind->m_fStartX, pPathfind->m_fStartY, 0.0f);
                 Vector vStart(fStartX, fStartY, 0.0f);
-                pPathfind->m_nField_84 = 0;
+                pPathfind->m_bPathReversed = 0;
 
                 int bFound = 0;
                 Vector vBest;
@@ -586,9 +586,9 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
                     }
                 }
             }
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_STARTPOINTS;
         }
-        if (nResult == CSWSObject::ACTION_COMPLETE && pPathfind->m_nField_84 == 1)
+        if (nResult == CSWSObject::ACTION_COMPLETE && pPathfind->m_bPathReversed == 1)
         {
             int nCount = pPathfind->m_nWayPointCount;
             float* pOldPoints = pPathfind->m_pWayPoints;
@@ -602,12 +602,12 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
             pPathfind->m_pWayPoints = pNewPoints;
             if (pOldPoints != NULL)
                 delete[] pOldPoints;
-            pPathfind->m_nField_84 = 0;
+            pPathfind->m_bPathReversed = 0;
             pPathfind->FlipStartEndPoints();
         }
         if (nResult == CSWSObject::ACTION_FAILED ||
             nResult == CSWSObject::ACTION_COMPLETE)
-            pPathfind->m_nField_88 = 1;
+            pPathfind->m_bPlotFinished = 1;
     }
     return nResult;
 }
@@ -704,7 +704,7 @@ void CSWSModule::SavePrimaryPlayerInfo(CSWSCreature* pCreature,
 // PC 0x00504F10 GOG 0x004FCFF0
 void CSWSModule::SetIntraAreaGoal(CPathfindInformation* pPathfind)
 {
-    if (pPathfind->m_nField_A8 > 1)
+    if (pPathfind->m_nAreaPathLength > 1)
     {
         pPathfind->m_fTempStartX = pPathfind->m_fStartX;
         pPathfind->m_fTempStartY = pPathfind->m_fStartY;
@@ -761,7 +761,7 @@ int CSWSModule::InterAreaDFS(int nArea, int nDepth,
 {
     if (pPathfind->m_pAreaPath[nArea] == pPathfind->m_nStartArea)
     {
-        pPathfind->m_nField_A8 = nArea + 1;
+        pPathfind->m_nAreaPathLength = nArea + 1;
         return 1;
     }
     if (nArea >= nDepth)
@@ -1052,8 +1052,8 @@ int CSWSModule::PlotInterAreaPath(CPathfindInformation* pPathfind,
     {
         if (pPathfind->m_pAreaPath == NULL)
         {
-            pPathfind->m_nField_A0 = 1;
-            pPathfind->m_nField_A8 = 1;
+            pPathfind->m_bAreaPathFound = 1;
+            pPathfind->m_nAreaPathLength = 1;
             pStart = new int[1];
             pStart[0] = pPathfind->m_nStartArea;
             pPathfind->m_pAreaPath = pStart;
@@ -1077,16 +1077,16 @@ int CSWSModule::PlotInterAreaPath(CPathfindInformation* pPathfind,
     nResult = PlotPathInArea(pPathfind, nFlags);
     if (nResult == CSWSObject::ACTION_FAILED)
     {
-        if (pPathfind->m_nField_A8 > 1)
+        if (pPathfind->m_nAreaPathLength > 1)
         {
-            nCount = pPathfind->m_nField_B4;
+            nCount = pPathfind->m_nAreaListCount;
             pNewList = new unsigned long[nCount + 1];
             for (i = 0; i < nCount; i++)
             {
                 pNewList[i] = pPathfind->m_pAreaList[i];
             }
             pNewList[nCount] = pPathfind->m_pAreaPathCost[0];
-            pPathfind->m_nField_B4 = nCount + 1;
+            pPathfind->m_nAreaListCount = nCount + 1;
             if (pPathfind->m_pAreaList != NULL)
             {
                 delete[] pPathfind->m_pAreaList;
@@ -1105,7 +1105,7 @@ int CSWSModule::PlotInterAreaPath(CPathfindInformation* pPathfind,
     }
     else
     {
-        if (pPathfind->m_nField_A8 > 1)
+        if (pPathfind->m_nAreaPathLength > 1)
         {
             pPathfind->FlipTempEndPoints();
         }
@@ -1124,27 +1124,27 @@ int CSWSModule::PlotPath(CPathfindInformation* pPathfind, unsigned long nFlags)
     {
         return CSWSObject::ACTION_FAILED;
     }
-    if (pPathfind->m_nField_58 == 0 && pPathfind->m_nField_88 == 1)
+    if (pPathfind->m_bNewPathRequest == 0 && pPathfind->m_bPlotFinished == 1)
     {
         return CSWSObject::ACTION_COMPLETE;
     }
-    if (pPathfind->m_nField_58 == 1)
+    if (pPathfind->m_bNewPathRequest == 1)
     {
-        if (pPathfind->m_nField_A4 == 1)
+        if (pPathfind->m_bAreaLegStarted == 1)
         {
             pPathfind->ResetInterTileSearchData();
             pPathfind->ResetGridSearchData();
-            pPathfind->m_nField_A4 = 0;
+            pPathfind->m_bAreaLegStarted = 0;
         }
         else
         {
-            nSavedField = pPathfind->m_nField_84;
+            nSavedField = pPathfind->m_bPathReversed;
             pPathfind->ResetInterAreaSearchData();
-            pPathfind->m_nField_84 = nSavedField;
+            pPathfind->m_bPathReversed = nSavedField;
         }
-        pPathfind->m_nField_3C = 0;
-        pPathfind->m_nField_88 = 0;
-        pPathfind->m_nField_58 = 0;
+        pPathfind->m_nPlotAttempts = 0;
+        pPathfind->m_bPlotFinished = 0;
+        pPathfind->m_bNewPathRequest = 0;
     }
     g_pAppManager->m_pServerExoApp->GetServerAIMaster()->m_nLastEvent[0] = 1;
     nResult = PlotInterAreaPath(pPathfind, nFlags);

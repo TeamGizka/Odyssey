@@ -1317,9 +1317,9 @@ public:
                                          CExoLocString& lsJournalEntry);
     int SendServerToPlayerModuleUpdate_Time(
         CSWSPlayer* pPlayer, unsigned char nUpdateMask,
-        unsigned long nTimeOfDay, unsigned long nDayOfMonth,
-        unsigned long nMonth, unsigned long nYear, unsigned char nCalendar,
-        unsigned long nCalendarDay);
+        unsigned long nYear, unsigned long nDayOfMonth,
+        unsigned long nMonth, unsigned long nHour, unsigned char nTimeOfDayState,
+        unsigned long nTimeOfDayTime);
     int SendServerToPlayerMapPinEnabled(CSWSPlayer* pPlayer,
                                         unsigned long oidMapPin, int bEnabled);
     int SendServerToPlayerGuiTimingEvent(CSWSPlayer* pPlayer, int bStarted,

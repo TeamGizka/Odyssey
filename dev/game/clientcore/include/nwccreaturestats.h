@@ -43,7 +43,7 @@ public:
     void RemoveKnownSpell(unsigned char nLevel, unsigned long nSpell);
 
     CExoArrayList<unsigned long> m_lstKnownSpells[SPELL_LEVEL_COUNT];
-    CExoArrayList<unsigned long> m_lstUnknown0C[1];
+    CExoArrayList<unsigned long> m_lstAdditionalSpells[1];
     unsigned char m_aSpellsPerDayLeft[SPELL_LEVEL_COUNT];
     unsigned char m_nUnknown19;
     unsigned char m_nUnknown1A;
@@ -286,7 +286,7 @@ public:
     unsigned char m_nCharisma;
     unsigned char m_aAbilities[6];
     unsigned char m_nDexterityBonus;
-    unsigned char m_aUnknown41[6];
+    unsigned char m_aBaseAbilities[6];
     unsigned char m_nUnknown47;
     short m_nHitPointsBase;
 
@@ -302,8 +302,8 @@ public:
     char m_nWillSave;
     char m_nReflexSave;
     unsigned char m_nUnknown5F;
-    int m_nUnknown60;
-    unsigned char m_nUnknown64;
+    int m_bUseMonkAttackTables;
+    unsigned char m_nBaseAttackBonus;
     unsigned char m_aUnknown65[3];
     CCombatInformation* m_pCombatInformation;
     int m_bOwnsCombatInformation;

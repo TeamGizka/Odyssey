@@ -15,16 +15,16 @@ CExoBase::CExoBase()
 #ifdef _XBOX
 int CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,
                                const CExoString& sPath,
-                               unsigned short nResType, int nArg4, int nArg5)
+                               unsigned short nResType, int bDirectories, int nSortMode)
 {
-    return m_pInternal->GetDirectoryList(pList, sPath, nResType, nArg4, nArg5);
+    return m_pInternal->GetDirectoryList(pList, sPath, nResType, bDirectories, nSortMode);
 }
 #else
 void CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,  // PC 0x00631F70 GOG 0x00631E60
                                 const CExoString& sPath,
-                                unsigned short nResType, int nArg4, int nArg5)
+                                unsigned short nResType, int bDirectories, int nSortMode)
 {
-    m_pInternal->GetDirectoryList(pList, sPath, nResType, nArg4, nArg5);
+    m_pInternal->GetDirectoryList(pList, sPath, nResType, bDirectories, nSortMode);
 }
 #endif
 // PC 0x00631F80 GOG 0x00631E70

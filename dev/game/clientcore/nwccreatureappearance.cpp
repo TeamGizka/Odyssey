@@ -20,7 +20,7 @@
 // PC 0x006F0430 GOG 0x006F0020
 CSWCCreatureAppearance::CSWCCreatureAppearance(CSWCCreature* pCreature)
 {
-    m_nUnmapped10 = CGameObjectArray::INVALIDOBJID;
+    m_oidHeadItem = CGameObjectArray::INVALIDOBJID;
     memset(m_anArmorModelPart, 0, sizeof(m_anArmorModelPart));
     m_nBodyVariation = 0;
     m_nTextureVar = 1;
@@ -29,23 +29,23 @@ CSWCCreatureAppearance::CSWCCreatureAppearance(CSWCCreature* pCreature)
     m_nHeadVariation = -1;
     m_nHead = -1;
     m_bUseBodyVariation = 0;
-    m_nUnknown1D = 0;
-    m_nUnknown1E = 0;
-    m_nUnknown1F = 0;
-    m_nUnknown20 = 0;
+    m_nColorSkin = 0;
+    m_nColorHair = 0;
+    m_nColorTattoo1 = 0;
+    m_nColorTattoo2 = 0;
     m_nTail = 0;
     m_nWing = 0;
     m_fCameraHeight = 0.6f;
     m_fDefaultHeight = 0.5f;
-    m_nUnknown30 = 0;
-    m_nUnknown34 = -1;
+    m_bUseBackupHead = 0;
+    m_nHeadOverride = -1;
     m_nAlignment = 50;
     m_pCreature = pCreature;
-    m_nUnknown40 = 0;
+    m_bHeadDirty = 0;
     m_nUnknown44 = 0;
     m_nUnknown48 = 0;
     m_nUnknown4C = 0;
-    m_nUnknown50 = 0;
+    m_bAlignmentDirty = 0;
     m_nUnknown54 = 0;
     m_bForceAnimate = 0;
     m_bGroundTilt = 0;
@@ -78,12 +78,12 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
     int bAltTexture = 0;
 
     if (pAppearance->m_nHead == 0 &&
-        pAppearance->m_nUnmapped10 == CGameObjectArray::INVALIDOBJID)
+        pAppearance->m_oidHeadItem == CGameObjectArray::INVALIDOBJID)
     {
         m_pCreature->UnloadMonkVisuals();
         m_pCreature->UnloadModel(CSWCAnimBase::MODEL_SLOT_HEAD);
         m_pCreature->UpdateMonkVisuals();
-        m_nUnmapped10 = pAppearance->m_nUnmapped10;
+        m_oidHeadItem = pAppearance->m_oidHeadItem;
         m_nHead = pAppearance->m_nHead;
         return 1;
     }
@@ -108,12 +108,12 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
     if (nType == CSWCAnimBase::ANIMATION_TYPE_BTYPE)
     {
         int nHead;
-        if (pAppearance->m_nUnknown34 != CCAppearanceInfo::HEAD_OVERRIDE_DEFAULT)
+        if (pAppearance->m_nHeadOverride != CCAppearanceInfo::HEAD_OVERRIDE_DEFAULT)
         {
-            nHead = pAppearance->m_nUnknown34;
-            m_nUnknown40 = 1;
+            nHead = pAppearance->m_nHeadOverride;
+            m_bHeadDirty = 1;
         }
-        else if (pAppearance->m_nUnknown30)
+        else if (pAppearance->m_bUseBackupHead)
         {
             CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
             C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
@@ -188,11 +188,11 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
         cHeadTexture = sTexture;
     }
 
-    if (!m_nUnknown40 && m_nAppearance == pAppearance->m_nAppearance &&
+    if (!m_bHeadDirty && m_nAppearance == pAppearance->m_nAppearance &&
         m_nGender == pAppearance->m_nGender && m_nHead == pAppearance->m_nHead &&
-        m_nUnmapped10 == pAppearance->m_nUnmapped10 &&
-        m_nUnknown34 == pAppearance->m_nUnknown34 &&
-        m_nUnknown30 == pAppearance->m_nUnknown30)
+        m_oidHeadItem == pAppearance->m_oidHeadItem &&
+        m_nHeadOverride == pAppearance->m_nHeadOverride &&
+        m_bUseBackupHead == pAppearance->m_bUseBackupHead)
     {
         if (bAltTexture)
         {
@@ -218,8 +218,8 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
     m_pCreature->UnloadModel(CSWCAnimBase::MODEL_SLOT_HEAD);
     m_pCreature->UpdateMonkVisuals();
     m_nHead = pAppearance->m_nHead;
-    m_nUnknown34 = pAppearance->m_nUnknown34;
-    m_nUnknown30 = pAppearance->m_nUnknown30;
+    m_nHeadOverride = pAppearance->m_nHeadOverride;
+    m_bUseBackupHead = pAppearance->m_bUseBackupHead;
     if (!m_pCreature->LoadModel(cHeadModel, CSWCAnimBase::MODEL_SLOT_HEAD, nType))
     {
         return 0;
@@ -228,10 +228,10 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
     if (nType == CSWCAnimBase::ANIMATION_TYPE_HEAD ||
         nType == CSWCAnimBase::ANIMATION_TYPE_BTYPE)
     {
-        if (m_nUnknown40 || m_nUnmapped10 != pAppearance->m_nUnmapped10)
+        if (m_bHeadDirty || m_oidHeadItem != pAppearance->m_oidHeadItem)
         {
             CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-            CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(m_nUnmapped10);
+            CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(m_oidHeadItem);
             if (pItem)
             {
                 Gob* pItemModel = pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1);
@@ -246,10 +246,10 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
                     pItem->AttachToScene(0);
                 }
             }
-            if (pAppearance->m_nUnmapped10 != CGameObjectArray::INVALIDOBJID)
+            if (pAppearance->m_oidHeadItem != CGameObjectArray::INVALIDOBJID)
             {
                 pClientExoApp = g_pAppManager->m_pClientExoApp;
-                pItem = pClientExoApp->GetItemByGameObjectID(pAppearance->m_nUnmapped10);
+                pItem = pClientExoApp->GetItemByGameObjectID(pAppearance->m_oidHeadItem);
                 if (!pItem)
                 {
                     return 0;
@@ -263,9 +263,9 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
                 }
             }
         }
-        m_pCreature->GetAnimationBase()->SetHeadItem(pAppearance->m_nUnmapped10);
+        m_pCreature->GetAnimationBase()->SetHeadItem(pAppearance->m_oidHeadItem);
     }
-    m_nUnmapped10 = pAppearance->m_nUnmapped10;
+    m_oidHeadItem = pAppearance->m_oidHeadItem;
     if (bAltTexture)
     {
         if (g_pExoResMan->Exists(cHeadTexture, RESTYPE_TGA, (unsigned long*)0) ||
@@ -287,8 +287,8 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
     {
         m_pCreature->SetEnvMap(CSWCAnimBase::MODEL_SLOT_HEAD, 0, 1, "DEFAULT");
     }
-    m_nUnknown50 = 1;
-    m_nUnknown40 = 0;
+    m_bAlignmentDirty = 1;
+    m_bHeadDirty = 0;
     m_bForceAnimate = g_pAppManager->m_pClientExoApp->GetPausedByCombat();
     return 1;
 }
@@ -478,7 +478,7 @@ int CSWCCreatureAppearance::CreateBTypeBody(unsigned char nType, CCAppearanceInf
         m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_MAIN, "", cBodyTexture, 1);
     }
     m_nAppearance = pAppearance->m_nAppearance;
-    m_nUnknown40 = 1;
+    m_bHeadDirty = 1;
     m_nUnknown44 = 1;
     m_nUnknown48 = 1;
     SwitchWeaponEvent(0, "AppearanceForceUpdate", m_pCreature);
@@ -487,14 +487,14 @@ int CSWCCreatureAppearance::CreateBTypeBody(unsigned char nType, CCAppearanceInf
         Gob* pMainModel = m_pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1);
         pHeadModel->AttachToObject(pMainModel, "HeadHook", Gob::ATTACH_NORMAL);
     }
-    m_nUnknown50 = 1;
+    m_bAlignmentDirty = 1;
     m_bForceAnimate = g_pAppManager->m_pClientExoApp->GetPausedByCombat();
     return 1;
 }
 // PC 0x006F2330 GOG 0x006F1F20
 void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
 {
-    if (m_nUnknown50 == 0 && m_nAlignment == nAlignment)
+    if (m_bAlignmentDirty == 0 && m_nAlignment == nAlignment)
     {
         return;
     }
@@ -557,15 +557,15 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
 
     int nHead;
 
-    m_nUnknown50 = 0;
-    if (m_nUnknown34 != 0xFF)
+    m_bAlignmentDirty = 0;
+    if (m_nHeadOverride != 0xFF)
     {
-        nHead = m_nUnknown34;
-        m_nUnknown40 = 1;
+        nHead = m_nHeadOverride;
+        m_bHeadDirty = 1;
     }
     else
     {
-        if (m_nUnknown30)
+        if (m_bUseBackupHead)
         {
             pAppearance2DA->GetINTEntry(m_nAppearance,
                 CTwoDimArrays::COL2DA_APPEARANCETABLE_BACKUPHEAD, &nHead);
@@ -879,7 +879,7 @@ int CSWCCreatureAppearance::CreateSimple(unsigned char nType,
         m_pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1)->SetCanDownSample(0);
     }
     CCAppearanceInfo::operator=(*pAppearance);
-    m_nUnknown40 = 1;
+    m_bHeadDirty = 1;
     m_nUnknown44 = 1;
     m_nUnknown48 = 1;
 
@@ -1019,11 +1019,11 @@ int CSWCCreatureAppearance::RequestHeadAppearance(CCAppearanceInfo* pAppearance)
     if (GetAnimType(sEntry) == CSWCAnimBase::ANIMATION_TYPE_BTYPE)
     {
         if (pAppearance->m_nHead == 0 &&
-            pAppearance->m_nUnmapped10 == CGameObjectArray::INVALIDOBJID)
+            pAppearance->m_oidHeadItem == CGameObjectArray::INVALIDOBJID)
         {
             return 1;
         }
-        if (pAppearance->m_nUnmapped10 == CGameObjectArray::INVALIDOBJID)
+        if (pAppearance->m_oidHeadItem == CGameObjectArray::INVALIDOBJID)
         {
             sModel = "P";
             int nGender = pAppearance->m_nGender == CCAppearanceInfo::GENDER_FEMALE;
@@ -1243,7 +1243,7 @@ void CSWCCreatureAppearance::ForceAnimate()
             pModel->DisableForceAnimations();
 
             CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-            CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(m_nUnmapped10);
+            CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(m_oidHeadItem);
             if (pItem != 0)
             {
                 pModel = pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1);

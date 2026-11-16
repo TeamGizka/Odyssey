@@ -1033,7 +1033,7 @@ void CSWPartyTable::ClearTable()
     m_nReturnTitleStrref = 42120;
     m_nPlayedSeconds = 0;
     m_bSkipPartyPositioning = 0;
-    m_n254 = 0;
+    m_nNextPCIndex = 0;
 
     for (int i = 0; i < 16; i++)
     {
@@ -1108,7 +1108,7 @@ void CSWPartyTable::ClearTable()
         delete m_pPartyJournal;
         m_pPartyJournal = NULL;
     }
-    m_n248 = 0;
+    m_nSaveNumber = 0;
     m_nForfeitViolation = 0;
     m_nForfeitConditions = 0;
     m_bDisableMap = 0;
@@ -1698,13 +1698,13 @@ CExoString CSWPartyTable::GetPCLastName()
 // PC 0x0057A580 GOG 0x0057A600
 unsigned long CSWPartyTable::GetNextPC()
 {
-    if (m_n254 < 2)
+    if (m_nNextPCIndex < 2)
     {
-        int nNPC = m_anMembers[m_n254];
+        int nNPC = m_anMembers[m_nNextPCIndex];
         if (nNPC >= 0 && nNPC < 12)
         {
             unsigned long oidPC = m_aoidNPC[nNPC];
-            m_n254++;
+            m_nNextPCIndex++;
             return oidPC;
         }
     }

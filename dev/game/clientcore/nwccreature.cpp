@@ -6136,18 +6136,18 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
             if ((nResult == CSWSArea::DIRECT_LINE_BLOCKED_ROOM ||
                  nResult == CSWSArea::DIRECT_LINE_BLOCKED_OBJECT ||
                  nResult == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE) &&
-                cHit.m_nUnknown00 == CWalkHitInfo::FAILURE_BLOCKED)
+                cHit.m_nFailureReason == CWalkHitInfo::FAILURE_BLOCKED)
             {
-                float fSide = vReverse * cross(zaxis, cHit.m_vUnknown10);
+                float fSide = vReverse * cross(zaxis, cHit.m_vNormal);
                 float fPreviousSide = vReverse * cross(zaxis, vPreviousNormal);
                 if (nTries > 1 && ((fSide > 0.0f && fPreviousSide < 0.0f) ||
                                   (fSide < 0.0f && fPreviousSide > 0.0f)))
                 {
-                    if (cHit.m_nUnknown44 != CWalkHitInfo::INTERSECTION_CORNER)
+                    if (cHit.m_nIntersectionType != CWalkHitInfo::INTERSECTION_CORNER)
                         break;
                     Vector vOffset = cross(zaxis, vDirection) * SWCCREATURE_DRIVE_REVERSE_CORNER_OFFSET;
-                    if (vDirection * Vector(-cHit.m_vUnknown34.m_fY,
-                                              cHit.m_vUnknown34.m_fX, 0.0f) > 0.0f)
+                    if (vDirection * Vector(-cHit.m_vDirection.m_fY,
+                                              cHit.m_vDirection.m_fX, 0.0f) > 0.0f)
                         vNewPosition = m_vPosition + vOffset;
                     else
                         vNewPosition = m_vPosition - vOffset;
@@ -6155,11 +6155,11 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
                 else
                 {
                     Vector vAdjustedPosition;
-                    if (cHit.m_nUnknown44 == CWalkHitInfo::INTERSECTION_CORNER)
+                    if (cHit.m_nIntersectionType == CWalkHitInfo::INTERSECTION_CORNER)
                     {
                         Vector vOffset = cross(zaxis, vDirection) * SWCCREATURE_DRIVE_CORNER_OFFSET;
-                        if (vDirection * Vector(-cHit.m_vUnknown10.m_fY,
-                                                  cHit.m_vUnknown10.m_fX, 0.0f) > 0.0f)
+                        if (vDirection * Vector(-cHit.m_vNormal.m_fY,
+                                                  cHit.m_vNormal.m_fX, 0.0f) > 0.0f)
                             vAdjustedPosition = m_vPosition - vOffset;
                         else
                             vAdjustedPosition = m_vPosition + vOffset;
@@ -6171,22 +6171,22 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
                         float fHitDistance = vToHit * vToHit;
                         float fDestinationDistance = vToDestination * vToDestination;
                         if (fHitDistance > fDestinationDistance)
-                            vAdjustedPosition = vNewPosition - cHit.m_vUnknown10 *
-                                ((cHit.m_vHitPosition - vNewPosition) * cHit.m_vUnknown10);
+                            vAdjustedPosition = vNewPosition - cHit.m_vNormal *
+                                ((cHit.m_vHitPosition - vNewPosition) * cHit.m_vNormal);
                         else
-                            vAdjustedPosition = vNewPosition - cHit.m_vUnknown10 *
-                                ((vNewPosition - cHit.m_vHitPosition) * cHit.m_vUnknown10);
+                            vAdjustedPosition = vNewPosition - cHit.m_vNormal *
+                                ((vNewPosition - cHit.m_vHitPosition) * cHit.m_vNormal);
                     }
                     vNewPosition = vAdjustedPosition;
                 }
-                vPreviousNormal = cHit.m_vUnknown10;
+                vPreviousNormal = cHit.m_vNormal;
                 if (renderintersects == 1)
                 {
                     char sDebug[256];
                     sprintf(sDebug, "V1:%3.2f,%3.2f  V2:%3.2f,%3.2f IT:%d FR:%d PF:%d WT:%d",
-                        cHit.m_vUnknown1C.m_fX, cHit.m_vUnknown1C.m_fY,
-                        cHit.m_vUnknown28.m_fX, cHit.m_vUnknown28.m_fY,
-                        cHit.m_nUnknown44, cHit.m_nUnknown00, nResult, nTries);
+                        cHit.m_vVertex1.m_fX, cHit.m_vVertex1.m_fY,
+                        cHit.m_vVertex2.m_fX, cHit.m_vVertex2.m_fY,
+                        cHit.m_nIntersectionType, cHit.m_nFailureReason, nResult, nTries);
                 }
             }
         } while (nTries <= DRIVE_WALK_LAST_TRY);

@@ -716,7 +716,7 @@ int CSWSObject::StartDialog(unsigned long oidTarget,
             }
             delete pGFF;
             CSWSDialog* pDialog = m_pDialog;
-            pDialog->m_n90 = nConversationType;
+            pDialog->m_nConversationType = nConversationType;
             g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalDialogState(1);
             CExoString sDialog;
             cDialogResRef.CopyToString(sDialog);
@@ -791,7 +791,7 @@ void CSWSObject::SetListenExpression(const CExoString& sPattern, int nNumber)
     if (pExpression == NULL)
     {
         pExpression = new CSWSExpression;
-        pExpression->m_nReserved = nNumber;
+        pExpression->m_nId = nNumber;
         m_lstExpressions.Add(pExpression);
     }
     pExpression->ParseString(sPattern);
@@ -2258,7 +2258,7 @@ void CSWSObject::SaveListenData(CResGFF* pRes, CResStruct* pStruct)
         {
             pRes->AddListElement(&cExpressionStruct, &cExpressionList, 5);
             pRes->WriteFieldINT(&cExpressionStruct,
-                                m_lstExpressions[i]->m_nReserved,
+                                m_lstExpressions[i]->m_nId,
                                 "ExpressionId");
             pRes->WriteFieldCExoString(&cExpressionStruct,
                                        m_lstExpressions[i]->m_sPattern,
@@ -2597,8 +2597,8 @@ int CSWSObject::IsDialogDelay()
         bDelay |= IsFadingInDialog();
     }
 
-    if (m_nDialogReplyState != 0 && m_pDialog->m_n3C != 0 &&
-        m_pDialog->m_n64 == 0)
+    if (m_nDialogReplyState != 0 && m_pDialog->m_bSkippable != 0 &&
+        m_pDialog->m_bNodeUnskippable == 0)
     {
         StopSoundPlayingInDialog();
         g_pAppManager->GetServerExoApp()->GetWorldTimer()->AddWorldTimes(
@@ -2705,7 +2705,7 @@ int CSWSObject::UpdateDialog()
 
     if (IsDialogDelay() != 0 || m_nDialogState == 0)
     {
-        if (m_pDialog->m_n60 != 0 &&
+        if (m_pDialog->m_bEndPending != 0 &&
             IsSoundPlayingInDialog() == 0)
         {
             StopDialog();
@@ -2750,7 +2750,7 @@ CSWSExpression* CSWSObject::GetListenExpressionObj(int nId)
 {
     for (int i = 0; i < m_lstExpressions.num; i++)
     {
-        if (m_lstExpressions[i]->m_nReserved == nId)
+        if (m_lstExpressions[i]->m_nId == nId)
         {
             return m_lstExpressions[i];
         }
@@ -2767,7 +2767,7 @@ int CSWSObject::TestListenExpression(const CExoString& sString)
         CSWSExpression* pExpression = m_lstExpressions[i];
         if (pExpression != NULL && pExpression->TestString(sString, 1) != 0)
         {
-            nResult = m_lstExpressions[i]->m_nReserved;
+            nResult = m_lstExpressions[i]->m_nId;
             break;
         }
     }

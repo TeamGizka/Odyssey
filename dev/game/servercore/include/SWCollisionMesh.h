@@ -12,20 +12,20 @@ public:
     enum { INTERSECTION_LINE = 1, INTERSECTION_CORNER = 2,
            INTERSECTION_TRIANGLE = 3 };
 
-    int m_nUnknown00;
+    int m_nFailureReason;
 
     Vector m_vHitPosition;
-    Vector m_vUnknown10;
-    Vector m_vUnknown1C;
-    Vector m_vUnknown28;
-    Vector m_vUnknown34;
+    Vector m_vNormal;
+    Vector m_vVertex1;
+    Vector m_vVertex2;
+    Vector m_vDirection;
     unsigned long m_oidBlocker;
-    int m_nUnknown44;
+    int m_nIntersectionType;
     // PC 0x004DF7E0 GOG 0x004DF900
     CWalkHitInfo()
     {
-        m_nUnknown00 = 0;
-        m_nUnknown44 = 0;
+        m_nFailureReason = 0;
+        m_nIntersectionType = 0;
         m_oidBlocker = OBJECT_INVALID;
     }
     // PC 0x004FC0F0 GOG 0x004F41D0
@@ -34,13 +34,13 @@ public:
                     const Vector& vVertex2, int nIntersectionType,
                     const Vector& vDirection)
     {
-        m_nUnknown00 = nFailureReason;
+        m_nFailureReason = nFailureReason;
         m_vHitPosition = vHitPosition;
-        m_vUnknown10 = vNormal;
-        m_vUnknown1C = vVertex1;
-        m_vUnknown28 = vVertex2;
-        m_nUnknown44 = nIntersectionType;
-        m_vUnknown34 = vDirection;
+        m_vNormal = vNormal;
+        m_vVertex1 = vVertex1;
+        m_vVertex2 = vVertex2;
+        m_nIntersectionType = nIntersectionType;
+        m_vDirection = vDirection;
     }
 };
 

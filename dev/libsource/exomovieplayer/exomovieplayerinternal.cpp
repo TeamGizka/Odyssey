@@ -290,8 +290,8 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     m_nUnknown34 = 0;
     m_bCancelMovie = 0;
     m_nCancelResult = 0;
-    m_nUnknown1C = 0;
-    m_nUnknown20 = 0;
+    m_bDeactivated = 0;
+    m_bToggleFullScreen = 0;
     m_bShuttingDown = 0;
     m_pFadePanel = NULL;
     m_hBinkBuffer = NULL;
@@ -356,9 +356,9 @@ int CExoMoviePlayerInternal::ShutDown()
 // PC 0x00404C90 GOG 0x00404C90
 void CExoMoviePlayerInternal::OnDeactivation(int bToggleFullScreen)
 {
-    m_nUnknown1C = 1;
-    if (m_nUnknown20 == 0 || bToggleFullScreen == 1)
-        m_nUnknown20 = bToggleFullScreen;
+    m_bDeactivated = 1;
+    if (m_bToggleFullScreen == 0 || bToggleFullScreen == 1)
+        m_bToggleFullScreen = bToggleFullScreen;
 }
 // PC 0x00404CB0 GOG 0x00404CB0
 int CExoMoviePlayerInternal::CancelMovie(int nA, int nB)
@@ -597,7 +597,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
                 {
                     self->RunMovieLoop(1);
                     Sleep(5);
-                    if (self->m_nUnknown1C == 0)
+                    if (self->m_bDeactivated == 0)
                         self->m_lstMovies[i] = "";
                     self->FinishMovie();
                 }
@@ -614,15 +614,15 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
                     self->m_bCancelMovie = 0;
             }
         }
-        if (self->m_nUnknown1C == 0)
+        if (self->m_bDeactivated == 0)
             self->m_lstMovies.SetSize(0);
         self->m_bCancelMovie = 0;
         self->m_nCancelResult = 0;
         self->m_bMoviePlaying = 0;
-        if (self->m_nUnknown1C == 1)
+        if (self->m_bDeactivated == 1)
         {
             g_bMovieResolutionLocked = 1;
-            if (self->m_nUnknown20 == 1)
+            if (self->m_bToggleFullScreen == 1)
             {
                 if (g_pAurora->FullScreen() == 1)
                     PostMessageA(g_hRenderWnd, WM_MOVIE_MODE_ACTIVATE, 0, 0);
@@ -631,8 +631,8 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
             }
             else
                 PostMessageA(g_hRenderWnd, WM_ACTIVATEAPP, 0, 0);
-            self->m_nUnknown20 = 0;
-            self->m_nUnknown1C = 0;
+            self->m_bToggleFullScreen = 0;
+            self->m_bDeactivated = 0;
         }
         else
         {

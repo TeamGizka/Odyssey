@@ -1112,8 +1112,8 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             continue;
         if (pHitInfo != NULL)
         {
-            pHitInfo->m_nUnknown00 = CWalkHitInfo::FAILURE_INSIDE_TRIANGLE;
-            pHitInfo->m_nUnknown44 = CWalkHitInfo::INTERSECTION_TRIANGLE;
+            pHitInfo->m_nFailureReason = CWalkHitInfo::FAILURE_INSIDE_TRIANGLE;
+            pHitInfo->m_nIntersectionType = CWalkHitInfo::INTERSECTION_TRIANGLE;
         }
         return 0;
     }

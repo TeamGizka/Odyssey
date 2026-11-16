@@ -73,19 +73,19 @@ public:
     int m_nAppearance;
 
     int m_bPlotObject;
-    int m_nUnknown114;
+    int m_bLockable;
     int m_bLocked;
-    int m_n11C;
+    int m_bNotBlastable;
 
     int m_bTrap;
-    int m_nUnknown120;
+    int m_bHasDescription;
     int m_bTrapDetected;
     int m_bUseable;
     int m_nUnknown12C;
-    int m_nUnknown130;
+    int m_bTrapDisarmable;
     int m_nUnknown134;
     int m_nUnknown138;
-    int m_nUnknown13C;
+    int m_bHilighted;
     int m_nUnknown140;
     CExoString m_sModel;
     Gob* m_pLight;

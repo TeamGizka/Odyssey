@@ -531,7 +531,7 @@ void CSWGuiInGameCharacter::SetStats()
         m_nShownAlignment != pServerStats->m_nGoodEvilAlignment)
     {
         CCAppearanceInfo aAppearance = *pCreature->GetAppearance();
-        aAppearance.m_nUnmapped10 = OBJECT_INVALID;
+        aAppearance.m_oidHeadItem = OBJECT_INVALID;
         m_pCreature->SetPortrait(pCreature->GetPortrait(0));
         if (g_bDo3DGUIs != 0)
         {

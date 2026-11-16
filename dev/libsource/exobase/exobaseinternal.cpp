@@ -252,7 +252,7 @@ void CExoBaseInternal::CreateResourceExtensionTable()
 void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x00633040 GOG 0x00632F30
                                 const CExoString& sAlias,
                                 const CExoString& sDefault,
-                                const CExoString& sUnused)
+                                const CExoString& sXboxDefault)
 {
     CExoString sPath;
 

@@ -421,7 +421,7 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->SetWillSavingThrow();
     pNewStats->SetReflexSavingThrow();
     for (int nAttack = 0; nAttack < 4; nAttack++)
-        pNewStats->m_nUnknown64 = pOldStats->GetBaseAttackBonus();
+        pNewStats->m_nBaseAttackBonus = pOldStats->GetBaseAttackBonus();
     pNewStats->m_nGoodEvilAlignment = pOldStats->GetAlignment();
 #ifndef _XBOX
     pNewStats->SetBaseCNPCAlignment(pOldStats->m_nBaseCNPCAlignment);

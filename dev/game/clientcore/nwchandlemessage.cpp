@@ -472,11 +472,11 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
     }
     if (nUpdateMask & 0x4000)
     {
-        sAppearance.m_nUnknown30 = ReadBOOL();
+        sAppearance.m_bUseBackupHead = ReadBOOL();
     }
     if (nUpdateMask & 0x8000)
     {
-        sAppearance.m_nUnknown34 = ReadBYTE(8);
+        sAppearance.m_nHeadOverride = ReadBYTE(8);
     }
     if (nUpdateMask & 0x800)
     {
@@ -488,19 +488,19 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
     }
     if (nUpdateMask & 0x8)
     {
-        sAppearance.m_nUnknown1D = ReadBYTE(8);
+        sAppearance.m_nColorSkin = ReadBYTE(8);
     }
     if (nUpdateMask & 0x10)
     {
-        sAppearance.m_nUnknown1E = ReadBYTE(8);
+        sAppearance.m_nColorHair = ReadBYTE(8);
     }
     if (nUpdateMask & 0x20)
     {
-        sAppearance.m_nUnknown1F = ReadBYTE(8);
+        sAppearance.m_nColorTattoo1 = ReadBYTE(8);
     }
     if (nUpdateMask & 0x40)
     {
-        sAppearance.m_nUnknown20 = ReadBYTE(8);
+        sAppearance.m_nColorTattoo2 = ReadBYTE(8);
     }
     if (nUpdateMask & 0x2000)
     {
@@ -517,8 +517,8 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
         bReAttach = 1;
     }
     if (sAppearance.m_nHead != pAppearance->m_nHead ||
-        sAppearance.m_nUnknown34 != pAppearance->m_nUnknown34 ||
-        sAppearance.m_nUnknown30 != pAppearance->m_nUnknown30)
+        sAppearance.m_nHeadOverride != pAppearance->m_nHeadOverride ||
+        sAppearance.m_bUseBackupHead != pAppearance->m_bUseBackupHead)
     {
         nPartMask |= CSWCCreature::APPEARANCE_PART_HEAD;
     }
@@ -659,7 +659,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
                 else if (nSlot == INVENTORY_SLOT_HEAD)
                 {
                     pItem->AttachToScene(NULL);
-                    sAppearance.m_nUnmapped10 = oidObject;
+                    sAppearance.m_oidHeadItem = oidObject;
                     nPartMask |= CSWCCreature::APPEARANCE_PART_HEAD;
                     pCreature->EquipToInventorySlot(INVENTORY_SLOT_HEAD, pItem, 0);
                 }
@@ -691,7 +691,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
                 }
                 else if (nSlot == INVENTORY_SLOT_HEAD)
                 {
-                    sAppearance.m_nUnmapped10 = CGameObjectArray::INVALIDOBJID;
+                    sAppearance.m_oidHeadItem = CGameObjectArray::INVALIDOBJID;
                     nPartMask |= CSWCCreature::APPEARANCE_PART_HEAD;
                 }
                 else if (nSlot == INVENTORY_SLOT_LEFTHAND)
@@ -5732,12 +5732,12 @@ int CSWCMessage::HandleServerToPlayerUpdate_CharacterSheet()
         pStats->m_nIntelligence = nIntelligence;
         pStats->m_nWisdom = nWisdom;
         pStats->m_nCharisma = nCharisma;
-        pStats->m_aUnknown41[0] = nStrengthBase;
-        pStats->m_aUnknown41[1] = nDexterityBase;
-        pStats->m_aUnknown41[2] = nConstitutionBase;
-        pStats->m_aUnknown41[3] = nIntelligenceBase;
-        pStats->m_aUnknown41[4] = nWisdomBase;
-        pStats->m_aUnknown41[5] = nCharismaBase;
+        pStats->m_aBaseAbilities[0] = nStrengthBase;
+        pStats->m_aBaseAbilities[1] = nDexterityBase;
+        pStats->m_aBaseAbilities[2] = nConstitutionBase;
+        pStats->m_aBaseAbilities[3] = nIntelligenceBase;
+        pStats->m_aBaseAbilities[4] = nWisdomBase;
+        pStats->m_aBaseAbilities[5] = nCharismaBase;
         pStats->m_aAbilities[0] = nStrengthBonus;
         pStats->m_aAbilities[1] = nDexterityBonus;
         pStats->m_aAbilities[2] = nConstitutionBonus;
@@ -5780,8 +5780,8 @@ int CSWCMessage::HandleServerToPlayerUpdate_CharacterSheet()
         int bAttack = ReadBOOL();
         if (MessageReadOverflow(1))
             return 0;
-        pStats->m_nUnknown64 = nBaseAttackBonus;
-        pStats->m_nUnknown60 = bAttack;
+        pStats->m_nBaseAttackBonus = nBaseAttackBonus;
+        pStats->m_bUseMonkAttackTables = bAttack;
     }
     if (nUpdateMask & CHARACTER_SHEET_COMBAT)
     {
@@ -6254,12 +6254,12 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     pPlaceable->AttachToScene(pScene);
     pPlaceable->m_bPlotObject = nFlag110;
     pPlaceable->m_bUseable = nFlag128;
-    pPlaceable->m_nUnknown130 = nFlag130;
-    pPlaceable->m_nUnknown114 = nFlag114;
+    pPlaceable->m_bTrapDisarmable = nFlag130;
+    pPlaceable->m_bLockable = nFlag114;
     pPlaceable->m_bLocked = nFlag118;
-    pPlaceable->m_n11C = nFlag11C;
+    pPlaceable->m_bNotBlastable = nFlag11C;
     pPlaceable->m_nUnknown12C = nFlag12C;
-    pPlaceable->m_nUnknown120 = nFlag120;
+    pPlaceable->m_bHasDescription = nFlag120;
     pPlaceable->m_bTrapDetected = bTrapDetected;
     pPlaceable->SetAnimation(nAnimation, 0, 0);
     if (pPlaceable->m_bUseable)
@@ -6352,7 +6352,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
             pPlaceable->m_bPlotObject = nFlag110;
             if (bTrap)
             {
-                if (!pPlaceable->m_nUnknown13C)
+                if (!pPlaceable->m_bHilighted)
                 {
                     pPlaceable->HilightPlaceable(1);
                 }
@@ -6360,7 +6360,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
             }
             else
             {
-                if (pPlaceable->m_nUnknown13C)
+                if (pPlaceable->m_bHilighted)
                 {
                     pPlaceable->HilightPlaceable(0);
                 }
@@ -6458,7 +6458,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_WorkRemaining()
     if (nStep == nTotalSteps)
     {
         CExoString sAreaName;
-        CResRef resArea = pModule->m_resReserved28;
+        CResRef resArea = pModule->m_resStartMovie;
         resArea.CopyToString(sAreaName);
         SendPlayerToServerArea_AreaLoaded();
     }
@@ -9920,19 +9920,19 @@ int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
         }
         if (bTimeB0 != 0)
         {
-            pModule->m_nTimeB0 = nTimeB0;
+            pModule->m_nTimeHour = nTimeB0;
         }
         if (bTimeAC != 0)
         {
-            pModule->m_nTimeAC = nTimeAC;
+            pModule->m_nTimeDay = nTimeAC;
         }
         if (bTimeA8 != 0)
         {
-            pModule->m_nTimeA8 = nTimeA8;
+            pModule->m_nTimeMonth = nTimeA8;
         }
         if (bTimeA4 != 0)
         {
-            pModule->m_nTimeA4 = nTimeA4;
+            pModule->m_nTimeYear = nTimeA4;
         }
     }
     return 1;

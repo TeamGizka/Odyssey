@@ -1764,9 +1764,9 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
                 vDifference = vDestination - pLastUpdateObject->m_vUnknown54;
                 float fDistanceSquared = vDifference * vDifference;
                 if (fDistanceSquared >= OBJECT_UPDATE_DISTANCE_SQUARED ||
-                    pPath->m_nField_23C != 0)
+                    pPath->m_bForceLocationUpdate != 0)
                 {
-                    pPath->m_nField_23C = 0;
+                    pPath->m_bForceLocationUpdate = 0;
                     nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION | OBJECT_UPDATE_ANIMATION;
                 }
             }
@@ -1845,7 +1845,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         if (pLastUpdateObject->m_nPortraitId != pObject->GetPortraitId() ||
             pLastUpdateObject->m_resRef != pObject->GetPortrait())
             nUpdateMask |= OBJECT_UPDATE_PORTRAIT;
-        if (bPlayerObject && pLastUpdateObject->m_nClientSidePathType != pPath->m_nField_28)
+        if (bPlayerObject && pLastUpdateObject->m_nClientSidePathType != pPath->m_nMovementRate)
             nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION | OBJECT_UPDATE_ANIMATION;
         if (pLastUpdateObject->m_bDeleteNoFade != pCreature->m_bDeleteNoFade ||
             pLastUpdateObject->m_nFadeOutTime != pCreature->m_nFadeOutTime ||
@@ -6071,9 +6071,9 @@ int CSWSMessage::SendServerToPlayerLevelUp_Confirmation(unsigned long nPlayerId,
 }
 // PC 0x0058F3B0 GOG 0x0058F430
 int CSWSMessage::SendServerToPlayerModuleUpdate_Time(
-    CSWSPlayer* pPlayer, unsigned char nUpdateMask, unsigned long nTimeOfDay,
-    unsigned long nDayOfMonth, unsigned long nMonth, unsigned long nYear,
-    unsigned char nCalendar, unsigned long nCalendarDay)
+    CSWSPlayer* pPlayer, unsigned char nUpdateMask, unsigned long nYear,
+    unsigned long nDayOfMonth, unsigned long nMonth, unsigned long nHour,
+    unsigned char nTimeOfDayState, unsigned long nTimeOfDayTime)
 {
     unsigned long nPlayerId;
     unsigned long nMessageSize;
@@ -6083,15 +6083,15 @@ int CSWSMessage::SendServerToPlayerModuleUpdate_Time(
     WriteBYTE(nUpdateMask, 8);
     if ((nUpdateMask & 1) != 0)
     {
-        WriteBYTE(nCalendar, 8);
-        if (nCalendar == 3 || nCalendar == 4)
+        WriteBYTE(nTimeOfDayState, 8);
+        if (nTimeOfDayState == 3 || nTimeOfDayState == 4)
         {
-            WriteDWORD(nCalendarDay, 32);
+            WriteDWORD(nTimeOfDayTime, 32);
         }
     }
     if ((nUpdateMask & 2) != 0)
     {
-        WriteBYTE(nYear, 8);
+        WriteBYTE(nHour, 8);
     }
     if ((nUpdateMask & 4) != 0)
     {
@@ -6103,7 +6103,7 @@ int CSWSMessage::SendServerToPlayerModuleUpdate_Time(
     }
     if ((nUpdateMask & 16) != 0)
     {
-        WriteDWORD(nTimeOfDay, 32);
+        WriteDWORD(nYear, 32);
     }
     if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
     {
@@ -7478,7 +7478,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
     CSWSCreature* pCreature = (CSWSCreature*)pObject;
     if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
     {
-        unsigned char nPathType = pCreature->m_pPathfindInformation->m_nField_28;
+        unsigned char nPathType = pCreature->m_pPathfindInformation->m_nMovementRate;
         if (pObject->m_nId == pPlayerObject->m_nId)
         {
             if (nPathType != 0 && pCreature->m_bJumped == 1)
@@ -7499,7 +7499,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         else
         {
             unsigned short nPoints = pPath->m_nWayPointCount / 2;
-            int nFirst = pPath->m_nField_9C / 2;
+            int nFirst = pPath->m_nCurrentWayPoint / 2;
             if (nPoints >= nFirst)
             {
                 nPoints -= nFirst;
@@ -7754,7 +7754,7 @@ void CSWSMessage::UpdateLastUpdateObject(
         CSWSCreature* pCreature = pObject->AsSWSCreature();
         if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
             pLastUpdateObject->m_nClientSidePathType =
-                pCreature->m_pPathfindInformation->m_nField_28;
+                pCreature->m_pPathfindInformation->m_nMovementRate;
         if (nUpdateMask & OBJECT_UPDATE_AI_STATE)
         {
             pLastUpdateObject->m_nAIStateFlags = pCreature->m_nAIStateFlags;

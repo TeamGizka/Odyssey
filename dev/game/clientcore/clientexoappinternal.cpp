@@ -1486,7 +1486,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
     if (m_fCameraZoom != 0.0f)
     {
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved104 = 1;
+        pModule->m_bCameraZoomChanged = 1;
     }
     if (pCamera != NULL)
     {
@@ -1513,7 +1513,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
         m_pModule->ZoomCamera(m_fCameraZoom);
 
     if (g_pAppManager->GetClientExoApp()->GetCaptureEvents() == CAPTURE_EVENTS_RECORD &&
-        m_pModule->m_nReserved80 == 1)
+        m_pModule->m_bCameraMoved == 1)
     {
         float fDistance = pCamera->GetDist();
         float fPitch = pCamera->GetPitch();
@@ -1525,12 +1525,12 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
             CPlayBackEventNode::CAMERA, fDistance, fPitch, fYaw);
         g_pAppManager->GetClientExoApp()->GetCaptureEventFile()->Write(sEvent);
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved80 = 0;
+        pModule->m_bCameraMoved = 0;
     }
     m_fCameraZoom = 0.0f;
     m_fCameraTilt = 0.0f;
     m_fCameraTurn = 0.0f;
-    m_pModule->m_nReserved80 = 0;
+    m_pModule->m_bCameraMoved = 0;
 }
 #endif
 void CClientExoAppInternal::AddObjectToHitcheckIgnoreList(  // PC 0x00641E20 GOG 0x00641CD0
@@ -2002,7 +2002,7 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
                         if (pAppearance != NULL)
                         {
                             pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                pAppearance->m_nUnmapped10);
+                                pAppearance->m_oidHeadItem);
                             if (pItem != NULL &&
                                 pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1) != NULL)
                             {
@@ -2012,7 +2012,7 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
                             {
                                 pIgnoreList->Add(pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1));
                             }
-                            if (pAppearance->m_nUnmapped10 == CGameObjectArray::INVALIDOBJID)
+                            if (pAppearance->m_oidHeadItem == CGameObjectArray::INVALIDOBJID)
                             {
                                 if (pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1) != NULL)
                                 {
@@ -2022,7 +2022,7 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
                             else
                             {
                                 pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                    pAppearance->m_nUnmapped10);
+                                    pAppearance->m_oidHeadItem);
                                 if (pItem != NULL &&
                                     pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1) != NULL)
                                 {
@@ -2520,7 +2520,7 @@ void CClientExoAppInternal::ChangeCharacter(int nCharacter, int bPlaySound)
         CSWSCreature* pServerCreature = pCharacter->GetServerCreature();
         if (pServerCreature != NULL)
         {
-            pServerCreature->m_pPathfindInformation->m_nField_34 = OBJECT_INVALID;
+            pServerCreature->m_pPathfindInformation->m_oidIgnoreCreature = OBJECT_INVALID;
             pServerCreature->RemoveAction(CSWSObject::ACTION_FOLLOW_LEADER);
             if (pServerCreature->GetDead() || pServerCreature->GetDeadTemp())
             {
@@ -10961,7 +10961,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
     if (m_fCameraZoom != 0.0f)
     {
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved104 = 1;
+        pModule->m_bCameraZoomChanged = 1;
     }
     if (pCamera != NULL)
     {
@@ -10988,7 +10988,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
         m_pModule->ZoomCamera(m_fCameraZoom);
 
     if (g_pAppManager->GetClientExoApp()->GetCaptureEvents() == CAPTURE_EVENTS_RECORD &&
-        m_pModule->m_nReserved80 == 1)
+        m_pModule->m_bCameraMoved == 1)
     {
         float fDistance = pCamera->GetDist();
         float fPitch = pCamera->GetPitch();
@@ -11000,12 +11000,12 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
             CPlayBackEventNode::CAMERA, fDistance, fPitch, fYaw);
         g_pAppManager->GetClientExoApp()->GetCaptureEventFile()->Write(sEvent);
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved80 = 0;
+        pModule->m_bCameraMoved = 0;
     }
     m_fCameraZoom = 0.0f;
     m_fCameraTilt = 0.0f;
     m_fCameraTurn = 0.0f;
-    m_pModule->m_nReserved80 = 0;
+    m_pModule->m_bCameraMoved = 0;
 }
 #endif
 #ifdef _XBOX

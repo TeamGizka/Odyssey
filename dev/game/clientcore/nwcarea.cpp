@@ -1352,10 +1352,10 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
     SetWind(m_nWind);
     pModule->SetTimeOfDayState(nTimeState, 0);
     pModule->m_fTimeOfDay = nTime * 0.001f;
-    pModule->m_nTimeA4 = nYear;
-    pModule->m_nTimeA8 = nMonth;
-    pModule->m_nTimeAC = nDay;
-    pModule->m_nTimeB0 = nHour;
+    pModule->m_nTimeYear = nYear;
+    pModule->m_nTimeMonth = nMonth;
+    pModule->m_nTimeDay = nDay;
+    pModule->m_nTimeHour = nHour;
     pModule->m_nDawnHour = nDawnHour;
     pModule->m_nDuskHour = nDuskHour;
     UpdateSoundObjectsTimeOfDay();
@@ -2193,11 +2193,11 @@ int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
     }
     pPlaceable->m_bPlotObject = TRUE;
     pPlaceable->m_bUseable = 0;
-    pPlaceable->m_nUnknown130 = 0;
-    pPlaceable->m_nUnknown114 = 0;
+    pPlaceable->m_bTrapDisarmable = 0;
+    pPlaceable->m_bLockable = 0;
     pPlaceable->m_bLocked = 0;
     pPlaceable->m_nUnknown12C = 0;
-    pPlaceable->m_nUnknown120 = 0;
+    pPlaceable->m_bHasDescription = 0;
     pPlaceable->m_bTrapDetected = 0;
     pPlaceable->SetAnimation(0, 0, 0);
     g_pAppManager->m_pClientExoApp->RemoveObjectFromHitcheckIgnoreList(

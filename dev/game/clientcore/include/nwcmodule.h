@@ -77,16 +77,16 @@ public:
     CSWCArea* GetArea() { return m_pInfo; }
     unsigned char GetDawnHour() { return m_nDawnHour; }
     unsigned char GetDuskHour() { return m_nDuskHour; }
-    float UpdateNormalCameraCollision(float fTimeDelta, float fUnknown);
-    float UpdatePushCameraCollision(float fTimeDelta, float fUnknown);
-    float UpdateCameraCollision(float fTimeDelta, float fUnknown);
+    float UpdateNormalCameraCollision(float fTimeDelta, float fZoom);
+    float UpdatePushCameraCollision(float fTimeDelta, float fZoom);
+    float UpdateCameraCollision(float fTimeDelta, float fZoom);
     int FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch);
     void Update(float fTimeDelta);
 
     int m_nCameraType;
     CExoString m_sModuleTitle;
     CResRef m_resHak;
-    CResRef m_resReserved28;
+    CResRef m_resStartMovie;
     CExoString m_sModuleName;
     CAurCamera* m_pModuleCamera;
     int m_nReserved44;
@@ -98,19 +98,19 @@ public:
     float m_fCameraDistance;
     float m_fCameraYaw;
     float m_fCameraPitch;
-    int m_nReserved80;
-    int m_nReserved84;
-    int m_nReserved88;
+    int m_bCameraMoved;
+    int m_bCameraFollowTurning;
+    int m_bCameraFollowPaused;
     int m_bCameraCollisionChanged;
-    char m_nReserved90;
+    char m_nCameraTurnPreference;
     float m_fCameraTilt;
     float m_fCameraTurn;
     float m_fCameraZoom;
     unsigned char m_nTimeOfDayHour;
-    int m_nTimeA4;
-    int m_nTimeA8;
-    int m_nTimeAC;
-    int m_nTimeB0;
+    int m_nTimeYear;
+    int m_nTimeMonth;
+    int m_nTimeDay;
+    int m_nTimeHour;
     unsigned char m_nTimeOfDayState;
     float m_fTimeOfDay;
     float m_fTimeOfDayHours;
@@ -133,9 +133,9 @@ public:
     unsigned long m_nCameraBumpTime;
     unsigned long m_nCameraBumpDelay;
     int m_bCameraBumpChanged;
-    int m_nReservedFC;
-    int m_nReserved100;
-    int m_nReserved104;
+    int m_bPlayerWasIdle;
+    int m_bCameraTurnChanged;
+    int m_bCameraZoomChanged;
     int m_nReserved108;
     CCameraSettings m_cameraSettings;
     Gob* m_pAnimatedCamera;

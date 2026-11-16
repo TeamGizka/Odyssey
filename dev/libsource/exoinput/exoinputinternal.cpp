@@ -27,11 +27,11 @@ void CExoInputInternal::Configure()
 {
 }
 // PC 0x00401590 GOG 0x00401590
-int CExoInputInternal::SetRumble(int nArg1, float fArg2, float fArg3,
-                               unsigned long nArg4)
+int CExoInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,
+                               unsigned long nDuration)
 {
 #ifdef _XBOX
-    return m_pRawInput->SetRumble(nArg1, fArg2, fArg3, nArg4);
+    return m_pRawInput->SetRumble(nJoystick, fLeft, fRight, nDuration);
 #else
     return 0;
 #endif
@@ -609,7 +609,7 @@ CExoInputInternal::CExoInputInternal(HINSTANCE hInstance, HWND hWnd)  // PC 0x00
 
             m_nLastTime = (unsigned long)(
                 g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
-            m_nUnknown160 = 0;
+            m_nCheatCombos = 0;
             m_nMouseMode = 0;
             m_nMouseX = -1;
             m_nMouseY = -1;
@@ -812,7 +812,7 @@ int CExoInputInternal::AddEvent(unsigned long nEvent, unsigned long nInputClass)
             }
         }
 
-        pDesc->m_nUnknown8++;
+        pDesc->m_nInputClassCount++;
         if (pDesc->m_nClass == CExoInput::INPUTDEVICE_NONE)
         {
             m_aClasses[nInputClass].m_llEvents.AddHead(&pDesc->m_nEvent);
@@ -848,7 +848,7 @@ int CExoInputInternal::AddEvent(unsigned long nEvent, unsigned long nInputClass)
                 }
             }
 
-            pDesc->m_nUnknown8++;
+            pDesc->m_nInputClassCount++;
             if (pDesc->m_nClass == CExoInput::INPUTDEVICE_NONE)
             {
                 m_aClasses[nInputClass].m_llEvents.AddHead(&pDesc->m_nEvent);
@@ -1199,7 +1199,7 @@ void CExoInputInternal::RefreshMouseCursor(int bMouseDown)
     SetMouseCursor(nCursor, m_nUnknown39C, bMouseDown);
 }
 // PC 0x0062C310 GOG 0x0062C200
-int CExoInputInternal::SetMouseCursor(int nCursor, int nArg2, int bMouseDown)
+int CExoInputInternal::SetMouseCursor(int nCursor, int bCentered, int bMouseDown)
 {
     int nResource = nCursor;
 
@@ -1261,10 +1261,10 @@ void CExoInputInternal::ShowMouse()
     }
 }
 // PC 0x0062C400 GOG 0x0062C2F0
-void CExoInputInternal::GetMouseDelta(float* fX, float* fY)
+void CExoInputInternal::GetMouseDelta(float* pfX, float* pfY)
 {
-    *fX = m_fMouseDeltaX;
-    *fY = m_fMouseDeltaY;
+    *pfX = m_fMouseDeltaX;
+    *pfY = m_fMouseDeltaY;
 }
 // PC 0x0062C420 GOG 0x0062C310
 void CExoInputInternal::UpdateMouseDelta(float fElapsed)
@@ -1445,7 +1445,7 @@ CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEv
     for (int i = 0; i < m_nDevices; ++i)
         m_pRawInput->GetJoystickBuffer(i, aBuffers[i]);
     if (m_pRawInput->GetCheatCombo(0))
-        m_nUnknown160 = 1;
+        m_nCheatCombos = 1;
 
     int nBindControl;
     int nBindValue;
@@ -1829,7 +1829,7 @@ int CExoInputInternal::GetCheatCombo(unsigned char nCombo)
     {
         return 0;
     }
-    return (m_nUnknown160 & (1 << nCombo)) != 0;
+    return (m_nCheatCombos & (1 << nCombo)) != 0;
 }
 
 int CExoInputInternal::GetDebugOption()
@@ -1926,7 +1926,7 @@ CExoInputInternal::CExoInputInternal()
 
             m_nLastTime = (unsigned long)(
                 g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
-            m_nUnknown160 = 0;
+            m_nCheatCombos = 0;
         }
     }
 }

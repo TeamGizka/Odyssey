@@ -19,7 +19,7 @@ CResTPC::~CResTPC()
 // PC 0x00786790 GOG 0x00786560
 int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
                            int* pnCompressedSize, int* pnUncompressedSize,
-                           int* pnRemainingSize, float* pfUnknown,
+                           int* pnRemainingSize, float* pfAlphaBlending,
                            char* pnMipMapCount)
 {
     int nResult = (int)m_pHeader;
@@ -31,7 +31,7 @@ int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
     {
         *pnWidth = m_pHeader->m_nWidth;
         *pnHeight = m_pHeader->m_nHeight;
-        *pfUnknown = m_pHeader->m_fAlphaBlending;
+        *pfAlphaBlending = m_pHeader->m_fAlphaBlending;
         *pnMipMapCount = m_pHeader->m_nMipMapCount;
         *pnCompressedSize = m_nCompressedSize;
         *pnUncompressedSize = m_nUncompressedSize;

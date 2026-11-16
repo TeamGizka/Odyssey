@@ -257,7 +257,7 @@ void WaterTextureController::Init()
     int i;
     int j;
 
-    m_nUnknown64 = 0;
+    m_nUpdateCount = 0;
     if (m_bDistort != 0)
     {
         SetImage();
@@ -814,13 +814,13 @@ void WaterTextureController::Control()
     m_nLastUpdate = texcurrentframe;
     if (lowqualityblur == 0)
     {
-        if (m_nUnknown64 % 2 == 0)
+        if (m_nUpdateCount % 2 == 0)
         {
-            m_nUnknown64 = 0;
+            m_nUpdateCount = 0;
         }
         else
         {
-            ++m_nUnknown64;
+            ++m_nUpdateCount;
             return;
         }
     }
@@ -979,7 +979,7 @@ void WaterTextureController::Control()
         {
             delete[] pResult;
         }
-        ++m_nUnknown64;
+        ++m_nUpdateCount;
     }
 }
 // PC 0x00477DF0 GOG 0x00477F80

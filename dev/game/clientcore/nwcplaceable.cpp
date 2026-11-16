@@ -38,13 +38,13 @@ CSWCPlaceable::CSWCPlaceable()
     m_bTrap = 0;
     m_bTrapDetected = 0;
     m_bPlotObject = 0;
-    m_nUnknown114 = 0;
+    m_bLockable = 0;
     m_bLocked = 0;
     m_bUseable = 0;
     m_nUnknown12C = 1;
-    m_nUnknown130 = 1;
-    m_nUnknown13C = 0;
-    m_nUnknown120 = 0;
+    m_bTrapDisarmable = 1;
+    m_bHilighted = 0;
+    m_bHasDescription = 0;
     m_nAppearance = -1;
     m_nUnknown134 = -1;
     m_nUnknown138 = 0;
@@ -747,7 +747,7 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
 void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
                                                CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
-    int nFlag11C = m_n11C;
+    int nFlag11C = m_bNotBlastable;
     if (nFlag11C)
     {
         return;

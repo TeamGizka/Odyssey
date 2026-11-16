@@ -4253,7 +4253,7 @@ int CSWSEffectListHandler::OnApplyForceJumpDelayed(CSWSObject* pObject,
                 pTarget->m_nAnimationState = CSWSCreature::ANIMATION_STATE_FORCE_JUMP_TARGET;
                 pTarget->GetPathfindInformation()->m_nWayPointCount = 4;
                 pTarget->GetPathfindInformation()->m_pWayPoints = pTargetWayPoints;
-                pTarget->GetPathfindInformation()->m_nField_9C = 0;
+                pTarget->GetPathfindInformation()->m_nCurrentWayPoint = 0;
                 pTarget->WalkUpdateLocation_QuickWalk(1);
                 CGameEffect* pStateEffect = new CGameEffect(pEffect);
                 pStateEffect->m_nType = EFFECT_SETSTATE;
@@ -4275,7 +4275,7 @@ int CSWSEffectListHandler::OnApplyForceJumpDelayed(CSWSObject* pObject,
             pWayPoints[3] = vDestination.m_fY;
             pCreature->GetPathfindInformation()->m_nWayPointCount = 4;
             pCreature->GetPathfindInformation()->m_pWayPoints = pWayPoints;
-            pCreature->GetPathfindInformation()->m_nField_9C = 0;
+            pCreature->GetPathfindInformation()->m_nCurrentWayPoint = 0;
             pCreature->m_nAnimationState = CSWSCreature::ANIMATION_STATE_FORCE_JUMP;
             pCreature->WalkUpdateLocation_QuickWalk(1);
         }
@@ -7589,7 +7589,7 @@ int CSWSEffectListHandler::OnApplyForcePush(CSWSObject* pObject,
             }
             pCreature->GetPathfindInformation()->m_nWayPointCount = 4;
             pCreature->GetPathfindInformation()->m_pWayPoints = pWayPoints;
-            pCreature->GetPathfindInformation()->m_nField_9C = 0;
+            pCreature->GetPathfindInformation()->m_nCurrentWayPoint = 0;
             pCreature->m_nAnimationState = CSWSCreature::ANIMATION_STATE_FORCE_PUSH;
             pCreature->WalkUpdateLocation_QuickWalk(1);
             CGameEffect* pStateEffect = new CGameEffect(pEffect);

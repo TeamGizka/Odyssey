@@ -152,19 +152,19 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
         break;
     case CTlkTableToken::YEAR:
         {
-            unsigned long nYear = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeA4;
+            unsigned long nYear = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeYear;
             sValue = nYear;
         }
         break;
     case CTlkTableToken::MONTH:
         {
-            unsigned long nMonth = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeA8;
+            unsigned long nMonth = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeMonth;
             sValue = nMonth;
         }
         break;
     case CTlkTableToken::HOUR:
         {
-            nHour = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeB0;
+            nHour = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeHour;
             sValue = (nHour + CWorldTimer::HOURS_IN_DAY / 2 - 1) % (CWorldTimer::HOURS_IN_DAY / 2) + 1;
         }
         break;
@@ -172,7 +172,7 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
         {
             unsigned char nDawn = g_pAppManager->GetClientExoApp()->GetModule()->GetDawnHour();
             unsigned char nDusk = g_pAppManager->GetClientExoApp()->GetModule()->GetDuskHour();
-            nHour = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeB0;
+            nHour = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeHour;
             unsigned char nIndex;
             if (nHour < nDawn || nHour > nDusk)
                 nIndex = 0;

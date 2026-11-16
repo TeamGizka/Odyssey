@@ -1067,7 +1067,7 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0 GOG 0x004EB75
         pGFF->WriteFieldDWORD64(&stSaveInfo, nTimeStamp, "TIMESTAMP");
     }
     pGFF->WriteFieldCExoString(&stSaveInfo, m_partyTable.GetPCName(), "PCNAME");
-    int nSaveNumber = m_partyTable.m_n248;
+    int nSaveNumber = m_partyTable.m_nSaveNumber;
     pGFF->WriteFieldDWORD(&stSaveInfo, nSaveNumber, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&stSaveInfo,
         g_pAppManager->GetClientExoApp()->GetGamePlayHint(), "GAMEPLAYHINT");
@@ -2357,7 +2357,7 @@ int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
     }
     else
     {
-        nCount = pPathfind->m_nField_94;
+        nCount = pPathfind->m_nWayPointTempCount;
         pfPoints = pPathfind->m_pWayPointsTemp;
     }
     if (nCount == 0 || pfPoints == NULL)
@@ -3272,7 +3272,7 @@ int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
         float* pfPoints;
         if (bTempWayPoints != 0)
         {
-            nCount = pPathfind->m_nField_94;
+            nCount = pPathfind->m_nWayPointTempCount;
             pfPoints = pPathfind->m_pWayPointsTemp;
         }
         else
@@ -5510,7 +5510,7 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
         pGFF->WriteFieldDWORD64(&cRoot, nTimeStamp, "TIMESTAMP");
     }
     pGFF->WriteFieldCExoString(&cRoot, m_partyTable.GetPCName(), "PCNAME");
-    int nSaveNumber = m_partyTable.m_n248;
+    int nSaveNumber = m_partyTable.m_nSaveNumber;
     pGFF->WriteFieldDWORD(&cRoot, nSaveNumber, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
                          "GAMEPLAYHINT");

@@ -1321,7 +1321,7 @@ void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
     int nIndex = pEntry->m_nSaveGame - 1;
     sGameName.Format("Game%d", nIndex);
     int nSlot = pEntry->m_nSaveGame;
-    g_pAppManager->m_pServerExoApp->GetPartyTable()->m_n248 = nSlot;
+    g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nSaveNumber = nSlot;
 #ifdef _XBOX
     g_pAppManager->GetClientExoApp()->SendSaveGameRequest(pEntry->m_nSaveGame, sGameName);
 #else

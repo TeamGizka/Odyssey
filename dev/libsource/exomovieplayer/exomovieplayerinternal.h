@@ -92,8 +92,8 @@ public:
     CExoArrayList<CExoString> m_lstMovies;
     int m_bCancelMovie;
     int m_nCancelResult;
-    int m_nUnknown1C;
-    int m_nUnknown20;
+    int m_bDeactivated;
+    int m_bToggleFullScreen;
     int m_bShuttingDown;
     CExoString m_sCurrentMovie;
     int m_bMoviePlaying;

@@ -264,9 +264,9 @@ int CSWSCreature::AddMoveToPointActionToFront(
 
     CPathfindInformation* pPathfindInformation = m_pPathfindInformation;
     m_nAnimationState = ANIMATION_STATE_MOVE_PENDING;
-    pPathfindInformation->m_nField_26C = 0;
-    pPathfindInformation->m_nField_270 = 0;
-    pPathfindInformation->m_nField_274 = 0;
+    pPathfindInformation->m_bTimeout = 0;
+    pPathfindInformation->m_nTimeoutDay = 0;
+    pPathfindInformation->m_nTimeoutTime = 0;
 
     AddActionToFront(
         ACTION_MOVE_TO_POINT, nGroupId,
@@ -311,9 +311,9 @@ int CSWSCreature::AddMoveToPointAction(
 
     pPathfind = m_pPathfindInformation;
     m_nAnimationState = ANIMATION_STATE_MOVE_PENDING;
-    pPathfind->m_nField_26C = 0;
-    pPathfind->m_nField_270 = 0;
-    pPathfind->m_nField_274 = 0;
+    pPathfind->m_bTimeout = 0;
+    pPathfind->m_nTimeoutDay = 0;
+    pPathfind->m_nTimeoutTime = 0;
 
     AddAction(1, nGroupId, 2, (Vector*)&vPosition, 2,
               &((Vector*)&vPosition)->m_fY, 2, &((Vector*)&vPosition)->m_fZ, 3,
@@ -8781,12 +8781,12 @@ void CSWSCreature::AutoCloseGUIPanels(int bForce)
 void CSWSCreature::CutWaypointPath()
 {
     CPathfindInformation* pPathfind = m_pPathfindInformation;
-    ++pPathfind->m_bField_100;
-    pPathfind->m_nField_F8 = 1;
+    ++pPathfind->m_nWayPointCutCount;
+    pPathfind->m_bWayPointCut = 1;
     m_pPathfindInformation->m_nWayPointCutState = 0;
-    m_pPathfindInformation->m_nField_104 =
+    m_pPathfindInformation->m_nWayPointCutRemaining =
         (m_pPathfindInformation->m_nWayPointCount -
-         m_pPathfindInformation->m_nField_9C) >> 1;
+         m_pPathfindInformation->m_nCurrentWayPoint) >> 1;
     m_pPathfindInformation->m_vWayPointOrigin = m_vPosition;
     m_pPathfindInformation->m_vWayPointDirection = m_vOrientation;
 }

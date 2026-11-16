@@ -164,10 +164,10 @@ public:
     int m_bCheatUsed;
 #endif
     CExoString m_sPCName;
-    int m_n248;
+    int m_nSaveNumber;
     int m_nForfeitViolation;
     int m_nForfeitConditions;
-    int m_n254;
+    int m_nNextPCIndex;
     int m_bDisableMap;
     int m_bDisableRegen;
 };

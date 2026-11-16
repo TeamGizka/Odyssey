@@ -278,27 +278,27 @@ CExoInput::CExoInput()
 #endif
 }
 // PC 0x0062B760 GOG 0x0062B660
-int CExoInput::CreateNewEvent(unsigned long nArg1, int nArg2, int nArg3,
-                              unsigned long nArg4, unsigned long nArg5)
+int CExoInput::CreateNewEvent(unsigned long nEvent, int nType, int nClass,
+                              unsigned long nControl, unsigned long nControl2)
 {
-    return m_pExoInputInternal->CreateNewEvent(nArg1, nArg2, nArg3, nArg4,
-                                               nArg5);
+    return m_pExoInputInternal->CreateNewEvent(nEvent, nType, nClass, nControl,
+                                               nControl2);
 }
 // PC 0x0062B770 GOG 0x0062B670
-void CExoInput::AddEvent(unsigned long nArg1, unsigned long nArg2)
+void CExoInput::AddEvent(unsigned long nEvent, unsigned long nInputClass)
 {
-    m_pExoInputInternal->AddEvent(nArg1, nArg2);
+    m_pExoInputInternal->AddEvent(nEvent, nInputClass);
 }
 // PC 0x0062B780 GOG 0x0062B680
-int CExoInput::ScaleEvent(unsigned long nArg1, float fArg2, float fArg3)
+int CExoInput::ScaleEvent(unsigned long nEvent, float fScale, float fExponent)
 {
-    return m_pExoInputInternal->ScaleEvent(nArg1, fArg2, fArg3);
+    return m_pExoInputInternal->ScaleEvent(nEvent, fScale, fExponent);
 }
 // PC 0x0062B790 GOG 0x0062B690
-int CExoInput::SetEventRepeatable(unsigned long nArg1, unsigned long nArg2,
-                                  unsigned long nArg3)
+int CExoInput::SetEventRepeatable(unsigned long nEvent, unsigned long nDelay,
+                                  unsigned long nRate)
 {
-    return m_pExoInputInternal->SetEventRepeatable(nArg1, nArg2, nArg3);
+    return m_pExoInputInternal->SetEventRepeatable(nEvent, nDelay, nRate);
 }
 
 #ifdef _XBOX
@@ -308,14 +308,14 @@ void CExoInput::SetEventNonRepeatable(unsigned long nEvent)
 }
 #endif
 // PC 0x0062B7A0 GOG 0x0062B6A0
-void CExoInput::ClearEventRepeat(unsigned long nArg1)
+void CExoInput::ClearEventRepeat(unsigned long nEvent)
 {
-    m_pExoInputInternal->ClearEventRepeat(nArg1);
+    m_pExoInputInternal->ClearEventRepeat(nEvent);
 }
 // PC 0x0062B7B0 GOG 0x0062B6B0
-void CExoInput::CoolDownEvent(unsigned long nArg1, unsigned long nArg2)
+void CExoInput::CoolDownEvent(unsigned long nEvent, unsigned long nCoolDown)
 {
-    m_pExoInputInternal->CoolDownEvent(nArg1, nArg2);
+    m_pExoInputInternal->CoolDownEvent(nEvent, nCoolDown);
 }
 // PC 0x0062B7C0 GOG 0x0062B6C0
 CExoInputEventDesc* CExoInput::GetEvent(unsigned long nEvent, int nEventClass)
@@ -385,10 +385,10 @@ void CExoInput::SetActive(int bActive)
     m_pExoInputInternal->SetActive(bActive);
 }
 // PC 0x0062B850 GOG 0x0062B750
-int CExoInput::SetRumble(int nArg1, float fArg2, float fArg3,
-                         unsigned long nArg4)
+int CExoInput::SetRumble(int nJoystick, float fLeft, float fRight,
+                         unsigned long nDuration)
 {
-    return m_pExoInputInternal->SetRumble(nArg1, fArg2, fArg3, nArg4);
+    return m_pExoInputInternal->SetRumble(nJoystick, fLeft, fRight, nDuration);
 }
 
 #ifdef _XBOX
@@ -453,24 +453,24 @@ int CExoInput::GetDebugOption()
 #endif
 
 #ifndef _XBOX
-void CExoInput::BufferEvent(void* pArg1)  // PC 0x0062B8A0 GOG 0x0062B790
+void CExoInput::BufferEvent(void* pEvent)  // PC 0x0062B8A0 GOG 0x0062B790
 {
-    m_pExoInputInternal->BufferEvent(pArg1);
+    m_pExoInputInternal->BufferEvent(pEvent);
 }
 // PC 0x0062B8B0 GOG 0x0062B7A0
-int CExoInput::SetMouseMode(unsigned char cArg1)
+int CExoInput::SetMouseMode(unsigned char nMode)
 {
-    return m_pExoInputInternal->SetMouseMode(cArg1);
+    return m_pExoInputInternal->SetMouseMode(nMode);
 }
 // PC 0x0062B8C0 GOG 0x0062B7B0
-void CExoInput::RefreshMouseCursor(int nArg1)
+void CExoInput::RefreshMouseCursor(int bMouseDown)
 {
-    m_pExoInputInternal->RefreshMouseCursor(nArg1);
+    m_pExoInputInternal->RefreshMouseCursor(bMouseDown);
 }
 // PC 0x0062B8D0 GOG 0x0062B7C0
-int CExoInput::SetMouseCursor(int nArg1, int nArg2, int nArg3)
+int CExoInput::SetMouseCursor(int nCursor, int bCentered, int bMouseDown)
 {
-    return m_pExoInputInternal->SetMouseCursor(nArg1, nArg2, nArg3);
+    return m_pExoInputInternal->SetMouseCursor(nCursor, bCentered, bMouseDown);
 }
 // PC 0x0062B8E0 GOG 0x0062B7D0
 void CExoInput::SetMousePos(int nX, int nY, bool bKeepWarpState)
@@ -495,14 +495,14 @@ void CExoInput::ClearAllInputEventDescriptions()
 }
 
 #ifndef _XBOX
-void CExoInput::GetMouseDelta(float* fArg1, float* fArg2)  // PC 0x0062B920 GOG 0x0062B810
+void CExoInput::GetMouseDelta(float* pfX, float* pfY)  // PC 0x0062B920 GOG 0x0062B810
 {
-    m_pExoInputInternal->GetMouseDelta(fArg1, fArg2);
+    m_pExoInputInternal->GetMouseDelta(pfX, pfY);
 }
 // PC 0x0062B930 GOG 0x0062B820
-void CExoInput::UpdateMouseDelta(float fArg1)
+void CExoInput::UpdateMouseDelta(float fElapsed)
 {
-    m_pExoInputInternal->UpdateMouseDelta(fArg1);
+    m_pExoInputInternal->UpdateMouseDelta(fElapsed);
 }
 
 int CExoInput::IsModalKeyDown_Shift()

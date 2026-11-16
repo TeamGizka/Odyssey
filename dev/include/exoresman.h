@@ -252,7 +252,7 @@ public:
     int m_bServiced;
     unsigned long m_n2DASize;
     void* m_p2DAData;
-    unsigned long m_nUnknown34;
+    unsigned long* m_p2DAHeader;
     int m_bPacked;
 };
 
@@ -500,7 +500,7 @@ struct TPCHeader
     unsigned char m_bFormat4 : 1;
     unsigned char m_nFormatUnused : 5;
     unsigned char m_nMipMapCount;
-    unsigned char m_nUnknown0E[114];
+    unsigned char m_aReserved[114];
 };
 #pragma pack(pop)
 
@@ -530,7 +530,7 @@ public:
 
     int GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
                      int* pnCompressedSize, int* pnUncompressedSize,
-                     int* pnRemainingSize, float* pfUnknown,
+                     int* pnRemainingSize, float* pfAlphaBlending,
                      char* pnMipMapCount);
     unsigned char* GetTPCDataPtr();
     int GetTPCSize();
@@ -1294,7 +1294,7 @@ public:
 
 
     int CreateSignatureFile(const CExoString& sFileName, unsigned short nType,
-                            unsigned long nArg3, unsigned long nArg4);
+                            unsigned long nSize, unsigned long nArg4);
     void* Demand(CRes* pRes);
     void Dump(CRes* pRes, int bFlag);
     int Exists(const CResRef& cResRef, unsigned short nType,

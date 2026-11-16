@@ -928,7 +928,7 @@ int CSWSCreature::AIActionCheckInterAreaPathfinding(CSWSObjectActionNode* pActio
     if (GetArea() == NULL)
         return ACTION_IN_PROGRESS;
 
-    int nAreas = m_pPathfindInformation->m_nField_A8;
+    int nAreas = m_pPathfindInformation->m_nAreaPathLength;
     if (nAreas > 1)
     {
         int* pAreaPath = new int[nAreas - 1];
@@ -948,7 +948,7 @@ int CSWSCreature::AIActionCheckInterAreaPathfinding(CSWSObjectActionNode* pActio
             delete[] m_pPathfindInformation->m_pAreaPathCost;
         m_pPathfindInformation->m_pAreaPathCost = pAreaPathCost;
         m_pPathfindInformation->m_pAreaPath = pAreaPath;
-        m_pPathfindInformation->m_nField_A8 = nAreas - 1;
+        m_pPathfindInformation->m_nAreaPathLength = nAreas - 1;
 
         if (GetArea() != NULL)
         {
@@ -959,7 +959,7 @@ int CSWSCreature::AIActionCheckInterAreaPathfinding(CSWSObjectActionNode* pActio
             float fZ = m_pPathfindInformation->m_fStartZ;
             unsigned long oidArea = m_pPathfindInformation->m_nStartArea;
             m_pPathfindInformation->m_fStartX = fX - 5.0f;
-            m_pPathfindInformation->m_nField_A4 = 1;
+            m_pPathfindInformation->m_bAreaLegStarted = 1;
             AddMoveToPointActionToFront(pAction->m_nGroupId, Vector(fX, fY, fZ),
                 oidArea, OBJECT_INVALID, 0, 0.0f, 0.0f, 0, 0, 0, 0, 0, 0,
                 Vector(), 0, 0, 0);
@@ -2360,7 +2360,7 @@ int CSWSCreature::WalkUpdateLocationDistance(float fDistance, Vector* pvPosition
     if (pArea == NULL)
         return 0;
     int nPoints = m_pPathfindInformation->m_nWayPointCount;
-    int nCurrentPoint = m_pPathfindInformation->m_nField_9C;
+    int nCurrentPoint = m_pPathfindInformation->m_nCurrentWayPoint;
     float fDistanceLeft = fDistance;
     Vector vPosition = m_vPosition;
     Vector vNext;
@@ -2389,7 +2389,7 @@ int CSWSCreature::WalkUpdateLocationDistance(float fDistance, Vector* pvPosition
             }
         }
     }
-    if (m_pPathfindInformation->m_nField_240 != 0)
+    if (m_pPathfindInformation->m_bStopAtUseRange != 0)
     {
         Vector vTarget;
         float fUseRange = 0.0f;
@@ -2469,7 +2469,7 @@ int CSWSCreature::WalkUpdateLocationDistance(float fDistance, Vector* pvPosition
             vPosition = vNext;
             vPosition.m_fZ = GetArea()->ComputeHeight(vPosition, 1, NULL);
             nPoint += 2;
-            m_pPathfindInformation->m_nField_9C = nPoint;
+            m_pPathfindInformation->m_nCurrentWayPoint = nPoint;
             if (nPoint == nPoints)
             {
                 if (vDifference * vDifference != 0.0f)
@@ -2514,7 +2514,7 @@ int CSWSCreature::WalkUpdateLocationDistance(float fDistance, Vector* pvPosition
         {
             *pvPosition = m_vPosition;
             CAvoidCreature avoidCreature;
-            avoidCreature.m_nUnused = m_pPathfindInformation->m_nField_244;
+            avoidCreature.m_bAvoidLeft = m_pPathfindInformation->m_nAvoidSide;
             int nResult = avoidCreature.PlotPathAroundCreature(this, pBlockingCreature);
             if (nResult == CAvoidCreature::AVOIDCREATURE_FAILED)
             {
@@ -2527,14 +2527,14 @@ int CSWSCreature::WalkUpdateLocationDistance(float fDistance, Vector* pvPosition
                     g_pAppManager->GetClientExoApp()->GetInGameGui()->SetCombatMessage(47859);
                 return 1;
             }
-            if (m_pPathfindInformation->m_nField_244 != avoidCreature.m_nUnused)
-                m_pPathfindInformation->m_nField_244 = avoidCreature.m_nUnused;
+            if (m_pPathfindInformation->m_nAvoidSide != avoidCreature.m_bAvoidLeft)
+                m_pPathfindInformation->m_nAvoidSide = avoidCreature.m_bAvoidLeft;
             if (m_vOrientation * pBlockingCreature->m_vOrientation < 0.0f)
-                pBlockingCreature->m_pPathfindInformation->m_nField_244 =
-                    m_pPathfindInformation->m_nField_244;
+                pBlockingCreature->m_pPathfindInformation->m_nAvoidSide =
+                    m_pPathfindInformation->m_nAvoidSide;
             else
-                pBlockingCreature->m_pPathfindInformation->m_nField_244 =
-                    m_pPathfindInformation->m_nField_244 == 0;
+                pBlockingCreature->m_pPathfindInformation->m_nAvoidSide =
+                    m_pPathfindInformation->m_nAvoidSide == 0;
             if (nResult == CAvoidCreature::AVOIDCREATURE_ENDINHEX)
             {
                 SetAnimation(GetPauseReadyAnimation());
@@ -2836,7 +2836,7 @@ int CSWSCreature::WalkUpdateLocation()
     Vector vPosition;
     Vector vDirection;
     CExoArrayList<unsigned long> lstIntersectingSubAreas;
-    int nWayPoint = m_pPathfindInformation->m_nField_9C;
+    int nWayPoint = m_pPathfindInformation->m_nCurrentWayPoint;
     int bAtEnd = WalkUpdateLocationDistance(fRate, &vPosition, &vDirection,
                                            &lstIntersectingSubAreas);
     float fHeight = vPosition.m_fZ - m_vPosition.m_fZ;
@@ -2846,7 +2846,7 @@ int CSWSCreature::WalkUpdateLocation()
         Vector vSlopeDisplacement = fRate * normalize(vSlope);
         CPathfindInformation* pPathfindInformation = m_pPathfindInformation;
         float fSlopeDistance = vSlopeDisplacement.m_fX;
-        pPathfindInformation->m_nField_9C = nWayPoint;
+        pPathfindInformation->m_nCurrentWayPoint = nWayPoint;
         bAtEnd = WalkUpdateLocationDistance(fSlopeDistance, &vPosition,
                                             &vDirection, &lstIntersectingSubAreas);
     }
@@ -3085,7 +3085,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
     g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
         g_pAppManager->m_pClientExoApp->GetSWParty()->m_aPartyMemberData[nOtherMember].m_oidCreature);
 #endif
-    m_pPathfindInformation->m_nField_34 = OBJECT_INVALID;
+    m_pPathfindInformation->m_oidIgnoreCreature = OBJECT_INVALID;
     GetArea()->m_pPathfindInformation = GetPathfindInformation();
     pMember->m_fOffsetScale = 1.0f;
     int nResult = ACTION_IN_PROGRESS;
@@ -3847,7 +3847,7 @@ int CSWSCreature::AIActionFollowOwner(CSWSObjectActionNode* pNode)
 // PC 0x005453D0 GOG 0x005454F0
 float CSWSCreature::ComputeTotalWalkDistance()
 {
-    int nFirstPoint = m_pPathfindInformation->m_nField_9C;
+    int nFirstPoint = m_pPathfindInformation->m_nCurrentWayPoint;
     int nPointCount = m_pPathfindInformation->m_nWayPointCount;
     float fDistance = 0.0f;
     int nPoint = nFirstPoint;
@@ -4588,7 +4588,7 @@ int CSWSCreature::WalkUpdateLocationTestDistance(
         unsigned long oidHitObject = OBJECT_INVALID;
         unsigned long oidHitCreature = OBJECT_INVALID;
         CWalkHitInfo hitInfo;
-        unsigned long oidIgnore = m_pPathfindInformation->m_nField_BC;
+        unsigned long oidIgnore = m_pPathfindInformation->m_oidIgnoreDoor;
         float fRadius = m_pPathfindInformation->m_fStepScale;
         int bNoNonWalkPolys = GetArea()->NoNonWalkPolysDetailed(
             vStart, vEnd, fMinHeight, fTop,
@@ -6115,7 +6115,7 @@ template <> inline void CExoArrayList<CSWSInvitationDetails>::DelIndex(int nInde
 // PC 0x0054A0D0 GOG 0x0054A1F0
 CAvoidCreature::CAvoidCreature()
 {
-    m_nUnused = 0;
+    m_bAvoidLeft = 0;
     Reset();
 }
 static inline int CastSpellRequireItemMask(CSWSpell* pSpell) { return pSpell->m_nRequireItemMask; }
@@ -7377,13 +7377,13 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
         m_nLastWalkTime = nTime;
         return nResult;
     }
-    if (GetPathfindInformation()->m_nField_26C != 0)
+    if (GetPathfindInformation()->m_bTimeout != 0)
     {
         unsigned long nCurrentDay, nCurrentTime;
         g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
             &nCurrentDay, &nCurrentTime);
-        unsigned long nTimeoutTime = GetPathfindInformation()->m_nField_274;
-        unsigned long nTimeoutDay = GetPathfindInformation()->m_nField_270;
+        unsigned long nTimeoutTime = GetPathfindInformation()->m_nTimeoutTime;
+        unsigned long nTimeoutDay = GetPathfindInformation()->m_nTimeoutDay;
         if (g_pAppManager->GetServerExoApp()->GetWorldTimer()->CompareWorldTimes(
                 nCurrentDay, nCurrentTime, nTimeoutDay, nTimeoutTime) >= 0)
         {
@@ -7412,9 +7412,9 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
                 m_lstActions.AddHead(pAction);
             SetAnimation(GetPauseReadyAnimation());
             CPathfindInformation* pPathfind = GetPathfindInformation();
-            pPathfind->m_nField_26C = 0;
-            pPathfind->m_nField_270 = 0;
-            pPathfind->m_nField_274 = 0;
+            pPathfind->m_bTimeout = 0;
+            pPathfind->m_nTimeoutDay = 0;
+            pPathfind->m_nTimeoutTime = 0;
             return ACTION_COMPLETE;
         }
     }
@@ -7471,14 +7471,14 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
     m_fMovementRate = fSpeedFactor;
     Vector vPosition, vDirection;
     CExoArrayList<unsigned long> lstIntersectingSubAreas;
-    int nPoint = m_pPathfindInformation->m_nField_9C;
+    int nPoint = m_pPathfindInformation->m_nCurrentWayPoint;
     int bAtEnd = WalkUpdateLocationDistance(fRate, &vPosition, &vDirection, &lstIntersectingSubAreas);
     float fHeight = vPosition.m_fZ - m_vPosition.m_fZ;
     if (fHeight <= -0.001f || fHeight >= 0.001f)
     {
         Vector vSlope(fRate, 0.0f, fHeight);
         Vector vSlopeDisplacement = fRate * normalize(vSlope);
-        GetPathfindInformation()->m_nField_9C = nPoint;
+        GetPathfindInformation()->m_nCurrentWayPoint = nPoint;
         bAtEnd = WalkUpdateLocationDistance(vSlopeDisplacement.m_fX,
             &vPosition, &vDirection, &lstIntersectingSubAreas);
     }
@@ -7565,7 +7565,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
                         if (bSafe)
                         {
                             m_nAnimationState = -1;
-                            GetPathfindInformation()->m_vField_248 = vSafePosition;
+                            GetPathfindInformation()->m_vTargetPosition = vSafePosition;
                             CSWSObjectActionNode* pAction = GetAction(ACTION_MOVE_TO_POINT);
                             if (pAction != NULL)
                             {
@@ -7589,7 +7589,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
                         *(void**)&vDestination.m_fZ = pMoveAction->m_apParam[2];
                     }
                     m_nAnimationState = -1;
-                    GetPathfindInformation()->m_vField_248 = vDestination;
+                    GetPathfindInformation()->m_vTargetPosition = vDestination;
                 }
             }
         }
@@ -7638,13 +7638,13 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
         else if (pTarget->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
         {
             Vector vTarget = pTarget->AsSWSCreature()->m_vPosition;
-            Vector vLastTarget = GetPathfindInformation()->m_vField_248;
+            Vector vLastTarget = GetPathfindInformation()->m_vTargetPosition;
             Vector vTargetDifference = vTarget - vLastTarget;
             if (vTargetDifference * vTargetDifference >=
                 NWSCREATURE_WALK_TARGET_REFRESH_DISTANCE_SQUARED)
             {
                 m_nAnimationState = -1;
-                GetPathfindInformation()->m_vField_248 = vTarget;
+                GetPathfindInformation()->m_vTargetPosition = vTarget;
                 return ACTION_IN_PROGRESS;
             }
         }
@@ -7879,7 +7879,7 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
             GetPathfindInformation()->m_nPathFlags = 1;
             GetPathfindInformation()->m_oidPathfindCreature = GetId();
             GetPathfindInformation()->m_oidPathfindTargetCreature = OBJECT_INVALID;
-            GetPathfindInformation()->m_nField_84 = 0;
+            GetPathfindInformation()->m_bPathReversed = 0;
             GetPathfindInformation()->m_nStartArea = m_oidArea;
             GetPathfindInformation()->m_fStartX = vDestination.m_fX;
             GetPathfindInformation()->m_fStartY = vDestination.m_fY;
@@ -7887,12 +7887,12 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
             GetPathfindInformation()->m_fEndX = m_vPosition.m_fX;
             GetPathfindInformation()->m_fEndY = m_vPosition.m_fY;
             GetPathfindInformation()->SetEndZ(m_vPosition.m_fZ);
-            GetPathfindInformation()->m_nField_9C = 0;
-            GetPathfindInformation()->m_nField_28 = nDriveMode;
+            GetPathfindInformation()->m_nCurrentWayPoint = 0;
+            GetPathfindInformation()->m_nMovementRate = nDriveMode;
         }
         else
         {
-            GetPathfindInformation()->m_nField_28 = nDriveMode;
+            GetPathfindInformation()->m_nMovementRate = nDriveMode;
             TerminateClientSidePath(nDriveMode);
             m_bUpdateMovingOrientation = FALSE;
             SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE);
@@ -8016,7 +8016,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
     int bOption2 = (nFlags >> MOVE_OPTION2_SHIFT) & 1;
     int bUsePoint = (nFlags >> MOVE_OPTION3_SHIFT) & MOVE_OPTION3_INPUT_MASK;
     int bOption6 = (nFlags >> MOVE_OPTION6_SHIFT) & MOVE_OPTION6_INPUT_MASK;
-    m_pPathfindInformation->m_nField_240 = bOption6;
+    m_pPathfindInformation->m_bStopAtUseRange = bOption6;
     if (m_bLimitMovementSpeed == 1)
         bRun = 0;
 
@@ -8081,9 +8081,9 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
         g_pAppManager->GetServerExoApp()->GetWorldTimer()->AddWorldTimes( nDay, nTime, 0, (unsigned long)(fTimeout * 1000.0f), &nForceDay, &nForceTime);
         AddMoveToPointActionToFront(pAction->m_nGroupId, vDestination, oidArea, oidTarget, bRun, fRange, 0.0f, bUsePath, nMovementRate, nMovementOption, bClientMoving, bOption2, bUsePoint, vOrientation, nForceDay, nForceTime, bOption6);
         CPathfindInformation* pPathfind = m_pPathfindInformation;
-        pPathfind->m_nField_26C = 0;
-        pPathfind->m_nField_270 = 0;
-        pPathfind->m_nField_274 = 0;
+        pPathfind->m_bTimeout = 0;
+        pPathfind->m_nTimeoutDay = 0;
+        pPathfind->m_nTimeoutTime = 0;
         m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
         AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
     }
@@ -8301,7 +8301,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
     m_bUpdateMovingOrientation = 0;
     Vector vPathDestination;
     unsigned long oidPathArea;
-    if (m_pPathfindInformation->m_nField_84 == 0)
+    if (m_pPathfindInformation->m_bPathReversed == 0)
     {
         vPathDestination = Vector(m_pPathfindInformation->m_fStartX,
             m_pPathfindInformation->m_fStartY, m_pPathfindInformation->m_fStartZ);
@@ -8329,26 +8329,26 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
         m_pPathfindInformation->SetEndY(m_vPosition.m_fY);
         m_pPathfindInformation->SetEndZ(m_vPosition.m_fZ);
         m_pPathfindInformation->m_nEndArea = m_oidArea;
-        m_pPathfindInformation->m_nField_58 = 1;
-        GetPathfindInformation()->m_nField_88 = 0;
+        m_pPathfindInformation->m_bNewPathRequest = 1;
+        GetPathfindInformation()->m_bPlotFinished = 0;
     }
     int nResult;
-    if (GetPathfindInformation()->m_nField_88 == 0)
+    if (GetPathfindInformation()->m_bPlotFinished == 0)
     {
-        m_pPathfindInformation->m_nField_198 = bOption2;
+        m_pPathfindInformation->m_bPartialPathSearch = bOption2;
         m_pPathfindInformation->m_nBumpCount = 0;
         Vector vDelta = vDestination - m_vPosition;
         if (m_oidAttemptedAttackTarget != OBJECT_INVALID &&
             vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY +
             vDelta.m_fZ * vDelta.m_fZ < NWSCREATURE_MOVE_ATTACK_TARGET_RANGE_SQUARED)
-            m_pPathfindInformation->m_nField_194 = 1;
+            m_pPathfindInformation->m_bForceGridPath = 1;
         if (m_nClientState != 0)
             m_nAnimationState = ANIMATION_STATE_MOVE_PENDING;
         if (m_bIgnoreCrePath)
-            m_pPathfindInformation->m_nField_210 = 1;
+            m_pPathfindInformation->m_bIgnoreCreatures = 1;
         nResult = g_pAppManager->GetServerExoApp()->GetModule()->PlotPath(
             m_pPathfindInformation, AiTimeSlice);
-        m_pPathfindInformation->m_nField_198 = 0;
+        m_pPathfindInformation->m_bPartialPathSearch = 0;
         if (nResult == ACTION_COMPLETE)
         {
             unsigned long oidPathTarget = m_pPathfindInformation->m_oidPathfindTargetCreature;
@@ -8356,8 +8356,8 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
             m_pPathfindInformation->SetBlockingCreature(OBJECT_INVALID);
             if (oidPathTarget != oidTarget)
                 pAction->m_apParam[4] = (void*)oidPathTarget;
-            m_pPathfindInformation->m_nField_28 = (unsigned char)nMovementRate;
-            m_pPathfindInformation->m_nField_9C = 0;
+            m_pPathfindInformation->m_nMovementRate = (unsigned char)nMovementRate;
+            m_pPathfindInformation->m_nCurrentWayPoint = 0;
             if (bRun)
             {
                 SetAnimation(CREATURE_ANIMATION_RUN);
@@ -8387,7 +8387,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                 "The Path find has Failed... Why?");
             if (m_nClientState != 0)
                 m_nAnimationState = ANIMATION_STATE_MOVE_PENDING;
-            m_pPathfindInformation->m_nField_28 = (unsigned char)nMovementRate;
+            m_pPathfindInformation->m_nMovementRate = (unsigned char)nMovementRate;
             SetAnimation(ANIMATION_IDLE);
             if (bUsePath == 1)
                 TerminateClientSidePath(nMovementRate);

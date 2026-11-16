@@ -1268,7 +1268,7 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
             pPlayer->GetGameObject()->AsSWSCreature()->m_pPathfindInformation;
         Vector vDestination;
         unsigned long oidDestinationArea;
-        if (pPathfind->m_nField_84 == 0)
+        if (pPathfind->m_bPathReversed == 0)
         {
             vDestination = Vector(pPathfind->m_fStartX, pPathfind->m_fStartY,
                                   pPathfind->m_fStartZ);
@@ -1285,13 +1285,13 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
             Vector(fPositionX, fPositionY, fPositionZ) - vDestination;
         if (oidDestinationArea == oidArea && vDelta * vDelta < 0.01f)
         {
-            pPathfind->m_nField_28 = (unsigned char)nMovementRate;
+            pPathfind->m_nMovementRate = (unsigned char)nMovementRate;
             return 1;
         }
         pPathfind->ResetAtEndOfPath();
         if (nClientMoving == 1)
         {
-            pPathfind->m_nField_194 = 1;
+            pPathfind->m_bForceGridPath = 1;
         }
     }
 

@@ -109,16 +109,16 @@ public:
 #endif
     int WriteStringTable();
     void ExportFilesFromERF(const CExoString& sFileName,
-                           const CExoString& sDirectory, void* pUnused,
-                           int (*pfnProgress)(int, int, int, int), int nArg1,
-                           int nArg2);
+                           const CExoString& sDirectory, void* hSignature,
+                           int (*pfnProgress)(int, int, int, int), int nBase,
+                           int nRange);
     int SetNumEntries(unsigned long nEntries);
-    int WriteResource(const CExoString& sFileName, void* pUnused);
+    int WriteResource(const CExoString& sFileName, void* hSignature);
     int WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
-                      int bIsGFF, void* pUnused);
-    void ImportFiles(const CExoString& sDirectory, void* pUnused,
-                     int (*pfnProgress)(int, int, int, int), int nArg1,
-                     int nArg2);
+                      int bIsGFF, void* hSignature);
+    void ImportFiles(const CExoString& sDirectory, void* hSignature,
+                     int (*pfnProgress)(int, int, int, int), int nBase,
+                     int nRange);
     int Reset();
 
     char m_sFileType[4];

@@ -56,12 +56,12 @@ CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
     m_aAbilities[ABILITY_CHARISMA] = 0;
     m_aAbilities[ABILITY_CONSTITUTION] = 0;
     m_nDexterityBonus = 0;
-    m_aUnknown41[0] = 0;
-    m_aUnknown41[1] = 0;
-    m_aUnknown41[2] = 0;
-    m_aUnknown41[3] = 0;
-    m_aUnknown41[4] = 0;
-    m_aUnknown41[5] = 0;
+    m_aBaseAbilities[0] = 0;
+    m_aBaseAbilities[1] = 0;
+    m_aBaseAbilities[2] = 0;
+    m_aBaseAbilities[3] = 0;
+    m_aBaseAbilities[4] = 0;
+    m_aBaseAbilities[5] = 0;
     m_nDefenseBase = 0;
     m_nHitPointsBase = 0;
     m_nHitPointBonus = 0;
@@ -75,8 +75,8 @@ CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
     m_nReflexSave = 0;
     m_nGoodEvilAlignment = NEUTRAL_GOOD_EVIL_ALIGNMENT;
     m_nBaseCNPCAlignment = -1;
-    m_nUnknown60 = 0;
-    m_nUnknown64 = 0;
+    m_bUseMonkAttackTables = 0;
+    m_nBaseAttackBonus = 0;
     m_nAppearance = m_nRace;
     m_pSkillRanksTotal = new char[g_pRules->m_nNumSkills];
     m_pSkillRanks = new char[g_pRules->m_nNumSkills];
@@ -485,7 +485,7 @@ int CSWCCreatureStats::GetBaseAttackBonus()
 {
     if (m_bOwnsCombatInformation == 1)
     {
-        return m_nUnknown64;
+        return m_nBaseAttackBonus;
     }
 
     unsigned char nBonus = 0;
@@ -594,7 +594,7 @@ CExoString CSWCCreatureStats::GetAttackBonusString(CSWCCreature* pCreature, int 
         int nBonus = 0;
         if (m_pCombatInformation != NULL)
         {
-            nBonus = m_nUnknown60 ? GetBaseAttackBonus() - 3 * i : GetBaseAttackBonus() - 5 * i;
+            nBonus = m_bUseMonkAttackTables ? GetBaseAttackBonus() - 3 * i : GetBaseAttackBonus() - 5 * i;
         }
         if (nBonus + nModifier >= 0)
         {

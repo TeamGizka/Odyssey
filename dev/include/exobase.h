@@ -846,11 +846,11 @@ public:
 #ifdef _XBOX
     int GetDirectoryList(CExoArrayList<CExoString>* pList,
                          const CExoString& sPath, unsigned short nResType,
-                         int nArg4, int nArg5);
+                         int bDirectories, int nSortMode);
 #else
     void GetDirectoryList(CExoArrayList<CExoString>* pList,
                           const CExoString& sPath, unsigned short nResType,
-                          int nArg4, int nArg5);
+                          int bDirectories, int nSortMode);
 #endif
     int GetDirectorySize(const CExoString& sPath);
     const CExoString& GetResourceExtension(unsigned short resourceType);
@@ -893,7 +893,7 @@ public:
                          const CExoString& sDir, unsigned short nResType,
                          int bDirectories, int nSortMode);
     void AddAlias(const CExoString& sFile, const CExoString& sAlias,
-                  const CExoString& sDefault, const CExoString& sUnused);
+                  const CExoString& sDefault, const CExoString& sXboxDefault);
     int GetDirectorySize(const CExoString& sPath);
     const CExoString& GetResourceExtension(unsigned short resourceType);
     unsigned short GetResTypeFromExtension(const CExoString& extension);

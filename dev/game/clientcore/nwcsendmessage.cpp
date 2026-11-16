@@ -1103,10 +1103,10 @@ char* dm_gettime(char* szArgs)
     if (g_pAppManager->m_pClientExoApp->GetModule() != NULL)
     {
         unsigned char nMinutesPerHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeOfDayHour;
-        int nYear = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeA4;
-        int nMonth = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeA8;
-        int nDay = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeAC;
-        int nHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeB0;
+        int nYear = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeYear;
+        int nMonth = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeMonth;
+        int nDay = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeDay;
+        int nHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeHour;
         unsigned char nState = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeOfDayState;
 
         sprintf(szLine, "MinutesPerHour: %i", nMinutesPerHour);

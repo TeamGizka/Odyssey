@@ -125,7 +125,7 @@ CSWSExpression::CSWSExpression()
 {
     m_pList = NULL;
     m_bCaseSensitive = 0;
-    m_nReserved = 0;
+    m_nId = 0;
 }
 // PC 0x005E4800 GOG 0x005E4830
 CSWSExpression::~CSWSExpression()

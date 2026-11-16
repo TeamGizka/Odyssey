@@ -74,7 +74,7 @@ public:
     int ParseString(CExoString sPattern);
     int TestString(const CExoString& sString, int bCapture);
 
-    int m_nReserved;
+    int m_nId;
     CExoArrayList<CExoString*> m_lstMatches;
     int m_bCaseSensitive;
     CSWSExpressionList* m_pList;

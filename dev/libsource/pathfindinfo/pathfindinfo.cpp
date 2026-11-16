@@ -138,10 +138,10 @@ int CAvoidCreature::FindEntryAndExit(CPathfindInformation* pInfo)
     {
         if (m_nEntrySide == -1)
         {
-            Vector vPoint(pWayPoints[max(0, pInfo->m_nField_9C - 2)],
-                          pWayPoints[max(1, pInfo->m_nField_9C - 1)], 0.0f);
+            Vector vPoint(pWayPoints[max(0, pInfo->m_nCurrentWayPoint - 2)],
+                          pWayPoints[max(1, pInfo->m_nCurrentWayPoint - 1)], 0.0f);
             m_nEntrySide = GetClosestPointTo(vPoint);
-            m_nEntrySegment = max((pInfo->m_nField_9C - 2) / 2, 0);
+            m_nEntrySegment = max((pInfo->m_nCurrentWayPoint - 2) / 2, 0);
             m_vEntryPoint = m_vHexPoints[m_nEntrySide];
             ++nIntersections;
         }
@@ -172,7 +172,7 @@ Vector* CAvoidCreature::FindPath(int& nPoints)
         nPoints = 2;
         return pPath;
     }
-    if (m_nUnused != 0)
+    if (m_bAvoidLeft != 0)
     {
         return FindPath_Left(nPoints);
     }
@@ -352,10 +352,10 @@ void CPathfindInformation::Shutdown()
         delete m_pFirstTileFValue2;
         m_pFirstTileFValue2 = 0;
     }
-    if (m_pField_16C != 0)
+    if (m_pGridTransTable != 0)
     {
-        delete m_pField_16C;
-        m_pField_16C = 0;
+        delete m_pGridTransTable;
+        m_pGridTransTable = 0;
     }
     if (m_pfSmoothIntermediatePoints != 0)
     {
@@ -404,7 +404,7 @@ void CPathfindInformation::ResetGridSearchData()
     vGridEnd.m_fZ = 0.0f;
     m_vGridEnd = vGridEnd;
     m_fField_164 = 700.0f;
-    m_nField_168 = 0;
+    m_nGridTransTableDepth = 0;
     m_nGridDFSBestPathLength = 0;
     if (m_pGridDFSBestPath != 0)
     {
@@ -429,11 +429,11 @@ void CPathfindInformation::ResetWayPointData()
     }
     m_nWayPointCount = 0;
     m_pWayPoints = 0;
-    m_nField_94 = 0;
+    m_nWayPointTempCount = 0;
     m_pWayPointsTemp = 0;
-    m_nField_9C = 0;
-    m_nField_F8 = 0;
-    m_nField_104 = 0;
+    m_nCurrentWayPoint = 0;
+    m_bWayPointCut = 0;
+    m_nWayPointCutRemaining = 0;
     vOrigin.m_fX = 0.0f;
     vOrigin.m_fY = 0.0f;
     vOrigin.m_fZ = 0.0f;
@@ -716,7 +716,7 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
     }
     if (pAvoidCreature->GetReputation(pCreature->GetId(), 0) <= CSWSObject::MAX_HOSTILE_REPUTATION)
     {
-        pCreature->GetPathfindInformation()->m_nField_264 = pAvoidCreature->GetId();
+        pCreature->GetPathfindInformation()->m_oidFoundEnemyCreature = pAvoidCreature->GetId();
         g_pVirtualMachine->RunScript(&sFailureScript, pCreature->GetId(),
                                     pCreature->GetId() != OBJECT_INVALID);
         if (pCreature->m_bCommandable)
@@ -748,8 +748,8 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
 
     Vector* pFirstPath = FindPath(nFirstPoints);
     int bFirstBlocked = !IsPathClear(pCreature->GetId(), pFirstPath, nFirstPoints, oidFirstBlocker);
-    int bLeft = m_nUnused;
-    m_nUnused = !bLeft;
+    int bLeft = m_bAvoidLeft;
+    m_bAvoidLeft = !bLeft;
     Vector* pSecondPath = FindPath(nSecondPoints);
     int bSecondBlocked = !IsPathClear(pCreature->GetId(), pSecondPath, nSecondPoints, oidSecondBlocker);
     int nFirstQuality = PATH_BLOCKED;
@@ -794,7 +794,7 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
     int bResult;
     if (nBestPath == 0)
     {
-        pCreature->GetPathfindInformation()->m_nField_264 = OBJECT_INVALID;
+        pCreature->GetPathfindInformation()->m_oidFoundEnemyCreature = OBJECT_INVALID;
         g_pVirtualMachine->RunScript(&sFailureScript, pCreature->GetId(),
                                     pCreature->GetId() != OBJECT_INVALID);
         bResult = AVOIDCREATURE_FAILED;
@@ -814,14 +814,14 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
             {
                 nSegment *= 2;
             }
-            pCreature->GetPathfindInformation()->m_nField_9C = nSegment;
+            pCreature->GetPathfindInformation()->m_nCurrentWayPoint = nSegment;
         }
         if (oidFirstBlocker != OBJECT_INVALID)
         {
             CSWSCreature* pBlocker = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidFirstBlocker);
             if (pBlocker != NULL && pBlocker->GetReputation(pCreature->GetId(), 0) <= CSWSObject::MAX_HOSTILE_REPUTATION)
             {
-                pCreature->GetPathfindInformation()->m_nField_264 = oidFirstBlocker;
+                pCreature->GetPathfindInformation()->m_oidFoundEnemyCreature = oidFirstBlocker;
                 g_pVirtualMachine->RunScript(&sFailureScript, pCreature->GetId(),
                                             pCreature->GetId() != OBJECT_INVALID);
             }
@@ -843,14 +843,14 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
             {
                 nSegment *= 2;
             }
-            pCreature->GetPathfindInformation()->m_nField_9C = nSegment;
+            pCreature->GetPathfindInformation()->m_nCurrentWayPoint = nSegment;
         }
         if (oidSecondBlocker != OBJECT_INVALID)
         {
             CSWSCreature* pBlocker = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidSecondBlocker);
             if (pBlocker != NULL && pBlocker->GetReputation(pCreature->GetId(), 0) <= CSWSObject::MAX_HOSTILE_REPUTATION)
             {
-                pCreature->GetPathfindInformation()->m_nField_264 = oidSecondBlocker;
+                pCreature->GetPathfindInformation()->m_oidFoundEnemyCreature = oidSecondBlocker;
                 g_pVirtualMachine->RunScript(&sFailureScript, pCreature->GetId(),
                                             pCreature->GetId() != OBJECT_INVALID);
             }
@@ -874,7 +874,7 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
 CPathfindInformation::CPathfindInformation()
 {
     m_pGridDFSBestPath = 0;
-    m_nField_34 = OBJECT_INVALID;
+    m_oidIgnoreCreature = OBJECT_INVALID;
     Initialize();
     return;
 }
@@ -889,9 +889,9 @@ void CPathfindInformation::ResetInterAreaPathSearchData()
     {
         delete m_pAreaPathCost;
     }
-    m_nField_A0 = 0;
-    m_nField_A4 = 0;
-    m_nField_A8 = 0;
+    m_bAreaPathFound = 0;
+    m_bAreaLegStarted = 0;
+    m_nAreaPathLength = 0;
     m_pAreaPath = 0;
     m_pAreaPathCost = 0;
     ResetGridSearchData();
@@ -906,25 +906,25 @@ void CPathfindInformation::ResetInterAreaSearchData()
     {
         delete m_pAreaList;
     }
-    m_nField_84 = 0;
-    m_nField_1C = 0;
+    m_bPathReversed = 0;
+    m_bPathPointGridLeg = 0;
     m_nField_20 = 0;
-    m_nField_24 = 0;
-    m_nField_B4 = 0;
+    m_bReturnClosest = 0;
+    m_nAreaListCount = 0;
     m_pAreaList = 0;
-    m_nField_88 = 1;
+    m_bPlotFinished = 1;
     ResetInterAreaPathSearchData();
 }
 // PC 0x0061CA30 GOG 0x0061CA10
 void CPathfindInformation::ResetAtEndOfPath()
 {
-    m_nField_194 = 0;
+    m_bForceGridPath = 0;
     m_nField_40 = 0;
     m_fTempStartX = 0;
     m_fTempStartY = 0;
     m_fTempStartZ = 0;
     m_nTempArea = 0;
-    m_nField_58 = 0;
+    m_bNewPathRequest = 0;
     m_fStartX = 0;
     m_fStartY = 0;
     m_fStartZ = 0;
@@ -944,10 +944,10 @@ void CPathfindInformation::Initialize()
     m_fStepScaleZ = 0.6f;
     m_nPathFlags = 0;
     m_fHalfStep = 0.5f;
-    m_nField_1C = 0;
+    m_bPathPointGridLeg = 0;
     m_nField_20 = 0;
-    m_nField_24 = 0;
-    m_nField_194 = 0;
+    m_bReturnClosest = 0;
+    m_bForceGridPath = 0;
     m_oidPathfindCreature = OBJECT_INVALID;
     m_oidPathfindTargetCreature = OBJECT_INVALID;
     m_nField_40 = 0;
@@ -955,7 +955,7 @@ void CPathfindInformation::Initialize()
     m_fTempStartY = 0.0f;
     m_fTempStartZ = 0.0f;
     m_nTempArea = 0;
-    m_nField_58 = 0;
+    m_bNewPathRequest = 0;
     m_fStartX = 0.0f;
     m_fStartY = 0.0f;
     m_fStartZ = 0.0f;
@@ -966,19 +966,19 @@ void CPathfindInformation::Initialize()
     m_fEndY = 0.0f;
     m_fEndZ = 0.0f;
     m_nEndArea = 0;
-    m_nField_84 = 0;
-    m_nField_88 = 1;
+    m_bPathReversed = 0;
+    m_bPlotFinished = 1;
     m_nWayPointCount = 0;
     m_pWayPoints = 0;
-    m_nField_94 = 0;
+    m_nWayPointTempCount = 0;
     m_pWayPointsTemp = 0;
-    m_nField_9C = 0;
-    m_nField_A0 = 0;
-    m_nField_A4 = 0;
-    m_nField_A8 = 0;
+    m_nCurrentWayPoint = 0;
+    m_bAreaPathFound = 0;
+    m_bAreaLegStarted = 0;
+    m_nAreaPathLength = 0;
     m_pAreaPath = 0;
     m_pAreaPathCost = 0;
-    m_nField_B4 = 0;
+    m_nAreaListCount = 0;
     m_pAreaList = 0;
     m_nField_C0 = 0;
     m_pTileOpen = 0;
@@ -994,15 +994,15 @@ void CPathfindInformation::Initialize()
     m_pField_F4 = 0;
     m_pFirstTileFValue = 0;
     m_pFirstTileFValue2 = 0;
-    m_nField_28 = 0;
-    m_nField_F8 = 0;
-    m_bField_100 = 0;
-    m_nField_104 = 0;
+    m_nMovementRate = 0;
+    m_bWayPointCut = 0;
+    m_nWayPointCutCount = 0;
+    m_nWayPointCutRemaining = 0;
     m_vWayPointOrigin = Vector();
     m_vWayPointDirection = Vector(1.0f, 0.0f, 0.0f);
     m_fField_164 = 700.0f;
-    m_nField_168 = 0;
-    m_pField_16C = 0;
+    m_nGridTransTableDepth = 0;
+    m_pGridTransTable = 0;
     m_vGridStart = Vector();
     m_vGridEnd = Vector();
     m_nGridDFSBestPathLength = 0;
@@ -1010,31 +1010,31 @@ void CPathfindInformation::Initialize()
     {
         delete m_pGridDFSBestPath;
     }
-    m_nField_1A4 = -1;
-    m_nField_1A8 = -1;
+    m_nStartPathPoint = -1;
+    m_nEndPathPoint = -1;
     m_pGridDFSBestPath = 0;
     m_nGridDFSBestDistance = 700;
     m_fPathPointDFSBestDistance = 100000.0f;
-    m_nField_BC = OBJECT_INVALID;
+    m_oidIgnoreDoor = OBJECT_INVALID;
     m_pPathPointDFSPath = 0;
     m_nPathPointDFSDepth = 0;
     m_pPathPointTransTable = 0;
     m_fPathPointSearchBound = 0;
     m_nPathPointDFSBestPathLength = 0;
     m_pPathPointDFSBestPath = 0;
-    m_nField_1E0 = 1;
-    m_nField_194 = 0;
-    m_nField_198 = 0;
+    m_nPathPointState = 1;
+    m_bForceGridPath = 0;
+    m_bPartialPathSearch = 0;
     m_bField_1A0 = 0;
-    m_nField_210 = 0;
+    m_bIgnoreCreatures = 0;
     m_pfSmoothIntermediatePoints = 0;
     m_pfPathPointStartPoints = 0;
     m_pfPathPointEndPoints = 0;
-    m_nField_23C = 0;
-    m_nField_240 = 0;
-    m_nField_244 = 0;
+    m_bForceLocationUpdate = 0;
+    m_bStopAtUseRange = 0;
+    m_nAvoidSide = 0;
     SetBlockingCreature(OBJECT_INVALID);
-    m_nField_264 = OBJECT_INVALID;
+    m_oidFoundEnemyCreature = OBJECT_INVALID;
     m_nSmoothFirstCount = 0;
     m_pfSmoothFirstPoints = 0;
     m_nSmoothSecondCount = 0;
@@ -1043,7 +1043,7 @@ void CPathfindInformation::Initialize()
     m_pfSmoothFinalPoints = 0;
     m_fTargetUseRange = 0.0f;
     m_oidUseTarget = OBJECT_INVALID;
-    m_nField_26C = 0;
-    m_nField_270 = 0;
-    m_nField_274 = 0;
+    m_bTimeout = 0;
+    m_nTimeoutDay = 0;
+    m_nTimeoutTime = 0;
 }
