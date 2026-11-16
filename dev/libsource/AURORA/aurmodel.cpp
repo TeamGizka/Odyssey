@@ -1,5 +1,5 @@
-#include "aurmodel.h"
 #include "aurora.h"
+#include "aurmodel.h"
 #include "aurtexman.h"
 
 #include "aurscene.h"
@@ -109,383 +109,6 @@ MaxFace::MaxFace()
 const int TileData::FADE_NOT_CHECKED = 4;
 #include "mdlnodeinl.h"
 
-int MdlNodeAffectedByWind(MdlNode* pNode)
-{
-    MdlNodeEmitter* pEmitter = pNode->AsMdlNodeEmitter();
-    return pEmitter != 0 && pEmitter->IsAffectedByWind();
-}
-
-const char* setmirrorimage(char* sCommand)
-{
-#ifdef _XBOX
-    Gob* pGob = FindGob(GetToken(&sCommand));
-    if (pGob == 0)
-    {
-        return "FAILURE";
-    }
-    char* sImposters = GetToken(&sCommand);
-    int nImposters = atoi(sImposters);
-    float* pfValues = new float[3 * nImposters];
-    if (nImposters == 0)
-    {
-        nImposters = 1;
-    }
-    for (int i = 0; i < nImposters; i++)
-    {
-        pfValues[3 * i] = 3.0f * (float)sin(TWO_PI / nImposters);
-        pfValues[3 * i + 1] = 3.0f * (float)cos(TWO_PI / nImposters);
-        pfValues[3 * i + 2] = 0.0f;
-    }
-    pGob->SetUpImposters(atoi(sImposters), pfValues);
-    return "SUCCESS";
-#else
-    char sName[64];
-    int nImposters;
-
-    if (sscanf(sCommand, "%s %d", sName, &nImposters) != 2)
-    {
-        return "FAILURE";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "FAILURE";
-    }
-    float* pfValues = new float[3 * nImposters];
-    if (nImposters == 0)
-    {
-        nImposters = 1;
-    }
-    for (int i = 0; i < nImposters; i++)
-    {
-        float fAngle = TWO_PI * i / nImposters;
-        pfValues[3 * i] = 3.0f * (float)sin(fAngle);
-        pfValues[3 * i + 1] = 3.0f * (float)cos(fAngle);
-        pfValues[3 * i + 2] = 0.0f;
-    }
-    pGob->SetUpImposters(nImposters, pfValues);
-    return "SUCCESS";
-#endif
-}
-#ifdef _XBOX
-
-MdlNodeTrigger* MdlNode::AsMdlNodeTrigger()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIGGER)) ==
-        (MDL_NODE_HEADER | MDL_NODE_TRIGGER))
-        return (MdlNodeTrigger*)this;
-    return 0;
-}
-#endif
-
-const char* loadaddin(char* sCommand)
-{
-    char sName[64];
-    char sModel[64];
-
-    if (sscanf(sCommand, "%s %s", sName, sModel) != 2)
-    {
-        return "Incorrect number of params";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Couldn't find Gob";
-    }
-    pGob->LoadAddInAnimations(sModel);
-    pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
-    return "Playing ca1slashl";
-}
-
-const char* setillumination(char* sCommand)
-{
-    char sName[64];
-    float fRed;
-    float fGreen;
-    float fBlue;
-
-#ifdef _XBOX
-    fBlue = 0.0f;
-    fGreen = 0.0f;
-    fRed = 0.0f;
-    sName[0] = 0;
-    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
-    if (nCount != 4 && nCount != 5)
-#else
-    sName[0] = 0;
-    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
-    if (nCount != 4)
-#endif
-    {
-        return "Usage:  setillumination <gobname> <red> <green> <blue> <optional alpha>";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Error:  No gob by that name";
-    }
-    pGob->SetIllumination(Vector(fRed, fGreen, fBlue), 1);
-    return "Success";
-}
-// PC 0x00450BE0 GOG 0x00450D20
-void Gob::EnableInCutscene()
-{
-    m_bInCutscene = 1;
-}
-
-inline void DebugValidatePartMaterial(Part* pPart, char* sName)
-{
-}
-
-const char* append(char* sCommand)
-{
-    char sName[64];
-    char sPart[64];
-    char sModel[64];
-
-#ifdef _XBOX
-    sPart[0] = 0;
-    sModel[0] = 0;
-    sName[0] = 0;
-#else
-    sName[0] = 0;
-    sPart[0] = 0;
-    sModel[0] = 0;
-#endif
-    sscanf(sCommand, "%s%s%s", sName, sPart, sModel);
-    if (sName[0] == 0 || sPart[0] == 0 || sModel[0] == 0)
-    {
-        return "Usage:  append <gobname> <partname> <modelname>";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Error:  No gob by that name";
-    }
-#ifdef _XBOX
-    if (FindPart(pGob->m_pRootPart, sPart) == 0)
-#else
-    if (pGob->GetPart(sPart) == 0)
-#endif
-    {
-        return "Error:  Object does not have part with that name";
-    }
-    pGob->Append(sModel, sPart);
-    return "OK";
-}
-
-const char* amputate(char* sCommand)
-{
-    char sName[64];
-    char sPart[64];
-
-#ifdef _XBOX
-    sPart[0] = 0;
-    sName[0] = 0;
-#else
-    sName[0] = 0;
-    sPart[0] = 0;
-#endif
-    sscanf(sCommand, "%s%s", sName, sPart);
-    if (sName[0] == 0 || sPart[0] == 0)
-    {
-        return "Usage:  ampuatate <gobname> <partname>";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Error:  No gob by that name";
-    }
-#ifdef _XBOX
-    if (FindPart(pGob->m_pRootPart, sPart) == 0)
-#else
-    if (pGob->GetPart(sPart) == 0)
-#endif
-    {
-        return "Error:  Object does not have part with that name";
-    }
-    pGob->Amputate(sPart);
-    return "Amputation Sucessful";
-}
-
-const char* setgobwind(char* sCommand)
-{
-    char sName[64];
-    float fIntensity;
-
-    if (sscanf(sCommand, "%s %f", sName, &fIntensity) != 2)
-    {
-        return "Usage: setgobwind gobname intensity";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "That gob cannot be found!";
-    }
-    pGob->SetWind(true, fIntensity, 0.0f, 0.0f);
-    return "Success.";
-}
-
-const char* spinmodels(char* sCommand)
-{
-    for (int i = 0; i < 1000; i++)
-    {
-        CAurObject* pRat = NewCAurObject("c_wererat", "", 0, 0);
-        CAurObject* pSun = NewCAurObject("gidy_sun", "", 0, 0);
-        CAurObject* pRat2 = NewCAurObject("c_wererat", "", 0, 0);
-        CAurObject* pRat3 = NewCAurObject("c_wererat", "", 0, 0);
-        CAurObject* pRat4 = NewCAurObject("c_wererat", "", 0, 0);
-        CAurObject* pRat5 = NewCAurObject("c_wererat", "", 0, 0);
-        CAurObject* pRat6 = NewCAurObject("c_wererat", "", 0, 0);
-        pSun->AttachToObject(pRat, "wrat_handl", 0);
-        pSun->AttachToObject(pRat, "wrat_handr", 0);
-        pSun->AttachToObject(pRat, "wrat_t4", 0);
-        delete pRat;
-        delete pSun;
-        delete pRat2;
-        delete pRat3;
-        delete pRat4;
-        delete pRat5;
-        delete pRat6;
-    }
-    return "SUCK-CESS";
-}
-
-void MaxTree::InternalDestructor()
-{
-    MdlNode* pRootNode = m_pRootNode;
-    if (pRootNode != NULL)
-        pRootNode->DestructorDispatch();
-}
-
-const char* spawn(char* sCommand)
-{
-    char sModel[128];
-    char sName[128];
-
-    sModel[0] = 0;
-    sName[0] = 0;
-    sscanf(sCommand, "%s %s", sModel, sName);
-    CAurObject* pObject = NewCAurObject(sModel, sName, 0, 0);
-    strcpy(lastspawnedobject, pObject ? pObject->GetName() : "NULL");
-    FuncInterp("attach [lastspawned] scene");
-#ifdef _XBOX
-    return pObject ? "success" : "failure";
-#else
-    if (pObject == 0)
-    {
-        return "failure";
-    }
-    return "success";
-#endif
-}
-
-#ifdef _XBOX
-
-bool Gob::IsVisibilityTested()
-{
-    return (IsInCutscene() || IsAlternateShadowCaster() || IsAllRooms() || IsEmitterBounds()) ? false : true;
-}
-#endif
-
-#ifdef _XBOX
-char* bload(char* sArguments);
-
-const char* spawnbload(char* sCommand)
-{
-    char sModel[128];
-    char sName[128];
-
-    sModel[0] = 0;
-    sName[0] = 0;
-    sscanf(sCommand, "%s %s", sModel, sName);
-    if (stricmp(bload(sModel), "FAILURE") == 0)
-    {
-        return "FAILURE";
-    }
-    CAurObject* pObject = NewCAurObject(sModel, sName, 0, 0);
-    strcpy(lastspawnedobject, pObject ? pObject->GetName() : "NULL");
-    FuncInterp("attach [lastspawned] scene");
-    return pObject ? "success" : "failure";
-}
-
-const char* controlpart(char* sCommand)
-{
-    char sGob[64];
-    char sPart[64];
-    int nChars;
-
-    sPart[0] = 0;
-    sGob[0] = 0;
-    if (sscanf(sCommand, "%s%s%n", sGob, sPart, &nChars) < 2 || sGob[0] == 0 || sPart[0] == 0)
-    {
-        return "usage:  setcolor objectname partname r g b";
-    }
-    Gob* pGob = FindGob(sGob);
-    if (pGob == 0)
-    {
-        return "no object by that name";
-    }
-    Part* pPart = pGob->GetPart(sPart);
-    if (pPart == 0)
-    {
-        return "no part by that name";
-    }
-    MdlNode* pNode = pPart->m_pNode->ConJoinDispatch();
-    pNode->ParseFieldDispatch(skipspace(sCommand + nChars));
-    pNode->ControlDispatch(pPart, 0.0f, 0.0f, 1.0f);
-    delete pNode;
-    return "OK";
-}
-#endif
-
-#ifdef _XBOX
-
-#define DOGANMODELS_ITERATIONS 500
-
-const char* doganmodels(char* sCommand)
-{
-    unsigned short anColors[10] = {2, 0x104, 0x200, 0x200, 0x400, 0x500, 0x500, 0x624, 0x629, 0x629};
-
-    for (int i = DOGANMODELS_ITERATIONS; i != 0; i--)
-    {
-        CAurObject* pObject = NewCAurObject("pmh0", "", 0, 0);
-        pObject->Append("PMH0_FOOTR005", "rfoot_g");
-        pObject->Append("PMH0_FOOTL005", "lfoot_g");
-        pObject->Append("PMH0_SHINR009", "rshin_g");
-        pObject->Append("PMH0_SHINL009", "lshin_g");
-        pObject->Append("PMH0_LEGR003", "rthigh_g");
-        pObject->Append("PMH0_LEGL003", "lthigh_g");
-        pObject->Append("PMH0_PELVIS007", "pelvis_g");
-        pObject->Append("PMH0_CHEST012", "torso_g");
-        pObject->Append("PMH0_NECK001", "neck_g");
-        pObject->Append("PMH0_FORER013", "rforearm_g");
-        pObject->Append("PMH0_FOREL013", "lforearm_g");
-        pObject->Append("PMH0_BICEPR010", "rbicep_g");
-        pObject->Append("PMH0_BICEPL010", "lbicep_g");
-        pObject->Append("PMH0_HANDR004", "rhand_g");
-        pObject->Append("PMH0_HANDL004", "lhand_g");
-        pObject->ReplaceTextureSubtree("rfoot_g", "pmh0_footr001", 10, anColors);
-        pObject->ReplaceTextureSubtree("lfoot_g", "pmh0_footl001", 10, anColors);
-        pObject->ReplaceTextureSubtree("rshin_g", "pmh0_shinr001", 10, anColors);
-        pObject->ReplaceTextureSubtree("lshin_g", "pmh0_shinl001", 10, anColors);
-        pObject->ReplaceTextureSubtree("rthigh_g", "pmh0_legr001", 10, anColors);
-        pObject->ReplaceTextureSubtree("lthigh_g", "pmh0_legl001", 10, anColors);
-        pObject->ReplaceTextureSubtree("pelvis_g", "pmh0_pelvis001", 10, anColors);
-        pObject->ReplaceTextureSubtree("torso_g", "pmh0_chest001", 10, anColors);
-        pObject->ReplaceTextureSubtree("neck_g", "pmh0_neck001", 10, anColors);
-        pObject->ReplaceTextureSubtree("rforearm_g", "pmh0_forer002", 10, anColors);
-        pObject->ReplaceTextureSubtree("lforearm_g", "pmh0_forel002", 10, anColors);
-        pObject->ReplaceTextureSubtree("rbicep_g", "pmh0_bicepr001", 10, anColors);
-        pObject->ReplaceTextureSubtree("lbicep_g", "pmh0_bicepl001", 10, anColors);
-        pObject->ReplaceTextureSubtree("rhand_g", "pmh0_handr001", 10, anColors);
-        pObject->ReplaceTextureSubtree("lhand_g", "pmh0_handl001", 10, anColors);
-        AurTextureMakeCurrent();
-        delete pObject;
-    }
-    return "SUCKY-SUCKY?  FIVE DOLLAR!";
-}
-#endif
 // PC 0x0044FD60 GOG 0x0044FEA0
 MaxFace_PostProcess::MaxFace_PostProcess()
 {
@@ -707,6 +330,376 @@ void Model::InternalDestructor()
     if (m_pRootNode)
         m_pRootNode->DestructorDispatch();
 #endif
+}
+
+int MdlNodeAffectedByWind(MdlNode* pNode)
+{
+    MdlNodeEmitter* pEmitter = pNode->AsMdlNodeEmitter();
+    return pEmitter != 0 && pEmitter->IsAffectedByWind();
+}
+
+const char* setmirrorimage(char* sCommand)
+{
+#ifdef _XBOX
+    Gob* pGob = FindGob(GetToken(&sCommand));
+    if (pGob == 0)
+    {
+        return "FAILURE";
+    }
+    char* sImposters = GetToken(&sCommand);
+    int nImposters = atoi(sImposters);
+    float* pfValues = new float[3 * nImposters];
+    if (nImposters == 0)
+    {
+        nImposters = 1;
+    }
+    for (int i = 0; i < nImposters; i++)
+    {
+        pfValues[3 * i] = 3.0f * (float)sin(TWO_PI / nImposters);
+        pfValues[3 * i + 1] = 3.0f * (float)cos(TWO_PI / nImposters);
+        pfValues[3 * i + 2] = 0.0f;
+    }
+    pGob->SetUpImposters(atoi(sImposters), pfValues);
+    return "SUCCESS";
+#else
+    char sName[64];
+    int nImposters;
+
+    if (sscanf(sCommand, "%s %d", sName, &nImposters) != 2)
+    {
+        return "FAILURE";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "FAILURE";
+    }
+    float* pfValues = new float[3 * nImposters];
+    if (nImposters == 0)
+    {
+        nImposters = 1;
+    }
+    for (int i = 0; i < nImposters; i++)
+    {
+        float fAngle = TWO_PI * i / nImposters;
+        pfValues[3 * i] = 3.0f * (float)sin(fAngle);
+        pfValues[3 * i + 1] = 3.0f * (float)cos(fAngle);
+        pfValues[3 * i + 2] = 0.0f;
+    }
+    pGob->SetUpImposters(nImposters, pfValues);
+    return "SUCCESS";
+#endif
+}
+#ifdef _XBOX
+
+MdlNodeTrigger* MdlNode::AsMdlNodeTrigger()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIGGER)) ==
+        (MDL_NODE_HEADER | MDL_NODE_TRIGGER))
+        return (MdlNodeTrigger*)this;
+    return 0;
+}
+#endif
+
+const char* loadaddin(char* sCommand)
+{
+    char sName[64];
+    char sModel[64];
+
+    if (sscanf(sCommand, "%s %s", sName, sModel) != 2)
+    {
+        return "Incorrect number of params";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Couldn't find Gob";
+    }
+    pGob->LoadAddInAnimations(sModel);
+    pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
+    return "Playing ca1slashl";
+}
+
+const char* setillumination(char* sCommand)
+{
+    char sName[64];
+    float fRed;
+    float fGreen;
+    float fBlue;
+
+#ifdef _XBOX
+    fBlue = 0.0f;
+    fGreen = 0.0f;
+    fRed = 0.0f;
+    sName[0] = 0;
+    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
+    if (nCount != 4 && nCount != 5)
+#else
+    sName[0] = 0;
+    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
+    if (nCount != 4)
+#endif
+    {
+        return "Usage:  setillumination <gobname> <red> <green> <blue> <optional alpha>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+    pGob->SetIllumination(Vector(fRed, fGreen, fBlue), 1);
+    return "Success";
+}
+
+inline void DebugValidatePartMaterial(Part* pPart, char* sName)
+{
+}
+
+const char* append(char* sCommand)
+{
+    char sName[64];
+    char sPart[64];
+    char sModel[64];
+
+#ifdef _XBOX
+    sPart[0] = 0;
+    sModel[0] = 0;
+    sName[0] = 0;
+#else
+    sName[0] = 0;
+    sPart[0] = 0;
+    sModel[0] = 0;
+#endif
+    sscanf(sCommand, "%s%s%s", sName, sPart, sModel);
+    if (sName[0] == 0 || sPart[0] == 0 || sModel[0] == 0)
+    {
+        return "Usage:  append <gobname> <partname> <modelname>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+#ifdef _XBOX
+    if (FindPart(pGob->m_pRootPart, sPart) == 0)
+#else
+    if (pGob->GetPart(sPart) == 0)
+#endif
+    {
+        return "Error:  Object does not have part with that name";
+    }
+    pGob->Append(sModel, sPart);
+    return "OK";
+}
+
+const char* amputate(char* sCommand)
+{
+    char sName[64];
+    char sPart[64];
+
+#ifdef _XBOX
+    sPart[0] = 0;
+    sName[0] = 0;
+#else
+    sName[0] = 0;
+    sPart[0] = 0;
+#endif
+    sscanf(sCommand, "%s%s", sName, sPart);
+    if (sName[0] == 0 || sPart[0] == 0)
+    {
+        return "Usage:  ampuatate <gobname> <partname>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+#ifdef _XBOX
+    if (FindPart(pGob->m_pRootPart, sPart) == 0)
+#else
+    if (pGob->GetPart(sPart) == 0)
+#endif
+    {
+        return "Error:  Object does not have part with that name";
+    }
+    pGob->Amputate(sPart);
+    return "Amputation Sucessful";
+}
+
+const char* setgobwind(char* sCommand)
+{
+    char sName[64];
+    float fIntensity;
+
+    if (sscanf(sCommand, "%s %f", sName, &fIntensity) != 2)
+    {
+        return "Usage: setgobwind gobname intensity";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "That gob cannot be found!";
+    }
+    pGob->SetWind(true, fIntensity, 0.0f, 0.0f);
+    return "Success.";
+}
+
+const char* spinmodels(char* sCommand)
+{
+    for (int i = 0; i < 1000; i++)
+    {
+        CAurObject* pRat = NewCAurObject("c_wererat", "", 0, 0);
+        CAurObject* pSun = NewCAurObject("gidy_sun", "", 0, 0);
+        CAurObject* pRat2 = NewCAurObject("c_wererat", "", 0, 0);
+        CAurObject* pRat3 = NewCAurObject("c_wererat", "", 0, 0);
+        CAurObject* pRat4 = NewCAurObject("c_wererat", "", 0, 0);
+        CAurObject* pRat5 = NewCAurObject("c_wererat", "", 0, 0);
+        CAurObject* pRat6 = NewCAurObject("c_wererat", "", 0, 0);
+        pSun->AttachToObject(pRat, "wrat_handl", 0);
+        pSun->AttachToObject(pRat, "wrat_handr", 0);
+        pSun->AttachToObject(pRat, "wrat_t4", 0);
+        delete pRat;
+        delete pSun;
+        delete pRat2;
+        delete pRat3;
+        delete pRat4;
+        delete pRat5;
+        delete pRat6;
+    }
+    return "SUCK-CESS";
+}
+
+void MaxTree::InternalDestructor()
+{
+    MdlNode* pRootNode = m_pRootNode;
+    if (pRootNode != NULL)
+        pRootNode->DestructorDispatch();
+}
+
+const char* spawn(char* sCommand)
+{
+    char sModel[128];
+    char sName[128];
+
+    sModel[0] = 0;
+    sName[0] = 0;
+    sscanf(sCommand, "%s %s", sModel, sName);
+    CAurObject* pObject = NewCAurObject(sModel, sName, 0, 0);
+    strcpy(lastspawnedobject, pObject ? pObject->GetName() : "NULL");
+    FuncInterp("attach [lastspawned] scene");
+#ifdef _XBOX
+    return pObject ? "success" : "failure";
+#else
+    if (pObject == 0)
+    {
+        return "failure";
+    }
+    return "success";
+#endif
+}
+
+#ifdef _XBOX
+
+bool Gob::IsVisibilityTested()
+{
+    return (IsInCutscene() || IsAlternateShadowCaster() || IsAllRooms() || IsEmitterBounds()) ? false : true;
+}
+#endif
+
+#ifdef _XBOX
+char* bload(char* sArguments);
+
+const char* spawnbload(char* sCommand)
+{
+    char sModel[128];
+    char sName[128];
+
+    sModel[0] = 0;
+    sName[0] = 0;
+    sscanf(sCommand, "%s %s", sModel, sName);
+    if (stricmp(bload(sModel), "FAILURE") == 0)
+    {
+        return "FAILURE";
+    }
+    CAurObject* pObject = NewCAurObject(sModel, sName, 0, 0);
+    strcpy(lastspawnedobject, pObject ? pObject->GetName() : "NULL");
+    FuncInterp("attach [lastspawned] scene");
+    return pObject ? "success" : "failure";
+}
+
+const char* controlpart(char* sCommand)
+{
+    char sGob[64];
+    char sPart[64];
+    int nChars;
+
+    sPart[0] = 0;
+    sGob[0] = 0;
+    if (sscanf(sCommand, "%s%s%n", sGob, sPart, &nChars) < 2 || sGob[0] == 0 || sPart[0] == 0)
+    {
+        return "usage:  setcolor objectname partname r g b";
+    }
+    Gob* pGob = FindGob(sGob);
+    if (pGob == 0)
+    {
+        return "no object by that name";
+    }
+    Part* pPart = pGob->GetPart(sPart);
+    if (pPart == 0)
+    {
+        return "no part by that name";
+    }
+    MdlNode* pNode = pPart->m_pNode->ConJoinDispatch();
+    pNode->ParseFieldDispatch(skipspace(sCommand + nChars));
+    pNode->ControlDispatch(pPart, 0.0f, 0.0f, 1.0f);
+    delete pNode;
+    return "OK";
+}
+#endif
+
+#define DOGANMODELS_ITERATIONS 500
+
+const char* doganmodels(char* sCommand)
+{
+    unsigned short anColors[10] = {2, 0x104, 0x200, 0x200, 0x400, 0x500, 0x500, 0x624, 0x629, 0x629};
+
+    for (int i = DOGANMODELS_ITERATIONS; i != 0; i--)
+    {
+        CAurObject* pObject = NewCAurObject("pmh0", "", 0, 0);
+        pObject->Append("PMH0_FOOTR005", "rfoot_g");
+        pObject->Append("PMH0_FOOTL005", "lfoot_g");
+        pObject->Append("PMH0_SHINR009", "rshin_g");
+        pObject->Append("PMH0_SHINL009", "lshin_g");
+        pObject->Append("PMH0_LEGR003", "rthigh_g");
+        pObject->Append("PMH0_LEGL003", "lthigh_g");
+        pObject->Append("PMH0_PELVIS007", "pelvis_g");
+        pObject->Append("PMH0_CHEST012", "torso_g");
+        pObject->Append("PMH0_NECK001", "neck_g");
+        pObject->Append("PMH0_FORER013", "rforearm_g");
+        pObject->Append("PMH0_FOREL013", "lforearm_g");
+        pObject->Append("PMH0_BICEPR010", "rbicep_g");
+        pObject->Append("PMH0_BICEPL010", "lbicep_g");
+        pObject->Append("PMH0_HANDR004", "rhand_g");
+        pObject->Append("PMH0_HANDL004", "lhand_g");
+        pObject->ReplaceTextureSubtree("rfoot_g", "pmh0_footr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lfoot_g", "pmh0_footl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rshin_g", "pmh0_shinr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lshin_g", "pmh0_shinl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rthigh_g", "pmh0_legr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lthigh_g", "pmh0_legl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("pelvis_g", "pmh0_pelvis001", 10, anColors);
+        pObject->ReplaceTextureSubtree("torso_g", "pmh0_chest001", 10, anColors);
+        pObject->ReplaceTextureSubtree("neck_g", "pmh0_neck001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rforearm_g", "pmh0_forer002", 10, anColors);
+        pObject->ReplaceTextureSubtree("lforearm_g", "pmh0_forel002", 10, anColors);
+        pObject->ReplaceTextureSubtree("rbicep_g", "pmh0_bicepr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lbicep_g", "pmh0_bicepl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rhand_g", "pmh0_handr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lhand_g", "pmh0_handl001", 10, anColors);
+        AurTextureMakeCurrent();
+        delete pObject;
+    }
+    return "SUCKY-SUCKY?  FIVE DOLLAR!";
 }
 // PC 0x00452600 GOG 0x00452740
 MaxTree::~MaxTree()
@@ -2636,6 +2629,11 @@ void Gob::EnableAlwaysRender()
 void Gob::DisableAlwaysRender()
 {
     m_bAlwaysRendering = 0;
+}
+// PC 0x00450BE0 GOG 0x00450D20
+void Gob::EnableInCutscene()
+{
+    m_bInCutscene = 1;
 }
 // PC 0x00450BF0 GOG 0x00450D30
 void Gob::DisableInCutscene()
