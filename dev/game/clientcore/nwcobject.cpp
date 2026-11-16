@@ -481,7 +481,7 @@ int CSWCObject::SetAnimation(unsigned short nAnimation, int nFlags, int nParam)
             nAnimation != 10006 && nAnimation != 10008 && nAnimation != 10156)
             return 0;
     }
-    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 &&
+    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut &&
         m_bPlayedOutOfPlace)
         return 0;
     if (m_pAnimBase == NULL)

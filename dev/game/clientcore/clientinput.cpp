@@ -170,18 +170,18 @@ int CClientExoAppInternal::PerformRButtonUpAction()
 #endif
 }
 // PC 0x0066FE30 GOG 0x0066FBD0
-void CClientExoAppInternal::SetMouseCursor(int nCursor, int nArg2, int nArg3)
+void CClientExoAppInternal::SetMouseCursor(int nCursor, int bCentered, int bMouseDown)
 {
     if (g_pExoInput != NULL)
     {
 #ifndef _XBOX
-        nCursor = g_pExoInput->SetMouseCursor(nCursor, nArg2, nArg3);
+        nCursor = g_pExoInput->SetMouseCursor(nCursor, bCentered, bMouseDown);
 #endif
     }
     if (m_pSWGuiManager != NULL)
     {
 #ifndef _XBOX
-        m_pSWGuiManager->SetSoftwareMouseCursor(nCursor, nArg2, nArg3);
+        m_pSWGuiManager->SetSoftwareMouseCursor(nCursor, bCentered, bMouseDown);
 #endif
     }
 }
@@ -246,7 +246,7 @@ int TestNearestStruct(void* pObjectId, CNearestStruct cNearest)
     return (unsigned long)pObjectId == cNearest.m_oidObject;
 }
 // PC 0x0066FF50 GOG 0x0066FCF0
-int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
+int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int bMultipleActions)
 {
     int nCursor;
     switch (nAction & 0xFFFFFFF)
@@ -675,9 +675,9 @@ void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840 GOG 0x00
 }
 #endif
 
-CResRef CClientExoAppInternal::ActionIconToCursorResref(int nAction, int nArg2)
+CResRef CClientExoAppInternal::ActionIconToCursorResref(int nAction, int bMultipleActions)
 {
-    return CResRef(g_asMouseCursorNames[ActionIconToMouseCursor(nAction, nArg2)]);
+    return CResRef(g_asMouseCursorNames[ActionIconToMouseCursor(nAction, bMultipleActions)]);
 }
 
 #ifndef _XBOX
@@ -722,7 +722,7 @@ void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10 GOG 0x006708B0
                     if (pTarget->AsSWCCreature() != NULL)
                     {
                         CSWSCreature* pServerCreature = pTarget->AsSWCCreature()->GetServerCreature();
-                        if (pServerCreature != NULL && pServerCreature->m_n258 == 0)
+                        if (pServerCreature != NULL && pServerCreature->m_bConfused == 0)
                         {
                             m_aDefaultActions.SetSize(nAction + 1);
                             m_aDefaultActions[0].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_DIALOG);

@@ -586,7 +586,7 @@ void CSWSTrigger::EventHandler(unsigned long nEventId, unsigned long oidCaller,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC)
+        if (m_bDestroyable)
         {
             RemoveFromArea();
             delete this;

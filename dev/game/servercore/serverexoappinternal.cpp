@@ -3778,7 +3778,7 @@ void CServerExoAppInternal::TempDeathUpdate()
                     pEffect->m_nSubType = CGameEffect::DURATION_TYPE_INSTANTANEOUS |
                         (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
                     pMember->ApplyEffect(pEffect, 0, 0);
-                    pMember->m_nF0 = 1;
+                    pMember->m_bRaiseable = 1;
                 }
                 if (g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bSoloMode == 0)
                 {
@@ -5323,7 +5323,7 @@ int CServerExoAppInternal::MainLoop()
                         DealWithLoadGameError(LOAD_GAME_ERROR_COPY_MODULE);
                     else
                     {
-                        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n1024 = 0;
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bFadeUntilScript = 0;
                         pModule = new CSWSModule(sModuleName, 0,
                             (unsigned short)nType == RESTYPE_SAV ||
                             (unsigned short)nType == RESTYPE_RSV);

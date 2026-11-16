@@ -845,7 +845,7 @@ int CSWSObject::AddCloseDoorAction(unsigned long oidDoor, int bSuccess)
 }
 // PC 0x004F9940 GOG 0x00509130
 int CSWSObject::AddUnlockObjectAction(unsigned long oidObject,
-                                      unsigned long oidKey, int bUnknown)
+                                      unsigned long oidKey, int bInstant)
 {
     if (AsSWSCreature() != NULL)
     {
@@ -863,7 +863,7 @@ int CSWSObject::AddUnlockObjectAction(unsigned long oidObject,
         return 0;
     }
 
-    AddAction(0x26, 0xffff, 3, &oidObject, 3, &oidKey, 1, &bUnknown, 0, 0, 0, 0,
+    AddAction(0x26, 0xffff, 3, &oidObject, 3, &oidKey, 1, &bInstant, 0, 0, 0, 0,
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
@@ -976,12 +976,12 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_bCommandable = 1;
     m_bListening = 0;
     m_sTag = "";
-    m_nEC = 1;
-    m_nF0 = 1;
-    m_c7C = -1;
-    m_c1D5 = -1;
-    m_c1D4 = -1;
-    m_nF4 = 0;
+    m_bDestroyable = 1;
+    m_bRaiseable = 1;
+    m_nSavedAILevel = -1;
+    m_nLastSpellCastMetaType = -1;
+    m_nLastSpellCastMultiClass = -1;
+    m_bDeadSelectable = 0;
     m_fSyncHeight = 1.0f;
     m_nAILevel = -1;
     m_oidLastSpeaker = OBJECT_INVALID;
@@ -989,20 +989,20 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_oidLastHostileActor = OBJECT_INVALID;
     m_oidLastDamager = OBJECT_INVALID;
     m_oidLastAttacker = OBJECT_INVALID;
-    m_n154 = OBJECT_INVALID;
+    m_oidLastKiller = OBJECT_INVALID;
     m_oidLastDisturbed = OBJECT_INVALID;
-    m_n1D0 = 0;
+    m_bLastSpellCastSpontaneous = 0;
     m_nLastSpellId = -1;
-    m_c1C4 = 0;
+    m_nLastSpellLevel = 0;
     m_oidSpellTargetObject = OBJECT_INVALID;
     m_vSpellTargetPosition = Vector(0.0f, 0.0f, 0.0f);
     m_bSafeProjectileBroadcast = 0;
-    m_n1DC = -1;
-    m_n1E0 = 0;
-    m_n1D8 = OBJECT_INVALID;
-    m_n208 = 0;
+    m_nLastSpellCastAtMeId = -1;
+    m_bLastSpellCastAtMeHarmful = 0;
+    m_oidLastSpellCaster = OBJECT_INVALID;
+    m_nLastSpellForcePointCost = 0;
     m_oidInventoryDisturbItem = OBJECT_INVALID;
-    m_n178 = 0;
+    m_nInventoryDisturbType = 0;
     m_nSavingThrowSpellId = -1;
     m_pDamageImmunity = new char[LAST_DAMAGE_TYPE_COUNT];
     for (int i = 0; i < LAST_DAMAGE_TYPE_COUNT; i++)
@@ -1018,7 +1018,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_nLastGroupId = 0;
     m_pCurrentActionNode = NULL;
     m_nEffectIterator = 0;
-    m_n1EC = 0;
+    m_bApplyingInnateEffect = 0;
     m_bApplyingLinkedEffect = 0;
     m_nPortraitId = 0xFFFF;
     m_bOpenDoorStarted = 0;
@@ -1039,16 +1039,16 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_n64 = 0;
     m_bPartyInteract = 0;
     m_bDialogFaceSpeaker = 1;
-    m_n24C = 0;
-    m_c250 = 3;
-    m_c251 = 0;
-    m_n254 = 0;
-    m_n258 = 0;
+    m_bHologram = 0;
+    m_nMultiplierSet = 3;
+    m_nPCLevelAtSpawn = 0;
+    m_bWillNotRender = 0;
+    m_bConfused = 0;
     m_pClientObject = NULL;
     m_bDialogSoundStopped = 0;
     pServerApp = g_pAppManager->m_pServerExoApp;
-    pServerApp->GetWorldTimer()->GetWorldTime(&m_nC4, &m_nC8);
-    m_n260 = 0;
+    pServerApp->GetWorldTimer()->GetWorldTime(&m_nAnimationStartDay, &m_nAnimationStartTime);
+    m_bForceAlwaysUpdate = 0;
 }
 
 void CSWSObject::CopyScriptVars(CSWSScriptVarTable* pVarTable)
@@ -1592,7 +1592,7 @@ int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // PC 0x004FB4F0 GO
             int nClass = CSWClass::CCLASS_INVALID;
             if (bFromItem != 1)
             {
-                unsigned char nMultiClass = pCaster->m_c1D4;
+                unsigned char nMultiClass = pCaster->m_nLastSpellCastMultiClass;
                 CSWSCreatureStats* pStats = pCaster->AsSWSCreature()->m_pStats;
                 nClass = pStats->GetClass(nMultiClass);
             }
@@ -1637,7 +1637,7 @@ void CSWSObject::ApplyEffect(CGameEffect* pEffect, int bLoadingGame,  // PC 0x00
     g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
         &nCurrentDay, &nCurrentTime);
 
-    pEffect->m_bSkipOnLoad = m_n1EC != 0 || pEffect->m_bExposed == 0;
+    pEffect->m_bSkipOnLoad = m_bApplyingInnateEffect != 0 || pEffect->m_bExposed == 0;
     if (g_pAppManager->GetServerExoApp()->GetServerAIMaster()->OnEffectApplied(
             this, pEffect, bLoadingGame) != CSWSEffectListHandler::DELETE_EFFECT)
     {
@@ -2176,7 +2176,7 @@ void CSWSObject::SetGroupInterruptable(unsigned short nGroupId,  // PC 0x004F638
     {
         if (pAction->m_nGroupId == nGroupId)
         {
-            pAction->m_nField70 = bInterruptable;
+            pAction->m_bInterruptable = bInterruptable;
         }
         pAction = m_lstActions.GetNext(pPos);
     }
@@ -2285,7 +2285,7 @@ void CSWSObject::AddActionToFront(
 
     pNode->m_nActionType = nActionType;
     nNewGroupId = nGroupId;
-    pNode->m_nField70 = 1;
+    pNode->m_bInterruptable = 1;
     if (nGroupId == ACTION_GROUP_NEW)
     {
         nNewGroupId = m_nNextGroupId;
@@ -2713,7 +2713,7 @@ int CSWSObject::UpdateDialog()
         return 1;
     }
 
-    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nC0 == 0 &&
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bAnimatedCut == 0 &&
         m_bDialogSoundStopped != 0 &&
         IsSoundPlayingInDialog() != 0)
     {
@@ -3475,7 +3475,7 @@ unsigned long CSWSObject::GetNearestObjectByName(const CExoString& sName,
             Vector vDifference = vObjectPosition - vPosition;
             float fDistanceSquared = vDifference * vDifference;
             if (!bDistanceLimit || fDistanceSquared <= fNearestDistance ||
-                pObject->m_n260 != 0)
+                pObject->m_bForceAlwaysUpdate != 0)
             {
                 oidNearest = pObject->GetId();
                 bDistanceLimit = 1;
@@ -4024,7 +4024,7 @@ void CSWSObject::AddAction(
 
     pNode->m_nActionType = nActionType;
     nNewGroupId = nGroupId;
-    pNode->m_nField70 = 1;
+    pNode->m_bInterruptable = 1;
     if (nGroupId == ACTION_GROUP_NEW)
     {
         nNewGroupId = m_nNextGroupId;
@@ -4240,7 +4240,7 @@ int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)
             int nClass = CSWClass::CCLASS_INVALID;
             if (bFromItem != 1)
             {
-                unsigned char nMultiClass = pCaster->m_c1D4;
+                unsigned char nMultiClass = pCaster->m_nLastSpellCastMultiClass;
                 CSWSCreatureStats* pStats = pCaster->AsSWSCreature()->m_pStats;
                 nClass = pStats->GetClass(nMultiClass);
             }

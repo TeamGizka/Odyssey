@@ -7078,11 +7078,11 @@ int CSWCMessage::HandleServerToPlayerLoadBar(unsigned char nMinor)
             if (MessageReadOverflow(1) || MessageReadUnderflow(1))
                 return 0;
             int bSuppressLoadBar = g_pAppManager->GetClientExoApp()
-                ->m_pcExoAppInternal->m_nUnknown188;
+                ->m_pcExoAppInternal->m_bSuppressLoadBar;
             if (bSuppressLoadBar != 0 && nEvent == LOADBAR_STALL_EVENT_SAVE_GAME)
             {
                 g_pAppManager->GetClientExoApp()->m_pcExoAppInternal
-                    ->m_nUnknown240 = 1;
+                    ->m_bSaveStallEventSuppressed = 1;
                 return 1;
             }
             if (g_pAppManager->m_pServerExoApp != NULL)
@@ -7105,7 +7105,7 @@ int CSWCMessage::HandleServerToPlayerLoadBar(unsigned char nMinor)
             if (MessageReadOverflow(1) || MessageReadUnderflow(1))
                 return 0;
             if (g_pAppManager->m_pClientExoApp->m_pcExoAppInternal
-                    ->m_nUnknown240 == 1)
+                    ->m_bSaveStallEventSuppressed == 1)
                 return 1;
             if (g_pAppManager->m_pServerExoApp != NULL)
                 return 1;
@@ -7121,10 +7121,10 @@ int CSWCMessage::HandleServerToPlayerLoadBar(unsigned char nMinor)
             if (MessageReadOverflow(1) || MessageReadUnderflow(1))
                 return 0;
             if (g_pAppManager->GetClientExoApp()->GetExoAppInternal()
-                    ->m_nUnknown240 == 1)
+                    ->m_bSaveStallEventSuppressed == 1)
             {
                 g_pAppManager->GetClientExoApp()->GetExoAppInternal()
-                    ->m_nUnknown240 = 0;
+                    ->m_bSaveStallEventSuppressed = 0;
                 return 1;
             }
             g_pAppManager->GetClientExoApp()->GetExoAppInternal()

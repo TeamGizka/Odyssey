@@ -1745,7 +1745,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
             pCreature->m_pStats->m_nGender != pLastUpdateObject->m_nGender ||
             pCreature->m_pStats->m_nGoodEvilAlignment != pLastUpdateObject->m_nGoodEvilAlignment ||
             pCreature->GetStats()->m_n18C != pLastUpdateObject->m_n11A ||
-            pCreature->m_nF4 != pLastUpdateObject->m_nObjectF4 ||
+            pCreature->m_bDeadSelectable != pLastUpdateObject->m_nObjectF4 ||
             pCreature->GetForm() != pLastUpdateObject->m_n11C ||
             pCreature->GetTag() != pLastUpdateObject->m_s120)
         {
@@ -2868,7 +2868,7 @@ int CSWSMessage::TestObjectVisible(CSWSObject* pObject,
                 if (bInArea == 0)
                 {
                     if ((fCheckDistance * fCheckDistance >= fDistanceSquared ||
-                         pObject->m_n260 != 0) &&
+                         pObject->m_bForceAlwaysUpdate != 0) &&
                         pObject->AsSWSCreature()->GetInvisible(
                             pPlayerObject->AsSWSCreature()) == 0)
                     {
@@ -2889,7 +2889,7 @@ int CSWSMessage::TestObjectVisible(CSWSObject* pObject,
         }
     }
     else if (fCheckDistance * fCheckDistance >= fDistanceSquared ||
-             pObject->m_n260 != 0)
+             pObject->m_bForceAlwaysUpdate != 0)
     {
         if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
         {
@@ -3507,7 +3507,7 @@ unsigned short CSWSMessage::ComputeLastUpdate_PlayerState(
     {
         nState |= PLAYER_STATE_ASSOCIATE_6;
     }
-    if (pCreature->m_nUnknown8E8 == 1)
+    if (pCreature->m_bLimitMovementSpeed == 1)
     {
         nState |= PLAYER_STATE_CREATURE_8E8;
     }
@@ -3699,7 +3699,7 @@ CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
                     int nOverride = 0;
                     if (pObject->AsSWSObject() != NULL)
                     {
-                        nOverride = pObject->AsSWSObject()->m_n260;
+                        nOverride = pObject->AsSWSObject()->m_bForceAlwaysUpdate;
                     }
                     if (fDistanceSquared < fVisibleDistance * fVisibleDistance ||
                         nOverride != 0)
@@ -7660,7 +7660,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         WriteWORD(pCreature->m_pStats->m_n18C, 16);
         WriteINT(pCreature->m_nCurrentForm, 32);
         WriteCExoString(pCreature->m_sTag, 32);
-        WriteBOOL(pObject->m_nF4);
+        WriteBOOL(pObject->m_bDeadSelectable);
         WriteBYTE(pCreature->m_pStats->m_nClassCount, 8);
         for (int i = 0; i < pCreature->m_pStats->m_nClassCount; i++)
         {
@@ -7851,7 +7851,7 @@ void CSWSMessage::UpdateLastUpdateObject(
             pLastUpdateObject->m_n11A = pCreature->m_pStats->m_n18C;
             pLastUpdateObject->m_n11C = pCreature->m_nCurrentForm;
             pLastUpdateObject->m_s120 = pCreature->m_sTag;
-            pLastUpdateObject->m_nObjectF4 = pCreature->m_nF4;
+            pLastUpdateObject->m_nObjectF4 = pCreature->m_bDeadSelectable;
             for (int i = 0; i < pCreature->m_pStats->GetNumClasses(); i++)
             {
                 pLastUpdateObject->m_nClass[i] = pCreature->m_pStats->GetClass(i);
@@ -8167,7 +8167,7 @@ void CSWSMessage::ComputeGameObjectUpdateForObject(CSWSPlayer* pPlayer,
     {
         CSWSObject* pObject = pGameObject->AsSWSObject();
         int bVisible = TestObjectVisible(pObject, pPlayerObject);
-        if (pObject->m_n260 != 0)
+        if (pObject->m_bForceAlwaysUpdate != 0)
         {
             bVisible = 1;
         }

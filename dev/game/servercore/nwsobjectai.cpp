@@ -55,12 +55,12 @@ int OverrideReputation = CSWSObject::REPUTATION_NO_OVERRIDE;
 // PC 0x005DACE0 GOG 0x005DAD50
 void CSWSCreature::SetPreDialogPosition(Vector vPosition)
 {
-    m_v1208 = vPosition;
+    m_vPreDialogPosition = vPosition;
 }
 // PC 0x005DAD00 GOG 0x005DAD70
 void CSWSCreature::SetPreDialogOrientation(Vector vOrientation)
 {
-    m_v1214 = vOrientation;
+    m_vPreDialogOrientation = vOrientation;
 }
 // PC 0x005DAD20 GOG 0x005DAD90
 unsigned long CSWSObject::GetAcceptableAction(unsigned long nActionType)
@@ -485,7 +485,7 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
                         pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                             CGameEffect::DURATION_TYPE_INSTANTANEOUS;
                         pOriginalPlayer->ApplyEffect(pEffect, 0, 0);
-                        pOriginalPlayer->m_nF0 = 1;
+                        pOriginalPlayer->m_bRaiseable = 1;
                     }
                     pOriginalPlayer->AddActionToFront(ACTION_DIALOG_OBJECT, pNode->m_nGroupId,
                         ACTION_PARAM_OBJECT, &oidTarget, ACTION_PARAM_STRING, &sDialog,
@@ -502,7 +502,7 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
         pTargetCreature = pTarget->AsSWSCreature();
         if (pTargetCreature != NULL && pTargetCreature->m_bInParty)
         {
-            pTargetCreature->m_n1204 = 1;
+            pTargetCreature->m_bPreDialogPositionSaved = 1;
             pTargetCreature->SetPreDialogPosition(pTargetCreature->m_vPosition);
             pTargetCreature->SetPreDialogOrientation(pTargetCreature->m_vOrientation);
         }
@@ -520,7 +520,7 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
                 Vector vOrientation = pLeaderCreature->m_vOrientation;
                 if (pLeaderCreature->m_bInParty)
                 {
-                    pLeaderCreature->m_n1204 = 1;
+                    pLeaderCreature->m_bPreDialogPositionSaved = 1;
                     pLeaderCreature->SetPreDialogPosition(vLeaderPosition);
                     pLeaderCreature->SetPreDialogOrientation(vOrientation);
                 }
@@ -1610,8 +1610,8 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
     pServer->GetWorldTimer()->GetWorldTime(&nCurrentDay, &nCurrentTime);
     if (bFirstUpdate == 1)
     {
-        m_nC4 = nCurrentDay;
-        m_nC8 = nCurrentTime;
+        m_nAnimationStartDay = nCurrentDay;
+        m_nAnimationStartTime = nCurrentTime;
         pNode->m_apParam[3] = (void*)0;
         pServer = g_pAppManager->GetServerExoApp();
         if (GetId() == pServer->GetPlayerCreatureId())
@@ -1646,7 +1646,7 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
     }
     pServer = g_pAppManager->GetServerExoApp();
     pServer->GetWorldTimer()->SubtractWorldTimes(
-        nCurrentDay, nCurrentTime, m_nC4, m_nC8,
+        nCurrentDay, nCurrentTime, m_nAnimationStartDay, m_nAnimationStartTime,
         &nElapsedDay, &nElapsedTime);
 
     int bDone = 0;
@@ -2780,7 +2780,7 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
                 break;
             case ACTION_FOLLOW_OWNER:
                 if (nObjectType == SW_OBJECT_TYPE_CREATURE &&
-                    AsSWSCreature() != NULL && AsSWSCreature()->m_n11FC)
+                    AsSWSCreature() != NULL && AsSWSCreature()->m_bIsPuppet)
                     nResult = AsSWSCreature()->AIActionFollowOwner(pNode);
                 break;
             case ACTION_RANDOM_WALK:
@@ -2905,9 +2905,9 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
             case ACTION_PHYSICAL_ATTACKS:
                 if (nObjectType == SW_OBJECT_TYPE_CREATURE)
                 {
-                    m_nUnknown84 = (unsigned long)pNode->m_apParam[0];
+                    m_oidCurrentActionTarget = (unsigned long)pNode->m_apParam[0];
                     nResult = AsSWSCreature()->AIActionPhysicalAttacks(pNode);
-                    m_nUnknown84 = OBJECT_INVALID;
+                    m_oidCurrentActionTarget = OBJECT_INVALID;
                     if (nResult != ACTION_IN_PROGRESS)
                     {
                         unsigned long nCurrentDay, nCurrentTime;

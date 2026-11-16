@@ -2608,7 +2608,7 @@ void CSWSArea::SaveCreatures(CResGFF* pRes, CResStruct* pStruct,
                 ((CSWSObject*)pGameObject)->AsSWSCreature();
 
             EXOXBOXASSERT(pCreature);
-            if (pCreature->m_bInParty == 0 && pCreature->m_n11FC == 0)
+            if (pCreature->m_bInParty == 0 && pCreature->m_bIsPuppet == 0)
             {
                 pRes->AddListElement(&cStruct, &cList, 4);
                 pRes->WriteFieldDWORD(&cStruct, pCreature->m_nId,

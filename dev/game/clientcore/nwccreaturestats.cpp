@@ -813,15 +813,15 @@ unsigned char CSWCCreatureStats::GetLevel()
     {
         CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
         if (pServerCreature != NULL && !pServerCreature->GetStats()->GetIsPC() &&
-            !pServerCreature->m_bInParty && pServerCreature->m_c250 != 0)
+            !pServerCreature->m_bInParty && pServerCreature->m_nMultiplierSet != 0)
         {
-            int nAutoBalanceRow = pServerCreature->m_c250;
+            int nAutoBalanceRow = pServerCreature->m_nMultiplierSet;
             if (nAutoBalanceRow != 0)
             {
                 C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
                 float fLevelMult;
                 pAutoBalance->GetFLOATEntry(nAutoBalanceRow, "LevelMult", &fLevelMult);
-                char nPCLevel = pServerCreature->m_c251;
+                char nPCLevel = pServerCreature->m_nPCLevelAtSpawn;
                 if (nPCLevel == 0)
                 {
                     g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(

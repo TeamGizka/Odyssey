@@ -76,12 +76,12 @@ void CSWSDoor::AIUpdate()
     {
         if (m_nLastUpdateMilliseconds != 0 && GetDead() == 0)
         {
-            if (m_c251 == 0)
+            if (m_nPCLevelAtSpawn == 0)
             {
                 char nPCLevel = 0;
                 g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
                     "G_PC_LEVEL", nPCLevel);
-                m_c251 = nPCLevel;
+                m_nPCLevelAtSpawn = nPCLevel;
             }
             g_pVirtualMachine->RunScript(&m_asScripts[5], m_nId, 1);
         }
@@ -162,7 +162,7 @@ unsigned char CSWSDoor::GetOpenLockDC()
                 nModifier = 5;
                 break;
         }
-        nDC = (m_c251 + 7) * (nPercent / 100) + m_nOpenLockDiffMod + nModifier + 21;
+        nDC = (m_nPCLevelAtSpawn + 7) * (nPercent / 100) + m_nOpenLockDiffMod + nModifier + 21;
     }
     return nDC;
 }
@@ -486,7 +486,7 @@ int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldWORD(pStruct, GetLoadScreenID(), "LoadScreenID");
     pRes->WriteFieldBYTE(pStruct, m_bUseTweakColor, "UseTweakColor");
     pRes->WriteFieldDWORD(pStruct, m_nTweakColor, "TweakColor");
-    pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
+    pRes->WriteFieldBYTE(pStruct, m_nPCLevelAtSpawn, "PCLevelAtSpawn");
     pRes->WriteFieldCExoLocString(pStruct, *GetFirstName(), "LocName");
     pRes->WriteFieldCExoLocString(pStruct, m_locDescription, "Description");
     pRes->WriteFieldBYTE(pStruct, m_bStatic, "Static");
@@ -758,7 +758,7 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
     m_sLinkedTo = pRes->ReadFieldCExoString(pStruct, "LinkedTo", bSuccess, "");
     m_bUseTweakColor = pRes->ReadFieldBYTE(pStruct, "UseTweakColor", bSuccess, 0);
     m_nTweakColor = pRes->ReadFieldDWORD(pStruct, "TweakColor", bSuccess, 0);
-    m_c251 = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, 0);
+    m_nPCLevelAtSpawn = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, 0);
     m_locTransitionDestination = pRes->ReadFieldCExoLocString(pStruct, "TransitionDestination", bSuccess, m_locTransitionDestination);
     CResRef cModule;
     cModule = pRes->ReadFieldCResRef(pStruct, "LinkedToModule", bSuccess, "");
@@ -823,7 +823,7 @@ void CSWSDoor::PostProcess()
 {
     if (m_nHardness > 0)
     {
-        m_n1EC = 1;
+        m_bApplyingInnateEffect = 1;
         CGameEffect* pEffect = new CGameEffect(1);
         pEffect->m_nType = CSWSEffectListHandler::EFFECT_DAMAGE_RESISTANCE;
         pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
@@ -832,7 +832,7 @@ void CSWSDoor::PostProcess()
         pEffect->SetInteger(0, CSWSEffectListHandler::DAMAGE_FLAG_ALL);
         pEffect->SetInteger(1, m_nHardness);
         ApplyEffect(pEffect, 0, 0);
-        m_n1EC = 0;
+        m_bApplyingInnateEffect = 0;
     }
 
     if (m_bAnimatable == 0)
@@ -1415,7 +1415,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_DAMAGED], m_nId, 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH:
-            m_n154 = oidCaller;
+            m_oidLastKiller = oidCaller;
             g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_DEATH], m_nId, 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DISARM:
@@ -1567,13 +1567,13 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_SPELLCASTAT:
             {
-                m_n1D8 = pEvent->GetObjectID(0);
-                m_n1DC = pEvent->GetInteger(0);
-                m_n1E0 = pEvent->GetInteger(1);
-                if (m_n1E0)
+                m_oidLastSpellCaster = pEvent->GetObjectID(0);
+                m_nLastSpellCastAtMeId = pEvent->GetInteger(0);
+                m_bLastSpellCastAtMeHarmful = pEvent->GetInteger(1);
+                if (m_bLastSpellCastAtMeHarmful)
                 {
-                    SetLastHostileActor(m_n1D8, 0);
-                    unsigned long oidCaster = m_n1D8;
+                    SetLastHostileActor(m_oidLastSpellCaster, 0);
+                    unsigned long oidCaster = m_oidLastSpellCaster;
                     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaster);
                     if (pCreature != NULL)
                     {
@@ -1686,7 +1686,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC)
+        if (m_bDestroyable)
         {
             if (!GetIsLinked())
             {

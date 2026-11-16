@@ -329,7 +329,7 @@ CSWCPlayer* CClientExoApp::GetPlayerByPlayerID(unsigned long nPlayerId)
 // PC 0x00638930 GOG 0x00638820
 CNetLayer* CClientExoApp::GetNetLayer()
 {
-    return m_pcExoAppInternal->m_pUnknown10;
+    return m_pcExoAppInternal->m_pNetLayer;
 }
 // PC 0x00638940 GOG 0x00638830
 CSWCMessage* CClientExoApp::GetSWCMessage()
@@ -906,7 +906,7 @@ int CClientExoApp::GetPazaakResults(int* pnResult, int* pnUnused)
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
     int nUnused;
     *pnResult = pInternal->m_PazaakState.m_nResult;
-    nUnused = pInternal->m_PazaakState.m_nResultUnused;
+    nUnused = pInternal->m_PazaakState.m_nWager;
     *pnUnused = nUnused;
     return nUnused;
 }
@@ -931,7 +931,7 @@ void CClientExoApp::SetEndGamePending(int bPending, float fDelay, int nC)
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
     pInternal->m_bEndGamePending = bPending;
     pInternal->m_fEndGamePendingDelay = fDelay;
-    pInternal->m_nEndGamePendingUnknown = nC;
+    pInternal->m_bShowEndGameDeathMessage = nC;
 }
 // PC 0x00639090 GOG 0x00638F90
 int CClientExoApp::PlayRumblePattern(int nPattern)
@@ -1408,7 +1408,7 @@ int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int nA, int nB)
 
 void CClientExoApp::SetMissingFilePending(int bPending)
 {
-    m_pcExoAppInternal->m_nXboxUnmapped468 = bPending;
+    m_pcExoAppInternal->m_bMissingFilePending = bPending;
 }
 #endif
 

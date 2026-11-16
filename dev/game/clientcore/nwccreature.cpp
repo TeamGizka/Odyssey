@@ -1560,7 +1560,7 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
     {
         return;
     }
-    int nPUP = pServerCreature->m_n11F8;
+    int nPUP = pServerCreature->m_nAssignedPup;
     if (bStateChanged && nPUP != -1)
     {
         CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(
@@ -8745,13 +8745,13 @@ int CSWCCreature::LoadModel(const CResRef& cModel, unsigned char nModel,
                 m_fHeadHitHeight = 2.1f;
         }
         CSWSCreature* pServerCreature = GetServerCreature();
-        if (pServerCreature != NULL && pServerCreature->m_n24C)
+        if (pServerCreature != NULL && pServerCreature->m_bHologram)
             pModel->EnableHologram(1);
-        if (pServerCreature != NULL && pServerCreature->m_n254)
+        if (pServerCreature != NULL && pServerCreature->m_bWillNotRender)
             pModel->EnableRendering(0);
         else
             pModel->EnableRendering(1);
-        if (pServerCreature != NULL && pServerCreature->m_n254)
+        if (pServerCreature != NULL && pServerCreature->m_bWillNotRender)
             pModel->EnableRendering(0);
 
         short nAlignment = m_pStats->m_nGoodEvilAlignment;

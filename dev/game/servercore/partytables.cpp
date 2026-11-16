@@ -148,7 +148,7 @@ int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
             fPercent = nPercentXP * 0.01f;
         }
 
-        int nXP = pCreature->m_pStats->m_nExperience - pCreature->m_nUnknown22C;
+        int nXP = pCreature->m_pStats->m_nExperience - pCreature->m_nJoiningXP;
         int nPoolXP = m_nXPPool;
         if (nXP < (int)(nPoolXP * fPercent))
         {
@@ -313,7 +313,7 @@ CSWSCreature* CSWPartyTable::GetPUPOwner(int nPUP)
             unsigned long oidNPC = GetNPCObject(m_anMembers[i], 0, 1);
             CSWSCreature* pCreature =
                 g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
-            if (pCreature != NULL && pCreature->m_n11F8 == nPUP)
+            if (pCreature != NULL && pCreature->m_nAssignedPup == nPUP)
             {
                 return pCreature;
             }
@@ -323,7 +323,7 @@ CSWSCreature* CSWPartyTable::GetPUPOwner(int nPUP)
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pPlayer = pServerExoApp->GetCreatureByGameObjectID(
         pServerExoApp->GetPlayerCreatureId());
-    if (pPlayer != NULL && pPlayer->m_n11F8 == nPUP)
+    if (pPlayer != NULL && pPlayer->m_nAssignedPup == nPUP)
     {
         return pPlayer;
     }
@@ -356,7 +356,7 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80 GOG 0x0057EC00
     if (pCreature != NULL)
     {
         pCreature->ClearAllEffects(0);
-        int nPUP = pCreature->m_n11F8;
+        int nPUP = pCreature->m_nAssignedPup;
         if (nPUP != -1 && GetIsPuppet(nPUP) != 0)
         {
             RemovePuppet(nPUP);
@@ -476,7 +476,7 @@ int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D02
         }
         m_nNumMembers++;
         pCreature->HandleAlignmentInfluence();
-        int nPUP = pCreature->m_n11F8;
+        int nPUP = pCreature->m_nAssignedPup;
         if (nPUP != -1)
         {
             AddPuppet(nPUP, SpawnPUP(nPUP, 1, pCreature->m_vPosition,
@@ -734,7 +734,7 @@ int CSWPartyTable::AssignPUP(int nPUP, int nNPC)
     {
         return 0;
     }
-    pCreature->m_n11F8 = nPUP;
+    pCreature->m_nAssignedPup = nPUP;
     return 1;
 }
 // PC 0x0057DC50 GOG 0x0057DCD0
@@ -2055,12 +2055,12 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260 G
     }
     if (nBaseXP <= nPoolXP)
     {
-        pCreature->m_nUnknown22C = 0;
+        pCreature->m_nJoiningXP = 0;
         pCreature->ReceiveExperience(nPoolXP);
     }
     else
     {
-        pCreature->m_nUnknown22C = 0;
+        pCreature->m_nJoiningXP = 0;
         pCreature->ReceiveExperience(nBaseXP - nPoolXP);
     }
 
@@ -2199,7 +2199,7 @@ unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
 
             if (bResurrect != 0 && pCreature->GetCurrentHitPoints(0) <= 0)
             {
-                pCreature->m_nF0 = 1;
+                pCreature->m_bRaiseable = 1;
                 CGameEffect* pEffect = new CGameEffect(1);
                 pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
                 pEffect->m_nSubType =
@@ -2239,7 +2239,7 @@ unsigned long CSWPartyTable::GetPUPObject(int nPUP, int bLoad, int bResurrect)
 
             if (bResurrect != 0 && pCreature->GetCurrentHitPoints(0) <= 0)
             {
-                pCreature->m_nF0 = 1;
+                pCreature->m_bRaiseable = 1;
                 CGameEffect* pEffect = new CGameEffect(1);
                 pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
                 pEffect->m_nSubType =
@@ -2768,11 +2768,11 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)
     }
     if (nBaseXP <= nPoolXP)
     {
-        pCreature->m_nUnknown22C = 0;
+        pCreature->m_nJoiningXP = 0;
     }
     else
     {
-        pCreature->m_nUnknown22C = nBaseXP - nPoolXP;
+        pCreature->m_nJoiningXP = nBaseXP - nPoolXP;
     }
 
     CServerExoApp* pServerExoApp = g_pAppManager->GetServerExoApp();

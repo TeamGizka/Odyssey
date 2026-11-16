@@ -274,8 +274,8 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     m_bIsBodyBag = bIsBodyBag;
     m_bIsCorpse = pRes->ReadFieldBYTE(pStruct, "IsCorpse", bSuccess, GetIsCorpse());
     {
-        unsigned char nDefault = m_c251;
-        m_c251 = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, nDefault);
+        unsigned char nDefault = m_nPCLevelAtSpawn;
+        m_nPCLevelAtSpawn = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, nDefault);
     }
     m_bOpen = pRes->ReadFieldBYTE(pStruct, "Open", bSuccess, 0);
     if (m_bOpen)
@@ -475,7 +475,7 @@ void CSWSPlaceable::PostProcess()
 {
     if (m_nHardness > 0)
     {
-        m_n1EC = 1;
+        m_bApplyingInnateEffect = 1;
         CGameEffect* pEffect = new CGameEffect(1);
         pEffect->m_nType = CSWSEffectListHandler::EFFECT_DAMAGE_RESISTANCE;
         pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
@@ -484,7 +484,7 @@ void CSWSPlaceable::PostProcess()
         pEffect->SetInteger(1, m_nHardness);
         pEffect->m_bExposed = 0;
         ApplyEffect(pEffect, 0, 0);
-        m_n1EC = 0;
+        m_bApplyingInnateEffect = 0;
     }
 }
 // PC 0x005894A0 GOG 0x00589520
@@ -629,7 +629,7 @@ int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bIsBodyBag, "IsBodyBag");
     pRes->WriteFieldBYTE(pStruct, m_bIsBodyBagVisible, "IsBodyBagVisible");
     pRes->WriteFieldBYTE(pStruct, m_bIsCorpse, "IsCorpse");
-    pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
+    pRes->WriteFieldBYTE(pStruct, m_nPCLevelAtSpawn, "PCLevelAtSpawn");
     return 1;
 }
 // PC 0x00589C60 GOG 0x00589CE0
@@ -770,7 +770,7 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
                                 CExoLocString* pDescription = &pItem->m_sDescIdentified;
                                 pDescription->GetString(0, &sText, 0);
                                 CSWGuiMessageBox* pDatapad =
-                                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
+                                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pDatapad;
                                 pDatapad->SetAllowCancel(0);
                                 pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
                                 CResRef cFont("fnt_d16x16");
@@ -842,12 +842,12 @@ void CSWSPlaceable::AIUpdate()
     {
         if (m_nHeartbeatTime != 0 && GetDead() == 0)
         {
-            if (m_c251 == 0)
+            if (m_nPCLevelAtSpawn == 0)
             {
                 char nPCLevel = 0;
                 g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
                     "G_PC_LEVEL", nPCLevel);
-                m_c251 = nPCLevel;
+                m_nPCLevelAtSpawn = nPCLevel;
             }
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONHEARTBEAT], m_nId, 1);
         }
@@ -1035,7 +1035,7 @@ unsigned char CSWSPlaceable::GetOpenLockDC()
                 nModifier = 5;
                 break;
         }
-        nDC = (m_c251 + 7) * (nPercent / 100) + m_nOpenLockDiffMod + nModifier + 21;
+        nDC = (m_nPCLevelAtSpawn + 7) * (nPercent / 100) + m_nOpenLockDiffMod + nModifier + 21;
     }
     return nDC;
 }
@@ -1116,7 +1116,7 @@ int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
     m_nLastSpellId = nSpellId;
     m_oidSpellTargetObject = oidTarget;
     m_bSafeProjectileBroadcast = 0;
-    m_n208 = 0;
+    m_nLastSpellForcePointCost = 0;
     CalculateLastSpellProjectileTime(nProjectilePathType);
     if (bFake)
     {
@@ -1458,7 +1458,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH:
             SetAnimation(PLACEABLE_ANIMATION_DESTROYED);
-            m_n154 = oidCaller;
+            m_oidLastKiller = oidCaller;
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONDEATH], GetId(), 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DISARM:
@@ -1604,7 +1604,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_INVENTORY_DISTURBED:
             m_oidLastDisturbed = oidCaller;
-            m_n178 = pScriptEvent->GetInteger(0);
+            m_nInventoryDisturbType = pScriptEvent->GetInteger(0);
             m_oidInventoryDisturbItem = pScriptEvent->GetObjectID(0);
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONINVDISTURBED], GetId(), 1);
             break;
@@ -1617,13 +1617,13 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONUNLOCK], GetId(), 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_SPELLCASTAT:
-            m_n1D8 = pScriptEvent->GetObjectID(0);
-            m_n1DC = pScriptEvent->GetInteger(0);
-            m_n1E0 = pScriptEvent->GetInteger(1);
-            if (m_n1E0 != 0)
+            m_oidLastSpellCaster = pScriptEvent->GetObjectID(0);
+            m_nLastSpellCastAtMeId = pScriptEvent->GetInteger(0);
+            m_bLastSpellCastAtMeHarmful = pScriptEvent->GetInteger(1);
+            if (m_bLastSpellCastAtMeHarmful != 0)
             {
-                SetLastHostileActor(m_n1D8, 0);
-                unsigned long oidCaster = m_n1D8;
+                SetLastHostileActor(m_oidLastSpellCaster, 0);
+                unsigned long oidCaster = m_oidLastSpellCaster;
                 CSWSCreature* pCaster = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaster);
                 if (pCaster != NULL)
                 {
@@ -1696,7 +1696,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             m_nLastSpellId = pSpellData->m_nSpellId;
             m_oidSpellTargetObject = pSpellData->m_oidTarget;
             SetSpellTargetPosition(pSpellData->m_vTargetPosition);
-            m_n208 = pSpellData->m_nFinalForceCost;
+            m_nLastSpellForcePointCost = pSpellData->m_nFinalForceCost;
             if (pSpellData->m_oidTarget != OBJECT_INVALID)
             {
                 CGameObject* pTarget;

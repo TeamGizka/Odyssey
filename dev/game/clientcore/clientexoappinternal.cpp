@@ -335,7 +335,7 @@ int CClientExoAppInternal::HandleMessage(unsigned long nPlayerId,
         }
         if (*pMessage == 'S')
         {
-            m_pUnknown1C0->HandleServerToSysAdminMessage(pMessage, nSize);
+            m_pClientMsgSysAdmin->HandleServerToSysAdminMessage(pMessage, nSize);
         }
     }
     return 1;
@@ -1221,11 +1221,11 @@ void CClientExoAppInternal::StopServices()  // PC 0x00650110 GOG 0x0064FFC0
         delete m_pServerInfo;
         m_pServerInfo = NULL;
     }
-    if (m_pUnknown10 != NULL)
+    if (m_pNetLayer != NULL)
     {
-        m_pUnknown10->ShutDown();
-        delete m_pUnknown10;
-        m_pUnknown10 = NULL;
+        m_pNetLayer->ShutDown();
+        delete m_pNetLayer;
+        m_pNetLayer = NULL;
     }
     if (g_pExoInput != NULL)
     {
@@ -1321,10 +1321,10 @@ void CClientExoAppInternal::StopServices()  // PC 0x00650110 GOG 0x0064FFC0
         delete m_pClientOptions;
         m_pClientOptions = NULL;
     }
-    if (m_pUnknown1C0 != NULL)
+    if (m_pClientMsgSysAdmin != NULL)
     {
-        delete m_pUnknown1C0;
-        m_pUnknown1C0 = NULL;
+        delete m_pClientMsgSysAdmin;
+        m_pClientMsgSysAdmin = NULL;
     }
     if (m_pPlayerControl != NULL)
         delete m_pPlayerControl;
@@ -1829,7 +1829,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0 G
     CExoString sValue;
     CExoString sDialogFile;
 
-    m_pUnknown1C0 = new CClientMsgSysAdmin;
+    m_pClientMsgSysAdmin = new CClientMsgSysAdmin;
     m_pWorldTimer = new CWorldTimer;
     m_pCombatTimer = new CWorldTimer;
     m_pPauseTimer = new CWorldTimer;
@@ -1842,7 +1842,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0 G
         g_bAllowWindowedMode = sValue.AsINT() != 0;
     g_pAurora = NewCAurora();
     CreateWorldJournal();
-    m_pUnknown10 = new CNetLayer;
+    m_pNetLayer = new CNetLayer;
     if (m_pServerInfo == NULL)
         m_pServerInfo = new CServerInfo;
     m_pSWCMessage = new CSWCMessage;
@@ -1881,7 +1881,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0 G
     sDialogFile = g_pExoResMan->CacheResource("HD0:DIALOG", RESTYPE_TLK);
     g_pTlkTable->OpenFile(sDialogFile);
     AddDownloadedResources();
-    m_pUnknown10->Initialize(g_pAppManager->GetClientExoApp());
+    m_pNetLayer->Initialize(g_pAppManager->GetClientExoApp());
     srand(GetTickCount());
     m_pModule = new CSWCModule;
     if (m_pModule != NULL)
@@ -2410,7 +2410,7 @@ void CClientExoAppInternal::QueryExitProgram()  // PC 0x006423C0 GOG 0x00642270
 {
     if (g_pAppManager->GetClientExoApp() == NULL
         || g_pAppManager->GetClientExoApp()->GetInGameGui() == NULL
-        || g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 != 0)
+        || g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut != 0)
     {
         return;
     }
@@ -3596,7 +3596,7 @@ CClientExoAppInternal::CClientExoAppInternal()
 {
     m_bStartMenuMusicOnMovieEnd = 1;
     m_nUnknown1D4 = 1;
-    m_nUnknown26C = 0;
+    m_bAreaSoundsHeld = 0;
     m_bClientInitialized = 0;
     m_nDebugMode = 0;
     m_nUnknown19C = 0;
@@ -3615,7 +3615,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_pQuestJournal = NULL;
     m_pWorldJournal = NULL;
     m_nUnknown6C = 0;
-    m_nUnknown188 = 0;
+    m_bSuppressLoadBar = 0;
     m_nLoadBarState = 0;
     m_pSWGuiManager = NULL;
     m_pGuiLoadScreen = NULL;
@@ -3688,7 +3688,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_pMenuMusic = NULL;
     m_pLoadMusic = NULL;
     m_nUnknown244 = 0;
-    m_nUnknown240 = 0;
+    m_bSaveStallEventSuppressed = 0;
     m_bModuleServicesActive = 0;
     m_nUnknown24C = 0;
     m_bExitGame = 0;
@@ -3696,10 +3696,10 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nUnknown258 = 0;
     m_nUnknown25C = 0;
 #ifdef _XBOX
-    m_nXboxUnmapped264 = 0;
+    m_nCodeWord = 0;
 #endif
     m_bEndGamePending = 0;
-    m_nEndGamePendingUnknown = 1;
+    m_bShowEndGameDeathMessage = 1;
     m_nCharacterExportState = CHARACTER_EXPORT_IDLE;
     m_bShutDownToMainMenuPending = 0;
     m_nUnknown268 = 0;
@@ -3780,12 +3780,12 @@ CClientExoAppInternal::CClientExoAppInternal()
     memset(m_anStoryHint, 0, sizeof(m_anStoryHint));
     m_bMainMenuTransition = 0;
     m_PauseFlags.m_Bits.m_bLastTargetChanged = 0;
-    m_PauseFlags.m_Bits.m_nUnused1 = 0;
+    m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = 0;
     m_fTargetChanging = 0.0f;
     m_pClientOptions = new CClientOptions;
     m_nModuleResourcesLoaded = 0;
-    m_nUnknown49C = 0;
-    m_nUnknown4A0 = 0;
+    m_bEndGameInputLocked = 0;
+    m_nEndGameInputLockTime = 0;
     m_pEvilEndingHackSound = NULL;
 #ifndef _XBOX
     m_oidMouseOverTarget = OBJECT_INVALID;
@@ -3820,7 +3820,7 @@ CClientExoAppInternal::~CClientExoAppInternal()
     }
 }
 #ifndef _XBOX
-void CClientExoAppInternal::DisplayMainMenu(int bUnknown)  // PC 0x00648720 GOG 0x006485D0
+void CClientExoAppInternal::DisplayMainMenu(int bScanContent)  // PC 0x00648720 GOG 0x006485D0
 {
     if (m_pMainMenu != NULL && m_pSWGuiManager->PanelExists(m_pMainMenu))
     {
@@ -5855,7 +5855,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
                                      int bAnyButtonSkips, int bNoMusic)
 {
 
-    m_PauseFlags.m_Bits.m_nUnused1 = bAnyButtonSkips;
+    m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = bAnyButtonSkips;
     int bPlayMusic = 0;
 
     if (!bNoMusic && sMovie.CompareNoCase("55"))
@@ -5879,7 +5879,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
 #undef XB7_MOVIE_VOLUME
 
         m_pEvilEndingHackSound->Play("evil_end", 11, 1, 1, 1);
-        m_pGuiInGame->SetXboxUnmappedC0C(0);
+        m_pGuiInGame->SetPlayCreditsMusic(0);
     }
 
     if (!AddMoveToModuleMovie(sMovie))
@@ -5928,7 +5928,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     }
     m_pClientOptions->SetMovieShown(sMovie, 1);
-    m_PauseFlags.m_Bits.m_nUnused1 = 0;
+    m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = 0;
     return 1;
 }
 
@@ -7131,13 +7131,13 @@ int CClientExoAppInternal::GetCanSendDialog(
     CGameObject* pObject =
         g_pAppManager->GetServerExoApp()->GetGameObject(oidListener);
     if (pObject != NULL && pObject->AsSWSCreature() != NULL &&
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n102C == 0)
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bKeepStealthInDialog == 0)
     {
         pObject->AsSWSCreature()->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, 1);
     }
     pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidSpeaker);
     if (pObject != NULL && pObject->AsSWSCreature() != NULL &&
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n102C == 0)
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bKeepStealthInDialog == 0)
     {
         pObject->AsSWSCreature()->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, 1);
     }
@@ -7411,7 +7411,7 @@ void CClientExoAppInternal::StartPazaakGame(int nSideDeck, const CExoString& sEn
         nWager = nWager < nGold ? nWager : nGold;
     }
     m_PazaakState.m_nResult = 0;
-    m_PazaakState.m_nResultUnused = nWager;
+    m_PazaakState.m_nWager = nWager;
     m_PazaakState.m_sEndScript = sEndScript;
     m_PazaakState.m_nSideDeck = nSideDeck;
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
@@ -7427,7 +7427,7 @@ void CClientExoAppInternal::EndPazaakGame(int nResult, int nWager,
                                         int bPlayAgain, unsigned long oidOpponent)
 {
     m_PazaakState.m_nResult = nResult;
-    m_PazaakState.m_nResultUnused = nWager;
+    m_PazaakState.m_nWager = nWager;
     SetInputClass(INPUT_CLASS_GAME, 1);
     m_PazaakState.m_bIsRunning = 0;
 
@@ -8700,8 +8700,8 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
     {
         if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
         {
-            m_pUnknown10->ProcessReceivedFrames(1);
-            m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+            m_pNetLayer->ProcessReceivedFrames(1);
+            m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
         }
         StallServerCode();
         pStats = g_pAppManager->m_pReentrantServerStats;
@@ -8731,7 +8731,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
         if (m_fEndGamePendingDelay > 0.0f)
         {
             if (!m_pSWGuiManager->PanelExists(m_pGuiInGame->GetDeathDisplay()) &&
-                m_nEndGamePendingUnknown)
+                m_bShowEndGameDeathMessage)
             {
                 CGuiInGame* pGui = m_pGuiInGame;
                 pGui->DisplayDeathMessage();
@@ -8750,7 +8750,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
             m_pGuiInGame->ShutDown();
             m_bEndGamePending = 0;
             m_fEndGamePendingDelay = 0.0f;
-            m_nEndGamePendingUnknown = 1;
+            m_bShowEndGameDeathMessage = 1;
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
             m_bStartMenuMusicOnMovieEnd = 1;
             StartMenuMusic(1, MENU_MUSIC_VOLUME, MENU_MUSIC_PRIORITY_GROUP);
@@ -8764,8 +8764,8 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
         SetGameSpeed(1.0f);
     if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
     {
-        m_pUnknown10->ProcessReceivedFrames(1);
-        m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+        m_pNetLayer->ProcessReceivedFrames(1);
+        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
     }
     if (m_bRunScript)
     {
@@ -8861,12 +8861,12 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
     if (pModule != NULL && pModule->m_pInfo != NULL)
     {
         CSWCArea* pArea = pModule->m_pInfo;
-        if (!m_nUnknown26C && m_nUnknown188)
-            m_nUnknown26C = 1;
-        else if (m_nUnknown26C && !m_nUnknown188)
+        if (!m_bAreaSoundsHeld && m_bSuppressLoadBar)
+            m_bAreaSoundsHeld = 1;
+        else if (m_bAreaSoundsHeld && !m_bSuppressLoadBar)
         {
             pArea->StartSounds();
-            m_nUnknown26C = 0;
+            m_bAreaSoundsHeld = 0;
         }
         CAurScene* pScene = pArea->m_pScene;
         if (pScene != NULL && pCharacter != NULL)
@@ -9145,7 +9145,7 @@ int CClientExoAppInternal::WaitForMovie()
                     unsigned long nEvent = aEvents[i].m_pDesc->m_nEvent;
                     if (aEvents[i].m_nValue &&
                         (nEvent == MOVIE_SKIP_EVENT_FIRST || nEvent == MOVIE_SKIP_EVENT_SECOND ||
-                         (m_PauseFlags.m_Bits.m_nUnused1 &&
+                         (m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie &&
                           (nEvent == MOVIE_SKIP_EVENT_THIRD || nEvent == MOVIE_SKIP_EVENT_FOURTH))))
                     {
                         m_pMoviePlayer->SetFadeMsg(STRREF_MOVIE_SKIPPING);
@@ -9213,7 +9213,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     CExoString sFileName;
     int nLegalDisplayMinimum = 0;
 
-    m_pUnknown1C0 = new CClientMsgSysAdmin();
+    m_pClientMsgSysAdmin = new CClientMsgSysAdmin();
     m_pWorldTimer = new CWorldTimer;
     m_pCombatTimer = new CWorldTimer;
     m_pPauseTimer = new CWorldTimer;
@@ -9227,7 +9227,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     g_pAurora = NewCAurora();
     g_pExoInput = new CExoInput;
     CreateWorldJournal();
-    m_pUnknown10 = new CNetLayer;
+    m_pNetLayer = new CNetLayer;
     if (m_pServerInfo == NULL)
         m_pServerInfo = new CServerInfo;
     m_pSWCMessage = new CSWCMessage;
@@ -9277,7 +9277,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
         g_pAppManager->m_pClientExoApp->GetClientOptions()->SetDefaults();
         g_pAppManager->m_pClientExoApp->LoadOptions(1);
     }
-    int nMissing = m_nXboxUnmapped468;
+    int nMissing = m_bMissingFilePending;
     if (nMissing == 1)
         g_pExoResMan->ReportMissingFile("", 0xffff, 1);
     m_pSWGuiManager = new CSWGuiManager;
@@ -9375,7 +9375,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
         SetLoadBarProgress(50, 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
     }
-    m_pUnknown10->Initialize(g_pAppManager->GetClientExoApp());
+    m_pNetLayer->Initialize(g_pAppManager->GetClientExoApp());
     srand(GetTickCount());
     m_pModule = new CSWCModule;
     if (m_pModule != NULL)
@@ -9412,7 +9412,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             m_bSkipIntro = sValue.AsINT();
         else
             m_bSkipIntro = 0;
-        m_nXboxUnmapped264 = g_pAppManager->GetCodeWord();
+        m_nCodeWord = g_pAppManager->GetCodeWord();
         if (sLoadScreen == "" && sModule != "")
         {
             SetLoadBarProgress(70, 1);
@@ -10613,8 +10613,8 @@ int CClientExoAppInternal::MainLoop()
     {
         if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
         {
-            m_pUnknown10->ProcessReceivedFrames(1);
-            m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+            m_pNetLayer->ProcessReceivedFrames(1);
+            m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
         }
         StallServerCode();
         pStats = g_pAppManager->m_pReentrantServerStats;
@@ -10641,18 +10641,18 @@ int CClientExoAppInternal::MainLoop()
     int bEndGameReady = 1;
     if (m_bEndGamePending && m_fEndGamePendingDelay <= 0.0f)
     {
-        if (!m_nUnknown49C)
+        if (!m_bEndGameInputLocked)
         {
-            m_nUnknown49C = 1;
+            m_bEndGameInputLocked = 1;
             g_pExoInput->SetActive(0);
             bEndGameReady = 0;
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_MUTE);
-            m_nUnknown4A0 = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
+            m_nEndGameInputLockTime = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
         }
         else
         {
             bEndGameReady = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) -
-                            m_nUnknown4A0 > XBOX_END_GAME_INPUT_LOCK_MS;
+                            m_nEndGameInputLockTime > XBOX_END_GAME_INPUT_LOCK_MS;
             g_pExoInput->UpdateJoysticks();
             g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
         }
@@ -10663,7 +10663,7 @@ int CClientExoAppInternal::MainLoop()
         if (m_fEndGamePendingDelay > 0.0f)
         {
             if (m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pMessageBox) ||
-                !m_nEndGamePendingUnknown)
+                !m_bShowEndGameDeathMessage)
                 m_fEndGamePendingDelay -= DeltaT;
             else
             {
@@ -10706,8 +10706,8 @@ int CClientExoAppInternal::MainLoop()
         SetGameSpeed(1.0f);
     if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
     {
-        m_pUnknown10->ProcessReceivedFrames(1);
-        m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+        m_pNetLayer->ProcessReceivedFrames(1);
+        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
     }
     if (m_bRunScript)
     {
@@ -10803,12 +10803,12 @@ int CClientExoAppInternal::MainLoop()
     if (pModule != NULL && pModule->m_pInfo != NULL)
     {
         CSWCArea* pArea = pModule->m_pInfo;
-        if (!m_nUnknown26C && m_nUnknown188)
-            m_nUnknown26C = 1;
-        else if (m_nUnknown26C && !m_nUnknown188)
+        if (!m_bAreaSoundsHeld && m_bSuppressLoadBar)
+            m_bAreaSoundsHeld = 1;
+        else if (m_bAreaSoundsHeld && !m_bSuppressLoadBar)
         {
             pArea->StartSounds();
-            m_nUnknown26C = 0;
+            m_bAreaSoundsHeld = 0;
         }
         CAurScene* pScene = pArea->m_pScene;
         if (pScene != NULL && pCharacter != NULL)
@@ -11112,11 +11112,11 @@ void CClientExoAppInternal::StopServices()
         delete m_pServerInfo;
         m_pServerInfo = NULL;
     }
-    if (m_pUnknown10 != NULL)
+    if (m_pNetLayer != NULL)
     {
-        m_pUnknown10->ShutDown();
-        delete m_pUnknown10;
-        m_pUnknown10 = NULL;
+        m_pNetLayer->ShutDown();
+        delete m_pNetLayer;
+        m_pNetLayer = NULL;
     }
     if (g_pExoInput != NULL)
     {
@@ -11214,10 +11214,10 @@ void CClientExoAppInternal::StopServices()
         delete m_pClientOptions;
         m_pClientOptions = NULL;
     }
-    if (m_pUnknown1C0 != NULL)
+    if (m_pClientMsgSysAdmin != NULL)
     {
-        delete m_pUnknown1C0;
-        m_pUnknown1C0 = NULL;
+        delete m_pClientMsgSysAdmin;
+        m_pClientMsgSysAdmin = NULL;
     }
     if (m_pPlayerControl != NULL)
         delete m_pPlayerControl;

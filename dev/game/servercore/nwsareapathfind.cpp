@@ -3174,7 +3174,7 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
         if (pOther != NULL && oidOther != oidCreature && oidOther != oidTarget &&
             oidOther != oidIgnore && !pOther->GetDead() && !pOther->GetDeadTemp() &&
             (!bBumpCreatures || !pCreature->GetIsCreatureBumpable(pOther)) &&
-            !pOther->m_c26A && !pPathfind->m_nField_210)
+            !pOther->m_bIgnoreCrePath && !pPathfind->m_nField_210)
         {
             float fRadius = pOther->m_pPathfindInformation->GetCreaturePersonalSpace() +
                             fPersonalSpace;

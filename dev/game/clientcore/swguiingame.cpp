@@ -1443,9 +1443,9 @@ void CSWGuiStatusSummary::OnPanelAdded()
         {
             CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
             CExoString sItems;
-            for (int nItem = 0; nItem < pInGameGui->m_a1030.num; nItem++)
+            for (int nItem = 0; nItem < pInGameGui->m_aItemsReceived.num; nItem++)
             {
-                CExoLocString sLocName(pInGameGui->m_a1030[nItem]);
+                CExoLocString sLocName(pInGameGui->m_aItemsReceived[nItem]);
                 CExoString sName;
                 sLocName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
                 if (sItems == "")
@@ -2526,7 +2526,7 @@ void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
 #ifndef _XBOX
             HandleAlignmentMovie();
             HandleLevelUpDLG();
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_a1030.num = 0;
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_aItemsReceived.num = 0;
 #endif
             if (!m_bWasPaused)
                 g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);

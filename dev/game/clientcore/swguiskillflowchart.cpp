@@ -147,7 +147,7 @@ void CSWGuiSkillFlowChart::BuildSortedPowerList(
     CSWSpell* pOther;
 
     CExoArrayList<unsigned long>* pCachedPowers =
-        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_a1048;
+        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_aSortedPowers;
     if (pCachedPowers != NULL && pCachedPowers->num > 0)
     {
         lstPowers = *pCachedPowers;
@@ -203,7 +203,7 @@ void CSWGuiSkillFlowChart::BuildSortedPowerList(
         }
     }
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    pInGameGui->m_a1048 = lstPowers;
+    pInGameGui->m_aSortedPowers = lstPowers;
 }
 // PC 0x0073B970 GOG 0x0073B330
 void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
@@ -519,7 +519,7 @@ void CSWGuiSkillFlowChart::BuildSortedFeatList(
     CExoArrayList<unsigned short>& cFeats)
 {
     CExoArrayList<unsigned short>* pCachedFeats =
-        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_a103C;
+        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_aSortedFeats;
     if (pCachedFeats != NULL && pCachedFeats->num > 0)
     {
         cFeats = *pCachedFeats;
@@ -561,7 +561,7 @@ void CSWGuiSkillFlowChart::BuildSortedFeatList(
         }
     }
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    pInGameGui->m_a103C = cFeats;
+    pInGameGui->m_aSortedFeats = cFeats;
 }
 // PC 0x0073C580 GOG 0x0073C2E0
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)

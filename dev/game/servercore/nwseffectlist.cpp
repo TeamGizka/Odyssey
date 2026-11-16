@@ -365,7 +365,7 @@ int CSWSEffectListHandler::OnApplyFactionModifier(CSWSObject* pObject,
         {
             return 1;
         }
-        pObject->m_n258 = 1;
+        pObject->m_bConfused = 1;
         if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
         {
             pObject->AsSWSPlaceable()->m_nFaction = nFaction;
@@ -416,7 +416,7 @@ int CSWSEffectListHandler::OnRemoveFactionModifier(CSWSObject* pObject,
     {
         return 1;
     }
-    pObject->m_n258 = 0;
+    pObject->m_bConfused = 0;
     int nFaction = pEffect->GetInteger(1);
     if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
     {
@@ -895,7 +895,7 @@ int CSWSEffectListHandler::OnApplySavingThrowIncrease(CSWSObject* pObject,
             {
                 return 1;
             }
-            pCreature->m_nUnknown344 = 1;
+            pCreature->m_bUpdateCombatInformation = 1;
         }
     }
     return 0;
@@ -918,7 +918,7 @@ int CSWSEffectListHandler::OnApplySavingThrowDecrease(CSWSObject* pObject,
         {
             return 1;
         }
-        pCreature->m_nUnknown344 = 1;
+        pCreature->m_bUpdateCombatInformation = 1;
     }
     return 0;
 }
@@ -1070,7 +1070,7 @@ int CSWSEffectListHandler::OnApplyAttackIncrease(CSWSObject* pObject,
         {
             return 1;
         }
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 0;
 }
@@ -1101,7 +1101,7 @@ int CSWSEffectListHandler::OnApplyAttackDecrease(CSWSObject* pObject,
         {
             return 1;
         }
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 0;
 }
@@ -1112,7 +1112,7 @@ int CSWSEffectListHandler::OnApplyDamageIncrease(CSWSObject* pObject,
 {
     if (pObject->AsSWSCreature() != NULL)
     {
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 0;
 }
@@ -1135,7 +1135,7 @@ int CSWSEffectListHandler::OnApplyDamageDecrease(CSWSObject* pObject,
         {
             return 1;
         }
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 0;
 }
@@ -1145,7 +1145,7 @@ int CSWSEffectListHandler::OnRemoveSavingThrowIncrease(CSWSObject* pObject,
 {
     if (pObject->AsSWSCreature() != NULL)
     {
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 1;
 }
@@ -1155,7 +1155,7 @@ int CSWSEffectListHandler::OnRemoveSavingThrowDecrease(CSWSObject* pObject,
 {
     if (pObject->AsSWSCreature() != NULL)
     {
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 1;
 }
@@ -1165,7 +1165,7 @@ int CSWSEffectListHandler::OnRemoveAttackIncrease(CSWSObject* pObject,
 {
     if (pObject->AsSWSCreature() != NULL)
     {
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 1;
 }
@@ -1175,7 +1175,7 @@ int CSWSEffectListHandler::OnRemoveAttackDecrease(CSWSObject* pObject,
 {
     if (pObject->AsSWSCreature() != NULL)
     {
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 1;
 }
@@ -1185,7 +1185,7 @@ int CSWSEffectListHandler::OnRemoveDamageIncrease(CSWSObject* pObject,
 {
     if (pObject->AsSWSCreature() != NULL)
     {
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 1;
 }
@@ -1195,7 +1195,7 @@ int CSWSEffectListHandler::OnRemoveDamageDecrease(CSWSObject* pObject,
 {
     if (pObject->AsSWSCreature() != NULL)
     {
-        pObject->AsSWSCreature()->m_nUnknown344 = 1;
+        pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
     }
     return 1;
 }
@@ -1586,7 +1586,7 @@ int CSWSEffectListHandler::OnApplyDisarm(CSWSObject* pObject,
                     }
                     return 1;
                 }
-                else if (pItem->m_nEC == 1)
+                else if (pItem->m_bDestroyable == 1)
                 {
                     g_pAppManager->GetServerExoApp()->GetServerAIMaster()
                         ->AddEventDeltaTime(0, 0, pCreator->GetId(), pItem->GetId(),
@@ -1618,7 +1618,7 @@ int CSWSEffectListHandler::OnApplyDisarm(CSWSObject* pObject,
                         pItem->AddToArea(pCreature->GetArea(), vSafePosition.m_fX,
                             vSafePosition.m_fY, vSafePosition.m_fZ, 1);
                     }
-                    else if (pItem->m_nEC == 1)
+                    else if (pItem->m_bDestroyable == 1)
                     {
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()
                             ->AddEventDeltaTime(0, 0, pCreator->GetId(), pItem->GetId(),
@@ -1741,7 +1741,7 @@ int CSWSEffectListHandler::OnApplyArcaneSpellFailure(CSWSObject* pObject,
         {
             if (pObject->AsSWSCreature() != NULL)
             {
-                pObject->AsSWSCreature()->m_nUnknown344 = 1;
+                pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
             }
             nFailure = pStats->m_nArcaneSpellFailure;
             pStats->SetArcaneSpellFailure(nFailure + pEffect->GetInteger(0));
@@ -2189,7 +2189,7 @@ int CSWSEffectListHandler::OnApplyForceResistanceIncrease(CSWSObject* pObject,
         }
         if (pObject->AsSWSCreature() != NULL)
         {
-            pObject->AsSWSCreature()->m_nUnknown344 = 1;
+            pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
         }
         nCurrent = pStats->GetForceResistance();
         if (nResistance > nCurrent)
@@ -2230,7 +2230,7 @@ int CSWSEffectListHandler::OnApplyForceResistanceDecrease(CSWSObject* pObject,
                 }
                 if (pObject->AsSWSCreature() != NULL)
                 {
-                    pObject->AsSWSCreature()->m_nUnknown344 = 1;
+                    pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
                 }
                 if (pStats->m_nForceResistancePenalty <= nPenalty)
                 {
@@ -2522,10 +2522,10 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
                             int nRoll = g_pRules->RollDice(1, 20);
                             pCreature->GetNearestEnemy(4.0f, OBJECT_INVALID, OBJECT_INVALID);
                             int nSpellLevel;
-                            if (pCreature->m_c1D4 != CSWSObject::CASTING_CLASS_INNATE_FF)
+                            if (pCreature->m_nLastSpellCastMultiClass != CSWSObject::CASTING_CLASS_INNATE_FF)
                             {
                                 CSWSCreatureStats* pStats = pCreature->m_pStats;
-                                unsigned char nCastingClass = pCreature->m_c1D4;
+                                unsigned char nCastingClass = pCreature->m_nLastSpellCastMultiClass;
                                 nSpellLevel = pSpell->GetSpellLevel(
                                     pStats->GetClass(nCastingClass));
                             }
@@ -2538,7 +2538,7 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
                             {
                                 pCreature->DeleteCurrentAIAction();
                                 pCreature->SetAnimation(CREATURE_ANIMATION_DAMAGE);
-                                unsigned char nCastingClass = pCreature->m_c1D4;
+                                unsigned char nCastingClass = pCreature->m_nLastSpellCastMultiClass;
                                 int nLastSpellId = pCreature->m_nLastSpellId;
                                 pCreature->DecrementSpellReadyCount(
                                     nLastSpellId, nCastingClass, 0, 0, 255);
@@ -3293,7 +3293,7 @@ int CSWSEffectListHandler::OnApplyLimitMovementSpeed(CSWSObject* pObject,
         {
             return 1;
         }
-        pObject->AsSWSCreature()->m_nUnknown8E8 = 1;
+        pObject->AsSWSCreature()->m_bLimitMovementSpeed = 1;
     }
     return 0;
 }
@@ -3476,7 +3476,7 @@ int CSWSEffectListHandler::OnRemoveDisguise(CSWSObject* pObject,
         return 1;
     }
     if (((CSWSObject*)pCreature)->GetDead() == 0 || pCreature->m_nAreaWaitState != 0 ||
-        pCreature->m_nEC == 0)
+        pCreature->m_bDestroyable == 0)
     {
         if (pEffect->GetInteger(1) == 0)
         {
@@ -5195,7 +5195,7 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
             int bDestroy = pEffect->GetInteger(0);
             pEffect->GetInteger(1);
             int bNoFadeAway = pEffect->GetInteger(DEATH_INTEGER_NO_FADE_AWAY);
-            pCreature->m_n154 = oidCreator;
+            pCreature->m_oidLastKiller = oidCreator;
             if (!bNoFadeAway)
                 pCreature->ApplyDeathExperience();
             if (!pCreature->GetInParty())
@@ -5205,7 +5205,7 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
                     ->GetFactionManager()->m_pNeutral;
                 pNeutral->AddMember(oidCreature, 0);
             }
-            if (!pCreature->m_nEC)
+            if (!pCreature->m_bDestroyable)
                 bDestroy = 0;
             pCreature->m_pcCombatRound->EndCombatRound(0);
             pCreature->GetCombatRound()->m_oidUnknown9CC = OBJECT_INVALID;
@@ -5393,7 +5393,7 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
     CGameEffect* pAppliedEffect;
     int nIndex;
 
-    if (pObject->m_nF0 == 0)
+    if (pObject->m_bRaiseable == 0)
     {
         return 1;
     }
@@ -5782,7 +5782,7 @@ int CSWSEffectListHandler::OnRemoveArcaneSpellFailure(CSWSObject* pObject,
         }
         if (pObject->AsSWSCreature() != NULL)
         {
-            pObject->AsSWSCreature()->m_nUnknown344 = 1;
+            pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
         }
         pCreature->m_pStats->SetArcaneSpellFailure(nTotal);
     }
@@ -6277,7 +6277,7 @@ int CSWSEffectListHandler::OnRemoveForceResistanceIncrease(CSWSObject* pObject,
         }
         if (pObject->AsSWSCreature() != NULL)
         {
-            pObject->AsSWSCreature()->m_nUnknown344 = 1;
+            pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
         }
         pStats->SetForceResistance(nMaximum - nPenalty);
     }
@@ -6324,7 +6324,7 @@ int CSWSEffectListHandler::OnRemoveForceResistanceDecrease(CSWSObject* pObject,
         }
         if (pObject->AsSWSCreature() != NULL)
         {
-            pObject->AsSWSCreature()->m_nUnknown344 = 1;
+            pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
         }
         pStats->SetForceResistancePenalty(nMaximum);
     }
@@ -6673,7 +6673,7 @@ int CSWSEffectListHandler::OnRemoveLimitMovementSpeed(CSWSObject* pObject,
                 }
             }
         }
-        pObject->AsSWSCreature()->m_nUnknown8E8 = bLimited;
+        pObject->AsSWSCreature()->m_bLimitMovementSpeed = bLimited;
     }
     return 1;
 }

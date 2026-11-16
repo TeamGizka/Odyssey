@@ -148,7 +148,7 @@ int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)
     m_nAreaEffectId = pRes->ReadFieldINT(pStruct, "AreaEffectId", bSuccess, 0);
     m_EffectSpellId = pRes->ReadFieldDWORD(pStruct, "SpellId", bSuccess, 0);
     nShape = pRes->ReadFieldBYTE(pStruct, "Shape", bSuccess, 0);
-    m_c1D5 = pRes->ReadFieldBYTE(pStruct, "MetaMagicType", bSuccess, 0);
+    m_nLastSpellCastMetaType = pRes->ReadFieldBYTE(pStruct, "MetaMagicType", bSuccess, 0);
     m_nSpellSaveDC = pRes->ReadFieldINT(pStruct, "SpellSaveDC", bSuccess, 0);
     m_nSpellLevel = pRes->ReadFieldINT(pStruct, "SpellLevel", bSuccess, 0);
 
@@ -188,7 +188,7 @@ int CSWSAreaOfEffectObject::SaveEffect(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldINT(pStruct, m_nAreaEffectId, "AreaEffectId");
     pRes->WriteFieldDWORD(pStruct, GetEffectSpellId(), "SpellId");
     pRes->WriteFieldBYTE(pStruct, m_nShape, "Shape");
-    pRes->WriteFieldBYTE(pStruct, m_c1D5, "MetaMagicType");
+    pRes->WriteFieldBYTE(pStruct, m_nLastSpellCastMetaType, "MetaMagicType");
     pRes->WriteFieldINT(pStruct, m_nSpellSaveDC, "SpellSaveDC");
     pRes->WriteFieldINT(pStruct, m_nSpellLevel, "SpellLevel");
 
@@ -243,14 +243,14 @@ void CSWSAreaOfEffectObject::SetCreator(unsigned long oidCreator)
     pCreator = pServer->GetCreatureByGameObjectID(oidCreator);
     if (pCreator != NULL && pCreator->GetEffectSpellId() != -1)
     {
-        m_c1D5 = pCreator->m_c1D5;
+        m_nLastSpellCastMetaType = pCreator->m_nLastSpellCastMetaType;
         m_nSpellSaveDC =
             pCreator->CalculateSpellSaveDC(pCreator->GetEffectSpellId());
 
-        if (pCreator->m_c1D4 != CASTING_CLASS_INNATE_FF &&
-            pCreator->m_c1D4 != CASTING_CLASS_INNATE_FE)
+        if (pCreator->m_nLastSpellCastMultiClass != CASTING_CLASS_INNATE_FF &&
+            pCreator->m_nLastSpellCastMultiClass != CASTING_CLASS_INNATE_FE)
         {
-            unsigned char nClass = pCreator->m_c1D4;
+            unsigned char nClass = pCreator->m_nLastSpellCastMultiClass;
             m_nSpellLevel = pCreator->m_pStats->GetClassLevel(nClass, 1);
         }
         else
@@ -726,7 +726,7 @@ void CSWSAreaOfEffectObject::EventHandler(unsigned long nEventId,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC != 0)
+        if (m_bDestroyable != 0)
         {
             RemoveFromArea();
             delete this;

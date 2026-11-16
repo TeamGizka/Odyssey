@@ -643,7 +643,7 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
     g_pRules->Get2DArrays()->GetAppearance()->GetCExoStringEntry(
         m_cAppearanceInfo.m_nAppearance, "MODELTYPE", &sModelType);
     int bHumanoid = sModelType.CompareNoCase("B") || sModelType.CompareNoCase("F");
-    pAction->m_nField70 = 0;
+    pAction->m_bInterruptable = 0;
     int bForceMaster = FALSE;
     unsigned short nAnimation;
     unsigned long nCastTime, nRoundTime;
@@ -1224,7 +1224,7 @@ int CSWSCreature::AIActionEncounterCreatureDestroySelf()
 // PC 0x00544AF0 GOG 0x00544C10
 unsigned char CSWSCreature::CanEquipWeapon(CSWSItem* pItem,
                                          unsigned long* pnSlot,
-                                         int bFeedback, int bUnknown)
+                                         int bCheckRestrictions, int bFeedback)
 {
     CSWSItem* pRightItem;
     CSWSItem* pLeftItem;
@@ -1296,7 +1296,7 @@ unsigned char CSWSCreature::CanEquipWeapon(CSWSItem* pItem,
 // PC 0x00544C50 GOG 0x00544D70
 unsigned char CSWSCreature::CanEquipWeapon2(CSWSItem* pItem,
                                           unsigned long* pnSlot,
-                                          int bFeedback, int bUnknown)
+                                          int bCheckRestrictions, int bFeedback)
 {
     CSWSItem* pRightItem;
     CSWSItem* pLeftItem;
@@ -2005,11 +2005,11 @@ unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
 // PC 0x0054AFD0 GOG 0x0054B0F0
 unsigned char CSWSCreature::CanEquipMiscellaneous(CSWSItem* pItem,
                                                   unsigned long* pnSlot,
-                                                  int bFeedback, int bUnknown)
+                                                  int bCheckRestrictions, int bFeedback)
 {
     if (CheckProficiencies(pItem, *pnSlot) == 0)
     {
-        if (bFeedback == 1 && bUnknown == 1)
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
             SendFeedbackMessage(FEEDBACK_ITEM_PROFICIENCY_REQUIRED, NULL);
         }
@@ -2018,7 +2018,7 @@ unsigned char CSWSCreature::CanEquipMiscellaneous(CSWSItem* pItem,
 
     if (m_pInventory->GetItemInSlot(*pnSlot) != 0)
     {
-        if (bFeedback == 1 && bUnknown == 1)
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
             SendFeedbackMessage(FEEDBACK_EQUIPPED_ITEM_SWAPPED, NULL);
         }
@@ -3336,7 +3336,7 @@ void CSWSCreature::UpdateVisibleList(unsigned char nUpdateType)
                             Vector vDifference = pCreature->m_vPosition - m_vPosition;
                             if (GetVisibleListElement(oidCreature) != NULL ||
                                 vDifference * vDifference <= fDistanceSquared ||
-                                pCreature->m_n260)
+                                pCreature->m_bForceAlwaysUpdate)
                             {
                                 DoPerceptionUpdateOnCreature(pCreature);
                             }
@@ -3393,7 +3393,7 @@ void CSWSCreature::UpdateVisibleList(unsigned char nUpdateType)
                         Vector vDifference = pCreature->m_vPosition - m_vPosition;
                         if (GetVisibleListElement(oidCreature) == NULL &&
                             (vDifference * vDifference <= fDistanceSquared ||
-                             pCreature->m_n260) &&
+                             pCreature->m_bForceAlwaysUpdate) &&
                             (nUpdateType == VISIBLE_LIST_UPDATE_ALL ||
                              (nUpdateType == VISIBLE_LIST_UPDATE_NONPARTY &&
                               pCreature->m_bInParty == 0)))
@@ -3650,7 +3650,7 @@ int CSWSCreature::AIActionHeal(CSWSObjectActionNode* pAction)
     return ACTION_COMPLETE;
 }
 // PC 0x00544E80 GOG 0x00544FA0
-int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
+int CSWSCreature::RemoveItem(CSWSItem* pItem, int bMerge, int bDisplayFeedback,
                              CSWSItem** ppItem)
 {
     CGameObject* pObject;
@@ -3663,7 +3663,7 @@ int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
 
     if (m_pInventory->GetItemInInventory(pItem) == 1)
     {
-        RunUnequip(pItem->m_nId, OBJECT_INVALID, bUnknown1, ppItem, 0);
+        RunUnequip(pItem->m_nId, OBJECT_INVALID, bMerge, ppItem, 0);
         if (ppItem != NULL)
         {
             pItem = *ppItem;
@@ -3710,7 +3710,7 @@ int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
         pContainer->m_pRepository->RemoveItem(pItem);
     }
 
-    pItem->SetPossessor(OBJECT_INVALID, 1, bUnknown2, OBJECT_INVALID);
+    pItem->SetPossessor(OBJECT_INVALID, 1, bDisplayFeedback, OBJECT_INVALID);
     return 1;
 }
 // PC 0x00544FD0 GOG 0x005450F0
@@ -3802,7 +3802,7 @@ int CSWSCreature::AIActionPartyFollowLeader(CSWSObjectActionNode*)
 // PC 0x005451E0 GOG 0x00545300
 int CSWSCreature::AIActionFollowOwner(CSWSObjectActionNode* pNode)
 {
-    if (m_n11FC != 0 && !GetDead() && !GetDeadTemp() &&
+    if (m_bIsPuppet != 0 && !GetDead() && !GetDeadTemp() &&
         (m_nAIStateFlags & AI_STATE_CAN_MOVE) != 0)
     {
         float fFollowDistance;
@@ -5293,16 +5293,16 @@ int CSWSCreature::AIActionStanceTotalDefense(CSWSObjectActionNode* pNode)
         return CSWSObject::ACTION_IN_PROGRESS;
     }
     unsigned long oidTarget = (unsigned long)pNode->m_apParam[0];
-    if (m_n10B4 == 0 && m_n10B8 == 0)
+    if (m_nTotalDefenseStartDay == 0 && m_nTotalDefenseStartTime == 0)
     {
         SetAnimation(CREATURE_ANIMATION_COMBAT_READY);
         SetAttemptedAttackTarget(oidTarget);
         SetLockOrientationToObject(oidTarget, 0);
         ActivityManager(ACTIVITY_ACTION_COUNTERSPELL);
     }
-    if (m_c110C != 0)
+    if (m_nCurrentStance != 0)
     {
-        m_c110C = 0;
+        m_nCurrentStance = 0;
     }
     if (!m_pcCombatRound->m_bRoundStarted)
     {
@@ -5313,7 +5313,7 @@ int CSWSCreature::AIActionStanceTotalDefense(CSWSObjectActionNode* pNode)
             if (bMaster)
             {
                 g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
-                    (unsigned long*)&m_n10B4, (unsigned long*)&m_n10B8);
+                    (unsigned long*)&m_nTotalDefenseStartDay, (unsigned long*)&m_nTotalDefenseStartTime);
                 GetCombatRound()->StartCombatRound(oidTarget, bEngaged, bMaster, 0, 0);
                 CSWSCreature* pTarget =
                     g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidTarget);
@@ -5327,7 +5327,7 @@ int CSWSCreature::AIActionStanceTotalDefense(CSWSObjectActionNode* pNode)
         else
         {
             g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
-                (unsigned long*)&m_n10B4, (unsigned long*)&m_n10B8);
+                (unsigned long*)&m_nTotalDefenseStartDay, (unsigned long*)&m_nTotalDefenseStartTime);
             GetCombatRound()->StartCombatRound(oidTarget, bEngaged, bMaster, 0, 0);
         }
     }
@@ -5339,12 +5339,12 @@ int CSWSCreature::AIActionStanceTotalDefense(CSWSObjectActionNode* pNode)
     g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
     unsigned long nElapsedDays, nElapsedTime;
     g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
-        nDay, nTime, m_n10B4, m_n10B8, &nElapsedDays, &nElapsedTime);
+        nDay, nTime, m_nTotalDefenseStartDay, m_nTotalDefenseStartTime, &nElapsedDays, &nElapsedTime);
     if (nElapsedTime >= 1500)
     {
-        m_n10B8 = 0;
-        m_c110C = -1;
-        m_n10B4 = 0;
+        m_nTotalDefenseStartTime = 0;
+        m_nCurrentStance = -1;
+        m_nTotalDefenseStartDay = 0;
         return CSWSObject::ACTION_COMPLETE;
     }
     return CSWSObject::ACTION_IN_PROGRESS;
@@ -5759,15 +5759,15 @@ int CSWSCreature::AIActionStanceMeditative(CSWSObjectActionNode* pNode)
         return CSWSObject::ACTION_FAILED;
     }
     ActivityManager(ACTIVITY_ACTION_OBJECT_INTERACTION);
-    if (m_c110C != 1)
+    if (m_nCurrentStance != 1)
     {
-        m_c110C = 1;
+        m_nCurrentStance = 1;
         RecomputeAmbientAnimationState();
         return CSWSObject::ACTION_IN_PROGRESS;
     }
     if (m_lstActions.Count() > 1)
     {
-        m_c110C = -1;
+        m_nCurrentStance = -1;
         RecomputeAmbientAnimationState();
         return CSWSObject::ACTION_COMPLETE;
     }
@@ -5871,7 +5871,7 @@ void CSWSCreature::UnpossessCreature()
     }
 }
 // PC 0x00551220 GOG 0x00551340
-int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown,
+int CSWSCreature::CanUseItem(CSWSItem* pItem, int bIgnoreIdentifiedFlag,
                              int bCheckFullHealth)
 {
     if (NWSCREATUREAI_DEBUG)
@@ -6290,11 +6290,11 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
     if (nElapsedTime == 0)
     {
         m_nLastSpellId = nSpellId;
-        m_c1C4 = nSpellLevel;
+        m_nLastSpellLevel = nSpellLevel;
         m_oidSpellTargetObject = oidTarget;
         m_vSpellTargetPosition = vTarget;
         m_bSafeProjectileBroadcast = 0;
-        m_n208 = 0;
+        m_nLastSpellForcePointCost = 0;
     }
     if (nElapsedTime < nConjureTime)
     {
@@ -6311,10 +6311,10 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
             SetAnimation(CREATURE_ANIMATION_CONJURE_1);
         return ACTION_IN_PROGRESS;
     }
-    if (pAction->m_nField70 == 1)
+    if (pAction->m_bInterruptable == 1)
     {
         int bEngaged = GetCombatRound()->m_bEngaged;
-        pAction->m_nField70 = bEngaged != 0;
+        pAction->m_bInterruptable = bEngaged != 0;
         if (!bFake)
         {
             if (GetArea() == NULL)
@@ -6358,10 +6358,10 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
                 }
             }
         }
-        m_c1D4 = nMultiClass;
+        m_nLastSpellCastMultiClass = nMultiClass;
         m_oidSpellCasterItem = CGameObjectArray::INVALIDOBJID;
-        m_n1D0 = bOverride;
-        m_c1D5 = nMetamagic;
+        m_bLastSpellCastSpontaneous = bOverride;
+        m_nLastSpellCastMetaType = nMetamagic;
         CalculateLastSpellProjectileTime(nProjectilePath);
     }
     if (nElapsedTime >= nConjureTime + nCastTime && m_bSafeProjectileBroadcast)
@@ -7689,7 +7689,7 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
     if (pArea == NULL)
         return ACTION_FAILED;
     m_bUpdateMovingOrientation = TRUE;
-    if (m_nUnknown8E8 == 1 && (nFlags & DRIVE_RUN) == DRIVE_RUN)
+    if (m_bLimitMovementSpeed == 1 && (nFlags & DRIVE_RUN) == DRIVE_RUN)
         nFlags = (nFlags & ~DRIVE_RUN) | DRIVE_FORWARD;
     Vector vDestination = m_vPosition;
     if (bNewPath)
@@ -8017,7 +8017,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
     int bUsePoint = (nFlags >> MOVE_OPTION3_SHIFT) & MOVE_OPTION3_INPUT_MASK;
     int bOption6 = (nFlags >> MOVE_OPTION6_SHIFT) & MOVE_OPTION6_INPUT_MASK;
     m_pPathfindInformation->m_nField_240 = bOption6;
-    if (m_nUnknown8E8 == 1)
+    if (m_bLimitMovementSpeed == 1)
         bRun = 0;
 
     float fRange;
@@ -8344,7 +8344,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
             m_pPathfindInformation->m_nField_194 = 1;
         if (m_nClientState != 0)
             m_nAnimationState = ANIMATION_STATE_MOVE_PENDING;
-        if (m_c26A)
+        if (m_bIgnoreCrePath)
             m_pPathfindInformation->m_nField_210 = 1;
         nResult = g_pAppManager->GetServerExoApp()->GetModule()->PlotPath(
             m_pPathfindInformation, AiTimeSlice);

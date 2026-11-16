@@ -291,8 +291,8 @@ public:
     void SetDeferredFOVCallForAnimatedCutscenes(float fFieldOfView);
     int GetBarkBubbleVisible(int& nTop);
     int GetFadeOverridePanelVisible();
-    void ShowPartySelection(const CExoString& sExitScript, int bAllowCancel,
-                            int nForceNPC1, int nForceNPC2, int nUnknown);
+    void ShowPartySelection(const CExoString& sExitScript, int bFromScript,
+                            int nForceNPC1, int nForceNPC2, int bAllowCancel);
     void MarkNoClickEvent(unsigned long nMilliseconds);
     void SuppressStatusSummary(int nNumEntries);
     int CanPlayDialogAnimations(unsigned long oidObject);
@@ -343,15 +343,15 @@ public:
     int HandleDialogReplies(
         unsigned long oidPlayer, unsigned long oidSpeaker,
         unsigned char nComputerType, CExoString* psText,
-        unsigned long* pnValue1, unsigned long* pnValue2,
-        unsigned long* pnValue3, int* pnValue4, float* pfValue5,
-        float* pfValue6, unsigned long* pnValue7, unsigned short* pnValue8,
-        float* pfValue9, int* pnValue10, unsigned char* pnValue11,
-        Vector* pvValue12, float* pfValue13, float* pfValue14,
+        unsigned long* pnReplyIndex, unsigned long* poidListener,
+        unsigned long* pnCameraAngle, int* pnCameraId, float* pfCameraHeight,
+        float* pfTargetHeight, unsigned long* pnWaitFlags, unsigned short* pnCameraAnimation,
+        float* pfFieldOfView, int* pnVideoEffect, unsigned char* pnFadeType,
+        Vector* pvValue12, float* pfFadeDelay, float* pfFadeLength,
         unsigned long nEntries, unsigned long nReplies,
         unsigned long nReplyContext, unsigned long* pnAnimations,
         unsigned long** ppnAnimationIDs, unsigned short** ppnAnimationFlags,
-        int bUnknown);
+        int bEndOfDialog);
 
     int HandleDialogEntry(unsigned long nPlayerId, unsigned long oidTarget,
                           unsigned long oidSpeaker, unsigned long oidListener,
@@ -365,12 +365,12 @@ public:
                           const Vector& vFadeColor, float fFadeDelay,
                           float fFadeLength, int bSoundActive);
     void SetReplyData(unsigned long nReply, const CExoString& sText,
-                      unsigned long nValue1, unsigned long nValue2,
-                      unsigned long nValue3, int nValue4, float fValue5,
-                      float fValue6, unsigned long nValue7,
-                      unsigned short nValue8, float fValue9, int nValue10,
-                      unsigned char nValue11, const Vector& vValue12,
-                      float fValue13, float fValue14, unsigned long nAnimations,
+                      unsigned long nReplyIndex, unsigned long oidListener,
+                      unsigned long nCameraAngle, int nCameraId, float fCameraHeight,
+                      float fTargetHeight, unsigned long nWaitFlags,
+                      unsigned short nCameraAnimation, float fFieldOfView, int nVideoEffect,
+                      unsigned char nFadeType, const Vector& vFadeColor,
+                      float fFadeDelay, float fFadeLength, unsigned long nAnimations,
                       unsigned long* pnAnimationIDs,
                       unsigned short* pnAnimationFlags);
     void SetDialogAnimationData(unsigned long nIndex, unsigned long nAnimation,
@@ -408,7 +408,7 @@ public:
 #endif
     int GetPartyAccessPanelUp(int bAny); int GetCurrentEquipScreenNPC();
     int GetGlobalFadeActive();
-    void UpdateStatus(unsigned char nMessage, int nUnknown); SFeedbackMessage* GetMessageBuffer();
+    void UpdateStatus(unsigned char nMessage, int nValue); SFeedbackMessage* GetMessageBuffer();
     int GetMessageBufferSize();
 
     enum ChatMessageMask
@@ -549,7 +549,7 @@ public:
     CSWGuiMainInterface* m_pMainInterface;
     CSWGuiInGameAreaTransition* m_pAreaTransition;
     CSWGuiMessageBox* m_pMessageBox;
-    CSWGuiMessageBox* m_pA4;
+    CSWGuiMessageBox* m_pDatapad;
     CSWGuiDeathDisplay* m_pDeathDisplay;
     CSWGuiSkillInfoBox* m_pSkillInfoBox;
     CSWGuiTutorialBox* m_pTutorialBox;
@@ -561,7 +561,7 @@ public:
     int m_bDialogEntryShown;
     int m_nGlobalDialogState;
     unsigned char m_aUnknownB8[0xC0 - 0xB8];
-    int m_nC0;
+    int m_bAnimatedCut;
     int m_nDialogCameraType;
     int m_nDialogReply;
     int m_nDialogReplyCount;
@@ -607,7 +607,7 @@ public:
 
     unsigned long m_oidComputerCameraTarget;
     unsigned short m_nDialogCameraAnimation;
-    unsigned char m_aUnknown166[2];
+    unsigned char m_aCameraAnimationAlignment[2];
 
     int m_bDialogCameraAnimationActive;
 
@@ -657,7 +657,7 @@ public:
     int m_bHoldWorldFadeInForDialog;
 #ifdef _XBOX
 
-    int m_nXboxUnmappedB98;
+    int m_bShowDialogDebugText;
     int m_nDialogReplyRow;
 #else
     unsigned char m_aUnknownB9C[0xBA4 - 0xB9C];
@@ -677,13 +677,13 @@ public:
 #endif
     unsigned char m_nAbilityMode;
     unsigned char m_nInventoryFilter;
-    unsigned char m_aUnknownBC2[2];
+    unsigned char m_aInventoryFilterAlignment[2];
     unsigned long m_bJournalDone : 1;
     unsigned long m_nJournalFlagsUnused : 31;
 
     enum { MESSAGE_TYPE_DIALOG = 0, MESSAGE_TYPE_FEEDBACK = 1, MESSAGE_TYPE_COMBAT = 2, MESSAGE_TYPE_EFFECTS = 3 };
     unsigned char m_nMessageType;
-    unsigned char m_aUnknownBC9[0xBCC - 0xBC9];
+    unsigned char m_aMessageTypeAlignment[0xBCC - 0xBC9];
     unsigned long m_nNoClickDay;
     unsigned long m_nNoClickTime;
     unsigned long m_nNoClickDuration;
@@ -697,9 +697,9 @@ public:
     float m_fDeferredFieldOfView;
     int m_bTransitionScriptRunning;
 #ifdef _XBOX
-    int m_nXboxUnmappedC0C;
+    int m_bPlayCreditsMusic;
 
-    void SetXboxUnmappedC0C(int nValue) { m_nXboxUnmappedC0C = nValue; }
+    void SetPlayCreditsMusic(int nValue) { m_bPlayCreditsMusic = nValue; }
 #endif
     int m_bInputActiveBeforeControllerPause;
 #ifndef _XBOX
@@ -708,15 +708,15 @@ public:
 
     int m_bCameraRelativeAreaTransition;
     int m_bDanceDanceMalak;
-    int m_n1024;
-    int m_n1028;
-    int m_n102C;
-    CExoArrayList<CExoLocString> m_a1030;
-    CExoArrayList<unsigned short> m_a103C;
-    CExoArrayList<unsigned long> m_a1048;
+    int m_bFadeUntilScript;
+    int m_bVideoEffectEnabled;
+    int m_bKeepStealthInDialog;
+    CExoArrayList<CExoLocString> m_aItemsReceived;
+    CExoArrayList<unsigned short> m_aSortedFeats;
+    CExoArrayList<unsigned long> m_aSortedPowers;
 #endif
     void ShowGalaxyMapGui(int nPlanet);
-    int ShowLevelUpGUI(int nArg1);
+    int ShowLevelUpGUI(int bAutomatic);
     void ShowUpgradeScreen(unsigned long oidItem, unsigned long oidCharacter = 0x7f000000,
                            int bDisableItemCreation = 0, int bDisableUpgrade = 0,
                            CExoString sOverride2DA = "");
@@ -728,8 +728,8 @@ public:
     int IsAnimationPlayingInDialog();
     int IsFadingInDialog();
 #ifndef _XBOX
-    void AddItemReceived(const CExoLocString& sName) { m_a1030.Add(sName); }
-    void SetKeepStealthInDialog(int bKeep) { m_n102C = bKeep; }
+    void AddItemReceived(const CExoLocString& sName) { m_aItemsReceived.Add(sName); }
+    void SetKeepStealthInDialog(int bKeep) { m_bKeepStealthInDialog = bKeep; }
 #endif
 };
 

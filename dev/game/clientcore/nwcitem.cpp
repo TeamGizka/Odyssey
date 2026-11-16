@@ -179,11 +179,11 @@ void CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
         {
             if (pModel != NULL)
             {
-                if (pServerCreature->m_n24C)
+                if (pServerCreature->m_bHologram)
                     pModel->EnableHologram(1);
                 else
                     pModel->EnableHologram(0);
-                if (pServerCreature->m_n254)
+                if (pServerCreature->m_bWillNotRender)
                     pModel->EnableRendering(0);
                 else
                     pModel->EnableRendering(1);

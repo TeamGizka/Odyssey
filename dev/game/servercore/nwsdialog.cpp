@@ -135,11 +135,11 @@ void CSWSDialog::Cleanup()
             pOwner->AsSWSObject()->m_nAILevel = nAILevel;
             pOwner->AsSWSObject()->StopSoundPlayingInDialog();
         }
-        int nSavedAILevel = pOwner->AsSWSObject()->m_c7C;
+        int nSavedAILevel = pOwner->AsSWSObject()->m_nSavedAILevel;
         if (nSavedAILevel != -1)
         {
             pOwner->AsSWSObject()->m_nAILevel = nSavedAILevel;
-            pOwner->AsSWSObject()->m_c7C = 0xFF;
+            pOwner->AsSWSObject()->m_nSavedAILevel = 0xFF;
         }
     }
 
@@ -922,7 +922,7 @@ CSWSObject* CSWSDialog::GetSpeaker(CSWSObject* pOwner, const CExoString& sSpeake
     if (pSpeakerArea != pOwnerArea ||
         (vDistance * vDistance > CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE *
                                  CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE &&
-         pSpeaker->m_n260 == 0))
+         pSpeaker->m_bForceAlwaysUpdate == 0))
     {
         if (pSpeaker->m_oidDialogOwner == m_oidDialogOwner)
         {
@@ -972,7 +972,7 @@ float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
     }
 
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    if (pGui->m_nC0 == 0 && nFlag == 0 && fDelay < 0.01f)
+    if (pGui->m_bAnimatedCut == 0 && nFlag == 0 && fDelay < 0.01f)
     {
         fDelay = 0.01f;
     }
@@ -1170,7 +1170,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
         {
             if (m_pReplies[nReplyIndex].m_nSoundDelay == CSWSDialogBase::DELAY_DEFAULT)
             {
-                if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 == 0)
+                if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut == 0)
                 {
                     SetDialogDelay(pOwner, m_pReplies[nReplyIndex].m_lsText,
                         (unsigned long)m_pReplies[nReplyIndex].m_lsText.GetSpokenTimeEstimate(
@@ -1194,7 +1194,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
                            m_pReplies[nReplyIndex].m_nDelay,
                            m_pReplies[nReplyIndex].m_nEntries != 0, 1);
         }
-        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 == 0)
+        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut == 0)
         {
             pOwner->m_nWaitFlags = m_pReplies[nReplyIndex].m_nWaitFlags;
         }
@@ -1461,7 +1461,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     int bAnimatedCut = pGFF->ReadFieldBYTE(&resTop, "AnimatedCut", bFieldSuccess, 0);
     int bOldHitCheck = pGFF->ReadFieldBYTE(&resTop, "OldHitCheck", bFieldSuccess, 0);
     m_nAlienRaceOwner = pGFF->ReadFieldINT(&resTop, "AlienRaceOwner", bFieldSuccess, 0);
-    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 = bAnimatedCut;
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut = bAnimatedCut;
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nDialogCameraType = bOldHitCheck;
     if (nConversationType == 2)
     {
@@ -1475,7 +1475,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     else
     {
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetConversationType(CONVERSATION_TYPE_CINEMATIC, 0);
-        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n102C == 0)
+        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bKeepStealthInDialog == 0)
         {
             g_pAppManager->GetServerExoApp()->GetPartyTable()->UnstealthParty(1);
         }
@@ -3029,7 +3029,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     }
     else if (m_pEntries[nEntry].m_nSoundDelay == CSWSDialogBase::DELAY_DEFAULT)
     {
-        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 == 0)
+        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut == 0)
         {
             SetDialogDelay(pOwner, m_pEntries[nEntry].m_lsText,
                 (unsigned long)m_pEntries[nEntry].m_lsText.GetSpokenTimeEstimate(

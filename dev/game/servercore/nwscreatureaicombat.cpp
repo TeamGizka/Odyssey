@@ -85,7 +85,7 @@ int CSWSCreature::IsDebilitated(int bCheckMeditation)
         bDebilitated = 1;
     }
 
-    if (bCheckMeditation != 0 && m_c110C == 1)
+    if (bCheckMeditation != 0 && m_nCurrentStance == 1)
     {
         return 1;
     }
@@ -96,7 +96,7 @@ int CSWSCreature::IsDebilitated(int bCheckMeditation)
 int CSWSCreature::IsInTotalDefense()
 {
     CSWSCombatRound* pCombatRound = m_pcCombatRound;
-    if (m_c110C == 0 ||
+    if (m_nCurrentStance == 0 ||
         (pCombatRound != NULL && pCombatRound->m_cB1C == 13))
     {
         return 1;
@@ -147,7 +147,7 @@ void CSWSCreature::InitializeNewAttackTarget(unsigned long oidTarget,
     }
 
     SetLockOrientationToObject(oidTarget, 0);
-    m_nUnknown84 = oidTarget;
+    m_oidCurrentActionTarget = oidTarget;
     SetAttemptedAttackTarget(oidTarget);
     m_pcCombatRound->UpdateAttackTargetForAllActions(oidTarget);
     m_bNewAttackTarget = 1;
@@ -3448,7 +3448,7 @@ void CSWSCreature::ResolveRangedAnimations(CSWSObject* pTarget,
             {
                 bDebilitated = 1;
             }
-            if (pCreature->m_c110C == 1)
+            if (pCreature->m_nCurrentStance == 1)
             {
                 bDebilitated = 1;
             }
@@ -3472,7 +3472,7 @@ void CSWSCreature::ResolveRangedAnimations(CSWSObject* pTarget,
             {
                 bTargetDebilitated = 1;
             }
-            if (pCreature->m_c110C == 1)
+            if (pCreature->m_nCurrentStance == 1)
             {
                 bTargetDebilitated = 1;
             }
@@ -3933,7 +3933,7 @@ void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
     {
         bDebilitated = 1;
     }
-    if (pCreature->m_c110C == 1)
+    if (pCreature->m_nCurrentStance == 1)
     {
         bDebilitated = 1;
     }
@@ -3947,7 +3947,7 @@ void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
     {
         bTargetDebilitated = 1;
     }
-    if (pCreature->m_c110C == 1)
+    if (pCreature->m_nCurrentStance == 1)
     {
         bTargetDebilitated = 1;
     }

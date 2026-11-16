@@ -140,7 +140,7 @@ struct CNearestStruct
 
     unsigned long m_oidObject;
     char m_nCanSee;
-    unsigned char m_aUnmapped05[3];
+    unsigned char m_aCanSeeAlignment[3];
 
     unsigned long m_bInFront : 1;
     unsigned long m_nUnused : 31;
@@ -305,7 +305,7 @@ public:
     struct SPauseFlagBits
     {
         unsigned long m_bLastTargetChanged : 1;
-        unsigned long m_nUnused1 : 1;
+        unsigned long m_bAnyButtonSkipsMovie : 1;
         unsigned long m_bTogglePauseAtEndOfFrame : 1;
 #ifdef _XBOX
         unsigned long m_bAutoPaused : 1;
@@ -368,7 +368,7 @@ public:
 #endif
     void PerformRButtonDownAction();
     int PerformRButtonUpAction();
-    void SetMouseCursor(int nCursor, int nArg2, int nArg3);
+    void SetMouseCursor(int nCursor, int bCentered, int bMouseDown);
     void RestoreMousePositionTo(int nX, int nY);
     void HideMouse(int nFlags);
     void ShowMouse(int nFlags);
@@ -380,8 +380,8 @@ public:
 #else
     void SetInputClass(int nClass, int bHideInterface);
 #endif
-    int ActionIconToMouseCursor(int nAction, int nArg2);
-    CResRef ActionIconToCursorResref(int nAction, int nArg2);
+    int ActionIconToMouseCursor(int nAction, int bMultipleActions);
+    CResRef ActionIconToCursorResref(int nAction, int bMultipleActions);
     void HandleMouseOver(unsigned long oidObject, const Vector& vPosition,
                          int bForceUpdate);
 
@@ -402,7 +402,7 @@ public:
                             const CExoString& sMessage);
     void SetCharacterFile(unsigned long nDataSize, unsigned char* pCharacterData,
                          int nCharacterFileId);
-    void DisplayMainMenu(int bUnknown);
+    void DisplayMainMenu(int bScanContent);
 #ifdef _XBOX
     void DisplayStartScreen();
 #endif
@@ -514,11 +514,11 @@ public:
            CAMERA_EDGE_MIN_PIXELS = 2, CAPTURE_EVENTS_RECORD = 1 };
     void AddDownloadedResources();
 #ifndef _XBOX
-    int StartServices(int nServices, const CExoString& sArg2,
-                      const CExoString& sArg3, const CExoString& sArg4,
-                      unsigned long nArg5);
+    int StartServices(int nServices, const CExoString& sModule,
+                      const CExoString& sLoadMusic, const CExoString& sLoadScreen,
+                      unsigned long nPlayerId);
 #else
-    void StartServices(int nServices, const CExoString& sArg2, const CExoString& sArg3, const CExoString& sArg4, unsigned long nArg5);
+    void StartServices(int nServices, const CExoString& sModule, const CExoString& sLoadMusic, const CExoString& sLoadScreen, unsigned long nPlayerId);
 #endif
     void SetEventDescriptions();
     void StopServices();
@@ -616,7 +616,7 @@ public:
     int GetMoveToModuleMovies();
     void IndicateObject(CSWCObject* pObject, int nFlags);
 
-    void ShowObject(CSWCObject* pObject, int bLookAt, int bUnknown1,
+    void ShowObject(CSWCObject* pObject, int bLookAt, int bMoveCamera,
                    int bUnknown2);
     CSWCObject* SelectNearestObject(int bReverse, unsigned char nFilter);
     void ResetDriveAcceleration();
@@ -788,7 +788,7 @@ public:
     CClientOptions* m_pClientOptions;
     CServerInfo* m_pServerInfo;
     CClientAIMaster* m_pClientAIMaster;
-    CNetLayer* m_pUnknown10;
+    CNetLayer* m_pNetLayer;
     CGameObjectArray* m_pGameObjectArray;
     CSWCModule* m_pModule;
     CExoLinkedList<CSWCPlayer> m_lstPlayerList;
@@ -819,13 +819,13 @@ public:
         {
             m_bIsRunning = 0;
             m_nResult = 0;
-            m_nResultUnused = 0;
+            m_nWager = 0;
             m_nSideDeck = 0;
         }
         ~CPazaakData();
         int m_bIsRunning;
         CExoString m_sEndScript;
-        int m_nResultUnused;
+        int m_nWager;
         int m_nResult;
         int m_nSideDeck;
     } m_PazaakState;
@@ -884,7 +884,7 @@ public:
     int m_nUnknown178;
     unsigned char m_nUnknown17C;
     unsigned char m_aUnmapped17D[11];
-    int m_nUnknown188;
+    int m_bSuppressLoadBar;
     int m_nLoadBarState;
     CExoLinkedList<unsigned long> m_lstHitcheckIgnore;
     int m_nDebugMode;
@@ -895,12 +895,12 @@ public:
     unsigned char m_nTexturePack;
     unsigned char m_aUnmapped1A5[3];
     int m_bEndGamePending;
-    int m_nEndGamePendingUnknown;
+    int m_bShowEndGameDeathMessage;
     int m_bGuiGameSlow;
     unsigned char* m_pCharacterFile;
     unsigned long m_nCharacterFileSize;
     int m_nCharacterFileId;
-    CClientMsgSysAdmin* m_pUnknown1C0;
+    CClientMsgSysAdmin* m_pClientMsgSysAdmin;
     CSoundSetList* m_pSoundSetList;
     CResRef* m_pItemDropSounds;
     SPauseState m_PauseState;
@@ -927,7 +927,7 @@ public:
     int m_bDialogModelsSent;
     CExoStreamingSoundSource* m_pMenuMusic;
     CExoStreamingSoundSource* m_pLoadMusic;
-    int m_nUnknown240;
+    int m_bSaveStallEventSuppressed;
     int m_nUnknown244;
     int m_bModuleServicesActive;
     int m_nUnknown24C;
@@ -936,13 +936,13 @@ public:
     int m_nUnknown258;
     int m_nUnknown25C;
 #ifdef _XBOX
-    unsigned char m_nXboxUnmapped264;
+    unsigned char m_nCodeWord;
 #endif
 
     int m_nCharacterExportState;
     int m_bShutDownToMainMenuPending;
     int m_nUnknown268;
-    int m_nUnknown26C;
+    int m_bAreaSoundsHeld;
     CSWParty* m_pSWParty;
     CSWGuiManager* m_pSWGuiManager;
     CSWGuiLoadScreen* m_pGuiLoadScreen;
@@ -1058,8 +1058,8 @@ public:
     int m_bMainMenuTransition;
     unsigned char m_nModuleResourcesLoaded;
     unsigned char m_aUnmapped499[3];
-    int m_nUnknown49C;
-    int m_nUnknown4A0;
+    int m_bEndGameInputLocked;
+    int m_nEndGameInputLockTime;
 #ifndef _XBOX
     int m_bCharacterChangeInProgress;
     unsigned long m_oidMouseOverTarget;
@@ -1072,7 +1072,7 @@ public:
     unsigned char m_nSuperModelSet;
 #else
 
-    int m_nXboxUnmapped468;
+    int m_bMissingFilePending;
     unsigned char m_aXboxUnmapped46C[4];
 
     int m_nMouseX;
@@ -1092,7 +1092,7 @@ public:
     CExoString m_sPlayerName;
     CSWPortrait m_cPrimaryPCPortrait;
     short m_nPrimaryPCPortraitId;
-    char m_aUnmapped26[2];
+    char m_aPortraitIdAlignment[2];
 
     unsigned long m_oidControlledObject;
 

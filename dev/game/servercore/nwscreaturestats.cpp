@@ -694,13 +694,13 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
     }
     if (m_pCreature->m_bInParty == 0)
     {
-        int nAutoBalance = m_pCreature->m_c250;
+        int nAutoBalance = m_pCreature->m_nMultiplierSet;
         if (nAutoBalance != 0)
         {
             C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fArmorMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "ArmorMult", &fArmorMult);
-            char nLevel = max(1, GetCreature()->m_c251);
+            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
             nClassBonus += (int)(nLevel * fArmorMult);
         }
     }
@@ -2228,14 +2228,14 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                         nMaximum = nNumDice * nDie;
                         C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
                         float fDamageMult = 0.0f;
-                        int nAutoBalance = GetCreature()->m_c250;
+                        int nAutoBalance = GetCreature()->m_nMultiplierSet;
                         if (nAutoBalance != 0)
                         {
                             pAutoBalance->GetFLOATEntry(nAutoBalance, "DamageMult", &fDamageMult);
                         }
                         if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
                         {
-                            char nLevel = max(1, GetCreature()->m_c251);
+                            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
                             nMaximum *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
                         }
                         if (bCritical)
@@ -2245,7 +2245,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                                 short nRoll = g_pRules->RollDice(nNumDice, nDie);
                                 if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
                                 {
-                                    char nLevel = max(1, GetCreature()->m_c251);
+                                    char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
                                     nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
                                 }
                                 nDamage += g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
@@ -2256,7 +2256,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                             short nRoll = g_pRules->RollDice(nNumDice, nDie);
                             if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
                             {
-                                char nLevel = max(1, GetCreature()->m_c251);
+                                char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
                                 nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
                             }
                             nDamage = g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
@@ -2271,14 +2271,14 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                 nMaximum = nNumDice * nDie;
                 C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
                 float fDamageMult;
-                int nAutoBalance = GetCreature()->m_c250;
+                int nAutoBalance = GetCreature()->m_nMultiplierSet;
                 if (nAutoBalance != 0)
                 {
                     pAutoBalance->GetFLOATEntry(nAutoBalance, "DamageMult", &fDamageMult);
                 }
                 if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
                 {
-                    char nLevel = max(1, GetCreature()->m_c251);
+                    char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
                     nMaximum *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
                 }
                 if (bCritical)
@@ -2288,7 +2288,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                         short nRoll = g_pRules->RollDice(nNumDice, nDie);
                         if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
                         {
-                            char nLevel = max(1, GetCreature()->m_c251);
+                            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
                             nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
                         }
                         nDamage += g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
@@ -2299,7 +2299,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                     short nRoll = g_pRules->RollDice(nNumDice, nDie);
                     if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
                     {
-                        char nLevel = max(1, GetCreature()->m_c251);
+                        char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
                         nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
                     }
                     nDamage = g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
@@ -2917,13 +2917,13 @@ char CSWSCreatureStats::GetBaseFortSavingThrow()
 
     if (m_pCreature->m_bInParty == 0)
     {
-        int nAutoBalance = m_pCreature->m_c250;
+        int nAutoBalance = m_pCreature->m_nMultiplierSet;
         if (nAutoBalance != 0)
         {
             C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fSaveMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "SaveMult", &fSaveMult);
-            char nLevel = max(1, GetCreature()->m_c251);
+            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
             nBonus += (char)(nLevel * fSaveMult);
         }
     }
@@ -2957,13 +2957,13 @@ unsigned char CSWSCreatureStats::GetBaseWillSavingThrow()
 
     if (m_pCreature->m_bInParty == 0)
     {
-        int nAutoBalance = m_pCreature->m_c250;
+        int nAutoBalance = m_pCreature->m_nMultiplierSet;
         if (nAutoBalance != 0)
         {
             C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fSaveMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "SaveMult", &fSaveMult);
-            char nLevel = max(1, GetCreature()->m_c251);
+            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
             nBonus += (char)(nLevel * fSaveMult);
         }
     }
@@ -2997,13 +2997,13 @@ unsigned char CSWSCreatureStats::GetBaseReflexSavingThrow()
 
     if (m_pCreature->m_bInParty == 0)
     {
-        int nAutoBalance = m_pCreature->m_c250;
+        int nAutoBalance = m_pCreature->m_nMultiplierSet;
         if (nAutoBalance != 0)
         {
             C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fSaveMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "SaveMult", &fSaveMult);
-            char nLevel = max(1, GetCreature()->m_c251);
+            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
             nBonus += (char)(nLevel * fSaveMult);
         }
     }
@@ -5004,27 +5004,27 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     int bReorienting = !pRes->ReadFieldBYTE(pStruct, "NotReorienting", bSuccess,
                                             !GetCreature()->m_bDialogFaceSpeaker);
     GetCreature()->m_bDialogFaceSpeaker = bReorienting;
-    int bHologram = GetCreature()->m_n24C;
+    int bHologram = GetCreature()->m_bHologram;
     bHologram = pRes->ReadFieldBYTE(pStruct, "Hologram", bSuccess, bHologram);
-    GetCreature()->m_n24C = bHologram;
-    unsigned char bIgnoreCrePath = GetCreature()->m_c26A;
+    GetCreature()->m_bHologram = bHologram;
+    unsigned char bIgnoreCrePath = GetCreature()->m_bIgnoreCrePath;
     bIgnoreCrePath = pRes->ReadFieldBYTE(pStruct, "IgnoreCrePath", bSuccess,
                                          bIgnoreCrePath);
     unsigned char bIgnore = bIgnoreCrePath != 0;
-    GetCreature()->m_c26A = bIgnore;
+    GetCreature()->m_bIgnoreCrePath = bIgnore;
     unsigned char nMultiplierSet = pRes->ReadFieldBYTE(pStruct, "MultiplierSet",
-        bSuccess, GetCreature()->m_c250);
-    GetCreature()->m_c250 = nMultiplierSet;
-    unsigned char nPCLevelAtSpawn = GetCreature()->m_c251;
+        bSuccess, GetCreature()->m_nMultiplierSet);
+    GetCreature()->m_nMultiplierSet = nMultiplierSet;
+    unsigned char nPCLevelAtSpawn = GetCreature()->m_nPCLevelAtSpawn;
     nPCLevelAtSpawn = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess,
                                           nPCLevelAtSpawn);
-    GetCreature()->m_c251 = nPCLevelAtSpawn;
-    int bWillNotRender = GetCreature()->m_n254;
+    GetCreature()->m_nPCLevelAtSpawn = nPCLevelAtSpawn;
+    int bWillNotRender = GetCreature()->m_bWillNotRender;
     bWillNotRender = pRes->ReadFieldBYTE(pStruct, "WillNotRender", bSuccess, bWillNotRender);
-    GetCreature()->m_n254 = bWillNotRender;
-    int bConfused = GetCreature()->m_n258;
+    GetCreature()->m_bWillNotRender = bWillNotRender;
+    int bConfused = GetCreature()->m_bConfused;
     bConfused = pRes->ReadFieldBYTE(pStruct, "Confused", bSuccess, bConfused);
-    GetCreature()->m_n258 = bConfused;
+    GetCreature()->m_bConfused = bConfused;
     int bDisarmable = pRes->ReadFieldBYTE(pStruct, "Disarmable", bSuccess,
                                           GetCreature()->GetDisarmable());
     GetCreature()->m_nDisarmable = bDisarmable;
@@ -5303,9 +5303,9 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
                                              nCurrentHitPoints);
     int nDefaultForce = GetCreature()->GetStats()->m_nForcePoints;
     short nCurrentForce = pRes->ReadFieldSHORT(pStruct, "CurrentForce", bSuccess, nDefaultForce);
-    GetCreature()->m_n11F4 = pRes->ReadFieldINT(pStruct, "BonusForcePoints", bSuccess, 0);
+    GetCreature()->m_nBonusForcePoints = pRes->ReadFieldINT(pStruct, "BonusForcePoints", bSuccess, 0);
     GetCreature()->m_bPlayerCreated = pRes->ReadFieldINT(pStruct, "PlayerCreated", bSuccess, 0);
-    GetCreature()->m_n11F8 = pRes->ReadFieldINT(pStruct, "AssignedPup", bSuccess, -1);
+    GetCreature()->m_nAssignedPup = pRes->ReadFieldINT(pStruct, "AssignedPup", bSuccess, -1);
     if (GetIsPC())
     {
         short nBaseHitPoints = GetCreature()->m_nMaxHitPoints;
@@ -5544,16 +5544,16 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, bPartyInteract, "PartyInteract");
     int bReorienting = GetCreature()->m_bDialogFaceSpeaker;
     pRes->WriteFieldBYTE(pStruct, !bReorienting, "NotReorienting");
-    int bHologram = GetCreature()->m_n24C;
+    int bHologram = GetCreature()->m_bHologram;
     pRes->WriteFieldBYTE(pStruct, bHologram, "Hologram");
-    unsigned char bIgnoreCrePath = GetCreature()->m_c26A;
+    unsigned char bIgnoreCrePath = GetCreature()->m_bIgnoreCrePath;
     pRes->WriteFieldBYTE(pStruct, bIgnoreCrePath, "IgnoreCrePath");
-    pRes->WriteFieldBYTE(pStruct, (int)GetCreature()->m_c250, "MultiplierSet");
-    unsigned char nPCLevelAtSpawn = GetCreature()->m_c251;
+    pRes->WriteFieldBYTE(pStruct, (int)GetCreature()->m_nMultiplierSet, "MultiplierSet");
+    unsigned char nPCLevelAtSpawn = GetCreature()->m_nPCLevelAtSpawn;
     pRes->WriteFieldBYTE(pStruct, nPCLevelAtSpawn, "PCLevelAtSpawn");
-    int bWillNotRender = GetCreature()->m_n254;
+    int bWillNotRender = GetCreature()->m_bWillNotRender;
     pRes->WriteFieldBYTE(pStruct, bWillNotRender, "WillNotRender");
-    int bConfused = GetCreature()->m_n258;
+    int bConfused = GetCreature()->m_bConfused;
     pRes->WriteFieldBYTE(pStruct, bConfused, "Confused");
     unsigned char nBodyBag = GetCreature()->m_nBodyBag;
     pRes->WriteFieldBYTE(pStruct, nBodyBag, "BodyBag");
@@ -5571,9 +5571,9 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     short nMaxForcePoints = m_pCreature->GetMaxForcePoints();
     unsigned short nCurrentForcePoints = nForcePoints + pStats->m_nCurrentForcePoints;
     pRes->WriteFieldSHORT(pStruct, nCurrentForcePoints - nMaxForcePoints, "CurrentForce");
-    int nBonusForcePoints = GetCreature()->m_n11F4;
+    int nBonusForcePoints = GetCreature()->m_nBonusForcePoints;
     pRes->WriteFieldINT(pStruct, nBonusForcePoints, "BonusForcePoints");
-    int nAssignedPup = GetCreature()->m_n11F8;
+    int nAssignedPup = GetCreature()->m_nAssignedPup;
     pRes->WriteFieldINT(pStruct, nAssignedPup, "AssignedPup");
     int bPlayerCreated = GetCreature()->m_bPlayerCreated;
     pRes->WriteFieldINT(pStruct, bPlayerCreated, "PlayerCreated");
@@ -6861,13 +6861,13 @@ int CSWSCreatureStats::GetUnarmedDamageRoll(CSWSObject* pTarget)
 
     if (m_pCreature->m_bInParty == 0)
     {
-        int nAutoBalance = m_pCreature->m_c250;
+        int nAutoBalance = m_pCreature->m_nMultiplierSet;
         if (nAutoBalance != 0)
         {
             C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fDamageMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "DamageMult", &fDamageMult);
-            char nLevel = max(1, GetCreature()->m_c251);
+            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
             nDamage *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
         }
     }
@@ -7823,15 +7823,15 @@ unsigned char CSWSCreatureStats::GetLevel(int bExcludeNegativeLevels)
         return nLevel;
     if (pCreature->GetStats()->GetIsPC())
         return nLevel;
-    if (!pCreature->m_bInParty && pCreature->m_c250 != 0)
+    if (!pCreature->m_bInParty && pCreature->m_nMultiplierSet != 0)
     {
-        int nAutoBalance = pCreature->m_c250;
+        int nAutoBalance = pCreature->m_nMultiplierSet;
         if (nAutoBalance != 0)
         {
             C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fLevelMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "LevelMult", &fLevelMult);
-            char nPCLevel = pCreature->m_c251;
+            char nPCLevel = pCreature->m_nPCLevelAtSpawn;
             if (nPCLevel == 0)
             {
                 g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
@@ -7869,13 +7869,13 @@ int CSWSCreatureStats::GetBaseAttackBonus()
 
     if (m_pCreature->m_bInParty == 0)
     {
-        int nAutoBalance = m_pCreature->m_c250;
+        int nAutoBalance = m_pCreature->m_nMultiplierSet;
         if (nAutoBalance != 0)
         {
             C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fToHitMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "ToHitMult", &fToHitMult);
-            char nLevel = max(1, GetCreature()->m_c251);
+            char nLevel = max(1, GetCreature()->m_nPCLevelAtSpawn);
             nBonus += (int)(nLevel * fToHitMult);
         }
     }

@@ -4480,7 +4480,7 @@ void CSWSItem::EventHandler(unsigned long nEventId, unsigned long oidCaller,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC != 0)
+        if (m_bDestroyable != 0)
         {
             CloseItemForAllPlayers();
             unsigned long oidPossessor = m_oidPossessor;
