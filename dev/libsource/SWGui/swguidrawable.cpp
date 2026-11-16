@@ -532,6 +532,18 @@ inline void CSWGuiImageParams::SetImage(const CResRef& cImage)
 {
     SetImage(cImage, 0);
 }
+static inline void BorderSetCornerImage(CSWGuiBorderParams* pParams, const CResRef& cImage)
+{
+    pParams->SetCornerImage(cImage, 0);
+}
+static inline void BorderSetEdgeImage(CSWGuiBorderParams* pParams, const CResRef& cImage)
+{
+    pParams->SetEdgeImage(cImage, 0);
+}
+static inline void BorderSetFillImage(CSWGuiBorderParams* pParams, const CResRef& cImage)
+{
+    pParams->SetFillImage(cImage, 0);
+}
 // PC 0x00414C20 GOG 0x00414BD0
 void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
                        const CExoString& sName)
@@ -542,12 +554,12 @@ void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
     {
         int bSuccess;
 
-        m_cParams.SetCornerImage(pGFF->ReadFieldCResRef(&cBorder, "CORNER",
+        BorderSetCornerImage(&m_cParams, pGFF->ReadFieldCResRef(&cBorder, "CORNER",
                                   bSuccess, ""));
         CSWGuiBorderParams& cParams = m_cParams;
-        cParams.SetEdgeImage(pGFF->ReadFieldCResRef(&cBorder, "EDGE",
+        BorderSetEdgeImage(&cParams, pGFF->ReadFieldCResRef(&cBorder, "EDGE",
                                 bSuccess, ""));
-        cParams.SetFillImage(pGFF->ReadFieldCResRef(&cBorder, "FILL",
+        BorderSetFillImage(&cParams, pGFF->ReadFieldCResRef(&cBorder, "FILL",
                                 bSuccess, ""));
         cParams.m_nFillMode = pGFF->ReadFieldINT(&cBorder, "FILLSTYLE",
                                                  bSuccess, 0);

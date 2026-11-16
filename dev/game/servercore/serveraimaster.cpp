@@ -1,3 +1,4 @@
+#define SERVERAIMASTER_SOURCE
 #include "exobase.h"
 #include "resgff.h"
 #include "appmanager.h"
@@ -57,17 +58,10 @@ const unsigned long CServerAIMaster::EVENT_SUMMON_CREATURE = 24;
 const unsigned long CServerAIMaster::EVENT_ACQUIRE_ITEM = 25;
 const unsigned long CServerAIMaster::EVENT_AREA_TRANSITION = 26;
 
-// PC 0x004DDFE0 GOG 0x004DE100
-CServerAIMaster::CServerAIMaster()
+inline void CreateHandlers(CSWSEffectListHandler*& pEffectHandler, CSWSItemPropertyHandler*& pItemPropertyHandler)
 {
-    m_pEffectHandler = new CSWSEffectListHandler;
-    m_pEffectHandler->InitializeEffects();
-    m_pItemPropertyHandler = new CSWSItemPropertyHandler;
-    m_pItemPropertyHandler->InitializeItemProperties();
-    m_pUnused80 = NULL;
-    m_pUnused84 = NULL;
-    m_pUnused88 = NULL;
-    m_pUnused8C = NULL;
+    pEffectHandler = new CSWSEffectListHandler;
+    pItemPropertyHandler = new CSWSItemPropertyHandler;
 }
 const unsigned long CServerAIMaster::EVENT_CONTROLLER_RUMBLE = 27;
 // PC 0x00650770 GOG 0x00650620
@@ -911,6 +905,27 @@ BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
     m_vPosition.m_fY = pRes->ReadFieldFLOAT(pStruct, "PositionY", bSuccess, 0.0f);
     m_vPosition.m_fZ = pRes->ReadFieldFLOAT(pStruct, "PositionZ", bSuccess, 0.0f);
     return TRUE;
+}
+template <> inline CExoLinkedList<CServerAIEventNode>::~CExoLinkedList()
+{
+    delete m_pInternal;
+}
+// PC 0x004DDFD0 GOG 0x004DE0F0
+inline CServerAIList::CServerAIList()
+{
+    m_nCurrent = 0;
+}
+// PC 0x004DDFE0 GOG 0x004DE100
+CServerAIMaster::CServerAIMaster()
+{
+    m_pEffectHandler = new CSWSEffectListHandler;
+    m_pEffectHandler->InitializeEffects();
+    m_pItemPropertyHandler = new CSWSItemPropertyHandler;
+    m_pItemPropertyHandler->InitializeItemProperties();
+    m_pUnused80 = NULL;
+    m_pUnused84 = NULL;
+    m_pUnused88 = NULL;
+    m_pUnused8C = NULL;
 }
 // PC 0x004DE0B0 GOG 0x004DE1D0
 BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)

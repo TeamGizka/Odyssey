@@ -298,6 +298,7 @@ public:
         m_bToolTipDirty = 1;
     }
 #endif
+#ifndef SWGUIINGAME_SOURCE
     void SetHealth(int nCurHealth, int nMaxHealth, int bAlive)
     {
         m_aBars[0].SetMaxValue(nMaxHealth);
@@ -312,6 +313,9 @@ public:
         m_bToolTipDirty = 1;
 #endif
     }
+#else
+    void SetHealth(int nCurHealth, int nMaxHealth, int bAlive);
+#endif
     void Show(int, unsigned char, unsigned char, unsigned char);
     void Initialize(CSWGuiMainInterface*, int);
     CSWGuiMainInterfaceChar();

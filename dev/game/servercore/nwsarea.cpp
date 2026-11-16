@@ -1,3 +1,4 @@
+#define NWSAREA_SOURCE
 #include "exobase.h"
 #include <windows.h>
 #include "resgff.h"
@@ -19,6 +20,10 @@
 #include "nwsstore.h"
 #include "nwsvartable.h"
 #include "nwsplaceable.h"
+// PC 0x004DF820
+inline CGameObject::~CGameObject()
+{
+}
 #include "nwsspellimpact.h"
 #include "nwmessage.h"
 #include "nwsplayer.h"

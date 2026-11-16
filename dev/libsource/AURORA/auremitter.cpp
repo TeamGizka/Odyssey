@@ -6,13 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "aurrendergl.h"
+inline void AurEmitterCopyParticle(Particle* pParticle) { Particle copy(*pParticle); }
 #include <stdio.h>
 #include "aurwindmanager.h"
 
 template void List<Vector>::DelIndex(int);
 
 template <class T> inline void AurEmitterCopy(T* p) { T copy(*p); }
-inline void AurEmitterCopyParticles(Particle* pParticle, ChunkyParticle* pChunky) { AurEmitterCopy(pParticle); AurEmitterCopy(pChunky); }
+inline void AurEmitterCopyChunkyParticle(ChunkyParticle* pChunky) { AurEmitterCopy(pChunky); }
 
 #include "exoresfile.h"
 

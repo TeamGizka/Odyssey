@@ -68,9 +68,13 @@ public:
 
     unsigned long GetId() { return m_nId; }
 
+#ifndef NWSAREA_SOURCE
     virtual ~CGameObject()
     {
     }
+#else
+    virtual ~CGameObject();
+#endif
     // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void SetId(unsigned long nId)
     {

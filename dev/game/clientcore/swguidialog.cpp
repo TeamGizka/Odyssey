@@ -1027,9 +1027,14 @@ CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
     StopLoadFromLayout();
 #endif
 }
+static inline void SwguidialogSkillsTrace1();
 // PC 0x0070EE90 GOG 0x0070E690
 void CSWGuiDialogComputer::UpdateSkills()
 {
+    if (SWGUIDIALOG_DEBUG)
+    {
+        SwguidialogSkillsTrace1();
+    }
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
     CItemRepository* pRepository =
@@ -1054,6 +1059,9 @@ void CSWGuiDialogComputer::UpdateSkills()
             CSWRules::SKILL_REPAIR));
     m_aInfo[2].m_lblValue.m_cText.m_cParams.SetText(nSpikes);
     m_aInfo[3].m_lblValue.m_cText.m_cParams.SetText(nRepairParts);
+}
+static inline void SwguidialogSkillsTrace1()
+{
 }
 // PC 0x0070F050 GOG 0x0070E850
 CSWGuiDialogComputerCamera::~CSWGuiDialogComputerCamera()

@@ -2,6 +2,13 @@
 #include "appmanager.h"
 #include "clientexoapp.h"
 #include "gameobjectarray.h"
+#include "nwrules.h"
+#include "nwspell.h"
+// PC 0x004F4460 GOG 0x00503C50
+inline CSWSpell* CSWRules::GetSpell(int nSpell)
+{
+    return m_pSpellArray->GetSpell(nSpell);
+}
 #include "twodimarrays.h"
 #include "nwsscriptevent.h"
 #include "nwportrait.h"
@@ -452,7 +459,7 @@ unsigned char CSWSObject::GetDamageLevel()
 
 CSWSpell* CSWSObject::GetLastSpell()
 {
-    return g_pRules->m_pSpellArray->GetSpell(m_nLastSpellId);
+    return g_pRules->GetSpell(m_nLastSpellId);
 }
 // PC 0x004F8A70 GOG 0x00508260
 void CSWSObject::LoadActionQueue(CResGFF* pRes, CResStruct* pStruct)

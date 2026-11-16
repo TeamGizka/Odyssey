@@ -1,3 +1,4 @@
+#define SWGUIINGAME_SOURCE
 #include "appmanager.h"
 #include "swguiingame.h"
 #include "exotlktable.h"
@@ -103,6 +104,21 @@ void CSWGuiMessageBox::ShowLoadError(unsigned long nStrRef)
     m_pCallbackControl = 0;
 }
 #endif
+// PC 0x006753C0
+inline void CSWGuiMainInterfaceChar::SetHealth(int nCurHealth, int nMaxHealth, int bAlive)
+{
+    m_aBars[0].SetMaxValue(nMaxHealth);
+    m_aBars[0].SetCurValue(nCurHealth);
+#ifdef _XBOX
+    m_aBars[0].m_cFill.m_cParams.SetFillImage(bAlive != 0 ? "lbl_healthp" : "lbl_health", 0);
+#else
+    m_aBars[0].m_cFill.m_cParams.SetColor(bAlive != 0 ? CGuiInGame::COLOR_GREEN
+                                                      : CGuiInGame::COLOR_RED);
+    m_nMaxHealth = nMaxHealth;
+    m_nCurHealth = nCurHealth;
+    m_bToolTipDirty = 1;
+#endif
+}
 // PC 0x00675430 GOG 0x006751D0
 void CSWGuiInGameMenu::OnShoulderLeft(CSWGuiControl* pControl)
 {
@@ -296,6 +312,10 @@ void CSWGuiInGameMenu::OnEquipButtonPressed(CSWGuiControl* pControl)
 {
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_EQUIP);
+}
+inline CSWGuiLabelHilight* NewLabelHilights(int nCount)
+{
+    return new CSWGuiLabelHilight[nCount];
 }
 // PC 0x00677240 GOG 0x00676FE0
 CSWGuiInGameMessages::~CSWGuiInGameMessages()

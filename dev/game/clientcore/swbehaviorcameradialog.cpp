@@ -12,6 +12,10 @@
 #include "nwcplaceable.h"
 #include "nwcdoor.h"
 
+#define SWBEHAVIORCAMERADIALOG_DEBUG 0
+
+static inline void CameraDialogTrace(CSWBehaviorCameraDialog* pBehavior);
+
 // PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWBehaviorCameraDialog::Message(char* sMessage)
 {
@@ -277,10 +281,18 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
     qOrientation = YawPitchRoll(Yaw(normalize(vDirection)),
                                 Pitch(normalize(vLookAt - vPosition)) + 90.0f,
                                 0.0f);
+    if (SWBEHAVIORCAMERADIALOG_DEBUG)
+    {
+        CameraDialogTrace(this);
+    }
 }
 // PC 0x00711390 GOG 0x007110E0
 int CSWBehaviorCameraDialog::GetSideUnobstructed()
 {
+    if (SWBEHAVIORCAMERADIALOG_DEBUG)
+    {
+        CameraDialogTrace(this);
+    }
     Vector vHookPosition;
     Quaternion qOrientation;
     Vector vFirst = ((Gob*)(CAurObject*)m_pFirstObject)->GetPosition();
@@ -519,6 +531,10 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
                                      float const& fSecondHeight,
                                      float fCameraYaw)
 {
+    if (SWBEHAVIORCAMERADIALOG_DEBUG)
+    {
+        CameraDialogTrace(this);
+    }
     Vector vHookPosition;
     Quaternion qHookOrientation;
 
@@ -703,4 +719,8 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
     m_nCameraState = 0;
     Control(0.0f);
     m_nCameraState = INITIAL_CAMERA_STATE;
+}
+static inline void CameraDialogTrace(CSWBehaviorCameraDialog* pBehavior)
+{
+    pBehavior->CSWBehaviorCameraDialog::~CSWBehaviorCameraDialog();
 }
