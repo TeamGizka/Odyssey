@@ -1,4 +1,7 @@
 #include "exobase.h"
+#ifndef _XBOX
+#define SWROOMSURFACEMESH_CROSSING_FACES
+#endif
 #include "swroomsurfacemesh.h"
 #include <stdio.h>
 #include <string.h>
@@ -409,6 +412,12 @@ int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
 
     return nResult;
 }
+
+#ifndef _XBOX
+CSWRoomSurfaceMeshCrossingFaces::~CSWRoomSurfaceMeshCrossingFaces()
+{
+}
+#endif
 // PC 0x00575630 GOG 0x00575350
 int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& vEnd,
                                      CSWRoomSurfaceMeshHitInfo& hitInfo)

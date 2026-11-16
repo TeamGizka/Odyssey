@@ -54,6 +54,14 @@ public:
     int m_nField1C;
 };
 
+#ifdef SWROOMSURFACEMESH_CROSSING_FACES
+class CSWRoomSurfaceMeshCrossingFaces : public CExoArrayList<int>
+{
+public:
+    ~CSWRoomSurfaceMeshCrossingFaces();
+};
+#endif
+
 class CSWRoomSurfaceMesh : public CSWCollisionMesh
 {
 public:
@@ -144,7 +152,11 @@ public:
     CExoStaticArrayList<int> m_lstPerimeters;
     CExoStaticArrayList<CSWRoomSurfaceMeshAABBNode> m_lstAABBNodes;
     CExoArrayList<Vector> m_lstCrossings;
+#ifdef SWROOMSURFACEMESH_CROSSING_FACES
+    CSWRoomSurfaceMeshCrossingFaces m_lstCrossingFaces;
+#else
     CExoArrayList<int> m_lstCrossingFaces;
+#endif
     int m_nAABBRootNode;
     int m_nLOSMaterialMask;
     int m_nWalkableMaterialMask;
