@@ -2273,50 +2273,6 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
     m_nTimeStamp = 0;
 #endif
 }
-void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A070 GOG 0x00709DB0
-{
-
-    m_sXboxTitle = sTitle;
-    CExoString sTemp;
-
-#ifdef _XBOX
-    if (m_nSaveGame == SAVE_SLOT_QUICK)
-    {
-        m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE);
-    }
-#else
-    if (m_nSaveGame == SAVE_SLOT_AUTO)
-    {
-        m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE);
-    }
-    else if (m_bBadSave)
-    {
-        m_sXboxTitle = sTitle;
-    }
-    else if (m_nSaveGame == SAVE_SLOT_QUICK)
-    {
-        m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_QUICK_SAVE);
-    }
-
-    CExoString sFormattedTitle;
-
-    if (m_nSaveGame == SAVE_SLOT_QUICK || m_nSaveGame == SAVE_SLOT_AUTO)
-    {
-        m_sXboxTitle = m_sXboxTitle + "\n" + FormatTimeToString();
-    }
-    else
-    {
-        CExoString sTimeStamp = FormatTimeToString();
-        g_pTlkTable->SetCustomToken(TITLE_TOKEN_NUMBER, m_nSaveNumber);
-        g_pTlkTable->SetCustomToken(TITLE_TOKEN_NAME, m_sSaveGameName);
-        g_pTlkTable->SetCustomToken(TITLE_TOKEN_TIME_STAMP, sTimeStamp);
-        sFormattedTitle = g_pTlkTable->GetSimpleString(STRREF_SAVE_TITLE);
-        g_pTlkTable->ParseStr(sFormattedTitle);
-        m_sXboxTitle = sFormattedTitle;
-    }
-#endif
-    m_cText.m_cParams.SetText(m_sXboxTitle);
-}
 #ifndef _XBOX
 void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0 GOG 0x0070BB00
 {
@@ -2508,6 +2464,54 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
         AddEvent(GUIEVENT_RECOMMEND, pObject, pHandler);
 }
 #endif
+void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A070 GOG 0x00709DB0
+{
+
+    m_sXboxTitle = sTitle;
+    CExoString sTemp;
+
+#ifdef _XBOX
+    if (m_nSaveGame == SAVE_SLOT_QUICK)
+    {
+        m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE);
+    }
+#else
+    if (SWGUISAVELOAD_DEBUG)
+    {
+        KOTOR_AUTOSAVE_PARAMS cParams;
+    }
+    if (m_nSaveGame == SAVE_SLOT_AUTO)
+    {
+        m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE);
+    }
+    else if (m_bBadSave)
+    {
+        m_sXboxTitle = sTitle;
+    }
+    else if (m_nSaveGame == SAVE_SLOT_QUICK)
+    {
+        m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_QUICK_SAVE);
+    }
+
+    CExoString sFormattedTitle;
+
+    if (m_nSaveGame == SAVE_SLOT_QUICK || m_nSaveGame == SAVE_SLOT_AUTO)
+    {
+        m_sXboxTitle = m_sXboxTitle + "\n" + FormatTimeToString();
+    }
+    else
+    {
+        CExoString sTimeStamp = FormatTimeToString();
+        g_pTlkTable->SetCustomToken(TITLE_TOKEN_NUMBER, m_nSaveNumber);
+        g_pTlkTable->SetCustomToken(TITLE_TOKEN_NAME, m_sSaveGameName);
+        g_pTlkTable->SetCustomToken(TITLE_TOKEN_TIME_STAMP, sTimeStamp);
+        sFormattedTitle = g_pTlkTable->GetSimpleString(STRREF_SAVE_TITLE);
+        g_pTlkTable->ParseStr(sFormattedTitle);
+        m_sXboxTitle = sFormattedTitle;
+    }
+#endif
+    m_cText.m_cParams.SetText(m_sXboxTitle);
+}
 int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380 GOG 0x0070B0C0
                                const CExoString& sSaveName,
                                CSWGuiControl* pControl)

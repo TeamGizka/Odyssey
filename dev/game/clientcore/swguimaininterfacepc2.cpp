@@ -31,6 +31,7 @@
 
 #include <math.h>
 
+static inline void Swguimaininterfacepc2Trace4();
 static inline void Swguimaininterfacepc2Trace3();
 static inline void Swguimaininterfacepc2Trace2();
 static inline void Swguimaininterfacepc2Trace1();
@@ -485,6 +486,11 @@ void CSWGuiMainInterface::OnCharacterRightClicked(CSWGuiControl* pControl)  // P
 {
 }
 #endif
+
+static inline void Swguimaininterfacepc2Trace4()
+{
+    Swguimaininterfacepc2Trace3();
+}
 
 static inline void Swguimaininterfacepc2Trace3()
 {
@@ -3460,34 +3466,9 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
 #endif
 }
 
-// PC 0x006E4EB0 GOG 0x006E44C0
-void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
-                                        const CExoString& sText,
-                                        const Vector& vColor, float fDuration)
+inline CSWGuiFloatyText* NewFloatyText()
 {
-    Swguimaininterfacepc2Trace3();
-    CSWGuiFloatyText* pFloatyText = new CSWGuiFloatyText;
-    pFloatyText->CreateEntry(oidObject, sText, vColor, fDuration);
-
-    for (int i = m_lFloatyText.num - 1; i >= 0; i--)
-    {
-        CSWGuiFloatyText* pOldText = m_lFloatyText.element[i];
-        if (pOldText->m_oidObject == oidObject)
-        {
-            if (++pOldText->m_bActive <= SWGUI_FLOATY_TEXT_MAX_LINES)
-            {
-                pOldText->m_cExtent.m_nTop -= pOldText->m_cExtent.m_nHeight;
-                pOldText->SetExtent(pOldText->m_cExtent);
-            }
-            else
-            {
-                delete m_lFloatyText.element[i];
-                m_lFloatyText.DelIndex(i);
-            }
-        }
-    }
-
-    m_lFloatyText.Add(pFloatyText);
+    return new CSWGuiFloatyText;
 }
 // PC 0x006E2610 GOG 0x006E0470
 void CSWGuiMainInterface::RemoveFloatyText(CSWGuiFloatyText* pFloatyText)
@@ -4815,6 +4796,35 @@ void CSWGuiTargetActionMenu::Initialize(CSWGuiMainInterface* pMainInterface)  //
 }
 #endif
 
+// PC 0x006E4EB0 GOG 0x006E44C0
+void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
+                                        const CExoString& sText,
+                                        const Vector& vColor, float fDuration)
+{
+    Swguimaininterfacepc2Trace4();
+    CSWGuiFloatyText* pFloatyText = new CSWGuiFloatyText;
+    pFloatyText->CreateEntry(oidObject, sText, vColor, fDuration);
+
+    for (int i = m_lFloatyText.num - 1; i >= 0; i--)
+    {
+        CSWGuiFloatyText* pOldText = m_lFloatyText.element[i];
+        if (pOldText->m_oidObject == oidObject)
+        {
+            if (++pOldText->m_bActive <= SWGUI_FLOATY_TEXT_MAX_LINES)
+            {
+                pOldText->m_cExtent.m_nTop -= pOldText->m_cExtent.m_nHeight;
+                pOldText->SetExtent(pOldText->m_cExtent);
+            }
+            else
+            {
+                delete m_lFloatyText.element[i];
+                m_lFloatyText.DelIndex(i);
+            }
+        }
+    }
+
+    m_lFloatyText.Add(pFloatyText);
+}
 #ifndef _XBOX
 CSWGuiTargetActionMenu::CSWGuiTargetActionMenu()  // PC 0x006E5060 GOG 0x006E4B70
 {
