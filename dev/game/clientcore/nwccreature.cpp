@@ -30,6 +30,7 @@
 #include "nwcitem.h"
 #include "nwcprojectile.h"
 #include "swparty.h"
+#define NWCCREATURE_PARSESTR
 #include "nwtlktable.h"
 #include "serverexoapp.h"
 #include "nwsvartable.h"
@@ -294,6 +295,15 @@ void CSWCCreature::SetMoveOrientation(const Vector& vOrientation)
 void CSWCCreature::SetDesiredOrientation(const Vector& vOrientation)
 {
     m_vDesiredOrientation = normalize(vOrientation);
+}
+// PC 0x006576A0 GOG 0x00657550
+inline void CSWTlkTable::ParseStr(CExoString& sText, CGameObject* pObject,
+                                  int nGender, int nFlags)
+{
+    m_pObject = pObject;
+    m_nCurGender = GetObjectGender();
+    m_bFlag = nFlags;
+    CTlkTable::ParseStr(sText);
 }
 // PC 0x006576E0 GOG 0x00657590
 void HitGroundEvent(CAurObject* pObject, char* sEvent, void* pData)

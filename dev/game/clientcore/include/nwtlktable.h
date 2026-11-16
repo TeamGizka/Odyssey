@@ -43,6 +43,7 @@ public:
         return g_pAppManager->m_pClientExoApp->GetGUIString(nStrRef);
     }
 
+#ifndef NWCCREATURE_PARSESTR
     void ParseStr(CExoString& sText, CGameObject* pObject, int nGender,
                   int nFlags)
     {
@@ -51,6 +52,10 @@ public:
         m_bFlag = nFlags;
         CTlkTable::ParseStr(sText);
     }
+#else
+    void ParseStr(CExoString& sText, CGameObject* pObject, int nGender,
+                  int nFlags);
+#endif
     virtual void GetTokenValue(const CTlkTableToken& token, CExoString& sValue);
 };
 
