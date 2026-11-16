@@ -1,4 +1,5 @@
 #define MATH3D_NO_INLINE
+#define SWGUICONTROL_SOURCE
 #include "aurgui.h"
 #include "twodimarray.h"
 #include "resgff.h"
@@ -453,6 +454,105 @@ void CSWGuiNavigable::Load(CResGFF* pGFF, CResStruct& cStruct)
     }
     CSWGuiControl::Load(pGFF, cStruct);
 }
+void CSWGuiListBox::ClearItems()  // PC 0x00419410 GOG 0x00419400
+{
+    int i;
+
+    if (m_bOwnsItems)
+    {
+#ifndef _XBOX
+        if (m_pHoverControl != NULL && m_pHoverControl->AsScrollBar() == NULL)
+        {
+            m_pHoverControl = NULL;
+        }
+#endif
+        for (i = 0; i < GetNumItems(); i++)
+        {
+            if (m_lItems.element[i] != NULL)
+            {
+                delete m_lItems.element[i];
+            }
+            m_lItems.element[i] = NULL;
+        }
+    }
+    else
+    {
+        for (i = 0; i < GetNumItems(); i++)
+        {
+            if (m_bRestoreExtents)
+            {
+                m_lItems.element[i]->SetExtent(m_lItemExtents.element[i]);
+            }
+            m_lItems.element[i]->m_pOwner = NULL;
+        }
+    }
+#ifndef _XBOX
+    m_pHoverControl = NULL;
+#endif
+    m_lItems.num = 0;
+    m_lItemExtents.num = 0;
+    m_nSelectedItem = -1;
+    m_nScrollPosition = 1;
+}
+// PC 0x00419500 GOG 0x004194F0
+void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent, CSWGuiListBox* pProto)
+{
+    if (SWGUICONTROL_DEBUG)
+    {
+        ClearItems();
+    }
+    Initialize(cExtent, pProto->m_cBorder.m_cParams, pProto->m_nPadding);
+    CSWGuiScrollBar* pScrollBar = &pProto->m_cScrollBar;
+    return m_cScrollBar.Initialize(pScrollBar->m_cExtent, pScrollBar);
+}
+#ifndef _XBOX
+void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,  // PC 0x00419550 GOG 0x00419540
+                                      const CSWGuiBorderParams& cBorder,
+                                      const CResRef& sArrow,
+                                      const CResRef& sThumb, int bLeft)
+{
+    m_bScrollBarOnLeft = bLeft;
+    if (cExtent.m_nWidth > m_cExtent.m_nWidth)
+    {
+        cExtent.m_nWidth = m_cExtent.m_nWidth;
+    }
+    cExtent.m_nTop = m_cExtent.m_nTop;
+    cExtent.m_nHeight = m_cExtent.m_nHeight;
+    if (m_bScrollBarOnLeft)
+    {
+        cExtent.m_nLeft = m_cExtent.m_nLeft;
+    }
+    else
+    {
+        cExtent.m_nLeft = m_cExtent.m_nLeft + m_cExtent.m_nWidth - cExtent.m_nWidth;
+    }
+    m_cScrollBar.Initialize(cExtent, cBorder, sArrow, sThumb);
+    m_cScrollBar.SetMaxValue(
+        (m_lItems.num - (m_nVisibleItems < 1 ? 1 : m_nVisibleItems) + 1 > 1)
+            ? m_lItems.num - (m_nVisibleItems < 1 ? 1 : m_nVisibleItems) + 1
+            : 1,
+        m_bScrollOnly);
+    SetExtent(m_cExtent);
+}
+#endif
+#ifndef _XBOX
+// PC 0x00419640 GOG 0x00419630
+inline CSWGuiControl::~CSWGuiControl()
+{
+}
+// PC 0x004196D0 GOG 0x004196C0
+inline CSWGuiNavigable::~CSWGuiNavigable()
+{
+}
+// PC 0x00419700 GOG 0x004196F0
+inline CSWGuiLabel::~CSWGuiLabel()
+{
+}
+// PC 0x00419790 GOG 0x00419780
+inline CSWGuiButton::~CSWGuiButton()
+{
+}
+#endif
 // PC 0x0041B2A0 GOG 0x0041B290
 CSWGuiNavigable::CSWGuiNavigable()
 {
@@ -755,87 +855,6 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041C830 G
     CSWGuiControl::HandleInputEvent(nEvent, nState);
 }
 #endif
-void CSWGuiListBox::ClearItems()  // PC 0x00419410 GOG 0x00419400
-{
-    int i;
-
-    if (m_bOwnsItems)
-    {
-#ifndef _XBOX
-        if (m_pHoverControl != NULL && m_pHoverControl->AsScrollBar() == NULL)
-        {
-            m_pHoverControl = NULL;
-        }
-#endif
-        for (i = 0; i < GetNumItems(); i++)
-        {
-            if (m_lItems.element[i] != NULL)
-            {
-                delete m_lItems.element[i];
-            }
-            m_lItems.element[i] = NULL;
-        }
-    }
-    else
-    {
-        for (i = 0; i < GetNumItems(); i++)
-        {
-            if (m_bRestoreExtents)
-            {
-                m_lItems.element[i]->SetExtent(m_lItemExtents.element[i]);
-            }
-            m_lItems.element[i]->m_pOwner = NULL;
-        }
-    }
-#ifndef _XBOX
-    m_pHoverControl = NULL;
-#endif
-    m_lItems.num = 0;
-    m_lItemExtents.num = 0;
-    m_nSelectedItem = -1;
-    m_nScrollPosition = 1;
-}
-// PC 0x00419500 GOG 0x004194F0
-void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent, CSWGuiListBox* pProto)
-{
-    if (SWGUICONTROL_DEBUG)
-    {
-        ClearItems();
-    }
-    Initialize(cExtent, pProto->m_cBorder.m_cParams, pProto->m_nPadding);
-    CSWGuiScrollBar* pScrollBar = &pProto->m_cScrollBar;
-    return m_cScrollBar.Initialize(pScrollBar->m_cExtent, pScrollBar);
-}
-#ifndef _XBOX
-void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,  // PC 0x00419550 GOG 0x00419540
-                                      const CSWGuiBorderParams& cBorder,
-                                      const CResRef& sArrow,
-                                      const CResRef& sThumb, int bLeft)
-{
-    m_bScrollBarOnLeft = bLeft;
-    if (cExtent.m_nWidth > m_cExtent.m_nWidth)
-    {
-        cExtent.m_nWidth = m_cExtent.m_nWidth;
-    }
-    cExtent.m_nTop = m_cExtent.m_nTop;
-    cExtent.m_nHeight = m_cExtent.m_nHeight;
-    if (m_bScrollBarOnLeft)
-    {
-        cExtent.m_nLeft = m_cExtent.m_nLeft;
-    }
-    else
-    {
-        cExtent.m_nLeft = m_cExtent.m_nLeft + m_cExtent.m_nWidth - cExtent.m_nWidth;
-    }
-    m_cScrollBar.Initialize(cExtent, cBorder, sArrow, sThumb);
-    m_cScrollBar.SetMaxValue(
-        (m_lItems.num - (m_nVisibleItems < 1 ? 1 : m_nVisibleItems) + 1 > 1)
-            ? m_lItems.num - (m_nVisibleItems < 1 ? 1 : m_nVisibleItems) + 1
-            : 1,
-        m_bScrollOnly);
-    SetExtent(m_cExtent);
-}
-#endif
 CSWGuiListBox::CSWGuiListBox() : m_lItems(0), m_lItemExtents(0)  // PC 0x0041B830 GOG 0x0041B820
 {
     m_nSelectedItem = -1;
@@ -929,6 +948,10 @@ void CSWGuiListBox::SetPadding(int nPadding)
         m_bOrganizePending = 1;
         OrganizeControls();
     }
+}
+// PC 0x0041BB50 GOG 0x0041BB40
+inline CSWGuiButton::CSWGuiButton()
+{
 }
 // PC 0x0041BBC0 GOG 0x0041BBB0
 void CSWGuiListBox::AddControls(CExoArrayList<CSWGuiControl*>& aControls,
@@ -1181,6 +1204,22 @@ void CSWGuiListBox::OrganizeOversized()  // PC 0x00419BE0 GOG 0x00419BD0
     m_lItems[0]->SetExtent(cExtent);
 }
 #endif
+#ifndef _XBOX
+// PC 0x00419CF0 GOG 0x00419CE0
+inline CSWGuiScrollBar::~CSWGuiScrollBar()
+{
+}
+#endif
+// PC 0x00419D90 GOG 0x00419D80
+inline int CSWGuiListBox::IsOversized()
+{
+    if (SWGUICONTROL_DEBUG)
+    {
+        int nRange = GetScrollRange();
+    }
+    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
+           m_lItems.num > 0 && !m_bHideScrollIcon;
+}
 // PC 0x00419DD0 GOG 0x00419DC0
 CSWGuiControl* CSWGuiListBox::GetControl(int nIndex)
 {

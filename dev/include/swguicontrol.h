@@ -138,9 +138,13 @@ public:
 
     CSWGuiControl();
 #ifndef _XBOX
+#ifndef SWGUICONTROL_SOURCE
     virtual ~CSWGuiControl()  // PC 0x00419640 GOG 0x00419630
     {
     }
+#else
+    virtual ~CSWGuiControl();
+#endif
 #endif
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver);
     SWGUI_PCVIRTUAL void HandleLMouseDown();
@@ -358,9 +362,13 @@ public:
     CSWGuiNavigable();
 
 #ifndef _XBOX
+#ifndef SWGUICONTROL_SOURCE
     virtual ~CSWGuiNavigable()  // PC 0x004196D0 GOG 0x004196C0
     {
     }
+#else
+    virtual ~CSWGuiNavigable();
+#endif
 #endif
 
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver);
@@ -383,9 +391,13 @@ class CSWGuiLabel : public CSWGuiControl
 public:
     CSWGuiLabel();
 #ifndef _XBOX
+#ifndef SWGUICONTROL_SOURCE
     virtual ~CSWGuiLabel()  // PC 0x00419700 GOG 0x004196F0
     {
     }
+#else
+    virtual ~CSWGuiLabel();
+#endif
 #endif
     using CSWGuiObject::SetExtent;
     using CSWGuiControl::Initialize;
@@ -434,14 +446,22 @@ public:
     using CSWGuiControl::Initialize;
 
 #ifndef _XBOX
+#ifndef SWGUICONTROL_SOURCE
     virtual ~CSWGuiButton()  // PC 0x00419790 GOG 0x00419780
     {
     }
+#else
+    virtual ~CSWGuiButton();
 #endif
+#endif
+#ifndef SWGUICONTROL_SOURCE
     // PC 0x0041BB50 GOG 0x0041BB40
     CSWGuiButton()
     {
     }
+#else
+    CSWGuiButton();
+#endif
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void HandleInputEvent(int nEvent, int nState);
@@ -552,9 +572,13 @@ public:
 
     CSWGuiScrollBar();
 #ifndef _XBOX
+#ifndef SWGUICONTROL_SOURCE
     virtual ~CSWGuiScrollBar()  // PC 0x00419CF0 GOG 0x00419CE0
     {
     }
+#else
+    virtual ~CSWGuiScrollBar();
+#endif
 #endif
     using CSWGuiObject::SetExtent;
     using CSWGuiControl::Initialize;
@@ -762,12 +786,14 @@ public:
     CSWGuiControl* m_pHoverControl;
 #endif
 };
+#ifndef SWGUICONTROL_SOURCE
 // PC 0x00419D90 GOG 0x00419D80
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
+#endif
 
 class CSWGuiSlider : public CSWGuiNavigable
 {
