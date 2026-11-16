@@ -339,58 +339,6 @@ int MdlNodeAffectedByWind(MdlNode* pNode)
     return pEmitter != 0 && pEmitter->IsAffectedByWind();
 }
 
-const char* setmirrorimage(char* sCommand)
-{
-#ifdef _XBOX
-    Gob* pGob = FindGob(GetToken(&sCommand));
-    if (pGob == 0)
-    {
-        return "FAILURE";
-    }
-    char* sImposters = GetToken(&sCommand);
-    int nImposters = atoi(sImposters);
-    float* pfValues = new float[3 * nImposters];
-    if (nImposters == 0)
-    {
-        nImposters = 1;
-    }
-    for (int i = 0; i < nImposters; i++)
-    {
-        pfValues[3 * i] = 3.0f * (float)sin(TWO_PI / nImposters);
-        pfValues[3 * i + 1] = 3.0f * (float)cos(TWO_PI / nImposters);
-        pfValues[3 * i + 2] = 0.0f;
-    }
-    pGob->SetUpImposters(atoi(sImposters), pfValues);
-    return "SUCCESS";
-#else
-    char sName[64];
-    int nImposters;
-
-    if (sscanf(sCommand, "%s %d", sName, &nImposters) != 2)
-    {
-        return "FAILURE";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "FAILURE";
-    }
-    float* pfValues = new float[3 * nImposters];
-    if (nImposters == 0)
-    {
-        nImposters = 1;
-    }
-    for (int i = 0; i < nImposters; i++)
-    {
-        float fAngle = TWO_PI * i / nImposters;
-        pfValues[3 * i] = 3.0f * (float)sin(fAngle);
-        pfValues[3 * i + 1] = 3.0f * (float)cos(fAngle);
-        pfValues[3 * i + 2] = 0.0f;
-    }
-    pGob->SetUpImposters(nImposters, pfValues);
-    return "SUCCESS";
-#endif
-}
 #ifdef _XBOX
 
 MdlNodeTrigger* MdlNode::AsMdlNodeTrigger()
@@ -402,147 +350,8 @@ MdlNodeTrigger* MdlNode::AsMdlNodeTrigger()
 }
 #endif
 
-const char* loadaddin(char* sCommand)
-{
-    char sName[64];
-    char sModel[64];
-
-    if (sscanf(sCommand, "%s %s", sName, sModel) != 2)
-    {
-        return "Incorrect number of params";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Couldn't find Gob";
-    }
-    pGob->LoadAddInAnimations(sModel);
-    pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
-    return "Playing ca1slashl";
-}
-
-const char* setillumination(char* sCommand)
-{
-    char sName[64];
-    float fRed;
-    float fGreen;
-    float fBlue;
-
-#ifdef _XBOX
-    fBlue = 0.0f;
-    fGreen = 0.0f;
-    fRed = 0.0f;
-    sName[0] = 0;
-    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
-    if (nCount != 4 && nCount != 5)
-#else
-    sName[0] = 0;
-    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
-    if (nCount != 4)
-#endif
-    {
-        return "Usage:  setillumination <gobname> <red> <green> <blue> <optional alpha>";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Error:  No gob by that name";
-    }
-    pGob->SetIllumination(Vector(fRed, fGreen, fBlue), 1);
-    return "Success";
-}
-
 inline void DebugValidatePartMaterial(Part* pPart, char* sName)
 {
-}
-
-const char* append(char* sCommand)
-{
-    char sName[64];
-    char sPart[64];
-    char sModel[64];
-
-#ifdef _XBOX
-    sPart[0] = 0;
-    sModel[0] = 0;
-    sName[0] = 0;
-#else
-    sName[0] = 0;
-    sPart[0] = 0;
-    sModel[0] = 0;
-#endif
-    sscanf(sCommand, "%s%s%s", sName, sPart, sModel);
-    if (sName[0] == 0 || sPart[0] == 0 || sModel[0] == 0)
-    {
-        return "Usage:  append <gobname> <partname> <modelname>";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Error:  No gob by that name";
-    }
-#ifdef _XBOX
-    if (FindPart(pGob->m_pRootPart, sPart) == 0)
-#else
-    if (pGob->GetPart(sPart) == 0)
-#endif
-    {
-        return "Error:  Object does not have part with that name";
-    }
-    pGob->Append(sModel, sPart);
-    return "OK";
-}
-
-const char* amputate(char* sCommand)
-{
-    char sName[64];
-    char sPart[64];
-
-#ifdef _XBOX
-    sPart[0] = 0;
-    sName[0] = 0;
-#else
-    sName[0] = 0;
-    sPart[0] = 0;
-#endif
-    sscanf(sCommand, "%s%s", sName, sPart);
-    if (sName[0] == 0 || sPart[0] == 0)
-    {
-        return "Usage:  ampuatate <gobname> <partname>";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Error:  No gob by that name";
-    }
-#ifdef _XBOX
-    if (FindPart(pGob->m_pRootPart, sPart) == 0)
-#else
-    if (pGob->GetPart(sPart) == 0)
-#endif
-    {
-        return "Error:  Object does not have part with that name";
-    }
-    pGob->Amputate(sPart);
-    return "Amputation Sucessful";
-}
-
-const char* setgobwind(char* sCommand)
-{
-    char sName[64];
-    float fIntensity;
-
-    if (sscanf(sCommand, "%s %f", sName, &fIntensity) != 2)
-    {
-        return "Usage: setgobwind gobname intensity";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "That gob cannot be found!";
-    }
-    pGob->SetWind(true, fIntensity, 0.0f, 0.0f);
-    return "Success.";
 }
 
 const char* spinmodels(char* sCommand)
@@ -701,6 +510,138 @@ const char* doganmodels(char* sCommand)
         delete pObject;
     }
     return "SUCKY-SUCKY?  FIVE DOLLAR!";
+}
+
+const char* lasthitpart(char* sCommand)
+{
+    return hitpartname ? hitpartname : "NULL";
+}
+
+const char* spewpltnames(char* sCommand)
+{
+    spewpltfp = fopen("D:\\override\\filenamesofplts", "wb");
+    return "SPEWING";
+}
+
+const char* quitspewing(char* sCommand)
+{
+    fclose(spewpltfp);
+    return "CLOSESD";
+}
+
+const char* lastspawned(char* sCommand)
+{
+    return lastspawnedobject;
+}
+
+const char* gobdisablefog(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "Cannot find gob.";
+    }
+    pGob->DisableFog();
+    return "Success.";
+}
+
+const char* gobenablefog(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "Cannot find gob.";
+    }
+    pGob->EnableFog();
+    return "Success.";
+}
+
+const char* removeaddin(char* sCommand)
+{
+    char sName[64];
+
+    if (sscanf(sCommand, "%s", sName) != 1)
+    {
+        return "Incorrect number of params";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Couldn't find Gob";
+    }
+    pGob->PlayAnimation("NULL", 1.0f, 0, 0);
+    pGob->RemoveAddInAnimations();
+    pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
+    return "Removed add-in anims";
+}
+
+const char* enablebumpout(char* sCommand)
+{
+    static char sResult[128];
+    float fDistance = 0.0f;
+    char sName[64];
+    char sTexture[64];
+
+    int nRead = sscanf(sCommand, "%s%f%s", sName, &fDistance, sTexture);
+    if (nRead != 2 && nRead != 3)
+    {
+        return "incorrect parameters  usage: enablebumpout gob bumpdist texture";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        sprintf(sResult, "Object '%s' not found.", sName);
+        return sResult;
+    }
+    pGob->EnableRenderBumpedOut(sTexture, fDistance);
+    return "success";
+}
+
+const char* getmaximumlightradius(char* sCommand)
+{
+    static char sResult[128];
+    char sName[64];
+
+    if (sscanf(sCommand, "%s", sName) != 1)
+    {
+        return "Failure: getmaximumlightradius requires a gob name";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "That gob cannot be found!";
+    }
+    sprintf(sResult, "Maximum light radius for %s is %.2f", sName, pGob->GetMaximumLightRadius());
+    return sResult;
+}
+
+const char* setcolorshifting(char* sCommand)
+{
+    char sName[64];
+    float fRed;
+    float fGreen;
+    float fBlue;
+    float fAlpha;
+    int bPropagate;
+
+    fBlue = 0.0f;
+    fGreen = 0.0f;
+    fRed = 0.0f;
+    fAlpha = 1.0f;
+    bPropagate = 1;
+    sName[0] = 0;
+    int nRead = sscanf(sCommand, "%s%f%f%f%f%d", sName, &fRed, &fGreen, &fBlue, &fAlpha, &bPropagate);
+    if (nRead != 4 && nRead != 5 && nRead != 6)
+    {
+        return "Usage:  setcolorshifting <gobname> <red> <green> <blue> <optional alpha> <optional propagate>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+    pGob->SetColorShifting(Vector(fRed, fGreen, fBlue), fAlpha, bPropagate);
+    return "Success";
 }
 // PC 0x00452600 GOG 0x00452740
 MaxTree::~MaxTree()
@@ -1778,6 +1719,59 @@ Gob* FindGob(char* sName)
 
     return 0;
 }
+const char* setmirrorimage(char* sCommand)
+{
+#ifdef _XBOX
+    Gob* pGob = FindGob(GetToken(&sCommand));
+    if (pGob == 0)
+    {
+        return "FAILURE";
+    }
+    char* sImposters = GetToken(&sCommand);
+    int nImposters = atoi(sImposters);
+    float* pfValues = new float[3 * nImposters];
+    if (nImposters == 0)
+    {
+        nImposters = 1;
+    }
+    for (int i = 0; i < nImposters; i++)
+    {
+        pfValues[3 * i] = 3.0f * (float)sin(TWO_PI / nImposters);
+        pfValues[3 * i + 1] = 3.0f * (float)cos(TWO_PI / nImposters);
+        pfValues[3 * i + 2] = 0.0f;
+    }
+    pGob->SetUpImposters(atoi(sImposters), pfValues);
+    return "SUCCESS";
+#else
+    char sName[64];
+    int nImposters;
+
+    if (sscanf(sCommand, "%s %d", sName, &nImposters) != 2)
+    {
+        return "FAILURE";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "FAILURE";
+    }
+    float* pfValues = new float[3 * nImposters];
+    if (nImposters == 0)
+    {
+        nImposters = 1;
+    }
+    for (int i = 0; i < nImposters; i++)
+    {
+        float fAngle = TWO_PI * i / nImposters;
+        pfValues[3 * i] = 3.0f * (float)sin(fAngle);
+        pfValues[3 * i + 1] = 3.0f * (float)cos(fAngle);
+        pfValues[3 * i + 2] = 0.0f;
+    }
+    pGob->SetUpImposters(nImposters, pfValues);
+    return "SUCCESS";
+#endif
+}
+
 // PC 0x00453390 GOG 0x004534D0
 void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
 {
@@ -1825,6 +1819,25 @@ void Gob::EnableFog()
 {
     PartSetFog(m_pRootPart, true);
 }
+const char* loadaddin(char* sCommand)
+{
+    char sName[64];
+    char sModel[64];
+
+    if (sscanf(sCommand, "%s %s", sName, sModel) != 2)
+    {
+        return "Incorrect number of params";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Couldn't find Gob";
+    }
+    pGob->LoadAddInAnimations(sModel);
+    pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
+    return "Playing ca1slashl";
+}
+
 // PC 0x00453790 GOG 0x004538D0
 int Gob::LoadAddInAnimations(char* sName)
 {
@@ -1849,6 +1862,37 @@ int Gob::LoadAddInAnimations(char* sName)
     }
     AUR_MODEL_ADDREF(m_pAnimationModel, this);
     return 1;
+}
+
+const char* setillumination(char* sCommand)
+{
+    char sName[64];
+    float fRed;
+    float fGreen;
+    float fBlue;
+
+#ifdef _XBOX
+    fBlue = 0.0f;
+    fGreen = 0.0f;
+    fRed = 0.0f;
+    sName[0] = 0;
+    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
+    if (nCount != 4 && nCount != 5)
+#else
+    sName[0] = 0;
+    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
+    if (nCount != 4)
+#endif
+    {
+        return "Usage:  setillumination <gobname> <red> <green> <blue> <optional alpha>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+    pGob->SetIllumination(Vector(fRed, fGreen, fBlue), 1);
+    return "Success";
 }
 // PC 0x00453870 GOG 0x004539B0
 void Part::GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum, float fScale)
@@ -3215,6 +3259,122 @@ void CreateReferenceObjects(Gob* pGob, Part* pPart)
         CreateReferenceObjects(pGob, pChild);
     }
 }
+const char* append(char* sCommand)
+{
+    char sName[64];
+    char sPart[64];
+    char sModel[64];
+
+#ifdef _XBOX
+    sPart[0] = 0;
+    sModel[0] = 0;
+    sName[0] = 0;
+#else
+    sName[0] = 0;
+    sPart[0] = 0;
+    sModel[0] = 0;
+#endif
+    sscanf(sCommand, "%s%s%s", sName, sPart, sModel);
+    if (sName[0] == 0 || sPart[0] == 0 || sModel[0] == 0)
+    {
+        return "Usage:  append <gobname> <partname> <modelname>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+#ifdef _XBOX
+    if (FindPart(pGob->m_pRootPart, sPart) == 0)
+#else
+    if (pGob->GetPart(sPart) == 0)
+#endif
+    {
+        return "Error:  Object does not have part with that name";
+    }
+    pGob->Append(sModel, sPart);
+    return "OK";
+}
+
+const char* amputate(char* sCommand)
+{
+    char sName[64];
+    char sPart[64];
+
+#ifdef _XBOX
+    sPart[0] = 0;
+    sName[0] = 0;
+#else
+    sName[0] = 0;
+    sPart[0] = 0;
+#endif
+    sscanf(sCommand, "%s%s", sName, sPart);
+    if (sName[0] == 0 || sPart[0] == 0)
+    {
+        return "Usage:  ampuatate <gobname> <partname>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+#ifdef _XBOX
+    if (FindPart(pGob->m_pRootPart, sPart) == 0)
+#else
+    if (pGob->GetPart(sPart) == 0)
+#endif
+    {
+        return "Error:  Object does not have part with that name";
+    }
+    pGob->Amputate(sPart);
+    return "Amputation Sucessful";
+}
+
+const char* attach(char* sCommand)
+{
+    static char sResult[128];
+    char sTarget[64];
+    char sPart[64];
+    char sName[64];
+
+    sPart[0] = 0;
+    int nRead = sscanf(sCommand, "%s%s%s", sName, sTarget, sPart);
+    if (nRead != 2 && nRead != 3)
+    {
+        return "incorrect parameters  usage: attach thing object [part]";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        sprintf(sResult, "Object '%s' not found.", sName);
+        return sResult;
+    }
+    if (stricmp(sTarget, "null") == 0)
+    {
+        pGob->SetBehavior(0);
+        pGob->SetScene(0);
+        return "unattached object from everything";
+    }
+    Scene* pScene = FindScene(sTarget);
+    if (pScene)
+    {
+        pGob->SetScene(pScene);
+        return "attached to scene";
+    }
+    Gob* pTarget = FindGob(sTarget);
+    if (pTarget == 0)
+    {
+        sprintf(sResult, "Object '%s' not found.", sTarget);
+        return sResult;
+    }
+    if (pGob->AttachToObject(pTarget, sPart, 0) == 0)
+    {
+        sprintf(sResult, "Invalid target for attachment: '%s %s'.", sTarget, sPart);
+        return sResult;
+    }
+    return "success";
+}
+
 // PC 0x00458840 GOG 0x00458980
 bool Gob::SetObjectScale(float fScale, bool bBaseScale)
 {
@@ -3287,6 +3447,24 @@ static void findalllightparts(Part* pPart, List<PartLight*>& lLights)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         findalllightparts(pPart->m_lstChildren[i], lLights);
 }
+const char* setgobwind(char* sCommand)
+{
+    char sName[64];
+    float fIntensity;
+
+    if (sscanf(sCommand, "%s %f", sName, &fIntensity) != 2)
+    {
+        return "Usage: setgobwind gobname intensity";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "That gob cannot be found!";
+    }
+    pGob->SetWind(true, fIntensity, 0.0f, 0.0f);
+    return "Success.";
+}
+
 // PC 0x0045A030 GOG 0x0045A1D0
 void Gob::SetLightPriority(int nPriority)
 {
@@ -4322,138 +4500,6 @@ Vector defaultambient(0.2f, 0.2f, 0.2f);
 
 #ifdef _XBOX
 
-const char* lasthitpart(char* sCommand)
-{
-    return hitpartname ? hitpartname : "NULL";
-}
-
-const char* spewpltnames(char* sCommand)
-{
-    spewpltfp = fopen("D:\\override\\filenamesofplts", "wb");
-    return "SPEWING";
-}
-
-const char* quitspewing(char* sCommand)
-{
-    fclose(spewpltfp);
-    return "CLOSESD";
-}
-
-const char* lastspawned(char* sCommand)
-{
-    return lastspawnedobject;
-}
-
-const char* gobdisablefog(char* sCommand)
-{
-    Gob* pGob = FindGob(sCommand);
-    if (pGob == 0)
-    {
-        return "Cannot find gob.";
-    }
-    pGob->DisableFog();
-    return "Success.";
-}
-
-const char* gobenablefog(char* sCommand)
-{
-    Gob* pGob = FindGob(sCommand);
-    if (pGob == 0)
-    {
-        return "Cannot find gob.";
-    }
-    pGob->EnableFog();
-    return "Success.";
-}
-
-const char* removeaddin(char* sCommand)
-{
-    char sName[64];
-
-    if (sscanf(sCommand, "%s", sName) != 1)
-    {
-        return "Incorrect number of params";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Couldn't find Gob";
-    }
-    pGob->PlayAnimation("NULL", 1.0f, 0, 0);
-    pGob->RemoveAddInAnimations();
-    pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
-    return "Removed add-in anims";
-}
-
-const char* enablebumpout(char* sCommand)
-{
-    static char sResult[128];
-    float fDistance = 0.0f;
-    char sName[64];
-    char sTexture[64];
-
-    int nRead = sscanf(sCommand, "%s%f%s", sName, &fDistance, sTexture);
-    if (nRead != 2 && nRead != 3)
-    {
-        return "incorrect parameters  usage: enablebumpout gob bumpdist texture";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        sprintf(sResult, "Object '%s' not found.", sName);
-        return sResult;
-    }
-    pGob->EnableRenderBumpedOut(sTexture, fDistance);
-    return "success";
-}
-
-const char* getmaximumlightradius(char* sCommand)
-{
-    static char sResult[128];
-    char sName[64];
-
-    if (sscanf(sCommand, "%s", sName) != 1)
-    {
-        return "Failure: getmaximumlightradius requires a gob name";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "That gob cannot be found!";
-    }
-    sprintf(sResult, "Maximum light radius for %s is %.2f", sName, pGob->GetMaximumLightRadius());
-    return sResult;
-}
-
-const char* setcolorshifting(char* sCommand)
-{
-    char sName[64];
-    float fRed;
-    float fGreen;
-    float fBlue;
-    float fAlpha;
-    int bPropagate;
-
-    fBlue = 0.0f;
-    fGreen = 0.0f;
-    fRed = 0.0f;
-    fAlpha = 1.0f;
-    bPropagate = 1;
-    sName[0] = 0;
-    int nRead = sscanf(sCommand, "%s%f%f%f%f%d", sName, &fRed, &fGreen, &fBlue, &fAlpha, &bPropagate);
-    if (nRead != 4 && nRead != 5 && nRead != 6)
-    {
-        return "Usage:  setcolorshifting <gobname> <red> <green> <blue> <optional alpha> <optional propagate>";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "Error:  No gob by that name";
-    }
-    pGob->SetColorShifting(Vector(fRed, fGreen, fBlue), fAlpha, bPropagate);
-    return "Success";
-}
-
 const char* rt(char* sCommand)
 {
     char sName[32];
@@ -4540,51 +4586,6 @@ const char* behaviormessage(char* sCommand)
     }
     pGob->BehaviorMessage(sMessage);
     return "OK";
-}
-
-const char* attach(char* sCommand)
-{
-    static char sResult[128];
-    char sTarget[64];
-    char sPart[64];
-    char sName[64];
-
-    sPart[0] = 0;
-    int nRead = sscanf(sCommand, "%s%s%s", sName, sTarget, sPart);
-    if (nRead != 2 && nRead != 3)
-    {
-        return "incorrect parameters  usage: attach thing object [part]";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        sprintf(sResult, "Object '%s' not found.", sName);
-        return sResult;
-    }
-    if (stricmp(sTarget, "null") == 0)
-    {
-        pGob->SetBehavior(0);
-        pGob->SetScene(0);
-        return "unattached object from everything";
-    }
-    Scene* pScene = FindScene(sTarget);
-    if (pScene)
-    {
-        pGob->SetScene(pScene);
-        return "attached to scene";
-    }
-    Gob* pTarget = FindGob(sTarget);
-    if (pTarget == 0)
-    {
-        sprintf(sResult, "Object '%s' not found.", sTarget);
-        return sResult;
-    }
-    if (pGob->AttachToObject(pTarget, sPart, 0) == 0)
-    {
-        sprintf(sResult, "Invalid target for attachment: '%s %s'.", sTarget, sPart);
-        return sResult;
-    }
-    return "success";
 }
 
 const char* setgobscheme(char* sCommand)

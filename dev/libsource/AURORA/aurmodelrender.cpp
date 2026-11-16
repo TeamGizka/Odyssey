@@ -3619,7 +3619,6 @@ enum MotionBlurredVPRegister
 #ifndef _XBOX
 extern unsigned long* cMotionBlurredVPDeclaration;
 #endif
-#ifdef _XBOX
 void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
 {
 #ifdef _XBOX
@@ -3724,7 +3723,6 @@ void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
 #endif
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
-#endif
 // PC 0x00492190 GOG 0x00492260
 void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
 {
