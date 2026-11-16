@@ -3003,8 +3003,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
         g_pAppManager->m_pClientExoApp->GetSWParty();
         g_pAppManager->m_pClientExoApp->GetSWParty();
         CreaturePartyIndex = nMember;
-        m_sTag.CStr();
-        magnitude(pMember->m_vFormationPosition - pMember->m_vFollowPosition);
+        EXOLOG("Party follow: %s\n", m_sTag.CStr());
+        EXOLOG("Party follow: formation distance %f\n", magnitude(pMember->m_vFormationPosition - pMember->m_vFollowPosition));
         AurDrawLine(pMember->m_vFollowPosition - m_vPosition, pMember->m_vFormationPosition - m_vPosition, nMember);
         AurDrawLine(pMember->m_vFormationPosition - m_vPosition, pMember->m_vLastPosition - m_vPosition, nMember);
         AurDrawLine(pMember->m_vLastPosition - m_vPosition, pMember->m_vFollowPosition - m_vPosition, nMember);
@@ -3808,6 +3808,7 @@ int CSWSCreature::AIActionFollowOwner(CSWSObjectActionNode* pNode)
         float fFollowDistance;
         if (GetArea() == NULL)
         {
+            EXOLOG("AIActionFollowOwner: no area\n");
         }
         else
         {

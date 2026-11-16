@@ -1739,7 +1739,6 @@ void CSWGuiMainInterfaceAction::Show(int bActive, int bEmpty, int bArrow)
 #else
 void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0 GOG 0x006E17D0
 {
-    Swguimaininterfacepc2Trace1();
     float fBorderAlpha;
     float fHiliteAlpha;
 
@@ -1775,7 +1774,6 @@ void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0
 
 CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()  // PC 0x006DF7D0 GOG 0x006E18F0
 {
-    Swguimaininterfacepc2Trace1();
 }
 #endif
 

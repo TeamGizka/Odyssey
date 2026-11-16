@@ -10140,22 +10140,22 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Item(unsigned long oidItem)
     sMessage = sMessage + sBaseType;
     pGui->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
 
-    pItem->GetName(0).CStr();
-    sTag.CStr();
-    sBaseType.CStr();
+    EXOLOG("Name: %s\n", pItem->GetName(0).CStr());
+    EXOLOG("Tag: %s\n", sTag.CStr());
+    EXOLOG("BaseType: %s\n", sBaseType.CStr());
 
     sMessage = "Weight: ";
     sMessage = sMessage + CExoString(0);
     sMessage = sMessage + "    AC: ";
     sMessage = sMessage + CExoString(pItem->GetArmorClass());
     pGui->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
-    CExoString(0).CStr();
-    CExoString(pItem->GetArmorClass()).CStr();
+    EXOLOG("Weight: %s\n", CExoString(0).CStr());
+    EXOLOG("AC: %s\n", CExoString(pItem->GetArmorClass()).CStr());
 
     sMessage = "ActiveProperties: ";
     sMessage = sMessage + CExoString(pItem->GetNumActiveProperties());
     pGui->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
-    CExoString(pItem->GetNumActiveProperties()).CStr();
+    EXOLOG("ActiveProperties: %s\n", CExoString(pItem->GetNumActiveProperties()).CStr());
     int nStringRef;
     for (int nProperty = 0; nProperty < pItem->GetNumActiveProperties(); ++nProperty)
     {
@@ -10171,14 +10171,14 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Item(unsigned long oidItem)
             sMessage = "    ";
             sMessage = sMessage + strRes.m_sString;
             pGui->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
-            strRes.m_sString.CStr();
+            EXOLOG("%s\n", strRes.m_sString.CStr());
         }
     }
 
     sMessage = "PassiveProperties: ";
     sMessage = sMessage + CExoString(nPassiveProperties);
     pGui->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
-    CExoString(nPassiveProperties).CStr();
+    EXOLOG("PassiveProperties: %s\n", CExoString(nPassiveProperties).CStr());
     for (int nPassive = 0; nPassive < nPassiveProperties; ++nPassive)
     {
         pItemProps->GetINTEntry(pnPassiveProperties[nPassive], "STRINGREF", &nStringRef);
@@ -10186,7 +10186,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Item(unsigned long oidItem)
         sMessage = "    ";
         sMessage = sMessage + strRes.m_sString;
         pGui->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
-        strRes.m_sString.CStr();
+        EXOLOG("%s\n", strRes.m_sString.CStr());
     }
     pGui->AppendToMsgBuffer("******************", CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
     pItemProps->Unload2DArray();

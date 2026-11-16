@@ -421,7 +421,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
     float fYaw = Yaw(static_cast<Gob*>(m_pObject)->GetOrientation());
     float fPitch = Pitch(static_cast<Gob*>(m_pObject)->GetOrientation());
     float fDirection = 1.0f;
-    EXOLOG("Camera %f %f %f", AbsoluteValue(fTimeStep * m_fTurn), AbsoluteValue(fTimeStep * m_fTilt), AbsoluteValue(fTimeStep * m_fSpeed));
+    EXOLOG("Camera %f %f %f", AbsoluteValue(m_fTurn), AbsoluteValue(m_fTilt), AbsoluteValue(m_fSpeed));
     float fDot = static_cast<Gob*>(m_pObject)->GetOrientation().zdir() *
         Vector(0.0f, 0.0f, 1.0f);
     if (fDot >= 0.0f)
