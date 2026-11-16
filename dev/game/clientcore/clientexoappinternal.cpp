@@ -3554,11 +3554,42 @@ int CClientExoAppInternal::AddMovieToMovieQueue(const CExoString& sMovie,
     return AddMovieToExoArrayList(sMovie, m_aMovieQueue);
 }
 #endif
+
+template <class T> inline void ExoArrayListCheck(T* pElement)
+{
+    T cElement;
+}
+
+template <class T> inline void ExoArrayListRelease(T*& pElement)
+{
+    delete[] pElement;
+    pElement = NULL;
+}
+// PC 0x00647C60 GOG 0x00647B10
+template <> inline CExoArrayList<CSWRumblePattern>::~CExoArrayList()
+{
+    if (CLIENTEXOAPPINTERNAL_DEBUG)
+    {
+        ExoArrayListCheck(element);
+    }
+    ExoArrayListRelease(element);
+}
 // PC 0x00647C90 GOG 0x00647B40
 template <> inline CExoArrayList<CSWGuiInterfaceAction>::~CExoArrayList()
 {
     delete[] element;
     element = NULL;
+}
+
+template <> inline CExoArrayList<CSWGuiInterfaceAction>::CExoArrayList(int nSize)
+{
+    num = 0;
+    array_size = 0;
+    element = NULL;
+    if (nSize != 0)
+    {
+        Allocate(nSize);
+    }
 }
 // PC 0x00647CC0 GOG 0x00647B70
 CClientExoAppInternal::CClientExoAppInternal()
