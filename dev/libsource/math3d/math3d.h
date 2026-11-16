@@ -204,11 +204,6 @@ double Round(float fValue, float fRoundTo);
 Matrix Transpose(const Matrix& matrix);
 Vector operator*(const Matrix& matrix, const Vector& vector);
 #ifndef MATH3D_NO_INLINE
-__forceinline Quaternion operator-(const Quaternion& quaternion)
-{
-    return Quaternion(quaternion.m_fW * -1.0f, quaternion.m_fX, quaternion.m_fY,
-                      quaternion.m_fZ);
-}
 __forceinline Quaternion operator*(const Quaternion& left, const Quaternion& right)
 {
     return Quaternion(left.m_fW * right.m_fW - left.m_fX * right.m_fX -
@@ -410,6 +405,13 @@ inline Matrix Quaternion::getmatrix() const
 {
     return Matrix(xdir(), ydir(), zdir());
 }
+#ifndef MATH3D_NO_INLINE
+__forceinline Quaternion operator-(const Quaternion& quaternion)
+{
+    return Quaternion(quaternion.m_fW * -1.0f, quaternion.m_fX, quaternion.m_fY,
+                      quaternion.m_fZ);
+}
+#endif
 
 
 #include "aurlist.h"

@@ -43,10 +43,6 @@ inline CSWGuiPartySelectionButton::~CSWGuiPartySelectionButton()
 {
 }
 
-inline CSWGuiPartySelectionButton::CSWGuiPartySelectionButton()
-{
-    m_bPartySelected = 0;
-}
 // PC 0x0071DEB0 GOG 0x0071DBF0
 void CSWGuiPartySelectionButton::SetSelected(int bSelected)
 {
@@ -741,6 +737,10 @@ void CSWGuiPartySelection::UpdateVisibleCharacters()
         pShared->SetMoveToControl(1, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
         pShared->SetMoveToControl(3, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
     }
+}
+inline CSWGuiPartySelectionButton::CSWGuiPartySelectionButton()
+{
+    m_bPartySelected = 0;
 }
 #endif
 // PC 0x0071F6C0 GOG 0x0071EB00

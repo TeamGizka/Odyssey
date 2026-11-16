@@ -1,4 +1,5 @@
 #define AURGLCORE_TEXTURESTAGE
+#define AURGLCORE_BLOOMFILTERARB
 #include <math.h>
 #include "../math3d/math3d.h"
 #include <new>
@@ -601,21 +602,34 @@ unsigned int ones32popcount(unsigned int x)
     return x & 0x3F;
 }
 
-void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
-                                      float fHeight, unsigned int nTexture,
-                                      float fSourceWidth, float fSourceHeight)
+void GLRender::BloomFilterARB(HDC hDC, HGLRC hContext, float fWidth,
+                              float fHeight, PBUFFERARB* pBuffer,
+                              unsigned long nTexture, float fSourceSize,
+                              int bSoftShadows)
 {
-    float filter[25] = {
-        0.0037f, 0.0147f, 0.0256f, 0.0147f, 0.0037f,
-        0.0147f, 0.0586f, 0.0952f, 0.0586f, 0.0147f,
-        0.0256f, 0.0952f, 0.1502f, 0.0952f, 0.0256f,
-        0.0147f, 0.0586f, 0.0952f, 0.0586f, 0.0147f,
-        0.0037f, 0.0147f, 0.0256f, 0.0147f, 0.0037f
+    static float filter[28] = {
+        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
+        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
+        0.29f, 0.58f, 0.67f, 0.58f, 0.29f,
+        0.25f, 0.49f, 0.58f, 0.49f, 0.25f,
+        0.12f, 0.25f, 0.29f, 0.25f, 0.12f,
+        0.0f, 0.0f, 0.0f
     };
+    wglMakeCurrent(hDC, hContext);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, fWidth, 0.0, fHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, (int)fWidth, (int)fHeight);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -623,6 +637,7 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -630,6 +645,7 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE2_ARB);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -637,23 +653,36 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE3_ARB);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, nTexture);
+    wglBindTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glEnable(GL_PER_STAGE_CONSTANTS_NV);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_SOFT_SHADOW, 0, 0, 0, 0);
+    if (bSoftShadows)
+        FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_SOFT_SHADOW, 0, 0, 0, 0);
+    else
+        FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_FOUR_DECALS, 0, 0, 0, 0);
     int nRow = 0;
     int nColumn = 0;
     glEnable(GL_BLEND);
+    float fInverseSize = 1.0f / fSourceSize;
     for (int nSample = 0; nSample < 25; nSample += 4)
     {
         for (int nStage = 0; nStage < 4; ++nStage)
         {
             float color[4];
-            color[3] = color[2] = color[1] = color[0] =
-                filter[nSample + nStage] * 8.6f;
+            if (bSoftShadows)
+                color[3] = color[2] = color[1] = color[0] =
+                    filter[nSample + nStage] * softshadowdarkeningfactor;
+            else
+            {
+                color[0] = filter[nSample + nStage];
+                color[1] = filter[nSample + nStage];
+                color[2] = filter[nSample + nStage];
+                color[3] = filter[nSample + nStage];
+            }
             if (nStage == 0)
                 glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, color);
             else if (nStage == 1)
@@ -668,26 +697,26 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
         {
             glColor4f(1.0f, 1.0f, 1.0f, multiplier);
             glActiveTextureARB(GL_TEXTURE0_ARB);
-            float t = (i == 0 || i == 3) ? (nRow + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nRow - 1.5f) / fSourceHeight;
-            float s = (i == 0 || i == 1) ? 0.0f + (nColumn - 1.5f) / fSourceWidth : (nColumn + fSourceWidth - 1.5f) / fSourceWidth;
-            glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
+            float tBase = (i == 0 || i == 3) ? (nRow + fSourceSize - pixeloffset) * fInverseSize : (nRow - pixeloffset) * fInverseSize;
+            float s = (i == 0 || i == 1) ? (float)(0.0 + (nColumn - pixeloffset) * fInverseSize) : (nColumn + fSourceSize - pixeloffset) * fInverseSize;
+            glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, tBase);
             int nTextureRow = (nColumn + 1 > 4) ? nRow + 1 : nRow;
             int nTextureColumn = (nColumn + 1) % 5;
             glActiveTextureARB(GL_TEXTURE1_ARB);
-            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nTextureColumn - 1.5f) / fSourceHeight;
-            s = (i == 0 || i == 1) ? 0.0f + (nTextureRow - 1.5f) / fSourceWidth : (nTextureRow + fSourceWidth - 1.5f) / fSourceWidth;
+            float t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
             glMultiTexCoord2fARB(GL_TEXTURE1_ARB, s, t);
             nTextureRow = (nColumn + 2 > 4) ? nRow + 1 : nRow;
             nTextureColumn = (nColumn + 2) % 5;
             glActiveTextureARB(GL_TEXTURE2_ARB);
-            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nTextureColumn - 1.5f) / fSourceHeight;
-            s = (i == 0 || i == 1) ? 0.0f + (nTextureRow - 1.5f) / fSourceWidth : (nTextureRow + fSourceWidth - 1.5f) / fSourceWidth;
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
             glMultiTexCoord2fARB(GL_TEXTURE2_ARB, s, t);
             nTextureRow = (nColumn + 3 > 4) ? nRow + 1 : nRow;
             nTextureColumn = (nColumn + 3) % 5;
             glActiveTextureARB(GL_TEXTURE3_ARB);
-            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nTextureColumn - 1.5f) / fSourceHeight;
-            s = (i == 0 || i == 1) ? 0.0f + (nTextureRow - 1.5f) / fSourceWidth : (nTextureRow + fSourceWidth - 1.5f) / fSourceWidth;
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceSize - pixeloffset) * fInverseSize : (nTextureColumn - pixeloffset) * fInverseSize;
+            s = (i == 0 || i == 1) ? (nTextureRow - pixeloffset) * fInverseSize : (nTextureRow + fSourceSize - pixeloffset) * fInverseSize;
             glMultiTexCoord2fARB(GL_TEXTURE3_ARB, s, t);
             float y = (i == 0 || i == 3) ? fHeight : 0.0f;
             float x = (i == 0 || i == 1) ? 0.0f : fWidth;
@@ -700,21 +729,20 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
     }
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glActiveTextureARB(GL_TEXTURE2_ARB);
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glActiveTextureARB(GL_TEXTURE3_ARB);
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
-    glDisable(GL_PER_STAGE_CONSTANTS_NV);
-    glDisable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glFlush();
 }
 // PC 0x00448F80 GOG 0x00431EB0
@@ -4390,6 +4418,122 @@ void GLRender::BloomFilter(HDC hDC, HGLRC hContext, float fWidth,
     glBindTexture(GL_TEXTURE_2D, 0);
     wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glActiveTextureARB(GL_TEXTURE0_ARB);
+    glFlush();
+}
+void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
+                                      float fHeight, unsigned int nTexture,
+                                      float fSourceWidth, float fSourceHeight)
+{
+    float filter[25] = {
+        0.0037f, 0.0147f, 0.0256f, 0.0147f, 0.0037f,
+        0.0147f, 0.0586f, 0.0952f, 0.0586f, 0.0147f,
+        0.0256f, 0.0952f, 0.1502f, 0.0952f, 0.0256f,
+        0.0147f, 0.0586f, 0.0952f, 0.0586f, 0.0147f,
+        0.0037f, 0.0147f, 0.0256f, 0.0147f, 0.0037f
+    };
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, nTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_PER_STAGE_CONSTANTS_NV);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_SOFT_SHADOW, 0, 0, 0, 0);
+    int nRow = 0;
+    int nColumn = 0;
+    glEnable(GL_BLEND);
+    for (int nSample = 0; nSample < 25; nSample += 4)
+    {
+        for (int nStage = 0; nStage < 4; ++nStage)
+        {
+            float color[4];
+            color[3] = color[2] = color[1] = color[0] =
+                filter[nSample + nStage] * 8.6f;
+            if (nStage == 0)
+                glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, color);
+            else if (nStage == 1)
+                glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR1_NV, color);
+            else if (nStage == 2)
+                glCombinerStageParameterfvNV(GL_COMBINER1_NV, GL_CONSTANT_COLOR0_NV, color);
+            else
+                glCombinerStageParameterfvNV(GL_COMBINER2_NV, GL_CONSTANT_COLOR0_NV, color);
+        }
+        glBegin(GL_QUADS);
+        for (int i = 0; i < 4; ++i)
+        {
+            glColor4f(1.0f, 1.0f, 1.0f, multiplier);
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+            float t = (i == 0 || i == 3) ? (nRow + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nRow - 1.5f) / fSourceHeight;
+            float s = (i == 0 || i == 1) ? 0.0f + (nColumn - 1.5f) / fSourceWidth : (nColumn + fSourceWidth - 1.5f) / fSourceWidth;
+            glMultiTexCoord2fARB(GL_TEXTURE0_ARB, s, t);
+            int nTextureRow = (nColumn + 1 > 4) ? nRow + 1 : nRow;
+            int nTextureColumn = (nColumn + 1) % 5;
+            glActiveTextureARB(GL_TEXTURE1_ARB);
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nTextureColumn - 1.5f) / fSourceHeight;
+            s = (i == 0 || i == 1) ? 0.0f + (nTextureRow - 1.5f) / fSourceWidth : (nTextureRow + fSourceWidth - 1.5f) / fSourceWidth;
+            glMultiTexCoord2fARB(GL_TEXTURE1_ARB, s, t);
+            nTextureRow = (nColumn + 2 > 4) ? nRow + 1 : nRow;
+            nTextureColumn = (nColumn + 2) % 5;
+            glActiveTextureARB(GL_TEXTURE2_ARB);
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nTextureColumn - 1.5f) / fSourceHeight;
+            s = (i == 0 || i == 1) ? 0.0f + (nTextureRow - 1.5f) / fSourceWidth : (nTextureRow + fSourceWidth - 1.5f) / fSourceWidth;
+            glMultiTexCoord2fARB(GL_TEXTURE2_ARB, s, t);
+            nTextureRow = (nColumn + 3 > 4) ? nRow + 1 : nRow;
+            nTextureColumn = (nColumn + 3) % 5;
+            glActiveTextureARB(GL_TEXTURE3_ARB);
+            t = (i == 0 || i == 3) ? (nTextureColumn + fSourceHeight - 1.5f) / fSourceHeight : 0.0f + (nTextureColumn - 1.5f) / fSourceHeight;
+            s = (i == 0 || i == 1) ? 0.0f + (nTextureRow - 1.5f) / fSourceWidth : (nTextureRow + fSourceWidth - 1.5f) / fSourceWidth;
+            glMultiTexCoord2fARB(GL_TEXTURE3_ARB, s, t);
+            float y = (i == 0 || i == 3) ? fHeight : 0.0f;
+            float x = (i == 0 || i == 1) ? 0.0f : fWidth;
+            glVertex3f(x, y, 0.0f);
+        }
+        glEnd();
+        if (nColumn + 4 > 4)
+            ++nRow;
+        nColumn = (nColumn + 4) % 5;
+    }
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glDisable(GL_PER_STAGE_CONSTANTS_NV);
+    glDisable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glFlush();
 }
 // PC 0x0042EDE0 GOG 0x0042EEF0
