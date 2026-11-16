@@ -1382,15 +1382,11 @@ Part* CreateInstanceTree(MdlNode* pNode, Gob* pGob)
     pPart->PostProcess(pPart);
     return pPart;
 }
-// PC 0x004598A0 GOG 0x00459A40
-PartDanglyMesh::~PartDanglyMesh()
+// PC 0x0044FF70 GOG 0x004500B0
+inline CAurPart::~CAurPart()
 {
-    delete m_pVertexPositions;
-#ifndef _XBOX
-    GLRender::DeletePool(m_nVertexPool);
-    m_nVertexPool = RequestPoolManager::INVALID_POOL;
-#endif
 }
+#include "aurpathinfoinl.h"
 // PC 0x0045BB60 GOG 0x0045BD00
 PartLightsaber::PartLightsaber(MdlNode* pNode)
     : PartTriMesh(pNode)
@@ -1417,6 +1413,15 @@ PartDanglyMesh::PartDanglyMesh(MdlNode* pNode)
     memcpy(pVertices, m_pVertexPositions,
            pNode->AsMdlNodeTriMesh()->m_nVertexCount * sizeof(Vector));
     GLRender::UnlockPool(m_nVertexPool);
+#endif
+}
+// PC 0x004598A0 GOG 0x00459A40
+PartDanglyMesh::~PartDanglyMesh()
+{
+    delete m_pVertexPositions;
+#ifndef _XBOX
+    GLRender::DeletePool(m_nVertexPool);
+    m_nVertexPool = RequestPoolManager::INVALID_POOL;
 #endif
 }
 // PC 0x00459910 GOG 0x00459AB0
@@ -1489,11 +1494,6 @@ MdlNodeTriMesh_PostProcess::MdlNodeTriMesh_PostProcess()
       m_lstVertices(0)
 {
 }
-// PC 0x0044FF70 GOG 0x004500B0
-inline CAurPart::~CAurPart()
-{
-}
-#include "aurpathinfoinl.h"
 // PC 0x004599A0 GOG 0x00459B40
 Part::Part(MdlNode* pNode)
     : m_lstChildren(0)
