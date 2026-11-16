@@ -15,6 +15,7 @@
 #pragma inline_depth(10)
 
 #include <new>
+#include "mdlnodeinl.h"
 
 
 int animationfootprint = 0;
@@ -113,7 +114,6 @@ void MdlNode::SortChildrenByTransparency()
     }
 }
 #endif
-#include "mdlnodeinl.h"
 // PC 0x004490F0 GOG 0x00449230
 int UpdateAnimFootprint(MdlNode* pNode, int nMultiplier)
 {
