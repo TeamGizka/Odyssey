@@ -724,10 +724,14 @@ public:
     {
         return m_lItems.num;
     }
+#ifndef SWGUISTORE_SOURCE
     void SetTopVisible(short nTopItem)  // PC 0x00721090 GOG 0x00720DA0
     {
         m_nTopVisibleItem = min((int)nTopItem, max(0, GetNumItems() - m_nVisibleItems));
     }
+#else
+    void SetTopVisible(short nTopItem);
+#endif
 
     int GetItemWidth()
     {

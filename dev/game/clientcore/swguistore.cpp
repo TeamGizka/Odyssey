@@ -1,3 +1,5 @@
+#define SWGUISTORE_SOURCE
+#include "stdafx.h"
 #include "exobase.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
@@ -439,6 +441,11 @@ void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
             }
         }
     }
+}
+// PC 0x00721090 GOG 0x00720DA0
+inline void CSWGuiListBox::SetTopVisible(short nTopItem)
+{
+    m_nTopVisibleItem = min((int)nTopItem, max(0, GetNumItems() - m_nVisibleItems));
 }
 // PC 0x007210E0 GOG 0x00720DF0
 void CSWGuiStore::SellItem(CSWSItem* pItem)

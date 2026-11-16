@@ -155,6 +155,7 @@ endif()
 kotor_source_pch(swguiingame.cpp swguiingame.h)
 kotor_source_pch(swguipazaak.cpp exobase.h)
 kotor_source_pch(nwcanimbasewield.cpp nwcitem.h)
+kotor_source_pch(swguistore.cpp stdafx.h)
 kotor_project_pch(clientcore HEADER stdafx.h SOURCE stdafx.cpp
   EXCLUDE
     clientexoappinternal.cpp guiingame.cpp swminigame.cpp console.cpp nwccreature.cpp swbehaviorcamera.cpp
