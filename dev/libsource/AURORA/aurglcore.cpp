@@ -1,5 +1,4 @@
 #define AURGLCORE_TEXTURESTAGE
-#define AURGLCORE_BLOOMFILTERARB
 #include <math.h>
 #include "../math3d/math3d.h"
 #include <new>

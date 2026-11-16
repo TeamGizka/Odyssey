@@ -1111,12 +1111,10 @@ public:
                                unsigned long nTexture, float fSourceSize,
                                int bSoftShadows);
 
-#ifdef AURGLCORE_BLOOMFILTERARB
     static void BloomFilterARB(HDC hDC, HGLRC hContext, float fWidth,
                                float fHeight, PBUFFERARB* pBuffer,
                                unsigned long nTexture, float fSourceSize,
                                int bSoftShadows);
-#endif
 
     static void BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
                                        float fHeight, unsigned int nTexture,

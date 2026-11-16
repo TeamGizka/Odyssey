@@ -613,11 +613,7 @@ public:
 
     float GetAnimationSpeed() { return m_fSyncHeight; }
     float GetMovementRate() { return m_fMovementRate; }
-#ifndef NWSCREATURE_SPELLTARGET
-    void SetSpellTargetPosition(const Vector& vPosition) { m_vSpellTargetPosition = vPosition; }  // PC 0x0069FDD0 GOG 0x0069FBB0
-#else
     void SetSpellTargetPosition(const Vector& vPosition);
-#endif
 
 
     void SetLastDamageAmount(int nIndex, int nAmount);

@@ -1,9 +1,8 @@
-#define NWSCREATURE_SPELLTARGET
 #include "gameobjectarray.h"
 #include "nwscreature.h"
 #include "nwsobject.h"
 // PC 0x0050B650 GOG 0x0050B6B0
-inline void CSWSObject::SetSpellTargetPosition(const Vector& vPosition)
+void CSWSObject::SetSpellTargetPosition(const Vector& vPosition)
 {
     m_vSpellTargetPosition = vPosition;
 }

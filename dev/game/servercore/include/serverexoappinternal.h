@@ -239,6 +239,7 @@ public:
     void RemoveFromExclusionList(unsigned long oidObject, unsigned char nType);
     CExoLinkedList<unsigned long>* GetActiveExclusionList();
     int IsOnActiveExclusionList(unsigned long oidObject);
+    int IsOnExclusionList(unsigned long oidObject);
     int ResolvePlayerByFirstName(const CExoString& sFirstName);
     int GetDifficultyOption(int nOption);
     void AddCharListRequest(unsigned long nPlayerId);

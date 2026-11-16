@@ -54,14 +54,7 @@ public:
 class CServerAIList : public CExoArrayList<unsigned long>
 {
 public:
-#ifndef SERVERAIMASTER_SOURCE
-    CServerAIList()  // PC 0x004DDFD0 GOG 0x004DE0F0
-    {
-        m_nCurrent = 0;
-    }
-#else
     CServerAIList();
-#endif
 
     BOOL RemoveObject(unsigned long oidObject);
 

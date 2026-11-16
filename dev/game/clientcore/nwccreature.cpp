@@ -1,4 +1,3 @@
-#define NWCCREATURE_MINES
 #include <aurlist.h>
 #include "nwccreature.h"
 #include "pathfindinfo.h"

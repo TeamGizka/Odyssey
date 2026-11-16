@@ -1,5 +1,7 @@
 #define SWGUIINGAME_SOURCE
 #include "appmanager.h"
+class CSWGuiControl;
+template CExoArrayList<CSWGuiControl*>::CExoArrayList(int);
 #include "swguiingame.h"
 #include "exotlktable.h"
 

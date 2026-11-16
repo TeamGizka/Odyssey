@@ -823,9 +823,7 @@ public:
             m_nResultUnused = 0;
             m_nSideDeck = 0;
         }
-#ifdef CLIENTEXOAPPINTERNAL_PAZAAKDATA
         ~CPazaakData();
-#endif
         int m_bIsRunning;
         CExoString m_sEndScript;
         int m_nResultUnused;

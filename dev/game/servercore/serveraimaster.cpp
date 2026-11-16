@@ -1,4 +1,3 @@
-#define SERVERAIMASTER_SOURCE
 #include "exobase.h"
 #include "resgff.h"
 #include "appmanager.h"
@@ -911,7 +910,7 @@ template <> inline CExoLinkedList<CServerAIEventNode>::~CExoLinkedList()
     delete m_pInternal;
 }
 // PC 0x004DDFD0 GOG 0x004DE0F0
-inline CServerAIList::CServerAIList()
+CServerAIList::CServerAIList()
 {
     m_nCurrent = 0;
 }

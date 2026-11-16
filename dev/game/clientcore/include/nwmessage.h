@@ -1662,13 +1662,9 @@ public:
     int SendPlayerToServerCheat_Kill(unsigned long oidTarget, unsigned long oidKiller);
     int SendPlayerToServerCheat_MoveToArea(const CExoString& sArea, const Vector& vPosition);
     int SendPlayerToServerCheat_PlayerPathfindRule(unsigned char nRule);
-    int SendPlayerToServerCheat_PonyRide();
-    int SendPlayerToServerCheat_RainOfCows();
     int SendPlayerToServerCheat_RunScript(const CExoString& sScript);
-    int SendPlayerToServerCheat_ShowServerMem();
     int SendPlayerToServerCheat_SummonNasty(unsigned long oidArea, unsigned char nCount, const CResRef& cResRef);
     int SendPlayerToServerCheat_ToggleCombatDebugging(int bEnable);
-    int SendPlayerToServerCheat_ToggleFloatyEffects();
     int SendPlayerToServerCheat_ToggleMovementSpeedDebugging(int bEnable);
     int SendPlayerToServerChat_Party(const CExoString& sMessage);
     int SendPlayerToServerChat_Shout(const CExoString& sMessage);
