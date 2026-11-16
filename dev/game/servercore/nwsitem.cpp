@@ -1299,6 +1299,10 @@ CExoString CSWSItem::GetPropertiesOnlyDescription()
 int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                         int bLoadingGame)
 {
+    if (NWSITEM_DEBUG)
+    {
+        int nPassive = GetPassiveProperties();
+    }
     Vector vPosition(fX, fY, fZ);
     int result;
 
@@ -1326,7 +1330,7 @@ int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
     {
         pRes->AddListElement(&propertyStruct, &list, nProperty);
         pItemProperty = GetActiveProperty(nProperty);
-        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_nPropertyType,
+        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->GetPropertyType(),
                              "PropertyName");
         pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_nSubtype,
                              "Subtype");
@@ -1356,7 +1360,7 @@ int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
         pRes->AddListElement(&propertyStruct, &list,
                              nProperty + m_nActiveProperties);
         pItemProperty = GetPassiveProperty(nProperty);
-        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_nPropertyType,
+        pRes->WriteFieldWORD(&propertyStruct, pItemProperty->GetPropertyType(),
                              "PropertyName");
         pRes->WriteFieldWORD(&propertyStruct, pItemProperty->m_nSubtype,
                              "Subtype");
@@ -1389,7 +1393,7 @@ unsigned short CSWSItem::GetUsedActivePropertyUsesLeft(unsigned char nPropertyIn
     unsigned short nUsesLeft = 0;
     CSWItemProperty* pItemProperty = GetActiveProperty(nPropertyIndex);
     if (pItemProperty != NULL &&
-        pItemProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
+        pItemProperty->GetPropertyType() == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
     {
         switch (pItemProperty->m_nCostValue)
         {
@@ -1452,7 +1456,7 @@ int CSWSItem::RestoreUsedActiveProperties(int bRestoreAll)
     for (nProperty = 0; nProperty < nActiveProperties; nProperty++)
     {
         pItemProperty = GetActiveProperty(nProperty);
-        if (pItemProperty != NULL && pItemProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM &&
+        if (pItemProperty != NULL && pItemProperty->GetPropertyType() == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM &&
             (bRestoreAll == 0 || pItemProperty->m_nUsesPerDay == 0xFF))
         {
             switch (pItemProperty->m_nCostValue)
