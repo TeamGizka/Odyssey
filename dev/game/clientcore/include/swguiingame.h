@@ -721,4 +721,8 @@ public:
 };
 #endif
 
+#ifdef SWGUIINGAME_SOURCE
+template CExoArrayList<CSWGuiControl*>::CExoArrayList(int);
+#endif
+
 #endif
