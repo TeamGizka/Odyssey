@@ -1721,7 +1721,6 @@ Gob* FindGob(char* sName)
 }
 const char* setmirrorimage(char* sCommand)
 {
-#ifdef _XBOX
     Gob* pGob = FindGob(GetToken(&sCommand));
     if (pGob == 0)
     {
@@ -1742,34 +1741,6 @@ const char* setmirrorimage(char* sCommand)
     }
     pGob->SetUpImposters(atoi(sImposters), pfValues);
     return "SUCCESS";
-#else
-    char sName[64];
-    int nImposters;
-
-    if (sscanf(sCommand, "%s %d", sName, &nImposters) != 2)
-    {
-        return "FAILURE";
-    }
-    Gob* pGob = FindGob(sName);
-    if (pGob == 0)
-    {
-        return "FAILURE";
-    }
-    float* pfValues = new float[3 * nImposters];
-    if (nImposters == 0)
-    {
-        nImposters = 1;
-    }
-    for (int i = 0; i < nImposters; i++)
-    {
-        float fAngle = TWO_PI * i / nImposters;
-        pfValues[3 * i] = 3.0f * (float)sin(fAngle);
-        pfValues[3 * i + 1] = 3.0f * (float)cos(fAngle);
-        pfValues[3 * i + 2] = 0.0f;
-    }
-    pGob->SetUpImposters(nImposters, pfValues);
-    return "SUCCESS";
-#endif
 }
 
 // PC 0x00453390 GOG 0x004534D0

@@ -230,7 +230,7 @@ const char* DumpLogCounters(char* sBuffer)
 
 void LogLevelStats()
 {
-    FILE* pFile = fopen("D:\Logs\Levelstats.txt", "a");
+    FILE* pFile = fopen("D:\\Logs\\Levelstats.txt", "a");
     fprintf(pFile, "%s", g_szProcessModuleMemName);
     fprintf(pFile, "\t%d", RyanLevelTotalParts);
     fprintf(pFile, "\n");

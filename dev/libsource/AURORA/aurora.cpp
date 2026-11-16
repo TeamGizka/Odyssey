@@ -164,8 +164,6 @@ void AurSetPauseOverlayColor(float fRed, float fGreen, float fBlue,
 
 char* testsetpausecolor(char* sArguments)
 {
-#ifdef _XBOX
-
     double afColor[4];
     afColor[0] = atof(GetToken(&sArguments));
     afColor[1] = atof(GetToken(&sArguments));
@@ -173,13 +171,6 @@ char* testsetpausecolor(char* sArguments)
     afColor[3] = atof(GetToken(&sArguments));
     g_rgbaPauseOverlayColor = ((((int)(afColor[3] * 255.0) << 8 | (int)(afColor[0] * 255.0)) << 8 |
                                 (int)(afColor[1] * 255.0)) << 8) | (int)(afColor[2] * 255.0);
-#else
-    float fRed = (float)atof(GetToken(&sArguments));
-    float fGreen = (float)atof(GetToken(&sArguments));
-    float fBlue = (float)atof(GetToken(&sArguments));
-    float fAlpha = (float)atof(GetToken(&sArguments));
-    AurSetPauseOverlayColor(fRed, fGreen, fBlue, fAlpha);
-#endif
     return "SUCCESS";
 }
 // PC 0x00463000 GOG 0x00463110
@@ -571,20 +562,11 @@ void AuroraSetTileFoggedByWar(Vector& vPosition, bool bFogged)
 {
     Scene* pScene = FindScene("mainscene");
     BSPNode* pNode = BSPSearch(pScene->m_pBSPRoot, vPosition, NodeHasTileData, 0);
-#ifdef _XBOX
     nodedata* pData = pNode->m_pData;
     pData->m_pTileData->m_bFade = bFogged;
-#else
-    pNode->m_pData->m_pTileData->m_bFade = bFogged;
-#endif
     if (bFogged)
     {
-#ifdef _XBOX
         pData->m_pTileData->m_fFadeAlpha = 0.0f;
-#else
-        pNode->m_pData->m_pTileData->m_fFadeAlpha = 0.0f;
-#endif
-
         pScene->m_lstPendingObjects.Add(pNode);
     }
     else

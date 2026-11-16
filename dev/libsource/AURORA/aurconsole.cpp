@@ -856,42 +856,70 @@ void AurResFree(void* pResource, int nSize)
 }
 
 Model* FindModel(char* sName);
+const char* spawn(char* sArguments);
 
 #ifndef _XBOX
 char* converttobinary(char* sArguments)
 {
-    char sPattern[MAX_PATH];
-    char sDirectory[MAX_PATH];
-    char sCurrentDirectory[MAX_PATH];
     char sModelName[MAX_PATH];
+    char sCurrentDirectory[MAX_PATH];
     WIN32_FIND_DATA cFindData;
     HANDLE hFind;
+    char* sPattern = GetToken(&sArguments);
+    char* sDirectory = GetToken(&sArguments);
 
     GetCurrentDirectory(MAX_PATH, sCurrentDirectory);
-    if (sscanf(sArguments, "%s %s", sPattern, sDirectory) != 2)
+    if (sPattern == "")
+    {
         return "FAILURE";
+    }
 
+    if (sDirectory == "")
+    {
+        return "FAILURE";
+    }
+
+    IODispatcher::GetRef();
     memset(&cFindData, 0, sizeof(cFindData));
     hFind = FindFirstFile(sPattern, &cFindData);
-    if (hFind == INVALID_HANDLE_VALUE)
-        return "Finished";
 
-    do
+    if (hFind != INVALID_HANDLE_VALUE)
     {
-        sprintf(sModelName, "%s", cFindData.cFileName);
-        sModelName[strlen(sModelName) - 4] = 0;
-        if (!SetCurrentDirectory(sDirectory))
-            return "FAILURE";
-        Model* pModel = FindModel(sModelName);
-        if (pModel != 0)
+        do
         {
-            IODispatcher::GetRef()->WriteSync(pModel, NULL);
-        }
-        SetCurrentDirectory(sCurrentDirectory);
-    } while (FindNextFile(hFind, &cFindData));
+            sprintf(sModelName, "%s", cFindData.cFileName);
+            sModelName[strlen(sModelName) - 4] = 0;
+            spawn(sModelName);
 
-    if (GetLastError() != ERROR_NO_MORE_FILES)
-        return "FAILURE";
+            int i;
+            for (i = strlen(sModelName - 5); i > -1; i--)
+            {
+                if (sModelName[i] == '\\' || sModelName[i] == '/')
+                {
+                    break;
+                }
+            }
+
+            if (!SetCurrentDirectory(sDirectory))
+            {
+                return "FAILURE";
+            }
+
+            char* sName = &sModelName[i + 1];
+            Model* pModel = FindModel(GetToken(&sName));
+            if (pModel != NULL)
+            {
+                IODispatcher::GetRef()->WriteSync(pModel, NULL);
+            }
+            SetCurrentDirectory(sCurrentDirectory);
+        } while (FindNextFile(hFind, &cFindData));
+
+        if (GetLastError() != ERROR_NO_MORE_FILES)
+        {
+            return "FAILURE";
+        }
+    }
+
     FindClose(hFind);
     return "Finished";
 }

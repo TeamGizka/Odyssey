@@ -838,7 +838,7 @@ int CExoBaseInternal::CheckForCD()
     int bHaveAlias;
     int nDrive;
 
-    bHaveAlias = g_pExoBase->m_pExoIni->ReadIniEntry(sSearch, ".\\swkotor.ini",
+    bHaveAlias = g_pExoBase->m_pExoIni->ReadIniEntry(sSearch, ".\\swkotor2.ini",
                                                      "Alias", "CD0");
     if (bHaveAlias)
     {
@@ -926,10 +926,10 @@ int CExoBaseInternal::CheckForCD()
     }
 
     CExoString sAlias;
-    if (!g_pExoBase->m_pExoIni->ReadIniEntry(sAlias, ".\\swkotor.ini", "Alias",
+    if (!g_pExoBase->m_pExoIni->ReadIniEntry(sAlias, ".\\swkotor2.ini", "Alias",
                                              "CD0"))
     {
-        g_pExoBase->m_pExoIni->WriteIniEntry(".\\swkotor.ini", "Alias", "CD0",
+        g_pExoBase->m_pExoIni->WriteIniEntry(".\\swkotor2.ini", "Alias", "CD0",
                                              sSearch.Left(3));
     }
 

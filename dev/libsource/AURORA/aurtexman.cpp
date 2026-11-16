@@ -1808,23 +1808,22 @@ inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,  // PC 0x004
 
 void AurTextureFreeAll()
 {
-    int i;
-
-    for (i = 0; i < CAurTextureBasic::m_StaticTextureList.m_nCount; i++)
+    for (int i = 0; i < CAurTextureBasic::m_OrderedTextureList.m_nCount; i++)
     {
-        CAurTextureBasic* pTexture = CAurTextureBasic::m_StaticTextureList[i];
-        if (pTexture->m_pImage != NULL)
+        CAurTextureBasic* pTexture = CAurTextureBasic::m_OrderedTextureList[i];
+        if (pTexture->m_pTextureIDs != NULL)
         {
-            pTexture->FreeImage();
+            GLRender_DeleteTextures(pTexture->m_nNumX * pTexture->m_nNumY,
+                             pTexture->m_pTextureIDs);
+            delete[] pTexture->m_pTextureIDs;
+            pTexture->m_pTextureIDs = NULL;
         }
+        pTexture->m_nTIDIndex = 0;
     }
-    for (i = 0; i < CAurTextureBasic::m_DynamicTextureList.m_nCount; i++)
+    if (CAurTextureBasic::m_pNullTexture.m_pObject != NULL)
     {
-        CAurTextureBasic* pTexture = CAurTextureBasic::m_DynamicTextureList[i];
-        if (pTexture->m_pImage != NULL)
-        {
-            pTexture->FreeImage();
-        }
+        delete CAurTextureBasic::m_pNullTexture.m_pObject;
+        CAurTextureBasic::m_pNullTexture = (CAurTexture*)NULL;
     }
 }
 
@@ -1990,16 +1989,10 @@ const char* replacetexture(char* sCommand)
         return returnvalue;
     }
     sscanf(sOld, "%s", sNew);
-#ifdef _XBOX
     if (stricmp(sNew, "NULL") == 0)
-#else
-    if (strcmp(sNew, "NULL") == 0)
-#endif
     {
         sNew[0] = 0;
     }
-#ifdef _XBOX
-
     char* sSpace = strchr(sOld + 1, ' ');
     if (sSpace == NULL)
     {
@@ -2060,59 +2053,6 @@ const char* replacetexture(char* sCommand)
         }
     }
     return returnvalue;
-#else
-    char* sTexture = strchr(sOld + 1, ' ');
-    if (sTexture == NULL)
-    {
-        return returnvalue;
-    }
-    *sTexture++ = 0;
-    char* sParts = strchr(sTexture, ' ');
-    int nReplaced;
-    if (sParts == NULL)
-    {
-        nReplaced = pGob->ReplaceTexture(sNew, sTexture);
-    }
-    else
-    {
-        *sParts++ = 0;
-        unsigned char nCount = 0;
-        for (char* sNext = strchr(sParts, ' '); sNext != NULL;
-             sNext = strchr(sNext + 1, ' '))
-        {
-            ++nCount;
-        }
-        nCount = (unsigned char)(nCount + 1) >> 1;
-        if (nCount == 0)
-        {
-            return returnvalue;
-        }
-        for (int nPart = 0; nPart < nCount; ++nPart)
-        {
-            char* sEnd = strchr(sParts, ' ');
-            *sEnd = 0;
-            unsigned char nHigh = (unsigned char)atoi(sParts);
-            sParts = sEnd + 1;
-            sEnd = strchr(sParts, ' ');
-            if (sEnd != NULL)
-            {
-                *sEnd = 0;
-            }
-            aParts[nPart] = (unsigned short)(nHigh * 256 + (unsigned char)atoi(sParts));
-            sParts = sEnd + 1;
-        }
-        nReplaced = pGob->ReplaceTexture(sNew, sTexture, nCount, aParts, 0);
-    }
-    if (nReplaced != 0)
-    {
-        sprintf(returnvalue, "Success: %i", nReplaced);
-    }
-    else
-    {
-        sprintf(returnvalue, "WARNING: no parts on model use texture %s", sNew);
-    }
-    return returnvalue;
-#endif
 }
 // PC 0x00423B00 GOG 0x00423C10
 void CAurTextureBasic::ParseField(char* sField)
@@ -2859,18 +2799,7 @@ List<int>* AurTextureGetOrdering()
 #ifndef _XBOX
 int AurTextureGetAvailableTextureMemory()
 {
-    for (int i = 0; i < CAurTextureBasic::m_OrderedTextureList.m_nCount; i++)
-    {
-        CAurTextureBasic* pTexture = CAurTextureBasic::m_OrderedTextureList[i];
-        if (pTexture->m_pTextureIDs != NULL)
-        {
-            GLRender_DeleteTextures(pTexture->m_nNumX * pTexture->m_nNumY,
-                             pTexture->m_pTextureIDs);
-            delete[] pTexture->m_pTextureIDs;
-            pTexture->m_pTextureIDs = NULL;
-        }
-        pTexture->m_nTIDIndex = 0;
-    }
+    AurTextureFreeAll();
     int nMemory = GLRender::GetAvailableTextureMemory();
     RefreshTextures = CAurTextureBasic::m_OrderedTextureList;
     AurTextureBuildAndStoreAll();

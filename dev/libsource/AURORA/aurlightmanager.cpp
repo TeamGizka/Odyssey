@@ -1247,7 +1247,7 @@ void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
     int i = m_lstExcludedShaderLights.m_nCount;
     while (i != 0)
     {
-        DisableThisLight(m_lstExcludedShaderLights[--i]);
+        EnableThisLight(m_lstExcludedShaderLights[--i]);
     }
     m_lstExcludedShaderLights.m_nCount = 0;
 
@@ -1265,7 +1265,7 @@ void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
         if (!pLight->m_bAmbientOnly)
         {
             m_lstExcludedShaderLights.Add(pLight);
-            EnableThisLight(pLight);
+            DisableThisLight(pLight);
         }
         if (m_lstExcludedShaderLights.m_nCount >= nMaxLights)
         {

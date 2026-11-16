@@ -66,12 +66,6 @@ CAurString* NewCAurString(int nMaxLength)
 
 void CAurString::DieWithoutParent()
 {
-    StringGob* pGob = (StringGob*)this;
-
-    if (pGob->m_pBehavior != NULL)
-    {
-        pGob->m_pBehavior->Message("diewithoutparent 1");
-    }
 }
 #endif
 

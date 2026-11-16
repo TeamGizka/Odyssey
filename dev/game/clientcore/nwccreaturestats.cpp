@@ -311,12 +311,18 @@ CExoString CSWCCreatureStats::GetAlignmentInfo()
     CExoString sInfo;
     STR_RES strRes;
 
-    if (m_nGoodEvilAlignment <= 40)
-        g_pTlkTable->Fetch(STRREF_ALIGNMENT_DARK, strRes, CTlkTable::GENDER_MALE);
-    else if (m_nGoodEvilAlignment < 60)
-        g_pTlkTable->Fetch(STRREF_ALIGNMENT_NEUTRAL, strRes, CTlkTable::GENDER_MALE);
-    else
+    switch (GetSimpleAlignmentGoodEvil())
+    {
+    case CSWSCreatureStats::ALIGNMENT_GOOD:
         g_pTlkTable->Fetch(STRREF_ALIGNMENT_LIGHT, strRes, CTlkTable::GENDER_MALE);
+        break;
+    case CSWSCreatureStats::ALIGNMENT_EVIL:
+        g_pTlkTable->Fetch(STRREF_ALIGNMENT_DARK, strRes, CTlkTable::GENDER_MALE);
+        break;
+    case CSWSCreatureStats::ALIGNMENT_NEUTRAL:
+        g_pTlkTable->Fetch(STRREF_ALIGNMENT_NEUTRAL, strRes, CTlkTable::GENDER_MALE);
+        break;
+    }
 
     sInfo.Format("%s (%d)", strRes.m_sString.CStr(), m_nGoodEvilAlignment);
     return sInfo;

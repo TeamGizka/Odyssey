@@ -2472,32 +2472,32 @@ int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 {
     int bFailed = FALSE;
 
-    for (int nPoint = 0; nPoint < m_nPathPointCount; nPoint++)
+    for (unsigned long nPoint = 0; nPoint < (unsigned long)m_nPathPointCount; nPoint++)
     {
-        CSWSAreaPathPoint* pPoint = &m_pPathPoints[nPoint];
-        if (pPoint->m_nConnectionCount == 0)
+        Vector vPoint(m_pPathPoints[nPoint].m_fX, m_pPathPoints[nPoint].m_fY, 0.0f);
+        ComputeHeight(vPoint, 1, NULL);
+        if (m_pPathPoints[nPoint].m_nFirstConnection + m_pPathPoints[nPoint].m_nConnectionCount == 0)
             bFailed = TRUE;
 
-        for (int nConnection = pPoint->m_nFirstConnection;
-             nConnection < pPoint->m_nFirstConnection + pPoint->m_nConnectionCount;
+        for (unsigned long nConnection = m_pPathPoints[nPoint].m_nFirstConnection;
+             nConnection < (unsigned long)(m_pPathPoints[nPoint].m_nFirstConnection + m_pPathPoints[nPoint].m_nConnectionCount);
              nConnection++)
         {
-            int nTarget = m_pPathConnections[nConnection];
-            Vector vStart(pPoint->m_fX, pPoint->m_fY, 0.0f);
-            Vector vEnd(m_pPathPoints[nTarget].m_fX,
-                        m_pPathPoints[nTarget].m_fY, 0.0f);
+            Vector vStart(m_pPathPoints[nPoint].m_fX, m_pPathPoints[nPoint].m_fY, 0.0f);
+            Vector vEnd(m_pPathPoints[m_pPathConnections[nConnection]].m_fX,
+                        m_pPathPoints[m_pPathConnections[nConnection]].m_fY, 0.0f);
             vStart.m_fZ = ComputeHeight(vStart, 1, NULL);
             vEnd.m_fZ = ComputeHeight(vEnd, 1, NULL);
-            if (nPoint > nTarget)
+            if (nPoint > (unsigned long)m_pPathConnections[nConnection])
             {
                 vStart.m_fZ += AREA_PATH_POINT_TEST_HEIGHT;
                 vEnd.m_fZ += AREA_PATH_POINT_TEST_HEIGHT;
             }
 
-            int nResult = TestDirectLine(vStart, vEnd, fPersonalSpace, 0.0f,
-                                         1, NULL);
-            if (nResult != DIRECT_LINE_BLOCKED_CREATURE &&
-                nResult != DIRECT_LINE_CLEAR)
+            int nResult = TestDirectLine(vStart, vEnd, fPersonalSpace, 0.0f, 1, NULL);
+            Vector vPerpendicular = normalize(cross(Vector(0.0f, 0.0f, 1.0f), vEnd - vStart));
+            Vector vDirection = normalize(vEnd - vStart);
+            if (nResult != DIRECT_LINE_CLEAR && nResult != DIRECT_LINE_BLOCKED_CREATURE)
             {
                 bFailed = TRUE;
             }

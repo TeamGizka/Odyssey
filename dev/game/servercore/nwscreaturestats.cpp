@@ -7368,7 +7368,7 @@ int CSWSCreatureStats::CalcStatModifier(unsigned char nScore)
 
 unsigned long CSWSCreatureStats::CalculateExpNeededForNextLevel()
 {
-    for (int nLevel = 0; nLevel <= 20; ++nLevel)
+    for (int nLevel = 0; nLevel <= CSWRules::EXPERIENCE_TABLE_LAST_INDEX; ++nLevel)
     {
         if (m_nExperience < g_pRules->m_anExperience[(unsigned char)nLevel])
         {
