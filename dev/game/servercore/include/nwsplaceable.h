@@ -102,13 +102,13 @@ public:
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    virtual CResRef GetDialogResref()  // PC 0x00587F50 GOG 0x00587FD0
-    {
-        return m_cConversation;
-    }
     virtual CExoLocString* GetFirstName()  // PC 0x00587F40 GOG 0x00587FC0
     {
         return &m_lsLocName;
+    }
+    virtual CResRef GetDialogResref()  // PC 0x00587F50 GOG 0x00587FD0
+    {
+        return m_cConversation;
     }
     virtual void DoDamage(int nDamage);
     virtual unsigned long GetEffectSpellId()  // PC 0x00587F80 GOG 0x00588000

@@ -1,4 +1,5 @@
 #include <aurlist.h>
+#define CLIENTEXOAPPINTERNAL_PAZAAKDATA
 #include "clientexoappinternal.h"
 #include "swbehaviorcamera.h"
 #include "appmanager.h"
@@ -7606,6 +7607,10 @@ void CClientExoAppInternal::UpdateCombatMode()
                 m_pGuiInGame->SetCombatMessage(nMessage);
         }
     }
+}
+// PC 0x0063F400
+inline CClientExoAppInternal::CPazaakData::~CPazaakData()
+{
 }
 // PC 0x0063F410 GOG 0x0063F270
 void CClientExoAppInternal::SetAutoPaused(int bAuto, unsigned char nPauseType)
