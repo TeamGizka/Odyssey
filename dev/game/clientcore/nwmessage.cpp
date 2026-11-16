@@ -6,7 +6,7 @@
 #include "nwmessage.h"
 #include "gameobjectarray.h"
 
-#define NWMESSAGE_DEBUG 0
+#define NWMESSAGE_BITSTREAM 0
 
 const int CSWMessage::DEFAULT_WRITE_BUFFER_SIZE = 128;
 // PC 0x00404E60 GOG 0x00404E60
@@ -35,172 +35,6 @@ void CSWCCMessageData::SetObjectID(int nIndex, unsigned long oidValue)
     m_lstObjectIDs.element[nIndex] = oidValue;
 }
 
-unsigned char CSWMessage::ReadBit(unsigned char nBit)
-{
-    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
-
-    return (pFragments[m_nUnknown3C] & (1 << (7 - nBit))) >> (7 - nBit);
-}
-
-unsigned __int64 CSWMessage::ReadBits(int nBits)
-{
-    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
-    unsigned __int64 nValue = 0;
-    unsigned char cBit;
-    int i;
-
-    for (i = 0; i < nBits; i++)
-    {
-        cBit = (unsigned char)((pFragments[m_nUnknown3C] &
-                                (1 << (7 - m_bUnknown44))) >>
-                               (7 - m_bUnknown44));
-        nValue = (nValue << 1) | (cBit & 1);
-
-        m_bUnknown44++;
-
-        if (m_bUnknown44 == 8)
-        {
-            m_nUnknown3C++;
-            m_bUnknown44 = 0;
-        }
-    }
-
-    return nValue;
-}
-
-void CSWMessage::WriteBit(unsigned char bValue)
-{
-    unsigned char* pFragment = m_pUnknown10 + m_nUnknown18;
-    unsigned char nBitPos = *(unsigned char*)&m_nUnknown20;
-
-    *pFragment &= ~(1 << (7 - nBitPos));
-    *pFragment |= bValue << (7 - nBitPos);
-}
-
-void CSWMessage::WriteBits(unsigned __int64 nValue, int nBits)
-{
-    unsigned char& nBitPos = *(unsigned char*)&m_nUnknown20;
-    unsigned char* pFragment;
-
-    while (nBits > 0)
-    {
-        nBits--;
-
-        pFragment = m_pUnknown10 + m_nUnknown18;
-        *pFragment &= ~(1 << (7 - nBitPos));
-        *pFragment |= ((unsigned char)(nValue >> nBits) & 1) << (7 - nBitPos);
-
-        nBitPos++;
-
-        if (nBitPos == 8)
-        {
-            m_nUnknown18++;
-            nBitPos = 0;
-        }
-    }
-}
-
-unsigned __int64 CSWMessage::ReadUnsigned(int nBits)
-{
-    unsigned __int64 nValue = 0;
-    unsigned long nFragmentIndex;
-
-    if (nBits == 64)
-    {
-        if (m_nReadIndex + 8 > m_nReadBufferSize)
-        {
-            m_nReadIndex += 8;
-            return 0;
-        }
-
-        nValue = *(unsigned __int64*)(m_pReadBuffer + m_nReadIndex);
-        m_nReadIndex += 8;
-        return nValue;
-    }
-
-    while (nBits >= 32)
-    {
-        if (m_nReadIndex + 4 > m_nReadBufferSize)
-        {
-            m_nReadIndex += 4;
-            return 0;
-        }
-
-        nValue = (nValue << 32) |
-                 *(unsigned long*)(m_pReadBuffer + m_nReadIndex);
-        m_nReadIndex += 4;
-        nBits -= 32;
-    }
-
-    while (nBits >= 16)
-    {
-        if (m_nReadIndex + 2 > m_nReadBufferSize)
-        {
-            m_nReadIndex += 2;
-            return 0;
-        }
-
-        nValue = (nValue << 16) |
-                 *(unsigned short*)(m_pReadBuffer + m_nReadIndex);
-        m_nReadIndex += 2;
-        nBits -= 16;
-    }
-
-    while (nBits >= 8)
-    {
-        if (m_nReadIndex + 1 > m_nReadBufferSize)
-        {
-            m_nReadIndex += 1;
-            return 0;
-        }
-
-        nValue = (nValue << 8) | m_pReadBuffer[m_nReadIndex];
-        m_nReadIndex += 1;
-        nBits -= 8;
-    }
-
-    if (nBits > 0)
-    {
-        nFragmentIndex = m_nUnknown3C +
-                         (unsigned char)((m_bUnknown44 - 1 + nBits) >> 3);
-
-        if (nFragmentIndex > m_nUnknown38)
-        {
-            m_nUnknown3C = nFragmentIndex;
-            return 0;
-        }
-
-        nValue = (nValue << nBits) | ReadBits(nBits);
-    }
-
-    return nValue;
-}
-
-__int64 CSWMessage::ReadSigned(int nBits)
-{
-    unsigned char bNegative;
-    __int64 nValue;
-
-    if (m_nUnknown3C > m_nUnknown38)
-    {
-        return 0;
-    }
-
-    bNegative = (unsigned char)ReadBits(1);
-    nValue = (__int64)ReadUnsigned(nBits - 1);
-
-    if (bNegative)
-    {
-        nValue = -nValue;
-
-        if (nValue == 0)
-        {
-            nValue = 0x8000000000000000;
-        }
-    }
-
-    return nValue;
-}
 // PC 0x0053EEF0 GOG 0x0052B6E0
 CSWMessage::CSWMessage()
 {
@@ -413,10 +247,6 @@ Vector CSWMessage::ReadVector()
     vValue.m_fX = ReadFLOAT(0.0f, 32);
     vValue.m_fY = ReadFLOAT(0.0f, 32);
     vValue.m_fZ = ReadFLOAT(0.0f, 32);
-    if (NWMESSAGE_DEBUG)
-    {
-        WriteFLOAT(vValue.m_fZ, 0.0f, 32);
-    }
 
     return vValue;
 }
@@ -426,34 +256,6 @@ void CSWMessage::WriteVector(const Vector& vValue)
     WriteFLOAT(vValue.m_fX, 0.0f, 32);
     WriteFLOAT(vValue.m_fY, 0.0f, 32);
     WriteFLOAT(vValue.m_fZ, 0.0f, 32);
-}
-// PC 0x0053F700 GOG 0x0052BF10
-void CSWMessage::WriteFLOAT(float fValue, float fDefault, int nBits)
-{
-    if (m_nWriteIndex + 4 > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(4);
-    }
-
-    *(float*)(m_pWriteBuffer + m_nWriteIndex) = fValue;
-    m_nWriteIndex += 4;
-    m_nTotalBytesWritten += 4;
-}
-// PC 0x0053F740 GOG 0x0052BF50
-void CSWMessage::WriteCExoString(const CExoString& sValue, int nBits)
-{
-    unsigned long nLength = sValue.GetLength();
-
-    WriteINT(nLength, 32);
-
-    if (m_nWriteIndex + nLength > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(nLength);
-    }
-
-    memcpy(m_pWriteBuffer + m_nWriteIndex, sValue.CStr(), nLength);
-    m_nWriteIndex += nLength;
-    m_nTotalBytesWritten += nLength;
 }
 // PC 0x0053F060 GOG 0x0052B850
 void CSWMessage::ExtendWriteBuffer(unsigned long nExtraBytes)
@@ -471,102 +273,6 @@ void CSWMessage::ExtendWriteBuffer(unsigned long nExtraBytes)
 
     m_nWriteBufferSize = nNewSize;
     m_pWriteBuffer = pNewBuffer;
-}
-// PC 0x0053F640 GOG 0x0052B8B0
-void CSWMessage::WriteCHAR(char cValue, int nBits)
-{
-    if (m_nWriteIndex + 1 > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(1);
-    }
-
-    m_pWriteBuffer[m_nWriteIndex] = cValue;
-    m_nWriteIndex += 1;
-    m_nTotalBytesWritten += 1;
-}
-// PC 0x0053F680 GOG 0x0052B8F0
-void CSWMessage::WriteSHORT(short nValue, int nBits)
-{
-    if (m_nWriteIndex + 2 > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(2);
-    }
-
-    *(short*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
-    m_nWriteIndex += 2;
-    m_nTotalBytesWritten += 2;
-}
-// PC 0x0053F6C0 GOG 0x0052B930
-void CSWMessage::WriteDWORD(unsigned long nValue, int nBits)
-{
-    if (m_nWriteIndex + 4 > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(4);
-    }
-
-    *(unsigned long*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
-    m_nWriteIndex += 4;
-    m_nTotalBytesWritten += 4;
-}
-
-void CSWMessage::WriteUnsigned(unsigned __int64 nValue, int nBits)
-{
-    unsigned short nBytes = (unsigned short)(nBits >> 3);
-
-    if (m_nWriteIndex + nBytes > m_nWriteBufferSize)
-    {
-        ExtendWriteBuffer(nBytes);
-    }
-
-    if (nBits == 64)
-    {
-        if (m_nWriteIndex + 8 > m_nWriteBufferSize)
-        {
-            ExtendWriteBuffer(8);
-        }
-
-        *(unsigned __int64*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
-        m_nWriteIndex += 8;
-        m_nTotalBytesWritten += 8;
-        return;
-    }
-
-    while (nBits >= 32)
-    {
-        nBits -= 32;
-        WriteDWORD((unsigned long)(nValue >> nBits), 32);
-    }
-
-    while (nBits >= 16)
-    {
-        nBits -= 16;
-        WriteWORD((unsigned short)(nValue >> nBits), 16);
-    }
-
-    while (nBits >= 8)
-    {
-        nBits -= 8;
-        WriteBYTE((unsigned char)(nValue >> nBits), 8);
-    }
-
-    if (nBits > 0)
-    {
-        WriteBits(nValue & (0xFF >> (8 - nBits)), nBits);
-    }
-}
-
-void CSWMessage::WriteSigned(__int64 nValue, int nBits)
-{
-    if (nValue < 0)
-    {
-        WriteBits(1, 1);
-        WriteUnsigned(-nValue, nBits - 1);
-    }
-    else
-    {
-        WriteBits(0, 1);
-        WriteUnsigned(nValue, nBits - 1);
-    }
 }
 // PC 0x0053F0C0 GOG 0x0052B970
 void CSWMessage::WriteCResRef(CResRef cResRef, int nLength)
@@ -710,10 +416,20 @@ void CSWMessage::SetReadMessage(unsigned char* pBuffer, unsigned long nSize,
     {
         m_bUnknown44 = m_bUnknown45;
     }
+
+    if (NWMESSAGE_BITSTREAM)
+    {
+        m_bUnknown45 = (unsigned char)ReadBits(3);
+    }
 }
 // PC 0x0053F450 GOG 0x0052BCE0
 int CSWMessage::ReadBOOL()
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (int)ReadBits(1);
+    }
+
     unsigned char bValue;
 
     if (m_nReadIndex + 4 > m_nReadBufferSize)
@@ -729,6 +445,11 @@ int CSWMessage::ReadBOOL()
 // PC 0x0053F480 GOG 0x0052BD10
 char CSWMessage::ReadCHAR(int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (char)ReadBits(nBits);
+    }
+
     if (m_nReadIndex + 1 > m_nReadBufferSize)
     {
         m_nReadIndex += 1;
@@ -742,6 +463,11 @@ char CSWMessage::ReadCHAR(int nBits)
 // PC 0x0053F4B0 GOG 0x0052BD40
 short CSWMessage::ReadSHORT(int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (short)ReadBits(nBits);
+    }
+
     if (m_nReadIndex + 2 > m_nReadBufferSize)
     {
         m_nReadIndex += 2;
@@ -755,6 +481,11 @@ short CSWMessage::ReadSHORT(int nBits)
 // PC 0x0053F4E0 GOG 0x0052BD70
 int CSWMessage::ReadINT(int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (int)ReadBits(nBits);
+    }
+
     if (m_nReadIndex + 4 > m_nReadBufferSize)
     {
         m_nReadIndex += 4;
@@ -767,6 +498,11 @@ int CSWMessage::ReadINT(int nBits)
 // PC 0x0053F480 GOG 0x0052BD10
 unsigned char CSWMessage::ReadBYTE(int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (unsigned char)ReadBits(nBits);
+    }
+
     unsigned char cValue;
 
     if (m_nReadIndex + 1 > m_nReadBufferSize)
@@ -785,6 +521,11 @@ unsigned char CSWMessage::ReadBYTE(int nBits)
 // PC 0x0053F4B0 GOG 0x0052BD40
 unsigned short CSWMessage::ReadWORD(int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (unsigned short)ReadBits(nBits);
+    }
+
     if (m_nReadIndex + 2 > m_nReadBufferSize)
     {
         m_nReadIndex += 2;
@@ -800,6 +541,11 @@ unsigned short CSWMessage::ReadWORD(int nBits)
 // PC 0x0053F4E0 GOG 0x0052BD70
 unsigned long CSWMessage::ReadDWORD(int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (unsigned long)ReadBits(nBits);
+    }
+
     unsigned long nValue;
 
     if (m_nReadIndex + 4 > m_nReadBufferSize)
@@ -818,6 +564,11 @@ unsigned long CSWMessage::ReadDWORD(int nBits)
 // PC 0x0053F510 GOG 0x0052BDA0
 float CSWMessage::ReadFLOAT(float fDefault, int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        return (float)(__int64)ReadBits(nBits);
+    }
+
     float fValue;
 
     if (m_nReadIndex + 4 > m_nReadBufferSize)
@@ -864,10 +615,39 @@ void CSWMessage::CreateWriteMessage(unsigned long nMsgLen,
     {
         ExtendWriteBuffer(nMsgLen - m_nWriteBufferSize);
     }
+
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(0, 3);
+    }
+}
+// PC 0x0053F640 GOG 0x0052B8B0
+void CSWMessage::WriteCHAR(char cValue, int nBits)
+{
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(cValue, nBits);
+        return;
+    }
+
+    if (m_nWriteIndex + 1 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(1);
+    }
+
+    m_pWriteBuffer[m_nWriteIndex] = cValue;
+    m_nWriteIndex += 1;
+    m_nTotalBytesWritten += 1;
 }
 // PC 0x0053F640 GOG 0x0052B8B0
 void CSWMessage::WriteBYTE(unsigned char cValue, int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(cValue, nBits);
+        return;
+    }
+
     if (m_nWriteIndex + 1 > m_nWriteBufferSize)
     {
         ExtendWriteBuffer(1);
@@ -878,8 +658,32 @@ void CSWMessage::WriteBYTE(unsigned char cValue, int nBits)
     m_nTotalBytesWritten += 1;
 }
 // PC 0x0053F680 GOG 0x0052B8F0
+void CSWMessage::WriteSHORT(short nValue, int nBits)
+{
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(nValue, nBits);
+        return;
+    }
+
+    if (m_nWriteIndex + 2 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(2);
+    }
+
+    *(short*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
+    m_nWriteIndex += 2;
+    m_nTotalBytesWritten += 2;
+}
+// PC 0x0053F680 GOG 0x0052B8F0
 void CSWMessage::WriteWORD(unsigned short nValue, int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(nValue, nBits);
+        return;
+    }
+
     if (m_nWriteIndex + 2 > m_nWriteBufferSize)
     {
         ExtendWriteBuffer(2);
@@ -890,8 +694,32 @@ void CSWMessage::WriteWORD(unsigned short nValue, int nBits)
     m_nTotalBytesWritten += 2;
 }
 // PC 0x0053F6C0 GOG 0x0052B930
+void CSWMessage::WriteDWORD(unsigned long nValue, int nBits)
+{
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(nValue, nBits);
+        return;
+    }
+
+    if (m_nWriteIndex + 4 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(4);
+    }
+
+    *(unsigned long*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
+    m_nWriteIndex += 4;
+    m_nTotalBytesWritten += 4;
+}
+// PC 0x0053F6C0 GOG 0x0052B930
 void CSWMessage::WriteINT(int nValue, int nBits)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(nValue, nBits);
+        return;
+    }
+
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)
     {
         ExtendWriteBuffer(4);
@@ -904,6 +732,12 @@ void CSWMessage::WriteINT(int nValue, int nBits)
 // PC 0x006EC0C0 GOG 0x0052BED0
 void CSWMessage::WriteBOOL(int bValue)
 {
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits(bValue, 1);
+        return;
+    }
+
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)
     {
         ExtendWriteBuffer(4);
@@ -912,4 +746,265 @@ void CSWMessage::WriteBOOL(int bValue)
     *(int*)(m_pWriteBuffer + m_nWriteIndex) = bValue;
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
+}
+// PC 0x0053F700 GOG 0x0052BF10
+void CSWMessage::WriteFLOAT(float fValue, float fDefault, int nBits)
+{
+    if (NWMESSAGE_BITSTREAM)
+    {
+        WriteBits((unsigned __int64)fValue, nBits);
+        return;
+    }
+
+    if (m_nWriteIndex + 4 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(4);
+    }
+
+    *(float*)(m_pWriteBuffer + m_nWriteIndex) = fValue;
+    m_nWriteIndex += 4;
+    m_nTotalBytesWritten += 4;
+}
+// PC 0x0053F740 GOG 0x0052BF50
+void CSWMessage::WriteCExoString(const CExoString& sValue, int nBits)
+{
+    unsigned long nLength = sValue.GetLength();
+
+    WriteINT(nLength, 32);
+
+    if (m_nWriteIndex + nLength > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(nLength);
+    }
+
+    memcpy(m_pWriteBuffer + m_nWriteIndex, sValue.CStr(), nLength);
+    m_nWriteIndex += nLength;
+    m_nTotalBytesWritten += nLength;
+}
+
+unsigned char CSWMessage::ReadBit(unsigned char nBit)
+{
+    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
+
+    return (pFragments[m_nUnknown3C] & (1 << (7 - nBit))) >> (7 - nBit);
+}
+
+unsigned __int64 CSWMessage::ReadBits(int nBits)
+{
+    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
+    unsigned __int64 nValue = 0;
+    unsigned char cBit;
+    int i;
+
+    for (i = 0; i < nBits; i++)
+    {
+        cBit = (unsigned char)((pFragments[m_nUnknown3C] &
+                                (1 << (7 - m_bUnknown44))) >>
+                               (7 - m_bUnknown44));
+        nValue = (nValue << 1) | (cBit & 1);
+
+        m_bUnknown44++;
+
+        if (m_bUnknown44 == 8)
+        {
+            m_nUnknown3C++;
+            m_bUnknown44 = 0;
+        }
+    }
+
+    return nValue;
+}
+
+void CSWMessage::WriteBit(unsigned char bValue)
+{
+    unsigned char* pFragment = m_pUnknown10 + m_nUnknown18;
+    unsigned char nBitPos = *(unsigned char*)&m_nUnknown20;
+
+    *pFragment &= ~(1 << (7 - nBitPos));
+    *pFragment |= bValue << (7 - nBitPos);
+}
+
+void CSWMessage::WriteBits(unsigned __int64 nValue, int nBits)
+{
+    unsigned char& nBitPos = *(unsigned char*)&m_nUnknown20;
+    unsigned char* pFragment;
+
+    while (nBits > 0)
+    {
+        nBits--;
+
+        pFragment = m_pUnknown10 + m_nUnknown18;
+        *pFragment &= ~(1 << (7 - nBitPos));
+        *pFragment |= ((unsigned char)(nValue >> nBits) & 1) << (7 - nBitPos);
+
+        nBitPos++;
+
+        if (nBitPos == 8)
+        {
+            m_nUnknown18++;
+            nBitPos = 0;
+        }
+    }
+}
+
+unsigned __int64 CSWMessage::ReadUnsigned(int nBits)
+{
+    unsigned __int64 nValue = 0;
+    unsigned long nFragmentIndex;
+
+    if (nBits == 64)
+    {
+        if (m_nReadIndex + 8 > m_nReadBufferSize)
+        {
+            m_nReadIndex += 8;
+            return 0;
+        }
+
+        nValue = *(unsigned __int64*)(m_pReadBuffer + m_nReadIndex);
+        m_nReadIndex += 8;
+        return nValue;
+    }
+
+    while (nBits >= 32)
+    {
+        if (m_nReadIndex + 4 > m_nReadBufferSize)
+        {
+            m_nReadIndex += 4;
+            return 0;
+        }
+
+        nValue = (nValue << 32) |
+                 *(unsigned long*)(m_pReadBuffer + m_nReadIndex);
+        m_nReadIndex += 4;
+        nBits -= 32;
+    }
+
+    while (nBits >= 16)
+    {
+        if (m_nReadIndex + 2 > m_nReadBufferSize)
+        {
+            m_nReadIndex += 2;
+            return 0;
+        }
+
+        nValue = (nValue << 16) |
+                 *(unsigned short*)(m_pReadBuffer + m_nReadIndex);
+        m_nReadIndex += 2;
+        nBits -= 16;
+    }
+
+    while (nBits >= 8)
+    {
+        if (m_nReadIndex + 1 > m_nReadBufferSize)
+        {
+            m_nReadIndex += 1;
+            return 0;
+        }
+
+        nValue = (nValue << 8) | m_pReadBuffer[m_nReadIndex];
+        m_nReadIndex += 1;
+        nBits -= 8;
+    }
+
+    if (nBits > 0)
+    {
+        nFragmentIndex = m_nUnknown3C +
+                         (unsigned char)((m_bUnknown44 - 1 + nBits) >> 3);
+
+        if (nFragmentIndex > m_nUnknown38)
+        {
+            m_nUnknown3C = nFragmentIndex;
+            return 0;
+        }
+
+        nValue = (nValue << nBits) | ReadBits(nBits);
+    }
+
+    return nValue;
+}
+
+__int64 CSWMessage::ReadSigned(int nBits)
+{
+    unsigned char bNegative;
+    __int64 nValue;
+
+    if (m_nUnknown3C > m_nUnknown38)
+    {
+        return 0;
+    }
+
+    bNegative = (unsigned char)ReadBits(1);
+    nValue = (__int64)ReadUnsigned(nBits - 1);
+
+    if (bNegative)
+    {
+        nValue = -nValue;
+
+        if (nValue == 0)
+        {
+            nValue = 0x8000000000000000;
+        }
+    }
+
+    return nValue;
+}
+
+void CSWMessage::WriteUnsigned(unsigned __int64 nValue, int nBits)
+{
+    unsigned short nBytes = (unsigned short)(nBits >> 3);
+
+    if (m_nWriteIndex + nBytes > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(nBytes);
+    }
+
+    if (nBits == 64)
+    {
+        if (m_nWriteIndex + 8 > m_nWriteBufferSize)
+        {
+            ExtendWriteBuffer(8);
+        }
+
+        *(unsigned __int64*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
+        m_nWriteIndex += 8;
+        m_nTotalBytesWritten += 8;
+        return;
+    }
+
+    while (nBits >= 32)
+    {
+        nBits -= 32;
+        WriteDWORD((unsigned long)(nValue >> nBits), 32);
+    }
+
+    while (nBits >= 16)
+    {
+        nBits -= 16;
+        WriteWORD((unsigned short)(nValue >> nBits), 16);
+    }
+
+    while (nBits >= 8)
+    {
+        nBits -= 8;
+        WriteBYTE((unsigned char)(nValue >> nBits), 8);
+    }
+
+    if (nBits > 0)
+    {
+        WriteBits(nValue & (0xFF >> (8 - nBits)), nBits);
+    }
+}
+
+void CSWMessage::WriteSigned(__int64 nValue, int nBits)
+{
+    if (nValue < 0)
+    {
+        WriteBits(1, 1);
+        WriteUnsigned(-nValue, nBits - 1);
+    }
+    else
+    {
+        WriteBits(0, 1);
+        WriteUnsigned(nValue, nBits - 1);
+    }
 }
