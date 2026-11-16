@@ -164,6 +164,12 @@ public:
 
 };
 
+#ifdef AURMODEL_SOURCE
+inline CAurObject::CAurObject(int nReserved)
+{
+}
+#endif
+
 class PartCamera : public Part
 {
 public:

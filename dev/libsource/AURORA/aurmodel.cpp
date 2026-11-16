@@ -1,3 +1,4 @@
+#define AURMODEL_SOURCE
 #include "aurora.h"
 #include "aurmodel.h"
 #include "aurtexman.h"
@@ -1363,6 +1364,88 @@ inline CAurPart::~CAurPart()
 {
 }
 #include "aurpathinfoinl.h"
+// PC 0x0044FFD0 GOG 0x00450110
+MdlNodeAABB* MdlNode::AsMdlNodeAABB()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB))
+        return (MdlNodeAABB*)this;
+    else
+        return 0;
+}
+// PC 0x0044FFF0 GOG 0x00450130
+MdlNodeAnimMesh* MdlNode::AsMdlNodeAnimMesh()
+{
+    if ((m_nNodeType &
+            (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH)) ==
+                   (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH))
+        return (MdlNodeAnimMesh*)this;
+    else
+        return 0;
+}
+// PC 0x00450000 GOG 0x00450140
+MdlNodeCamera* MdlNode::AsMdlNodeCamera()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_CAMERA)) ==
+                   (MDL_NODE_HEADER | MDL_NODE_CAMERA))
+        return (MdlNodeCamera*)this;
+    else
+        return 0;
+}
+// PC 0x00450010 GOG 0x00450150
+MdlNodeDanglyMesh* MdlNode::AsMdlNodeDanglyMesh()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_DANGLYMESH)) ==
+        (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_DANGLYMESH))
+        return (MdlNodeDanglyMesh*)this;
+    else
+        return 0;
+}
+// PC 0x00450030 GOG 0x00450170
+MdlNodeLightsaber* MdlNode::AsMdlNodeLightsaber()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_LIGHTSABER)) ==
+        (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_LIGHTSABER))
+        return (MdlNodeLightsaber*)this;
+    else
+        return 0;
+}
+// PC 0x00450050 GOG 0x00450190
+MdlNodeEmitter* MdlNode::AsMdlNodeEmitter()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_EMITTER)) ==
+                   (MDL_NODE_HEADER | MDL_NODE_EMITTER))
+        return (MdlNodeEmitter*)this;
+    else
+        return 0;
+}
+// PC 0x00450060 GOG 0x004501A0
+MdlNodeLight* MdlNode::AsMdlNodeLight()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_LIGHT)) ==
+                   (MDL_NODE_HEADER | MDL_NODE_LIGHT))
+        return (MdlNodeLight*)this;
+    else
+        return 0;
+}
+// PC 0x00450070 GOG 0x004501B0
+MdlNodeReference* MdlNode::AsMdlNodeReference()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_REFERENCE)) ==
+                   (MDL_NODE_HEADER | MDL_NODE_REFERENCE))
+        return (MdlNodeReference*)this;
+    else
+        return 0;
+}
+// PC 0x00450080 GOG 0x004501C0
+MdlNodeSkin* MdlNode::AsMdlNodeSkin()
+{
+    if ((m_nNodeType &
+            (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_SKIN)) ==
+                   (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_SKIN))
+        return (MdlNodeSkin*)this;
+    else
+        return 0;
+}
 // PC 0x0045BB60 GOG 0x0045BD00
 PartLightsaber::PartLightsaber(MdlNode* pNode)
     : PartTriMesh(pNode)
@@ -1708,88 +1791,6 @@ void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
 #else
     m_nImposters = GLRender::SetUpImposters(nImposterType, pfImposterValues);
 #endif
-}
-// PC 0x0044FFD0 GOG 0x00450110
-MdlNodeAABB* MdlNode::AsMdlNodeAABB()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB))
-        return (MdlNodeAABB*)this;
-    else
-        return 0;
-}
-// PC 0x0044FFF0 GOG 0x00450130
-MdlNodeAnimMesh* MdlNode::AsMdlNodeAnimMesh()
-{
-    if ((m_nNodeType &
-            (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH)) ==
-                   (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH))
-        return (MdlNodeAnimMesh*)this;
-    else
-        return 0;
-}
-// PC 0x00450000 GOG 0x00450140
-MdlNodeCamera* MdlNode::AsMdlNodeCamera()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_CAMERA)) ==
-                   (MDL_NODE_HEADER | MDL_NODE_CAMERA))
-        return (MdlNodeCamera*)this;
-    else
-        return 0;
-}
-// PC 0x00450010 GOG 0x00450150
-MdlNodeDanglyMesh* MdlNode::AsMdlNodeDanglyMesh()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_DANGLYMESH)) ==
-        (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_DANGLYMESH))
-        return (MdlNodeDanglyMesh*)this;
-    else
-        return 0;
-}
-// PC 0x00450030 GOG 0x00450170
-MdlNodeLightsaber* MdlNode::AsMdlNodeLightsaber()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_LIGHTSABER)) ==
-        (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_LIGHTSABER))
-        return (MdlNodeLightsaber*)this;
-    else
-        return 0;
-}
-// PC 0x00450050 GOG 0x00450190
-MdlNodeEmitter* MdlNode::AsMdlNodeEmitter()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_EMITTER)) ==
-                   (MDL_NODE_HEADER | MDL_NODE_EMITTER))
-        return (MdlNodeEmitter*)this;
-    else
-        return 0;
-}
-// PC 0x00450060 GOG 0x004501A0
-MdlNodeLight* MdlNode::AsMdlNodeLight()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_LIGHT)) ==
-                   (MDL_NODE_HEADER | MDL_NODE_LIGHT))
-        return (MdlNodeLight*)this;
-    else
-        return 0;
-}
-// PC 0x00450070 GOG 0x004501B0
-MdlNodeReference* MdlNode::AsMdlNodeReference()
-{
-    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_REFERENCE)) ==
-                   (MDL_NODE_HEADER | MDL_NODE_REFERENCE))
-        return (MdlNodeReference*)this;
-    else
-        return 0;
-}
-// PC 0x00450080 GOG 0x004501C0
-MdlNodeSkin* MdlNode::AsMdlNodeSkin()
-{
-    if ((m_nNodeType &
-            (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_SKIN)) ==
-                   (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_SKIN))
-        return (MdlNodeSkin*)this;
-    else
-        return 0;
 }
 // PC 0x004533B0 GOG 0x004534F0
 Vector Gob::GetCutsceneDummyPosition()

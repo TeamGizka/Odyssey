@@ -26,6 +26,9 @@ class CAurObject : public SafePointerList<CAurObject>
 {
 public:
     CAurObject();
+#ifdef AURMODEL_SOURCE
+    CAurObject(int nReserved);
+#endif
     virtual ~CAurObject();
     virtual CAurCamera* AsCAurCamera() = 0;
     virtual char* GetName() = 0;
