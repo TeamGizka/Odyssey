@@ -4875,6 +4875,16 @@ int CSWSCreature::LoadFollowInfo(CResGFF* pResGFF, CResStruct* pResStruct)
 
     return nResult;
 }
+
+void CSWSCreature::SaveFollowInfo(CResGFF* pRes, CResStruct* pStruct)
+{
+    if (m_pFollowInfo != NULL)
+    {
+        CResStruct stFollow;
+        pRes->AddStructToStruct(&stFollow, pStruct, "FollowInfo", 0);
+        m_pFollowInfo->Save(pRes, &stFollow);
+    }
+}
 // PC 0x0051D4D0 GOG 0x0051D530
 void CSWSCreature::ApplyDeathExperience()
 {
@@ -6157,15 +6167,6 @@ void CSWSCreature::UpdatePersonalSpace()
         m_pPathfindInformation->m_fHalfStep = 1.0f;
 }
 
-void CSWSCreature::SaveFollowInfo(CResGFF* pRes, CResStruct* pStruct)
-{
-    if (m_pFollowInfo != NULL)
-    {
-        CResStruct stFollow;
-        pRes->AddStructToStruct(&stFollow, pStruct, "FollowInfo", 0);
-        m_pFollowInfo->Save(pRes, &stFollow);
-    }
-}
 // PC 0x0050E280 GOG 0x0050E2E0
 void CSWSCreature::UpdateAppearanceDependantInfo(int bUpdateModel)
 {

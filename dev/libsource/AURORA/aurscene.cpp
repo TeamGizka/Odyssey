@@ -289,6 +289,11 @@ int SceneGetNearestLights(Scene* pScene, Vector vPosition, float fRadius)
 {
     return pScene->m_pLightManager->GetNearestLights(pScene, vPosition, fRadius, 0);
 }
+
+int SceneInShadowRange(const Vector& vDelta)
+{
+    return vDelta * vDelta <= AUR_SHADOW_GOB_RANGE_SQUARED;
+}
 // PC 0x004638D0 GOG 0x004639E0
 Vector Scene::GetWindVector(Vector vPosition, float fScale)
 {

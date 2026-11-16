@@ -1430,6 +1430,10 @@ CExoEncapsulatedFile::~CExoEncapsulatedFile()
 
 CExoResourceImageFile::CExoResourceImageFile()
 {
+    if (EXORESFILE_DEBUG)
+    {
+        void (CExoArrayList<CExoString>::*pfnSetSize)(int) = &CExoArrayList<CExoString>::SetSize;
+    }
     m_pFile = NULL;
     m_nResourceType = 0;
     m_nFileSize = 0;
