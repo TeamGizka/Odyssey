@@ -211,6 +211,13 @@ ChunkyParticle::~ChunkyParticle()
         m_pGob = 0;
     }
 }
+float PartEmitter::GetGobAlpha()
+{
+    float fAlpha = 1.0f;
+    if (m_pAurObject)
+        fAlpha = m_pAurObject->m_fAlpha;
+    return fAlpha;
+}
 // PC 0x004B8570 GOG 0x004B8680
 float PartEmitter::GetTileAlpha()
 {
@@ -2218,13 +2225,6 @@ void PartEmitter::AnimateParticles(float fTimeStep)
     Update(fTimeStep);
 }
 
-static inline float GetGobAlpha(Gob* pGob)
-{
-    float fAlpha = 1.0f;
-    if (pGob)
-        fAlpha = pGob->m_fAlpha;
-    return fAlpha;
-}
 #ifndef _XBOX
 void PartEmitter::RenderLinked()  // PC 0x004C2590 GOG 0x004C26A0
 {
@@ -2321,7 +2321,7 @@ void PartEmitter::RenderLinked()  // PC 0x004C2590 GOG 0x004C26A0
     float fUScale = 1.0f / nXGrid;
     float fVScale = 1.0f / nYGrid;
     float fTileAlpha = GetTileAlpha();
-    float fGobAlpha = GetGobAlpha(m_pAurObject);
+    float fGobAlpha = GetGobAlpha();
 
     for (i = 0; i < m_lstActive.m_nCount; i++)
     {
@@ -2942,8 +2942,6 @@ void LightningEmitter::UpdateControlPoints()
             fFinalD * m_lstReserved21C[nSegment];
     }
 }
-
-inline Vector PartEmitter::GetOrigin() { return m_vOrigin; }
 
 inline void LightningDebugDelta(const Vector& vDelta)
 {

@@ -567,7 +567,6 @@ public:
     Vector m_vReserved14C;
     Vector m_vReserved158;
     Vector m_vOrigin;
-    Vector GetOrigin();
     Vector m_vLastOrigin;
     void SetLastOrigin(Vector v);
     Vector m_vColorEnd;
@@ -593,6 +592,7 @@ public:
     void RecursiveFractal(int nIndex, int nStep, int nCount,
                           Vector vDirection, Vector vOffset, float fRange);
     void CalculateRadius();
+    float GetGobAlpha();
     float GetTileAlpha();
     void SetWeather(bool bWeather);
 };
