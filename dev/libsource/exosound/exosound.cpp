@@ -1,3 +1,4 @@
+#define MATH3D_NO_INLINE
 #include <windows.h>
 #include "exobase.h"
 #include "swmain.h"

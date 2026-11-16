@@ -203,6 +203,7 @@ float DegToRad(float fDegrees);
 double Round(float fValue, float fRoundTo);
 Matrix Transpose(const Matrix& matrix);
 Vector operator*(const Matrix& matrix, const Vector& vector);
+#ifndef MATH3D_NO_INLINE
 __forceinline Quaternion operator-(const Quaternion& quaternion)
 {
     return Quaternion(quaternion.m_fW * -1.0f, quaternion.m_fX, quaternion.m_fY,
@@ -256,6 +257,7 @@ inline float quaternionDot(const Quaternion& left, const Quaternion& right)
     return left.m_fW * right.m_fW + left.m_fX * right.m_fX +
            left.m_fY * right.m_fY + left.m_fZ * right.m_fZ;
 }
+#endif
 Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition);
 Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll);
 float Roll(Quaternion quaternion);
@@ -272,12 +274,14 @@ Vector VectorMin(Vector vFirst, Vector vSecond);
 Vector VectorMax(Vector vFirst, Vector vSecond);
 Vector VectorMin(List<Vector>& vectors);
 Vector VectorMax(List<Vector>& vectors);
+#ifndef MATH3D_NO_INLINE
 __forceinline Vector cross(const Vector& vFirst, const Vector& vSecond)
 {
     return Vector(vFirst.m_fY * vSecond.m_fZ - vFirst.m_fZ * vSecond.m_fY,
                   vFirst.m_fZ * vSecond.m_fX - vFirst.m_fX * vSecond.m_fZ,
                   vFirst.m_fX * vSecond.m_fY - vFirst.m_fY * vSecond.m_fX);
 }
+#endif
 Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
                 const Vector& vThird);
 float SphereAbovePlane(const Vector& vCenter, float fRadius,

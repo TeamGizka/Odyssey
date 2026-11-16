@@ -993,6 +993,10 @@ void CSWGuiUpgrade::InsertUpgrade(CSWSItem* pItem, int nSlot)
         m_apItemEntries[nSlot] = pItem;
     }
 }
+inline CSWUpgradeItemEntry* CopyItemEntry(CSWUpgradeItemEntry* pEntry)
+{
+    return new CSWUpgradeItemEntry(*pEntry);
+}
 // PC 0x00724150 GOG 0x00723E60
 void CSWGuiUpgradeItemSelect::OnUpgradableSelected(CSWGuiControl* pControl)
 {
@@ -2325,6 +2329,10 @@ void CSWGuiCreateMedicalItem::ShowSellGUI()
     m_lblCost.m_cText.m_cParams.SetStrRef(115432);
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
+}
+inline CSWGuiSwoopUpgrade* CopySwoopUpgrade(CSWGuiSwoopUpgrade* pPanel)
+{
+    return new CSWGuiSwoopUpgrade(*pPanel);
 }
 // PC 0x00725160 GOG 0x00724E70
 void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)

@@ -1495,6 +1495,10 @@ inline void KOTOR_AUTOSAVE_PARAMS::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruc
 {
     int bSuccess;
 
+    if (SWGUISAVELOAD_DEBUG)
+    {
+        KOTOR_AUTOSAVE_PARAMS cDefaults;
+    }
     m_sLoadMusic = pGFF->ReadFieldCExoString(&cStruct, "LOADMUSIC", bSuccess,
                                             m_sLoadMusic);
     m_sStartWaypoint = pGFF->ReadFieldCExoString(&cStruct, "STARTWAYPOINT",

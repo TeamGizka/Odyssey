@@ -206,129 +206,6 @@ unsigned char CSWSDoor::GetDisarmDC()
     }
     return nDC;
 }
-// PC 0x005802B0 GOG 0x00580330
-int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
-{
-    pRes->WriteFieldDWORD(pStruct, (unsigned char)m_nAppearanceType, "Appearance");
-    pRes->WriteFieldBYTE(pStruct, m_nGenericType, "GenericType");
-    pRes->WriteFieldBYTE(pStruct, m_nOpenState, "OpenState");
-    pRes->WriteFieldBYTE(pStruct, m_bAutoRemoveKey, "AutoRemoveKey");
-    float fBearing = m_fBearing;
-    pRes->WriteFieldFLOAT(pStruct, fBearing, "Bearing");
-    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fX, "X");
-    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fY, "Y");
-    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fZ, "Z");
-    pRes->WriteFieldDWORD(pStruct, m_nFactionId, "Faction");
-    pRes->WriteFieldBYTE(pStruct, m_nFortSave, "Fort");
-    pRes->WriteFieldBYTE(pStruct, m_nWillSave, "Will");
-    pRes->WriteFieldBYTE(pStruct, m_nReflexSave, "Ref");
-    pRes->WriteFieldSHORT(pStruct, m_nMaxHitPoints, "HP");
-    pRes->WriteFieldSHORT(pStruct, GetCurrentHitPoints(0), "CurrentHP");
-    pRes->WriteFieldBYTE(pStruct, m_bPlotObject, "Plot");
-    pRes->WriteFieldBYTE(pStruct, m_bNotBlastable, "NotBlastable");
-    pRes->WriteFieldBYTE(pStruct, m_bMin1HP, "Min1HP");
-    pRes->WriteFieldCExoString(pStruct, m_sKeyName, "KeyName");
-    pRes->WriteFieldBYTE(pStruct, m_bKeyRequired, "KeyRequired");
-    pRes->WriteFieldBYTE(pStruct, m_nOpenLockDC, "OpenLockDC");
-    pRes->WriteFieldBYTE(pStruct, m_nOpenLockDiff, "OpenLockDiff");
-    pRes->WriteFieldCHAR(pStruct, m_nOpenLockDiffMod, "OpenLockDiffMod");
-    pRes->WriteFieldBYTE(pStruct, m_nCloseLockDC, "CloseLockDC");
-    pRes->WriteFieldBYTE(pStruct, m_nSecretDoorDC, "SecretDoorDC");
-    pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
-    pRes->WriteFieldCResRef(pStruct, GetDialogResref(), "Conversation");
-    if (GetPortraitId() == -1)
-    {
-        pRes->WriteFieldCResRef(pStruct, GetPortrait(), "Portrait");
-    }
-    else
-    {
-        pRes->WriteFieldWORD(pStruct, GetPortraitId(), "PortraitId");
-    }
-    pRes->WriteFieldBYTE(pStruct, m_nHardness, "Hardness");
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_CLOSED]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnClosed");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_DAMAGED]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnDamaged");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_DEATH]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnDeath");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_DISARM]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnDisarm");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_HEARTBEAT]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnHeartbeat");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_LOCK]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnLock");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_MELEE_ATTACKED]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnMeleeAttacked");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_OPEN]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnOpen");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_SPELL_CAST_AT]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnSpellCastAt");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_TRAP_TRIGGERED]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnTrapTriggered");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_UNLOCK]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnUnlock");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_USER_DEFINED]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnUserDefined");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_CLICK]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnClick");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_FAIL_TO_OPEN]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnFailToOpen");
-    }
-    {
-        CResRef cScript(m_asScripts[SCRIPT_ON_DIALOG]);
-        pRes->WriteFieldCResRef(pStruct, cScript, "OnDialog");
-    }
-    pRes->WriteFieldBYTE(pStruct, m_nTrapType, "TrapType");
-    pRes->WriteFieldBYTE(pStruct, m_bTrapDisarmable, "TrapDisarmable");
-    pRes->WriteFieldBYTE(pStruct, m_bTrapDetectable, "TrapDetectable");
-    pRes->WriteFieldBYTE(pStruct, GetDisarmDC(), "DisarmDC");
-    pRes->WriteFieldBYTE(pStruct, GetDetectDC(), "TrapDetectDC");
-    pRes->WriteFieldINT(pStruct, m_nOwnerDemolitionsSkill, "OwnerDemolitionsSkill");
-    pRes->WriteFieldBYTE(pStruct, m_bTrapFlag, "TrapFlag");
-    pRes->WriteFieldBYTE(pStruct, m_bTrapOneShot, "TrapOneShot");
-    pRes->WriteFieldBYTE(pStruct, m_bLocked, "Locked");
-    pRes->WriteFieldBYTE(pStruct, m_bLockable, "Lockable");
-    pRes->WriteFieldBYTE(pStruct, m_IsLinked, "LinkedToFlags");
-    pRes->WriteFieldCExoString(pStruct, m_sLinkedTo, "LinkedTo");
-    CResRef cModule((char*)m_sLinkedToModule.CStr());
-    pRes->WriteFieldCResRef(pStruct, cModule, "LinkedToModule");
-    pRes->WriteFieldWORD(pStruct, m_nLoadScreenId, "LoadScreenID");
-    pRes->WriteFieldBYTE(pStruct, m_bUseTweakColor, "UseTweakColor");
-    pRes->WriteFieldDWORD(pStruct, m_nTweakColor, "TweakColor");
-    pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
-    pRes->WriteFieldCExoLocString(pStruct, *GetFirstName(), "LocName");
-    pRes->WriteFieldCExoLocString(pStruct, m_locDescription, "Description");
-    pRes->WriteFieldBYTE(pStruct, m_bStatic, "Static");
-    pRes->WriteFieldCExoLocString(pStruct, m_locTransitionDestination, "TransitionDestination");
-    return 1;
-}
 // PC 0x0057F630 GOG 0x0057F6B0
 int CSWSDoor::GetIsLinked()
 {
@@ -493,6 +370,130 @@ int CSWSDoor::OpenDoor(unsigned long oidOpener)  // PC 0x005801E0 GOG 0x00580260
     return g_pVirtualMachine->RunScript(&m_asScripts[0], m_nId, 1);
 }
 #endif
+inline unsigned short SWSDoorGetLoadScreenId(CSWSDoor* pDoor);
+// PC 0x005802B0 GOG 0x00580330
+int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
+{
+    pRes->WriteFieldDWORD(pStruct, (unsigned char)m_nAppearanceType, "Appearance");
+    pRes->WriteFieldBYTE(pStruct, m_nGenericType, "GenericType");
+    pRes->WriteFieldBYTE(pStruct, m_nOpenState, "OpenState");
+    pRes->WriteFieldBYTE(pStruct, m_bAutoRemoveKey, "AutoRemoveKey");
+    float fBearing = m_fBearing;
+    pRes->WriteFieldFLOAT(pStruct, fBearing, "Bearing");
+    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fX, "X");
+    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fY, "Y");
+    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fZ, "Z");
+    pRes->WriteFieldDWORD(pStruct, m_nFactionId, "Faction");
+    pRes->WriteFieldBYTE(pStruct, m_nFortSave, "Fort");
+    pRes->WriteFieldBYTE(pStruct, m_nWillSave, "Will");
+    pRes->WriteFieldBYTE(pStruct, m_nReflexSave, "Ref");
+    pRes->WriteFieldSHORT(pStruct, m_nMaxHitPoints, "HP");
+    pRes->WriteFieldSHORT(pStruct, GetCurrentHitPoints(0), "CurrentHP");
+    pRes->WriteFieldBYTE(pStruct, m_bPlotObject, "Plot");
+    pRes->WriteFieldBYTE(pStruct, m_bNotBlastable, "NotBlastable");
+    pRes->WriteFieldBYTE(pStruct, m_bMin1HP, "Min1HP");
+    pRes->WriteFieldCExoString(pStruct, m_sKeyName, "KeyName");
+    pRes->WriteFieldBYTE(pStruct, m_bKeyRequired, "KeyRequired");
+    pRes->WriteFieldBYTE(pStruct, m_nOpenLockDC, "OpenLockDC");
+    pRes->WriteFieldBYTE(pStruct, m_nOpenLockDiff, "OpenLockDiff");
+    pRes->WriteFieldCHAR(pStruct, m_nOpenLockDiffMod, "OpenLockDiffMod");
+    pRes->WriteFieldBYTE(pStruct, m_nCloseLockDC, "CloseLockDC");
+    pRes->WriteFieldBYTE(pStruct, m_nSecretDoorDC, "SecretDoorDC");
+    pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
+    pRes->WriteFieldCResRef(pStruct, GetDialogResref(), "Conversation");
+    if (GetPortraitId() == -1)
+    {
+        pRes->WriteFieldCResRef(pStruct, GetPortrait(), "Portrait");
+    }
+    else
+    {
+        pRes->WriteFieldWORD(pStruct, GetPortraitId(), "PortraitId");
+    }
+    pRes->WriteFieldBYTE(pStruct, m_nHardness, "Hardness");
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_CLOSED]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnClosed");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_DAMAGED]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnDamaged");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_DEATH]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnDeath");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_DISARM]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnDisarm");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_HEARTBEAT]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnHeartbeat");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_LOCK]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnLock");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_MELEE_ATTACKED]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnMeleeAttacked");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_OPEN]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnOpen");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_SPELL_CAST_AT]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnSpellCastAt");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_TRAP_TRIGGERED]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnTrapTriggered");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_UNLOCK]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnUnlock");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_USER_DEFINED]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnUserDefined");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_CLICK]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnClick");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_FAIL_TO_OPEN]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnFailToOpen");
+    }
+    {
+        CResRef cScript(m_asScripts[SCRIPT_ON_DIALOG]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnDialog");
+    }
+    pRes->WriteFieldBYTE(pStruct, m_nTrapType, "TrapType");
+    pRes->WriteFieldBYTE(pStruct, m_bTrapDisarmable, "TrapDisarmable");
+    pRes->WriteFieldBYTE(pStruct, m_bTrapDetectable, "TrapDetectable");
+    pRes->WriteFieldBYTE(pStruct, GetDisarmDC(), "DisarmDC");
+    pRes->WriteFieldBYTE(pStruct, GetDetectDC(), "TrapDetectDC");
+    pRes->WriteFieldINT(pStruct, m_nOwnerDemolitionsSkill, "OwnerDemolitionsSkill");
+    pRes->WriteFieldBYTE(pStruct, m_bTrapFlag, "TrapFlag");
+    pRes->WriteFieldBYTE(pStruct, m_bTrapOneShot, "TrapOneShot");
+    pRes->WriteFieldBYTE(pStruct, m_bLocked, "Locked");
+    pRes->WriteFieldBYTE(pStruct, m_bLockable, "Lockable");
+    pRes->WriteFieldBYTE(pStruct, m_IsLinked, "LinkedToFlags");
+    pRes->WriteFieldCExoString(pStruct, m_sLinkedTo, "LinkedTo");
+    CResRef cModule((char*)m_sLinkedToModule.CStr());
+    pRes->WriteFieldCResRef(pStruct, cModule, "LinkedToModule");
+    pRes->WriteFieldWORD(pStruct, SWSDoorGetLoadScreenId(this), "LoadScreenID");
+    pRes->WriteFieldBYTE(pStruct, m_bUseTweakColor, "UseTweakColor");
+    pRes->WriteFieldDWORD(pStruct, m_nTweakColor, "TweakColor");
+    pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
+    pRes->WriteFieldCExoLocString(pStruct, *GetFirstName(), "LocName");
+    pRes->WriteFieldCExoLocString(pStruct, m_locDescription, "Description");
+    pRes->WriteFieldBYTE(pStruct, m_bStatic, "Static");
+    pRes->WriteFieldCExoLocString(pStruct, m_locTransitionDestination, "TransitionDestination");
+    return 1;
+}
 // PC 0x00580E50 GOG 0x00580ED0
 int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
 {

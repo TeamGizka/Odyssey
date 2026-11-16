@@ -1,3 +1,4 @@
+#define MATH3D_NO_INLINE
 #include "aurgui.h"
 #include "twodimarray.h"
 #include "resgff.h"
