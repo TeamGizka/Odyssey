@@ -20,7 +20,6 @@
 #define AURANIM_DEBUG 0
 
 #pragma inline_recursion(on)
-#pragma inline_depth(10)
 
 int AnimRun::m_AnimFlags = 0;
 AnimRun* AnimRun::m_pTraceRun = 0;

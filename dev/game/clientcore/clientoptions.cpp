@@ -24,8 +24,6 @@ float KeyboardCameraRotationSpeed = -1.0f;
 float KeyboardCameraRotationAccl = -1.0f;
 float KeyboardCameraRotationDecel = -1.0f;
 
-void AurDisableGrass();
-void AurEnableGrass();
 void AurSetVSyncState(bool bEnabled);
 // PC 0x004015A0 GOG 0x004015A0
 CClientOptions::~CClientOptions()

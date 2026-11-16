@@ -47,11 +47,6 @@ public:
 
 
 
-    __forceinline void SetPointer(T* pObject)
-    {
-        if (m_pObject) m_pObject->RemoveSafePointer(this);
-        m_pObject = pObject; if (m_pObject) m_pObject->AddSafePointer(this);
-    }
 
     T* m_pObject;
 };
@@ -62,7 +57,7 @@ template <class T> class SafePointerList
 {
 public:
     SafePointerList() {}
-    void AddSafePointer(SafePointer<T>* pPointer); void RemoveSafePointer(SafePointer<T>* pPointer);
+    void AddPointer(SafePointer<T>* pPointer); void RemoveSafePointer(SafePointer<T>* pPointer);
     ~SafePointerList();
 
     List<SafePointer<T>*> m_lstSafePointers;
@@ -74,7 +69,7 @@ template <class T> SafePointer<T>::SafePointer(T* pObject)
 {
     if (m_pObject)
     {
-        m_pObject->AddSafePointer(this);
+        m_pObject->AddPointer(this);
     }
 }
 
@@ -88,7 +83,15 @@ template <class T> SafePointer<T>::~SafePointer()
 
 template <class T> SafePointer<T>& SafePointer<T>::operator=(T* pObject)
 {
-    SetPointer(pObject);
+    if (m_pObject)
+    {
+        RemovePointer();
+    }
+    m_pObject = pObject;
+    if (m_pObject)
+    {
+        m_pObject->AddPointer(this);
+    }
     return *this;
 }
 
@@ -108,7 +111,7 @@ template <class T> SafePointerList<T>::~SafePointerList()
     m_lstSafePointers.SetSize(0);
 }
 
-template <class T> void SafePointerList<T>::AddSafePointer(SafePointer<T>* pPointer)
+template <class T> void SafePointerList<T>::AddPointer(SafePointer<T>* pPointer)
 {
     if (m_lstSafePointers.m_nAllocated == 0)
         m_lstSafePointers.allocate(2);
@@ -121,7 +124,7 @@ template <class T> SafePointer<T>::SafePointer(const SafePointer& other)
     : m_pObject(other.m_pObject)
 {
     if (m_pObject)
-        m_pObject->AddSafePointer(this);
+        m_pObject->AddPointer(this);
 }
 
 

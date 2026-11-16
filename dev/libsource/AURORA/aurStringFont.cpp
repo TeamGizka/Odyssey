@@ -2,7 +2,6 @@
 #include "aurrendergl.h"
 #include "aurtexman.h"
 
-#pragma inline_recursion(on)
 
 List<CAurFont*> CAurFont::s_LoadedFontList;
 void AurTextureRelease(CAurTexture* pTexture);

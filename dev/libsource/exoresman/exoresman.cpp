@@ -2548,8 +2548,6 @@ int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
 #include "aurora.h"
 #include "aurgui.h"
 
-void AurFlushPostedStrings();
-
 void CExoResMan::ReportMissingFile(const CExoString& sFileName,
                                    unsigned short nType, int bFatal)
 {

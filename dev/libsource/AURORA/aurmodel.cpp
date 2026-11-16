@@ -3470,7 +3470,15 @@ float Gob::GetMaximumLightRadius()
 // PC 0x0045C230 GOG 0x00423BB0
 template <> inline SafePointer<CAurObject>& SafePointer<CAurObject>::operator=(CAurObject* pObject)
 {
-    SetPointer(pObject);
+    if (m_pObject)
+    {
+        RemovePointer();
+    }
+    m_pObject = pObject;
+    if (m_pObject)
+    {
+        m_pObject->AddPointer(this);
+    }
     return *this;
 }
 #endif

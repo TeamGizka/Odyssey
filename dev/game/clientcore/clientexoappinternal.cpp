@@ -10350,7 +10350,6 @@ void CClientExoAppInternal::AddDownloadedResources()
 }
 
 #include "LaunchData.h"
-void AurPersistDisplay();
 void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 
 #define XBOX_DEATH_SEQUENCE_SPEED_RANGE 0.8f

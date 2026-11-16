@@ -24,7 +24,6 @@ inline void AurEmitterCopyChunkyParticle(ChunkyParticle* pChunky) { AurEmitterCo
 #include "aurdraw.h"
 
 #pragma inline_recursion(on)
-#pragma inline_depth(10)
 
 static int NORMAL = 1;
 static int LocalZ = 2;

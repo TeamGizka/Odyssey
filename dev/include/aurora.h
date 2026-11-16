@@ -637,6 +637,7 @@ void AurDeleteAllFonts();
 void PrintStringScreenPos_UseTextureFont(char* szString, float fX, float fY);
 void AurStringsFree();
 void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
+void AurFlushPostedStrings();
 void AurPrintf(const char* szFormat, ...);
 char* untrace(char* szPrefix);
 void PostTraceStrings();
@@ -645,6 +646,11 @@ void AurRenderStrings();
 extern CAuroraInterface* g_pAuroraInterface;
 
 void DestroyCAurora();
+void AurInitExtensions();
+void AurPersistDisplay();
+void AurReleaseFrameTexture();
+void AurRemoveAllDrawableSquares();
+int AurGetStencilClearValue();
 
 class Model;
 extern int RyanTotalLevelVertices;
@@ -652,6 +658,8 @@ extern int RyanTotalLevelVertSize;
 extern bool g_bKeepHistory;
 extern int g_bEnableAurPostString;
 void AurGrassClearInfo();
+void AurEnableGrass();
+void AurDisableGrass();
 extern float DeltaT;
 char* firstword(char* sMessage);
 extern Model* currentmodel;

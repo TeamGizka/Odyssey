@@ -11,7 +11,6 @@
 
 #define VIDEO_MAX_REFRESH_RATE 85.0f
 
-extern void AurInitExtensions();
 extern void AurTextureRefreshAll();
 
 extern void AurInitVertexArrayRange(int nBytes);

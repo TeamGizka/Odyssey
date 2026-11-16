@@ -180,7 +180,6 @@ static __int64 QueryTimer()
     return 1000000 * nPerformanceCount.QuadPart / performanceFrequency;
 }
 
-int AurGetStencilClearValue();
 
 static void ClearStencilBuffer()
 {
