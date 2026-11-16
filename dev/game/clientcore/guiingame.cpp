@@ -4580,6 +4580,11 @@ int CGuiInGame::GetGlobalFadeActive()
     }
     return 0;
 }
+// PC 0x00682E00 GOG 0x00682BE0
+template <> inline CExoLinkedList<CExoString>::CExoLinkedList()
+{
+    m_pInternal = new CExoLinkedListInternal;
+}
 int CGuiInGame::GetPartyAccessPanelUp(int bAny)
 {
     if (m_pGuiManager == 0)

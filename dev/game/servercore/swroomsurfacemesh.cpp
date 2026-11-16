@@ -51,14 +51,6 @@ int CSWRoomSurfaceMesh::SetEdgeVertex(int nEdge, Vector& vVertex)
     return 0;
 }
 
-#ifndef _XBOX
-template <> CExoArrayList<CSWRoomSurfaceMeshAABBNode>::~CExoArrayList()
-{
-    delete[] element;
-    element = NULL;
-}
-#endif
-
 // PC 0x005769D0 GOG 0x00576640
 float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
 {
@@ -288,6 +280,20 @@ int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
 
     return 1;
 }
+
+#ifndef _XBOX
+static inline void DeleteAABBNodeList(
+    CExoStaticArrayList<CSWRoomSurfaceMeshAABBNode>* pList)
+{
+    delete pList;
+}
+
+template <> CExoArrayList<CSWRoomSurfaceMeshAABBNode>::~CExoArrayList()
+{
+    delete[] element;
+    element = NULL;
+}
+#endif
 // PC 0x00576040 GOG 0x00575F00
 int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
                                              CSWRoomSurfaceMeshHitInfo& hitInfo)
@@ -1085,6 +1091,15 @@ void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
         }
     }
 }
+
+#ifndef _XBOX
+template <>
+inline CExoStaticArrayList<CSWRoomSurfaceExternalEdge>::CExoStaticArrayList(
+    int bStatic)
+{
+    m_bStatic = bStatic;
+}
+#endif
 // PC 0x00577550 GOG 0x005775D0
 CSWRoomSurfaceMesh::CSWRoomSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, RESTYPE_WOK)
