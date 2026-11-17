@@ -321,18 +321,21 @@ void CResGFF::ReleaseResource()
     m_nListIndicesLost = 0;
 }
 
+// Dead code: not in the PC executable
 unsigned long CResGFF::ByteSwap(unsigned long nValue)
 {
     ::ByteSwap(&nValue);
     return nValue;
 }
 
+// Dead code: not in the PC executable
 unsigned __int64 CResGFF::ByteSwap64(unsigned __int64 nValue)
 {
     ::ByteSwap(&nValue);
     return nValue;
 }
 
+// Dead code: not in the PC executable
 unsigned long CResGFF::GetFieldCount(CResGFFStruct* pStruct)
 {
     if (pStruct == NULL)
@@ -381,6 +384,7 @@ inline CResGFFField* CResGFF::GetField(CResGFFStruct* pStruct, unsigned long nIn
     return NULL;
 }
 
+// Dead code: not in the PC executable
 CResGFFStruct* CResGFF::GetStruct(CResStruct* pStructure)
 {
     if (pStructure != NULL && m_pHeader != NULL && m_pStructs != NULL &&
@@ -428,6 +432,7 @@ CResGFFField* CResGFF::GetField(CResStruct* pStructure, unsigned long nIndex)
     return NULL;
 }
 
+// Dead code: not in the PC executable
 char* CResGFF::GetLabel(CResStruct* pStructure, unsigned long nIndex)
 {
     CResGFFField* pField = GetField(pStructure, nIndex);
@@ -464,6 +469,7 @@ unsigned char* CResGFF::GetDataField(CResGFFField* pField,
     return NULL;
 }
 
+// Dead code: not in the PC executable
 void* CResGFF::GetDataLayoutField(CResGFFField* pField, unsigned long& nSize)
 {
     if (pField == NULL)
@@ -507,6 +513,7 @@ unsigned char* CResGFF::GetDataLayoutList(CResGFFField* pField,
     return NULL;
 }
 
+// Dead code: not in the PC executable
 int CResGFF::IsDataInPlace(unsigned long nType)
 {
     switch (nType)
@@ -795,6 +802,7 @@ unsigned char* CResGFF::AddDataLayoutList(unsigned long nOldOffset,
     return NULL;
 }
 
+// Dead code: not in the PC executable
 int CResGFF::GetFileData(char* szFileName)
 {
     if (m_pHeader != NULL)
@@ -861,6 +869,7 @@ int CResGFF::GetFileData(char* szFileName)
     return 1;
 }
 
+// Dead code: not in the PC executable
 void CResGFF::GetGFFFileInfo(CExoString* psFileType, CExoString* psFileVersion)
 {
     if (psFileVersion != NULL && psFileType != NULL && m_pHeader != NULL)
@@ -994,6 +1003,7 @@ int CResGFF::WriteGFFData(CExoFile& file, unsigned long& nSize)
            nListIndicesBytes;
 }
 
+// Dead code: not in the PC executable
 int CResGFF::WriteGFFFile(char* szFileName)
 {
     if (m_pHeader == NULL)
@@ -1067,6 +1077,7 @@ int CResGFF::GetTotalSize()
            m_pHeader->m_nFieldDataCount + sizeof(CResGFFHeader);
 }
 
+// Dead code: not in the PC executable
 void CResGFF::SetFileType(char* szFileType)
 {
     strncpy(m_szFileType, szFileType, 4);
@@ -1230,6 +1241,7 @@ int CResGFF::GetFieldType(CResStruct* pStructure, char* szLabel,
     return pField->m_nType;
 }
 
+// Dead code: not in the PC executable
 char* CResGFF::GetFieldLabel(CResStruct* pStructure, unsigned long nIndex)
 {
     CResGFFField* pField = GetField(pStructure, nIndex);
@@ -1244,6 +1256,7 @@ char* CResGFF::GetFieldLabel(CResStruct* pStructure, unsigned long nIndex)
     return (char*)m_pLabels[pField->m_nLabelIndex].m_anName;
 }
 
+// Dead code: not in the PC executable
 char* CResGFF::GetFieldStringID(CResStruct* pStructure, unsigned long nIndex)
 {
     char* szLabel = GetFieldLabel(pStructure, nIndex);
@@ -1255,6 +1268,7 @@ char* CResGFF::GetFieldStringID(CResStruct* pStructure, unsigned long nIndex)
     return (char*)m_aUnmapped7C;
 }
 
+// Dead code: not in the PC executable
 unsigned long CResGFF::GetFieldSize(CResStruct* pStructure, char* szLabel,
                                     unsigned long nIndex)
 {
@@ -1628,6 +1642,7 @@ unsigned __int64 CResGFF::ReadFieldDWORD64(CResStruct* pStructure,
     }
 }
 
+// Dead code: not in the PC executable
 __int64 CResGFF::ReadFieldINT64(CResStruct* pStructure, char* szLabel,
                                 int& bSuccess, __int64 nDefault)
 {
@@ -1663,6 +1678,7 @@ __int64 CResGFF::ReadFieldINT64(CResStruct* pStructure, char* szLabel,
     }
 }
 
+// Dead code: not in the PC executable
 double CResGFF::ReadFieldDOUBLE(CResStruct* pStructure, char* szLabel,
                                 int& bSuccess, double fDefault)
 {
@@ -2220,6 +2236,7 @@ BOOL CResGFF::WriteFieldDWORD64(CResStruct* pStructure, unsigned __int64 nValue,
     return 1;
 }
 
+// Dead code: not in the PC executable
 BOOL CResGFF::WriteFieldINT64(CResStruct* pStructure, __int64 nValue,
                               char* szLabel)
 {
@@ -2272,6 +2289,7 @@ BOOL CResGFF::WriteFieldFLOAT(CResStruct* pStructure, float fValue,
     return 0;
 }
 
+// Dead code: not in the PC executable
 BOOL CResGFF::WriteFieldDOUBLE(CResStruct* pStructure, double fValue,
                                char* szLabel)
 {

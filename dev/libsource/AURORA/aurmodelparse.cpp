@@ -256,6 +256,7 @@ int Parse(char* sText, SkinVertexWeight& weight)
     return nWeights;
 }
 
+// Dead code: not in the PC executable
 void classification(char* sType)
 {
 #ifdef _XBOX
@@ -325,6 +326,7 @@ void classification(char* sType)
 #endif
 }
 
+// Dead code: not in the PC executable
 const char* setanimationscale(char* sCommand)
 {
     float fScale = 1.0f;

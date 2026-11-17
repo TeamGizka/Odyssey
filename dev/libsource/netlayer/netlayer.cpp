@@ -128,6 +128,7 @@ int CNetLayer::StartConnectToSession(unsigned long nPlayerId,
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CNetLayer::EndConnectToSession()
 {
     if (m_bConnecting == 0)
@@ -151,6 +152,7 @@ int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CNetLayer::ConnectToSessionLoop()
 {
     if (m_bConnecting == 0)
@@ -380,6 +382,7 @@ int CNetLayer::ShutDown()
     return 1;
 }
 
+// Dead code: not in the PC executable
 void CNetLayer::SetDestNetLayer(CNetLayer* pNetLayer)
 {
     m_pPeer = pNetLayer;

@@ -76,6 +76,7 @@ void CExoRawInputInternal::ClearMouseBuffer()
     }
 }
 
+// Dead code: not in the PC executable
 void CExoRawInputInternal::ClearJoystickBuffer(int nJoystick)
 {
     memset(&m_pJoystickStates[nJoystick], 0, sizeof(DIJOYSTATE));
@@ -603,6 +604,7 @@ CExoString CExoRawInputInternal::GetDisplayCharacterDirectInputValue(
     return CExoString("N/A");
 }
 
+// Dead code: not in the PC executable
 void CExoRawInputInternal::ShutDownDirectInputMouse()
 {
     if (m_pMouse != NULL)

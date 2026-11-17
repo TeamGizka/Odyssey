@@ -28,19 +28,23 @@ public:
     char* m_szText;
 };
 
+// Dead code: not in the PC executable
 CAurString::CAurString(CAurTexture* pTexture) : TextureController(pTexture)
 {
     m_nFont = -1;
 }
 
+// Dead code: not in the PC executable
 void CAurString::Control()
 {
 }
 
+// Dead code: not in the PC executable
 void CAurString::Init()
 {
 }
 
+// Dead code: not in the PC executable
 int CAurString::LoadFont(char* szFontName)
 {
     int i;
@@ -58,12 +62,14 @@ int CAurString::LoadFont(char* szFontName)
     return i;
 }
 
+// Dead code: not in the PC executable
 CAurString* NewCAurString(int nMaxLength)
 {
     StringGob* pGob = new StringGob(nMaxLength);
     return pGob;
 }
 
+// Dead code: not in the PC executable
 void CAurString::DieWithoutParent()
 {
 }

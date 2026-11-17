@@ -29,6 +29,7 @@ template <class T> inline void ExoArrayListReleased(CExoArrayList<T>* pList)
     TraceListRelease(pList);
 }
 
+// Dead code: not in the PC executable
 void MovieSetUpProjection()
 {
     glLoadIdentity();
@@ -43,6 +44,7 @@ void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
     glOrtho(dLeft, dRight, dBottom, dTop, dNear, dFar);
 }
 
+// Dead code: not in the PC executable
 void MovieSetUpAlphaTest()
 {
     glAlphaFunc(GL_GREATER, 0.0f);
@@ -436,6 +438,7 @@ int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
     }
     return 0;
 }
+// Dead code: not in the PC executable
 void MovieNextFrame()
 {
     if (g_pMoviePlayer != NULL && g_pMoviePlayer->m_hBink != NULL)
@@ -551,6 +554,7 @@ int CExoMoviePlayerInternal::RestartMoviesAsync()
     return SetEvent(m_hWakeEvent);
 }
 
+// Dead code: not in the PC executable
 double MovieGetFrameRate()
 {
     if (g_pMoviePlayer == NULL || g_pMoviePlayer->m_hBink == NULL)
@@ -663,6 +667,7 @@ int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& ls
     return SetEvent(m_hWakeEvent);
 }
 
+// Dead code: not in the PC executable
 void MovieDumpQueue(const char* szFileName)
 {
     if (g_pMoviePlayer == NULL)

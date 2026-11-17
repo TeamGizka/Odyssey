@@ -1,15 +1,18 @@
 #include "aurfonttexture.h"
 
+// Dead code: not in the PC executable
 CAuroraFontTexture::CAuroraFontTexture(CResRef cResRef, int bRequest)
     : CResHelper<CResFNT, RESTYPE_FNT>()
 {
     SetResRef(cResRef, bRequest);
 }
 
+// Dead code: not in the PC executable
 CAuroraFontTexture::~CAuroraFontTexture()
 {
 }
 
+// Dead code: not in the PC executable
 unsigned long* CAuroraFontTexture::GetFontDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -19,6 +22,7 @@ unsigned long* CAuroraFontTexture::GetFontDataPtr()
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CAuroraFontTexture::GetFontTextureAttrib(unsigned long* pnWidth,
                                          unsigned long* pnHeight,
                                          unsigned char* pnDepth)
@@ -30,6 +34,7 @@ int CAuroraFontTexture::GetFontTextureAttrib(unsigned long* pnWidth,
     return 0;
 }
 
+// Dead code: not in the PC executable
 unsigned char* CAuroraFontTexture::GetFontTextureDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -39,6 +44,7 @@ unsigned char* CAuroraFontTexture::GetFontTextureDataPtr()
     return 0;
 }
 
+// Dead code: not in the PC executable
 unsigned char* CAuroraFontTexture::GetPtrToResHelperInfo()
 {
     if (m_pRes == NULL || m_pRes->GetDemands() < 1)
@@ -50,6 +56,7 @@ unsigned char* CAuroraFontTexture::GetPtrToResHelperInfo()
            FNT_GLYPH_SIZE * *m_pRes->GetFNTDataPtr();
 }
 
+// Dead code: not in the PC executable
 int CAuroraFontTexture::Load()
 {
     unsigned long nWidth;
@@ -76,6 +83,7 @@ int CAuroraFontTexture::Load()
     return 1;
 }
 
+// Dead code: not in the PC executable
 void CAuroraFontTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)

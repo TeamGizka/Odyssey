@@ -78,6 +78,7 @@ extern int countculledgobs;
 extern int countculledshadows;
 extern int countculledbeams;
 
+// Dead code: not in the PC executable
 char* GetToken(char** psLine)
 {
 #ifdef _XBOX
@@ -1663,6 +1664,7 @@ void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
     m_lstMovingEmitters.Add(pEmitter);
 }
 
+// Dead code: not in the PC executable
 void nodedata::AddMovingLight(PartLight* pLight)
 {
     m_lstMovingLights.Add(pLight);

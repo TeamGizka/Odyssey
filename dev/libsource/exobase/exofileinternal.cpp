@@ -365,6 +365,7 @@ CExoAliasListInternal::~CExoAliasListInternal()
     }
 }
 
+// Dead code: not in the PC executable
 void CExoAliasListInternal::Clear()
 {
     CExoAlias* pAlias = m_pAliasList;

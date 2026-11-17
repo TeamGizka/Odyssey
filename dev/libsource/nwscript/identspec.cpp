@@ -2,6 +2,7 @@
 #include "exotlktable.h"
 #include "nwscriptinternal.h"
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GenerateIdentifierList()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_KEYWORD_INT ||
@@ -607,6 +608,7 @@ int CScriptCompilerInternal::GenerateIdentifierList()
     return STRREF_CSCRIPTCOMPILER_ERROR_PARSING_IDENTIFIER_LIST;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::PrintParseIdentifierFileError(int nChar, int nError)
 {
     STR_RES strRes;
@@ -618,6 +620,7 @@ int CScriptCompilerInternal::PrintParseIdentifierFileError(int nChar, int nError
     return nError;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseIdentifierFile()
 {
     char* pScript;

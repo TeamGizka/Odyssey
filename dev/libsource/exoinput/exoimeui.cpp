@@ -36,6 +36,7 @@ void CExoImeUI::GetCompositionString(HWND hWnd, long nFlags)
     }
 }
 
+// Dead code: not in the PC executable
 CExoString CExoImeUI::GetImeModeDescription(HWND hWnd)
 {
     CExoString sMode;
@@ -115,6 +116,7 @@ void CExoImeUI::UpdateOpenStatus(HWND hWnd)
         ImmReleaseContext(hWnd, hContext);
     }
 }
+// Dead code: not in the PC executable
 void CExoImeUI::TurnImeOff(HWND hWnd)
 {
     HIMC hContext = ImmGetContext(hWnd);
@@ -141,6 +143,7 @@ void CExoImeUI::TurnImeOff(HWND hWnd)
     }
 }
 
+// Dead code: not in the PC executable
 void CExoImeUI::TurnImeOn(HWND hWnd)
 {
     m_bKatakana = 0;

@@ -212,6 +212,7 @@ CAurora16BitTexture* CAuroraInterface::Get16BitTextureInternal(
     return pTexture;
 }
 
+// Dead code: not in the PC executable
 CAuroraFontTexture* CAuroraInterface::GetFontTextureInternal(
     const CExoString& sName)
 {
@@ -552,6 +553,7 @@ void CAuroraInterface::Release16BitTextureInternal(
     }
 }
 
+// Dead code: not in the PC executable
 void CAuroraInterface::ReleaseFontTextureInternal(
     CAuroraFontTexture* pTexture)
 {

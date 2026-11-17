@@ -1428,6 +1428,7 @@ CExoEncapsulatedFile::~CExoEncapsulatedFile()
     CloseFile();
 }
 
+// Dead code: not in the PC executable
 CExoResourceImageFile::CExoResourceImageFile()
 {
     if (EXORESFILE_DEBUG)

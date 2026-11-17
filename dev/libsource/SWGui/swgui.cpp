@@ -124,6 +124,7 @@ CExoString CSWGuiPanel::GetFullScreenBG()
 #include "aurcamera.h"
 #include <string.h>
 
+// Dead code: not in the PC executable
 CExoString CSWGuiManager::GetScreenResolutionString(unsigned long nWidth,
                                                     unsigned long nHeight)
 {

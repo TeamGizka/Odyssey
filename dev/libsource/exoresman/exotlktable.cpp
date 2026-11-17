@@ -65,6 +65,7 @@ CTlkFile::~CTlkFile()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int CTlkTable::ExoIsDBCSLeadByte(unsigned char c)
 {
     if (EXOTLKTABLE_DEBUG)
@@ -568,6 +569,7 @@ int CTlkTable::GetLanguageVersion()
 
 long ExoLogFileInfo(const char* szFileName);
 
+// Dead code: not in the PC executable
 long ExoLogResFileInfo(const CExoString& sFileName)
 {
     return ExoLogFileInfo(sFileName.CStr());

@@ -289,6 +289,7 @@ void AurClearPalette()
     paletteheight = 0;
 }
 
+// Dead code: not in the PC executable
 TextureController* AurTextureGetController(CAurTexture* pTexture)
 {
     return pTexture->GetReferencedTexture()->AsCAurTextureBasic()->m_pController;
@@ -1806,6 +1807,7 @@ inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,  // PC 0x004
 }
 #endif
 
+// Dead code: not in the PC executable
 void AurTextureFreeAll()
 {
     for (int i = 0; i < CAurTextureBasic::m_OrderedTextureList.m_nCount; i++)
@@ -1946,6 +1948,7 @@ unsigned char CAurTexture::IsNull()
     return GetReferencedTexture() == CAurTextureBasic::m_pNullTexture.m_pObject;
 }
 
+// Dead code: not in the PC executable
 const char* savegamesnapshot(char* sCommand)
 {
     char sName[64];
@@ -1965,6 +1968,7 @@ const char* savegamesnapshot(char* sCommand)
 
 Gob* FindGob(char* sName);
 
+// Dead code: not in the PC executable
 const char* replacetexture(char* sCommand)
 {
     char sNew[64];
@@ -2500,6 +2504,7 @@ void AurTextureSetLayered(CAurTexture* pTexture, char* sExtra, int* pTXI,
     RefreshTextures.AddUnique(pBasic);
 }
 
+// Dead code: not in the PC executable
 void AurTextureRefreshLowEndEnvMapped()
 {
     for (int i = 0; i < CAurTextureBasic::m_StaticTextureList.m_nCount; i++)
@@ -2522,6 +2527,7 @@ void AurTextureRefreshLowEndEnvMapped()
     }
 }
 
+// Dead code: not in the PC executable
 void AurTextureEnableLowEndEnvMapping(Vector vColor)
 {
     CAurTextureBasic::m_vLowEndEnvMapColor = vColor;
@@ -2549,6 +2555,7 @@ void AurTextureEnableLowEndEnvMapping(Vector vColor)
 #endif
 }
 
+// Dead code: not in the PC executable
 void AurTextureDisableLowEndEnvMapping()
 {
     CAurTextureBasic::m_bLowEndEnvMapEnabled = false;
@@ -2575,6 +2582,7 @@ void AurTextureDisableLowEndEnvMapping()
 #endif
 }
 
+// Dead code: not in the PC executable
 const char* enablelowendenvmapping(char* sCommand)
 {
     Vector vColor;
@@ -2587,12 +2595,14 @@ const char* enablelowendenvmapping(char* sCommand)
     return "Success.";
 }
 
+// Dead code: not in the PC executable
 const char* disablelowendenvmapping(char* sCommand)
 {
     AurTextureDisableLowEndEnvMapping();
     return "Success.";
 }
 
+// Dead code: not in the PC executable
 int sorttexturelist(const void* pA, const void* pB)
 {
 #ifdef _XBOX
@@ -2607,6 +2617,7 @@ int sorttexturelist(const void* pA, const void* pB)
 #endif
 }
 
+// Dead code: not in the PC executable
 const char* listalltextures(char* sCommand)
 {
     char sLines[1000][50];
@@ -2797,6 +2808,7 @@ List<int>* AurTextureGetOrdering()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int AurTextureGetAvailableTextureMemory()
 {
     AurTextureFreeAll();
@@ -2939,6 +2951,7 @@ bool AurTextureSetMem(int nMem)
     return usedtexturememory <= maxtexmem;
 }
 
+// Dead code: not in the PC executable
 void SwapTex(void* pFirst, void* pSecond)
 {
     CAurTextureBasic* pTemp = *(CAurTextureBasic**)pFirst;
@@ -2946,6 +2959,7 @@ void SwapTex(void* pFirst, void* pSecond)
     *(CAurTextureBasic**)pSecond = pTemp;
 }
 
+// Dead code: not in the PC executable
 unsigned char* AurGetLayeredRasterWrapper(char* sFileName, int* pWidth, int* pHeight, int* pBPP)
 {
     int nReserved;
@@ -3151,6 +3165,7 @@ void CAurTextureBasic::GetMemoryUsage(TEXTUREMEMORYSTATS* pStats)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 unsigned int AurTextureReadScreen(int nWidth, int nHeight, unsigned char* pBuffer)
 {
     unsigned int nTextureID;

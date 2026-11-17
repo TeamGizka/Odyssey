@@ -19,6 +19,7 @@ void* (*AurGetResource)(char*, char*, int*) = 0;
 void (*AurReleaseResource)(void*, int) = 0;
 List<char*> g_listHistory;
 
+// Dead code: not in the PC executable
 funcholderbase::~funcholderbase()
 {
 }
@@ -448,6 +449,7 @@ char* CommandCompletion(char* sLine, List<char*>& lstCompletions)
     return returnvalue;
 }
 
+// Dead code: not in the PC executable
 char* AurResGetNextLine(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -859,6 +861,7 @@ Model* FindModel(char* sName);
 const char* spawn(char* sArguments);
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 char* converttobinary(char* sArguments)
 {
     char sModelName[MAX_PATH];

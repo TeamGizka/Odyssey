@@ -235,6 +235,7 @@ const int CAvoidCreature::AVOIDCREATURE_FAILED = 0;
 const int CAvoidCreature::AVOIDCREATURE_STARTINHEX = -1;
 const int CAvoidCreature::AVOIDCREATURE_ENDINHEX = -2;
 
+// Dead code: not in the PC executable
 void CPathfindInformation::ResetIntraTileSearchData()
 {
     if (m_ppFirstTileFValueAlternatives != 0)

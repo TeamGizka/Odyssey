@@ -49,6 +49,7 @@ void CExoBase::LoadAliases(const CExoString& sFile)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CExoBase::SpawnExternalApplication(const CExoString& sApplication,
                                         const CExoString& sCommandLine,
                                         int bQuit)

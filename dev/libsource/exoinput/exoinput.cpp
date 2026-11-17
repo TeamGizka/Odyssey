@@ -371,6 +371,7 @@ void CExoInput::UpdateJoysticks()  // PC 0x0062B870 GOG 0x00638C70
 }
 #endif
 
+// Dead code: not in the PC executable
 CExoInput::~CExoInput()
 {
     if (m_pExoInputInternal)
@@ -505,16 +506,19 @@ void CExoInput::UpdateMouseDelta(float fElapsed)
     m_pExoInputInternal->UpdateMouseDelta(fElapsed);
 }
 
+// Dead code: not in the PC executable
 int CExoInput::IsModalKeyDown_Shift()
 {
     return m_pExoInputInternal->IsModalKeyDown_Shift();
 }
 
+// Dead code: not in the PC executable
 int CExoInput::IsModalKeyDown_Ctrl()
 {
     return m_pExoInputInternal->IsModalKeyDown_Ctrl();
 }
 
+// Dead code: not in the PC executable
 int CExoInput::IsModalKeyDown_Alt()
 {
     return m_pExoInputInternal->IsModalKeyDown_Alt();

@@ -300,6 +300,7 @@ char* addsquaretorender(char* sArguments)
     return returnvalue;
 }
 
+// Dead code: not in the PC executable
 char* removesquaretorender(char* sArguments)
 {
 #ifdef _XBOX
@@ -331,6 +332,7 @@ int AurQueryMaximumAnisotropy()  // PC 0x004631A0 GOG 0x004632B0
     return (int)largest_supported_anisotropy;
 }
 
+// Dead code: not in the PC executable
 float QueryMaxAnisotropicFilter()
 {
     return largest_supported_anisotropy;
@@ -352,12 +354,14 @@ void AurDisableSpeedBlur()
     GLRender::m_bSpeedBlurEnabled = false;
 }
 
+// Dead code: not in the PC executable
 char* startblur(char* sArguments)
 {
     AurEnableSpeedBlur();
     return "blah";
 }
 
+// Dead code: not in the PC executable
 char* endblur(char* sArguments)
 {
     AurDisableSpeedBlur();
@@ -496,12 +500,14 @@ int SetAnisotropicFilter(int nLevel)
     return g_nCurrentAnisotropy;
 }
 
+// Dead code: not in the PC executable
 int AurSetAnisotropy(int nLevel)
 {
     SetAnisotropicFilter(nLevel);
     return g_nCurrentAnisotropy;
 }
 
+// Dead code: not in the PC executable
 char* setanisotropy(char* sArguments)
 {
     int nLevel = atoi(sArguments);
@@ -528,6 +534,7 @@ extern "C" int AurSetAntiAliasingMode(int nMode)
     return 1;
 }
 
+// Dead code: not in the PC executable
 char* setaliasing(char* sArguments)
 {
     int nMode = atoi(sArguments);
@@ -558,11 +565,13 @@ void AurReleaseFrameTexture()
 
 Scene* FindScene(char* sName);
 
+// Dead code: not in the PC executable
 int NodeHasTileData(BSPNode* pNode, void* pData)
 {
     return pNode->m_pData->m_pTileData != 0;
 }
 
+// Dead code: not in the PC executable
 void AuroraSetTileFoggedByWar(Vector& vPosition, bool bFogged)
 {
     Scene* pScene = FindScene("mainscene");

@@ -40,6 +40,7 @@ void MdlNodeAnimMesh::InternalPostProcess()
 {
 }
 
+// Dead code: not in the PC executable
 void ClearNodeControllers(MdlNode* pNode)
 {
     pNode->m_lstControllers.SetSize(0);

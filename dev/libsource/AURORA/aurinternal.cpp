@@ -143,6 +143,7 @@ void CAurInternal::DestroyCAuroraInstance()
     }
 }
 
+// Dead code: not in the PC executable
 int CAurInternal::GetGLContext()
 {
     return 0;
@@ -232,6 +233,7 @@ inline CAurora::~CAurora()
 {
 }
 
+// Dead code: not in the PC executable
 CAurInternal::CAurInternal()
 {
 #ifdef _XBOX
@@ -970,6 +972,7 @@ CAurInternalGL* CAurInternalGL::NewCAuroraInstance()
     return (CAurInternalGL*)AuroraInstance;
 }
 
+// Dead code: not in the PC executable
 CAurInternalGL::CAurInternalGL()
 {
 #ifndef _XBOX

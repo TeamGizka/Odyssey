@@ -388,6 +388,7 @@ inline void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,  // PC 0x0048
     glEnable(GL_TEXTURE_2D);
 }
 
+// Dead code: not in the PC executable
 void DrawFrame(const Vector& vMinimum, const Vector& vMaximum, const Vector& vColor)
 {
     GLRender::DrawAxisAlignedFrame(vMinimum, vMaximum, vColor);
@@ -633,6 +634,7 @@ void PartAABB::Draw(bool bRenderChildren)
     }
 }
 
+// Dead code: not in the PC executable
 static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
                             float fX, float fY, float fZ, float fW)
 {
@@ -2516,10 +2518,12 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)  // PC 0x00488800 GOG 0x004888C
                 BLEND_ONE_MINUS_SRC_ALPHA);
 }
 
+// Dead code: not in the PC executable
 void RenderShadowSkinnedVariant(VertexPrimitiveSkinned* pPrimitive)
 {
 }
 
+// Dead code: not in the PC executable
 void RenderShadowTriMesh(VertexPrimitiveFlat* pPrimitive)
 {
 }
@@ -3632,6 +3636,7 @@ enum MotionBlurredVPRegister
 #ifndef _XBOX
 extern unsigned long* cMotionBlurredVPDeclaration;
 #endif
+// Dead code: not in the PC executable
 void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
 {
 #ifdef _XBOX

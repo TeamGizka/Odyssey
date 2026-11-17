@@ -40,6 +40,7 @@ double Round(float fValue, float fRoundTo)
     return floor(fValue / fRoundTo + 0.5f) * fRoundTo;
 }
 
+// Dead code: not in the PC executable
 int argmin(float* pValues, int nValues)
 {
     int nMinimum = 0;
@@ -78,6 +79,7 @@ float PlaneHeightAtPoint(const Vector& vNormal, float fDistance,
            vNormal.m_fZ;
 }
 
+// Dead code: not in the PC executable
 Vector planeproject(const Vector& vNormal, float fDistance,
                     const Vector& vPoint)
 {
@@ -154,6 +156,7 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vNormal,
     return nHit;
 }
 
+// Dead code: not in the PC executable
 int BoxInside(const Vector& vPoint, const Vector& vMinimum, const Vector& vMaximum)
 {
     return vPoint.m_fX >= vMinimum.m_fX && vPoint.m_fX <= vMaximum.m_fX &&
@@ -449,11 +452,13 @@ float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vF
                        SEGMENT_MAX(SegmentAbs(dP.m_fY), SegmentAbs(dP.m_fZ)));
 }
 
+// Dead code: not in the PC executable
 int IsPowerOf2(int nValue)
 {
     return (nValue & (nValue - 1)) == 0;
 }
 
+// Dead code: not in the PC executable
 Quaternion VirtualTrackBall(const Vector& vProjectionCenter, const Vector& vRotationCenter,
                             const Vector& vFirstDirection, const Vector& vSecondDirection)
 {
@@ -551,6 +556,7 @@ float InterpolateBezier(float fStart, float fEnd, float fControl1,
     return fResult;
 }
 
+// Dead code: not in the PC executable
 int FloorLogBase2(unsigned long nValue)
 {
     int nLog = 0;
@@ -991,6 +997,7 @@ float magnitude(const Vector& vector)
                        vector.m_fZ * vector.m_fZ);
 }
 
+// Dead code: not in the PC executable
 Vector Orth(const Vector& vector)
 {
     Vector vOrth = cross(vector, Vector(1.0f, 0.0f, 0.0f));
@@ -1032,6 +1039,7 @@ Vector normalize(const Vector& vector)
                   vector.m_fZ * fReciprocal);
 }
 
+// Dead code: not in the PC executable
 Vector Orth(const Vector& vFirst, const Vector& vSecond)
 {
     Vector vOrth = cross(vFirst, vSecond);
@@ -1039,6 +1047,7 @@ Vector Orth(const Vector& vFirst, const Vector& vSecond)
     return vOrth;
 }
 
+// Dead code: not in the PC executable
 int bitcount(unsigned char nValue)
 {
     int nCount = 0;
@@ -1073,6 +1082,7 @@ Vector planelineintersection(const Vector& vNormal, float fDistance,
     return vStart + dif * fProjection;
 }
 
+// Dead code: not in the PC executable
 Vector planesegmentintersection(const Vector& vNormal, float fDistance,
                                 const Vector& vStart, const Vector& vEnd)
 {
@@ -1153,6 +1163,7 @@ Vector segmentproject(const Vector& vStart, const Vector& vEnd,
     return vStart + w * fProjection;
 }
 
+// Dead code: not in the PC executable
 float Determinant(Matrix matrix)
 {
     return matrix.m_vFirst.m_fX * matrix.m_vSecond.m_fY * matrix.m_vThird.m_fZ +
@@ -1163,6 +1174,7 @@ float Determinant(Matrix matrix)
            matrix.m_vThird.m_fX * matrix.m_vSecond.m_fY * matrix.m_vFirst.m_fZ;
 }
 
+// Dead code: not in the PC executable
 Matrix Inverse(Matrix matrix)
 {
     static Matrix b;
@@ -1181,6 +1193,7 @@ Matrix Inverse(Matrix matrix)
     return b;
 }
 
+// Dead code: not in the PC executable
 Matrix inverse2(Matrix matrix)
 {
     matrix.m_vThird = Vector(0.0f, 0.0f, 1.0f);
@@ -1214,17 +1227,20 @@ inline float norm(const Vector& vector)
                        SEGMENT_MAX(AbsoluteValue(vector.m_fY), AbsoluteValue(vector.m_fZ)));
 }
 
+// Dead code: not in the PC executable
 float norm(const Matrix& matrix)
 {
     return SEGMENT_MAX(norm(matrix.m_vFirst),
                        SEGMENT_MAX(norm(matrix.m_vSecond), norm(matrix.m_vThird)));
 }
 
+// Dead code: not in the PC executable
 Matrix operator*(const Matrix& left, const Matrix& right)
 {
     return Matrix(left * right.m_vFirst, left * right.m_vSecond, left * right.m_vThird);
 }
 
+// Dead code: not in the PC executable
 float* Augment(const Matrix& matrix)
 {
     static float a[16];
@@ -1256,6 +1272,7 @@ void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
     m_fDistance = -(origin * newnormal);
 }
 
+// Dead code: not in the PC executable
 Vector operator*(const Vector& vector, const Quaternion& quaternion)
 {
     return Vector();
@@ -1308,6 +1325,7 @@ Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
     return result;
 }
 
+// Dead code: not in the PC executable
 Quaternion Matrix::getquaternion() const
 {
     Quaternion quaternion;
@@ -1368,6 +1386,7 @@ Quaternion Matrix::getquaternion() const
     return quaternion;
 }
 
+// Dead code: not in the PC executable
 Quaternion lerp(Quaternion first, const Quaternion& second, float fPosition)
 {
     if (dot(first, second) < 0.99)
@@ -1377,6 +1396,7 @@ Quaternion lerp(Quaternion first, const Quaternion& second, float fPosition)
     return normalize(first * (1.0f - fPosition) + second * fPosition);
 }
 
+// Dead code: not in the PC executable
 int isnormalized(const Vector& vector)
 {
     float fLengthSquared = vector * vector;

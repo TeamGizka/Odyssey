@@ -1123,6 +1123,7 @@ void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode, 
 }
 #endif
 
+// Dead code: not in the PC executable
 int CExoSoundSourceInternal::IsScalable()
 {
     return m_nPriorityGroup == 4 || (m_nPriorityGroup == 21 && m_p2DVoice != 0);

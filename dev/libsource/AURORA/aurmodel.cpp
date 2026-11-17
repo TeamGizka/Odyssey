@@ -333,6 +333,7 @@ void Model::InternalDestructor()
 #endif
 }
 
+// Dead code: not in the PC executable
 int MdlNodeAffectedByWind(MdlNode* pNode)
 {
     MdlNodeEmitter* pEmitter = pNode->AsMdlNodeEmitter();
@@ -354,6 +355,7 @@ inline void DebugValidatePartMaterial(Part* pPart, char* sName)
 {
 }
 
+// Dead code: not in the PC executable
 const char* spinmodels(char* sCommand)
 {
     for (int i = 0; i < 1000; i++)
@@ -379,6 +381,7 @@ const char* spinmodels(char* sCommand)
     return "SUCK-CESS";
 }
 
+// Dead code: not in the PC executable
 void MaxTree::InternalDestructor()
 {
     MdlNode* pRootNode = m_pRootNode;
@@ -386,6 +389,7 @@ void MaxTree::InternalDestructor()
         pRootNode->DestructorDispatch();
 }
 
+// Dead code: not in the PC executable
 const char* spawn(char* sCommand)
 {
     char sModel[128];
@@ -469,6 +473,7 @@ const char* controlpart(char* sCommand)
 
 #define DOGANMODELS_ITERATIONS 500
 
+// Dead code: not in the PC executable
 const char* doganmodels(char* sCommand)
 {
     unsigned short anColors[10] = {2, 0x104, 0x200, 0x200, 0x400, 0x500, 0x500, 0x624, 0x629, 0x629};
@@ -512,28 +517,33 @@ const char* doganmodels(char* sCommand)
     return "SUCKY-SUCKY?  FIVE DOLLAR!";
 }
 
+// Dead code: not in the PC executable
 const char* lasthitpart(char* sCommand)
 {
     return hitpartname ? hitpartname : "NULL";
 }
 
+// Dead code: not in the PC executable
 const char* spewpltnames(char* sCommand)
 {
     spewpltfp = fopen("D:\\override\\filenamesofplts", "wb");
     return "SPEWING";
 }
 
+// Dead code: not in the PC executable
 const char* quitspewing(char* sCommand)
 {
     fclose(spewpltfp);
     return "CLOSESD";
 }
 
+// Dead code: not in the PC executable
 const char* lastspawned(char* sCommand)
 {
     return lastspawnedobject;
 }
 
+// Dead code: not in the PC executable
 const char* gobdisablefog(char* sCommand)
 {
     Gob* pGob = FindGob(sCommand);
@@ -545,6 +555,7 @@ const char* gobdisablefog(char* sCommand)
     return "Success.";
 }
 
+// Dead code: not in the PC executable
 const char* gobenablefog(char* sCommand)
 {
     Gob* pGob = FindGob(sCommand);
@@ -556,6 +567,7 @@ const char* gobenablefog(char* sCommand)
     return "Success.";
 }
 
+// Dead code: not in the PC executable
 const char* removeaddin(char* sCommand)
 {
     char sName[64];
@@ -575,6 +587,7 @@ const char* removeaddin(char* sCommand)
     return "Removed add-in anims";
 }
 
+// Dead code: not in the PC executable
 const char* enablebumpout(char* sCommand)
 {
     static char sResult[128];
@@ -597,6 +610,7 @@ const char* enablebumpout(char* sCommand)
     return "success";
 }
 
+// Dead code: not in the PC executable
 const char* getmaximumlightradius(char* sCommand)
 {
     static char sResult[128];
@@ -615,6 +629,7 @@ const char* getmaximumlightradius(char* sCommand)
     return sResult;
 }
 
+// Dead code: not in the PC executable
 const char* setcolorshifting(char* sCommand)
 {
     char sName[64];
@@ -829,6 +844,7 @@ void MdlNode::InternalDestructor()
     --countnode;
 }
 
+// Dead code: not in the PC executable
 void MaxTree::AddToFreeList(MdlNode* pNode)
 {
     m_lFreeNodes.Add(pNode);
@@ -1724,6 +1740,7 @@ Gob* FindGob(char* sName)
 
     return 0;
 }
+// Dead code: not in the PC executable
 const char* setmirrorimage(char* sCommand)
 {
     Gob* pGob = FindGob(GetToken(&sCommand));
@@ -1795,6 +1812,7 @@ void Gob::EnableFog()
 {
     PartSetFog(m_pRootPart, true);
 }
+// Dead code: not in the PC executable
 const char* loadaddin(char* sCommand)
 {
     char sName[64];
@@ -1840,6 +1858,7 @@ int Gob::LoadAddInAnimations(char* sName)
     return 1;
 }
 
+// Dead code: not in the PC executable
 const char* setillumination(char* sCommand)
 {
     char sName[64];
@@ -3235,6 +3254,7 @@ void CreateReferenceObjects(Gob* pGob, Part* pPart)
         CreateReferenceObjects(pGob, pChild);
     }
 }
+// Dead code: not in the PC executable
 const char* append(char* sCommand)
 {
     char sName[64];
@@ -3272,6 +3292,7 @@ const char* append(char* sCommand)
     return "OK";
 }
 
+// Dead code: not in the PC executable
 const char* amputate(char* sCommand)
 {
     char sName[64];
@@ -3306,6 +3327,7 @@ const char* amputate(char* sCommand)
     return "Amputation Sucessful";
 }
 
+// Dead code: not in the PC executable
 const char* attach(char* sCommand)
 {
     static char sResult[128];
@@ -3423,6 +3445,7 @@ static void findalllightparts(Part* pPart, List<PartLight*>& lLights)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         findalllightparts(pPart->m_lstChildren[i], lLights);
 }
+// Dead code: not in the PC executable
 const char* setgobwind(char* sCommand)
 {
     char sName[64];
@@ -4386,6 +4409,7 @@ int Gob::Amputate(char* sPart)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int Model::DelRef(Gob* pGob)
 {
     if (removedelref)

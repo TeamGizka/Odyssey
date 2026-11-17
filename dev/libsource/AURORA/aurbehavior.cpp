@@ -129,6 +129,7 @@ void CAurBehaviorAttachRotate::Message(char* sMessage)
     }
 }
 
+// Dead code: not in the PC executable
 void CAurBehaviorNavigate::Message(char* sMessage)
 {
     if (stricmp("turn", firstword(sMessage)) == 0)
@@ -153,6 +154,7 @@ void CAurBehaviorNavigate::Message(char* sMessage)
     }
 }
 
+// Dead code: not in the PC executable
 void CAurBehaviorCameraOnAStick::Message(char* sMessage)
 {
     if (stricmp("m_fDist", firstword(sMessage)) == 0)
@@ -485,6 +487,7 @@ int CAurBehaviorCameraFollow::Control(float fTimeStep)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CAurBehaviorNavigate::Control(float fTimeStep)
 {
     if (currentscene)
@@ -512,6 +515,7 @@ int CAurBehaviorNavigate::Control(float fTimeStep)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CAurBehaviorCameraOnAStick::Control(float fTimeStep)
 {
     if (currentscene)
@@ -640,6 +644,7 @@ CAurBehaviorAttachNoOrientation::CAurBehaviorAttachNoOrientation(
 {
 }
 
+// Dead code: not in the PC executable
 CAurBehaviorNavigate::CAurBehaviorNavigate(CAurObject* pObject)
     : CAurBehavior(pObject)
 {
@@ -650,6 +655,7 @@ CAurBehaviorNavigate::CAurBehaviorNavigate(CAurObject* pObject)
     m_fStrafe = 0.0f;
 }
 
+// Dead code: not in the PC executable
 CAurBehaviorCameraOnAStick::CAurBehaviorCameraOnAStick(CAurObject* pCamera,
                                                        CAurObject* pTarget)
     : CAurBehavior(pCamera)
@@ -687,6 +693,7 @@ CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow()
 {
 }
 
+// Dead code: not in the PC executable
 CAurBehaviorCameraOnAStick::~CAurBehaviorCameraOnAStick()
 {
 }

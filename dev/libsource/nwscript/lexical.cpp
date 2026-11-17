@@ -3,6 +3,7 @@
 
 #include "nwscriptinternal.h"
 
+// Dead code: not in the PC executable
 float CScriptCompilerInternal::ParseFloatFromTokenString()
 {
     float fValue = 0.0f;
@@ -47,6 +48,7 @@ float CScriptCompilerInternal::ParseFloatFromTokenString()
     return fValue;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterNumeric(int nChar)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -76,6 +78,7 @@ int CScriptCompilerInternal::ParseCharacterNumeric(int nChar)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterAlphabet(int nChar)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -130,6 +133,7 @@ int CScriptCompilerInternal::ParseCharacterAlphabet(int nChar)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCommentedOutCharacter(int nChar)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_CPLUSCOMMENT && nChar == '\n')
@@ -163,6 +167,7 @@ int CScriptCompilerInternal::ParseCommentedOutCharacter(int nChar)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::HandleToken()
 {
     int nReturnValue;
@@ -185,6 +190,7 @@ int CScriptCompilerInternal::HandleToken()
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterColon()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -196,6 +202,7 @@ int CScriptCompilerInternal::ParseCharacterColon()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterEllipsis()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -214,6 +221,7 @@ int CScriptCompilerInternal::ParseCharacterEllipsis()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterComma()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -225,6 +233,7 @@ int CScriptCompilerInternal::ParseCharacterComma()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterTilde()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -236,6 +245,7 @@ int CScriptCompilerInternal::ParseCharacterTilde()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterCarat(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -258,6 +268,7 @@ int CScriptCompilerInternal::ParseCharacterCarat(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterSemicolon()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -269,6 +280,7 @@ int CScriptCompilerInternal::ParseCharacterSemicolon()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterPercentSign(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -291,6 +303,7 @@ int CScriptCompilerInternal::ParseCharacterPercentSign(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterPlusSign(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -323,6 +336,7 @@ int CScriptCompilerInternal::ParseCharacterPlusSign(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterEqualSign(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -345,6 +359,7 @@ int CScriptCompilerInternal::ParseCharacterEqualSign(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterExclamationPoint(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -367,6 +382,7 @@ int CScriptCompilerInternal::ParseCharacterExclamationPoint(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterLeftAngle(int nCharNext)
 {
     int nReturnValue = 0;
@@ -421,6 +437,7 @@ int CScriptCompilerInternal::ParseCharacterLeftAngle(int nCharNext)
     return nReturnValue;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterRightAngle(int nCharNext)
 {
     int nReturnValue = 0;
@@ -499,6 +516,7 @@ int CScriptCompilerInternal::ParseCharacterRightAngle(int nCharNext)
     return nReturnValue;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterQuestionMark()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -510,6 +528,7 @@ int CScriptCompilerInternal::ParseCharacterQuestionMark()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterRightSquareBracket()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -521,6 +540,7 @@ int CScriptCompilerInternal::ParseCharacterRightSquareBracket()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterLeftSquareBracket()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -532,6 +552,7 @@ int CScriptCompilerInternal::ParseCharacterLeftSquareBracket()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterRightBracket()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -543,6 +564,7 @@ int CScriptCompilerInternal::ParseCharacterRightBracket()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterLeftBracket()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -554,6 +576,7 @@ int CScriptCompilerInternal::ParseCharacterLeftBracket()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterRightBrace()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -565,6 +588,7 @@ int CScriptCompilerInternal::ParseCharacterRightBrace()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterLeftBrace()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -576,6 +600,7 @@ int CScriptCompilerInternal::ParseCharacterLeftBrace()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterHyphen(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -608,6 +633,7 @@ int CScriptCompilerInternal::ParseCharacterHyphen(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterQuotationMark()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -625,6 +651,7 @@ int CScriptCompilerInternal::ParseCharacterQuotationMark()
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterAsterisk(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -647,6 +674,7 @@ int CScriptCompilerInternal::ParseCharacterAsterisk(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterVerticalBar(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -679,6 +707,7 @@ int CScriptCompilerInternal::ParseCharacterVerticalBar(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterAmpersand(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -711,6 +740,7 @@ int CScriptCompilerInternal::ParseCharacterAmpersand(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterSlash(int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_UNKNOWN)
@@ -743,6 +773,7 @@ int CScriptCompilerInternal::ParseCharacterSlash(int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::TestIdentifierToken()
 {
     if (m_nTokenCharacters == 2 && strncmp(m_pchToken, "if", 2) == 0)
@@ -919,6 +950,7 @@ int CScriptCompilerInternal::TestIdentifierToken()
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::HandleIdentifierToken()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_IDENTIFIER)
@@ -933,6 +965,7 @@ int CScriptCompilerInternal::HandleIdentifierToken()
     return HandleToken();
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseCharacterPeriod()
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_FLOAT)
@@ -973,6 +1006,7 @@ int CScriptCompilerInternal::ParseCharacterPeriod()
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseStringCharacter(int nChar, int nCharNext)
 {
     if (m_nTokenStatus == CSCRIPTCOMPILER_TOKEN_STRING)
@@ -1015,6 +1049,7 @@ int CScriptCompilerInternal::ParseStringCharacter(int nChar, int nCharNext)
     return STRREF_CSCRIPTCOMPILER_ERROR_UNEXPECTED_CHARACTER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseNextCharacter(int nChar, int nCharNext)
 {
     if (nChar == -1)

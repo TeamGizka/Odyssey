@@ -620,6 +620,7 @@ void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380 GO
 }
 #endif
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CExoBaseInternal::SpawnExternalApplication(const CExoString& sApplication,
                                                 const CExoString& sCommandLine,
                                                 int bQuit)
@@ -828,6 +829,7 @@ public:
 };
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int CExoBaseInternal::CheckForCD()
 {
     CExoString sSearch;

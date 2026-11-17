@@ -12,6 +12,7 @@ void CExoAliasList::Add(const CExoString& sAlias, const CExoString& sPath)
     m_pInternal->Add(sAlias, sPath);
 }
 
+// Dead code: not in the PC executable
 void CExoAliasList::Clear()
 {
     m_pInternal->Clear();
@@ -97,6 +98,7 @@ CExoFile::~CExoFile()
     }
 }
 
+// Dead code: not in the PC executable
 int CExoFile::Eof()
 {
     return m_pInternal->Eof();

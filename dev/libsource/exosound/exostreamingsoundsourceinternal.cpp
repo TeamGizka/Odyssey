@@ -366,6 +366,7 @@ void CExoStreamingSoundSourceInternal::SetLooping(int bLooping)
     }
 }
 
+// Dead code: not in the PC executable
 int CExoStreamingSoundSourceInternal::IsScalable()
 {
     return m_nPriorityGroup == 4 || m_nPriorityGroup == 21;

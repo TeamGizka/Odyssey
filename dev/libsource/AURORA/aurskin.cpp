@@ -86,6 +86,7 @@ VertexProgram* GetSkinVP(bool bHologram)
 }
 #endif
 
+// Dead code: not in the PC executable
 VertexProgram* GetSkinBumpyVP()
 {
     if (!pSkinBumpyVP)

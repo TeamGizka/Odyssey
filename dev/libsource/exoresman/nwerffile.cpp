@@ -9,6 +9,7 @@
 #define NWERFFILE_DEBUG 0
 
 
+// Dead code: not in the PC executable
 int CERFRes::Read(CExoFile& file)
 {
     file.Read(this, 4, 1);
@@ -270,6 +271,7 @@ CERFFile::~CERFFile()
     Reset();
 }
 
+// Dead code: not in the PC executable
 int CERFString::Write(CExoFile& file)
 {
     file.Write(this, 4, 1);
@@ -511,6 +513,7 @@ int CERFFile::Finish()
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CERFKey::Read(CExoFile& file)
 {
     EXOXBOXASSERT(file.FileOpened());

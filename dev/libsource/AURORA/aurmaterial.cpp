@@ -31,6 +31,7 @@ static inline void CopyString(char* sDest, const char* sSource)
     } while (c != 0);
 }
 
+// Dead code: not in the PC executable
 CAurTexture* LoadTexture(char* sName)
 {
     if (sName == 0 || *sName == 0 || strcmp("NULL", sName) == 0)

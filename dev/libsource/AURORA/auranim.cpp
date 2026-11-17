@@ -207,6 +207,7 @@ CallBack::CallBack(void (*pfnCallBack)(CAurObject*, char*, void*), char* sEvent,
     m_bRepeat = bRepeat;
 }
 
+// Dead code: not in the PC executable
 bool Gob::CheckEvent(float fTime, bool bForce)
 {
     if (!checkevents)
@@ -275,6 +276,7 @@ void PartLightsaber::Animate(float fTimeStep)
     lightsaberSegments = m_nSegments;
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 OOAnimRun::~OOAnimRun()
 {
     if (m_pDeltaValues != 0)

@@ -1242,6 +1242,7 @@ void LightManager::EnableBumpMapLights()
     m_bBumpMapLightsDisabled = 0;
 }
 
+// Dead code: not in the PC executable
 void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
 {
     int i = m_lstExcludedShaderLights.m_nCount;

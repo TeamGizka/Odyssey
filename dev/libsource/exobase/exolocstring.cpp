@@ -173,6 +173,7 @@ int CExoLocString::GetStringLoc(int nID, CExoString* psString,
     return GetStringInternal(nGender + 2 * nID, psString);
 }
 
+// Dead code: not in the PC executable
 int CExoLocString::GetStringInternal(int nStringID, CExoString* psString) const
 {
     return m_pExoLocStringInternal->GetString(nStringID, psString);
@@ -208,6 +209,7 @@ float CExoLocString::GetSpokenTimeEstimate(int nID, unsigned char nGender) const
     return 0.0f;
 }
 
+// Dead code: not in the PC executable
 void CExoLocString::RemoveString(int nID, unsigned char nGender)
 {
     nGender = (nID == 0) ? 0 : nGender;

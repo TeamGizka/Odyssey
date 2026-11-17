@@ -6,6 +6,7 @@
 #include "nwvmachineinternal.h"
 #include "nwscriptinternal.h"
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::WriteResolvedOutput()
 {
     char* pchResolvedOutput = new char[m_nFinalBinarySize];
@@ -35,6 +36,7 @@ int CScriptCompilerInternal::WriteResolvedOutput()
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::InitializeFinalCode()
 {
     if (m_pchOutputCode != NULL)
@@ -58,6 +60,7 @@ void CScriptCompilerInternal::InitializeFinalCode()
     }
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::FinalizeFinalCode()
 {
     if (m_nCompileSymbolicOutput == 0)
@@ -75,6 +78,7 @@ void CScriptCompilerInternal::FinalizeFinalCode()
     }
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::WriteFinalCodeToFile(const CExoString& sFileName)
 {
     CExoString sModifiedFileName;
@@ -113,6 +117,7 @@ int CScriptCompilerInternal::WriteFinalCodeToFile(const CExoString& sFileName)
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::ClearUserDefinedIdentifiers()
 {
     for (int nCount = m_nMaxPredefinedIdentifierId; nCount < m_nOccupiedIdentifiers; ++nCount)
@@ -183,6 +188,7 @@ void CScriptCompilerInternal::ClearUserDefinedIdentifiers()
     m_nOccupiedIdentifiers = m_nMaxPredefinedIdentifierId;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::OutputIdentifierError(const CExoString& sFunctionName, int nError)
 {
     STR_RES strRes;
@@ -195,6 +201,7 @@ int CScriptCompilerInternal::OutputIdentifierError(const CExoString& sFunctionNa
     return OutputError(nError, m_pcIncludeFileStack[m_nCompileFileLevel].m_sFileName, 0, sErrorText);
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GetIdentifierByName(const CExoString& sIdentifierName)
 {
     int nLength = sIdentifierName.GetLength();
@@ -211,6 +218,7 @@ int CScriptCompilerInternal::GetIdentifierByName(const CExoString& sIdentifierNa
     return STRREF_CSCRIPTCOMPILER_ERROR_UNDEFINED_IDENTIFIER;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ValidateLocationOfIdentifier(const CExoString& sFunctionName)
 {
     int nIdentifier = GetIdentifierByName(sFunctionName);
@@ -252,6 +260,7 @@ int CScriptCompilerInternal::ValidateLocationOfIdentifier(const CExoString& sFun
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::DetermineLocationOfCode()
 {
     if (m_bOptimizeBinaryCodeLength == TRUE)
@@ -275,6 +284,7 @@ int CScriptCompilerInternal::DetermineLocationOfCode()
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ResolveLabels()
 {
     CExoString sFunctionName;
@@ -349,6 +359,7 @@ int CScriptCompilerInternal::ResolveLabels()
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GetStructureField(const CExoString& sStructureName, const CExoString& sFieldName)
 {
     for (int nCount = 0; nCount < m_nMaxStructures; ++nCount)
@@ -369,6 +380,7 @@ int CScriptCompilerInternal::GetStructureField(const CExoString& sStructureName,
     return STRREF_CSCRIPTCOMPILER_ERROR_UNDEFINED_STRUCTURE;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::FoundReturnStatementOnAllBranches(CScriptParseTreeNode* pNode)
 {
     if (pNode == NULL)
@@ -409,6 +421,7 @@ int CScriptCompilerInternal::FoundReturnStatementOnAllBranches(CScriptParseTreeN
     return FALSE;
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::ClearAllSymbolLists()
 {
     if (m_pSymbolQueryList != NULL)
@@ -428,6 +441,7 @@ void CScriptCompilerInternal::ClearAllSymbolLists()
     m_nSymbolLabelList = 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::CleanUpAfterCompile(int nReturnValue, CScriptParseTreeNode* pReturnTree)
 {
     DeleteParseTree(FALSE, pReturnTree);
@@ -451,6 +465,7 @@ int CScriptCompilerInternal::CleanUpAfterCompile(int nReturnValue, CScriptParseT
     return nReturnValue;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::AddSymbolToLabelList(const CExoString& sSymbolName, int nLocationPointer)
 {
     if (m_nSymbolLabelListSize == m_nSymbolLabelList)
@@ -477,6 +492,7 @@ int CScriptCompilerInternal::AddSymbolToLabelList(const CExoString& sSymbolName,
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::AddSymbolToQueryList(const CExoString& sSymbolName, int nLocationPointer)
 {
     if (m_nSymbolQueryListSize == m_nSymbolQueryList)
@@ -503,11 +519,13 @@ int CScriptCompilerInternal::AddSymbolToQueryList(const CExoString& sSymbolName,
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::PrintBinaryAddress()
 {
     sprintf(m_pchOutputCode + m_nOutputCodeLength, "  %08x   ", m_nBinaryCodeLength);
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::OutputWalkTreeError(int nError, CScriptParseTreeNode* pNode)
 {
     STR_RES strRes;
@@ -524,6 +542,7 @@ int CScriptCompilerInternal::OutputWalkTreeError(int nError, CScriptParseTreeNod
     return OutputError(nError, m_pcIncludeFileStack[m_nCompileFileLevel].m_sFileName, nLine, strRes.m_sString);
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::InitializeSwitchLabelList()
 {
     m_bSwitchLabelDefault = FALSE;
@@ -532,6 +551,7 @@ void CScriptCompilerInternal::InitializeSwitchLabelList()
     m_pnSwitchLabelStatements = new int[m_nSwitchLabelArraySize];
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::TraverseTreeForSwitchLabels(CScriptParseTreeNode* pNode)
 {
 
@@ -688,6 +708,7 @@ int CScriptCompilerInternal::TraverseTreeForSwitchLabels(CScriptParseTreeNode* p
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::ClearSwitchLabelList()
 {
 
@@ -743,6 +764,7 @@ void CScriptCompilerInternal::ClearSwitchLabelList()
     m_pnSwitchLabelStatements = NULL;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GenerateCodeForSwitchLabels(CScriptParseTreeNode* pNode)
 {
     int nReturnValue = 0;
@@ -761,6 +783,7 @@ int CScriptCompilerInternal::GenerateCodeForSwitchLabels(CScriptParseTreeNode* p
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::AddStructureToStack(const CExoString& sStructureName, BOOL bGenerateCode)
 {
     for (int nCount = 0; nCount < m_nMaxStructures; ++nCount)
@@ -855,6 +878,7 @@ void CScriptCompilerInternal::AddStructureToStack(const CExoString& sStructureNa
     }
 }
 
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::AddVariableToStack(int nVariableType, const CExoString& sVariableTypeName, BOOL bGenerateCode)
 {
     if (nVariableType == CSCRIPTCOMPILER_TOKEN_KEYWORD_INT ||
@@ -938,6 +962,7 @@ void CScriptCompilerInternal::AddVariableToStack(int nVariableType, const CExoSt
     }
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GetStructureSize(const CExoString& sStructureName)
 {
     for (int nCount = 0; nCount < m_nMaxStructures; ++nCount)
@@ -951,6 +976,7 @@ int CScriptCompilerInternal::GetStructureSize(const CExoString& sStructureName)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::PostVisitGenerateCode(CScriptParseTreeNode* pNode)
 {
     int nCount;
@@ -3919,6 +3945,7 @@ int CScriptCompilerInternal::PostVisitGenerateCode(CScriptParseTreeNode* pNode)
     return OutputWalkTreeError(STRREF_CSCRIPTCOMPILER_ERROR_UNKNOWN_OPERATION_IN_SEMANTIC_CHECK, pNode);
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::InVisitGenerateCode(CScriptParseTreeNode* pNode)
 {
     if (pNode->nOperation == CSCRIPTCOMPILER_OPERATION_STRUCTURE_DEFINITION)
@@ -4271,6 +4298,7 @@ int CScriptCompilerInternal::InVisitGenerateCode(CScriptParseTreeNode* pNode)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::PreVisitGenerateCode(CScriptParseTreeNode* pNode)
 {
     if (pNode->nOperation == CSCRIPTCOMPILER_OPERATION_COMPOUND_STATEMENT ||
@@ -4844,6 +4872,7 @@ int CScriptCompilerInternal::PreVisitGenerateCode(CScriptParseTreeNode* pNode)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::WalkParseTree(CScriptParseTreeNode* pNode)
 {
     int nReturnCode = 0;
@@ -4894,6 +4923,7 @@ int CScriptCompilerInternal::WalkParseTree(CScriptParseTreeNode* pNode)
     return nReturnCode;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::InstallLoader()
 {
 
@@ -5027,6 +5057,7 @@ int CScriptCompilerInternal::InstallLoader()
     return 0;
 }
 
+// Dead code: not in the PC executable
 CScriptParseTreeNode* CScriptCompilerInternal::InsertGlobalVariablesInParseTree(CScriptParseTreeNode* pOldTree)
 {
 
@@ -5042,6 +5073,7 @@ CScriptParseTreeNode* CScriptCompilerInternal::InsertGlobalVariablesInParseTree(
     return pNewNode;
 }
 
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GenerateFinalCodeFromParseTree()
 {
     int nState;

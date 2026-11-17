@@ -288,6 +288,7 @@ void CExoStreamingSoundSource::SetVolume(unsigned char nVolume)
     }
 }
 
+// Dead code: not in the PC executable
 unsigned char CExoStreamingSoundSource::GetVolume()
 {
     CExoStreamingSoundSourceInternal* pInternal;
@@ -333,6 +334,7 @@ void CExoStreamingSoundSource::SetPriorityGroup(unsigned char nGroup)
     }
 }
 
+// Dead code: not in the PC executable
 unsigned char CExoStreamingSoundSource::GetPriorityGroup()
 {
     CExoStreamingSoundSourceInternal* pInternal;
@@ -454,6 +456,7 @@ void CExoSound::SetDialogVolume(float fVolume)
     }
 }
 
+// Dead code: not in the PC executable
 float CExoSound::GetMusicVolume()
 {
     CExoSoundInternal* pInternal;
@@ -466,6 +469,7 @@ float CExoSound::GetMusicVolume()
     return 1.0f;
 }
 
+// Dead code: not in the PC executable
 float CExoSound::GetSoundEffectVolume()
 {
     CExoSoundInternal* pInternal;
@@ -478,6 +482,7 @@ float CExoSound::GetSoundEffectVolume()
     return 1.0f;
 }
 
+// Dead code: not in the PC executable
 float CExoSound::GetDialogVolume()
 {
     CExoSoundInternal* pInternal;
@@ -644,6 +649,7 @@ void CExoSound::SetSoundMode(int nMode, int bMovie)  // PC 0x00621AE0 GOG 0x0062
     }
 }
 
+// Dead code: not in the PC executable
 CExoSoundSource::~CExoSoundSource()
 {
     if (m_pInternal != NULL)
@@ -767,6 +773,7 @@ CExoStreamingSoundSourceInternal* CExoStreamingSoundSource::Set3D(int b3D)  // P
 }
 #endif
 
+// Dead code: not in the PC executable
 int CExoStreamingSoundSource::Get3D()
 {
     CExoStreamingSoundSourceInternal* pInternal;

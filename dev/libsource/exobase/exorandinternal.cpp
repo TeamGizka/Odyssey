@@ -75,6 +75,7 @@ void CExoRandInternal::Add(unsigned char* pData, int nLength)
     }
 }
 
+// Dead code: not in the PC executable
 void CExoRandInternal::SignalEvent()
 {
     LARGE_INTEGER nPerformanceCount;
@@ -117,6 +118,7 @@ void CExoRandInternal::SignalEvent()
     }
 }
 
+// Dead code: not in the PC executable
 void CExoRandInternal::SignalEvent(unsigned long nEvent)
 {
     unsigned short nDelta = (unsigned short)(m_nTickCount - nEvent);

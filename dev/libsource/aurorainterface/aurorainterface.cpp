@@ -522,6 +522,7 @@ CAuroraInterface::~CAuroraInterface()
     AurClearPalette();
 }
 
+// Dead code: not in the PC executable
 int CAuroraInterface::GetHighestPriorityTextureFormat(
     CResRef resRef, int bDDS, int b4PC, int bTGA, int bTPC)
 {

@@ -7,6 +7,7 @@ List<CAurFont*> CAurFont::s_LoadedFontList;
 void AurTextureRelease(CAurTexture* pTexture);
 int rint(float fValue);
 
+// Dead code: not in the PC executable
 int CAurFont::ProcessTextMarkup(char* sText, CAurFont** ppFont,
                                 CStringColor& cColor)
 {
@@ -68,6 +69,7 @@ static inline unsigned long RequestFontPool(unsigned long nSize, unsigned long* 
                                  RequestPoolManager::POOL_FORMAT_VTC, pnPool);
 }
 
+// Dead code: not in the PC executable
 int CAurFont::TextOutA(char* sText, int nLength)
 {
 

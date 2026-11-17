@@ -6,11 +6,13 @@
 #include <stdlib.h>
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void AurPushClientState()
 {
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 }
 
+// Dead code: not in the PC executable
 void AurPopClientState()
 {
     glPopClientAttrib();
@@ -274,11 +276,13 @@ bool Gob::IsDistortionEnabled()
     return false;
 }
 
+// Dead code: not in the PC executable
 int SceneGetNearestLights(Scene* pScene, Vector vPosition, float fRadius)
 {
     return pScene->m_pLightManager->GetNearestLights(pScene, vPosition, fRadius, 0);
 }
 
+// Dead code: not in the PC executable
 int SceneInShadowRange(const Vector& vDelta)
 {
     return vDelta * vDelta <= AUR_SHADOW_GOB_RANGE_SQUARED;
@@ -2231,6 +2235,7 @@ void Scene::DoEmitterBucket()
         PartEmitter::StopEmitterLayer();
     }
 }
+// Dead code: not in the PC executable
 void SetShadowStencilBuffer()
 {
     int nStencilBits = AurGetAvailableStencilBits();
@@ -2422,6 +2427,7 @@ void RenderPersonalSpace(Scene* pScene)
     GLRender_Enable(ENABLE_DEPTH_TEST);
 }
 
+// Dead code: not in the PC executable
 void RenderDrawableSquares()
 {
 }

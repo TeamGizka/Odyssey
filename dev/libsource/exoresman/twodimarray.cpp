@@ -84,6 +84,7 @@ int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
     return psEntry->GetLength() > 0;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetCExoStringEntry(int nRow, int nColumn, const CExoString& sValue)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
@@ -95,6 +96,7 @@ int C2DA::SetCExoStringEntry(int nRow, int nColumn, const CExoString& sValue)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetFLOATEntry(int nRow, int nColumn, float fValue)
 {
     char szValue[32];
@@ -109,6 +111,7 @@ int C2DA::SetFLOATEntry(int nRow, int nColumn, float fValue)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetFLOATEntry(const CExoString& sRow, const CExoString& sColumn, float fValue)
 {
     char szValue[32];
@@ -125,6 +128,7 @@ int C2DA::SetFLOATEntry(const CExoString& sRow, const CExoString& sColumn, float
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetFLOATEntry(int nRow, const CExoString& sColumn, float fValue)
 {
     char szValue[32];
@@ -140,6 +144,7 @@ int C2DA::SetFLOATEntry(int nRow, const CExoString& sColumn, float fValue)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetFLOATEntry(const CExoString& sRow, int nColumn, float fValue)
 {
     char szValue[32];
@@ -155,6 +160,7 @@ int C2DA::SetFLOATEntry(const CExoString& sRow, int nColumn, float fValue)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetINTEntry(const CExoString& sRow, const CExoString& sColumn, int nValue)
 {
     char szValue[32];
@@ -171,6 +177,7 @@ int C2DA::SetINTEntry(const CExoString& sRow, const CExoString& sColumn, int nVa
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetINTEntry(const CExoString& sRow, int nColumn, int nValue)
 {
     char szValue[32];
@@ -346,6 +353,7 @@ int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetINTEntry(int nRow, int nColumn, int nValue)
 {
     char szValue[32];
@@ -360,6 +368,7 @@ int C2DA::SetINTEntry(int nRow, int nColumn, int nValue)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetINTEntry(int nRow, const CExoString& sColumn, int nValue)
 {
     char szValue[32];
@@ -375,6 +384,7 @@ int C2DA::SetINTEntry(int nRow, const CExoString& sColumn, int nValue)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int C2DA::SetBlankEntry(int nRow, int nColumn)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
@@ -1030,6 +1040,7 @@ void C2DA::Unload2DArray()
     }
 }
 
+// Dead code: not in the PC executable
 int C2DA::SaveBinary2da(char* sFileName)
 {
     int nRow;

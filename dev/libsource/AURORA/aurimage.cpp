@@ -43,6 +43,7 @@ void ImageFlipRB(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
     }
 }
 
+// Dead code: not in the PC executable
 unsigned char* ImageDup(unsigned char* pImage, int nWidth, int nHeight, int nBPP,
                         int bCompressed)
 {
@@ -517,6 +518,7 @@ unsigned char* ImageReadPLT(char* sFileName, int* pnWidth, int* pnHeight,
     return pImage;
 }
 
+// Dead code: not in the PC executable
 void ImageJulia(int nWidth, int nHeight, int nBPP, unsigned char* pImage,
                 float fCReal, float fCImaginary)
 {

@@ -30,16 +30,19 @@ void CExoDebug::FlushScriptLogFile()
     }
 }
 
+// Dead code: not in the PC executable
 unsigned long CExoDebug::GetMaxAllocatedMemory()
 {
     return 0;
 }
 
+// Dead code: not in the PC executable
 unsigned long CExoDebug::GetTotalMemoryAllocations()
 {
     return 0;
 }
 
+// Dead code: not in the PC executable
 unsigned long CExoDebug::GetCurrentMemoryAllocations()
 {
     return 0;
@@ -61,14 +64,17 @@ void CExoDebug::Warning(int line, char* file, const char* message)
     }
 }
 
+// Dead code: not in the PC executable
 void CExoDebug::WriteToErrorFile(const CExoString& text)
 {
 }
 
+// Dead code: not in the PC executable
 void CExoDebug::WriteToLogFile(const CExoString& text)
 {
 }
 
+// Dead code: not in the PC executable
 void CExoDebug::Assert(int line, char* file, const char* message)
 {
     CExoString sAssert;

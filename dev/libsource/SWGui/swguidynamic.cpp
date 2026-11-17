@@ -1,6 +1,7 @@
 #include "swgui.h"
 #include "resgff.h"
 
+// Dead code: not in the PC executable
 CSWGuiDynamic::CSWGuiDynamic(CSWGuiManager* pManager, const CResRef& cLayout)
     : CSWGuiPanel(pManager)
 {
@@ -58,6 +59,7 @@ CSWGuiDynamic::CSWGuiDynamic(CSWGuiManager* pManager, const CResRef& cLayout)
     StopLoadFromLayout();
 }
 
+// Dead code: not in the PC executable
 CSWGuiDynamic::~CSWGuiDynamic()
 {
     int nControls = m_lControls.num;

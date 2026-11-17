@@ -89,6 +89,7 @@ CExoString* CExoStringList::operator[](int nIndex)
     return m_pStrings[nIndex];
 }
 
+// Dead code: not in the PC executable
 void CExoStringList::Insert(CExoString* pString, int nPosition)
 {
     if (m_nSortMode == 0)

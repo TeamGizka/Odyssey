@@ -512,6 +512,7 @@ void CExoSoundInternal::SetEnvironment(unsigned char nEnvironment)  // PC 0x0062
 
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int ApplySpeakerSettings(int nSpeakerType, int bReleaseDevice)
 {
     CExoSoundInternal* pInternal = g_pExoSound->m_pInternal;
@@ -539,6 +540,7 @@ int ApplySpeakerSettings(int nSpeakerType, int bReleaseDevice)
 #endif
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void GetListenerFactors(float* pfRolloffFactor, float* pfDistanceFactor)
 {
     CExoSoundInternal* pInternal = g_pExoSound->m_pInternal;

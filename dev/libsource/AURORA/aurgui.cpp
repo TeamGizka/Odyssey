@@ -164,6 +164,7 @@ void CAurGUIStringInternal::WrapStrings(int nWidth)
     }
 }
 
+// Dead code: not in the PC executable
 void AurGUIDumpWrappedLines(CAurGUIStringInternal* pString)
 {
     List<int> lstLineStart;

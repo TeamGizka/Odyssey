@@ -67,6 +67,7 @@ unsigned char MdlNodeEmitter::IsAffectedByWind()
     return bAffectedByWind;
 }
 
+// Dead code: not in the PC executable
 unsigned char MdlNodeEmitter::IsRandom()
 {
 #ifdef _XBOX
@@ -196,6 +197,7 @@ void Particle::randomPosition(int nWidth, int nHeight)
 #ifdef _XBOX
 inline float PartEmitter::GetRadius()
 #else
+// Dead code: not in the PC executable
 float PartEmitter::GetRadius()
 #endif
 {
@@ -210,6 +212,7 @@ ChunkyParticle::~ChunkyParticle()
         m_pGob = 0;
     }
 }
+// Dead code: not in the PC executable
 float PartEmitter::GetGobAlpha()
 {
     float fAlpha = 1.0f;
@@ -305,6 +308,7 @@ static RenderVertexVTC* ResizeEmitterPool(RenderVertexVTC* pVertices,
     return pNewVertices;
 }
 
+// Dead code: not in the PC executable
 void PartEmitter::moveParticle(Particle* pParticle, float fTimeStep,
                                int bInheriting)
 {
@@ -675,6 +679,7 @@ void PartEmitter::StartEmitterLayer()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 static int GetNextFrame(PartEmitter* pEmitter, int nFrame)
 {
     if (pEmitter->m_fFrameStart != pEmitter->m_fFrameEnd)
@@ -2096,6 +2101,7 @@ ChunkyParticle::ChunkyParticle(PartEmitter* pEmitter, float fTime)
 #ifdef _XBOX
 unsigned char MdlNodeEmitter::IsBouncing() { unsigned char bBouncing = m_EmitterFlags.m_bBouncing; return bBouncing; }
 #else
+// Dead code: not in the PC executable
 unsigned char MdlNodeEmitter::IsBouncing() { return (unsigned char)m_EmitterFlags.m_bBouncing; }
 #endif
 inline void PartEmitter::SetLastOrigin(Vector v) { m_vLastOrigin = v; }
@@ -2746,6 +2752,7 @@ void SingleEmitter::Update(float fTimeStep)
     }
 }
 
+// Dead code: not in the PC executable
 unsigned char MdlNodeEmitter::IsPointToPoint()
 {
 #ifdef _XBOX
@@ -2756,6 +2763,7 @@ unsigned char MdlNodeEmitter::IsPointToPoint()
 #endif
 }
 
+// Dead code: not in the PC executable
 unsigned char MdlNodeEmitter::IsPointToPointSel()
 {
 #ifdef _XBOX
@@ -3992,6 +4000,7 @@ PartEmitter::~PartEmitter()
     totalemitters--;
 }
 
+// Dead code: not in the PC executable
 unsigned char MdlNodeEmitter::IsInheritingVelocity()
 {
 #ifdef _XBOX

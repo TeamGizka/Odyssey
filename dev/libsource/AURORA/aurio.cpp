@@ -106,6 +106,7 @@ public:
     void* m_pResource;
 };
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetAnimation(Animation* pAnimation,
                                         unsigned char* pModelData,
                                         unsigned char* pVertexData)
@@ -131,6 +132,7 @@ void Input::InputBinary::ResetAnimation(Animation* pAnimation,
     pAnimation->m_pfnParseField = MaxTreeParseField;
 }
 
+// Dead code: not in the PC executable
 MaxTree* Input::InputBinary::Reset(unsigned char* pModelData,
                                   unsigned char* pVertexData, void* pResource)
 {
@@ -288,6 +290,7 @@ MaxTree* Input::InputBinary::ResetLite(unsigned char* pModelData,
     return pModel;
 }
 #else
+// Dead code: not in the PC executable
 MaxTree* Input::InputBinary::Read(void* pModelResource,
                                  void* pVertexResource, bool bLite)
 {
@@ -340,6 +343,7 @@ MaxTree* Input::InputBinary::Read(void* pModelResource,
     return pTree;
 }
 
+// Dead code: not in the PC executable
 MaxTree* Input::InputBinary::ResetLite(unsigned char* pModelData,
                                       unsigned char* pVertexData,
                                       void* pResource)
@@ -367,6 +371,7 @@ MaxTree* Input::InputBinary::ResetLite(unsigned char* pModelData,
 }
 #endif
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetAnim(MdlNodeAnimMesh* pNode,
                                    unsigned char* pModelData,
                                    unsigned char* pVertexData)
@@ -424,6 +429,7 @@ void Input::InputBinary::ResetAnim(MdlNodeAnimMesh* pNode,
     ResetTriMeshParts(pNode, pModelData, pVertexData);
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetDangly(MdlNodeDanglyMesh* pNode,
                                      unsigned char* pModelData,
                                      unsigned char* pVertexData)
@@ -450,6 +456,7 @@ void Input::InputBinary::ResetDangly(MdlNodeDanglyMesh* pNode,
     }
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetBaseLite(MdlNode* pNode,
                                     unsigned char* pModelData,
                                     unsigned char* pVertexData)
@@ -471,6 +478,7 @@ void Input::InputBinary::ResetBaseLite(MdlNode* pNode,
 }
 #endif
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetSkin(MdlNodeSkin* pNode,
                                    unsigned char* pModelData,
                                    unsigned char* pVertexData)
@@ -528,6 +536,7 @@ void Input::InputBinary::ResetSkin(MdlNodeSkin* pNode,
     }
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetAABB(MdlNodeAABB* pNode,
                                    unsigned char* pModelData,
                                    unsigned char* pVertexData)
@@ -542,6 +551,7 @@ void Input::InputBinary::ResetAABB(MdlNodeAABB* pNode,
     ResetTriMeshParts(pNode, pModelData, pVertexData);
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetAABBTree(AABB* pNode, unsigned char* pModelData,
                                        unsigned char* pVertexData)
 #ifdef _XBOX
@@ -709,6 +719,7 @@ void Input::InputBinary::ResetAABBTree(AABB* pNode, unsigned char* pModelData,
 }
 #endif
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetLightsaber(MdlNodeLightsaber* pNode,
                                         unsigned char* pModelData,
                                         unsigned char* pVertexData)
@@ -731,6 +742,7 @@ void Input::InputBinary::ResetLightsaber(MdlNodeLightsaber* pNode,
         (Vector*)(pModelData + (unsigned int)pNode->m_pVertexNormals);
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetLightsaberLite(MdlNodeLightsaber* pNode,
                                              unsigned char* pModelData,
                                              unsigned char* pVertexData)
@@ -746,6 +758,7 @@ void Input::InputBinary::ResetLightsaberLite(MdlNodeLightsaber* pNode,
 
 }
 
+// Dead code: not in the PC executable
 IODispatcher::IODispatcher() : m_lDispatchEntries(0)
 {
 }
@@ -776,6 +789,7 @@ MaxTree* IODispatcher::ReadSync(FILE* pModelFile, FILE* pVertexFile)
 static const int WRITE_PATH_LENGTH = 256;
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
 {
     char sPath[WRITE_PATH_LENGTH];
@@ -790,6 +804,7 @@ bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
 namespace
 {
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetLight(MdlNodeLight* pNode,
                                    unsigned char* pModelData,
                                    unsigned char* pVertexData)
@@ -847,6 +862,7 @@ void Input::InputBinary::ResetLight(MdlNodeLight* pNode,
     pNode->AddToFreeList(pNode);
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetLightLite(MdlNodeLight* pNode,
                                       unsigned char* pModelData,
                                       unsigned char* pVertexData)
@@ -924,6 +940,7 @@ void Input::InputBinary::ResetMdlNodeLite(MdlNode* pNode,
         return ResetTriMeshLite((MdlNodeTriMesh*)pNode, pModelData, pVertexData);
 }
 #else
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetMdlNode(MdlNode* pNode,
                                      unsigned char* pModelData,
                                      unsigned char* pVertexData)
@@ -984,6 +1001,7 @@ void Input::InputBinary::ResetMdlNode(MdlNode* pNode,
     }
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetMdlNodeLite(MdlNode* pNode,
                                        unsigned char* pModelData,
                                        unsigned char* pVertexData)
@@ -1014,6 +1032,7 @@ void Input::InputBinary::ResetMdlNodeLite(MdlNode* pNode,
 }
 #endif
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetCameraLite(MdlNode* pNode,
                                     unsigned char* pModelData,
                                     unsigned char* pVertexData)
@@ -1035,6 +1054,7 @@ void Input::InputBinary::ResetCameraLite(MdlNode* pNode,
 }
 #endif
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetEmitterLite(MdlNode* pNode,
                                     unsigned char* pModelData,
                                     unsigned char* pVertexData)
@@ -1056,6 +1076,7 @@ void Input::InputBinary::ResetEmitterLite(MdlNode* pNode,
 }
 #endif
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetReferenceLite(MdlNode* pNode,
                                     unsigned char* pModelData,
                                     unsigned char* pVertexData)
@@ -1077,6 +1098,7 @@ void Input::InputBinary::ResetReferenceLite(MdlNode* pNode,
 }
 #endif
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetTriggerLite(MdlNode* pNode,
                                     unsigned char* pModelData,
                                     unsigned char* pVertexData)
@@ -1099,6 +1121,7 @@ void Input::InputBinary::ResetTriggerLite(MdlNode* pNode,
 #endif
 
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetMdlNodeParts(MdlNode* pNode,
                                            unsigned char* pModelData,
                                            unsigned char* pVertexData)
@@ -1153,6 +1176,7 @@ void Input::InputBinary::ResetMdlNodeParts(MdlNode* pNode,
     }
 }
 
+// Dead code: not in the PC executable
 MaxTree* Input::Read(char* sFileName)
 {
     ++g_nModelsRead;
@@ -1199,6 +1223,7 @@ MaxTree* Input::Read(char* sFileName)
     return pModel;
 }
 
+// Dead code: not in the PC executable
 MaxTree* Input::Read(FILE* pModelFile, FILE* pVertexFile)
 {
     void* pModelResource = AurResGet(pModelFile);
@@ -1248,6 +1273,7 @@ MaxTree* Input::Read(FILE* pModelFile, FILE* pVertexFile)
     }
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetMdlNodePartsLite(MdlNode* pNode,
                                     unsigned char* pModelData,
                                     unsigned char* pVertexData)
@@ -1262,6 +1288,7 @@ void Input::InputBinary::ResetMdlNodePartsLite(MdlNode* pNode,
         }
     }
 }
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetTriMeshParts(MdlNodeTriMesh* pNode,
                                           unsigned char* pModelData,
                                           unsigned char* pVertexData)
@@ -1388,6 +1415,7 @@ void Input::InputBinary::ResetTriMeshParts(MdlNodeTriMesh* pNode,
     RyanTotalLevelVertSize += pNode->m_nVertexCount * pNode->m_nVertexStride;
 }
 
+// Dead code: not in the PC executable
 void Input::InputBinary::ResetTriMeshPartsLite(MdlNodeTriMesh* pNode,
                                               unsigned char* pModelData,
                                               unsigned char* pVertexData)

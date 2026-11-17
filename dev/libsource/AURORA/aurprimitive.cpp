@@ -19,6 +19,7 @@ int enablevar;
 int vertexsize;
 int usevertexprograms = 1;
 
+// Dead code: not in the PC executable
 VertexPrimitive::VertexPrimitive(Part* pPart)
 #ifdef _XBOX
     : m_nArrayPool(RequestPoolManager::INVALID_POOL), m_pPart(pPart), m_nArrayCount(0), m_bStatic(1),

@@ -103,6 +103,7 @@ enum
 
 #ifndef _XBOX
 
+// Dead code: not in the PC executable
 void GetGLError()
 {
     int nError = glGetError();

@@ -24,6 +24,7 @@ CExoDebugInternal::CExoDebugInternal()
     m_bLogFilesOpen = 0;
 }
 
+// Dead code: not in the PC executable
 void CExoDebugInternal::Assert(int line, char* file, const char* message)
 {
     CExoString sAssert;
@@ -51,6 +52,7 @@ void CExoDebugInternal::Assert(int line, char* file, const char* message)
     abort();
 }
 
+// Dead code: not in the PC executable
 void CExoDebugInternal::InitializeWarningFile()
 {
     time_t tNow;
@@ -253,6 +255,7 @@ CExoDebugInternal::~CExoDebugInternal()
     CloseLogFiles();
 }
 
+// Dead code: not in the PC executable
 static void ExoTranslateStructuredException(unsigned int nCode, EXCEPTION_POINTERS* pExceptionPointers)
 {
     if (std::uncaught_exception())
@@ -262,11 +265,13 @@ static void ExoTranslateStructuredException(unsigned int nCode, EXCEPTION_POINTE
     throw nCode;
 }
 
+// Dead code: not in the PC executable
 static void ExoTerminate()
 {
     abort();
 }
 
+// Dead code: not in the PC executable
 void ExoInstallExceptionHandlers()
 {
     _set_se_translator(ExoTranslateStructuredException);

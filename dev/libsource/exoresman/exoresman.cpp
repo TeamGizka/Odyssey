@@ -1092,6 +1092,7 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0
 }
 #endif
 
+// Dead code: not in the PC executable
 int CExoResMan::GetNewResRef(const CResRef& cResRef, unsigned short nType,
                              CResRef& cNewResRef)
 {
@@ -2793,6 +2794,7 @@ int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // PC 0x00406D
 }
 #endif
 
+// Dead code: not in the PC executable
 int CExoResMan::GetResourcesInMemory(int* pnResources, int* pnKeys,
                                      int* pnServicedSize, int* pnImageSize,
                                      int* pnModelSize, int* pnModelDataSize,

@@ -11,6 +11,7 @@ static long g_nFileInfoSize;
 static long g_nFileInfoTime;
 static int g_nFileInfoCount = 0;
 
+// Dead code: not in the PC executable
 long ExoGetFileInfoSize(const char* szFileName)
 {
     FILE* pFile = fopen(szFileName, "rb");
@@ -24,12 +25,14 @@ long ExoGetFileInfoSize(const char* szFileName)
     return g_nFileInfoSize;
 }
 
+// Dead code: not in the PC executable
 struct tm* ExoGetFileInfoTime()
 {
     time(&g_nFileInfoTime);
     return localtime(&g_nFileInfoTime);
 }
 
+// Dead code: not in the PC executable
 long ExoLogFileInfo(const char* szFileName)
 {
     struct tm* pTime;

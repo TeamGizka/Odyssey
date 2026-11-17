@@ -38,16 +38,19 @@ int CExoInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int CExoInputInternal::IsModalKeyDown_Shift()
 {
     return (GetKeyState(VK_SHIFT) >> 15) & 1;
 }
 
+// Dead code: not in the PC executable
 int CExoInputInternal::IsModalKeyDown_Ctrl()
 {
     return (GetKeyState(VK_CONTROL) >> 15) & 1;
 }
 
+// Dead code: not in the PC executable
 int CExoInputInternal::IsModalKeyDown_Alt()
 {
     return (GetKeyState(VK_MENU) >> 15) & 1;

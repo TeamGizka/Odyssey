@@ -25,6 +25,7 @@ MdlNodeTrigger::MdlNodeTrigger(char* sName)
     m_nNodeType = MdlNode::MDLNODE_TRIGGER_ID;
 }
 
+// Dead code: not in the PC executable
 void AurPartTriggerSetColor(PartTrigger* pTrigger, float* pfColor)
 {
     memcpy(&pTrigger->m_fColorRed, pfColor, 4 * sizeof(float));

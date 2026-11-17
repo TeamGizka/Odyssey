@@ -61,5 +61,8 @@ A comment on a function definition gives the address of that function in the rel
 `PC` is the virtual address in `swkotor2.exe`. It is left out where the function has no single address in that
 image (inlined everywhere, a template with several instances, or not located).
 
+A function that is compiled but has no copy in the executable (the linker removed it, nothing calls it) carries
+`// Dead code: not in the PC executable` on the line above its definition instead of an address.
+
 # AI Disclaimer
 LLMs were used heavily during the development of this source tree reconstruction. Despite this it has been handled with care and follows strict exactness rules where plausible

@@ -23,6 +23,7 @@ PAINTSTRUCT paint;
 int inputlength;
 char inputline[500];
 
+// Dead code: not in the PC executable
 LRESULT CALLBACK AurWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (nMsg)
@@ -83,6 +84,7 @@ LRESULT CALLBACK AurWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProcA(hWnd, nMsg, wParam, lParam);
 }
 
+// Dead code: not in the PC executable
 void CalcFPSDeltaT()
 {
     static int bInitialized = 0;
@@ -132,6 +134,7 @@ class TimeTrigger;
 List<Binding*> bindings;
 List<TimeTrigger*> timetriggers;
 
+// Dead code: not in the PC executable
 char* keysdown()
 {
     static char sKeys[256];

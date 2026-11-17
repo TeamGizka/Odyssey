@@ -94,6 +94,7 @@ inline void FreeTextFormat()
     glDeleteLists(fontOffset, 128);
 }
 
+// Dead code: not in the PC executable
 void GLRender::PrintStringAtScreenPos(char* szString, float fX, float fY)
 {
     glPushAttrib(GL_TEXTURE_BIT | GL_DEPTH_BUFFER_BIT | GL_LIGHTING_BIT);
@@ -138,6 +139,7 @@ void AurFreeFont()
 
 #ifndef _XBOX
 
+// Dead code: not in the PC executable
 void PrintStringScreenPos(char* szString, float fX, float fY)
 {
     if (szString != NULL && *szString != 0)
@@ -146,6 +148,7 @@ void PrintStringScreenPos(char* szString, float fX, float fY)
     }
 }
 
+// Dead code: not in the PC executable
 void PrintStringScreenPos_UseTextureFont(char* szString, float fX, float fY)
 {
     GLint aViewport[4];
@@ -183,6 +186,7 @@ void AurPrintString(char* szString, int nColumn, int nRow)
 #endif
 #ifndef _XBOX
 
+// Dead code: not in the PC executable
 int SetConsoleFont(char* szFontName)
 {
     if (initialized == 0)
