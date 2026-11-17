@@ -43,6 +43,7 @@ template <> int CExoArrayList<CSWSItem*>::IndexOf(CSWSItem* value) const  // PC 
 }
 #endif
 
+// Dead code: not in the PC executable
 void CSWGuiUpgradeSelection::AutoUpgradeDone()
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->HideUpgradeScreen();
@@ -4273,6 +4274,7 @@ CSWGuiUpgrade::~CSWGuiUpgrade()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 unsigned char CSWGuiUpgrade::GetNumUpgrades()
 {
     unsigned char nSlots = 0;

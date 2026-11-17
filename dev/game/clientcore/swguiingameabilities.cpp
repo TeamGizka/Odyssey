@@ -21,6 +21,7 @@
 #define SWGUIINGAMEABILITIES_DEBUG 0
 
 
+// Dead code: not in the PC executable
 void CSWGuiInGameAbilities::CreateFeatList()
 {
     if (m_pCreature != NULL)
@@ -84,6 +85,7 @@ void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
 #endif
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameAbilities::OnChangeCharacter(CSWGuiControl* pControl)
 {
 }
@@ -583,6 +585,7 @@ void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameAbilities::UpdatePortraits()
 {
 }

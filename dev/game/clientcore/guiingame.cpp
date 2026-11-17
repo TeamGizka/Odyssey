@@ -118,6 +118,7 @@ Vector CGuiInGame::COLOR_BLACK;
 extern int bDisableLetterbox;
 extern bool g_bLetterBoxMode;
 
+// Dead code: not in the PC executable
 const char* HideGUI(char* sCommand)
 {
     if (g_pDynamicGUI != NULL)
@@ -138,6 +139,7 @@ const char* HideGUI(char* sCommand)
     return "";
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* ShowGUI(char* sCommand)
 {
     if (*sCommand == 0)
@@ -394,6 +396,7 @@ CGuiInGame::~CGuiInGame()
     }
 }
 
+// Dead code: not in the PC executable
 void CGuiInGame::ClearLastDialogAnimationData()
 {
     m_nLastDialogAnimations = 0;
@@ -467,6 +470,7 @@ void CGuiInGame::SetConversationType(unsigned long nType,
     }
 }
 
+// Dead code: not in the PC executable
 void CGuiInGame::ClearDialogAnimationData()
 {
     m_nDialogAnimations = 0;
@@ -2602,6 +2606,7 @@ void CGuiInGame::HideSubItemCreateMenu()
     }
 }
 
+// Dead code: not in the PC executable
 void CGuiInGame::ShowExamineBox(unsigned long nStrRef, int nReturnInputClass)
 {
     if (m_bItemCreateMenuAvailable != 0)
@@ -3257,6 +3262,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x00680700
 }
 #endif
 
+// Dead code: not in the PC executable
 void CGuiInGame::SetStuntModelData(unsigned long nModel, unsigned long oidObject,
                                    const CResRef& cModel)
 {
@@ -3277,6 +3283,7 @@ CPlaceableCamera* CGuiInGame::GetPlaceableCamera(int nCamera)
     return &m_aPlaceableCameras[nCamera];
 }
 
+// Dead code: not in the PC executable
 void CGuiInGame::LoadCameraModelForDialog(const CResRef& cCameraModel)
 {
     if (cCameraModel.IsValid() && !m_bAnimatedCameraLoaded)
@@ -3408,6 +3415,7 @@ void CGuiInGame::UpdateMessageGUI(CSWGuiPanel* pPanel)
 }
 
 
+// Dead code: not in the PC executable
 void CGuiInGame::StopBarkBubble(int bFade)
 {
     if (m_pBarkBubble != 0)
@@ -4224,6 +4232,7 @@ void CGuiInGame::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x00682330 GO
 #endif
 }
 
+// Dead code: not in the PC executable
 int CGuiInGame::IsPauseGUIVisible()
 {
     return m_pGuiManager->PanelExists(m_pPausePanel);
@@ -5894,6 +5903,7 @@ int CGuiInGame::IsOnDialogNonDependantList(const CExoString& sName)
     return 0;
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int CGuiInGame::GetCurrentEquipScreenNPC()
 {
     int nNPC = -1;

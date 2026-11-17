@@ -392,6 +392,7 @@ int CSWCArea::ClearLineOfSightOneWay(Vector vStart, Vector vEnd, Vector* pHit)
 
 
 
+// Dead code: not in the PC executable
 void CSWCArea::ChangeTriggerDisplay(int bDisplay)
 {
     for (int i = m_lstRenderTriggerIds.num - 1; i >= 0; i--)
@@ -407,6 +408,7 @@ void CSWCArea::ChangeTriggerDisplay(int bDisplay)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCArea::DisplayAllTriggers(int bDisplay)
 {
     for (int i = m_lstRenderTriggerIds.num - 1; i >= 0; i--)
@@ -2206,6 +2208,7 @@ int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
     return TRUE;
 }
 
+// Dead code: not in the PC executable
 void CSWCArea::EmptyCAurObjectToHitCheckIgnoreList()
 {
     while (m_lstHitCheckIgnoreObjects.GetHeadPos() != NULL)

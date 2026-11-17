@@ -413,6 +413,7 @@ CSWGuiMainMenu::~CSWGuiMainMenu()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiMainMenu::ClearListBox()
 {
     m_lbModules.ClearItems();

@@ -19,6 +19,7 @@ int g_bShowCheatResult = 1;
 CExoString g_returnCode;
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 char* dm_setrace(char* szArgs)
 {
     unsigned short nRace;
@@ -68,6 +69,7 @@ char* dm_setrace(char* szArgs)
 }
 #endif
 #ifndef _XBOX
+// Dead code: not in the PC executable
 char* setvideomode(char* szArgs)
 {
     int nWidth = 800;
@@ -451,6 +453,7 @@ int CSWCMessage::SendPlayerToServerInput_UseObject(unsigned long oidObject)
     return SendPlayerToServerMessage(6, 11, pBuffer, nSize);
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::SendPlayerToServerParty_Action(unsigned long oidTarget,
                                                 int nAction)
 {
@@ -859,6 +862,7 @@ int CSWCMessage::SendPlayerToServerCheat_ComputeSafeLocation()
 }
 #endif
 
+// Dead code: not in the PC executable
 int CSWCMessage::SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarget,
                                                           unsigned short nVisualEffect,
                                                           float fDuration,
@@ -935,6 +939,7 @@ char* DebugMode(char* szArgs)
 ConsoleFunc ConFDebugMode("DebugMode", DebugMode);
 #endif
 
+// Dead code: not in the PC executable
 char* visualeffect(char* szArgs)
 {
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();

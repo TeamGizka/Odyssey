@@ -10,11 +10,13 @@
 #include "swguiingame.h"
 #include "swguiingameequip.h"
 
+// Dead code: not in the PC executable
 void CSWGuiQuestItem::Draw(float fElapsed)
 {
     CSWGuiPanel::Draw(fElapsed);
 }
 
+// Dead code: not in the PC executable
 void CSWGuiQuestItem::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -39,6 +41,7 @@ void CSWGuiQuestItem::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 
+// Dead code: not in the PC executable
 void CSWGuiQuestItem::OnControlEntered(CSWGuiControl* pControl)
 {
     if (pControl != 0 && pControl->m_bSelected != 0)
@@ -74,6 +77,7 @@ void CSWGuiQuestItem::OnControlEntered(CSWGuiControl* pControl)
     m_lbxDescription.SetSelectedControl(&m_lblDescription, 0);
 }
 
+// Dead code: not in the PC executable
 CSWGuiQuestItem::CSWGuiQuestItem(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -117,6 +121,7 @@ CSWGuiQuestItem::CSWGuiQuestItem(CSWGuiManager* pManager)
     SetActiveControl(pItems, 0);
 }
 
+// Dead code: not in the PC executable
 CSWGuiQuestItem::~CSWGuiQuestItem()
 {
     m_lbxItems.ClearItems();
@@ -136,6 +141,7 @@ void CSWGuiQuestItem::OnPanelAdded()
 #endif
 }
 
+// Dead code: not in the PC executable
 void CSWGuiQuestItem::PopulateItemListBox()
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();

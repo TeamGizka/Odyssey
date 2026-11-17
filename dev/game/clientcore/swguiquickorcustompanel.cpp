@@ -166,6 +166,7 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
 #endif
 }
 
+// Dead code: not in the PC executable
 CResWOK::CResWOK()
 {
     m_bServiced = 0;
@@ -173,25 +174,30 @@ CResWOK::CResWOK()
     m_pWOKData = 0;
 }
 
+// Dead code: not in the PC executable
 CResWOK::~CResWOK()
 {
 }
 
+// Dead code: not in the PC executable
 unsigned char* CResWOK::GetWOKDataPtr()
 {
     return m_pWOKData;
 }
 
+// Dead code: not in the PC executable
 unsigned long CResWOK::GetWOKSize()
 {
     return m_nWOKSize;
 }
 
+// Dead code: not in the PC executable
 int CResWOK::IsLoaded()
 {
     return m_bServiced;
 }
 
+// Dead code: not in the PC executable
 int CResWOK::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -200,6 +206,7 @@ int CResWOK::OnResourceFreed()
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CResWOK::OnResourceServiced()
 {
     unsigned char* pData;

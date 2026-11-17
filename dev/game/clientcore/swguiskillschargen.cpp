@@ -882,6 +882,7 @@ CSWGuiSkillsCharGen::~CSWGuiSkillsCharGen()
     m_lbDescription.ClearItems();
 }
 
+// Dead code: not in the PC executable
 void CSWGuiSkillsCharGen::CompletePanel()
 {
     m_pManager->PopModalPanel();

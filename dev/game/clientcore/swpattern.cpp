@@ -1,5 +1,6 @@
 #include "swpattern.h"
 
+// Dead code: not in the PC executable
 CSWRumbleMotorData::CSWRumbleMotorData()
 {
     m_pfMagnitudes = 0;
@@ -66,6 +67,7 @@ float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
            m_pfMagnitudes[m_nCurrentSamplePoint];
 }
 
+// Dead code: not in the PC executable
 CSWRumblePattern::CSWRumblePattern()
 {
     m_bLoop = 0;

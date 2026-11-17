@@ -116,21 +116,25 @@ void CSWGuiLevelUpPanel::PowersSelectionCompleted()
     ChangeState(0);
 }
 
+// Dead code: not in the PC executable
 void CSWGuiLevelUpPanel::ClearPowers()
 {
     m_pParent->ClearPowers();
 }
 
+// Dead code: not in the PC executable
 void CSWGuiLevelUpPanel::ClearAbilities()
 {
     m_pParent->ClearAbilities();
 }
 
+// Dead code: not in the PC executable
 void CSWGuiLevelUpPanel::ClearSkills()
 {
     m_pParent->ClearSkills();
 }
 
+// Dead code: not in the PC executable
 void CSWGuiLevelUpPanel::ClearFeats()
 {
     m_pParent->ClearFeats();

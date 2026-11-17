@@ -351,6 +351,7 @@ void CSWCDoor::AnimationUpdate()
     }
 }
 
+// Dead code: not in the PC executable
 unsigned char CSWCDoor::GetState()
 {
     return m_nState;

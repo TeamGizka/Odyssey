@@ -178,6 +178,7 @@ void CSWGuiKeyMapButton::onEventClicked(CSWGuiControl* pControl)
         m_pParent->SetCaptureEvent(this);
     }
 }
+// Dead code: not in the PC executable
 void CSWGuiKeyMapButton::SetEvents()
 {
     AddEvent(CSWGuiControl::EVENT_SELECT, this,
@@ -398,6 +399,7 @@ void CSWGuiKeyMapButton::UpdateColor()
         m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     }
 }
+// Dead code: not in the PC executable
 void CSWGuiKeyMapButton::SetEditing(int bEditing)
 {
     if (bEditing)

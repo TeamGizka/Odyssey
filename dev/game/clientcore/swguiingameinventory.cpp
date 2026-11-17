@@ -112,6 +112,7 @@ void CSWGuiInGameInventory::NotUseable(CSWGuiControl* pControl)
     }
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiInGameInventory::NotUseableOnHawk(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -174,6 +175,7 @@ void CSWGuiInGameInventory::SetNextFilter(CSWGuiControl* pControl)
     m_bUpdateItems = 1;
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameInventory::OnChangeCharacter(CSWGuiControl* pControl)
 {
 }
@@ -821,6 +823,7 @@ void CSWGuiInGameInventory::OnPanelAdded()
                                                        OBJECT_INVALID, 0);
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameInventory::UpdatePortraits()
 {
 }

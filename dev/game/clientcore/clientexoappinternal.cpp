@@ -291,6 +291,7 @@ CAurCamera* CClientExoAppInternal::GetModuleCamera()
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CClientExoAppInternal::ShutDownLegalScreen()
 {
     if (m_pLegalScreen != NULL)
@@ -413,6 +414,7 @@ void CClientExoAppInternal::CreateWorldJournal()
     }
 }
 
+// Dead code: not in the PC executable
 void CClientExoAppInternal::DestroyWorldJournal()
 {
     if (m_pWorldJournal != NULL)
@@ -902,6 +904,7 @@ RenderSound:
 }
 #endif
 
+// Dead code: not in the PC executable
 int CClientExoAppInternal::IsValidResolution(unsigned long nWidth,
                                           unsigned long nHeight)
 {
@@ -1061,6 +1064,7 @@ void CClientExoAppInternal::SetCaptureEventPlayBack(const CExoString& sFileName)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 unsigned long CClientExoAppInternal::GetNearestVideoMode(unsigned long nWidth, unsigned long nHeight,
                                                          unsigned char nBitsPerPixel,
                                                          unsigned long nRefreshRate)
@@ -1710,6 +1714,7 @@ void CClientExoAppInternal::SetPauseState(unsigned char nPauseState, int bPause,
     }
 }
 
+// Dead code: not in the PC executable
 void CClientExoAppInternal::CleanUpModuleServices()
 {
     m_bModuleServicesActive = 0;
@@ -7385,6 +7390,7 @@ void CClientExoAppInternal::SetLoadScreenHint(unsigned long nHint)  // PC 0x0063
     }
 }
 
+// Dead code: not in the PC executable
 unsigned long CClientExoAppInternal::GetLoadScreenHint()
 {
     if (m_pGuiLoadScreen != NULL)
@@ -8556,6 +8562,7 @@ void CClientExoAppInternal::UnloadSuperModelSet()
     }
 }
 
+// Dead code: not in the PC executable
 int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
 {
     unsigned long oidNormalized;
@@ -8581,6 +8588,7 @@ int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CClientExoAppInternal::ClearCameraInput()
 {
     m_pModule->TurnCamera(0.0f, 0.0f);
@@ -9036,6 +9044,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
     return m_bExitGame && m_bExitGamePending;
 }
 #endif
+// Dead code: not in the PC executable
 void CClientExoAppInternal::DestroyQuestJournal()
 {
     if (m_pQuestJournal != NULL)
@@ -9046,6 +9055,7 @@ void CClientExoAppInternal::DestroyQuestJournal()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* playcredits(char* sCommand)
 {
 

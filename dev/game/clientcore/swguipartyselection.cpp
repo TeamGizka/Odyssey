@@ -62,6 +62,7 @@ void CSWGuiPartySelectionButton::SetSelected(int bSelected)
     }
 }
 
+// Dead code: not in the PC executable
 int CSWGuiPartySelectionButton::GetSelected()
 {
     return m_bPartySelected;

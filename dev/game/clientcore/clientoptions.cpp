@@ -626,6 +626,7 @@ void CClientOptions::SetVSync(unsigned long nVSync)
 }
 #endif
 
+// Dead code: not in the PC executable
 void CClientOptions::SetUseSmallFonts(int bSmallFonts)
 {
     m_bUseSmallFonts = bSmallFonts;

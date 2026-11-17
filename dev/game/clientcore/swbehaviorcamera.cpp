@@ -232,6 +232,7 @@ void CSWCameraOnAStick::SetCameraStyle(int nStyle)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCameraOnAStick::UpdateCameraStyle()
 {
     SetCameraStyle(g_pAppManager->m_pClientExoApp->GetModule()

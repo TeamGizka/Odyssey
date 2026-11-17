@@ -191,6 +191,7 @@ void CSWGuiTutorialBox::PerformAttack(CSWGuiControl* pControl)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiTutorialBox::MessageBoxPause(CSWGuiControl* pControl)
 {
     int bPaused = g_pAppManager->GetClientExoApp()->GetPausedByCombat();

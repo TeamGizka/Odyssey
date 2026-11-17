@@ -330,6 +330,7 @@ enum
     ITEM_VISUAL_EFFECT_NEGATIVE = 7
 };
 
+// Dead code: not in the PC executable
 int CSWCItem::LoadVisualEffect(unsigned char nEffect)
 {
     CExoString sModel;

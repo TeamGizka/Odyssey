@@ -43,6 +43,7 @@ void CSWGuiMainInterface::QueueActiveAction()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiTargetActionMenu::ResetFont()
 {
 #ifndef _XBOX
@@ -87,6 +88,7 @@ void CSWGuiMainInterfaceAction::Draw(float fElapsed)
 #endif
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiMainInterfaceAction::Pulse(int bPulse)
 {
     if (bPulse)
@@ -103,6 +105,7 @@ void CSWGuiMainInterfaceAction::Pulse(int bPulse)
 }
 #endif
 
+// Dead code: not in the PC executable
 void CSWGuiMainInterface::ShiftControl(CSWGuiControl& cControl, int nOffset)
 {
     CSWGuiExtent cExtent = cControl.m_cExtent;
@@ -117,6 +120,7 @@ CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()
 #else
 #endif
 
+// Dead code: not in the PC executable
 void CSWGuiMainInterfaceStatus::ShiftControl(int nOffset)
 {
     CSWGuiExtent cExtent = m_cLabel.m_cExtent;

@@ -306,6 +306,7 @@ int CSWCCreatureStats::CalculateNumAttacks()
     return 1;
 }
 
+// Dead code: not in the PC executable
 CExoString CSWCCreatureStats::GetAlignmentInfo()
 {
     CExoString sInfo;
@@ -359,6 +360,7 @@ int CSWCCreatureStats::CheckCustomPortrait(CResRef* pResRef, int bFemale)
     return 0;
 }
 
+// Dead code: not in the PC executable
 CExoString CSWCCreatureStats::GetFullName()
 {
     CExoString* pName = &m_sFirstName;
@@ -481,6 +483,7 @@ CResRef CSWCCreatureStats::GetPortrait(int bAlternate)
     return CResRef(sResRef);
 }
 
+// Dead code: not in the PC executable
 int CSWCCreatureStats::GetBaseAttackBonus()
 {
     if (m_bOwnsCombatInformation == 1)
@@ -500,6 +503,7 @@ int CSWCCreatureStats::GetBaseAttackBonus()
     return nBonus;
 }
 
+// Dead code: not in the PC executable
 int CSWCCreatureStats::GetCombatModeAttackModifier(CSWCCreature* pCreature)
 {
     if (pCreature == NULL)
@@ -525,6 +529,7 @@ int CSWCCreatureStats::GetCombatModeAttackModifier(CSWCCreature* pCreature)
     return 0;
 }
 
+// Dead code: not in the PC executable
 CExoString CSWCCreatureStats::GetAttackBonusString(CSWCCreature* pCreature, int nAttack,
                                                    int bOffHand)
 {
@@ -644,6 +649,7 @@ CExoString CSWCCreatureStats::GetAttackBonusString(CSWCCreature* pCreature, int 
     return sResult;
 }
 
+// Dead code: not in the PC executable
 CExoString CSWCCreatureStats::GetGeneralDamageBonusString(CSWCCreature* pCreature,
                                                           int bOffHand)
 {
@@ -695,6 +701,7 @@ CExoString CSWCCreatureStats::GetGeneralDamageBonusString(CSWCCreature* pCreatur
     return sResult;
 }
 
+// Dead code: not in the PC executable
 int CSWCCreatureStats::GetCombatModeDamageModifier(CSWCCreature* pCreature)
 {
     if (pCreature->m_nPowerAttackState == 1)
@@ -1562,6 +1569,7 @@ CSWCCreatureStats_ClassInfo::CSWCCreatureStats_ClassInfo()
     memset(m_aSpellsPerDayLeft, 0, sizeof(m_aSpellsPerDayLeft));
 }
 
+// Dead code: not in the PC executable
 void CSWCCreatureStats_ClassInfo::RemoveKnownSpell(unsigned char nLevel,
                                                    unsigned long nSpell)
 {
@@ -2434,6 +2442,7 @@ void CSWCCreatureStats::UpdateAbilityModifiedSkillRanks()
     }
 }
 
+// Dead code: not in the PC executable
 unsigned char CSWCCreatureStats::CalculateUnarmedDamageDice()
 {
     int nSizeCategory;
@@ -2443,6 +2452,7 @@ unsigned char CSWCCreatureStats::CalculateUnarmedDamageDice()
     return 0;
 }
 
+// Dead code: not in the PC executable
 unsigned char CSWCCreatureStats::CalculateUnarmedDamageDie()
 {
     int nSizeCategory;
@@ -2722,6 +2732,7 @@ void CSWCCreatureStats::GetMenuInfo(
     }
 }
 
+// Dead code: not in the PC executable
 int CSWCCreatureStats::CalculateAttackModifier()
 {
     return GetSTRMod();

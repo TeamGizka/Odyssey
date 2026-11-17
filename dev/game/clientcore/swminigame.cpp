@@ -439,6 +439,7 @@ SWMGTrackInfo* CSWMiniGame::GetProtoTrack(int nIndex)
     return m_lstTracks[nIndex];
 }
 
+// Dead code: not in the PC executable
 SWMGTrackInfo* CSWMiniGame::GetProtoTrack(const CResRef& cResRef)
 {
     int nTracks = m_lstTracks.num;

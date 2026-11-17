@@ -134,6 +134,7 @@ void CServerInfo::SetDifficultyLevel(int nDifficultyLevel)
     m_nDifficultyLevel = nDifficultyLevel;
 }
 
+// Dead code: not in the PC executable
 void CServerInfo::SetModuleName(const CExoString& sModuleName)
 {
     m_sModuleName = sModuleName;

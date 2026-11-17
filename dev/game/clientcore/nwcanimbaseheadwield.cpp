@@ -450,6 +450,7 @@ void CSWCAnimBaseHeadWield::SetHeadItem(unsigned long nItem)
     CSWCAnimBaseHead::SetHeadItem(nItem);
 }
 
+// Dead code: not in the PC executable
 CSWCAnimBaseHeadWield::~CSWCAnimBaseHeadWield()
 {
     UnloadModel();

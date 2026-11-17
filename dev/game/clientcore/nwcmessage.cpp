@@ -79,6 +79,7 @@ CExoString CSWCMessage::ReadCExoLocStringClient(CResRef& cResRef,
     return ReadCExoString(32);
 }
 
+// Dead code: not in the PC executable
 CExoString CSWCMessage::ReadCExoLocStringClient()
 {
     CResRef cResRef;

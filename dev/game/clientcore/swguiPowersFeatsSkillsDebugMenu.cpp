@@ -73,6 +73,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteFeats(
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiPowersFeatsSkillsDebugMenu::HideMenu()
 {
     CreateMainPowersFeatsSkillsMenu();

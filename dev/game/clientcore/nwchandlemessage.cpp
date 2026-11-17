@@ -384,6 +384,7 @@ int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerQuickChat(unsigned char nMinor)
 {
     return 1;
@@ -3472,26 +3473,31 @@ int CSWCMessage::HandleServerToPlayerGuiInfoPopupMessage(unsigned char nMinor)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerExamineGui_CreatureData()
 {
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerExamineGui_ItemData()
 {
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerExamineGui_PlaceableData()
 {
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerExamineGui_MineData()
 {
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerExamineGui_DoorData()
 {
     return 0;
@@ -3603,6 +3609,7 @@ CSWCItem* CSWCMessage::CreateItem(unsigned long nBaseItem,
     return pItem;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerDialog(unsigned char nMinor)
 {
     return 1;
@@ -3820,6 +3827,7 @@ int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerCharacterList(unsigned char nMinor)
 {
     return 0;
@@ -6520,11 +6528,13 @@ int CSWCMessage::HandleServerToPlayerGuiInventory(unsigned char nMinor)
     return bSuccess;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleInventoryFindSourceAndUnghost(CSWCItem* pItem)
 {
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleInventoryUnghostSourceItem(CSWCItem* pItem)
 {
     return 0;
@@ -10335,6 +10345,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Placeable(unsigned long oidObject
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerDebugInfo_Area(unsigned long oidArea)
 {
     return 1;
@@ -10596,6 +10607,7 @@ int CSWCMessage::HandleServerToPlayerCharacterDownload(unsigned char nMinor)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerCheat_PonyRide()
 {
     ReadOBJECTIDClient();
@@ -10603,6 +10615,7 @@ int CSWCMessage::HandleServerToPlayerCheat_PonyRide()
     return !MessageReadOverflow(1);
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerCheat_DebugMode()
 {
     int bDebugMode = ReadBOOL();
@@ -10680,6 +10693,7 @@ int CSWCMessage::HandleServerToPlayerGuiTimingEvent_Info()
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWCMessage::HandleServerToPlayerPlayModuleCharacterList(unsigned char nMinor)
 {
     return 1;

@@ -290,6 +290,7 @@ void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiInGameOptions::SetActiveButton(int nOption)
 {
     if (nOption >= 0 && nOption < 8)

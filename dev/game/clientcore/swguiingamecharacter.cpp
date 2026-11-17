@@ -614,6 +614,7 @@ void CSWGuiInGameCharacter::SetStats()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameCharacter::UpdatePortraits()
 {
 }
@@ -756,6 +757,7 @@ void CSWGuiInGameCharacter::DoAutoLevelup(CSWGuiControl* pControl)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameCharacter::OnChangeCharacter(CSWGuiControl* pControl)
 {
 }

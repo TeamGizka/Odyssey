@@ -192,6 +192,7 @@ void CSWGuiPortraitCharGen::HandleCancelButton()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiPortraitCharGen::HandleLeftButton()
 {
     m_nPortraitIndex--;

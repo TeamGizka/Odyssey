@@ -180,6 +180,7 @@ const int XBOX_LEVEL_MEMORY_CAP = 0xd00000;
 #define XBOX_TEXTURE_COMPRESSION 0.23f
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* Buffers(char* sBuffer)
 {
     sprintf(sBuffer, "VB[%d][%d] IB[%d][%d]",
@@ -188,6 +189,7 @@ const char* Buffers(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* C_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "tot[%06.1f] snd[%06.1f] AI:[%06.1f] gui:[%06.1f]",
@@ -195,12 +197,14 @@ const char* C_Stats(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* AI_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "Mod[%05.2f] Obj[%05.2f]", g_AIModuleTime, g_AIObjectTime);
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* TexMem(char* sBuffer)
 {
     sprintf(sBuffer, "(kB) Tex %d Cmp %d LM %d CM %d BM %d",
@@ -210,6 +214,7 @@ const char* TexMem(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* XbxMem(char* sBuffer)
 {
     sprintf(sBuffer, "Anims %d Parts %d Tex %d", animationfootprint / BYTES_PER_KB,
@@ -218,6 +223,7 @@ const char* XbxMem(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* ClearLogCounters(char* sBuffer)
 {
     return "NOT ENABLED";
@@ -228,6 +234,7 @@ const char* DumpLogCounters(char* sBuffer)
     return "NOT ENABLED";
 }
 
+// Dead code: not in the PC executable
 void LogLevelStats()
 {
     FILE* pFile = fopen("D:\\Logs\\Levelstats.txt", "a");
@@ -354,6 +361,7 @@ UINT RestoreScreenSaverState()  // PC 0x00401650 GOG 0x00401650
 }
 #endif
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* tc(char* sBuffer)
 {
     int nLevelVertices = RyanTotalLevelVertices;
@@ -402,12 +410,14 @@ void SetClearColor(char* sColor)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* S_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "tot[%07.2f]", g_ServerUpdateTime);
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* GuiMem(char* sBuffer)
 {
     sprintf(sBuffer, "Tex %d Part %d", RyanStartTextureSize / BYTES_PER_KB,
@@ -415,6 +425,7 @@ const char* GuiMem(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* LevMem(char* sBuffer)
 {
     sprintf(sBuffer, "Tot %d Tex %d Part %d Vert %d-%d",
@@ -424,6 +435,7 @@ const char* LevMem(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* DynMem(char* sBuffer)
 {
     int nTextures = usedtexturememory - RyanEndTextureSize;
@@ -436,6 +448,7 @@ const char* DynMem(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* GfxMem(char* sBuffer)
 {
     int nResources;
@@ -455,6 +468,7 @@ const char* GfxMem(char* sBuffer)
     return sBuffer;
 }
 
+// Dead code: not in the PC executable
 const char* ResMem(char* sBuffer)
 {
     int nResources;
@@ -474,6 +488,7 @@ const char* ResMem(char* sBuffer)
 }
 #endif
 
+// Dead code: not in the PC executable
 void SaveCreature(char* sName)
 {
     g_pAppManager->m_pClientExoApp->GetPlayerCreature()->SaveCharGenCreature();
@@ -598,6 +613,7 @@ inline DWORD ProcessorMask(unsigned int nProcessor)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void SetProcessorAffinity(unsigned int nProcessor)
 {
     if (nProcessor < 32)

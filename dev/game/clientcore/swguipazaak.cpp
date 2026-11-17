@@ -42,6 +42,7 @@ static inline void TracePazaak()
 {
 }
 
+// Dead code: not in the PC executable
 CSWGuiActivatedButton::CSWGuiActivatedButton()
 {
     m_fFlashTimer = -1.0f;
@@ -686,6 +687,7 @@ void CSWGuiTutorial::PlaceAbove(CSWGuiControl* pControl)
     SetExtent(cExtent);
 }
 
+// Dead code: not in the PC executable
 unsigned long CSWGuiTutorial::GetHelpText()
 {
     if (m_nHelpIndex < m_lHelp.m_nCount)
@@ -1289,6 +1291,7 @@ void CSWGuiTutorial::ShowHelp(unsigned long nHelpStrRef,
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiTutorial::SetBButtonEnabled(int bEnabled)
 {
     SetAllowCancel(bEnabled);

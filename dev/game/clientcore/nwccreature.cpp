@@ -175,6 +175,7 @@ void CSWCCreature::UpdateMonkVisuals()
 {
 }
 
+// Dead code: not in the PC executable
 int CSWCCreature::ResetAnimationState()
 {
     if (GetLoopingAnimation() == CREATURE_ANIMATION_COMBAT_READY)
@@ -281,6 +282,7 @@ inline int CSWCCreature::IsHostile()
     return this->m_nHostile == HOSTILE_STATE_HOSTILE;
 }
 
+// Dead code: not in the PC executable
 void CSWCCreature::DoFootstepRumble(int nFootstepType)
 {
     g_pAppManager->GetClientExoApp()->LookUpAndPerformRumbleWithCutOff(
@@ -1980,6 +1982,7 @@ void CSWCCreature::SetDesiredOrientationForLock()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCCreature::LoadMonkVisuals()
 {
     unsigned short nAppearance = GetAppearance()->m_nAppearance;
@@ -2022,6 +2025,7 @@ void CSWCCreature::UnloadMonkVisuals()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCCreature::LoadSpecialAttacks(unsigned char nType)
 {
     switch (nType)
@@ -2066,6 +2070,7 @@ void CSWCCreature::LoadSpecialAttacks(unsigned char nType)
         GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1), sHook, 0);
 }
 
+// Dead code: not in the PC executable
 void CSWCCreature::StopSpecialAttacks(unsigned char nType)
 {
     switch (nType)
@@ -4885,6 +4890,7 @@ void CSWCCreature::GetMines(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCCreature::ActionMenuSetMine(unsigned long oidItem, CSWCCreature* pTarget)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -5887,6 +5893,7 @@ int CSWCCreature::IsDriveAnimationBlocked()
     return nEngagedState;
 }
 
+// Dead code: not in the PC executable
 void Swing(const CExoString& sSound, CSWCCombatAttackData* pAttackData,
            int nSoundCount)
 {

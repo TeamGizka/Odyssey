@@ -70,6 +70,7 @@ void CSWCAmbientSound::SetMusicDelay(int nDelay)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCAmbientSound::SetMusicVolume(unsigned char nVolume)
 {
     if (nVolume >= CExoSound::CMAX_VOLUME)

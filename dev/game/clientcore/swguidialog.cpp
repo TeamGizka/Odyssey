@@ -629,12 +629,14 @@ void CSWGuiDialogLetterbox::Draw(float fElapsed)
     CSWGuiPanel::Draw(fElapsed);
 }
 
+// Dead code: not in the PC executable
 int CSWGuiDialogLetterbox::GetLetterboxChangeHeight(const float& fElapsed)
 {
     float fScrollRate = (m_cTarget.m_nHeight - m_cStart.m_nHeight) * 2.0f;
     return (int)(fScrollRate * fElapsed);
 }
 
+// Dead code: not in the PC executable
 int CSWGuiDialogLetterbox::GetLetterboxChangeTop(const float& fElapsed)
 {
     float fScrollRate = (m_cTarget.m_nTop - m_cStart.m_nTop) * 2.0f;

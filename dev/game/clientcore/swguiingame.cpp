@@ -30,6 +30,7 @@ template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 
 #define SWGUIINGAME_DEBUG 0
 
+// Dead code: not in the PC executable
 void CSWGuiMessageBox::OnDeath(CSWGuiControl* pControl)
 {
     g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
@@ -41,6 +42,7 @@ static inline void SetBorderFillImage(CSWGuiBorderParams& cParams, const CResRef
 }
 #endif
 
+// Dead code: not in the PC executable
 void CSWGuiMessageBox::DisplayDeathMessage()
 {
 #ifndef _XBOX
@@ -58,6 +60,7 @@ void CSWGuiMessageBox::DisplayDeathMessage()
     m_pManager->AddPanel(this, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameMessages::ToggleMessages()
 {
     if (m_lbMessages.m_bEnabled)

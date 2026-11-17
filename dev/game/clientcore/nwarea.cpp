@@ -63,6 +63,7 @@ CSWArea::~CSWArea()
     delete m_pBoundingBoxIds;
 }
 
+// Dead code: not in the PC executable
 int CSWArea::AddStaticObject(unsigned long nId, const Vector& vOrientation,
                              const Vector& vPosition, int nVertices,
                              Vector* pVertices, int nTriangles, int* pTriangles)
@@ -114,6 +115,7 @@ int CSWArea::AddStaticObject(unsigned long nId, const Vector& vOrientation,
     return m_nStaticObjectCount - 1;
 }
 
+// Dead code: not in the PC executable
 void CSWArea::GrowStaticObjectArray()
 {
     if (m_nStaticObjectAlloc == 0)
@@ -149,6 +151,7 @@ void CSWArea::GrowStaticObjectArray()
     m_pStaticObjectIds = pIds;
 }
 
+// Dead code: not in the PC executable
 void CSWArea::GrowStaticObjectVertices(int nAdditional)
 {
     int nNewAlloc = m_nStaticVertexAlloc;
@@ -170,6 +173,7 @@ void CSWArea::GrowStaticObjectVertices(int nAdditional)
     m_pStaticVertices = pVertices;
 }
 
+// Dead code: not in the PC executable
 void CSWArea::GrowStaticObjectTriangles(int nAdditional)
 {
     int nNewAlloc = m_nStaticTriangleAlloc;
@@ -334,6 +338,7 @@ int CSWArea::IntersectLineSegments(float fX1, float fY1, float fX2, float fY2,
     return bHit;
 }
 
+// Dead code: not in the PC executable
 void CSWArea::RemoveStaticObject(int nIndex)
 {
     if (nIndex == -1 || nIndex >= m_nStaticObjectCount)
@@ -367,6 +372,7 @@ void CSWArea::RemoveStaticObject(int nIndex)
     }
 }
 
+// Dead code: not in the PC executable
 int CSWArea::GetIsNight()
 {
     return m_bIsNight;

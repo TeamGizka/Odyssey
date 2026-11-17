@@ -316,6 +316,7 @@ void CSWCSoundObject::UpdateVolumeVariation()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCSoundObject::UpdateRandomPosition()
 {
 }
@@ -349,6 +350,7 @@ template <> inline void CExoArrayList<CResRef>::DelIndex(int nIndex)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWCSoundObject::ResetLastUpdate()
 {
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(

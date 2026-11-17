@@ -20,6 +20,7 @@ float fInertiaScale = 1.0f;
 
 extern float fInertiaScale;
 
+// Dead code: not in the PC executable
 void CSWTrackFollower::AttachGuns()
 {
     int nModels = m_lstModels.num;
@@ -321,6 +322,7 @@ Vector CSWMiniPlayer::SetOffset(const Vector& vOffset)
     return m_vOffset;
 }
 
+// Dead code: not in the PC executable
 Vector CSWMiniPlayer::DoInertia(const Vector& vPrevious,
                                const Vector& vCurrent,
                                const Quaternion& qOrientation, float fTime)
@@ -570,6 +572,7 @@ void OnReportKey(CAurObject* pObject, char* sEvent, void* pUserData)
 #endif
 }
 
+// Dead code: not in the PC executable
 void CSWTrackFollower::UpdateGunBanks()
 {
     if (m_bDying)

@@ -491,6 +491,7 @@ void CSWCWorldJournal::DeleteAllEntries()
     m_bChanged = 1;
 }
 
+// Dead code: not in the PC executable
 CSWCSortedJournalArrayList::CSWCSortedJournalArrayList()
     : m_lstEntries(0), m_lstOrder(0)
 {
@@ -498,6 +499,7 @@ CSWCSortedJournalArrayList::CSWCSortedJournalArrayList()
     m_bHasChanged = 0;
 }
 
+// Dead code: not in the PC executable
 SJournalEntry* CSWCSortedJournalArrayList::GetEntryAt(int nIndex)
 {
     if (nIndex >= 0 && nIndex < m_lstEntries.num)

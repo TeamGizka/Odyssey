@@ -273,6 +273,7 @@ void CSWGuiCustomPanel::ClearAbilities()
     m_pCreature->m_pStats->m_nCreationStage = 30;
 }
 
+// Dead code: not in the PC executable
 void CSWGuiCustomPanel::PlayGame()
 {
     ((CSWGuiMainCharGen*)m_pParentPanel)->BeginPlayGame();

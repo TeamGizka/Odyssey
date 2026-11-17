@@ -79,6 +79,7 @@ void CSWGuiSaveLoad::HandleFilterPress(CSWGuiControl* pControl)
 }
 #endif
 
+// Dead code: not in the PC executable
 void CSWGuiSaveNamePanel::SetTextAndPointer(CSWGuiSaveLoad* pSaveLoad, const CExoString& sText)
 {
     m_pSaveLoad = pSaveLoad;

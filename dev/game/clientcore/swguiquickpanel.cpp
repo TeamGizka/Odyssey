@@ -13,6 +13,7 @@
 
 #define SWGUIQUICKPANEL_DEBUG 0
 
+// Dead code: not in the PC executable
 void CSWGuiQuickPanel::CancelPanel()
 {
 #ifdef _XBOX
@@ -245,6 +246,7 @@ void CSWGuiQuickPanel::HandleInputEvent(int nEvent, int bPressed)
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
 
+// Dead code: not in the PC executable
 CExoString CSWGuiQuickPanel::GetCurrentName()
 {
     return m_pMainCharGen->m_sName;
@@ -277,6 +279,7 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
 
+// Dead code: not in the PC executable
 void CSWGuiQuickPanel::PlayGame()
 {
     m_pMainCharGen->BeginPlayGame();

@@ -236,6 +236,7 @@ void CClientExoAppInternal::ShowMouse(int nFlags)
     }
 }
 
+// Dead code: not in the PC executable
 int NearestObjectCompare(void* pObjectId, CNearestStruct cNearest)
 {
     return pObjectId == (void*)cNearest.m_oidObject;
@@ -675,6 +676,7 @@ void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840 GOG 0x00
 }
 #endif
 
+// Dead code: not in the PC executable
 CResRef CClientExoAppInternal::ActionIconToCursorResref(int nAction, int bMultipleActions)
 {
     return CResRef(g_asMouseCursorNames[ActionIconToMouseCursor(nAction, bMultipleActions)]);

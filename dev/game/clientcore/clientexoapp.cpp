@@ -251,6 +251,7 @@ CSWCSoundObject* CClientExoApp::GetSoundObjectByGameObjectID(
     return m_pcExoAppInternal->GetSoundObjectByGameObjectID(oidObject);
 }
 
+// Dead code: not in the PC executable
 int CClientExoApp::GetInStartNewModule()
 {
     return m_pcExoAppInternal->m_bInStartNewModule;
@@ -803,6 +804,7 @@ void CClientExoApp::SetDialogSent(int bSent)
     m_pcExoAppInternal->m_bDialogSent = bSent;
 }
 
+// Dead code: not in the PC executable
 int CClientExoApp::GetDialogSent()
 {
     return m_pcExoAppInternal->m_bDialogSent;
@@ -813,6 +815,7 @@ void CClientExoApp::SetDialogModelsSent(int bSent)
     m_pcExoAppInternal->m_bDialogModelsSent = bSent;
 }
 
+// Dead code: not in the PC executable
 int CClientExoApp::GetDialogModelsSent()
 {
     return m_pcExoAppInternal->m_bDialogModelsSent;
@@ -876,6 +879,7 @@ void CClientExoApp::SetGuiGameSlow(int bSlow)
     m_pcExoAppInternal->m_bGuiGameSlow = bSlow;
 }
 
+// Dead code: not in the PC executable
 void CClientExoApp::SetRunScript(const CExoString& sScript)
 {
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
@@ -916,11 +920,13 @@ void CClientExoApp::SetFutureLeader(unsigned long oidObject)
     m_pcExoAppInternal->m_oidFutureLeader = oidObject;
 }
 
+// Dead code: not in the PC executable
 unsigned long CClientExoApp::GetFutureLeader()
 {
     return m_pcExoAppInternal->m_oidFutureLeader;
 }
 
+// Dead code: not in the PC executable
 int CClientExoApp::GetEndGamePending()
 {
     return m_pcExoAppInternal->m_bEndGamePending;
@@ -994,6 +1000,7 @@ void CClientExoApp::SetLoadScreenHint(unsigned long nHint)
     m_pcExoAppInternal->SetLoadScreenHint(nHint);
 }
 
+// Dead code: not in the PC executable
 unsigned long CClientExoApp::GetLoadScreenHint()
 {
     return m_pcExoAppInternal->GetLoadScreenHint();
@@ -1085,6 +1092,7 @@ void CClientExoApp::SetMinGlobalRim(int bMinGlobalRim)
 }
 #endif
 
+// Dead code: not in the PC executable
 int CClientExoApp::GetLoadingSaveGame()
 {
     return m_pcExoAppInternal->m_nLoadingSaveGame;
@@ -1115,16 +1123,19 @@ CExoString& CClientExoApp::GetLiveContentName(int nIndex)
     return m_pcExoAppInternal->m_aLiveContentNames[nIndex].m_sName;
 }
 
+// Dead code: not in the PC executable
 int CClientExoApp::GetLiveContentExists(int nIndex)
 {
     return m_pcExoAppInternal->m_aLiveContentNames[nIndex].m_bExists;
 }
 
+// Dead code: not in the PC executable
 int CClientExoApp::GetLiveContentCorrupt(int nIndex)
 {
     return m_pcExoAppInternal->m_aLiveContentNames[nIndex].m_bCorrupt;
 }
 
+// Dead code: not in the PC executable
 unsigned long CClientExoApp::GetLoadScreenHintUpdateTimer()
 {
     return m_pcExoAppInternal->m_nLoadScreenHintUpdateTimer;
@@ -1257,6 +1268,7 @@ int CClientExoApp::GetCreditSequenceInProgress()
     return m_pcExoAppInternal->m_bCreditSequenceInProgress;
 }
 
+// Dead code: not in the PC executable
 void CClientExoApp::SetCreditSequenceInProgress(int bInProgress)
 {
     m_pcExoAppInternal->m_bCreditSequenceInProgress = bInProgress;
@@ -1272,6 +1284,7 @@ void CClientExoApp::SetLastClickedOnTarget(unsigned long oidObject)  // PC 0x006
     m_pcExoAppInternal->m_oidLastClickedOnTarget = oidObject;
 }
 
+// Dead code: not in the PC executable
 unsigned long CClientExoApp::GetLastClickedOnTarget()
 {
     return m_pcExoAppInternal->m_oidLastClickedOnTarget;
@@ -1332,6 +1345,7 @@ CExoString CClientExoApp::GetDisplayCharacterForKey(int nKey)
     return m_pcExoAppInternal->GetDisplayCharacterForKey(nKey);
 }
 
+// Dead code: not in the PC executable
 int CClientExoApp::IsValidResolution(unsigned long nWidth,
                                      unsigned long nHeight)
 {
@@ -1346,6 +1360,7 @@ int CClientExoApp::GetSoundPausedByCombat()  // PC 0x006395A0 GOG 0x006394A0
     return m_pcExoAppInternal->m_nSoundPausedByCombat;
 }
 
+// Dead code: not in the PC executable
 void CClientExoApp::SetSoundPausedByCombat(int nPaused)
 {
     m_pcExoAppInternal->m_nSoundPausedByCombat = nPaused;
@@ -1367,12 +1382,14 @@ void CClientExoApp::EnableMainMenuIdleTimer()
         m_pcExoAppInternal->m_pMainMenu->m_bIdleTimerDisabled = 0;
     }
 }
+// Dead code: not in the PC executable
 int CClientExoApp::DontUseThisSetPlayerCreature(unsigned long oidObject)
 {
     return m_pcExoAppInternal->DontUseThisSetPlayerCreature(oidObject);
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CClientExoApp::HandleExitGameButton()
 {
     m_pcExoAppInternal->HandleExitGameButton(NULL);

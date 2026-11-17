@@ -718,6 +718,7 @@ void CSWGuiInGameJournal::OnPanelRemoved()
     MarkNewQuestsObserved();
 }
 
+// Dead code: not in the PC executable
 CResSET::CResSET()
 {
     m_bServiced = 0;
@@ -726,10 +727,12 @@ CResSET::CResSET()
     m_nNumSections = 0;
 }
 
+// Dead code: not in the PC executable
 CResSET::~CResSET()
 {
 }
 
+// Dead code: not in the PC executable
 int CResSET::CopySETData(unsigned char* pSETData)
 {
     if (m_bServiced == 0)
@@ -740,21 +743,25 @@ int CResSET::CopySETData(unsigned char* pSETData)
     return 1;
 }
 
+// Dead code: not in the PC executable
 char* CResSET::GetSETDataPtr()
 {
     return (char*)m_pResource;
 }
 
+// Dead code: not in the PC executable
 unsigned long CResSET::GetSETSize()
 {
     return m_nSETSize;
 }
 
+// Dead code: not in the PC executable
 int CResSET::IsLoaded()
 {
     return m_bServiced;
 }
 
+// Dead code: not in the PC executable
 int CResSET::OnResourceFreed()
 {
     unsigned long nSection;
@@ -777,6 +784,7 @@ int CResSET::OnResourceFreed()
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CResSET::OnResourceServiced()
 {
     char szValue[256];
@@ -811,6 +819,7 @@ int CResSET::OnResourceServiced()
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CResSET::CreateSectionTable()
 {
     char szLine[256];
@@ -985,6 +994,7 @@ int CResSET::CreateSectionTable()
     return 1;
 }
 
+// Dead code: not in the PC executable
 void CResSET::GetSectionEntryValue(char* szSection, char* szEntry, char* szValue)
 {
     unsigned long nSection;
@@ -1017,6 +1027,7 @@ void CResSET::GetSectionEntryValue(char* szSection, char* szEntry, char* szValue
     }
 }
 
+// Dead code: not in the PC executable
 char* CResSET::SkipWhiteSpace(char* pLine)
 {
     while (*pLine == ' ' || *pLine == '\t')
@@ -1026,6 +1037,7 @@ char* CResSET::SkipWhiteSpace(char* pLine)
     return pLine;
 }
 
+// Dead code: not in the PC executable
 char* CResSET::GetNextLine(unsigned long nOffsetStart, unsigned long* pOffsetEnd)
 {
     char* pLine;

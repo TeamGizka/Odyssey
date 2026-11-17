@@ -93,6 +93,7 @@ int CSWPlayerControl::SetCamera(CAurCamera* pCamera)
 
 #define SWPLAYERCONTROL_DEFAULT_ACCELERATION 20.0f
 
+// Dead code: not in the PC executable
 float CSWPlayerControlCamRelative::GetAcceleration()
 {
     if (GetPlayer() != NULL)
@@ -165,6 +166,7 @@ void CSWPlayerControlCamRelative::ResetDriveAcceleration()
     m_vFacing = Vector();
 }
 
+// Dead code: not in the PC executable
 CSWPlayerControl::CSWPlayerControl()
 {
     m_oidPlayer = OBJECT_INVALID;
@@ -172,6 +174,7 @@ CSWPlayerControl::CSWPlayerControl()
     m_bEnabled = 0;
 }
 
+// Dead code: not in the PC executable
 CSWPlayerControl::CSWPlayerControl(unsigned long oidPlayer, CAurCamera* pCamera)
 {
     m_oidPlayer = OBJECT_INVALID;
@@ -181,6 +184,7 @@ CSWPlayerControl::CSWPlayerControl(unsigned long oidPlayer, CAurCamera* pCamera)
     m_pCamera = pCamera;
 }
 
+// Dead code: not in the PC executable
 CSWPlayerControlCamRelative::CSWPlayerControlCamRelative()
 {
     Init();

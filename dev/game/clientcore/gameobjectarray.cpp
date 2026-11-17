@@ -205,6 +205,7 @@ unsigned char CGameObjectArray::AddObjectAtPos(unsigned long oidObject,
     return NULL_GAMEOBJECT;
 }
 
+// Dead code: not in the PC executable
 unsigned char CGameObjectArray::AddCharacterObjectAtPos(unsigned long oidObject,
                                                         CGameObject* pObject)
 {
@@ -462,6 +463,7 @@ unsigned char CGameObjectArray::Delete(unsigned long oidObject,
     return SUCCESS;
 }
 
+// Dead code: not in the PC executable
 void CGameObjectArray::Clean(unsigned short nType)
 {
 }
@@ -494,6 +496,7 @@ unsigned char CGameObjectArray::Delete(unsigned long oidObject)
     return Delete(oidObject, &pObject);
 }
 
+// Dead code: not in the PC executable
 CResPWK::CResPWK()
 {
     m_bServiced = 0;
@@ -502,25 +505,30 @@ CResPWK::CResPWK()
     m_bAllocPrefix = 1;
 }
 
+// Dead code: not in the PC executable
 CResPWK::~CResPWK()
 {
 }
 
+// Dead code: not in the PC executable
 unsigned char* CResPWK::GetPWKDataPtr()
 {
     return m_pPWKData;
 }
 
+// Dead code: not in the PC executable
 unsigned long CResPWK::GetPWKSize()
 {
     return m_nPWKSize;
 }
 
+// Dead code: not in the PC executable
 int CResPWK::IsLoaded()
 {
     return m_bServiced;
 }
 
+// Dead code: not in the PC executable
 int CResPWK::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -529,6 +537,7 @@ int CResPWK::OnResourceFreed()
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CResPWK::OnResourceServiced()
 {
     unsigned char* pData;

@@ -19,6 +19,7 @@ static int g_nOldScreenWidth = 0;
 
 static float creditsscrollduration = 305.0f;
 
+// Dead code: not in the PC executable
 void CSWGuiInGameCredits::Initialize()
 {
     m_fScrollTime = 0.0f;

@@ -133,6 +133,7 @@ void CSWCVisualEffectOnObject::SetEffectDone(CAurObject* pEffectModel)
     }
 }
 
+// Dead code: not in the PC executable
 int CSWCVisualEffectOnObject::GetHardCodedCessationLength(
     unsigned short nVisualEffect)
 {
@@ -277,6 +278,7 @@ void CSWCVisualEffectOnObject::UnloadHardCodedVisualEffect()
     }
 }
 
+// Dead code: not in the PC executable
 CSWCObject* CSWCVisualEffectOnObject::GetTargetCSWCObject()
 {
     CSWCObject* pObject =
@@ -288,6 +290,7 @@ CSWCObject* CSWCVisualEffectOnObject::GetTargetCSWCObject()
     return pObject->AsSWCObject();
 }
 
+// Dead code: not in the PC executable
 CSWCObject* CSWCVisualEffectOnObject::GetSourceCSWCObject()
 {
     CSWCObject* pObject =
@@ -299,6 +302,7 @@ CSWCObject* CSWCVisualEffectOnObject::GetSourceCSWCObject()
     return pObject->AsSWCObject();
 }
 
+// Dead code: not in the PC executable
 void CSWCVisualEffectOnObject::DoVFXRumble()
 {
     CSWCObject* pObject = GetTargetCSWCObject();
@@ -380,6 +384,7 @@ char CSWCVisualEffectOnObject::GetHardCodedEffectClass(
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CSWCVisualEffectOnObject::EnableHardCodedEffectShadow(int bEnable)
 {
     if (m_pEffectModel != 0)
@@ -440,6 +445,7 @@ void CSWCVisualEffectOnObject::AttachBeam()
     }
 }
 
+// Dead code: not in the PC executable
 CSWCObject* CSWCVisualEffectOnObject::GetOwnerCSWCObject()
 {
     CSWCObject* pObject =
@@ -2284,6 +2290,7 @@ int CSWCVisualEffectOnObject::LoadLightSource(unsigned short nVisualEffect)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWCVisualEffectOnObject::LoadAlpha(unsigned short nVisualEffect)
 {
     unsigned short nAlphaEffect = nVisualEffect - VFX_ALPHA_BEGIN;

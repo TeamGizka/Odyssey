@@ -1098,6 +1098,7 @@ void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameEquip::OnChangeCharacter(CSWGuiControl* pControl)
 {
 }
@@ -1622,6 +1623,7 @@ CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
 }
 
 
+// Dead code: not in the PC executable
 void CSWGuiInGameEquip::UpdatePortraits(int bShow)
 {
     if (!bShow)
@@ -2962,6 +2964,7 @@ void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameEquip::SetActiveSlot(int nSlot)
 {
     if (nSlot > 0 && nSlot < NUM_EQUIPMENT_SLOTS)

@@ -80,6 +80,7 @@ void CSWGuiInGameAutoPause::SaveOptions()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiInGameAutoPause::ClosePanel()
 {
     SaveOptions();

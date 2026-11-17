@@ -28,6 +28,7 @@
 #include "swguiingameautopause.h"
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
@@ -35,18 +36,21 @@ void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)
 }
 #endif
 
+// Dead code: not in the PC executable
 void CSWGuiOptionsMouse::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 0;
 }
 
+// Dead code: not in the PC executable
 void CSWGuiOptionsMain::ClosePanel()
 {
     g_pAppManager->m_pClientExoApp->SaveOptions();
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
 {
     if (nOption >= 0 && nOption < OPTION_COUNT)
@@ -1866,6 +1870,7 @@ void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiOptionsMain::SetActiveButton(int nOption)
 {
     if (nOption >= 0 && nOption < 6)

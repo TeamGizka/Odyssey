@@ -495,6 +495,7 @@ void CSWGuiLevelUpCharGen::CancelLevelUp()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiLevelUpCharGen::LevelUpCreature()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -507,6 +508,7 @@ void CSWGuiLevelUpCharGen::LevelUpCreature()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiLevelUpCharGen::RemoveSubPanels()
 {
     m_pManager->PopModalPanel();
@@ -517,6 +519,7 @@ void CSWGuiLevelUpCharGen::RemoveSubPanels()
     m_nExitState = EXITSTATE_DELETE;
 }
 
+// Dead code: not in the PC executable
 void CSWGuiLevelUpCharGen::HandleCancelButton()
 {
     RemoveSubPanels();
