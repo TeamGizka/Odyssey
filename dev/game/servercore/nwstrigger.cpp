@@ -104,7 +104,7 @@ int CSWSTrigger::GetCanFireMineOnObject(unsigned long oidObject, int bForce)
     int bCanFire = 1;
     if (NWSTRIGGER_DEBUG)
     {
-        printf("CSWSTrigger::GetCanFireMineOnObject() target area %d\n", GetTargetArea());
+        EXOLOG("CSWSTrigger::GetCanFireMineOnObject() target area %d\n", GetTargetArea());
     }
     CSWSCreature* pCreator =
         g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(m_oidCreator);
@@ -220,7 +220,7 @@ CSWCTrigger* CSWSTrigger::GetClientTrigger()
 {
     if (NWSTRIGGER_DEBUG)
     {
-        printf("CSWSTrigger::GetClientTrigger() target area %d\n", GetTargetArea());
+        EXOLOG("CSWSTrigger::GetClientTrigger() target area %d\n", GetTargetArea());
     }
     if (GetClientObject() != NULL)
         return GetClientObject()->AsSWCTrigger();
@@ -232,7 +232,7 @@ void CSWSTrigger::SetCreator(unsigned long oidCreator)
 {
     if (NWSTRIGGER_DEBUG)
     {
-        printf("CSWSTrigger::SetCreator() target area %d\n", GetTargetArea());
+        EXOLOG("CSWSTrigger::SetCreator() target area %d\n", GetTargetArea());
     }
     m_oidCreator = oidCreator;
     if (oidCreator != OBJECT_INVALID &&

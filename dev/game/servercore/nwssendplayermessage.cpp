@@ -2858,7 +2858,7 @@ int CSWSMessage::TestObjectVisible(CSWSObject* pObject,
 {
     if (NWSSENDPLAYERMESSAGE_DEBUG)
     {
-        printf("CSWSMessage::TestObjectVisible() node %p\n", pPlayerObject->AsSWSCreature()->m_lstVisibilityList[0]);
+        EXOLOG("CSWSMessage::TestObjectVisible() node %p\n", pPlayerObject->AsSWSCreature()->m_lstVisibilityList[0]);
     }
     Vector vObjectPosition = pObject->m_vPosition;
     int bVisible = 0;

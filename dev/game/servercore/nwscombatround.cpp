@@ -1356,7 +1356,7 @@ int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
 {
     if (NWSCOMBATROUND_DEBUG)
     {
-        printf("CSWSCombatRound::CalculateOnHandAttacks() pending %d\n", GetActionPending());
+        EXOLOG("CSWSCombatRound::CalculateOnHandAttacks() pending %d\n", GetActionPending());
     }
     m_nOnHandAttacks = m_pBaseCreature->m_pStats->GetAttacksPerRound();
     m_nOnHandAttacks += GetFunctionalBonusEffectAttacks();

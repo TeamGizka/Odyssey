@@ -468,7 +468,7 @@ CExoString CSWCItem::GetName(int bFullName)
 {
     if (NWCITEM_DEBUG)
     {
-        printf("CSWCItem::GetName() server item %p\n", GetServerItem());
+        EXOLOG("CSWCItem::GetName() server item %p\n", GetServerItem());
     }
     STR_RES strRes;
     CExoString sName;

@@ -742,7 +742,7 @@ void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 
     if (SWGUIFEATSCHARGEN_DEBUG)
     {
-        printf("CSWGuiFeatsCharGen::SetDescription() chosen index %d\n", m_lChosen.IndexOf((unsigned short)nStrRef));
+        EXOLOG("CSWGuiFeatsCharGen::SetDescription() chosen index %d\n", m_lChosen.IndexOf((unsigned short)nStrRef));
     }
     g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
     m_lblDescription.m_cText.m_cParams.SetText(strRes.m_sString);

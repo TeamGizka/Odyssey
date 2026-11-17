@@ -3927,7 +3927,7 @@ void CSWCCreature::SetCombatState(int nState)
 {
     if (NWCCREATURE_DEBUG)
     {
-        printf("CSWCCreature::SetCombatState() can see %d\n", CanSee(NULL));
+        EXOLOG("CSWCCreature::SetCombatState() can see %d\n", CanSee(NULL));
     }
     int nPreviousState = m_nCombatState;
     m_nCombatState = nState;

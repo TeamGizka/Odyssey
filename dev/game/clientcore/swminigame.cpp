@@ -478,7 +478,7 @@ CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
 {
     if (SWMINIGAME_DEBUG)
     {
-        printf("CSWMiniGame::SetCamera() obstacle %p\n", GetObstacle(0));
+        EXOLOG("CSWMiniGame::SetCamera() obstacle %p\n", GetObstacle(0));
     }
     m_pCam = pCamera;
     if (m_pCam != NULL && m_pPlayer != NULL && m_pPlayer->m_pTrack != NULL)

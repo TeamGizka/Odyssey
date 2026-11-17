@@ -531,7 +531,7 @@ int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
 {
     if (NWCAREA_DEBUG)
     {
-        printf("CSWCArea::SetFog() server area %p\n", GetServerArea());
+        EXOLOG("CSWCArea::SetFog() server area %p\n", GetServerArea());
     }
     if (m_pScene == NULL)
     {
@@ -548,7 +548,7 @@ void CSWCArea::SetAsDay()
 {
     if (NWCAREA_DEBUG)
     {
-        printf("CSWCArea::SetAsDay() server area %p\n", GetServerArea());
+        EXOLOG("CSWCArea::SetAsDay() server area %p\n", GetServerArea());
     }
     if (m_bDayNightCycle == 0 && m_bIsNight != 0)
     {
@@ -590,7 +590,7 @@ CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
 {
     if (NWCAREA_DEBUG)
     {
-        printf("CSWCArea::GetMapPin() server area %p\n", GetServerArea());
+        EXOLOG("CSWCArea::GetMapPin() server area %p\n", GetServerArea());
     }
     int nCount = m_lstMapPins.num;
     for (int i = 0; i < nCount; i++)
@@ -609,7 +609,7 @@ void CSWCArea::UpdateSoundObjectsTimeOfDay()
 {
     if (NWCAREA_DEBUG)
     {
-        printf("CSWCArea::UpdateSoundObjectsTimeOfDay() server area %p\n", GetServerArea());
+        EXOLOG("CSWCArea::UpdateSoundObjectsTimeOfDay() server area %p\n", GetServerArea());
     }
     int nCount = m_lstSoundObjectIds.num;
     for (int i = 0; i < nCount; i++)
@@ -652,7 +652,7 @@ Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
 {
     if (NWCAREA_DEBUG)
     {
-        printf("CSWCArea::GetPlaceableObjectLight() server area %p\n", GetServerArea());
+        EXOLOG("CSWCArea::GetPlaceableObjectLight() server area %p\n", GetServerArea());
     }
     int nCount = m_lstPlaceableLights.num;
     for (int i = 0; i < nCount; i++)
@@ -670,7 +670,7 @@ void CSWCArea::HiliteAreaObjects(int bHilite)
 {
     if (NWCAREA_DEBUG)
     {
-        printf("CSWCArea::HiliteAreaObjects() server area %p\n", GetServerArea());
+        EXOLOG("CSWCArea::HiliteAreaObjects() server area %p\n", GetServerArea());
     }
     for (int i = 0; i < m_lstObjectIds.num; i++)
     {

@@ -2101,7 +2101,7 @@ int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
 {
     if (NWCMODULE_DEBUG)
     {
-        printf("CSWCModule::FindClearView() camera collision %f\n", UpdateCameraCollision(fTimeDelta, 0.0f));
+        EXOLOG("CSWCModule::FindClearView() camera collision %f\n", UpdateCameraCollision(fTimeDelta, 0.0f));
     }
     CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
     Vector vHit;

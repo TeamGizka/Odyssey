@@ -2076,7 +2076,7 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x00709490 GOG 0
 
     if (SWGUISAVELOAD_DEBUG)
     {
-        printf("CSWGuiSaveLoad::RemoveGame() data loaded %d\n", m_lEntries[0]->m_bDataLoaded);
+        EXOLOG("CSWGuiSaveLoad::RemoveGame() data loaded %d\n", m_lEntries[0]->m_bDataLoaded);
     }
     pMessageBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
     if (pMessageBox->m_bAccepted)
@@ -2104,7 +2104,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 {
     if (SWGUISAVELOAD_DEBUG)
     {
-        printf("CSWGuiSaveLoad::ShowGame() data loaded %d\n", m_lEntries[0]->m_bDataLoaded);
+        EXOLOG("CSWGuiSaveLoad::ShowGame() data loaded %d\n", m_lEntries[0]->m_bDataLoaded);
     }
     if (pControl->m_bSelected && pControl->AsButton() != NULL)
     {

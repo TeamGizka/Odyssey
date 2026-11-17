@@ -1207,7 +1207,7 @@ void CSWSDoor::RemoveFromArea()
 {
     if (NWSDOOR_DEBUG)
     {
-        printf("CSWSDoor::RemoveFromArea() load door %d\n", LoadDoor(NULL, NULL, 0));
+        EXOLOG("CSWSDoor::RemoveFromArea() load door %d\n", LoadDoor(NULL, NULL, 0));
     }
     if (GetArea() != 0)
     {

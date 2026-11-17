@@ -759,7 +759,7 @@ inline char CSWCCreatureStats::GetSTRMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetSTRMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetSTRMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nStrength * 0.5) - 5;
 }
@@ -768,7 +768,7 @@ inline char CSWCCreatureStats::GetDEXMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetDEXMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetDEXMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return CalcStatModifier(m_nDexterity) + m_nDexterityBonus;
 }
@@ -777,7 +777,7 @@ inline int CSWCCreatureStats::GetCONMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetCONMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetCONMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nConstitution * 0.5) - 5;
 }
@@ -786,7 +786,7 @@ inline int CSWCCreatureStats::GetINTMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nIntelligence * 0.5) - 5;
 }
@@ -795,7 +795,7 @@ inline int CSWCCreatureStats::GetWISMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetWISMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetWISMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nWisdom * 0.5) - 5;
 }
@@ -804,7 +804,7 @@ inline int CSWCCreatureStats::GetCHAMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetCHAMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetCHAMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nCharisma * 0.5) - 5;
 }
@@ -813,7 +813,7 @@ inline char CSWCCreatureStats::GetBaseINTMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetBaseINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetBaseINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_aAbilities[3] * 0.5) - 5;
 }
@@ -848,7 +848,7 @@ unsigned char CSWCCreatureStats::GetLevel()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetLevel() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetLevel() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     int nLevel = 0;
     for (int i = 0; i < m_nClassCount; i++)
@@ -905,7 +905,7 @@ CExoString CSWCCreatureStats::GetClassesString(char cSeparator)
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetClassesString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetClassesString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     CExoString sClasses;
     char szSeparator[2];
@@ -974,7 +974,7 @@ void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::SetFeatRemainingUses() has feat 0 %d\n", HasFeat(0));
+        EXOLOG("CSWCCreatureStats::SetFeatRemainingUses() has feat 0 %d\n", HasFeat(0));
     }
     for (int i = 0; i < m_lstFeatUses.num; i++)
     {
@@ -1012,7 +1012,7 @@ unsigned long CSWCCreatureStats::GetKnownSpell(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetKnownSpell() has feat 0 %d\n", HasFeat(0));
+        EXOLOG("CSWCCreatureStats::GetKnownSpell() has feat 0 %d\n", HasFeat(0));
     }
     if (nClass >= 2)
     {
@@ -1100,7 +1100,7 @@ CExoString CSWCCreatureStats::GetAlignmentString(int nAlignment)
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetAlignmentString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetAlignmentString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     STR_RES strRes;
 
@@ -1127,7 +1127,7 @@ unsigned short CSWCCreatureStats::GetNumberKnownSpells(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetNumberKnownSpells() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetNumberKnownSpells() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     if (nClass >= 2)
     {
@@ -1141,7 +1141,7 @@ unsigned char CSWCCreatureStats::GetSpellsPerDayLeft(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::GetSpellsPerDayLeft() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+        EXOLOG("CSWCCreatureStats::GetSpellsPerDayLeft() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     if (nClass >= 2)
     {
@@ -1493,7 +1493,7 @@ void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCLevelUpStats::CalcNumberFeats() level %d\n", GetLevel());
+        EXOLOG("CSWCLevelUpStats::CalcNumberFeats() level %d\n", GetLevel());
     }
     CSWClass* pClass = &g_pRules->m_pClasses[GetClassLeveledUpIn()];
     unsigned char nLevel = GetClassLevel(m_nClassCount - 1);
@@ -1506,7 +1506,7 @@ unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCLevelUpStats::ComputeNumberKnownSpellsLeft() level %d\n", GetLevel());
+        EXOLOG("CSWCLevelUpStats::ComputeNumberKnownSpellsLeft() level %d\n", GetLevel());
     }
     unsigned char nClass = GetClass(m_nClassCount - 1);
     CSWClass* pClass = &g_pRules->m_pClasses[nClass];
@@ -1539,7 +1539,7 @@ void CSWCLevelUpStats::SetNormalBonusFlags(unsigned short nFeat, int& bNormal,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCLevelUpStats::SetNormalBonusFlags() INT mod %d\n", GetINTMod());
+        EXOLOG("CSWCLevelUpStats::SetNormalBonusFlags() INT mod %d\n", GetINTMod());
     }
     bNormal = 0;
     bBonus = 0;
@@ -1607,7 +1607,7 @@ void CSWCCreatureStats::RemoveKnownSpell(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        printf("CSWCCreatureStats::RemoveKnownSpell() classes %d\n", GetNumClasses());
+        EXOLOG("CSWCCreatureStats::RemoveKnownSpell() classes %d\n", GetNumClasses());
     }
     if (nClass < 2)
     {

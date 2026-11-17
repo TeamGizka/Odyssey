@@ -457,7 +457,7 @@ void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0 GOG 0x006D13F0
     sAutoSave.Format("SAVES:%06d - %s", 1, "AUTOSAVE");
     if (SWGUIMAINMENU_DEBUG)
     {
-        printf("CSWGuiMainMenu::OnPanelAdded() module %s\n", m_lstModules[0].CStr());
+        EXOLOG("CSWGuiMainMenu::OnPanelAdded() module %s\n", m_lstModules[0].CStr());
     }
     int bCreated = g_pExoResMan->CreateDirectory2(sAutoSave) == 0;
     if (!bCreated)

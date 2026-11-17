@@ -103,7 +103,7 @@ int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
 {
     if (NWSSTORE_DEBUG)
     {
-        printf("CSWSStore::SaveStore() item in repository %d\n", m_pItemRepository->m_lstItems.Contains(OBJECT_INVALID));
+        EXOLOG("CSWSStore::SaveStore() item in repository %d\n", m_pItemRepository->m_lstItems.Contains(OBJECT_INVALID));
     }
     pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
     pRes->WriteFieldCExoLocString(pStruct, m_lsName, "LocName");
@@ -148,7 +148,7 @@ int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 {
     if (NWSSTORE_DEBUG)
     {
-        printf("CSWSStore::AddToArea() item in repository %d\n", m_pItemRepository->m_lstItems.Contains(OBJECT_INVALID));
+        EXOLOG("CSWSStore::AddToArea() item in repository %d\n", m_pItemRepository->m_lstItems.Contains(OBJECT_INVALID));
     }
     int result = (int)pArea;
 
@@ -199,7 +199,7 @@ int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
 {
     if (NWSSTORE_DEBUG)
     {
-        printf("CSWSStore::SellItem() item in repository %d\n", m_pItemRepository->m_lstItems.Contains(pItem->m_nId));
+        EXOLOG("CSWSStore::SellItem() item in repository %d\n", m_pItemRepository->m_lstItems.Contains(pItem->m_nId));
     }
     if (pItem->m_bInfinite)
     {

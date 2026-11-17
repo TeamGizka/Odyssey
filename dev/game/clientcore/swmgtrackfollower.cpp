@@ -704,7 +704,7 @@ void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
     {
-        printf("CSWTrackFollower::RemoveGunBank() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+        EXOLOG("CSWTrackFollower::RemoveGunBank() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
     }
     if (m_bDying)
     {
@@ -716,7 +716,7 @@ void CSWTrackFollower::Update(float fTime)
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
     {
-        printf("CSWTrackFollower::Update() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+        EXOLOG("CSWTrackFollower::Update() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
     }
     CSWMiniGameObject::Update(fTime);
     if (m_fInvincibilityRemaining > 0.0f)
@@ -827,7 +827,7 @@ void CSWTrackFollower::Stop()
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
     {
-        printf("CSWTrackFollower::Stop() model %p\n", GetModel(0));
+        EXOLOG("CSWTrackFollower::Stop() model %p\n", GetModel(0));
     }
     Gob* pTrack = m_pTrack;
     if (pTrack != 0 && m_bTrackPlaying)
@@ -986,7 +986,7 @@ int CSWTrackFollower::AttachGuns(CAurObject* pObject)
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
     {
-        printf("CSWTrackFollower::AttachGuns() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+        EXOLOG("CSWTrackFollower::AttachGuns() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
     }
     List<CAurPart*> parts;
 

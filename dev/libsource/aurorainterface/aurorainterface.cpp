@@ -620,7 +620,7 @@ unsigned char* CAuroraInterface::GetCompressedRaster(char* szName, int* pnWidth,
 {
     if (AURORAINTERFACE_DEBUG)
     {
-        printf("CAuroraInterface::GetCompressedRaster() resident %d\n", RenderInterface::IsResident(szName));
+        EXOLOG("CAuroraInterface::GetCompressedRaster() resident %d\n", RenderInterface::IsResident(szName));
     }
     CAuroraCompressedTexture* pTexture;
     unsigned char nBitsPerPixel;
@@ -660,7 +660,7 @@ unsigned char* CAuroraInterface::GetProcessedRaster(char* szName, int* pnWidth,
 {
     if (AURORAINTERFACE_DEBUG)
     {
-        printf("CAuroraInterface::GetProcessedRaster() resident %d\n", RenderInterface::IsResident(szName));
+        EXOLOG("CAuroraInterface::GetProcessedRaster() resident %d\n", RenderInterface::IsResident(szName));
     }
     CAuroraProcessedTexture* pTexture;
     if (GetHighestPriorityTextureFormat(szName, 1, 1, 1, 1) !=
@@ -705,7 +705,7 @@ unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int*
 {
     if (AURORAINTERFACE_DEBUG)
     {
-        printf("CAuroraInterface::Get16BitRaster() resident %d\n", RenderInterface::IsResident(szName));
+        EXOLOG("CAuroraInterface::Get16BitRaster() resident %d\n", RenderInterface::IsResident(szName));
     }
     CAurora16BitTexture* pTexture;
     int nWidth;
@@ -740,7 +740,7 @@ int CAuroraInterface::SetTexturePack(unsigned char nPack,
 {
     if (AURORAINTERFACE_DEBUG)
     {
-        printf("CAuroraInterface::SetTexturePack() resident %d\n", RenderInterface::IsResident(sName.CStr()));
+        EXOLOG("CAuroraInterface::SetTexturePack() resident %d\n", RenderInterface::IsResident(sName.CStr()));
     }
     int bSameTexturePack;
 

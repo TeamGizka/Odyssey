@@ -24,7 +24,7 @@ CSWCAnimBaseHead::CSWCAnimBaseHead()
     m_nHeadItem = OBJECT_INVALID;
     if (NWCANIMBASEHEAD_DEBUG)
     {
-        printf("CSWCAnimBaseHead::CSWCAnimBaseHead() model %p\n", GetModel(0));
+        EXOLOG("CSWCAnimBaseHead::CSWCAnimBaseHead() model %p\n", GetModel(0));
     }
 }
 // PC 0x006F5820 GOG 0x006F5410

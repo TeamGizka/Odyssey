@@ -995,7 +995,7 @@ void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,  /
 {
     if (EXOSOUNDINTERNAL_DEBUG)
     {
-        printf("CExoSoundInternal::PlaySourceOn2DVoice() playing %d\n", m_lstPlaying.Contains(pSource));
+        EXOLOG("CExoSoundInternal::PlaySourceOn2DVoice() playing %d\n", m_lstPlaying.Contains(pSource));
     }
     int nLoopCount = pSource->m_bLooping == 0;
 

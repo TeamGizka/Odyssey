@@ -1302,7 +1302,7 @@ int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 {
     if (NWSITEM_DEBUG)
     {
-        printf("CSWSItem::AddToArea() passive %d\n", GetPassiveProperties());
+        EXOLOG("CSWSItem::AddToArea() passive %d\n", GetPassiveProperties());
     }
     Vector vPosition(fX, fY, fZ);
     int result;
@@ -1790,7 +1790,7 @@ void CSWSItem::OpenInventory(unsigned long oidOpener)
 {
     if (NWSITEM_DEBUG)
     {
-        printf("CSWSItem::OpenInventory() passive %d\n", GetPassiveProperties());
+        EXOLOG("CSWSItem::OpenInventory() passive %d\n", GetPassiveProperties());
     }
     if (m_bInventoryOpen != 0)
         return;
@@ -3464,7 +3464,7 @@ int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
 {
     if (NWSITEM_DEBUG)
     {
-        printf("CSWSItem::SaveItem() weight %d\n", GetWeight());
+        EXOLOG("CSWSItem::SaveItem() weight %d\n", GetWeight());
     }
     pRes->WriteFieldINT(pStruct, GetBaseItemType(), "BaseItem");
     pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
@@ -4260,7 +4260,7 @@ void CSWSItem::UpdateUsedActiveProperties()
 {
     if (NWSITEM_DEBUG)
     {
-        printf("CSWSItem::UpdateUsedActiveProperties() weight %d\n", GetWeight());
+        EXOLOG("CSWSItem::UpdateUsedActiveProperties() weight %d\n", GetWeight());
     }
     unsigned char aUsesLeft[MAX_TRACKED_ACTIVE_PROPERTIES];
     int nProperty;

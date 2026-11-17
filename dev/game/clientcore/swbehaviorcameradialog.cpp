@@ -291,7 +291,7 @@ int CSWBehaviorCameraDialog::GetSideUnobstructed()
 {
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
     {
-        printf("CSWBehaviorCameraDialog::GetSideUnobstructed() second offset %f\n", GetSecondOffset());
+        EXOLOG("CSWBehaviorCameraDialog::GetSideUnobstructed() second offset %f\n", GetSecondOffset());
     }
     Vector vHookPosition;
     Quaternion qOrientation;
@@ -533,7 +533,7 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
 {
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
     {
-        printf("CSWBehaviorCameraDialog::SetShot() shot %d\n", nShot);
+        EXOLOG("CSWBehaviorCameraDialog::SetShot() shot %d\n", nShot);
     }
     Vector vHookPosition;
     Quaternion qHookOrientation;

@@ -89,7 +89,7 @@ void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
 {
     if (NWSSPELLIMPACT_DEBUG)
     {
-        printf("CSWSAreaOfEffectObject::LoadAreaEffect() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+        EXOLOG("CSWSAreaOfEffectObject::LoadAreaEffect() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
     }
     m_nAreaEffectId = nAreaEffectId;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -135,7 +135,7 @@ int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)
 {
     if (NWSSPELLIMPACT_DEBUG)
     {
-        printf("CSWSAreaOfEffectObject::LoadEffect() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+        EXOLOG("CSWSAreaOfEffectObject::LoadEffect() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
     }
     int bSuccess;
     unsigned char nShape;
@@ -232,7 +232,7 @@ void CSWSAreaOfEffectObject::SetCreator(unsigned long oidCreator)
 {
     if (NWSSPELLIMPACT_DEBUG)
     {
-        printf("CSWSAreaOfEffectObject::SetCreator() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+        EXOLOG("CSWSAreaOfEffectObject::SetCreator() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
     }
     CSWSCreature* pCreator;
     CSWSpell* pSpell;
