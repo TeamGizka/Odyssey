@@ -645,7 +645,6 @@ public:
     Vector m_vPerpendicular;
     int m_nBranches;
     char m_bBranch;
-    char gap_28D[3];
     virtual LightningEmitter* AsLightningEmitter() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual void UpdateControlPoints();
 

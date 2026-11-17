@@ -111,7 +111,9 @@ public:
     int m_bPaused;
     CExoString m_sMovieFileName;
     int m_nFrameRate;
-    RECT m_rcMovie;
+    unsigned long m_anUnmapped74[2];
+    unsigned long m_nVertexPool;
+    unsigned long m_nUnmapped80;
     int m_nVideoOffsetX;
     int m_nVideoOffsetY;
     int m_nPlaybackMode;

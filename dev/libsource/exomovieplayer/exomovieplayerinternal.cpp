@@ -8,6 +8,7 @@ HWND g_hMovieWnd;
 
 #include "appmanager.h"
 #include "aurinternal.h"
+#include "aurrendergl.h"
 #include "clientexoapp.h"
 #include "clientexoappinternal.h"
 #include "clientoptions.h"
@@ -462,6 +463,7 @@ void CExoMoviePlayerInternal::ShowFrame(int nX, int nY, int nWidth, int nHeight)
     AurOrtho(-fScaleY, fScaleY, -fScaleX, fScaleX, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    GLRender::RenderObjectsVTQuad(m_nVertexPool, 4);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     BinkNextFrame(m_hBink);

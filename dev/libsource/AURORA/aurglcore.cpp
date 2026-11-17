@@ -12121,6 +12121,35 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter,
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
 }
+// Dead code: not in the PC executable
+void GLRender::RenderObjectsVTQuad(unsigned long nPool, int nVertices)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVT), (const GLvoid*)12);
+        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVT), 0);
+        glDrawArrays(GL_QUADS, 0, nVertices);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    }
+    else
+    {
+        glBegin(GL_QUADS);
+        RenderVertexVT* pVertices =
+            (RenderVertexVT*)manRef->GetPool(nPool);
+        for (int i = 0; i < nVertices; ++i)
+        {
+            glTexCoord2f(pVertices[i].u, pVertices[i].v);
+            glVertex3fv(pVertices[i].position);
+        }
+        glEnd();
+    }
+}
+
 // PC 0x00432410 GOG 0x00432560
 void GLRender::RenderObjectsVTCQuad(unsigned long nPool, int nVertices)
 {

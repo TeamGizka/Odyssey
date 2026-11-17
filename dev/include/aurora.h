@@ -530,7 +530,6 @@ public:
         VIDEO_MIN_BITS_PER_PIXEL = 16,
         VIDEO_MIN_REFRESH_RATE = 60
     };
-    char gap_0[1];
     static unsigned char* GetLayeredRaster(char*, int*, int*, int*);
     static unsigned char* GetRaster(char*, int*, int*, int*);
     static unsigned char* GetFontRaster(char* sFileName, void** ppFontData,

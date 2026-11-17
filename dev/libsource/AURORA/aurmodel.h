@@ -1427,7 +1427,6 @@ public:
     List<PartTriMesh*> m_lstLocalReferences;
     int m_nFadeState;
     char m_bFade;
-    char gap_91[3];
 
     float m_fFadeAlpha;
     ~TileData();

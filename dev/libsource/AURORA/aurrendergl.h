@@ -907,6 +907,7 @@ public:
                               RenderVertexC* pColors, unsigned long nVertexDataOffset);
 #endif
     static void RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices);
+    static void RenderObjectsVTQuad(unsigned long nPool, int nVertices);
     static void RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
                                   RenderVertexVC* pVertices, int nVertices);
     static void RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices);
