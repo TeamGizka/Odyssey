@@ -182,7 +182,6 @@ public:
     CSWGlobalVariable m_aIdentifiers[2365];
     unsigned char m_aBooleanValues[113];
     char m_acNumberValues[1000];
-    char m_aUnmappedA8CD[3];
     CScriptLocation m_aLocations[100];
     CExoString m_asStrings[5];
     int m_nBooleanCount;

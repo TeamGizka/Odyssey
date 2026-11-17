@@ -1076,15 +1076,15 @@ public:
 #ifdef _XBOX
     void CancelMovie();
     int IsMoviePlaying();
-    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nA);
+    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nMode);
     void ShowFadePanel();
     void HideFadePanel(int bWait);
     void SetFadeMsg(unsigned long nStrRef);
     int Initialize(void* pParam);
 #else
-    int CancelMovie(int nA, int nB);
+    int CancelMovie(int nResult, int bForce);
     int IsMoviePlaying();
-    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nA,
+    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nMode,
                         const CExoArrayList<int>* lstSkippable);
     void ShowFadePanel();
     void HideFadePanel();

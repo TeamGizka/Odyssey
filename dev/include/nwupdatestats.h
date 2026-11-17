@@ -47,11 +47,9 @@ public:
     signed char m_nReflexSave;
     short m_n42;
     short m_n44;
-    char m_aReserved46[2];
     long m_nExperience;
     long m_bUseMonkAttackTables;
     unsigned char m_nBaseAttackBonus;
-    char m_aReserved51[1];
     short m_nArmorClass;
     CCombatInformation* m_pCombatInformation;
     unsigned char* m_pSkillRanks;

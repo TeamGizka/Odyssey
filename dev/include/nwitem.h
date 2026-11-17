@@ -45,7 +45,6 @@ public:
     }
 
     unsigned char m_anArmorModelPart[6];
-    unsigned char m_aUnmapped0A[2];
     int m_nBaseItem;
 };
 
@@ -156,7 +155,6 @@ public:
     char m_nWeaponWield;
 
     unsigned char m_nWeaponType;
-    unsigned char m_aUnmapped0A[0xC - 0xA];
     int m_nDamageFlags;
     int m_nMinRange;
     int m_nMaxRange;
@@ -170,14 +168,12 @@ public:
     unsigned char m_nCritHitMult;
     float m_fBaseCost;
     unsigned short m_nMaxStackSize;
-    unsigned char m_aStackSizeAlignment[2];
     int m_nDescription;
     unsigned char m_nMinProps;
     unsigned char m_nMaxProps;
     unsigned char m_nPropColumn;
     unsigned char m_nStorePanel;
     unsigned char m_nStorePanelSort;
-    unsigned char m_aUnmapped31[3];
     float m_fMaxAttackRange;
     float m_fPrefAttackDist;
     char m_sItemClass[12];
@@ -188,10 +184,8 @@ public:
     int m_bIsContainer;
     int m_nGenderSpecific;
     unsigned char m_nInvSoundType;
-    unsigned char m_aUnmapped79[3];
     unsigned short* m_pRequiredFeats;
     unsigned char m_nRequiredFeatCount;
-    unsigned char m_aUnmapped81[3];
     int m_nBaseItemStatRef;
     unsigned char m_nRotateOnGround;
     unsigned char m_nTenthLBS;
@@ -200,7 +194,6 @@ public:
     unsigned char m_nWeaponMatType;
     unsigned char m_nArmorCheckPen;
     unsigned char m_nAmmunitionType;
-    unsigned char m_aUnmapped8F[0x90 - 0x8F];
     int m_bPoweredItem;
     CExoString m_sPoweredSnd;
     CExoString m_sPowerUpSnd;
@@ -212,7 +205,6 @@ public:
     unsigned short m_nSpecFeat;
     unsigned short m_nFocFeat;
     unsigned char m_nDroidOrHuman;
-    unsigned char m_aUnmappedB5[3];
     int m_nDenySubrace;
     CExoString m_sArmorType;
     float m_fCostMultiplier;

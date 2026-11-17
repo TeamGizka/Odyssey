@@ -113,7 +113,6 @@ public:
     float m_fMoonFogNear;
     float m_fMoonFogFar;
     unsigned char m_bMoonFogOn;
-    unsigned char m_aUnused7D[3];
     int m_bMoonShadows;
     unsigned long m_nSunAmbientColor;
     unsigned long m_nSunDiffuseColor;
@@ -121,7 +120,6 @@ public:
     float m_fSunFogNear;
     float m_fSunFogFar;
     char m_bSunFogOn;
-    unsigned char m_aUnused99[3];
     int m_bSunShadows;
     int m_bDayNightCycle;
     int m_bIsNight;

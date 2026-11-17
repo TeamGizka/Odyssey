@@ -195,7 +195,7 @@ CSWGuiManager::CSWGuiManager()
 #ifndef _XBOX
     m_nMouseCaptureType = 0;
     m_bLeftMouseDown = 0;
-    m_bUnknown1C1 = 0;
+    m_bRightMouseDown = 0;
     m_pLastMouseOverControl = NULL;
     m_pKeyFocus = NULL;
     m_pMouseCursor = NULL;

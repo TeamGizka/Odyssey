@@ -105,7 +105,6 @@ public:
 #endif
     unsigned long m_nAlignment : 6;
     unsigned long m_bHilightText : 1;
-    unsigned long m_nTextFlagsUnused : 25;
 #ifndef _XBOX
     char m_szBaseFont[20];
 #endif
@@ -136,7 +135,6 @@ public:
     unsigned long m_bTiled : 1;
     unsigned long m_nDrawStyle : 4;
     unsigned long m_nAlignment : 6;
-    unsigned long m_nImageFlagsUnused : 20;
     CSWGuiImage* m_pImage;
     CSWGuiImageParams(const CResRef& cImage, int bTiled,
                       int nDrawStyle, float fRotation, int nAlignment,
@@ -189,7 +187,6 @@ public:
     unsigned long m_bPulsing : 1;
     unsigned long m_bLowAlpha : 1;
     unsigned long m_bHighAlpha : 1;
-    unsigned long m_nBorderFlagsUnused : 27;
     CResRef m_cCornerImage;
     CResRef m_cEdgeImage;
     CResRef m_cFillImage;
@@ -340,9 +337,7 @@ public:
     void AddNewChar(char* szChar);
 
     short m_nMaxLength;
-    unsigned char m_aUnknown72[2];
     unsigned long m_bCaretVisible : 1;
-    unsigned long m_nEditFlagsUnused : 31;
     CExoString m_sText;
 };
 

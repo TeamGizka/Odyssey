@@ -1264,8 +1264,8 @@ char* CResGFF::GetFieldStringID(CResStruct* pStructure, unsigned long nIndex)
     {
         return NULL;
     }
-    memcpy(m_aUnmapped7C, szLabel, 16);
-    return (char*)m_aUnmapped7C;
+    memcpy(m_aLabelBuffer, szLabel, 16);
+    return (char*)m_aLabelBuffer;
 }
 
 // Dead code: not in the PC executable

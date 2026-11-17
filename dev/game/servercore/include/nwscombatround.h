@@ -295,11 +295,9 @@ public:
     Vector m_vRangedTarget;
     int m_nDischargeHand;
     short m_nDamage[15];
-    short m_nUnknown4E;
     CSWSCombatSubAttackAttack m_AttackBreakdown;
     CSWSCombatSubAttackThreat m_ThreatBreakdown;
     CSWSCombatSubAttackDefense m_Flags;
-    unsigned char m_nUnknown8D;
     CSWSCombatSubAttackDamage m_DamageBreakdown;
     CSWSCombatSubAttackEffect m_EffectBreakdown;
 };
@@ -403,7 +401,6 @@ public:
     CSWSCombatSubAttackAttack m_AttackBreakdown;
     CSWSCombatSubAttackThreat m_ThreatBreakdown;
     CSWSCombatSubAttackDefense m_Flags;
-    unsigned char m_nUnknownFD;
     CSWSCombatSubAttackDamage m_DamageBreakdown;
     CSWSCombatSubAttackEffect m_EffectBreakdown;
 

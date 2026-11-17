@@ -312,10 +312,9 @@ public:
     CSWGuiControl* m_pLastMouseOverControl;
     CSWGuiEditbox* m_pKeyFocus;
     unsigned long m_bLeftMouseDown : 1;
-    unsigned long m_bUnknown1C1 : 1;
+    unsigned long m_bRightMouseDown : 1;
     unsigned long m_bCursorCentered : 1;
     unsigned long m_bToolTipShown : 1;
-    unsigned long m_nMouseFlagsUnused : 28;
     CSWGuiScene* m_pMouseScene;
     CAurObject* m_pMouseCursor;
     CResRef m_resCursor;
@@ -485,7 +484,6 @@ public:
     unsigned long m_bShowButtons : 1;
     unsigned long m_bHideButtons : 1;
     unsigned long m_bHasIcon : 1;
-    unsigned long m_nMessageFlagsUnused : 27;
     CSWGuiHandler m_pCallback;
     CSWGuiObject* m_pCallbackObject;
     CSWGuiControl* m_pCallbackControl;

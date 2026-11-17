@@ -161,13 +161,11 @@ public:
     unsigned short m_nSubtype;
     unsigned short GetSubtype();
     unsigned char m_nCostTable;
-    unsigned char m_aCostTableAlignment[1];
     unsigned short m_nCostValue;
     unsigned short GetCostValue();
     unsigned char m_nParam1;
     unsigned char m_nParam1Value;
     unsigned char m_nChanceAppear;
-    unsigned char m_aUnmapped0B[1];
     int m_bUseable;
     unsigned char m_nUsesPerDay;
     unsigned char m_nUpgradeType;
@@ -306,7 +304,6 @@ public:
 
     unsigned char m_nUsableActivePropertyMask;
     unsigned char m_aActivePropertyUsesLeft[8];
-    unsigned char m_aUnmapped241[3];
 
     int m_nBaseAC;
     int m_nActiveProperties;
@@ -339,7 +336,6 @@ public:
     unsigned long m_bNonEquippable : 1;
     unsigned long m_bNewItem : 1;
     unsigned long m_bDeleting : 1;
-    unsigned long m_nUnknown289Rest : 23;
     // PC 0x0050B670 GOG 0x0050B6D0
     void SetDropable(int bDropable)
     {
@@ -364,7 +360,6 @@ public:
     int m_nUpgrades;
 
     unsigned short m_nInventoryIndex;
-    unsigned char m_aUnmapped29A[2];
     int m_bDoorCutting;
     int m_bDoorSabering;
     int m_bRapidShotBonus;
@@ -422,7 +417,6 @@ public:
     unsigned long m_oidOwner;
     unsigned long m_nNewItems;
     unsigned long m_bPartyInventory : 1;
-    unsigned long m_nUnknown09 : 31;
     CExoArrayList<unsigned long> m_lstItems;
     int FindItemWithBaseItemType(unsigned char nItemType, int nIndex);
     int FindItemWithTag(const CExoString& sTag);

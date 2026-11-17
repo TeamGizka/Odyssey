@@ -313,7 +313,6 @@ public:
     unsigned char m_aUnmapped0[0x10004];
     CServerInfo* m_pServerInfo;
     unsigned short m_nServerMode;
-    char m_aUnmapped1000A[2];
 
     CSWVirtualMachineCommands* m_pVirtualMachineCommands;
     CSWSMessage* m_pSWSMessage;
@@ -342,7 +341,6 @@ public:
     CExoLinkedList<unsigned long>* m_pTimestopExclusionList;
     CExoLinkedList<unsigned long>* m_pPauseExclusionList;
     SPauseState m_PauseState;
-    char m_aUnmapped10079[3];
     int m_bDoingStartNewModule;
     int m_bMoveToModulePending;
     CExoString m_sMoveToModule;
@@ -353,11 +351,9 @@ public:
     unsigned char m_nMoveToWorldHour;
     unsigned char m_nMoveToWorldMinute;
     unsigned char m_nMoveToWorldSecond;
-    char m_aUnmapped100A3[1];
     unsigned short m_nMoveToWorldMillisecond;
     unsigned short m_nMoveToWorldYear;
     unsigned short m_nMoveToWorldMonth;
-    char m_aUnmapped100AA[2];
     unsigned long m_nMoveToPausedTimeOfDay;
     unsigned long m_nMoveToPausedCalendarDay;
     int m_bLoadingModule;
@@ -428,7 +424,6 @@ public:
     unsigned int : 21;
     unsigned char m_nLightShift;
     unsigned char m_nDarkShift;
-    char m_aUnmapped6[2];
     int m_nCredits;
     int m_nExperience;
     int m_nStealthExperience;

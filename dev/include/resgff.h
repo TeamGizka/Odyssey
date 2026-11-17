@@ -246,10 +246,9 @@ public:
     unsigned char* m_pListIndices;
     unsigned long m_nListIndicesAlloc;
     unsigned long m_nListIndicesLost;
-    unsigned char m_aUnmapped7C[16];
+    unsigned char m_aLabelBuffer[16];
     char m_cFlags;
     char m_szFileType[4];
-    unsigned char m_aPad91[3];
     int m_bLoaded;
     int m_bInResource;
     int m_bDemanded;

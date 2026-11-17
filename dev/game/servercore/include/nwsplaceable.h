@@ -159,7 +159,6 @@ public:
     int m_bInterruptable;
     int m_bGroundPile;
     unsigned char m_nHardness;
-    char m_aUnmapped259[0x3];
     float m_fBearing;
     int m_bLocked;
     CExoString m_sKeyName;
@@ -171,25 +170,20 @@ public:
     char m_nOpenLockDiffMod;
     int m_nOwnerDemolitionsSkill;
     unsigned char m_bUseTweakColor;
-    char m_aUnmapped2BD[0x3];
     unsigned long m_nTweakColor;
     unsigned char m_nTrapDetectDC;
-    char m_aUnmapped277[0x1];
     int m_nTrapFlag;
     unsigned char m_nDisarmDC;
-    char m_aUnmapped27D[0x3];
     int m_bTrapDisarmable;
     int m_bTrapDetectable;
     int m_bTrapOneShot;
 
     int m_bTrapFlagged;
     unsigned char m_nTrapType;
-    char m_aUnmapped291[0x3];
     CExoString m_sScripts[NUM_SCRIPTS];
     unsigned char m_nFortSave;
     unsigned char m_nWillSave;
     unsigned char m_nReflexSave;
-    char m_aUnmapped317[0x1];
     CExoArrayList<unsigned long> m_lstTrapDetectedBy;
     int m_bHasInventory;
     int m_bUseable;
@@ -226,7 +220,6 @@ public:
     int m_bLightIsOn;
     int m_bLightStateChanged;
     unsigned char m_nBodyBag;
-    char m_aUnmapped395[0x3];
     int m_bStatic;
 
     int m_bDynamic;

@@ -31,7 +31,6 @@ public:
     unsigned int m_bCompleted : 1;
     unsigned int m_bChanged : 1;
     unsigned int m_bNew : 1;
-    unsigned int m_nUnusedFlags : 29;
     int m_nPlotIndex;
     int m_nPlanetID;
     int m_nXP;
@@ -91,17 +90,6 @@ public:
     }
 
     void Update(SJournalEntry entry, unsigned short nFlags);
-};
-
-class CSWSJournalEntry
-{
-public:
-    unsigned char m_aLocStrings[16];
-    unsigned long m_nDate;
-    unsigned long m_nTime;
-    CExoString m_sPlotID;
-    unsigned long m_nState;
-    unsigned char m_aUnknown24[24];
 };
 
 class CSWSJournal

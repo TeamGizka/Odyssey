@@ -631,7 +631,7 @@ struct CBMUFileHeader
 
 struct CLegacyWaveHeader
 {
-    unsigned char m_auUnknown[470];
+    unsigned char m_abHeader[470];
 };
 #pragma pack(pop)
 
@@ -1344,7 +1344,7 @@ public:
 
 
     int CreateSignatureFile(const CExoString& sFileName, unsigned short nType,
-                            unsigned long nSize, unsigned long nArg4);
+                            unsigned long nSize, unsigned long nFlags);
     void* Demand(CRes* pRes);
     void Dump(CRes* pRes, int bFlag);
     void DumpAll();

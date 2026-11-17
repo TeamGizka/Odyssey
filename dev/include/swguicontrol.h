@@ -325,8 +325,6 @@ public:
     unsigned long m_bIgnoreMouse : 1;
     unsigned long m_bToolTipShown : 1;
 #endif
-    unsigned long m_bUnknownBit7 : 1;
-    unsigned long m_nControlFlagsUnused : 24;
     unsigned long m_nEvent;
     int m_bSelected;
     int m_nID;
@@ -514,7 +512,6 @@ public:
 
     int m_nToggleEvent;
     unsigned long m_bToggled : 1;
-    unsigned long m_nToggleFlagsUnused : 31;
     CSWGuiBorder m_cToggleBorder;
     CSWGuiBorder m_cToggleHilite;
 };
@@ -611,7 +608,6 @@ public:
 #endif
     unsigned long m_bDrawMode : 1;
     unsigned long m_bExtendedRange : 1;
-    unsigned long m_nScrollFlagsUnused : 30;
     CSWGuiBorder m_cBorder;
     CSWGuiImage m_cThumb;
     CSWGuiImage m_cArrow;
@@ -771,7 +767,6 @@ public:
     unsigned long m_bScrollToSelected : 1;
 #endif
     unsigned long m_nCONTROLTYPE : 4;
-    unsigned long m_nListFlagsUnused : 15;
     unsigned char m_nPadding;
     char m_nSelectSound;
     short m_nScrollPosition;
@@ -843,7 +838,6 @@ public:
     int m_nMaxValue;
     int m_nCurValue;
     char m_nSlideSound;
-    unsigned char m_aUnmapped79[3];
     CSWGuiBorder m_cTrack;
     CSWGuiBorder m_cThumb;
     CSWGuiImage m_cImage;
@@ -883,7 +877,6 @@ public:
     int m_nCurValue;
 
     unsigned long m_bStartFromLeft : 1;
-    unsigned long m_nProgressFlagsUnused : 31;
     CSWGuiBorder m_cBorder;
     CSWGuiBorder m_cFill;
 };

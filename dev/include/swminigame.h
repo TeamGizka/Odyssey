@@ -105,7 +105,6 @@ public:
 
     CSWMGTargettingParameters m_params;
     bool m_bTargetting;
-    char m_abReserved4D[3];
     float m_fSpeed;
     SafePointer<CAurObject> m_pModel;
     Vector m_vTarget;
@@ -460,7 +459,6 @@ class SWMGFollowerModel
 public:
     Gob* m_pModel;
     unsigned char m_bAttached;
-    char m_abPadding[3];
 };
 
 class SWMGKeyInfo
@@ -609,7 +607,6 @@ public:
     {
         unsigned int m_bTrackPlaying : 1;
         unsigned int m_bDying : 1;
-        unsigned int m_nUnusedFlags : 30;
     };
 
     int m_nHitPoints;
@@ -688,7 +685,6 @@ public:
     int m_nBankPosition;
 
     unsigned char m_bSpeedOverride;
-    char gap_1D5[3];
     float m_fMinimumSpeed;
     float m_fMaximumSpeed;
     float m_fAPS;
@@ -699,7 +695,6 @@ public:
     Vector m_vTarget;
     Gob* m_pCameraHook;
     unsigned char m_bCameraHookAttached;
-    char gap_225[3];
 
     Vector m_vInertia;
     Vector m_vInitialHook;

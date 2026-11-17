@@ -2964,7 +2964,7 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
 #ifndef _XBOX
 int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // PC 0x00406DA0 GOG 0x00406D70
                                     unsigned short nType, unsigned long nSize,
-                                    unsigned long nArg4)
+                                    unsigned long nFlags)
 {
     return 1;
 }

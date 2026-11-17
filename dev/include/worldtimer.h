@@ -6,7 +6,7 @@
 class CExoString;
 
 #ifndef _XBOX
-#pragma pack(push, 1)
+#pragma pack(push, 4)
 #endif
 
 class CWorldTimer
@@ -119,7 +119,6 @@ public:
     unsigned long m_nCalendarDayOffset;
     unsigned long m_nTimeOfDayOffset;
     unsigned char m_nMinutesPerHour;
-    unsigned char m_aUnmapped39[3];
     unsigned long m_nMillisecondsPerDay;
     unsigned long m_nSecondsPerDay;
 };
