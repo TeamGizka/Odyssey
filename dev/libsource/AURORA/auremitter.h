@@ -266,6 +266,16 @@ public:
     MdlNodeTriMesh* AsMdlNodeTriMesh();
     MdlNodeAABB* AsMdlNodeAABB();
     MdlNodeLightsaber* AsMdlNodeLightsaber();
+    int IsMdlNodeEmitter();
+    int IsMdlNodeAnimMesh();
+    int IsMdlNodeCamera();
+    int IsMdlNodeDanglyMesh();
+    int IsMdlNodeLight();
+    int IsMdlNodeReference();
+    int IsMdlNodeSkin();
+    int IsMdlNodeTriMesh();
+    int IsMdlNodeAABB();
+    int IsMdlNodeTrigger();
 #ifdef _XBOX
     MdlNodeTrigger* AsMdlNodeTrigger();
 #else
@@ -286,6 +296,7 @@ public:
     void SortChildrenByTransparency();
 #endif
     void ProcessSkinSeams();
+    void ReorderChildren();
     int CreateSkinNodeList(List<MdlNodeTriMesh*>& lstNodes);
     void InternalPostProcess();
     void InternalControl(Part* pPart, float fTime, float fPreviousTime,
@@ -317,6 +328,8 @@ public:
     unsigned char IsPointToPointSel();
     unsigned char IsInheritingVelocity();
     unsigned char IsRandom();
+    unsigned char IsTinted();
+    unsigned char UsesDepthTexture();
 #ifdef _XBOX
     unsigned char IsSplat();
     unsigned char IsDepthTexture();

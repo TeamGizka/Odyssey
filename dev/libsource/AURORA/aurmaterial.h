@@ -123,10 +123,18 @@ public:
     void PurgeBadTexture(SafePointer<CAurTexture>& pTexture);
     int BindTexture0();
     int BindTexture1();
+    int BindTexture2();
+    int BindTexture3();
+    int BindBumpMap();
+    int BindBumpyShinyMap();
     int BindEnvMap();
     int GetTextureTID();
+    int GetBumpMapTID();
+    int GetBumpyShinyMapTID();
+    int GetEnvMapTID();
     int SetDownSampling(int nMax);
     int BumpMapIsSpecular();
+    int BumpMapIsDiffuse();
     Vector GetBumpMapSpecularColor();
 
     float GetBumpMapIntensity();

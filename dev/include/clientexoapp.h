@@ -298,6 +298,8 @@ public:
     void ShowMouse(int nFlags);
     void HideMouse(int nFlags);
     int GetLastTarget();
+    unsigned long GetLastDialogSpeaker();
+    void SetLastDialogSpeaker(unsigned long oidSpeaker);
     CAurCamera* GetModuleCamera();
     int ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound,
                                                unsigned char nPartyMembers);
@@ -317,6 +319,7 @@ public:
                       unsigned long oidOpponent);
     int SetVideoMode(unsigned long nVideoMode);
     int IsValidResolution(unsigned long nWidth, unsigned long nHeight);
+    int GetAllowHighMonitorFrequency();
     int IsMoviePlaying();
     int GetCreditSequenceInProgress();
     void SetCreditSequenceInProgress(int bInProgress);
@@ -337,7 +340,15 @@ public:
     CExoImeUI* GetImeUI();
     void CancelMovie();
     void StopMovie();
+    int GetDisableMovies();
+    int GetDisableIntroMovies();
+    CExoString GetEndMovie();
+    void SetEndMovie(CExoString& sMovie);
     void QueryExitProgram();
+    int GetQuitClicked();
+    void SetQuitClicked(int bQuitClicked);
+    int GetWMCLOSEQuery();
+    void SetWMCLOSEQuery(int bQuery);
     void RestartMoviesIfNecessary();
     int IsClientInitialized();
     void SetEventDescriptions();

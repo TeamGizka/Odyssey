@@ -200,22 +200,6 @@ int enablegobrender = 1;
 
 static float testpath[12] = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
                              1.0f, 2.0f, 0.0f, 2.0f, 0.0f, 0.0f};
-extern char szcStandardDirtyVPARB[];
-extern char szcStandardDirtyLMVPARB[];
-extern char szcStandardDirtyEMVPARB[];
-extern char szcStandardDirtyEMLMVPARB[];
-extern char szcStandardDirtyLSVPARB[];
-extern char szcStandardDirtyLSLMVPARB[];
-extern char szcStandardDirtyLSEMVPARB[];
-extern char szszcStandardDirtyLSEMLMVPARB[];
-extern char cStandardDirtyVP[];
-extern char cStandardDirtyLMVP[];
-extern char cStandardDirtyEMVP[];
-extern char cStandardDirtyEMLMVP[];
-extern char cStandardDirtyLSVP[];
-extern char cStandardDirtyLSLMVP[];
-extern char cStandardDirtyLSEMVP[];
-extern char cStandardDirtyLSEMLMVP[];
 extern int rint(float fValue);
 extern int stenciloff;
 extern int enablelighting;

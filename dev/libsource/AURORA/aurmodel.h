@@ -1698,6 +1698,8 @@ public:
     Animation(char* sName);
     ~Animation();
     int InternalParseField(char*);
+    void PostProcess();
+    void Prune(MdlNode* pNode);
 #ifdef _XBOX
     void PruneNodes(MdlNode* pNode);
     void PruneToAnimRoot();
@@ -1731,7 +1733,10 @@ public:
     static IODispatcher* GetRef();
     MaxTree* ReadSync(char* sFileName);
     MaxTree* ReadSync(FILE* pModelFile, FILE* pVertexFile);
+    void PreSpawnAsync(char* sFileName);
+    MaxTree* RetreiveAsync(void* pRequest);
     bool Write(MaxTree* pTree, char* sFileName);
+    bool Write(MaxTree* pTree, FILE* pModelFile, FILE* pVertexFile);
 
     List<int> m_lDispatchEntries;
 };

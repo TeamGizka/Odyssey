@@ -322,6 +322,7 @@ public:
     int ReadTextureHeader(int*, int*, int*, int*, float*);
     unsigned char* GetPtrToResHelperInfo();
     unsigned char* GetCompressedTextureDataPtr();
+    int GetCompressedTextureDataSize();
 };
 
 class CAuroraLayeredTexture;
