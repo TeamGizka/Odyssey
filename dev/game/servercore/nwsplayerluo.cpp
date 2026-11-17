@@ -50,7 +50,7 @@ void CSWSPlayerLastUpdateObject::ClearActionQueue()
 {
     for (int i = 0; i < 10; ++i)
     {
-        m_aActions[i].Clear();
+        m_aActions[i].ClearData();
     }
 }
 // PC 0x00615600 GOG 0x006155E0

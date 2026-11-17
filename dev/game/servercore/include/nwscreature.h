@@ -127,7 +127,7 @@ public:
     {
     }
 
-    void Clear();
+    void ClearData();
 
     unsigned short m_nActionId;
     unsigned short m_nGroupActionId;

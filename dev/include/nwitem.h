@@ -228,8 +228,8 @@ public:
     void SetModelType(unsigned char value) { m_nModelType = value; }
     void SetGenderSpecific(unsigned char value) { m_nGenderSpecific = value; }
     void SetPartEnvMap(int value) { m_nPartEnvMap = value; }
-    void SetDefaultModel(const CResRef& value) { m_resDefaultModel = value; }
-    void SetDefaultIcon(const CResRef& value) { m_resDefaultIcon = value; }
+    void SetDefaultModelResRef(const CResRef& value) { m_resDefaultModel = value; }
+    void SetDefaultIconResRef(const CResRef& value) { m_resDefaultIcon = value; }
     void SetIsContainer(int value) { m_bIsContainer = value; }
     void SetWeaponWield(char value) { m_nWeaponWield = value; }
     unsigned char GetWeaponWield() { return m_nWeaponWield; }
@@ -287,7 +287,7 @@ public:
     void SetDenySubrace(int value) { m_nDenySubrace = value; }
     void SetArmorType(const CExoString& value) { m_sArmorType = value; }
     void SetDexBonus(char value) { m_nDexBonus = value; }
-    void SetItemClass(const char* sClass)
+    void SetItemClassResRefChunk(const char* sClass)
     {
         strncpy(m_sItemClass, sClass, 11);
     }

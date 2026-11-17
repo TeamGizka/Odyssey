@@ -11160,7 +11160,7 @@ void CSWSCreature::UpdateActionQueue()
         int nCount;
         for (nCount = 0; nCount < 10; nCount++)
         {
-            m_aActionQueue[nCount].Clear();
+            m_aActionQueue[nCount].ClearData();
         }
 
         int nSkipped = 0;
@@ -11327,7 +11327,7 @@ void CSWSCreature::UpdateActionQueue()
 ClearRemaining:
         for (; nCount < 10; nCount++)
         {
-            m_aActionQueue[nCount].Clear();
+            m_aActionQueue[nCount].ClearData();
         }
     }
 }

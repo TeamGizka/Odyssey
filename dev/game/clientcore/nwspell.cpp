@@ -222,7 +222,7 @@ void CSWSpellArray::Load()
         p2DA->GetINTEntry(i, "SpellDesc", &nValue);
         { unsigned long nDescriptionStrRef = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nDescriptionStrRef = nDescriptionStrRef; }
         p2DA->GetCExoStringEntry(i, "IconResRef", &sValue);
-        m_pSpells[i].SetIcon(sValue);
+        m_pSpells[i].SetSpellIcon(sValue);
         p2DA->GetCExoStringEntry(i, "Range", &sValue);
         m_pSpells[i].SetRange(sValue.Left(1));
         p2DA->GetINTEntry(i, "TargetType", &nValue);
@@ -282,17 +282,17 @@ void CSWSpellArray::Load()
         p2DA->GetINTEntry(i, "ConjTime", &nValue);
         { int nConjureTime = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nConjureTime = nConjureTime; }
         p2DA->GetCExoStringEntry(i, "ConjSoundMale", &sValue);
-        m_pSpells[i].SetConjureSoundMale(sValue);
+        m_pSpells[i].SetSpellConjureSoundMale(sValue);
         p2DA->GetCExoStringEntry(i, "ConjSoundFemale", &sValue);
-        m_pSpells[i].SetConjureSoundFemale(sValue);
+        m_pSpells[i].SetSpellConjureSoundFemale(sValue);
         p2DA->GetCExoStringEntry(i, "ConjSoundVFX", &sValue);
-        m_pSpells[i].SetConjureSoundVFX(sValue);
+        m_pSpells[i].SetSpellConjureSoundVFX(sValue);
         p2DA->GetCExoStringEntry(i, "ConjHeadVisual", &sValue);
-        m_pSpells[i].SetConjureHeadVisual(sValue);
+        m_pSpells[i].SetSpellConjureHeadVisual(sValue);
         p2DA->GetCExoStringEntry(i, "ConjHandVisual", &sValue);
-        m_pSpells[i].SetConjureHandVisual(sValue);
+        m_pSpells[i].SetSpellConjureHandVisual(sValue);
         p2DA->GetCExoStringEntry(i, "ConjGrndVisual", &sValue);
-        m_pSpells[i].SetConjureGroundVisual(sValue);
+        m_pSpells[i].SetSpellConjureGroundVisual(sValue);
         p2DA->GetINTEntry(i, "CastTime", &nValue);
         { int nCastTime = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nCastTime = nCastTime; }
         p2DA->GetCExoStringEntry(i, "CastAnim", &sValue);
@@ -354,13 +354,13 @@ void CSWSpellArray::Load()
         { short nCastAnim = nType; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nCastAnim = nCastAnim; }
         { short nConjureAnim = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nConjureAnim = nConjureAnim; }
         p2DA->GetCExoStringEntry(i, "CastHeadVisual", &sValue);
-        m_pSpells[i].SetCastHeadVisual(sValue);
+        m_pSpells[i].SetSpellCastHeadVisual(sValue);
         p2DA->GetCExoStringEntry(i, "CastHandVisual", &sValue);
-        m_pSpells[i].SetCastHandVisual(sValue);
+        m_pSpells[i].SetSpellCastHandVisual(sValue);
         p2DA->GetCExoStringEntry(i, "CastSound", &sValue);
-        m_pSpells[i].SetCastSound(sValue);
+        m_pSpells[i].SetSpellCastSound(sValue);
         p2DA->GetCExoStringEntry(i, "CastGrndVisual", &sValue);
-        m_pSpells[i].SetCastGroundVisual(sValue);
+        m_pSpells[i].SetSpellCastGroundVisual(sValue);
         p2DA->GetINTEntry(i, "CatchTime", &nValue);
         { int nCatchTime = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nCatchTime = nCatchTime; }
         p2DA->GetCExoStringEntry(i, "CatchAnim", &sValue);
@@ -420,14 +420,14 @@ void CSWSpellArray::Load()
         if (nValue == 0)
         {
             sValue = "sp_sumfire";
-            m_pSpells[i].SetProjectileModel(sValue);
+            m_pSpells[i].SetSpellProjectileModel(sValue);
             { int nProjectileType = 1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nProjectileType = nProjectileType; }
-            m_pSpells[i].SetProjectileSound("amb_e14");
+            m_pSpells[i].SetSpellProjectileSound("amb_e14");
         }
         else
         {
             p2DA->GetCExoStringEntry(i, "ProjModel", &sValue);
-            m_pSpells[i].SetProjectileModel(sValue);
+            m_pSpells[i].SetSpellProjectileModel(sValue);
             p2DA->GetCExoStringEntry(i, "ProjType", &sValue);
             sValue = sValue.LowerCase();
             nValue = 0;
@@ -497,7 +497,7 @@ void CSWSpellArray::Load()
             nValue = nType;
             { unsigned char nProjectileSpawnPoint = nType; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nProjectileSpawnPoint = nProjectileSpawnPoint; }
             p2DA->GetCExoStringEntry(i, "ProjSound", &sValue);
-            m_pSpells[i].SetProjectileSound(sValue);
+            m_pSpells[i].SetSpellProjectileSound(sValue);
             p2DA->GetCExoStringEntry(i, "ProjOrientation", &sValue);
             sValue = sValue.LowerCase();
             nValue = 0;

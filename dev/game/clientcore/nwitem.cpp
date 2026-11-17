@@ -122,15 +122,15 @@ void CSWBaseItemArray::Load()
         pTable->GetINTEntry(nItem, "ModelType", &nValue);
         m_pBaseItems[nItem].SetModelType((unsigned char)nValue);
         pTable->GetCExoStringEntry(nItem, "ItemClass", &sValue);
-        m_pBaseItems[nItem].SetItemClass(sValue.CStr());
+        m_pBaseItems[nItem].SetItemClassResRefChunk(sValue.CStr());
         pTable->GetINTEntry(nItem, "GenderSpecific", &nValue);
         m_pBaseItems[nItem].SetGenderSpecific((unsigned char)nValue);
         pTable->GetINTEntry(nItem, "PartEnvMap", &nValue);
         m_pBaseItems[nItem].SetPartEnvMap(nValue);
         pTable->GetCExoStringEntry(nItem, "DefaultModel", &sValue);
-        m_pBaseItems[nItem].SetDefaultModel(CResRef(sValue));
+        m_pBaseItems[nItem].SetDefaultModelResRef(CResRef(sValue));
         pTable->GetCExoStringEntry(nItem, "DefaultIcon", &sValue);
-        m_pBaseItems[nItem].SetDefaultIcon(CResRef(sValue));
+        m_pBaseItems[nItem].SetDefaultIconResRef(CResRef(sValue));
         pTable->GetINTEntry(nItem, "Container", &nValue);
         m_pBaseItems[nItem].SetIsContainer(nValue);
         pTable->GetINTEntry(nItem, "WeaponWield", &nValue);

@@ -3,7 +3,7 @@
 
 #include "nwscreature.h"
 
-inline void CSWActionNode::Clear()
+inline void CSWActionNode::ClearData()
 {
     m_nActionId = 0xFFFF;
     m_nGroupActionId = 0xFFFF;

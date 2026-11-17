@@ -212,21 +212,21 @@ public:
     void SetSubRadialSpell(unsigned char nIndex, unsigned long nSpell);
 
     void SetLabel(const CExoString& value) { m_sLabel = value; }
-    void SetIcon(const CResRef& value) { m_resIcon = value; }
+    void SetSpellIcon(const CResRef& value) { m_resIcon = value; }
     void SetRange(const CExoString& value) { m_sRange = value; }
     void SetImpactScript(const CExoString& value) { m_sImpactScript = value; }
-    void SetConjureSoundMale(const CResRef& value) { m_resConjureSoundMale = value; }
-    void SetConjureSoundFemale(const CResRef& value) { m_resConjureSoundFemale = value; }
-    void SetConjureSoundVFX(const CResRef& value) { m_resConjureSoundVFX = value; }
-    void SetConjureHeadVisual(const CResRef& value) { m_resConjureHeadVisual = value; }
-    void SetConjureHandVisual(const CResRef& value) { m_resConjureHandVisual = value; }
-    void SetConjureGroundVisual(const CResRef& value) { m_resConjureGroundVisual = value; }
-    void SetCastHeadVisual(const CResRef& value) { m_resCastHeadVisual = value; }
-    void SetCastHandVisual(const CResRef& value) { m_resCastHandVisual = value; }
-    void SetCastSound(const CResRef& value) { m_resCastSound = value; }
-    void SetCastGroundVisual(const CResRef& value) { m_resCastGroundVisual = value; }
-    void SetProjectileModel(const CResRef& value) { m_resProjectileModel = value; }
-    void SetProjectileSound(const CResRef& value) { m_resProjectileSound = value; }
+    void SetSpellConjureSoundMale(const CResRef& value) { m_resConjureSoundMale = value; }
+    void SetSpellConjureSoundFemale(const CResRef& value) { m_resConjureSoundFemale = value; }
+    void SetSpellConjureSoundVFX(const CResRef& value) { m_resConjureSoundVFX = value; }
+    void SetSpellConjureHeadVisual(const CResRef& value) { m_resConjureHeadVisual = value; }
+    void SetSpellConjureHandVisual(const CResRef& value) { m_resConjureHandVisual = value; }
+    void SetSpellConjureGroundVisual(const CResRef& value) { m_resConjureGroundVisual = value; }
+    void SetSpellCastHeadVisual(const CResRef& value) { m_resCastHeadVisual = value; }
+    void SetSpellCastHandVisual(const CResRef& value) { m_resCastHandVisual = value; }
+    void SetSpellCastSound(const CResRef& value) { m_resCastSound = value; }
+    void SetSpellCastGroundVisual(const CResRef& value) { m_resCastGroundVisual = value; }
+    void SetSpellProjectileModel(const CResRef& value) { m_resProjectileModel = value; }
+    void SetSpellProjectileSound(const CResRef& value) { m_resProjectileSound = value; }
 
     void SetPrerequisites(const CExoString& sPrerequisites);
     void SetMasterSpells(const CExoString& sMasterSpells);
