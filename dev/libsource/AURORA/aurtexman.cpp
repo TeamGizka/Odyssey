@@ -953,7 +953,7 @@ inline DirtyTextureController::~DirtyTextureController()
     delete[] m_pDirtyImage;
 }
 
-inline DirtyTextureController::DirtyTextureController(CAurTexture* pTexture, int nDirtyIndex)
+inline DirtyTextureController::DirtyTextureController(int nDirtyIndex, CAurTexture* pTexture)
     : TextureController(pTexture)
 {
     m_pDirtyImage = NULL;
@@ -2081,19 +2081,19 @@ void CAurTextureBasic::ParseField(char* sField)
         if (strcmp(sProcedureType, "dirty") == 0)
         {
             m_pController =
-                (TextureController*)new DirtyTextureController(this, 0);
+                (TextureController*)new DirtyTextureController(0, this);
             m_b3D = true;
         }
         if (strcmp(sProcedureType, "dirty2") == 0)
         {
             m_pController =
-                (TextureController*)new DirtyTextureController(this, 1);
+                (TextureController*)new DirtyTextureController(1, this);
             m_b3D = true;
         }
         if (strcmp(sProcedureType, "dirty3") == 0)
         {
             m_pController =
-                (TextureController*)new DirtyTextureController(this, 2);
+                (TextureController*)new DirtyTextureController(2, this);
             m_b3D = true;
         }
         if (strcmp(sProcedureType, "water") == 0)

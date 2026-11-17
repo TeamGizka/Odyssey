@@ -263,7 +263,7 @@ public:
 class DirtyTextureController : public TextureController
 {
 public:
-    DirtyTextureController(CAurTexture* pTexture, int nDirtyIndex);
+    DirtyTextureController(int nDirtyIndex, CAurTexture* pTexture);
     virtual ~DirtyTextureController();
     virtual void Control();
     virtual void Init();
