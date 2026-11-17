@@ -29,7 +29,7 @@
 #define VIDEO_EFFECT_FURY_2 8
 #define VIDEO_EFFECT_FURY_3 9
 
-int g_nPartyUnused = 0;
+int g_allowForceSpeedEffect = 0;
 
 int FollowMode = -1;
 int g_bEnablePartySmoothing = 1;
