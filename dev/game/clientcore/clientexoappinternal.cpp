@@ -4062,7 +4062,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_OBJECT_COUNT:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(1, sObjectName);
             else
@@ -4070,7 +4070,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(1, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(0, CExoString(nValue2));
+            g_pTlkTable->SetCustomToken(0, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
@@ -4185,8 +4185,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            int nValue2 = pMessageData->GetInteger(0);
-            g_pTlkTable->SetCustomToken(1, nValue2);
+            int nTokenValue = pMessageData->GetInteger(0);
+            g_pTlkTable->SetCustomToken(1, nTokenValue);
             sFeedback = g_pSWTlkTable->Fetch(0x5D7u, NULL, 0, 0);
             break;
         }
@@ -4201,8 +4201,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            int nValue2 = pMessageData->GetInteger(0);
-            g_pTlkTable->SetCustomToken(1, nValue2);
+            int nTokenValue = pMessageData->GetInteger(0);
+            g_pTlkTable->SetCustomToken(1, nTokenValue);
             sFeedback = g_pSWTlkTable->Fetch(0x407u, NULL, 0, 0);
             break;
         }
@@ -4415,8 +4415,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_COUNTER_PAIR:
         {
             int nValue = pMessageData->GetInteger(0);
-            int nValue2 = pMessageData->GetInteger(1);
-            g_pTlkTable->SetCustomToken(0, nValue2);
+            int nTokenValue = pMessageData->GetInteger(1);
+            g_pTlkTable->SetCustomToken(0, nTokenValue);
             g_pTlkTable->SetCustomToken(1, nValue);
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
@@ -4644,7 +4644,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_DAMAGE_RESISTED:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4652,15 +4652,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0x5AEu, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_RESISTANCE_REMAINING:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
-            int nValue3 = pMessageData->GetInteger(1);
+            int nTokenValue = pMessageData->GetInteger(0);
+            int nTokenValue2 = pMessageData->GetInteger(1);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4668,15 +4668,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
-            g_pTlkTable->SetCustomToken(2, CExoString(nValue3));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
+            g_pTlkTable->SetCustomToken(2, CExoString(nTokenValue2));
             sFeedback = g_pSWTlkTable->Fetch(0x5B0u, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_REDUCTION:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4684,15 +4684,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0x5AFu, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_REDUCTION_REMAINING:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
-            int nValue3 = pMessageData->GetInteger(1);
+            int nTokenValue = pMessageData->GetInteger(0);
+            int nTokenValue2 = pMessageData->GetInteger(1);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4700,8 +4700,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
-            g_pTlkTable->SetCustomToken(2, CExoString(nValue3));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
+            g_pTlkTable->SetCustomToken(2, CExoString(nTokenValue2));
             sFeedback = g_pSWTlkTable->Fetch(0x5B1u, NULL, 0, 0);
             break;
         }
@@ -4754,7 +4754,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_OBJECT_COUNTER:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4762,15 +4762,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pSWTlkTable->SetCustomToken(1, CExoString(nValue2));
+            g_pSWTlkTable->SetCustomToken(1, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_OBJECT_COUNTER_REMAINING:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
-            int nValue3 = pMessageData->GetInteger(1);
+            int nTokenValue = pMessageData->GetInteger(0);
+            int nTokenValue2 = pMessageData->GetInteger(1);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4778,8 +4778,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pSWTlkTable->SetCustomToken(1, CExoString(nValue2));
-            g_pSWTlkTable->SetCustomToken(2, CExoString(nValue3));
+            g_pSWTlkTable->SetCustomToken(1, CExoString(nTokenValue));
+            g_pSWTlkTable->SetCustomToken(2, CExoString(nTokenValue2));
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }

@@ -5565,11 +5565,11 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         CExoString sSubRace;
         unsigned short nRace = ReadWORD(16);
         sSubRace = ReadCExoString(32);
-        unsigned char nUnknown = ReadBYTE(8);
+        unsigned char nSubraceIndex = ReadBYTE(8);
         unsigned char nGender = ReadBYTE(8);
         short nAlignment = ReadSHORT(16);
         short nBaseCNPCAlignment = ReadSHORT(16);
-        int nD8 = ReadINT(32);
+        int nCurrentForm = ReadINT(32);
         CExoString sTag = ReadCExoString(32);
         int bDeadSelectable = ReadBOOL();
         unsigned char nClasses = ReadBYTE(8);
@@ -5580,7 +5580,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             pStats->m_sTag = sTag;
             pStats->m_nRace = nRace;
             pStats->m_sSubRace = sSubRace;
-            pStats->m_nSubraceIndex = nUnknown;
+            pStats->m_nSubraceIndex = nSubraceIndex;
             pStats->m_nGender = nGender;
             pCreature->SetAlignmentGoodEvil(nAlignment);
             float fRed;
@@ -5643,7 +5643,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             pCreature->SetBaseCNPCAlignment(nBaseCNPCAlignment);
             CSWCAnimBase* pAnimBase = pCreature->GetAnimationBase();
             if (pAnimBase != NULL)
-                pAnimBase->m_nCurrentForm = nD8;
+                pAnimBase->m_nCurrentForm = nCurrentForm;
             pCreature->UpdateFloatyText();
             pCreature->m_bDeadSelectable = bDeadSelectable;
             if (bDeadSelectable == 1)
@@ -6139,14 +6139,14 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     int bTrapDetected = ReadBOOL();
     int nAppearance = ReadINT(32);
     unsigned short nAnimation = ReadWORD(16);
-    int nFlag110 = ReadBOOL();
-    int nFlag128 = ReadBOOL();
-    int nFlag130 = ReadBOOL();
-    int nFlag114 = ReadBOOL();
-    int nFlag118 = ReadBOOL();
-    int nFlag11C = ReadBOOL();
+    int bPlot = ReadBOOL();
+    int bUseable = ReadBOOL();
+    int bTrapDisarmable = ReadBOOL();
+    int bLockable = ReadBOOL();
+    int bLocked = ReadBOOL();
+    int bNotBlastable = ReadBOOL();
     int nFlag12C = ReadBOOL();
-    int nFlag120 = ReadBOOL();
+    int bHasDescription = ReadBOOL();
     if (MessageReadOverflow(1))
     {
         return 0;
@@ -6252,14 +6252,14 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     pPlaceable->m_sName = sName;
     CAurScene* pScene = pArea->m_pScene;
     pPlaceable->AttachToScene(pScene);
-    pPlaceable->m_bPlotObject = nFlag110;
-    pPlaceable->m_bUseable = nFlag128;
-    pPlaceable->m_bTrapDisarmable = nFlag130;
-    pPlaceable->m_bLockable = nFlag114;
-    pPlaceable->m_bLocked = nFlag118;
-    pPlaceable->m_bNotBlastable = nFlag11C;
+    pPlaceable->m_bPlotObject = bPlot;
+    pPlaceable->m_bUseable = bUseable;
+    pPlaceable->m_bTrapDisarmable = bTrapDisarmable;
+    pPlaceable->m_bLockable = bLockable;
+    pPlaceable->m_bLocked = bLocked;
+    pPlaceable->m_bNotBlastable = bNotBlastable;
     pPlaceable->m_nUnknown12C = nFlag12C;
-    pPlaceable->m_bHasDescription = nFlag120;
+    pPlaceable->m_bHasDescription = bHasDescription;
     pPlaceable->m_bTrapDetected = bTrapDetected;
     pPlaceable->SetAnimation(nAnimation, 0, 0);
     if (pPlaceable->m_bUseable)
@@ -6339,8 +6339,8 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
     {
         int bTrapDetected = ReadBOOL();
         int bTrap = ReadBOOL();
-        int nFlag118 = ReadBOOL();
-        int nFlag110 = ReadBOOL();
+        int bLocked = ReadBOOL();
+        int bPlot = ReadBOOL();
         if (MessageReadOverflow(1))
         {
             return 0;
@@ -6348,8 +6348,8 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
         if (pPlaceable != NULL)
         {
             pPlaceable->m_bTrapDetected = bTrapDetected;
-            pPlaceable->m_bLocked = nFlag118;
-            pPlaceable->m_bPlotObject = nFlag110;
+            pPlaceable->m_bLocked = bLocked;
+            pPlaceable->m_bPlotObject = bPlot;
             if (bTrap)
             {
                 if (!pPlaceable->m_bHilighted)
@@ -8874,7 +8874,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
         unsigned long nGold = ReadDWORD(32);
         int nItemComponent = ReadINT(32);
         int nChemicals = ReadINT(32);
-        int nUnknown1B4 = ReadINT(32);
+        int nEncumbranceState = ReadINT(32);
         int bLevelUp = ReadBOOL();
         unsigned long nExperience = ReadDWORD(32);
         if (MessageReadOverflow(1))
@@ -8888,7 +8888,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
             pCreature->m_nGold = nGold;
             pCreature->m_nItemComponent = nItemComponent;
             pCreature->m_nChemicals = nChemicals;
-            pCreature->m_nEncumbranceState = nUnknown1B4;
+            pCreature->m_nEncumbranceState = nEncumbranceState;
         }
         g_pAppManager->m_pClientExoApp->GetPlayerCreatureId();
         CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -9865,14 +9865,14 @@ int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
     unsigned char bTimeOfDay = nFlags & 1;
     unsigned char nTimeOfDayState;
     unsigned long nTimeOfDayTime;
-    unsigned char bTimeB0;
-    int nTimeB0;
-    unsigned char bTimeAC;
-    int nTimeAC;
-    unsigned char bTimeA8;
-    int nTimeA8;
-    unsigned char bTimeA4;
-    int nTimeA4;
+    unsigned char bHour;
+    int nHour;
+    unsigned char bDay;
+    int nDay;
+    unsigned char bMonth;
+    int nMonth;
+    unsigned char bYear;
+    int nYear;
     CSWCModule* pModule;
 
     if (bTimeOfDay != 0)
@@ -9887,25 +9887,25 @@ int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
             nTimeOfDayTime = 0;
         }
     }
-    bTimeB0 = nFlags & 2;
-    if (bTimeB0 != 0)
+    bHour = nFlags & 2;
+    if (bHour != 0)
     {
-        nTimeB0 = ReadBYTE(8);
+        nHour = ReadBYTE(8);
     }
-    bTimeAC = nFlags & 4;
-    if (bTimeAC != 0)
+    bDay = nFlags & 4;
+    if (bDay != 0)
     {
-        nTimeAC = ReadBYTE(8);
+        nDay = ReadBYTE(8);
     }
-    bTimeA8 = nFlags & 8;
-    if (bTimeA8 != 0)
+    bMonth = nFlags & 8;
+    if (bMonth != 0)
     {
-        nTimeA8 = ReadBYTE(8);
+        nMonth = ReadBYTE(8);
     }
-    bTimeA4 = nFlags & 0x10;
-    if (bTimeA4 != 0)
+    bYear = nFlags & 0x10;
+    if (bYear != 0)
     {
-        nTimeA4 = ReadDWORD(32);
+        nYear = ReadDWORD(32);
     }
     if (MessageReadOverflow(1))
     {
@@ -9918,21 +9918,21 @@ int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
         {
             pModule->SetTimeOfDayState(nTimeOfDayState, nTimeOfDayTime);
         }
-        if (bTimeB0 != 0)
+        if (bHour != 0)
         {
-            pModule->m_nTimeHour = nTimeB0;
+            pModule->m_nTimeHour = nHour;
         }
-        if (bTimeAC != 0)
+        if (bDay != 0)
         {
-            pModule->m_nTimeDay = nTimeAC;
+            pModule->m_nTimeDay = nDay;
         }
-        if (bTimeA8 != 0)
+        if (bMonth != 0)
         {
-            pModule->m_nTimeMonth = nTimeA8;
+            pModule->m_nTimeMonth = nMonth;
         }
-        if (bTimeA4 != 0)
+        if (bYear != 0)
         {
-            pModule->m_nTimeYear = nTimeA4;
+            pModule->m_nTimeYear = nYear;
         }
     }
     return 1;

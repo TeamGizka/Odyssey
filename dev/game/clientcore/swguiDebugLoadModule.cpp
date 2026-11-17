@@ -80,14 +80,14 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
 {
     m_nSelection = 0;
     StartLoadFromLayout("debug_p");
-    InitControl(m_CSWGuiListBox_64, "LB_OPTIONS", 1);
+    InitControl(m_lbOptions, "LB_OPTIONS", 1);
     InitControl(m_lblBuild, "LBL_BUILD", 1);
     StopLoadFromLayout();
     CExoString sBuild = CExoString("Build: ") + g_sBuildNumber;
     m_lblBuild.m_cText.m_cParams.SetText(sBuild);
 
     CExoArrayList<CSWGuiControl*> aControls;
-    CSWGuiControl* pProto = m_CSWGuiListBox_64.m_pProtoItem;
+    CSWGuiControl* pProto = m_lbOptions.m_pProtoItem;
     CExoString sModule;
     CExoString sRim;
     CExoString sMod;
@@ -164,7 +164,7 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
                                              (CSWGuiButton*)pProto);
         aControls.Add(pOption);
     }
-    CSWGuiListBox* pList = &m_CSWGuiListBox_64;
+    CSWGuiListBox* pList = &m_lbOptions;
     pList->AddControls(aControls, 1, 0, 0);
     pList->m_bLooping = 1;
     SetActiveControl(pList, 0);

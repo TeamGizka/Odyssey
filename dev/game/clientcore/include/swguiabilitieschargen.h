@@ -166,12 +166,12 @@ public:
     int m_bLevelUp;
 #ifndef _XBOX
     CSWGuiLabel m_lblPortrait;
-    Vector m_v49CC;
-    Vector m_v49D8;
-    Vector m_v49E4;
-    Vector m_v49F0;
-    Vector m_v49FC;
-    Vector m_v4A08;
+    Vector m_vScoreTextColor;
+    Vector m_vScoreTextHighlightColor;
+    Vector m_vScoreBorderColor;
+    Vector m_vScoreBorderHighlightColor;
+    Vector m_vPlusBorderColor;
+    Vector m_vPlusBorderHighlightColor;
 #endif
 };
 

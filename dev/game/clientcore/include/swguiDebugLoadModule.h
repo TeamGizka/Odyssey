@@ -9,7 +9,7 @@ class CSWGuiManager;
 class CSWGuiLoadModuleDebugMenu : public CSWGuiPanel
 {
 public:
-    CSWGuiListBox m_CSWGuiListBox_64;
+    CSWGuiListBox m_lbOptions;
     CSWGuiLabel m_lblBuild;
     int m_nSelection;
     int m_nNumOptions;

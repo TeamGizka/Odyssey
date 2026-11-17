@@ -1128,7 +1128,7 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     }
 #ifndef _XBOX
     m_nBackground = 3;
-    m_n28D4 = -1;
+    m_nCurrentPlanet = -1;
 #endif
 }
 // PC 0x006EF000 GOG 0x006EEBF0
@@ -1137,7 +1137,7 @@ void CSWGuiInGameGalaxyMap::OnPanelAdded()
     CSWPartyTable* pPartyTable =
         g_pAppManager->m_pServerExoApp->GetPartyTable();
 #ifndef _XBOX
-    m_n28D4 = pPartyTable->m_nSelectedPlanet;
+    m_nCurrentPlanet = pPartyTable->m_nSelectedPlanet;
 #endif
     if (pPartyTable->m_nSelectedPlanet == -1)
     {
@@ -1183,7 +1183,7 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
             {
                 CSWPartyTable* pPartyTable =
                     g_pAppManager->m_pServerExoApp->GetPartyTable();
-                if (pPartyTable->m_nSelectedPlanet == m_n28D4)
+                if (pPartyTable->m_nSelectedPlanet == m_nCurrentPlanet)
                 {
                     CSWGuiMessageBox* pMessageBox =
                         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
@@ -1371,7 +1371,7 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     InitControl(m_alblBar[2], "LBL_BAR3", 1);
     InitControl(m_alblBar[3], "LBL_BAR4", 1);
     InitControl(m_alblBar[4], "LBL_BAR5", 1);
-    InitControl(m_lbl1018, "LBL_TITLE", 1);
+    InitControl(m_lblPanelTitle, "LBL_TITLE", 1);
     StopLoadFromLayout();
 
     float fScaleX = 1.0f;

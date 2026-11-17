@@ -904,11 +904,11 @@ void CClientExoApp::EndPazaakGame(int nResult, int nWager, int bPlayAgain,
 int CClientExoApp::GetPazaakResults(int* pnResult, int* pnWager)
 {
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
-    int nUnused;
+    int nWager;
     *pnResult = pInternal->m_PazaakState.m_nResult;
-    nUnused = pInternal->m_PazaakState.m_nWager;
-    *pnWager = nUnused;
-    return nUnused;
+    nWager = pInternal->m_PazaakState.m_nWager;
+    *pnWager = nWager;
+    return nWager;
 }
 // PC 0x00639050 GOG 0x00638F50
 void CClientExoApp::SetFutureLeader(unsigned long oidObject)

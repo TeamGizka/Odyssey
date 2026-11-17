@@ -96,7 +96,7 @@ public:
 class CSWSJournalEntry
 {
 public:
-    unsigned char m_aUnknown00[16];
+    unsigned char m_aLocStrings[16];
     unsigned long m_nDate;
     unsigned long m_nTime;
     CExoString m_sPlotID;

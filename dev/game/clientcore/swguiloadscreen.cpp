@@ -58,7 +58,7 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     m_bCenterHorizontal = 0;
     m_bCenterVertical = 0;
 #ifndef _XBOX
-    m_res5A0 = m_lblLogo.m_cBorder.m_cParams.m_cFillImage;
+    m_resLogo = m_lblLogo.m_cBorder.m_cParams.m_cFillImage;
     {
         CResRef cNoLogo("");
         m_lblLogo.m_cBorder.m_cParams.SetFillImage(cNoLogo, 0);
@@ -70,7 +70,7 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
 // PC 0x006D0250 GOG 0x006D02F0
 void CSWGuiLoadScreen::OnPanelAdded()
 {
-    m_lblLogo.m_cBorder.m_cParams.SetFillImage(m_res5A0, 0);
+    m_lblLogo.m_cBorder.m_cParams.SetFillImage(m_resLogo, 0);
     CSWGuiPanel::OnPanelAdded();
 }
 // PC 0x006D0270 GOG 0x006D0310

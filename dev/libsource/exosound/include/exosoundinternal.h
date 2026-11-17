@@ -304,7 +304,7 @@ public:
     int m_nOcclusionState;
 
     CExoString m_s3DProviderName;
-    CExoStringList m_CExoStringList_D8;
+    CExoStringList m_lst3DProviderNames;
 
     CExoArrayList<HPROVIDER> m_a3DProviders;
     HPROVIDER m_h3DProvider;

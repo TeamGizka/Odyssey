@@ -87,7 +87,7 @@ public:
     CSWGuiButton m_btnExit;
     CSWGuiButton m_btnReturn;
     CSWGuiLabel m_alblBar[5];
-    CSWGuiLabel m_lbl1018;
+    CSWGuiLabel m_lblPanelTitle;
 #endif
     CSWGuiMapHider m_cMapHider;
     CSWGuiImage m_imgMap;
@@ -95,7 +95,7 @@ public:
 
     unsigned long m_bPartySelection : 1;
     unsigned long m_bReturnButton : 1;
-    unsigned long m_bUnknownFlagsRest : 30;
+    unsigned long m_nMapFlagsUnused : 30;
 };
 
 class CSWGuiInGameGalaxyMap : public CSWGuiPanel
@@ -145,7 +145,7 @@ public:
     PlanetInfo m_aPlanets[PLANET_COUNT];
     int m_nSelectedPlanet;
 #ifndef _XBOX
-    int m_n28D4;
+    int m_nCurrentPlanet;
 #endif
 };
 

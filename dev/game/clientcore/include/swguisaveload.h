@@ -26,7 +26,7 @@ public:
     unsigned long m_bSaveMode : 1;
     unsigned long m_bExitToMainMenu : 1;
     unsigned long m_bFiltersLoaded : 1;
-    unsigned long m_nUnknown64Rest : 29;
+    unsigned long m_nFlagsUnused : 29;
     int m_nMaxSaveGame;
 
     CExoString m_sResourceDirectory;
@@ -204,7 +204,7 @@ public:
     CExoString m_sGameName;
     CExoString m_sAreaName;
     CExoString m_sLastModule;
-    CExoString m_sUnknown1F8;
+    CExoString m_sSaveDirectory;
     CExoString m_sXboxTitle;
     CExoString m_sScreenshot;
 

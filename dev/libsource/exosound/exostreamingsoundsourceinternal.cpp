@@ -524,7 +524,7 @@ void CExoStreamingSoundSourceInternal::Update3DStream()
 }
 // PC 0x00628B60 GOG 0x00628A00
 void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
-                                                int bUnknown, float fScale)
+                                                int nSliderMode, float fScale)
 {
     int nSliderVolumeIndex;
     int nSliderType;
@@ -533,7 +533,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
     float fNewVolume;
     int nScaledVolume;
 
-    nSliderVolumeIndex = bUnknown;
+    nSliderVolumeIndex = nSliderMode;
     nSliderType = m_pSoundInternal->GetSliderType(this);
     if (!IsScalable())
     {
@@ -544,13 +544,13 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
         fVolumeScale = fScale;
     }
     nScaledVolume = (int)(nVolume * fVolumeScale);
-    if (bUnknown == 0)
+    if (nSliderMode == 0)
     {
         m_nVolume = nVolume;
     }
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {
-        if (m_pSoundInternal->GetMutable(this) == 0 && bUnknown == 0)
+        if (m_pSoundInternal->GetMutable(this) == 0 && nSliderMode == 0)
         {
             fVolume = m_pSoundInternal->GetSliderVolume(nSliderType, 1);
             nSliderVolumeIndex =
@@ -568,7 +568,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
 // PC 0x00628C60 GOG 0x00628B00
 int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
                                            unsigned short nResourceType,
-                                           int bVoice, int bMusic, int bUnused)
+                                           int bVoice, int bMusic, int bCached)
 {
     int nLoopCount;
 

@@ -45,25 +45,25 @@ public:
 
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
-    CSWGuiLabel m_lblUnknown80;
-    CSWGuiLabel m_lblUnknown1C0;
-    CSWGuiLabel m_lblUnknown300;
-    CSWGuiLabel m_lblUnknown440;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblAccept;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblCancel;
     CSWGuiLabel m_lblUnknown580;
-    CSWGuiLabel m_lblUnknown6C0;
-    CSWGuiLabel m_lblUnknown800;
+    CSWGuiLabel m_lblExamine;
+    CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblCost;
     CSWGuiLabel m_lblItemValue;
     CSWGuiLabel m_lblStock;
-    CSWGuiLabel m_lblUnknownD00;
-    CSWGuiLabel m_lblUnknownF80;
+    CSWGuiLabel m_lblStockValue;
+    CSWGuiLabel m_lblRanalog;
     CSWGuiLabel m_lblCredits;
     CSWGuiLabel m_lblCreditsValue;
     CSWGuiLabel m_lblBuySell;
     CSWGuiListBox m_lbxStoreItems;
     CSWGuiListBox m_lbxInventoryItems;
-    CSWGuiListBox m_CSWGuiListBox_1A40;
+    CSWGuiListBox m_lbxDescription;
 #ifndef _XBOX
     CSWGuiButton m_btnCancel;
     CSWGuiButton m_btnExamine;

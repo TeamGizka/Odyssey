@@ -339,283 +339,283 @@ void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380 GO
     sAliasFile.Format(".\\%s", sFile.CStr());
 
     {
-        CExoString sUnused("d:\\");
+        CExoString sXboxDefault("d:\\");
         CExoString sDefault(".\\");
         CExoString sAlias("HD0");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\");
+        CExoString sXboxDefault("d:\\");
         CExoString sDefault("d:\\");
         CExoString sAlias("CD0");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\override");
+        CExoString sXboxDefault("d:\\override");
         CExoString sDefault(".\\override");
         CExoString sAlias("OVERRIDE");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\errortex");
+        CExoString sXboxDefault("d:\\errortex");
         CExoString sDefault(".\\errortex");
         CExoString sAlias("ERRORTEX");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\temp");
+        CExoString sXboxDefault("d:\\temp");
         CExoString sDefault(".\\temp");
         CExoString sAlias("TEMP");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\modules");
+        CExoString sXboxDefault("d:\\modules");
         CExoString sDefault(".\\modules");
         CExoString sAlias("MODULES");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\nwm");
+        CExoString sXboxDefault("d:\\nwm");
         CExoString sDefault(".\\nwm");
         CExoString sAlias("NWMFILES");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\logs");
+        CExoString sXboxDefault("d:\\logs");
         CExoString sDefault(".\\logs");
         CExoString sAlias("LOGS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\localvault");
+        CExoString sXboxDefault("d:\\localvault");
         CExoString sDefault(".\\localvault");
         CExoString sAlias("LOCALVAULT");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\dmvault");
+        CExoString sXboxDefault("d:\\dmvault");
         CExoString sDefault(".\\dmvault");
         CExoString sAlias("DMVAULT");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\servervault");
+        CExoString sXboxDefault("d:\\servervault");
         CExoString sDefault(".\\servervault");
         CExoString sAlias("SERVERVAULT");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("u:\\");
+        CExoString sXboxDefault("u:\\");
         CExoString sDefault(".\\saves");
         CExoString sAlias("SAVES");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\music");
+        CExoString sXboxDefault("d:\\music");
         CExoString sDefault(".\\music");
         CExoString sAlias("MUSIC");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\streammusic");
+        CExoString sXboxDefault("d:\\streammusic");
         CExoString sDefault(".\\streammusic");
         CExoString sAlias("STREAMMUSIC");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\movies");
+        CExoString sXboxDefault("d:\\movies");
         CExoString sDefault(".\\movies");
         CExoString sAlias("MOVIES");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\tempclient");
+        CExoString sXboxDefault("d:\\tempclient");
         CExoString sDefault(".\\tempclient");
         CExoString sAlias("TEMPCLIENT");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\currentgame");
+        CExoString sXboxDefault("d:\\currentgame");
         CExoString sDefault(".\\currentgame");
         CExoString sAlias("CURRENTGAME");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\hak");
+        CExoString sXboxDefault("d:\\hak");
         CExoString sDefault(".\\hak");
         CExoString sAlias("HAK");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\texturepacks");
+        CExoString sXboxDefault("d:\\texturepacks");
         CExoString sDefault(".\\texturepacks");
         CExoString sAlias("TEXTUREPACKS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\streamvoice");
+        CExoString sXboxDefault("d:\\streamvoice");
         CExoString sDefault(".\\streamvoice");
         CExoString sAlias("STREAMVOICE");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\supermodels");
+        CExoString sXboxDefault("d:\\supermodels");
         CExoString sDefault(".\\supermodels");
         CExoString sAlias("SUPERMODELS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("t:\\");
+        CExoString sXboxDefault("t:\\");
         CExoString sDefault(".\\downloads");
         CExoString sAlias("DOWNLOADS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("t:\\");
+        CExoString sXboxDefault("t:\\");
         CExoString sDefault(".\\");
         CExoString sAlias("OPTIONS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\ambient");
+        CExoString sXboxDefault("d:\\ambient");
         CExoString sDefault(".\\ambient");
         CExoString sAlias("AMBIENT");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\patch");
+        CExoString sXboxDefault("d:\\patch");
         CExoString sDefault(".\\patch");
         CExoString sAlias("PATCH");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\portraits");
+        CExoString sXboxDefault("d:\\portraits");
         CExoString sDefault(".\\portraits");
         CExoString sAlias("PORTRAITS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\music");
+        CExoString sXboxDefault("d:\\music");
         CExoString sDefault(".\\music");
         CExoString sAlias("MUSIC");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\currentgame");
+        CExoString sXboxDefault("d:\\currentgame");
         CExoString sDefault(".\\currentgame");
         CExoString sAlias("CURRENTGAME");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("z:\\gameinprogress");
+        CExoString sXboxDefault("z:\\gameinprogress");
         CExoString sDefault(".\\gameinprogress");
         CExoString sAlias("GAMEINPROGRESS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("z:\\futuregame");
+        CExoString sXboxDefault("z:\\futuregame");
         CExoString sDefault(".\\futuregame");
         CExoString sAlias("FUTUREGAME");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\rims");
+        CExoString sXboxDefault("d:\\rims");
         CExoString sDefault(".\\rims");
         CExoString sAlias("RIMS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\rimsxbox");
+        CExoString sXboxDefault("d:\\rimsxbox");
         CExoString sDefault(".\\rimsxbox");
         CExoString sAlias("RIMSXBOX");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\rebootdata");
+        CExoString sXboxDefault("d:\\rebootdata");
         CExoString sDefault(".\\rebootdata");
         CExoString sAlias("REBOOTDATA");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("z:\\cache");
+        CExoString sXboxDefault("z:\\cache");
         CExoString sDefault(".\\");
         CExoString sAlias("CACHE");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 
     {
-        CExoString sUnused("d:\\lips");
+        CExoString sXboxDefault("d:\\lips");
         CExoString sDefault(".\\lips");
         CExoString sAlias("LIPS");
 
-        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxDefault);
     }
 }
 #endif

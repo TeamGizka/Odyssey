@@ -1944,13 +1944,13 @@ void CExoSoundInternal::LoadProviderPreferences()  // PC 0x00625020 GOG 0x00624F
 
     CExoString sProvider;
     for (unsigned char nProvider = 0;
-         nProvider < m_CExoStringList_D8.GetCount(); nProvider++)
+         nProvider < m_lst3DProviderNames.GetCount(); nProvider++)
     {
         for (unsigned char nRow = 0; nRow < pTable->m_nNumRows; nRow++)
         {
             if (pTable->GetCExoStringEntry(nRow, "Provider", &sProvider))
             {
-                if (!(*m_CExoStringList_D8.GetString(nProvider) == sProvider))
+                if (!(*m_lst3DProviderNames.GetString(nProvider) == sProvider))
                 {
                     continue;
                 }
@@ -2409,8 +2409,8 @@ void CExoSoundInternal::Enumerate3DProviders()  // PC 0x006265C0 GOG 0x00626540
     char* aNames[64];
     int nProvider = 0;
 
-    m_CExoStringList_D8.m_nSortMode = 1;
-    m_CExoStringList_D8.Clear();
+    m_lst3DProviderNames.m_nSortMode = 1;
+    m_lst3DProviderNames.Clear();
 
     CExoArrayList<HPROVIDER>* pProviderList = &m_a3DProviders;
     pProviderList->num = 0;
@@ -2432,7 +2432,7 @@ void CExoSoundInternal::Enumerate3DProviders()  // PC 0x006265C0 GOG 0x00626540
             AIL_open_3D_provider(aProviders[nProvider]) == M3D_NOERR)
         {
             AIL_close_3D_provider(aProviders[nProvider]);
-            m_CExoStringList_D8.Add(new CExoString(aNames[nProvider]));
+            m_lst3DProviderNames.Add(new CExoString(aNames[nProvider]));
             pProviderList->Add(aProviders[nProvider]);
         }
         nProvider++;
@@ -2563,7 +2563,7 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790 GOG
                 int nIndex = m_aProviderConfigurations[nProvider]->m_nProvider;
                 m_bInitialized = 1;
                 m_h3DProvider = m_a3DProviders[nIndex];
-                m_s3DProviderName = *m_CExoStringList_D8.GetString(nIndex);
+                m_s3DProviderName = *m_lst3DProviderNames.GetString(nIndex);
                 m_nEAX = nEAXMode;
                 m_bHardware = bHardware;
                 m_f2D3DBias = m_aProviderConfigurations[nProvider]->m_f2D3DBias;

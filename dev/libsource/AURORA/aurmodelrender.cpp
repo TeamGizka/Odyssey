@@ -501,7 +501,7 @@ static RenderVertexC* GetInverseWalkMeshColors()
 }
 // PC 0x00486410 GOG 0x004864D0
 bool StaticPartNeedsMat(PartTriMesh* pPart, MdlNodeTriMesh* pNode,
-                        bool& bHasTileData, bool& bUnknown)
+                        bool& bHasTileData, bool& bTileMaterial)
 {
     if (pPart->m_bColors == 0)
     {
@@ -512,7 +512,7 @@ bool StaticPartNeedsMat(PartTriMesh* pPart, MdlNodeTriMesh* pNode,
 
         if (bHasTileData)
         {
-            bUnknown = true;
+            bTileMaterial = true;
             return true;
         }
     }

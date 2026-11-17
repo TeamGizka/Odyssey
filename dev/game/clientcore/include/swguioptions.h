@@ -264,7 +264,7 @@ public:
     CSWGuiListBox m_lbResolutions;
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnBack;
-    int m_nUnknown80C;
+    int m_bResolutionChanged;
 };
 
 class CSWGuiOptionsGraphics : public CSWGuiPanel
@@ -303,7 +303,7 @@ public:
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnDefault;
     CSWGuiLabel m_alblBar[4];
-    int m_nUnknown18BC;
+    int m_bReInitPending;
     int m_bInGame;
 };
 

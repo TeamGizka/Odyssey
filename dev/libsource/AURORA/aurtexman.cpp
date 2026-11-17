@@ -184,7 +184,7 @@ void InsertionSortTexture(CAurTextureBasic** ppTextures, int nCount)
 }
 // PC 0x00420070 GOG 0x00420080
 unsigned char* AurGetImageWrapper(char* sFileName, int* pWidth, int* pHeight, int* pBPP,
-                       int* pCompressedSize, int* pReserved6, int* pReserved7,
+                       int* pCompressedSize, int* pDataSize, int* pTxiSize,
                        Aurora::AuroraTextureFormats* pFormat, float* pAlpha,
                        bool* pProcessed, short* pNumMipMaps,
                        int bAllowCompression)
@@ -194,12 +194,12 @@ unsigned char* AurGetImageWrapper(char* sFileName, int* pWidth, int* pHeight, in
         bAllowCompression = 0;
     }
     *pCompressedSize = 0;
-    *pReserved6 = 0;
-    *pReserved7 = 0;
+    *pDataSize = 0;
+    *pTxiSize = 0;
     char cBPP;
     char cNumMipMaps;
     unsigned char* result = AurGetProcessedRaster(sFileName, pWidth, pHeight, &cBPP,
-                                       pCompressedSize, pReserved6, pReserved7,
+                                       pCompressedSize, pDataSize, pTxiSize,
                                        pAlpha, &cNumMipMaps);
     if (result != 0)
     {

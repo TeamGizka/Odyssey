@@ -139,12 +139,12 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     StopLoadFromLayout();
 #ifndef _XBOX
-    m_v49CC = m_lblScore[0].m_cText.m_cParams.m_vColor;
-    m_v49D8 = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-    m_v49E4 = m_lblScore[0].m_cBorder.m_cParams.m_vColor;
-    m_v49F0 = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-    m_v49FC = m_btnPlus[0].m_cBorder.m_cParams.m_vColor;
-    m_v4A08 = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    m_vScoreTextColor = m_lblScore[0].m_cText.m_cParams.m_vColor;
+    m_vScoreTextHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    m_vScoreBorderColor = m_lblScore[0].m_cBorder.m_cParams.m_vColor;
+    m_vScoreBorderHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    m_vPlusBorderColor = m_btnPlus[0].m_cBorder.m_cParams.m_vColor;
+    m_vPlusBorderHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 #endif
 #ifdef _XBOX
     unsigned char nStrength = m_pCreature->GetStats()->m_aAbilities[0];
@@ -588,8 +588,8 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
             m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
             m_lblScore[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
 #else
-            m_btnPoints[i].m_cText.m_cParams.SetColor(m_v49D8);
-            m_lblScore[i].m_cText.m_cParams.SetColor(m_v49D8);
+            m_btnPoints[i].m_cText.m_cParams.SetColor(m_vScoreTextHighlightColor);
+            m_lblScore[i].m_cText.m_cParams.SetColor(m_vScoreTextHighlightColor);
 #endif
         }
         else
@@ -598,8 +598,8 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
             m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
             m_lblScore[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
 #else
-            m_btnPoints[i].m_cText.m_cParams.SetColor(m_v49CC);
-            m_lblScore[i].m_cText.m_cParams.SetColor(m_v49CC);
+            m_btnPoints[i].m_cText.m_cParams.SetColor(m_vScoreTextColor);
+            m_lblScore[i].m_cText.m_cParams.SetColor(m_vScoreTextColor);
 #endif
         }
     }

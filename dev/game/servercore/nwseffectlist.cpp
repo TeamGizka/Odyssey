@@ -999,8 +999,8 @@ int CSWSEffectListHandler::OnApplyACDecrease(CSWSObject* pObject,
     int nType;
     int nPenalty;
     int nRace;
-    int nUnknown3;
-    int nUnknown4;
+    int nLawChaos;
+    int nGoodEvil;
 
     if (pObject->AsSWSCreature() != NULL)
     {
@@ -1014,15 +1014,15 @@ int CSWSEffectListHandler::OnApplyACDecrease(CSWSObject* pObject,
         nType = pEffect->GetInteger(0);
         nPenalty = pEffect->GetInteger(1);
         nRace = pEffect->GetInteger(2);
-        nUnknown3 = pEffect->GetInteger(3);
-        nUnknown4 = pEffect->GetInteger(4);
+        nLawChaos = pEffect->GetInteger(3);
+        nGoodEvil = pEffect->GetInteger(4);
         pEffect->GetInteger(5);
         if (nPenalty < 1 || pCreature->m_bPlotObject != 0)
         {
             return 1;
         }
-        if (nRace != (unsigned char)g_pRules->m_nNumRaces || nUnknown3 != 0 ||
-            nUnknown4 != 0)
+        if (nRace != (unsigned char)g_pRules->m_nNumRaces || nLawChaos != 0 ||
+            nGoodEvil != 0)
         {
             return 0;
         }
@@ -3304,13 +3304,13 @@ int CSWSEffectListHandler::OnApplySkillIncrease(CSWSObject* pObject,
 {
     int nSkill;
     int nValue;
-    int nUnknown2;
-    int nUnknown3;
+    int nRace;
+    int nLawChaos;
 
     nSkill = pEffect->GetInteger(0);
     nValue = pEffect->GetInteger(1);
-    nUnknown2 = pEffect->GetInteger(2);
-    nUnknown3 = pEffect->GetInteger(3);
+    nRace = pEffect->GetInteger(2);
+    nLawChaos = pEffect->GetInteger(3);
     if (nValue < 0)
     {
         return 1;
@@ -3324,16 +3324,16 @@ int CSWSEffectListHandler::OnApplySkillDecrease(CSWSObject* pObject,
 {
     int nSkill;
     int nValue;
-    int nUnknown2;
-    int nUnknown3;
+    int nRace;
+    int nLawChaos;
     CSWSCreature* pCreator;
     CSWSCreatureStats* pStats;
     unsigned long oidCreator;
 
     nSkill = pEffect->GetInteger(0);
     nValue = pEffect->GetInteger(1);
-    nUnknown2 = pEffect->GetInteger(2);
-    nUnknown3 = pEffect->GetInteger(3);
+    nRace = pEffect->GetInteger(2);
+    nLawChaos = pEffect->GetInteger(3);
     if (nValue < 0 || pObject->m_bPlotObject != 0 ||
         pObject->AsSWSCreature() == NULL)
     {

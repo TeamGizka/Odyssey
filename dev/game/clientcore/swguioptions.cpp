@@ -623,7 +623,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
             m_pManager->PopModalPanel();
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
-            if (m_nUnknown18BC != 0)
+            if (m_bReInitPending != 0)
             {
                 CExoIni cIni;
                 CExoString sValue;
@@ -654,7 +654,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
                         }
                     }
                 }
-                m_nUnknown18BC = 0;
+                m_bReInitPending = 0;
             }
             break;
         case 45:
@@ -913,7 +913,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
             m_pManager->PopModalPanel();
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
-            if (m_nUnknown80C != 0)
+            if (m_bResolutionChanged != 0)
             {
                 CExoIni cIni;
                 CExoString sValue;
@@ -944,7 +944,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
                         }
                     }
                 }
-                m_nUnknown80C = 0;
+                m_bResolutionChanged = 0;
             }
             break;
         case 39:
@@ -1088,7 +1088,7 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
         m_pManager->PopModalPanel();
         m_bDeferredRemoval = 0;
         m_nExitState = EXITSTATE_DELETE;
-        m_nUnknown80C = 1;
+        m_bResolutionChanged = 1;
         g_pGuiMan->ReloadPanels(g_nScreenWidth, g_nScreenHeight);
         g_pGuiMan->ReloadToolTipPanel();
     }
@@ -2331,7 +2331,7 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
             m_lbResolutions.SetSelectedControl(pSelected, 0);
         }
     }
-    m_nUnknown80C = 0;
+    m_bResolutionChanged = 0;
 }
 #endif
 // PC 0x00751E50 GOG 0x00750D40
@@ -2818,7 +2818,7 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGam
     pAdvanced->AddEvent(39, this,
                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnAdvanced);
     SetActiveControl(&m_sldGamma, 0);
-    m_nUnknown18BC = 0;
+    m_bReInitPending = 0;
     m_bInGame = bInGame;
     if (bInGame)
     {

@@ -680,7 +680,7 @@ extern "C" unsigned char* (*AurGetRaster)(char*, int*, int*, int*);
 extern "C" unsigned char* (*AurGetS3TCImage)(char*, int*, int*, int*, int*, float*);
 extern "C" unsigned char* (*AurGet16BitRaster)(char*, int*, int*, float*, int*);
 extern "C" unsigned char* (*AurGetProcessedRaster)(char*, int*, int*, char*, int*, int*, int*, float*, char*);
-extern "C" void (*AurReleaseRaster)(void* pImage, int nWidth, int nHeight, int nBPP, int nSize, int nReserved60, int nTxiSize, bool bProcessed);
+extern "C" void (*AurReleaseRaster)(void* pImage, int nWidth, int nHeight, int nBPP, int nSize, int nDataSize, int nTxiSize, bool bProcessed);
 extern "C" void (*AurReleaseLayeredRaster)(void*, int, int);
 extern "C" unsigned char* (*AurGetLayeredRaster)(char* sFileName, int* pWidth, int* pHeight, int* pReserved);
 extern "C" int (*AurGetRasterHeader)(char*, int*, int*, int*);

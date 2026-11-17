@@ -131,7 +131,7 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
                     sModule = "END_M01AA";
                 }
 #else
-                CExoString sUnused;
+                CExoString sStartModule;
                 CExoString sModule("001ebo");
                 {
                     CExoString sEffects("HD0:effects");
@@ -562,8 +562,8 @@ void CSWGuiMainMenu::PopulateModules()
     CExoString sMod;
     CExoArrayList<CExoString> lstRims;
     CExoArrayList<CExoString> lstMods;
-    CExoArrayList<CExoString> lstUnused1;
-    CExoArrayList<CExoString> lstUnused2;
+    CExoArrayList<CExoString> lstUnusedRims;
+    CExoArrayList<CExoString> lstUnusedMods;
     CExoArrayList<CSWGuiControl*> lstControls;
     int nRim = 0;
     int nMod = 0;

@@ -1394,7 +1394,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByObject(
     int nNPC;
     unsigned long oidCreature;
     CSWSCreature* pCreature;
-    int nResult2;
+    int bAdded;
 
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
@@ -1409,8 +1409,8 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByObject(
         }
         pCreature = (CSWSCreature*)pServerExoApp->GetCreatureByGameObjectID(
             oidCreature);
-        nResult2 = pServerExoApp->GetPartyTable()->AddNPC(nNPC, pCreature);
-        return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
+        bAdded = pServerExoApp->GetPartyTable()->AddNPC(nNPC, pCreature);
+        return g_pVirtualMachine->StackPushInteger(bAdded) != 0 ? 0 : -2000;
     }
 }
 // PC 0x005AFB70 GOG 0x005AFBE0
@@ -1420,7 +1420,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByTemplate(
     CServerExoApp* pServerExoApp;
     int nNPC;
     CExoString sTemplate;
-    int nResult2;
+    int bAdded;
 
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
@@ -1431,8 +1431,8 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByTemplate(
     {
         return -2001;
     }
-    nResult2 = pServerExoApp->GetPartyTable()->AddNPC(nNPC, sTemplate);
-    if (g_pVirtualMachine->StackPushInteger(nResult2) == 0)
+    bAdded = pServerExoApp->GetPartyTable()->AddNPC(nNPC, sTemplate);
+    if (g_pVirtualMachine->StackPushInteger(bAdded) == 0)
     {
         return -2000;
     }
@@ -1491,9 +1491,9 @@ int CSWVirtualMachineCommands::ExecuteCommandAddPartyMember(int nCommand,
     int nNPC;
     unsigned long oidCreature;
     CServerExoApp* pServerExoApp;
-    int nResult2;
+    int bAdded;
     CClientExoApp* pClientExoApp;
-    unsigned long oidResult2;
+    unsigned long oidClientCreature;
     CSWCCreature* pSWCCreature;
     CSWSCreature* pCreature;
 
@@ -1508,12 +1508,12 @@ int CSWVirtualMachineCommands::ExecuteCommandAddPartyMember(int nCommand,
             return -2001;
         }
         pServerExoApp = g_pAppManager->m_pServerExoApp;
-        nResult2 = pServerExoApp->GetPartyTable()->AddMember(nNPC, oidCreature);
-        if (nResult2 != 0)
+        bAdded = pServerExoApp->GetPartyTable()->AddMember(nNPC, oidCreature);
+        if (bAdded != 0)
         {
             pClientExoApp = (CClientExoApp*)g_pAppManager->m_pClientExoApp;
-            oidResult2 = pClientExoApp->ServerToClientObjectId(oidCreature);
-            pSWCCreature = pClientExoApp->GetCreatureByGameObjectID(oidResult2);
+            oidClientCreature = pClientExoApp->ServerToClientObjectId(oidCreature);
+            pSWCCreature = pClientExoApp->GetCreatureByGameObjectID(oidClientCreature);
             pCreature = (CSWSCreature*)pServerExoApp->GetCreatureByGameObjectID(
                 oidCreature);
             if (pSWCCreature != NULL)
@@ -1525,7 +1525,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddPartyMember(int nCommand,
                 pCreature->SetInParty(1, 1);
             }
         }
-        return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
+        return g_pVirtualMachine->StackPushInteger(bAdded) != 0 ? 0 : -2000;
     }
 }
 // PC 0x005AFE50 GOG 0x005AFEC0
@@ -1738,7 +1738,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustReputation(int nCommand,
                                                               int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidSourceFactionMember;
     int nAdjustment;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
@@ -1746,12 +1746,12 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustReputation(int nCommand,
     int nResult;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
+    oidSourceFactionMember = OBJECT_INVALID;
     if (g_pVirtualMachine->StackPopObject(&oidResult) == 0)
     {
         return -2001;
     }
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    if (g_pVirtualMachine->StackPopObject(&oidSourceFactionMember) == 0)
     {
         return -2001;
     }
@@ -1760,7 +1760,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustReputation(int nCommand,
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidSourceFactionMember);
     if (pCreature == 0 || pCreature->m_bPlotObject == 0)
     {
         pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -1769,7 +1769,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustReputation(int nCommand,
         if (pCreature2 != NULL)
         {
             pServerExoApp = g_pAppManager->m_pServerExoApp;
-            if (pServerExoApp->GetFactionOfObject(oidResult2, &nResult) == 1)
+            if (pServerExoApp->GetFactionOfObject(oidSourceFactionMember, &nResult) == 1)
             {
                 pCreature2->AdjustReputation(nResult, nAdjustment);
             }
@@ -2043,15 +2043,15 @@ int CSWVirtualMachineCommands::ExecuteCommandCutsceneAttack(int nCommand,
 {
     unsigned long oidResult;
     int nResult;
-    int nResult2;
-    int nResult3;
+    int nAttackResult;
+    int nDamage;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
 
     oidResult = OBJECT_INVALID;
     nResult = 0;
-    nResult2 = 0;
-    nResult3 = 0;
+    nAttackResult = 0;
+    nDamage = 0;
     if (g_pVirtualMachine->StackPopObject(&oidResult) == 0)
     {
         return -2001;
@@ -2060,11 +2060,11 @@ int CSWVirtualMachineCommands::ExecuteCommandCutsceneAttack(int nCommand,
     {
         return -2001;
     }
-    if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nAttackResult) == 0)
     {
         return -2001;
     }
-    if (g_pVirtualMachine->StackPopInteger(&nResult3) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nDamage) == 0)
     {
         return -2001;
     }
@@ -2073,8 +2073,8 @@ int CSWVirtualMachineCommands::ExecuteCommandCutsceneAttack(int nCommand,
         (CSWSCreature*)pServerExoApp->GetCreatureByGameObjectID(m_oidObject);
     if (pCreature != NULL)
     {
-        pCreature->AddCutsceneAttackActions(oidResult, nResult, nResult2,
-                                            nResult3);
+        pCreature->AddCutsceneAttackActions(oidResult, nResult, nAttackResult,
+                                            nDamage);
     }
     return 0;
 }
@@ -4657,7 +4657,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowDecrease(
 {
     int nResult;
     int nSave;
-    int nResult2;
+    int nValue;
     CGameEffect* pGameEffect;
     CServerExoApp* pServerExoApp;
     CGameObject* pGameObject;
@@ -4671,7 +4671,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowDecrease(
     {
         nSave = 0;
     }
-    if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nValue) == 0)
     {
         return -2001;
     }
@@ -4687,7 +4687,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowDecrease(
     pGameEffect->m_nSubType =
         (pGameEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
         SUBTYPE_MAGICAL;
-    pGameEffect->SetInteger(0, nResult2);
+    pGameEffect->SetInteger(0, nValue);
     pGameEffect->SetInteger(1, nSave);
     pGameEffect->SetInteger(2, nResult);
     pGameEffect->SetInteger(3, (unsigned char)g_pRules->m_nNumRaces);
@@ -4712,7 +4712,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowIncrease(
 {
     int nResult;
     int nSave;
-    int nResult2;
+    int nValue;
     CGameEffect* pGameEffect;
     CServerExoApp* pServerExoApp;
     CGameObject* pGameObject;
@@ -4726,7 +4726,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowIncrease(
     {
         nSave = 0;
     }
-    if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nValue) == 0)
     {
         return -2001;
     }
@@ -4742,7 +4742,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowIncrease(
     pGameEffect->m_nSubType =
         (pGameEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
         SUBTYPE_MAGICAL;
-    pGameEffect->SetInteger(0, nResult2);
+    pGameEffect->SetInteger(0, nValue);
     pGameEffect->SetInteger(1, nSave);
     pGameEffect->SetInteger(2, nResult);
     pGameEffect->SetInteger(3, (unsigned char)g_pRules->m_nNumRaces);
@@ -5122,13 +5122,13 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectVisualEffect(int nCommand,
                                                                 int nArgs)
 {
     int nResult;
-    int nResult2;
+    int nVisualEffectId;
     CGameEffect* pGameEffect;
     CServerExoApp* pServerExoApp;
     CGameObject* pGameObject;
 
     nResult = 0;
-    if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nVisualEffectId) == 0)
     {
         return -2001;
     }
@@ -5139,18 +5139,18 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectVisualEffect(int nCommand,
             return -2001;
         }
     }
-    if (nResult2 == VISUAL_EFFECT_FRAME_BUFFER &&
+    if (nVisualEffectId == VISUAL_EFFECT_FRAME_BUFFER &&
         (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nFrameBuffer == 0 ||
          !AurCheckFrameBufferModificationsAvailable()))
     {
-        nResult2 = VISUAL_EFFECT_FRAME_BUFFER_FALLBACK;
+        nVisualEffectId = VISUAL_EFFECT_FRAME_BUFFER_FALLBACK;
     }
     pGameEffect = new CGameEffect(1);
     pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
     pGameEffect->m_nSubType =
         (pGameEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
         SUBTYPE_MAGICAL;
-    pGameEffect->SetInteger(0, nResult2);
+    pGameEffect->SetInteger(0, nVisualEffectId);
     pGameEffect->SetInteger(2, nResult);
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     if ((unsigned char)((CGameObjectArray*)pServerExoApp->GetObjectArray())
@@ -5445,14 +5445,14 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectLightsaberThrow(int nCommand,
                                                                    int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
-    unsigned long oidResult3;
+    unsigned long oidTarget2;
+    unsigned long oidTarget3;
     int nResult;
     CGameEffect* pGameEffect;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
-    oidResult3 = OBJECT_INVALID;
+    oidTarget2 = OBJECT_INVALID;
+    oidTarget3 = OBJECT_INVALID;
     nResult = 0;
     if (g_pVirtualMachine->StackPopObject(&oidResult) == 0)
     {
@@ -5460,14 +5460,14 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectLightsaberThrow(int nCommand,
     }
     if (nArgs >= 2)
     {
-        if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+        if (g_pVirtualMachine->StackPopObject(&oidTarget2) == 0)
         {
             return -2001;
         }
     }
     if (nArgs >= 3)
     {
-        if (g_pVirtualMachine->StackPopObject(&oidResult3) == 0)
+        if (g_pVirtualMachine->StackPopObject(&oidTarget3) == 0)
         {
             return -2001;
         }
@@ -5482,8 +5482,8 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectLightsaberThrow(int nCommand,
     pGameEffect = new CGameEffect(1);
     pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_LIGHTSABERTHROW;
     pGameEffect->SetObjectID(0, oidResult);
-    pGameEffect->SetObjectID(1, oidResult2);
-    pGameEffect->SetObjectID(2, oidResult3);
+    pGameEffect->SetObjectID(1, oidTarget2);
+    pGameEffect->SetObjectID(2, oidTarget3);
     if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
     {
         return -2000;
@@ -7306,7 +7306,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageGoodEvilAlignment(
     unsigned long oidResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
-    int nResult2;
+    int nFactionId;
     CServerExoAppInternal* pServerExoAppInternal;
     CFactionManager* pFactionManager;
     CSWSFaction* pFaction;
@@ -7321,7 +7321,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageGoodEvilAlignment(
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7346,7 +7346,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageGoodEvilAlignment(
             if (pFactionManager != NULL)
 #endif
             {
-                pFaction = pFactionManager->GetFaction(nResult2);
+                pFaction = pFactionManager->GetFaction(nFactionId);
                 nResult = pFaction->GetAverageGoodEvilAlignment();
             }
         }
@@ -7361,7 +7361,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageLevel(
     unsigned long oidResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
-    int nResult2;
+    int nFactionId;
     CServerExoAppInternal* pServerExoAppInternal;
     CFactionManager* pFactionManager;
     CSWSFaction* pFaction;
@@ -7376,7 +7376,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageLevel(
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7401,7 +7401,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageLevel(
             if (pFactionManager != NULL)
 #endif
             {
-                pFaction = pFactionManager->GetFaction(nResult2);
+                pFaction = pFactionManager->GetFaction(nFactionId);
                 nResult = pFaction->GetAverageLevel();
             }
         }
@@ -7418,7 +7418,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageReputation(
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
     CServerExoAppInternal* pServerExoAppInternal;
-    int nResult2;
+    int nFactionId;
     CFactionManager* pFactionManager;
 
     nResult = -1;
@@ -7435,7 +7435,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageReputation(
         pServerExoApp->GetCreatureByGameObjectID(oidSourceFactionMember);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7461,7 +7461,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageReputation(
 #endif
             {
                 nResult =
-                    pFactionManager->GetFaction(nResult2)->GetAverageReputation(
+                    pFactionManager->GetFaction(nFactionId)->GetAverageReputation(
                         oidTarget);
             }
         }
@@ -7480,7 +7480,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageXP(int nCommand,
     unsigned long oidResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
-    int nResult2;
+    int nFactionId;
     CServerExoAppInternal* pServerExoAppInternal;
     CFactionManager* pFactionManager;
     CSWSFaction* pFaction;
@@ -7495,7 +7495,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageXP(int nCommand,
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7520,7 +7520,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageXP(int nCommand,
             if (pFactionManager != NULL)
 #endif
             {
-                pFaction = pFactionManager->GetFaction(nResult2);
+                pFaction = pFactionManager->GetFaction(nFactionId);
                 nResult = pFaction->GetAverageXP();
             }
         }
@@ -7532,17 +7532,17 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionBestAC(int nCommand,
                                                               int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidFactionMember;
     int nResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
     CServerExoAppInternal* pServerExoAppInternal;
-    int nResult2;
+    int nFactionId;
     CFactionManager* pFactionManager;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    oidFactionMember = OBJECT_INVALID;
+    if (g_pVirtualMachine->StackPopObject(&oidFactionMember) == 0)
     {
         return -2001;
     }
@@ -7552,10 +7552,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionBestAC(int nCommand,
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidFactionMember);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7580,8 +7580,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionBestAC(int nCommand,
             if (pFactionManager != NULL)
 #endif
             {
-                oidResult = pFactionManager->GetFaction(nResult2)->GetBestAC(
-                    oidResult2, nResult);
+                oidResult = pFactionManager->GetFaction(nFactionId)->GetBestAC(
+                    oidFactionMember, nResult);
             }
         }
     }
@@ -7598,8 +7598,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionEqual(int nCommand,
     int nResult;
     unsigned long oidFirstObject;
     unsigned long oidSecondObject;
-    int nResult2;
-    int nResult3;
+    int nSecondFactionId;
+    int nFirstFactionId;
     CServerExoApp* pServerExoApp;
 
     nResult = false;
@@ -7612,12 +7612,12 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionEqual(int nCommand,
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    if (pServerExoApp->GetFactionOfObject(oidFirstObject, &nResult3) == 1)
+    if (pServerExoApp->GetFactionOfObject(oidFirstObject, &nFirstFactionId) == 1)
     {
         pServerExoApp = g_pAppManager->m_pServerExoApp;
-        if (pServerExoApp->GetFactionOfObject(oidSecondObject, &nResult2) == 1)
+        if (pServerExoApp->GetFactionOfObject(oidSecondObject, &nSecondFactionId) == 1)
         {
-            if (nResult3 == nResult2)
+            if (nFirstFactionId == nSecondFactionId)
             {
                 nResult = 1;
             }
@@ -7637,7 +7637,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionGold(int nCommand,
     unsigned long oidResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
-    int nResult2;
+    int nFactionId;
     CServerExoAppInternal* pServerExoAppInternal;
     CFactionManager* pFactionManager;
     CSWSFaction* pFaction;
@@ -7652,7 +7652,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionGold(int nCommand,
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7677,7 +7677,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionGold(int nCommand,
             if (pFactionManager != NULL)
 #endif
             {
-                pFaction = pFactionManager->GetFaction(nResult2);
+                pFaction = pFactionManager->GetFaction(nFactionId);
                 nResult = pFaction->GetGold();
             }
         }
@@ -7689,17 +7689,17 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionLeastDamagedMember(
     int nCommand, int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidFactionMember;
     int nResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
     CServerExoAppInternal* pServerExoAppInternal;
-    int nResult2;
+    int nFactionId;
     CFactionManager* pFactionManager;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    oidFactionMember = OBJECT_INVALID;
+    if (g_pVirtualMachine->StackPopObject(&oidFactionMember) == 0)
     {
         return -2001;
     }
@@ -7709,10 +7709,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionLeastDamagedMember(
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidFactionMember);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7737,8 +7737,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionLeastDamagedMember(
             if (pFactionManager != NULL)
 #endif
             {
-                oidResult = pFactionManager->GetFaction(nResult2)
-                                ->GetLeastDamagedMember(oidResult2, nResult);
+                oidResult = pFactionManager->GetFaction(nFactionId)
+                                ->GetLeastDamagedMember(oidFactionMember, nResult);
             }
         }
     }
@@ -7833,17 +7833,17 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostDamagedMember(
     int nCommand, int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidFactionMember;
     int nResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
     CServerExoAppInternal* pServerExoAppInternal;
-    int nResult2;
+    int nFactionId;
     CFactionManager* pFactionManager;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    oidFactionMember = OBJECT_INVALID;
+    if (g_pVirtualMachine->StackPopObject(&oidFactionMember) == 0)
     {
         return -2001;
     }
@@ -7853,10 +7853,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostDamagedMember(
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidFactionMember);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7882,8 +7882,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostDamagedMember(
 #endif
             {
                 oidResult =
-                    pFactionManager->GetFaction(nResult2)->GetMostDamagedMember(
-                        oidResult2, nResult);
+                    pFactionManager->GetFaction(nFactionId)->GetMostDamagedMember(
+                        oidFactionMember, nResult);
             }
         }
     }
@@ -7901,7 +7901,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostFrequentClass(
     unsigned long oidResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
-    int nResult2;
+    int nFactionId;
     CServerExoAppInternal* pServerExoAppInternal;
     CFactionManager* pFactionManager;
     CSWSFaction* pFaction;
@@ -7916,7 +7916,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostFrequentClass(
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -7941,7 +7941,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostFrequentClass(
             if (pFactionManager != NULL)
 #endif
             {
-                pFaction = pFactionManager->GetFaction(nResult2);
+                pFaction = pFactionManager->GetFaction(nFactionId);
                 nResult = pFaction->GetMostFrequentClass();
             }
         }
@@ -7953,17 +7953,17 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionStrongestMember(
     int nCommand, int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidFactionMember;
     int nResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
     CServerExoAppInternal* pServerExoAppInternal;
-    int nResult2;
+    int nFactionId;
     CFactionManager* pFactionManager;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    oidFactionMember = OBJECT_INVALID;
+    if (g_pVirtualMachine->StackPopObject(&oidFactionMember) == 0)
     {
         return -2001;
     }
@@ -7973,10 +7973,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionStrongestMember(
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidFactionMember);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -8002,8 +8002,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionStrongestMember(
 #endif
             {
                 oidResult =
-                    pFactionManager->GetFaction(nResult2)->GetStrongestMember(
-                        oidResult2, nResult);
+                    pFactionManager->GetFaction(nFactionId)->GetStrongestMember(
+                        oidFactionMember, nResult);
             }
         }
     }
@@ -8018,17 +8018,17 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWeakestMember(
     int nCommand, int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidFactionMember;
     int nResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
     CServerExoAppInternal* pServerExoAppInternal;
-    int nResult2;
+    int nFactionId;
     CFactionManager* pFactionManager;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    oidFactionMember = OBJECT_INVALID;
+    if (g_pVirtualMachine->StackPopObject(&oidFactionMember) == 0)
     {
         return -2001;
     }
@@ -8038,10 +8038,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWeakestMember(
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidFactionMember);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -8067,8 +8067,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWeakestMember(
 #endif
             {
                 oidResult =
-                    pFactionManager->GetFaction(nResult2)->GetWeakestMember(
-                        oidResult2, nResult);
+                    pFactionManager->GetFaction(nFactionId)->GetWeakestMember(
+                        oidFactionMember, nResult);
             }
         }
     }
@@ -8083,17 +8083,17 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWorstAC(int nCommand,
                                                                int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidFactionMember;
     int nResult;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
     CServerExoAppInternal* pServerExoAppInternal;
-    int nResult2;
+    int nFactionId;
     CFactionManager* pFactionManager;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    oidFactionMember = OBJECT_INVALID;
+    if (g_pVirtualMachine->StackPopObject(&oidFactionMember) == 0)
     {
         return -2001;
     }
@@ -8103,10 +8103,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWorstAC(int nCommand,
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+    pCreature = pServerExoApp->GetCreatureByGameObjectID(oidFactionMember);
     if (pCreature != 0)
     {
-        nResult2 = pCreature->m_pStats->m_nFactionId;
+        nFactionId = pCreature->m_pStats->m_nFactionId;
         pServerExoApp = g_pAppManager->m_pServerExoApp;
         pServerExoAppInternal = pServerExoApp->m_pcExoAppInternal;
 #ifdef _XBOX
@@ -8131,8 +8131,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWorstAC(int nCommand,
             if (pFactionManager != NULL)
 #endif
             {
-                oidResult = pFactionManager->GetFaction(nResult2)->GetWorstAC(
-                    oidResult2, nResult);
+                oidResult = pFactionManager->GetFaction(nFactionId)->GetWorstAC(
+                    oidFactionMember, nResult);
             }
         }
     }
@@ -10032,9 +10032,9 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastPazaakResult(int nCommand,
                                                                  int nArgs)
 {
     int nResult = 0;
-    int nUnused = 0;
+    int nWager = 0;
 
-    g_pAppManager->m_pClientExoApp->GetPazaakResults(&nResult, &nUnused);
+    g_pAppManager->m_pClientExoApp->GetPazaakResults(&nResult, &nWager);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
 // PC 0x005BDC60 GOG 0x005BDCD0
@@ -12957,14 +12957,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastConversation(int nCommand,
 {
     int nResult;
     CServerExoApp* pServerExoApp;
-    int nResult2;
+    int bPushed;
 
     nResult = 0;
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    nResult2 = g_pVirtualMachine->StackPushString(
+    bPushed = g_pVirtualMachine->StackPushString(
         pServerExoApp->GetLastConversation());
     nResult = -1;
-    return nResult2 != 0 ? -2000 : 0;
+    return bPushed != 0 ? -2000 : 0;
 }
 // PC 0x005C2320 GOG 0x005C2390
 int CSWVirtualMachineCommands::ExecuteCommandIsListening(int nCommand,
@@ -12995,19 +12995,19 @@ int CSWVirtualMachineCommands::ExecuteCommandIsNPCPartyMember(int nCommand,
 {
     int nNPC;
     CServerExoApp* pServerExoApp;
-    int nResult2;
+    int bIsMember;
 
     if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
     {
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    nResult2 = pServerExoApp->GetPartyTable()->GetIsMember(nNPC);
-    if (nResult2 == 0 && g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nControlledNPC == nNPC)
+    bIsMember = pServerExoApp->GetPartyTable()->GetIsMember(nNPC);
+    if (bIsMember == 0 && g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nControlledNPC == nNPC)
     {
-        nResult2 = 1;
+        bIsMember = 1;
     }
-    return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
+    return g_pVirtualMachine->StackPushInteger(bIsMember) != 0 ? 0 : -2000;
 }
 // PC 0x005C2420 GOG 0x005C2490
 int CSWVirtualMachineCommands::ExecuteCommandIsObjectPartyMember(int nCommand,
@@ -14565,9 +14565,9 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintInteger(int nCommand,
                                                           int nArgs)
 {
     int nResult;
-    int nResult2;
+    int nInteger;
 
-    if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nInteger) == 0)
     {
         return -2001;
     }
@@ -14779,15 +14779,15 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveAvailableNPC(int nCommand,
 {
     int nNPC;
     CServerExoApp* pServerExoApp;
-    int nResult2;
+    int bRemoved;
 
     if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
     {
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    nResult2 = pServerExoApp->GetPartyTable()->RemoveNPC(nNPC);
-    return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
+    bRemoved = pServerExoApp->GetPartyTable()->RemoveNPC(nNPC);
+    return g_pVirtualMachine->StackPushInteger(bRemoved) != 0 ? 0 : -2000;
 }
 // PC 0x005C5410 GOG 0x005C5480
 int CSWVirtualMachineCommands::ExecuteCommandRemoveFromParty(int nCommand,
@@ -15956,16 +15956,16 @@ int CSWVirtualMachineCommands::ExecuteCommandSetReturnStrref(int nCommand,
                                                              int nArgs)
 {
     int nResult;
-    int nResult2;
-    int nResult3;
+    int nStrRef;
+    int bShow;
     CServerExoApp* pServerExoApp;
 
     nResult = 0;
-    if (g_pVirtualMachine->StackPopInteger(&nResult3) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&bShow) == 0)
     {
         return -2001;
     }
-    if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nStrRef) == 0)
     {
         return -2001;
     }
@@ -15977,7 +15977,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetReturnStrref(int nCommand,
         }
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pServerExoApp->GetPartyTable()->SetReturnStrref(nResult3, nResult2,
+    pServerExoApp->GetPartyTable()->SetReturnStrref(bShow, nStrRef,
                                                     nResult);
     return 0;
 }
@@ -16054,8 +16054,8 @@ int CSWVirtualMachineCommands::ExecuteCommandSetTime(int nCommand, int nArgs)
     int nSecond;
     int nMillisecond;
     CServerExoApp* pServerExoApp;
-    unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long nCalendarDay;
+    unsigned long nTimeOfDay;
 
     if (g_pVirtualMachine->StackPopInteger(&nHour) == 0)
     {
@@ -16078,10 +16078,10 @@ int CSWVirtualMachineCommands::ExecuteCommandSetTime(int nCommand, int nArgs)
         ->AdvanceToTime(nHour, nMinute, nSecond, nMillisecond);
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     ((CWorldTimer*)pServerExoApp->GetWorldTimer())
-        ->GetWorldTime(&oidResult, &oidResult2);
+        ->GetWorldTime(&nCalendarDay, &nTimeOfDay);
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     ((CSWSModule*)pServerExoApp->GetModule())
-        ->UpdateTime(oidResult, oidResult2, 0);
+        ->UpdateTime(nCalendarDay, nTimeOfDay, 0);
     return 0;
 }
 // PC 0x005C7110 GOG 0x005C7180
@@ -16162,7 +16162,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
                                                                 int nArgs)
 {
     CExoString sExitScript;
-    int nUnknown = 0;
+    int bAllowCancel = 0;
     int nForceNPC1 = -1;
     int nForceNPC2 = -1;
 
@@ -16186,13 +16186,13 @@ int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
     }
     if (nArgs >= 4)
     {
-        if (g_pVirtualMachine->StackPopInteger(&nUnknown) == 0)
+        if (g_pVirtualMachine->StackPopInteger(&bAllowCancel) == 0)
         {
             return -2001;
         }
     }
     g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowPartySelection(sExitScript, 1, nForceNPC1,
-                                                                       nForceNPC2, nUnknown);
+                                                                       nForceNPC2, bAllowCancel);
     return 0;
 }
 // PC 0x005C73B0 GOG 0x005C7420
@@ -16825,15 +16825,15 @@ int CSWVirtualMachineCommands::ExecuteCommandSwitchPlayerCreature(int nCommand,
 {
     int nNPC;
     CServerExoApp* pServerExoApp;
-    int nResult2;
+    int bSwitched;
 
     if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
     {
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    nResult2 = pServerExoApp->GetPartyTable()->SwitchPlayerCharacter(nNPC);
-    return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
+    bSwitched = pServerExoApp->GetPartyTable()->SwitchPlayerCharacter(nNPC);
+    return g_pVirtualMachine->StackPushInteger(bSwitched) != 0 ? 0 : -2000;
 }
 // PC 0x005C8490 GOG 0x005C8500
 int CSWVirtualMachineCommands::ExecuteCommandSetForfeitConditions(int nCommand, int nArgs)
@@ -17898,19 +17898,19 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFormation(int nCommand,
                                                           int nArgs)
 {
     unsigned long oidResult;
-    unsigned long oidResult2;
+    unsigned long oidCreature;
     int nFormationPattern;
     int nPosition;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
 
     oidResult = OBJECT_INVALID;
-    oidResult2 = OBJECT_INVALID;
+    oidCreature = OBJECT_INVALID;
     if (g_pVirtualMachine->StackPopObject(&oidResult) == 0)
     {
         return -2001;
     }
-    if (g_pVirtualMachine->StackPopObject(&oidResult2) == 0)
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
     {
         return -2001;
     }
@@ -17924,7 +17924,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFormation(int nCommand,
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     pCreature =
-        (CSWSCreature*)pServerExoApp->GetCreatureByGameObjectID(oidResult2);
+        (CSWSCreature*)pServerExoApp->GetCreatureByGameObjectID(oidCreature);
     if (pCreature != NULL)
     {
         pCreature->SetFormation(oidResult, nFormationPattern, nPosition);
@@ -18273,10 +18273,10 @@ int CSWVirtualMachineCommands::ExecuteCommandSetDialogPlaceableCamera(
     int nCommand, int nArgs)
 {
     int nResult;
-    int nResult2;
+    int nCameraId;
     CClientExoApp* pClientExoApp;
 
-    if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger(&nCameraId) == 0)
     {
         return -2001;
     }
@@ -18289,7 +18289,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetDialogPlaceableCamera(
     }
     nResult = -1;
     pClientExoApp = g_pAppManager->m_pClientExoApp;
-    pClientExoApp->GetInGameGui()->SetShotFromScript(nResult2, -1);
+    pClientExoApp->GetInGameGui()->SetShotFromScript(nCameraId, -1);
     return 0;
 }
 // PC 0x005CA520 GOG 0x005CA590
@@ -18336,13 +18336,13 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMaxStealthXP(int nCommand,
     CServerExoApp* pServerExoApp;
     unsigned long oidResult;
     CSWSCreature* pCreature;
-    unsigned long oidResult2;
+    unsigned long nMaxStealthXP;
     CSWSArea* pArea;
 
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     oidResult = pServerExoApp->GetPlayerCreatureId();
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult);
-    if (g_pVirtualMachine->StackPopInteger((int*)&oidResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger((int*)&nMaxStealthXP) == 0)
     {
         return -2001;
     }
@@ -18351,7 +18351,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMaxStealthXP(int nCommand,
         pArea = pCreature->GetArea();
         if (pArea != NULL)
         {
-            pArea->SetMaxStealthXP(oidResult2);
+            pArea->SetMaxStealthXP(nMaxStealthXP);
         }
     }
     return 0;
@@ -18387,13 +18387,13 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCurrentStealthXP(int nCommand,
     CServerExoApp* pServerExoApp;
     unsigned long oidResult;
     CSWSCreature* pCreature;
-    unsigned long oidResult2;
+    unsigned long nCurrentStealthXP;
     CSWSArea* pArea;
 
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     oidResult = pServerExoApp->GetPlayerCreatureId();
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidResult);
-    if (g_pVirtualMachine->StackPopInteger((int*)&oidResult2) == 0)
+    if (g_pVirtualMachine->StackPopInteger((int*)&nCurrentStealthXP) == 0)
     {
         return -2001;
     }
@@ -18402,7 +18402,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCurrentStealthXP(int nCommand,
         pArea = pCreature->GetArea();
         if (pArea != NULL)
         {
-            pArea->SetCurrentStealthXP(oidResult2);
+            pArea->SetCurrentStealthXP(nCurrentStealthXP);
         }
     }
     return 0;

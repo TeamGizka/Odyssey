@@ -108,7 +108,7 @@ class CSWServerInfo
 public:
     unsigned char m_aUnknown00[0x104];
     unsigned long m_bPartyPicking : 1;
-    unsigned long m_nUnknown104Rest : 31;
+    unsigned long m_nPartyPickingFlagsUnused : 31;
 };
 
 class CSWCCreature;

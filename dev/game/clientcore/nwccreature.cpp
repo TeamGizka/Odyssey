@@ -3076,8 +3076,8 @@ int nWieldClass)
                 }
                 else
                 {
-                    int bUnknown = nAttackType == -1 || nAttackType == CSWFeat::FEAT_SHIELD_BREAKER;
-                    if (bUnknown)
+                    int bShieldBreaker = nAttackType == -1 || nAttackType == CSWFeat::FEAT_SHIELD_BREAKER;
+                    if (bShieldBreaker)
                     {
                         nAttackAnimation = MELEE_ANIMATION_SHIELD_BREAKER;
                     }

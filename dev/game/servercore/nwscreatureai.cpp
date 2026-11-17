@@ -4990,7 +4990,7 @@ int CSWSCreature::AIActionUnequipItem(CSWSObjectActionNode* pAction)
 {
     unsigned long oidItem;
     unsigned long oidTarget;
-    int bUnknown;
+    int bInstant;
     CSWSPlayer* pPlayer;
     CSWSMessage* pMessage;
 
@@ -4998,13 +4998,13 @@ int CSWSCreature::AIActionUnequipItem(CSWSObjectActionNode* pAction)
 
     oidItem = (unsigned long)pAction->m_apParam[0];
     oidTarget = (unsigned long)pAction->m_apParam[1];
-    bUnknown = (int)pAction->m_apParam[2];
+    bInstant = (int)pAction->m_apParam[2];
     int nArg6 = (int)pAction->m_apParam[3];
     int bMerge = (int)pAction->m_apParam[4];
 
     if (!GetDead() && !GetIsPCDying() && !GetDeadTemp())
     {
-        if (RunUnequip(oidItem, oidTarget, bMerge, NULL, bUnknown, nArg6) == 1)
+        if (RunUnequip(oidItem, oidTarget, bMerge, NULL, bInstant, nArg6) == 1)
         {
             return CSWSObject::ACTION_COMPLETE;
         }

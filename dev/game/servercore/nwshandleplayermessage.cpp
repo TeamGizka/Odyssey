@@ -2351,14 +2351,14 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
         unsigned long oidOther = OBJECT_INVALID;
         pCreature->ActionManager(CSWSCreature::ACTION_MANAGER_REST);
         CExoString sDialog("");
-        int nUnknown = 0;
+        int bPrivateConversation = 0;
         int bPrivate = 1;
         int bPlayHello = 0;
         if (!pCreature->m_nAILevel)
             g_pAppManager->m_pServerExoApp->GetServerAIMaster()->SetAILevel(pObject, 1);
         pObject->AddAction(CSWSObject::ACTION_START_CONVERSATION,
             CSWSObject::ACTION_GROUP_NEW,
-            3, &oidTarget, 4, &sDialog, 1, &nUnknown, 1, &bPrivate,
+            3, &oidTarget, 4, &sDialog, 1, &bPrivateConversation, 1, &bPrivate,
             1, &bPlayHello, 3, &oidOther,
             0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
         return 1;
