@@ -209,6 +209,12 @@ void CVirtualMachineStack::ClearStack()
         m_pValues = 0;
     }
 }
+
+// Dead code: not in the PC executable
+void CVirtualMachineStack::InitializeStack()
+{
+    ClearStack();
+}
 // PC 0x0061D1F0 GOG 0x0061D1C0
 void CVirtualMachineStack::AddToTopOfStack(int nType)
 {
@@ -428,6 +434,24 @@ void CVirtualMachineInternal::SetCommandImplementer(
     {
         pImplementer->InitializeCommands();
     }
+}
+
+// Dead code: not in the PC executable
+int CVirtualMachineStack::GetBasePointer()
+{
+    return m_nBasePointer;
+}
+
+// Dead code: not in the PC executable
+void CVirtualMachineStack::SetBasePointer(int nBasePointer)
+{
+    m_nBasePointer = nBasePointer;
+}
+
+// Dead code: not in the PC executable
+int CVirtualMachineStack::GetStackPointer()
+{
+    return m_nStackPointer;
 }
 // PC 0x0061DE40 GOG 0x0061DE10
 void CVirtualMachineStack::SetStackPointer(int nStackPointer)

@@ -105,6 +105,10 @@ public:
     void AssignLocationToLocation(int nSource, int nDestination);
     int SaveStack(CResGFF* pGFF, CResStruct* pStruct);
     void ClearStack();
+    void InitializeStack();
+    int GetBasePointer();
+    void SetBasePointer(int nBasePointer);
+    int GetStackPointer();
     void SetStackPointer(int nStackPointer);
     int LoadStack(CResGFF* pGFF, CResStruct* pStruct);
     void CopyFromStack(CVirtualMachineStack* pStack, int nStackSize,

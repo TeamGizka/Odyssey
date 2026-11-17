@@ -865,6 +865,27 @@ void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x006
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSFaction::AttemptJoin(unsigned long oidCreature)
+{
+    if (GetIsInvited(oidCreature))
+    {
+        AddMember(oidCreature, 0);
+    }
+}
+
+// Dead code: not in the PC executable
+int CSWSFaction::GetIsInvited(unsigned long oidCreature)
+{
+    CSWSCreature* pLeader =
+        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(GetLeader());
+    if (pLeader != NULL)
+    {
+        return pLeader->GetIsInInvitationsOffered(oidCreature);
+    }
+    return 0;
+}
 // PC 0x00603240 GOG 0x00603220
 int CSWSFaction::AttemptRemove(unsigned long oidCreature,
                                unsigned long oidLeader)

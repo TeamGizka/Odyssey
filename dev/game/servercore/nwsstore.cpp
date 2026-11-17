@@ -162,6 +162,11 @@ int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 
     return result;
 }
+
+// Dead code: not in the PC executable
+void CSWSStore::RemoveFromArea()
+{
+}
 // PC 0x00570F10 GOG 0x00571040
 void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                              void* pEventData, unsigned long nCalendarDay,

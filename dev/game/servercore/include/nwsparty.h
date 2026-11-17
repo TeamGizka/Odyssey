@@ -42,6 +42,8 @@ public:
     void RemoveMember(unsigned long oidCreature);
     int TransferLeadership(unsigned long oidCreature, unsigned long oidLeader);
     void AddMember(unsigned long oidCreature, int bSilent);
+    void AttemptJoin(unsigned long oidCreature);
+    int GetIsInvited(unsigned long oidCreature);
     int AttemptRemove(unsigned long oidCreature, unsigned long oidLeader);
 
     CExoArrayList<unsigned long> m_lstMembers;

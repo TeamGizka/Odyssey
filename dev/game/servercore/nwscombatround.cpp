@@ -2662,6 +2662,28 @@ void CSWSCombatEffectBreakdown::Clear()
 }
 
 // Dead code: not in the PC executable
+void CSWSCombatDeflectBreakdown::Clear()
+{
+    m_nDeflectRoll = 0;
+    m_nAttackTotal = 0;
+    m_nJediDefenseFeat = 0;
+    m_nJediDefenseBonus = 0;
+    m_nEffectBonus = 0;
+    m_nDeflectResult = 0;
+    m_nBaseAttackBonus = 0;
+    m_nArmorCheckPenalty = 0;
+    m_nDeflectTotal = 0;
+    m_nDeflectionSpellBonus = 0;
+    m_nDeflectionSpell = 0;
+    m_nFormDeflectionBonus = 0;
+    m_nForm = 0;
+    m_nDeflectionClassFeat = 0;
+    m_nClassBonus = 0;
+    m_nPenaltyFeat = 0;
+    m_nPenalty = 0;
+}
+
+// Dead code: not in the PC executable
 void CSWSCombatAttackData::Copy(CSWSCombatAttackData* pAttackData)
 {
     m_nAttackGroup = pAttackData->m_nAttackGroup;

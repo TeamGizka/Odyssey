@@ -46,6 +46,7 @@ public:
     int GetItemInInventory(unsigned long oidItem);
     int SaveStore(CResGFF* pRes, CResStruct* pStruct);
     int AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bLoading);
+    void RemoveFromArea();
     int SellItem(CSWSItem* pItem, CSWSCreature* pCreature);
     int AddItemToInventory(CSWSItem** ppItem, int bAppend = 0);
     int LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate);
