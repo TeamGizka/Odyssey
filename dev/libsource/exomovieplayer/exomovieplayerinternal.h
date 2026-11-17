@@ -84,6 +84,7 @@ private:
     static DWORD WINAPI PlayMoviesAsync(LPVOID pParam);
 
     int RenderFrame(int nWait);
+    void ShowFrame(int nX, int nY, int nWidth, int nHeight);
     void FinishMovie();
 
 public:

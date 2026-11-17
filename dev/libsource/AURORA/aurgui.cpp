@@ -164,27 +164,6 @@ void CAurGUIStringInternal::WrapStrings(int nWidth)
     }
 }
 
-// Dead code: not in the PC executable
-void AurGUIDumpWrappedLines(CAurGUIStringInternal* pString)
-{
-    List<int> lstLineStart;
-    int nStart = 0;
-    for (int i = 0; i < pString->m_lstLineLength.m_nCount; ++i)
-    {
-        lstLineStart.Add(nStart);
-        nStart += pString->m_lstLineLength[i];
-    }
-    printf("\"%s\" in %s wrapped into %d lines\n", pString->m_sString,
-           AsTexture(pString->m_pFont)->GetName(),
-           pString->m_lstLineLength.m_nCount);
-    for (i = 0; i < pString->m_lstLineLength.m_nCount; ++i)
-    {
-        printf("%3d %4d %5d %.*s\n", i, lstLineStart[i],
-               pString->m_lstLineWidth[i], pString->m_lstLineLength[i],
-               pString->m_sString + lstLineStart[i]);
-    }
-}
-
 float GetViewportAlpha();
 
 void AurGUIColor(unsigned int nColor);

@@ -6,6 +6,43 @@
 #include "../math3d/math3d.h"
 #include "exoresman.h"
 #include "aurimage.h"
+
+struct TiffHeader
+{
+    unsigned char nIDLength;
+    unsigned char nColorMapType;
+    unsigned char nImageType;
+    unsigned char nCMapStart1;
+    unsigned char nCMapStart2;
+    unsigned char nCMapLength1;
+    unsigned char nCMapLength2;
+    unsigned char nCMapDepth;
+    unsigned short nXOffset;
+    unsigned short nYOffset;
+    unsigned short nWidth;
+    unsigned short nHeight;
+    unsigned char nPixelDepth;
+    unsigned char nImageDescriptor;
+};
+
+// Dead code: not in the PC executable
+void print(TiffHeader& header)
+{
+    printf(" %4d IDLength \n", header.nIDLength);
+    printf(" %4d ColorMapType \n", header.nColorMapType);
+    printf(" %4d ImageType \n", header.nImageType);
+    printf(" %4d CMapStart1 \n", header.nCMapStart1);
+    printf(" %4d CMapStart2 \n", header.nCMapStart2);
+    printf(" %4d CMapLength1 \n", header.nCMapLength1);
+    printf(" %4d CMapLength2 \n", header.nCMapLength2);
+    printf(" %4d XOffset \n", header.nXOffset);
+    printf(" %4d YOffset \n", header.nYOffset);
+    printf(" %4d Width \n", header.nWidth);
+    printf(" %4d Height \n", header.nHeight);
+    printf(" %4d PixelDepth \n", header.nPixelDepth);
+    printf(" %4d ImageDescriptor \n", header.nImageDescriptor);
+    printf("\n");
+}
 // PC 0x004736C0 GOG 0x00473850
 void ImageFlipY(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
 {

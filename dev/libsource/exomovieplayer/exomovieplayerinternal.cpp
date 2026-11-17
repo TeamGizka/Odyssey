@@ -19,6 +19,8 @@ HWND g_hMovieWnd;
 #include "swmain.h"
 
 #define EXOMOVIEPLAYERINTERNAL_DEBUG 0
+#define MOVIE_REFERENCE_WIDTH 800.0f
+#define MOVIE_REFERENCE_HEIGHT 600.0f
 
 template <class T> inline void TraceListRelease(CExoArrayList<T>*)
 {
@@ -439,12 +441,30 @@ int CExoMoviePlayerInternal::RenderFrame(int nWait)
     return 0;
 }
 // Dead code: not in the PC executable
-void MovieNextFrame()
+void CExoMoviePlayerInternal::ShowFrame(int nX, int nY, int nWidth, int nHeight)
 {
-    if (g_pMoviePlayer != NULL && g_pMoviePlayer->m_hBink != NULL)
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+
+    if (!g_pAurora->FullScreen())
     {
-        BinkNextFrame(g_pMoviePlayer->m_hBink);
+        fScaleX = (float)g_nScreenWidth / MOVIE_REFERENCE_WIDTH;
+        fScaleY = (float)g_nScreenHeight / MOVIE_REFERENCE_HEIGHT;
     }
+    glClear(GL_COLOR_BUFFER_BIT);
+    glAlphaFunc(GL_ALWAYS, 0.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    AurOrtho(-fScaleY, fScaleY, -fScaleX, fScaleX, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    BinkNextFrame(m_hBink);
 }
 // PC 0x00404CF0 GOG 0x00404CF0
 int CExoMoviePlayerInternal::IsMoviePlaying()
