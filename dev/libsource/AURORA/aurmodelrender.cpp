@@ -3,6 +3,7 @@
 #include <aurlist.h>
 #include <aurpointer.h>
 #include "../math3d/math3d.h"
+#include "aurscene.h"
 
 class PartLight;
 class CAurTexture;
@@ -340,7 +341,6 @@ inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x0046E300 GOG 
 #endif
 
 #include "aurcamera.h"
-#include "aurscene.h"
 
 #ifdef _XBOX
 

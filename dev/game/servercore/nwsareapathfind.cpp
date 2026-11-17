@@ -22,6 +22,7 @@
 #include <float.h>
 #include <string.h>
 #include "nwsspellimpact.h"
+#include "nwsencounter.h"
 
 #define AREA_DIRECT_LINE_MAX_ROOM_STEPS 100
 #define AREA_PATH_POINT_BLOCKER_POST_COLUMN 7
@@ -1133,7 +1134,6 @@ Vector CSWSArea::ComputeAwayVector(const Vector& vPosition, const Vector& vAway,
     return vBest;
 }
 
-#include "nwsencounter.h"
 // PC 0x004FEFF0 GOG 0x004F70D0
 int CSWSArea::ComputeBestCorner(float fX1, float fY1, float fX2, float fY2,
                                float fX3, float fY3, float fRadius, float fWidth,

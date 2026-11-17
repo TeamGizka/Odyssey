@@ -5,24 +5,6 @@
 #include "resgff.h"
 #include "nwerffile.h"
 #include "appmanager.h"
-#include "exoresman.h"
-#include "twodimarray.h"
-#include "aurtexcontrol.h"
-#include <float.h>
-#include "worldtimer.h"
-// PC 0x004E3B70
-template <class T> void CExoArrayList<T>::Remove(T value)
-{
-    int nIndex;
-    for (nIndex = 0; nIndex < num; nIndex++)
-    {
-        if ((*this)[nIndex] == value)
-            break;
-    }
-    if (nIndex == num)
-        return;
-    DelIndex(nIndex);
-}
 #include "serverexoapp.h"
 #include "clientexoapp.h"
 #include "guiingame.h"
@@ -39,27 +21,45 @@ template <class T> void CExoArrayList<T>::Remove(T value)
 #include "nwsstore.h"
 #include "nwsvartable.h"
 #include "nwsplaceable.h"
-// PC 0x004DF820
-inline CGameObject::~CGameObject()
-{
-}
 #include "nwsspellimpact.h"
 #include "nwmessage.h"
 #include "nwsplayer.h"
 #include "nwsmodule.h"
 #include "swsareamap.h"
 #include "swguicustompanel.h"
-#include "swsroom.h"
-#include "nwsarea.h"
-#include "nwsambientsound.h"
+#include "exoresman.h"
 #include "gameobjectarray.h"
 #include "nwsscriptevent.h"
 #include "nwseffect.h"
 #include "nwrules.h"
 #include "twodimarrays.h"
-#include "nwccreature.h"
+#include "twodimarray.h"
 #include "nwscreature.h"
 #include "pathfindinfo.h"
+#include "aurtexcontrol.h"
+#include <float.h>
+#include "worldtimer.h"
+// PC 0x004E3B70
+template <class T> void CExoArrayList<T>::Remove(T value)
+{
+    int nIndex;
+    for (nIndex = 0; nIndex < num; nIndex++)
+    {
+        if ((*this)[nIndex] == value)
+            break;
+    }
+    if (nIndex == num)
+        return;
+    DelIndex(nIndex);
+}
+// PC 0x004DF820
+inline CGameObject::~CGameObject()
+{
+}
+#include "swsroom.h"
+#include "nwsarea.h"
+#include "nwsambientsound.h"
+#include "nwccreature.h"
 
 #define NWSAREA_DEBUG 0
 

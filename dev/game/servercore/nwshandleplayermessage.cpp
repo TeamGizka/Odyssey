@@ -43,6 +43,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "nwclass.h"
+#include "nwccreature.h"
 
 static const int nVolume = 1;
 
@@ -150,8 +151,6 @@ int CSWSMessage::HandlePlayerToServerChatMessage(CSWSPlayer* pPlayer,
     }
     return nResult;
 }
-
-#include "nwccreature.h"
 
 #define NWSHANDLEPLAYERMESSAGE_DEBUG 0
 // PC 0x005A2080 GOG 0x005A20F0

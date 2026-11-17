@@ -6646,7 +6646,6 @@ int CSWCCreature::LipSync(const CResRef& cLip)
     return 0;
 }
 
-#include "nwcdoor.h"
 // PC 0x0065B710 GOG 0x0065B5C0
 int CSWCCreature::StopLipSync()
 {

@@ -18,6 +18,7 @@
 #include "nwcitem.h"
 #include "swguiingamecharacter.h"
 #include "swguiingameequip.h"
+#include "nwccreature.h"
 
 #ifndef _XBOX
 const int CSWGuiInGameInventory::m_nFilterName[FILTER_MISC + 1] =
@@ -153,8 +154,6 @@ void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-
-#include "nwccreature.h"
 
 
 

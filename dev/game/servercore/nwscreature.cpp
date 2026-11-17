@@ -3,51 +3,51 @@
 #include "nwsobject.h"
 #include <stdlib.h>
 #include <math.h>
+#include "appmanager.h"
+#include "serverexoapp.h"
 #include "serverexoappinternal.h"
 #include "serveraimaster.h"
+#include "nwscombatround.h"
+#include "nwseffect.h"
 #include "nwseffectlist.h"
+#include "nwsstore.h"
+#include "nwitem.h"
+#include "nwmessage.h"
+#include "nwsparty.h"
+#include "factionmanager.h"
+#include "nwsplaceable.h"
+#include "nwsdoor.h"
+#include "nwsambientsound.h"
+#include "worldtimer.h"
+#include "twodimarray.h"
+#include "partytables.h"
+#include "resgff.h"
+#include "nwscript.h"
+#include "nwportrait.h"
+#include "swmain.h"
 // PC 0x0050B650 GOG 0x0050B6B0
 void CSWSObject::SetSpellTargetPosition(const Vector& vPosition)
 {
     m_vSpellTargetPosition = vPosition;
 }
 
-#include "appmanager.h"
-#include "serverexoapp.h"
-#include "nwscombatround.h"
-#include "nwseffect.h"
 #include "nwsitem.h"
-#include "nwsstore.h"
-#include "nwitem.h"
-#include "nwmessage.h"
 #include "nwsplayer.h"
-#include "nwsparty.h"
-#include "factionmanager.h"
-#include "nwsplaceable.h"
-#include "nwsdoor.h"
 #include "nwstrigger.h"
 #include "nwsarea.h"
-#include "nwsambientsound.h"
-#include "worldtimer.h"
 #include "nwrules.h"
 #include "nwfeat.h"
 #include "twodimarrays.h"
-#include "twodimarray.h"
-#include "nwmessage.h"
 #include "nwccreature.h"
 #include "swparty.h"
 #include "clientexoapp.h"
-#include "partytables.h"
 #include "serverinfo.h"
 #include "guiingame.h"
-#include "resgff.h"
 #include "swguiabilitieschargen.h"
-#include "nwscript.h"
 #include "pathfindinfo.h"
 #include "nwsmodule.h"
 #include "nwcmodule.h"
 #include "nwjournal.h"
-#include "nwportrait.h"
 #include "nwsscriptevent.h"
 #include "nwcreaturelevelstats.h"
 #include "nwsspellimpact.h"
@@ -95,7 +95,6 @@ const float CSWSCreature::XP_CALCULATIONS_HENCHMEN_BONUS_AMOUNT = 0.05f;
 const unsigned char CSWSCreature::XP_CALCULATIONS_MAX_XP_SCALE = 200;
 
 #include "swgui.h"
-#include "swmain.h"
 
 #define NWSCREATURE_DEBUG 0
 // PC 0x0050B8C0 GOG 0x0050B920

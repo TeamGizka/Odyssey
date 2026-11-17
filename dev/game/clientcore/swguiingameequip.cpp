@@ -30,6 +30,7 @@
 #include "twodimarrays.h"
 #include "nwsmodule.h"
 #include "nwtlktable.h"
+#include "nwccreaturestats.h"
 
 
 const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLOTS] =
@@ -46,7 +47,6 @@ const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLO
     {INVENTORY_SLOT_LEFTHAND2, "INV_WEAP_L2", "weap_l", 31378, 31378},
     {INVENTORY_SLOT_RIGHTHAND2, "INV_WEAP_R2", "weap_r", 31379, 31379}
 };
-#include "nwccreaturestats.h"
 #ifdef _XBOX
 #include "exoinput.h"
 

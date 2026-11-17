@@ -4,6 +4,10 @@
 #include <GL/gl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <aurlist.h>
+#include <aurpointer.h>
+#include "aurtexman.h"
+#include "aurpointer.h"
 
 #ifndef _XBOX
 // Dead code: not in the PC executable
@@ -22,8 +26,6 @@ void AurPopClientState()
 class CHitInfo;
 #include "aurscene.h"
 #include "aurora.h"
-#include <aurlist.h>
-#include <aurpointer.h>
 #include "aurrendergl.h"
 #include "aurdraw.h"
 
@@ -216,7 +218,6 @@ char Scene::IsAnimating()
 #include "aurconsole.h"
 #include <string.h>
 #include <math.h>
-#include "aurtexman.h"
 #include "aurprimitive.h"
 #include "aurlightmanager.h"
 // PC 0x004636B0 GOG 0x004637C0
@@ -3543,8 +3544,6 @@ void CHitInfo::ClearOutput()
 #include "aurlist.h"
 
 #include <stdlib.h>
-
-#include "aurpointer.h"
 
 Vector Scene::m_vLastCameraPosition;
 Quaternion Scene::m_qLastCameraOrientation;

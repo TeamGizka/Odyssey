@@ -8,6 +8,7 @@
 #include "aurimage.h"
 #include "aurtexman.h"
 #include "aurrendergl.h"
+#include "aurmodel.h"
 #include "swmain.h"
 
 template List<unsigned long>::List(int);
@@ -24,7 +25,6 @@ inline void Viewport(int nX, int nY, int nWidth, int nHeight)
     glViewport(nX, nY, nWidth, nHeight);
 }
 
-#include "aurmodel.h"
 #include "aurglext.h"
 
 extern float aquadraticterm;

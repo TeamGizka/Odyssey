@@ -16,6 +16,7 @@
 #include "aurlightmanager.h"
 #include "exotlktable.h"
 #include "worldtimer.h"
+#include "appmanager.h"
 
 static int enableitemgroundalignment = 0;
 // PC 0x0069CAB0 GOG 0x0069C860
@@ -89,8 +90,6 @@ void CSWCItem::UnloadVisualEffect()
         m_pAnimBase->UnloadModel(MODEL_SLOT_VISUAL_EFFECT);
     }
 }
-
-#include "appmanager.h"
 
 #define NWCITEM_DEBUG 0
 
