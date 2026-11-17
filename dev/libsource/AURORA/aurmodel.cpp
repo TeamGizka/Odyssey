@@ -828,6 +828,11 @@ void MdlNode::InternalDestructor()
         m_lChildren[--i]->DestructorDispatch();
     --countnode;
 }
+
+void MaxTree::AddToFreeList(MdlNode* pNode)
+{
+    m_lFreeNodes.Add(pNode);
+}
 // PC 0x00459390 GOG 0x00459530
 void MaxTree::AddToFreeTokenList(unsigned long nPool)
 {

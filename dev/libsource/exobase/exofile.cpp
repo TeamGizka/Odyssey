@@ -12,6 +12,11 @@ void CExoAliasList::Add(const CExoString& sAlias, const CExoString& sPath)
     m_pInternal->Add(sAlias, sPath);
 }
 
+void CExoAliasList::Clear()
+{
+    m_pInternal->Clear();
+}
+
 #ifdef _XBOX
 
 void CExoAliasList::ChangePath(const CExoString& sAlias, const CExoString& sPath)
@@ -90,6 +95,11 @@ CExoFile::~CExoFile()
         delete m_pInternal;
         m_pInternal = 0;
     }
+}
+
+int CExoFile::Eof()
+{
+    return m_pInternal->Eof();
 }
 // PC 0x00632340 GOG 0x00632230
 int CExoFile::FileOpened()
@@ -171,6 +181,11 @@ inline int CExoFileInternal::SeekBeginning()
 inline int CExoFileInternal::SeekEnd()
 {
     return m_pFile ? (fseek(m_pFile, 0, 2) == 0) : 0;
+}
+
+inline int CExoFileInternal::Eof()
+{
+    return m_pFile ? feof(m_pFile) : 0;
 }
 
 #ifdef _XBOX

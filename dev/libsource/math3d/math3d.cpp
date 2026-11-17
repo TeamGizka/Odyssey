@@ -1034,6 +1034,66 @@ Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
     return result;
 }
 
+Quaternion Matrix::getquaternion() const
+{
+    Quaternion quaternion;
+    Vector vFirst = m_vFirst;
+    Vector vSecond = m_vSecond;
+    Vector vThird = m_vThird;
+    int anNext[3] = {1, 2, 0};
+    float aafMatrix[3][3];
+
+    for (int i = 0; i < 3; i++)
+    {
+        aafMatrix[0][i] = (&vFirst.m_fX)[i];
+        aafMatrix[1][i] = (&vSecond.m_fX)[i];
+        aafMatrix[2][i] = (&vThird.m_fX)[i];
+    }
+
+    float fTrace = aafMatrix[0][0] + aafMatrix[1][1] + aafMatrix[2][2];
+    if (fTrace > 0.0f)
+    {
+        float fScale = (float)sqrt(fTrace + 1.0);
+        quaternion.m_fW = fScale * 0.5f;
+        fScale = 0.5f / fScale;
+        quaternion.m_fX = (aafMatrix[1][2] - aafMatrix[2][1]) * fScale;
+        quaternion.m_fY = (aafMatrix[2][0] - aafMatrix[0][2]) * fScale;
+        quaternion.m_fZ = (aafMatrix[0][1] - aafMatrix[1][0]) * fScale;
+    }
+    else
+    {
+        float afQuaternion[4];
+        int i = 0;
+        if (aafMatrix[1][1] > aafMatrix[0][0])
+        {
+            i = 1;
+        }
+        if (aafMatrix[2][2] > aafMatrix[i][i])
+        {
+            i = 2;
+        }
+        int j = anNext[i];
+        int k = anNext[j];
+
+        float fScale = (float)sqrt((aafMatrix[i][i] - (aafMatrix[j][j] + aafMatrix[k][k])) + 1.0);
+        afQuaternion[i] = fScale * 0.5f;
+        if (fScale != 0.0f)
+        {
+            fScale = 0.5f / fScale;
+        }
+        afQuaternion[3] = (aafMatrix[j][k] - aafMatrix[k][j]) * fScale;
+        afQuaternion[j] = (aafMatrix[i][j] + aafMatrix[j][i]) * fScale;
+        afQuaternion[k] = (aafMatrix[i][k] + aafMatrix[k][i]) * fScale;
+
+        quaternion.m_fX = afQuaternion[0];
+        quaternion.m_fY = afQuaternion[1];
+        quaternion.m_fZ = afQuaternion[2];
+        quaternion.m_fW = afQuaternion[3];
+    }
+
+    return quaternion;
+}
+
 Quaternion lerp(Quaternion first, const Quaternion& second, float fPosition)
 {
     if (dot(first, second) < 0.99)

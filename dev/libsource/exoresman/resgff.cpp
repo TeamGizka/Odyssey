@@ -1066,6 +1066,11 @@ int CResGFF::GetTotalSize()
            12 * (m_pHeader->m_nStructCount + m_pHeader->m_nFieldCount) +
            m_pHeader->m_nFieldDataCount + sizeof(CResGFFHeader);
 }
+
+void CResGFF::SetFileType(char* szFileType)
+{
+    strncpy(m_szFileType, szFileType, 4);
+}
 // PC 0x004126F0 GOG 0x004126A0
 CResGFF::~CResGFF()
 {

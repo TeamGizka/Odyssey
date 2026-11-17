@@ -206,6 +206,16 @@ CallBack::CallBack(void (*pfnCallBack)(CAurObject*, char*, void*), char* sEvent,
     m_fDelay = fDelay;
     m_bRepeat = bRepeat;
 }
+
+bool Gob::CheckEvent(float fTime, bool bForce)
+{
+    if (!checkevents)
+        return true;
+    bool bFire = false;
+    if (fTime > m_fCameraDistance || (bForce && IsInViewVolume()))
+        bFire = true;
+    return bFire;
+}
 // PC 0x004B2130 GOG 0x004B2240
 inline Quaternion Interpolate(const Quaternion& qFirst,
                               const Quaternion& qSecond, float fPosition)

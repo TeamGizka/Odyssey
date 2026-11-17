@@ -35,6 +35,7 @@ public:
     int Seek(int offset, int origin);
     int SeekBeginning();
     int SeekEnd();
+    int Eof();
 
     FILE* m_pFile;
     CExoString m_sFileName;
@@ -61,6 +62,7 @@ public:
 #ifdef _XBOX
     void ChangePath(const CExoString& sAlias, const CExoString& sPath);
 #endif
+    void Clear();
     const CExoString& GetAliasPath(const CExoString& sAlias, int nLength) const;
     CExoString ResolveFileName(const CExoString& sName,
                                unsigned short nResType) const;

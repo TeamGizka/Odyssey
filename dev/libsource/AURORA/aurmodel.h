@@ -112,7 +112,7 @@ public:
     virtual ~Gob();
     void Reset();
     void RenderBoundingBox();
-    void CheckEvent(float fTime, bool bForce);
+    bool CheckEvent(float fTime, bool bForce);
     void SetAnimationTime(char* sName, float fTime);
     void SetAnimationPercentage(char* sName, float fPercentage);
     int ShouldWeCheckVisibilityHACK();

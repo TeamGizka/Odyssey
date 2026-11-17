@@ -365,6 +365,18 @@ CExoAliasListInternal::~CExoAliasListInternal()
     }
 }
 
+void CExoAliasListInternal::Clear()
+{
+    CExoAlias* pAlias = m_pAliasList;
+    while (pAlias != NULL)
+    {
+        CExoAlias* pNext = pAlias->m_pNext;
+        delete pAlias;
+        m_pAliasList = NULL;
+        pAlias = pNext;
+    }
+}
+
 #ifdef _XBOX
 
 unsigned long CExoFileInternal::ReadAsyncBytesRead()

@@ -2096,7 +2096,7 @@ ChunkyParticle::ChunkyParticle(PartEmitter* pEmitter, float fTime)
 #ifdef _XBOX
 unsigned char MdlNodeEmitter::IsBouncing() { unsigned char bBouncing = m_EmitterFlags.m_bBouncing; return bBouncing; }
 #else
-inline unsigned char MdlNodeEmitter::IsBouncing() { return (unsigned char)m_EmitterFlags.m_bBouncing; }
+unsigned char MdlNodeEmitter::IsBouncing() { return (unsigned char)m_EmitterFlags.m_bBouncing; }
 #endif
 inline void PartEmitter::SetLastOrigin(Vector v) { m_vLastOrigin = v; }
 inline void LightningEmitter::SetTargetDirection(Vector v) { m_vTargetDirection = v; }
