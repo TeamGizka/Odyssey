@@ -2037,7 +2037,7 @@ void EndImposterRender(unsigned long nRecord)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glFinish();
-    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 128, 128, 0);
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, 128, 128, 0);
     gluErrorString(glGetError());
     wglMakeCurrent(GLRender::m_hDC, GLRender::m_hGLRC);
     glEnable(GL_TEXTURE_2D);

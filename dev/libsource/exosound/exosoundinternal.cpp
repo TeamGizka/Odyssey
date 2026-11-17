@@ -12,6 +12,7 @@
 
 #define EXOSOUND_RESERVED_STREAMING_HANDLES 8
 #define EXOSOUNDINTERNAL_DEBUG 0
+#define EXOSOUND_MAX_SPEAKER_TYPE 6
 
 int g_bDisableSound;
 int g_bSoundPaused;
@@ -95,6 +96,54 @@ void CExoSoundInternal::SetListenerPosition(const Vector& vPosition)  // PC 0x00
     }
 }
 #endif
+
+#ifndef _XBOX
+// Dead code: not in the PC executable
+int CExoSoundInternal::GetLatency()
+{
+    if (m_h3DProvider != NULL)
+    {
+        HDIGDRIVER hDriver;
+        AIL_quick_handles(&hDriver, NULL, NULL);
+        return AIL_digital_latency(hDriver);
+    }
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CExoSoundInternal::GetCPUUsage()
+{
+    if (m_h3DProvider != NULL)
+    {
+        HDIGDRIVER hDriver;
+        AIL_quick_handles(&hDriver, NULL, NULL);
+        return AIL_digital_CPU_percent(hDriver);
+    }
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CExoSoundInternal::GetNumber2DSamplesPlaying()
+{
+    if (m_h3DProvider != NULL)
+    {
+        HDIGDRIVER hDriver;
+        AIL_quick_handles(&hDriver, NULL, NULL);
+        return AIL_active_sample_count(hDriver);
+    }
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CExoSoundInternal::GetNumber3DSamplesPlaying()
+{
+    if (m_h3DProvider != NULL)
+    {
+        return AIL_active_3D_sample_count(m_h3DProvider);
+    }
+    return 0;
+}
+#endif
 // PC 0x00622290 GOG 0x00622260
 inline int CExoSoundSourceInternal::GetPlayWhenFree()
 {
@@ -169,6 +218,31 @@ inline void CExoSoundInternal::SetRollOffFactor(float fFactor)
     {
         AIL_set_3D_rolloff_factor(m_h3DProvider, fFactor);
     }
+}
+#endif
+
+#ifndef _XBOX
+// Dead code: not in the PC executable
+void CExoSoundInternal::SetSpeakerType(char nSpeakerType)
+{
+    if (m_h3DProvider != NULL && nSpeakerType <= EXOSOUND_MAX_SPEAKER_TYPE)
+    {
+        if (nSpeakerType == -1)
+        {
+            nSpeakerType = AIL_3D_2_SPEAKER;
+        }
+        AIL_set_3D_speaker_type(m_h3DProvider, nSpeakerType);
+    }
+}
+
+// Dead code: not in the PC executable
+char CExoSoundInternal::GetSpeakerType()
+{
+    if (m_h3DProvider != NULL)
+    {
+        return (char)AIL_3D_speaker_type(m_h3DProvider);
+    }
+    return -1;
 }
 #endif
 
@@ -510,47 +584,6 @@ void CExoSoundInternal::SetEnvironment(unsigned char nEnvironment)  // PC 0x0062
 
 
 
-
-#ifndef _XBOX
-// Dead code: not in the PC executable
-int ApplySpeakerSettings(int nSpeakerType, int bReleaseDevice)
-{
-    CExoSoundInternal* pInternal = g_pExoSound->m_pInternal;
-    int nResult = 0;
-    if (pInternal->m_h3DProvider != 0)
-    {
-        if (AIL_3D_speaker_type(pInternal->m_h3DProvider) != nSpeakerType)
-        {
-            AIL_set_3D_speaker_type(pInternal->m_h3DProvider, nSpeakerType);
-        }
-        nResult = AIL_3D_speaker_type(pInternal->m_h3DProvider);
-    }
-    HDIGDRIVER hDriver;
-    AIL_quick_handles(&hDriver, NULL, NULL);
-    if (bReleaseDevice)
-    {
-        AIL_digital_handle_release(hDriver);
-    }
-    else
-    {
-        AIL_digital_handle_reacquire(hDriver);
-    }
-    return nResult;
-}
-#endif
-
-#ifndef _XBOX
-// Dead code: not in the PC executable
-void GetListenerFactors(float* pfRolloffFactor, float* pfDistanceFactor)
-{
-    CExoSoundInternal* pInternal = g_pExoSound->m_pInternal;
-    if (pInternal->m_h3DProvider != 0)
-    {
-        *pfRolloffFactor = AIL_3D_rolloff_factor(pInternal->m_h3DProvider);
-        *pfDistanceFactor = AIL_3D_distance_factor(pInternal->m_h3DProvider);
-    }
-}
-#endif
 // PC 0x006225B0 GOG 0x00622580
 void CExoSoundInternal::SetMusicVolume(float fVolume, int nTemporary,
                                       int bFade)

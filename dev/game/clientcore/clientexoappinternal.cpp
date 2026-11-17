@@ -9094,7 +9094,7 @@ void CClientExoAppInternal::DestroyQuestJournal()
 
 #ifndef _XBOX
 // Dead code: not in the PC executable
-const char* playcredits(char* sCommand)
+const char* testmovie(char* sCommand)
 {
 
     CClientExoAppInternal* pInternal = g_pAppManager->m_pClientExoApp->m_pcExoAppInternal;

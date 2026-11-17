@@ -446,6 +446,12 @@ public:
     LPDIRECTSOUND GetDirectSound();
 #else
     int Initialize(unsigned char, unsigned char, int, int);
+    int GetLatency();
+    int GetCPUUsage();
+    int GetNumber2DSamplesPlaying();
+    int GetNumber3DSamplesPlaying();
+    void SetSpeakerType(char nSpeakerType);
+    char GetSpeakerType();
 #endif
 };
 

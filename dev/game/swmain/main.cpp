@@ -604,14 +604,6 @@ void DoConsoleHist(unsigned short nKey)  // PC 0x00401890 GOG 0x00401890
 }
 #endif
 
-inline DWORD ProcessorMask(unsigned int nProcessor)
-{
-    DWORD dwMask = 1;
-    while (nProcessor--)
-        dwMask *= 2;
-    return dwMask;
-}
-
 #ifndef _XBOX
 // Dead code: not in the PC executable
 void SetProcessorAffinity(unsigned int nProcessor)
@@ -629,7 +621,9 @@ void SetProcessorAffinity(unsigned int nProcessor)
             if (GetProcessAffinityMask(GetCurrentProcess(), &dwProcessMask,
                                        &dwSystemMask))
             {
-                DWORD dwMask = ProcessorMask(nProcessor);
+                DWORD dwMask = 1;
+                while (nProcessor--)
+                    dwMask *= 2;
                 if (dwProcessMask & dwMask)
                     SetProcessAffinityMask(GetCurrentProcess(), dwMask);
             }

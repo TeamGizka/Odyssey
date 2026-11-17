@@ -1390,16 +1390,6 @@ Quaternion Matrix::getquaternion() const
 }
 
 // Dead code: not in the PC executable
-Quaternion lerp(Quaternion first, const Quaternion& second, float fPosition)
-{
-    if (dot(first, second) < 0.99)
-    {
-        return slerp(first, second, fPosition);
-    }
-    return normalize(first * (1.0f - fPosition) + second * fPosition);
-}
-
-// Dead code: not in the PC executable
 int isnormalized(const Vector& vector)
 {
     float fLengthSquared = vector * vector;
