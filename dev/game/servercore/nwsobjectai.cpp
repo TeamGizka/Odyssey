@@ -1410,7 +1410,7 @@ int CSWSObject::AddDoCommandAction(void* pScriptSituation)
     return 1;
 }
 #ifndef _XBOX
-int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x005DD730 GOG 0x005DD7A0
+int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction)  // PC 0x005DD730 GOG 0x005DD7A0
 {
     if (OverrideReputation != REPUTATION_NO_OVERRIDE)
     {
@@ -1443,7 +1443,7 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x00
                 if (pServer->GetObjectArray()->GetGameObject(
                         oidCreator, &pCreator) == CGameObjectArray::SUCCESS)
                 {
-                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUnknown);
+                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUseOriginalFaction);
                 }
             }
             else
@@ -3155,7 +3155,7 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
 
 #ifdef _XBOX
 
-int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
+int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction)
 {
     if (OverrideReputation != REPUTATION_NO_OVERRIDE)
     {
@@ -3191,7 +3191,7 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
                 if (pServer->GetObjectArray()->GetGameObject(
                         oidCreator, &pCreator) == CGameObjectArray::SUCCESS)
                 {
-                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUnknown);
+                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUseOriginalFaction);
                 }
             }
             else

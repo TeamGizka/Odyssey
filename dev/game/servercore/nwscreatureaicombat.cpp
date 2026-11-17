@@ -79,7 +79,7 @@ int CSWSCreature::IsDebilitated(int bCheckMeditation)
 
     if ((m_bDebilitated > 0 &&
          m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
-         m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16) ||
+         m_bDebilitated != CSWSEffectListHandler::STATE_DROID_CONFUSED) ||
         GetDeadTemp() != 0)
     {
         bDebilitated = 1;
@@ -2602,8 +2602,8 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
     }
 }
 // PC 0x0060BA40 GOG 0x0060BA20
-void CSWSCreature::ResolveAttack(unsigned long oidTarget, int nA, int nB,
-                                 int nC, int nD, int nE, int nF)
+void CSWSCreature::ResolveAttack(unsigned long oidTarget, int nAttacks, int nAnimation,
+                                 int bUseAttackResult, int nAttackResult, int nAttackRollResult, int nDamage)
 {
     CGameObject* pObject =
         g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
@@ -2631,11 +2631,11 @@ void CSWSCreature::ResolveAttack(unsigned long oidTarget, int nA, int nB,
     }
     if (bRanged)
     {
-        ResolveRangedAttack(pTarget, nA, nB, nC, nD, nE, nF);
+        ResolveRangedAttack(pTarget, nAttacks, nAnimation, bUseAttackResult, nAttackResult, nAttackRollResult, nDamage);
     }
     else
     {
-        ResolveMeleeAttack(pTarget, nA, nB, nC, nD, nE, nF);
+        ResolveMeleeAttack(pTarget, nAttacks, nAnimation, bUseAttackResult, nAttackResult, nAttackRollResult, nDamage);
     }
 
     if (pTarget->AsSWSCreature() != NULL)
@@ -3238,7 +3238,7 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                 if (pTarget == NULL || pTarget->AsSWSObject() == NULL ||
                     pAction->m_oidTarget == OBJECT_INVALID)
                     goto MoveToPoint;
-                int bUnknown2 = 0;
+                int bStopAtUseRange = 0;
                 int bUseRange = 0;
                 float fRange = 0.2f;
                 int bUsePath = 1;
@@ -3247,7 +3247,7 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                     ACTION_PARAM_INTEGER, &pAction->m_nEquipFlags,
                     ACTION_PARAM_FLOAT, &fRange, ACTION_PARAM_FLOAT, &fRange,
                     ACTION_PARAM_INTEGER, &bUsePath, ACTION_PARAM_INTEGER, &bUseRange,
-                    ACTION_PARAM_INTEGER, &bUnknown2,
+                    ACTION_PARAM_INTEGER, &bStopAtUseRange,
                     0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
                 Vector vOrientation;
                 CSWSObject* pObject = pTarget->AsSWSObject();
@@ -3262,7 +3262,7 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
             }
 MoveToPoint:
             {
-                int bUnknown = 0;
+                int bStopAtUseRange = 0;
                 float fRange = 0.2f;
                 unsigned long oidMoveTarget = OBJECT_INVALID;
                 AddActionToFront(ACTION_CHECK_MOVE_TO_POINT_RADIUS, pNode->m_nGroupId,
@@ -3271,7 +3271,7 @@ MoveToPoint:
                     ACTION_PARAM_FLOAT, &pAction->m_vTarget.m_fZ,
                     ACTION_PARAM_OBJECT, &oidArea, ACTION_PARAM_OBJECT, &oidMoveTarget,
                     ACTION_PARAM_INTEGER, &pAction->m_nEquipFlags,
-                    ACTION_PARAM_FLOAT, &fRange, ACTION_PARAM_INTEGER, &bUnknown,
+                    ACTION_PARAM_FLOAT, &fRange, ACTION_PARAM_INTEGER, &bStopAtUseRange,
                     0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
                 Vector vOrientation;
                 AddMoveToPointActionToFront(pNode->m_nGroupId,
@@ -3449,7 +3449,7 @@ void CSWSCreature::ResolveRangedAnimations(CSWSObject* pTarget,
             int bDebilitated = 0;
             if ((pCreature->m_bDebilitated > 0 &&
                  pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
-                 pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16) ||
+                 pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_DROID_CONFUSED) ||
                 pCreature->GetDeadTemp() != 0)
             {
                 bDebilitated = 1;
@@ -3473,7 +3473,7 @@ void CSWSCreature::ResolveRangedAnimations(CSWSObject* pTarget,
             int bTargetDebilitated = 0;
             if ((pCreature->m_bDebilitated > 0 &&
                  pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
-                 pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16) ||
+                 pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_DROID_CONFUSED) ||
                 pCreature->GetDeadTemp() != 0)
             {
                 bTargetDebilitated = 1;
@@ -3935,7 +3935,7 @@ void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
     int bDebilitated = 0;
     if ((pCreature->m_bDebilitated > 0 &&
          pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
-         pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16) ||
+         pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_DROID_CONFUSED) ||
         pCreature->GetDeadTemp() != 0)
     {
         bDebilitated = 1;
@@ -3949,7 +3949,7 @@ void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
     int bTargetDebilitated = 0;
     if ((pCreature->m_bDebilitated > 0 &&
          pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
-         pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16) ||
+         pCreature->m_bDebilitated != CSWSEffectListHandler::STATE_DROID_CONFUSED) ||
         pCreature->GetDeadTemp() != 0)
     {
         bTargetDebilitated = 1;
@@ -4896,7 +4896,7 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
                 pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
-        case CSWSEffectListHandler::STATE_VARIANT_16:
+        case CSWSEffectListHandler::STATE_DROID_CONFUSED:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_DROID_CONFUSED, this))

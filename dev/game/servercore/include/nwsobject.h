@@ -488,7 +488,7 @@ public:
 
     enum { DIRTY_ANIMATION_INDEX = 0, DIRTY_ORIENTATION_INDEX = 2 };
 
-    CSWSObject(unsigned char nObjectType, unsigned long oidObject, int bFlag);
+    CSWSObject(unsigned char nObjectType, unsigned long oidObject, int bCharacterObject);
     unsigned long GetNearestObjectByName(const CExoString& sName,
                                          float fDistance);
 
@@ -724,26 +724,26 @@ public:
     void TestActionList();
     void AddAction(
         unsigned long nActionType, unsigned short nGroupId,
-        unsigned long nParamType1, void* pParam1, unsigned long nParamType2,
-        void* pParam2, unsigned long nParamType3, void* pParam3,
-        unsigned long nParamType4, void* pParam4, unsigned long nParamType5,
-        void* pParam5, unsigned long nParamType6, void* pParam6,
-        unsigned long nParamType7, void* pParam7, unsigned long nParamType8,
-        void* pParam8, unsigned long nParamType9, void* pParam9,
-        unsigned long nParamType10, void* pParam10, unsigned long nParamType11,
-        void* pParam11, unsigned long nParamType12, void* pParam12,
-        unsigned long nParamType13, void* pParam13);
+        unsigned long nParamType1, void* pParameter1, unsigned long nParamType2,
+        void* pParameter2, unsigned long nParamType3, void* pParameter3,
+        unsigned long nParamType4, void* pParameter4, unsigned long nParamType5,
+        void* pParameter5, unsigned long nParamType6, void* pParameter6,
+        unsigned long nParamType7, void* pParameter7, unsigned long nParamType8,
+        void* pParameter8, unsigned long nParamType9, void* pParameter9,
+        unsigned long nParamType10, void* pParameter10, unsigned long nParamType11,
+        void* pParameter11, unsigned long nParamType12, void* pParameter12,
+        unsigned long nParamType13, void* pParameter13);
     void AddActionToFront(
         unsigned long nActionType, unsigned short nGroupId,
-        unsigned long nParamType1, void* pParam1, unsigned long nParamType2,
-        void* pParam2, unsigned long nParamType3, void* pParam3,
-        unsigned long nParamType4, void* pParam4, unsigned long nParamType5,
-        void* pParam5, unsigned long nParamType6, void* pParam6,
-        unsigned long nParamType7, void* pParam7, unsigned long nParamType8,
-        void* pParam8, unsigned long nParamType9, void* pParam9,
-        unsigned long nParamType10, void* pParam10, unsigned long nParamType11,
-        void* pParam11, unsigned long nParamType12, void* pParam12,
-        unsigned long nParamType13, void* pParam13);
+        unsigned long nParamType1, void* pParameter1, unsigned long nParamType2,
+        void* pParameter2, unsigned long nParamType3, void* pParameter3,
+        unsigned long nParamType4, void* pParameter4, unsigned long nParamType5,
+        void* pParameter5, unsigned long nParamType6, void* pParameter6,
+        unsigned long nParamType7, void* pParameter7, unsigned long nParamType8,
+        void* pParameter8, unsigned long nParamType9, void* pParameter9,
+        unsigned long nParamType10, void* pParameter10, unsigned long nParamType11,
+        void* pParameter11, unsigned long nParamType12, void* pParameter12,
+        unsigned long nParamType13, void* pParameter13);
     void RemoveEffect(CGameEffect* pEffect);
     int RemoveEffectById(unsigned __int64 nEffectId);
     int DoSpellImmunity(CSWSObject* pCaster);
@@ -788,7 +788,7 @@ public:
     static const int MAX_HOSTILE_REPUTATION = 10;
 
     static const int MIN_FRIENDLY_REPUTATION = 90;
-    int GetReputation(unsigned long oidObject, int bUnknown);
+    int GetReputation(unsigned long oidObject, int bUseOriginalFaction);
 
 
     enum
@@ -863,7 +863,7 @@ public:
                             int bInstantSpell);
     int IsDirtyFlagSet(unsigned long nFlag);
     void ClearDirtyFlag(unsigned long nFlag);
-    void ReportOverflow(int nType, int nValue, int nLimit, int nExtra);
+    void ReportOverflow(int nType, int nTotal, int nLimit, int bCritical);
 
     CExoLocString m_locLastName;
     unsigned short m_nNextGroupId;
@@ -1325,7 +1325,7 @@ public:
     };
     CExoArrayList<CGameEffect*> GetFilteredEffectList(unsigned char nType);
 
-    CSWSCreature(unsigned long oidCreature, int bFlag);
+    CSWSCreature(unsigned long oidCreature, int bCharacterObject);
     ~CSWSCreature();
     short GetArmorClass();
     int GetBodyBagAppearance();
@@ -1348,7 +1348,7 @@ public:
     virtual void UpdateAttributesOnEffect(CGameEffect* pEffect);
     void RemoveFromArea(int bLoading);
     int AcquireItem(CSWSItem** ppItem, unsigned long oidCaller,
-                    unsigned long oidRepository, int bFlag);
+                    unsigned long oidRepository, int bDisplayFeedback);
     void SetId(unsigned long oidCreature);
 
     enum ActivityMask
@@ -1405,7 +1405,7 @@ public:
                           unsigned char nSanctuary, int bInvisible);
     void ClearVisibleList();
     void SetVisibilityList(CExoArrayList<CSWVisibilityNode*>* pList);
-    void UpdateVisibleList(unsigned char bFlag);
+    void UpdateVisibleList(unsigned char nUpdateType);
 
     enum VisibleListUpdateType
     {
@@ -1567,7 +1567,7 @@ public:
                              unsigned long oidArea, unsigned long oidTarget,
                              int bRun, float fRange, float fTimeout,
                              int bUsePath, int nMovementRate, int nMovementOption,
-                             int bClientMoving, int bUnknown2, int bUsePoint,
+                             int bClientMoving, int bPartialPathSearch, int bUsePoint,
                              const Vector& vOrientation,
                              unsigned long nForceDay, unsigned long nForceTime,
                              int bStopAtUseRange);
@@ -1624,9 +1624,9 @@ public:
     int TransferGold(unsigned long oidTarget, const Vector& vPosition,
                      unsigned long nAmount);
     int GetTotalEffectBonus(unsigned char nEffectType, CSWSObject* pObject,
-                            int& nCapped, int nA, int nB,
-                            unsigned char nSavingThrow, unsigned char nC,
-                            unsigned char nD, unsigned char nE, int nF,
+                            int& nCapped, int bElementalDamage, int bForceMax,
+                            unsigned char nSavingThrow, unsigned char nSpecificType,
+                            unsigned char nSkillType, unsigned char nAbilityScore, int bOffHand,
                             int* pnDamageBonus = NULL);
     int IsCreature();
     CItemRepository* GetItemRepository(int bParty);
@@ -1646,8 +1646,8 @@ public:
         ACTIVITY_ACTION_COUNTERSPELL = 4
     };
     int GetUseRange(unsigned long oidObject, Vector& vPosition,
-                    float& fRange, int bFlag, int bDoorSaberRange = 0);
-    int GetIsInUseRange(unsigned long oidObject, float fRange, int bFlag,
+                    float& fRange, int bIgnorePreciseUse, int bDoorSaberRange = 0);
+    int GetIsInUseRange(unsigned long oidObject, float fRange, int bCheckTransparentDoors,
                         int bDoorSaber = 0);
     int AddCounterSpellActions(unsigned long oidTarget);
     int AIActionCounterSpell(CSWSObjectActionNode* pAction);
@@ -1659,15 +1659,15 @@ public:
     {
         MOVE_USE_PATH_SHIFT = 1,
         MOVE_TIMEOUT_MASK = 4,
-        MOVE_OPTION1_INPUT_MASK = 7,
-        MOVE_OPTION1_SHIFT = 4,
-        MOVE_OPTION2_SHIFT = 3,
+        MOVE_MOVEMENT_OPTION_INPUT_MASK = 7,
+        MOVE_MOVEMENT_OPTION_SHIFT = 4,
+        MOVE_PARTIAL_PATH_SHIFT = 3,
         MOVE_CLIENT_INPUT_MASK = 3,
         MOVE_CLIENT_SHIFT = 7,
-        MOVE_OPTION3_INPUT_MASK = 1,
-        MOVE_OPTION3_SHIFT = 9,
-        MOVE_OPTION6_INPUT_MASK = 1,
-        MOVE_OPTION6_SHIFT = 10
+        MOVE_USE_POINT_INPUT_MASK = 1,
+        MOVE_USE_POINT_SHIFT = 9,
+        MOVE_STOP_AT_USE_RANGE_INPUT_MASK = 1,
+        MOVE_STOP_AT_USE_RANGE_SHIFT = 10
     };
 
     enum { ANIMATION_STATE_MOVE_PENDING = 2 };
@@ -1675,7 +1675,7 @@ public:
         unsigned short nGroupId, const Vector& vPosition,
         unsigned long oidArea, unsigned long oidTarget, int bRun,
         float fRange, float fTimeout, int bUsePath, int nMovementRate,
-        int nMovementOption, int bClientMoving, int bUnknown2, int bUsePoint,
+        int nMovementOption, int bClientMoving, int bPartialPathSearch, int bUsePoint,
         const Vector& vOrientation, unsigned long nForceDay,
         unsigned long nForceTime, int bStopAtUseRange);
     int IsLightsaberEquipped();
@@ -1695,7 +1695,7 @@ public:
     int GetWeaponDischargeTime(int nWeapon, int nDischarge);
     int GetWeaponDischargeHand(int nWeapon, int nHand);
     void SetCombatReactionTime(int nAttack, int nTime, int nReactionDelay);
-    int CalculateMaxElementalDamage(CSWSObject* pObject, int nUnknown);
+    int CalculateMaxElementalDamage(CSWSObject* pObject, int bOffHand);
     CGameEffect* CreateLinkedEffect(int nEffectType, int nEffectInteger,
                                     int nLinkedEffectType,
                                     int nLinkedEffectInteger);
@@ -1900,11 +1900,11 @@ public:
     void AddToAreaOfEffectObjects(unsigned long oidObject);
     int HandleSubAreaStateChanges(CExoArrayList<unsigned long>* pNewSubAreas,
                                   CExoArrayList<unsigned long>* pOldSubAreas,
-                                  int bFlag, int bRunScripts);
+                                  int bCheckTriggerType, int bRunScripts);
     int UpdateSubareasOnMoveTo(const Vector& vFrom, const Vector& vTo,
                                int bUseIntersectList,
                                CExoArrayList<unsigned long>* pIntersectList,
-                               int bFlag);
+                               int bCheckTriggerType);
 
 
     unsigned long GetId() { return m_nId; }
@@ -2201,7 +2201,7 @@ public:
         AI_STATE_ALL = 0xFFFF,
 
 
-        AI_STATE_FLAG_0040 = 0x0040
+        AI_STATE_CAN_USE_MIND = 0x0040
     };
 
     enum { AI_STATE_ALL_FLAGS = 0xFFFF };
@@ -2444,99 +2444,99 @@ public:
 
 
         FEEDBACK_CANNOT_USE_SKILL = 0,
-        FEEDBACK_UNKNOWN_002 = 2,
-        FEEDBACK_UNKNOWN_003 = 3,
+        FEEDBACK_SKILL_ANIMALEMPATHY_VALID_TARGETS = 2,
+        FEEDBACK_SKILL_TAUNT_VALID_TARGETS = 3,
         FEEDBACK_TARGET_MUST_BE_AWARE = 6,
-        FEEDBACK_UNKNOWN_008 = 8,
-        FEEDBACK_UNKNOWN_009 = 9,
-        FEEDBACK_UNKNOWN_012 = 12,
+        FEEDBACK_WEIGHT_TOO_ENCUMBERED_TO_RUN = 8,
+        FEEDBACK_WEIGHT_TOO_ENCUMBERED_WALK_SLOW = 9,
+        FEEDBACK_INVENTORY_FULL = 12,
         FEEDBACK_KEY_USED = 16,
-        FEEDBACK_UNKNOWN_017 = 17,
-        FEEDBACK_UNKNOWN_018 = 18,
-        FEEDBACK_UNKNOWN_019 = 19,
-        FEEDBACK_UNKNOWN_020 = 20,
+        FEEDBACK_REST_EXCITED_CANT_REST = 17,
+        FEEDBACK_REST_BEGINNING_REST = 18,
+        FEEDBACK_REST_FINISHED_REST = 19,
+        FEEDBACK_REST_CANCEL_REST = 20,
         FEEDBACK_TARGET_NOT_VISIBLE = 21,
-        FEEDBACK_UNKNOWN_022 = 22,
+        FEEDBACK_CAST_CANT_CAST = 22,
         FEEDBACK_ITEM_NO_USES = 23,
         FEEDBACK_PARTY_LEADER_CHANGED = 31,
-        FEEDBACK_UNKNOWN_032 = 32,
-        FEEDBACK_UNKNOWN_033 = 33,
-        FEEDBACK_UNKNOWN_034 = 34,
-        FEEDBACK_UNKNOWN_035 = 35,
-        FEEDBACK_UNKNOWN_036 = 36,
-        FEEDBACK_UNKNOWN_037 = 37,
+        FEEDBACK_PARTY_MEMBER_KICKED = 32,
+        FEEDBACK_PARTY_KICKED_YOU = 33,
+        FEEDBACK_PARTY_ALREADY_CONSIDERING = 34,
+        FEEDBACK_PARTY_ALREADY_INVOLVED = 35,
+        FEEDBACK_PARTY_SENT_INVITATION = 36,
+        FEEDBACK_PARTY_RECEIVED_INVITATION = 37,
         FEEDBACK_PARTY_MEMBER_JOINED = 38,
-        FEEDBACK_UNKNOWN_039 = 39,
-        FEEDBACK_UNKNOWN_040 = 40,
-        FEEDBACK_UNKNOWN_041 = 41,
-        FEEDBACK_UNKNOWN_042 = 42,
+        FEEDBACK_PARTY_INVITATION_IGNORED = 39,
+        FEEDBACK_PARTY_YOU_IGNORED_INVITATION = 40,
+        FEEDBACK_PARTY_INVITATION_REJECTED = 41,
+        FEEDBACK_PARTY_YOU_REJECTED_INVITATION = 42,
         FEEDBACK_PARTY_MEMBER_LEFT = 44,
-        FEEDBACK_UNKNOWN_045 = 45,
-        FEEDBACK_UNKNOWN_046 = 46,
-        FEEDBACK_UNKNOWN_048 = 48,
-        FEEDBACK_UNKNOWN_052 = 52,
-        FEEDBACK_UNKNOWN_054 = 54,
+        FEEDBACK_PARTY_YOU_LEFT = 45,
+        FEEDBACK_SKILL_PICKPOCKET_ATTEMPTING_TO_STEAL = 46,
+        FEEDBACK_SKILL_PICKPOCKET_STOLE_GOLD_TARGET = 48,
+        FEEDBACK_CAST_CNTRSPELL_TARGET_LOST_TARGET = 52,
+        FEEDBACK_REST_NOT_ALLOWED_IN_AREA = 54,
         FEEDBACK_HEAL_NO_AFFLICTION = 55,
         FEEDBACK_HEAL_ALREADY_FULL = 56,
-        FEEDBACK_UNKNOWN_057 = 57,
+        FEEDBACK_SKILL_PICKPOCKET_TARGET_BROKE = 57,
         FEEDBACK_DIALOG_TARGET_TOO_FAR = 58,
         FEEDBACK_DIALOG_TARGET_BUSY = 59,
-        FEEDBACK_UNKNOWN_061 = 61,
-        FEEDBACK_UNKNOWN_065 = 65,
-        FEEDBACK_UNKNOWN_072 = 72,
-        FEEDBACK_UNKNOWN_074 = 74,
-        FEEDBACK_UNKNOWN_075 = 75,
-        FEEDBACK_UNKNOWN_076 = 76,
-        FEEDBACK_UNKNOWN_077 = 77,
-        FEEDBACK_UNKNOWN_078 = 78,
-        FEEDBACK_UNKNOWN_079 = 79,
-        FEEDBACK_UNKNOWN_080 = 80,
-        FEEDBACK_UNKNOWN_081 = 81,
+        FEEDBACK_CAST_ARCANE_SPELL_FAILURE = 61,
+        FEEDBACK_CAST_ENTANGLE_CONCENTRATION_FAILURE = 65,
+        FEEDBACK_CAST_SPELL_INTERRUPTED = 72,
+        FEEDBACK_CHARACTER_INTRANSIT = 74,
+        FEEDBACK_CHARACTER_OUTTRANSIT = 75,
+        FEEDBACK_EQUIP_UNIDENTIFIED = 76,
+        FEEDBACK_EQUIP_MONK_ABILITIES = 77,
+        FEEDBACK_LEARN_SCROLL_NOT_SCROLL = 78,
+        FEEDBACK_LEARN_SCROLL_CANT_LEARN_CLASS = 79,
+        FEEDBACK_LEARN_SCROLL_CANT_LEARN_LEVEL = 80,
+        FEEDBACK_LEARN_SCROLL_CANT_LEARN_ABILITY = 81,
         FEEDBACK_INVENTORY_ITEM_DROPPED = 96,
-        FEEDBACK_UNKNOWN_097 = 97,
-        FEEDBACK_UNKNOWN_099 = 99,
-        FEEDBACK_UNKNOWN_100 = 100,
-        FEEDBACK_UNKNOWN_101 = 101,
-        FEEDBACK_UNKNOWN_102 = 102,
-        FEEDBACK_UNKNOWN_103 = 103,
-        FEEDBACK_UNKNOWN_106 = 106,
-        FEEDBACK_UNKNOWN_118 = 118,
+        FEEDBACK_ITEM_USE_UNIDENTIFIED = 97,
+        FEEDBACK_CANNOT_SELL_PLOT_ITEM = 99,
+        FEEDBACK_CANNOT_SELL_CONTAINER = 100,
+        FEEDBACK_CANNOT_SELL_ITEM = 101,
+        FEEDBACK_NOT_ENOUGH_GOLD = 102,
+        FEEDBACK_TRANSACTION_SUCCEEDED = 103,
+        FEEDBACK_CHAT_TELL_PLAYER_NOT_FOUND = 106,
+        FEEDBACK_CAST_CNTRSPELL_TARGET_ARCANE_SPELL_FAILURE = 118,
         FEEDBACK_ITEM_PROFICIENCY_REQUIRED = 119,
-        FEEDBACK_UNKNOWN_120 = 120,
+        FEEDBACK_EQUIP_WEAPON_TOO_LARGE = 120,
         FEEDBACK_WEAPON_EQUIPPED_ONE_HANDED = 121,
         FEEDBACK_WEAPON_EQUIPPED_TWO_HANDED = 122,
         FEEDBACK_EQUIPPED_ITEM_SWAPPED = 123,
-        FEEDBACK_UNKNOWN_124 = 124,
+        FEEDBACK_EQUIP_ONE_CHAIN_WEAPON = 124,
         FEEDBACK_EXPERIENCE_POINTS_RECEIVED = 143,
-        FEEDBACK_UNKNOWN_147 = 147,
-        FEEDBACK_UNKNOWN_150 = 150,
-        FEEDBACK_UNKNOWN_152 = 152,
-        FEEDBACK_UNKNOWN_186 = 186,
+        FEEDBACK_CAST_CNTRSPELL_TARGET_ENTANGLE_CONCENTRATION_FAILURE = 147,
+        FEEDBACK_SKILL_PICKPOCKET_ATTEMPT_DETECTED = 150,
+        FEEDBACK_CONVERSATION_IN_COMBAT = 152,
+        FEEDBACK_REST_NOT_ALLOWED_ENEMIES = 186,
         FEEDBACK_CANNOT_EQUIP_ARMOUR_IN_COMBAT = 193,
-        FEEDBACK_UNKNOWN_196 = 196,
-        FEEDBACK_UNKNOWN_197 = 197,
+        FEEDBACK_PARTY_CANNOT_LEAVE_THE_ONE_PARTY = 196,
+        FEEDBACK_PARTY_CANNOT_KICK_FROM_THE_ONE_PARTY = 197,
         FEEDBACK_FEAT_USES_EXHAUSTED = 199,
-        FEEDBACK_UNKNOWN_200 = 200,
-        FEEDBACK_UNKNOWN_201 = 201,
-        FEEDBACK_UNKNOWN_202 = 202,
+        FEEDBACK_EQUIP_RANGER_ABILITIES = 200,
+        FEEDBACK_GUI_ONLY_PARTY_LEADER_MAY_CLICK = 201,
+        FEEDBACK_PARTY_YOU_INVITED_NON_SINGLETON = 202,
         FEEDBACK_PAUSED = 205,
         FEEDBACK_UNPAUSED = 206,
-        FEEDBACK_UNKNOWN_210 = 210,
-        FEEDBACK_UNKNOWN_211 = 211,
+        FEEDBACK_CAST_USE_HANDS = 210,
+        FEEDBACK_CAST_USE_MOUTH = 211,
         FEEDBACK_CONTAINER_FULL = 212,
-        FEEDBACK_UNKNOWN_213 = 213,
-        FEEDBACK_UNKNOWN_214 = 214,
-        FEEDBACK_UNKNOWN_215 = 215,
-        FEEDBACK_UNKNOWN_219 = 219,
-        FEEDBACK_UNKNOWN_220 = 220,
-        FEEDBACK_UNKNOWN_221 = 221,
-        FEEDBACK_UNKNOWN_223 = 223,
-        FEEDBACK_UNKNOWN_224 = 224,
-        FEEDBACK_UNKNOWN_225 = 225,
-        FEEDBACK_UNKNOWN_226 = 226,
+        FEEDBACK_REST_CANT_UNDER_THIS_EFFECT = 213,
+        FEEDBACK_REST_YOU_MAY_NOT_AT_THIS_TIME = 214,
+        FEEDBACK_GUI_CHAR_EXPORT_REQUEST_SENT = 215,
+        FEEDBACK_LEARN_SCROLL_CANT_LEARN_OPPOSITION = 219,
+        FEEDBACK_LEARN_SCROLL_CANT_LEARN_POSSESS = 220,
+        FEEDBACK_LEARN_SCROLL_CANT_LEARN_KNOWN = 221,
+        FEEDBACK_SKILL_TAUNT_TARGET_IMMUNE = 223,
+        FEEDBACK_LEARN_SCROLL_CANT_LEARN_DIVINE = 224,
+        FEEDBACK_SAVE_GAME_STARTED = 225,
+        FEEDBACK_SAVE_GAME_FINISHED = 226,
         FEEDBACK_ITEM_GENDER_RESTRICTION = 229,
         FEEDBACK_ITEM_PC_RESTRICTION = 230,
-        FEEDBACK_UNKNOWN_231 = 231,
+        FEEDBACK_DROID_CONFUSED_IMMUNITY = 231,
         FEEDBACK_ITEM_ATTRIBUTE_RESTRICTION = 232,
         FEEDBACK_COMPONENTS_ADDED = 233,
         FEEDBACK_CHEMICALS_ADDED = 234,
@@ -2577,10 +2577,10 @@ public:
 
 
     enum { ACTIVITY_INDEX_USE_OBJECT = 4 };
-    void SetActivity(int nActivity, int bFlag, int nArg);
+    void SetActivity(int nActivity, int bValue, int nStealthModeValue);
     void ReadScriptsFromGff(CResGFF* pRes, CResStruct* pStruct);
     void ReadItemsFromGff(CResGFF* pRes, CResStruct* pStruct,
-                         int bFlag1, int bFlag2, int bFlag3);
+                         int bReadObjectIds, int bLoadInventory, int bLoadFromTemplate);
     void PostProcess();
 
     void SetOriginalFactionId(int nFactionId)
@@ -2629,12 +2629,12 @@ public:
 
     int GetInParty() { return m_bInParty; }
     int GetForm() { return m_nCurrentForm; }
-    void SetInParty(int bInParty, int bFlag);
+    void SetInParty(int bInParty, int bUpdateAI);
     int LoadCreature(CResGFF* pRes, CResStruct* pStruct, int nAreaId);
-    int LoadFromTemplate(const CResRef& cResRef, int bFlag);
+    int LoadFromTemplate(const CResRef& cResRef, int bLoadFromTemplate);
     int ResolveInitiative();
-    void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bFlag1,
-                   int bFlag2);
+    void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bLoadingGame,
+                   int bUpdateSubAreas);
     void ReceiveExperience(int nExperience);
     int EquipMostEffectiveArmor();
     int EquipMostDamagingRangedWeapon(unsigned long oidTarget);
@@ -2739,11 +2739,11 @@ public:
     void BroadcastSavingThrowData(CSWCCMessageData* pMessageData);
     int GetCurrentlyFollowingLeader();
     int RangeWeaponEquipped();
-    void StartGuiTimingBar(unsigned long nValue, unsigned char bFlag);
+    void StartGuiTimingBar(unsigned long nTime, unsigned char nType);
     void StopGuiTimingBar();
     enum { REST_CANCEL_ACTION = 20 };
     void CancelRest(unsigned short nFeedback);
-    void Rest(int bFlag);
+    void Rest(int bRestingWithMaster);
     void RemoveSleepEffects();
     void RemoveBadEffects();
     void OnEndDialog(CSWSObject* pObject);
@@ -2752,7 +2752,7 @@ public:
     void GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                          unsigned char nSpikeType);
     void SetLastInstantEquip(unsigned long nSlot, int nValue);
-    int AddHealActions(unsigned long nValue, unsigned long oidItem,
+    int AddHealActions(unsigned long oidTarget, unsigned long oidItem,
                        int nItemProperty);
     int GetPauseReadyAnimation();
     void UpdateCombatRoundTimer();
@@ -2857,23 +2857,23 @@ public:
     enum EquipItemResult { EQUIP_ITEM_OK = 1, EQUIP_ITEM_REPLACE = 2,
                            EQUIP_ITEM_REPLACE_HANDS = 3, EQUIP_ITEM_REPLACE_HANDS2 = 4 };
     unsigned char CanEquipItem(CSWSItem* pItem, unsigned long* pnSlot,
-                              int bFlag1, int bFlag2, int bFlag3);
+                              int bCheckRestrictions, int bLoading, int bFeedback);
     int EquipItem(unsigned long nSlot, CSWSItem* pItem,
-                  int bFlag1, int bFlag2, int bFlag3);
+                  int bApplyProperties, int bLoading, int bInstant);
     int LoadFollowInfo(CResGFF* pResGFF, CResStruct* pResStruct);
-    int DoListenDetection(CSWSCreature* pCreature, int bFlag);
-    int DoSpotDetection(CSWSCreature* pCreature, int bFlag);
+    int DoListenDetection(CSWSCreature* pCreature, int bInvisible);
+    int DoSpotDetection(CSWSCreature* pCreature, int bInvisible);
     int DoStealthDetection(CSWSCreature* pCreature, int bCheckSpot,
                            int* pnSpotDetected, int* pnListenDetected,
-                           int bFlag);
+                           int bInvisible);
     void UpdatePureGoodEvilPowers();
 
     int ResolveRangedMissToParry(CSWSObject* pTarget, int bCheckWeapon,
                                  int nWeaponHand);
-    void ResolveRangedAttack(CSWSObject* pTarget, int nA, int nB, int nC,
-                             int nD, int nE, int nF);
-    void ResolveAttack(unsigned long oidTarget, int nA, int nB, int nC,
-                       int nD, int nE, int nF);
+    void ResolveRangedAttack(CSWSObject* pTarget, int nAttacks, int nAnimation, int bUseAttackResult,
+                             int nAttackResult, int nAttackRollResult, int nDamage);
+    void ResolveAttack(unsigned long oidTarget, int nAttacks, int nAnimation, int bUseAttackResult,
+                       int nAttackResult, int nAttackRollResult, int nDamage);
 
 public:
 

@@ -1609,7 +1609,7 @@ int CItemRepository::FindItemWithTag(const CExoString& sTag)
     return OBJECT_INVALID;
 }
 // PC 0x0055F1A0 GOG 0x0055F310
-int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
+int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bCheckContainers)
 {
     CServerExoApp* pServerExoApp;
     CSWSItem* pRepositoryItem;
@@ -1626,7 +1626,7 @@ int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
             return 1;
         }
 
-        if (bFlag != 0 && pRepositoryItem != NULL)
+        if (bCheckContainers != 0 && pRepositoryItem != NULL)
         {
             int nBaseItem = pRepositoryItem->m_nBaseItem;
             pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
@@ -1634,7 +1634,7 @@ int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
             {
                 pSubRepository = pRepositoryItem->m_pRepository;
                 if (pSubRepository != NULL &&
-                    pSubRepository->GetItemInRepository(pItem, bFlag) != 0)
+                    pSubRepository->GetItemInRepository(pItem, bCheckContainers) != 0)
                 {
                     return 1;
                 }
@@ -3547,12 +3547,12 @@ int CSWSItem::SaveContainerItems(CResGFF* pRes, CResStruct* pStruct)
     return 1;
 }
 // PC 0x00567B10 GOG 0x00567C40
-CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
+CItemRepository::CItemRepository(unsigned long oidOwner, int bPartyInventory)
     : m_lstItems(0)
 {
     m_oidOwner = oidOwner;
     m_nNewItems = 0;
-    m_bPartyInventory = bFlag;
+    m_bPartyInventory = bPartyInventory;
 }
 // PC 0x00567B40 GOG 0x00567C70
 void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)

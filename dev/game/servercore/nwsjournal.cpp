@@ -22,7 +22,7 @@ CSWSJournal::~CSWSJournal()
 {
 }
 // PC 0x006009E0 GOG 0x006009C0
-void CSWSJournal::SetPicture(const CExoString& sName, int nPicture, int nFlag)
+void CSWSJournal::SetPicture(const CExoString& sName, int nPicture, int bLoading)
 {
 }
 // PC 0x00600AF0 GOG 0x00600AD0
@@ -83,7 +83,7 @@ int CSWSJournal::GetState(const CExoString& sName)
 }
 // PC 0x00600DF0 GOG 0x00600DD0
 void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
-                           int nFlag)
+                           int bLoading)
 {
     SJournalEntry entry;
     int nNum = m_lstEntries.num;
@@ -97,7 +97,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
     int bCategoryMissing = 1;
     int nEntry;
 
-    if (nFlag != 0)
+    if (bLoading != 0)
     {
         nFlags = CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
     }
@@ -224,7 +224,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                         C2DA* pPlotXP = g_pRules->Get2DArrays()->m_pPlotXP;
 #endif
                         EXOLOG("CSWSJournal::SetState: plot XP table %p, flag %p",
-                               p2DArrays, &nFlag);
+                               p2DArrays, &bLoading);
                         pPlotXP->GetINTEntry(
                             m_lstEntries.element[nEntry].m_nPlotIndex, "XP",
                             &nPlotXP);
@@ -247,7 +247,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                 }
             }
 
-            m_lstEntries.element[nEntry].m_bNew = (nFlag == 0);
+            m_lstEntries.element[nEntry].m_bNew = (bLoading == 0);
 
             CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
             int nPlayerCreatureId = pExoApp->GetPlayerCreatureId();
@@ -318,7 +318,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                         }
                     }
                 }
-                if (nFlag == 0)
+                if (bLoading == 0)
                 {
                     pMessage->SendServerToPlayerJournalUpdated(
                         pPlayer, 1, m_lstEntries.element[nEntry].m_bCompleted,
@@ -357,7 +357,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
 }
 // PC 0x006017A0 GOG 0x00601780
 void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
-                          int nFlag)
+                          int bLoading)
 {
     SJournalEntry entry;
     CSWSPlayerJournalQuestUpdates update;
@@ -412,7 +412,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_DATE;
                         }
-                        if (nFlag != 0)
+                        if (bLoading != 0)
                         {
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
@@ -427,7 +427,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
                     update.m_nQuest =
                         bFound != 0 ? CSWSPlayerJournalQuestUpdates::QUEST_DATE
                                     : CSWSPlayerJournalQuestUpdates::QUEST_NEW;
-                    if (nFlag != 0)
+                    if (bLoading != 0)
                     {
                         update.m_nQuest |=
                             CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
@@ -440,7 +440,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
 }
 // PC 0x00601A00 GOG 0x006019E0
 void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
-                          int nFlag)
+                          int bLoading)
 {
     SJournalEntry entry;
     CSWSPlayerJournalQuestUpdates update;
@@ -495,7 +495,7 @@ void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_TIME;
                         }
-                        if (nFlag != 0)
+                        if (bLoading != 0)
                         {
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
@@ -510,7 +510,7 @@ void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
                     update.m_nQuest =
                         bFound != 0 ? CSWSPlayerJournalQuestUpdates::QUEST_TIME
                                     : CSWSPlayerJournalQuestUpdates::QUEST_NEW;
-                    if (nFlag != 0)
+                    if (bLoading != 0)
                     {
                         update.m_nQuest |=
                             CSWSPlayerJournalQuestUpdates::QUEST_QUIET;

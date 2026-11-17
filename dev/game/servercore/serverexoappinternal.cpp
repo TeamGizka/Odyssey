@@ -1399,11 +1399,11 @@ void CServerExoAppInternal::StartServices(int nServices)
 }
 // PC 0x004EA900 GOG 0x004EC6E0
 void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
-    CSWSPlayer* pPlayer, int bFlag, unsigned __int64 nTime)
+    CSWSPlayer* pPlayer, int bForce, unsigned __int64 nTime)
 {
     unsigned __int64 nUpdateTime = nTime;
     CSWSCreature* pCreature;
-    if (bFlag == 1 && nTime == 0)
+    if (bForce == 1 && nTime == 0)
     {
         nUpdateTime = GetHighResolutionTimer();
     }
@@ -1414,7 +1414,7 @@ void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
          (pCreature = pPlayer->GetGameObject()->AsSWSCreature()) != NULL &&
          pCreature->m_oidDisappearTarget != OBJECT_INVALID))
     {
-        if (bFlag == 1 || nTime - *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime >=
+        if (bForce == 1 || nTime - *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime >=
                           CSWSPlayer::GAME_OBJECT_UPDATE_INTERVAL)
         {
             m_pSWSMessage->SendServerToPlayerGameObjUpdate(pPlayer);
@@ -3466,7 +3466,7 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
 }
 #endif
 // PC 0x004EE510 GOG 0x004EF290
-void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
+void CServerExoAppInternal::UpdateClientGameObjects(int bForce)
 {
     unsigned __int64 nTime;
     CExoLinkedListNode* pNode;
@@ -3477,7 +3477,7 @@ void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
     while (pNode != NULL)
     {
         pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-        UpdateClientGameObjectsForPlayer(pPlayer, bFlag, nTime);
+        UpdateClientGameObjectsForPlayer(pPlayer, bForce, nTime);
         m_pPlayerList->GetNext(pNode);
     }
 }
@@ -4940,12 +4940,12 @@ LoadModuleFailed:
     return 0;
 }
 // PC 0x004F35B0 GOG 0x004F30F0
-void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
+void CServerExoAppInternal::DealWithLoadGameError(unsigned long nLoadErr)
 {
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
 
     UnloadModule();
-    pStats->m_nError = nValue;
+    pStats->m_nError = nLoadErr;
     pStats->m_bOperationEndPending = 1;
     if (g_nClientServerMode == 2)
     {
@@ -4956,7 +4956,7 @@ void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
     m_nServerMode = 0;
     m_bLoadingModule = 0;
     g_pAppManager->m_pServerExoApp->GetSWSMessage()
-        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, nValue);
+        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, nLoadErr);
 }
 // PC 0x004F3610 GOG 0x004F3150
 void CServerExoAppInternal::TogglePauseState(unsigned char nPauseType)

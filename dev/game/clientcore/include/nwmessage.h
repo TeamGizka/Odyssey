@@ -1348,7 +1348,7 @@ public:
     int HasValidString(CExoLocString& lsString, unsigned char nGender);
 
     void WriteGameObjUpdate_WorkRemaining(CSWSObject* pObject, CSWSArea* pArea,
-                                          int nValue, int nCompleteStage);
+                                          int nStagesCompleted, int nCompleteStage);
     void WriteRepositoryUpdate(CSWSPlayer* pPlayer, CSWSObject* pObject,
                                 CItemRepository* pRepository,
                                 CSWSPlayerLUOInventory* pLastUpdateInventory,
@@ -1357,9 +1357,9 @@ public:
     int ComputeLastUpdate_GuiMemorizedSpells(CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pPlayerLastUpdateObject);
     int ComputeLastUpdate_GuiNumberMemorizedSpells(CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pPlayerLastUpdateObject);
     int ComputeRepositoryUpdateRequired(CSWSPlayer* pPlayer, CExoLinkedListNode* pLinkedListNode, CExoLinkedListNode* pLinkedListNode2);
-    int HandlePlayerToServerGroupInputWalkToWaypoint(CSWSPlayer* pPlayer, CSWSCreature* pCreature, unsigned long oidObject, float fA, float fB, float fC, unsigned char nA, int nB, int nC, unsigned long oidTarget);
-    int HandlePlayerToServerServerChatMessage(CSWSPlayer* pPlayer, unsigned char nA);
-    int ParseGetBool(unsigned char* pnA, unsigned long oidObject, int& nA);
+    int HandlePlayerToServerGroupInputWalkToWaypoint(CSWSPlayer* pPlayer, CSWSCreature* pCreature, unsigned long oidArea, float fPositionX, float fPositionY, float fPositionZ, unsigned char nMovementRate, int bRun, int bUsePath, unsigned long oidTarget);
+    int HandlePlayerToServerServerChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor);
+    int ParseGetBool(unsigned char* pString, unsigned long nLength, int& bValue);
     int SendPlayerToServerGuiInventory_Status(CSWSPlayer* pPlayer, int nA);
     int SendServerToPlayerCheatPonyRide(unsigned long oidObject, unsigned long oidTarget);
     int SendServerToPlayerCheatRainOfCows(unsigned long oidObject, unsigned long oidTarget);
@@ -1370,7 +1370,7 @@ public:
     int SendServerToPlayerDialogReplies(unsigned long oidObject, unsigned long oidTarget, unsigned char nA, CExoLocString* sLocString, unsigned long* pnA, unsigned long* pnB, unsigned long* pnC, int* pnA2, float* pfA, float* pfB, unsigned long* pnA3, unsigned short* pnA4, float* pfC, unsigned char* pnA5, Vector* pvPosition, float* pfA2, float* pfA3, unsigned long oidSource, unsigned long oidOther, unsigned long oidObject2, unsigned long* pnA6, unsigned long** pnA7, unsigned short** pnA8, int nB);
     int SendServerToPlayerDialogReplyChosen(unsigned long oidObject, unsigned long oidTarget, unsigned long oidSource, CExoLocString& sLocString, unsigned long oidOther, unsigned char nA, int nB);
     int SendServerToPlayerInventory_ConfirmDrop(unsigned long oidObject, unsigned long oidTarget);
-    int SendServerToPlayerInventory_Equip(unsigned long oidObject, unsigned long oidTarget, unsigned long oidSource, int nA);
+    int SendServerToPlayerInventory_Equip(unsigned long nPlayerId, unsigned long oidObject, unsigned long nInventorySlot, int bInstant);
     int SendServerToPlayerJournalSetQuestPicture(CSWSPlayer* pPlayer, const CExoString& sString, int nA);
     int SendServerToPlayerLogin_Fail(unsigned long oidObject, unsigned long oidTarget);
     int SendServerToPlayerModule_EndGame(unsigned long oidObject, const CExoString& sString);

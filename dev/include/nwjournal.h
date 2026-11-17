@@ -99,10 +99,10 @@ public:
     ~CSWSJournal();
     int GetQuestEntryXP(const CExoString& sName);
     int GetState(const CExoString& sName);
-    void SetState(const CExoString& sName, unsigned long nState, int nFlag);
-    void SetDate(const CExoString& sName, unsigned long nDate, int nFlag);
-    void SetTime(const CExoString& sName, unsigned long nTime, int nFlag);
-    void SetPicture(const CExoString& sName, int nPicture, int nFlag);
+    void SetState(const CExoString& sName, unsigned long nState, int bLoading);
+    void SetDate(const CExoString& sName, unsigned long nDate, int bLoading);
+    void SetTime(const CExoString& sName, unsigned long nTime, int bLoading);
+    void SetPicture(const CExoString& sName, int nPicture, int bLoading);
     void Destroy(const CExoString& sName);
 
     CExoArrayList<SJournalEntry> m_lstEntries;

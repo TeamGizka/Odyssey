@@ -2192,20 +2192,20 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             break;
         }
         case CSWSCreature::FEEDBACK_PARTY_LEADER_CHANGED:
-        case CSWSCreature::FEEDBACK_UNKNOWN_032:
-        case CSWSCreature::FEEDBACK_UNKNOWN_034:
-        case CSWSCreature::FEEDBACK_UNKNOWN_035:
-        case CSWSCreature::FEEDBACK_UNKNOWN_036:
-        case CSWSCreature::FEEDBACK_UNKNOWN_037:
+        case CSWSCreature::FEEDBACK_PARTY_MEMBER_KICKED:
+        case CSWSCreature::FEEDBACK_PARTY_ALREADY_CONSIDERING:
+        case CSWSCreature::FEEDBACK_PARTY_ALREADY_INVOLVED:
+        case CSWSCreature::FEEDBACK_PARTY_SENT_INVITATION:
+        case CSWSCreature::FEEDBACK_PARTY_RECEIVED_INVITATION:
         case CSWSCreature::FEEDBACK_PARTY_MEMBER_JOINED:
-        case CSWSCreature::FEEDBACK_UNKNOWN_039:
-        case CSWSCreature::FEEDBACK_UNKNOWN_040:
-        case CSWSCreature::FEEDBACK_UNKNOWN_041:
-        case CSWSCreature::FEEDBACK_UNKNOWN_042:
+        case CSWSCreature::FEEDBACK_PARTY_INVITATION_IGNORED:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_IGNORED_INVITATION:
+        case CSWSCreature::FEEDBACK_PARTY_INVITATION_REJECTED:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_REJECTED_INVITATION:
         case CSWSCreature::FEEDBACK_INVITATION_EXPIRED:
         case CSWSCreature::FEEDBACK_PARTY_MEMBER_LEFT:
-        case CSWSCreature::FEEDBACK_UNKNOWN_046:
-        case CSWSCreature::FEEDBACK_UNKNOWN_048:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_ATTEMPTING_TO_STEAL:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_STOLE_GOLD_TARGET:
         case CSWSCreature::FEEDBACK_DISEASE_IMMUNITY:
         case CSWSCreature::FEEDBACK_CRITICAL_HITS_IMMUNITY:
         case CSWSCreature::FEEDBACK_DEATH_IMMUNITY:
@@ -2226,7 +2226,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         case CSWSCreature::FEEDBACK_ENTANGLE_IMMUNITY:
         case CSWSCreature::FEEDBACK_SILENCE_IMMUNITY:
         case CSWSCreature::FEEDBACK_SLOW_IMMUNITY:
-        case CSWSCreature::FEEDBACK_UNKNOWN_202:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_INVITED_NON_SINGLETON:
         case CSWSCreature::FEEDBACK_HORRIFIED_IMMUNITY:
         {
             unsigned long oidObject = ReadOBJECTIDClient();

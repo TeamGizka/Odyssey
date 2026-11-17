@@ -91,7 +91,7 @@ public:
     unsigned long GetNPCObject(int nNPC, int bLoad, int bResurrect);
     void DistributeExperience(int nExperience, int bFeedback);
     int SpawnNPC(int nNPC, int bUseSpawnPoint, const Vector& vPosition,
-                 const Vector& vOrientation, int bFlag);
+                 const Vector& vOrientation, int bResurrect);
     void CreateParty();
     void PositionParty();
     int LoadTableInfo();
@@ -99,7 +99,7 @@ public:
     void GivePlotXP(unsigned long nPlotIndex, int nPercent);
     int SwitchPlayerCharacter(int nNPC);
     int GetTotalPlayedSeconds();
-    void UnstealthParty(int nFlag);
+    void UnstealthParty(int nStealthModeValue);
     static int ResetCurrentSessionStartTime();
     int RemoveNPC(int nNPC);
     void SetSoloMode(int bSoloMode, int bUnstealth);

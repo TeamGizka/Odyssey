@@ -208,7 +208,7 @@ public:
     virtual CSWSArea* NWAreaAsSWSArea() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual int HandleTransparentDoors(
         const Vector& vStart, const Vector& vEnd, float fDistance, float fWidth,
-        float fHeight, unsigned long oidObject, unsigned long& oidHitObject, int bFlag,
+        float fHeight, unsigned long oidObject, unsigned long& oidHitObject, int bWalking,
         CExoArrayList<CGameObject*>* pExcludeList, int bCheckObjects);
     virtual CSWSArea* AsSWSArea() { return this; }  // PC 0x004E88F0 GOG 0x004E89C0
 
@@ -227,7 +227,7 @@ public:
                                     unsigned long* poidExclude);
     int NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
                           CPathfindInformation* pPathfind, int nFlags,
-                          int nCount, unsigned long* poidIgnore, int bFlag,
+                          int nCount, unsigned long* poidIgnore, int bCheckSize,
                           CWalkHitInfo* pWalkHitInfo);
     int GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
                                   int nX, int nY, int nZ,
@@ -315,7 +315,7 @@ public:
                             int* pnRoomIndex = NULL);
     class CSWSRoom* GetRoom(int nRoomIndex);
     int ComputeSafeLocation(const Vector& vPosition, float fRadius,
-                            CPathfindInformation* pPathfind, int bFlag,
+                            CPathfindInformation* pPathfind, int bCheckLine,
                             Vector* pSafePosition);
     static class CSWSRoom* LoadRooms(CLYT* pLayout);
     int LoadCreatures(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
@@ -415,11 +415,11 @@ public:
                                float fMinHeight, float fMaxHeight, float fRadius,
                                unsigned long oidObject, unsigned long& oidHitObject,
                                CExoArrayList<CGameObject*>* pExcludeList,
-                               int bFlag, int bCheckTransparentDoors);
+                               int bWalking, int bCheckTransparentDoors);
     int NoNonWalkPolysDetailed(const Vector& vStart, const Vector& vEnd,
                                float fDistance, float fWidth, float fHeight,
                                unsigned long oidObject, unsigned long& oidHitObject,
-                               int bFlag, CExoArrayList<CGameObject*>* pObjects,
+                               int bWalking, CExoArrayList<CGameObject*>* pObjects,
                                int bCheckObjects, CWalkHitInfo* pWalkHitInfo,
                                int bCheckDoors);
     void ClearObjects();
@@ -445,7 +445,7 @@ public:
     int ClearLineOfSight(const Vector& vStart, const Vector& vEnd,
                          Vector* pvHit, unsigned long* poidHit,
                          unsigned long oidObject, unsigned long oidTarget,
-                         int bFlag1, int bFlag2);
+                         int bCheckTransparentDoors, int bCheckAllRooms);
     void ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
                     const Vector& vOrientation);
     CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea);

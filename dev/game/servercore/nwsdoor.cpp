@@ -216,8 +216,8 @@ int CSWSDoor::GetIsLinked()
 }
 // PC 0x0057F650 GOG 0x0057F6D0
 int CSWSDoor::NoNonWalkPolysInDoor(const Vector& vStart, const Vector& vEnd,
-                                   const float& fA, const float& fB,
-                                   const float& fC, CWalkHitInfo* pHitInfo)
+                                   const float& fMinHeight, const float& fMaxHeight,
+                                   const float& fRadius, CWalkHitInfo* pHitInfo)
 {
     CSWCollisionMesh* pMesh = m_apCollisionMesh[(unsigned char)m_nOpenState];
     if (pMesh == 0)
@@ -230,7 +230,7 @@ int CSWSDoor::NoNonWalkPolysInDoor(const Vector& vStart, const Vector& vEnd,
     m_apCollisionMesh[(unsigned char)m_nOpenState]->m_qOrientation =
         qOrientation;
     return m_apCollisionMesh[(unsigned char)m_nOpenState]->NoNonWalkPolys(
-        vStart, vEnd, fA, fB, fC, pHitInfo);
+        vStart, vEnd, fMinHeight, fMaxHeight, fRadius, pHitInfo);
 }
 // PC 0x0057F6F0 GOG 0x0057F770
 void CSWSDoor::DoDamage(int nDamage)

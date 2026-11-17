@@ -154,7 +154,7 @@ public:
 
         IMMUNITY_TYPE_DEATH = 32,
 
-        IMMUNITY_TYPE_33 = 33
+        IMMUNITY_TYPE_DROID_CONFUSED = 33
     };
 
     enum SimpleGoodEvilAlignment

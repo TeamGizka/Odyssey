@@ -5947,10 +5947,10 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                     return 1;
                 }
             }
-            else if (nState == STATE_VARIANT_16)
+            else if (nState == STATE_DROID_CONFUSED)
             {
                 if (pStats->GetEffectImmunity(
-                    CSWSCreatureStats::IMMUNITY_TYPE_33, pCreator) == 1)
+                    CSWSCreatureStats::IMMUNITY_TYPE_DROID_CONFUSED, pCreator) == 1)
                 {
                     pMessageData = new CSWCCMessageData;
                     pMessageData->SetObjectID(0, pObject->GetId());
@@ -5959,14 +5959,14 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                         pCreatorMessageData = new CSWCCMessageData;
                         pMessageData->CopyTo(pCreatorMessageData);
                         pCreator->SendFeedbackMessage(
-                            CSWSCreature::FEEDBACK_UNKNOWN_231, pCreatorMessageData);
+                            CSWSCreature::FEEDBACK_DROID_CONFUSED_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
                             pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_231, pMessageData);
+                        CSWSCreature::FEEDBACK_DROID_CONFUSED_IMMUNITY, pMessageData);
                     return 1;
                 }
             }
@@ -6798,7 +6798,7 @@ int CSWSEffectListHandler::OnApplyDisguise(CSWSObject* pObject,
 // PC 0x005379D0 GOG 0x00539730
 int CSWSEffectListHandler::OnApplyInvisibility(CSWSObject* pObject,
                                                CGameEffect* pGameEffect,
-                                               int nValue)
+                                               int bLoadingModule)
 {
     CSWSCreature* pCreature;
     CSWSModule* pModule;

@@ -127,10 +127,10 @@ public:
     void GetVertex(int nVertex, Vector* pvVertex);
     void GetFaceVertex(int nIndex, int nCorner, Vector& vVertex);
     int RenderMesh(int nFlag, unsigned long nColor, unsigned long nMask);
-    int NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd, float fA,
-                             float fB, float fC, CWalkHitInfo* pHitInfo);
-    int NoNonWalkPolys(const Vector& vStart, const Vector& vEnd, float fA,
-                       float fB, float fC, CWalkHitInfo* pHitInfo);
+    int NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd, float fMinHeight,
+                             float fMaxHeight, float fRadius, CWalkHitInfo* pHitInfo);
+    int NoNonWalkPolys(const Vector& vStart, const Vector& vEnd, float fMinHeight,
+                       float fMaxHeight, float fRadius, CWalkHitInfo* pHitInfo);
 
     int m_nType;
     int m_nMeshType;

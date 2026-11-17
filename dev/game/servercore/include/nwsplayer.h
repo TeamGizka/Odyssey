@@ -136,8 +136,8 @@ public:
     int SaveServerCharacter();
     int LoadCreatureData(CResRef cResRef, CSWSCreature* pCreature);
     int LoadLocalCharacter();
-    int LoadCharacterFromIFO(unsigned long nPlayerIndex, int bFlag1,
-                             int bFlag2);
+    int LoadCharacterFromIFO(unsigned long nPlayerIndex, int bLoadModuleCharacter,
+                             int bPostProcess);
     int LoadServerCharacter(CResRef cResRef);
     void ClearPlayerOnDestroyGame();
     CExoString GetPlayerName();

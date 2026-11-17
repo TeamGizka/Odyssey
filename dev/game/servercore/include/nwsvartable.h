@@ -98,7 +98,7 @@ public:
     unsigned long GetObject(const CExoString& sName);
     CScriptLocation GetLocation(const CExoString& sName);
 
-    void SetInt(const CExoString& sName, int nValue, int nFlag);
+    void SetInt(const CExoString& sName, int nValue, int bLoading);
     void SetFloat(const CExoString& sName, float fValue);
     void SetString(const CExoString& sName, CExoString& sValue);
     void SetObject(const CExoString& sName, unsigned long oidValue);

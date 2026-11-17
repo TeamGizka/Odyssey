@@ -372,7 +372,7 @@ public:
     int LoadItem(CResGFF* pRes, CResStruct* pStruct);
     void GetSortedPropertyStrings(CExoArrayList<CExoString>& aStrings,
                                   CExoString& sString);
-    void SetPossessor(unsigned long oidPossessor, int bFlag1, int bFlag2,
+    void SetPossessor(unsigned long oidPossessor, int bRunScripts, int bDisplayFeedback,
                       unsigned long oidRepository);
 
     void ApplyItemProperties(CSWSCreature* pCreature, unsigned long nSlot,
@@ -400,7 +400,7 @@ public:
 class CItemRepository
 {
 public:
-    CItemRepository(unsigned long oidOwner, int bFlag);
+    CItemRepository(unsigned long oidOwner, int bPartyInventory);
     ~CItemRepository();
     void ClearNewItems(CExoArrayList<unsigned long>* pNewItems);
     int ClearItems();
@@ -409,9 +409,9 @@ public:
     int CalculateContentsWeight();
     int SetParentId(unsigned long oidParent);
     int RemoveItem(CSWSItem* pItem);
-    int AddItem(CSWSItem** ppItem, int bFlag1, int bFlag2, int bFlag3);
+    int AddItem(CSWSItem** ppItem, int bMergeItem, int bUpdatePossessor, int bNewItem);
     int GetNumItems() { return m_lstItems.num; }
-    int GetItemInRepository(CSWSItem* pItem, int bFlag);
+    int GetItemInRepository(CSWSItem* pItem, int bCheckContainers);
     void InsertItem(CSWSItem* pItem, int nIndex);
 
     unsigned long m_oidOwner;

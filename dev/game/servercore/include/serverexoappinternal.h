@@ -216,9 +216,9 @@ public:
     int StorePlayerCharacters();
     int ValidateCreateServerCharacter(CSWSPlayer* pPlayer, void* pData, unsigned long nSize);
     int StoreCurrentModule();
-    void UpdateClientGameObjects(int bFlag);
+    void UpdateClientGameObjects(int bForce);
     void MarkUpdateClientsForObject(unsigned long oidObject);
-    void UpdateClientGameObjectsForPlayer(CSWSPlayer* pPlayer, int bFlag,
+    void UpdateClientGameObjectsForPlayer(CSWSPlayer* pPlayer, int bForce,
                                           unsigned __int64 nTime);
     void UpdateClientsForObject(unsigned long oidObject);
     int SendCharacterQuery(CSWSPlayer* pPlayer);
@@ -307,7 +307,7 @@ public:
 
     void GetServerInfoFromIniFile();
 
-    void DealWithLoadGameError(unsigned long nValue);
+    void DealWithLoadGameError(unsigned long nLoadErr);
 
     enum { LOAD_GAME_ERROR_COPY_MODULE = 5 };
     unsigned char m_aUnmapped0[0x10004];

@@ -185,24 +185,24 @@ int CSWSCreature::LearnScroll(unsigned long oidItem)
     return 0;
 }
 // PC 0x00510DF0 GOG 0x00510E50
-void CSWSCreature::SetActivity(int nActivity, int bFlag, int nArg)
+void CSWSCreature::SetActivity(int nActivity, int bValue, int nStealthModeValue)
 {
     if ((nActivity & m_bInDialog) == nActivity)
     {
         return;
     }
-    if (((nActivity & ACTIVITY_GROUP_LOW) && bFlag == 1) ||
-        (nActivity == ACTIVITY_GROUP_LOW && bFlag == 0))
+    if (((nActivity & ACTIVITY_GROUP_LOW) && bValue == 1) ||
+        (nActivity == ACTIVITY_GROUP_LOW && bValue == 0))
     {
         ClearActivities(ACTIVITY_GROUP_LOW);
     }
-    if (((nActivity & ACTIVITY_GROUP_HIGH) && bFlag == 1) ||
-        (nActivity == ACTIVITY_GROUP_HIGH && bFlag == 0))
+    if (((nActivity & ACTIVITY_GROUP_HIGH) && bValue == 1) ||
+        (nActivity == ACTIVITY_GROUP_HIGH && bValue == 0))
     {
         ClearActivities(ACTIVITY_GROUP_HIGH);
     }
     int nChanged;
-    if (bFlag == 1)
+    if (bValue == 1)
     {
         nChanged = (m_nActivity & nActivity) == 0;
         m_nActivity |= nActivity;
@@ -216,13 +216,13 @@ void CSWSCreature::SetActivity(int nActivity, int bFlag, int nArg)
     {
         if (nActivity & ACTIVITY_STEALTH)
         {
-            if (bFlag == 1 && !(m_nActivity & (ACTIVITY_DIALOG | ACTIVITY_REST)))
+            if (bValue == 1 && !(m_nActivity & (ACTIVITY_DIALOG | ACTIVITY_REST)))
             {
-                SetStealthMode(1, nArg);
+                SetStealthMode(1, nStealthModeValue);
             }
-            else if (bFlag == 0)
+            else if (bValue == 0)
             {
-                SetStealthMode(0, nArg);
+                SetStealthMode(0, nStealthModeValue);
             }
             else
             {
@@ -231,9 +231,9 @@ void CSWSCreature::SetActivity(int nActivity, int bFlag, int nArg)
         }
         if (nActivity & ACTIVITY_DETECT)
         {
-            SetDetectMode(bFlag != 0);
+            SetDetectMode(bValue != 0);
         }
-        if ((nActivity & ACTIVITY_DIALOG) && bFlag == 0)
+        if ((nActivity & ACTIVITY_DIALOG) && bValue == 0)
         {
             StopDialog();
         }
@@ -242,7 +242,7 @@ void CSWSCreature::SetActivity(int nActivity, int bFlag, int nArg)
 // PC 0x00511060 GOG 0x005110C0
 int CSWSCreature::AddMoveToPointActionToFront(
     unsigned short nGroupId, const Vector& vPosition, unsigned long oidArea, unsigned long oidTarget, int bRun,
-    float fRange, float fTimeout, int bUsePath, int nMovementRate, int nMovementOption, int bClientMoving, int bUnknown2, int bUsePoint,
+    float fRange, float fTimeout, int bUsePath, int nMovementRate, int nMovementOption, int bClientMoving, int bPartialPathSearch, int bUsePoint,
     const Vector& vOrientation, unsigned long nForceDay, unsigned long nForceTime, int bStopAtUseRange)
 {
 #ifdef _XBOX
@@ -253,14 +253,14 @@ int CSWSCreature::AddMoveToPointActionToFront(
     {
         nMoveFlags |= MOVE_TIMEOUT_MASK;
     }
-    nMoveFlags |= (nMovementOption & MOVE_OPTION1_INPUT_MASK) << MOVE_OPTION1_SHIFT;
-    nMoveFlags |= bUnknown2 << MOVE_OPTION2_SHIFT;
+    nMoveFlags |= (nMovementOption & MOVE_MOVEMENT_OPTION_INPUT_MASK) << MOVE_MOVEMENT_OPTION_SHIFT;
+    nMoveFlags |= bPartialPathSearch << MOVE_PARTIAL_PATH_SHIFT;
     if (bClientMoving != 0)
     {
         nMoveFlags |= (bClientMoving & MOVE_CLIENT_INPUT_MASK) << MOVE_CLIENT_SHIFT;
     }
-    nMoveFlags |= (bUsePoint & MOVE_OPTION3_INPUT_MASK) << MOVE_OPTION3_SHIFT;
-    nMoveFlags |= (bStopAtUseRange & MOVE_OPTION6_INPUT_MASK) << MOVE_OPTION6_SHIFT;
+    nMoveFlags |= (bUsePoint & MOVE_USE_POINT_INPUT_MASK) << MOVE_USE_POINT_SHIFT;
+    nMoveFlags |= (bStopAtUseRange & MOVE_STOP_AT_USE_RANGE_INPUT_MASK) << MOVE_STOP_AT_USE_RANGE_SHIFT;
 
     CPathfindInformation* pPathfindInformation = m_pPathfindInformation;
     m_nAnimationState = ANIMATION_STATE_MOVE_PENDING;
@@ -289,7 +289,7 @@ int CSWSCreature::AddMoveToPointActionToFront(
 // PC 0x00511170 GOG 0x005111D0
 int CSWSCreature::AddMoveToPointAction(
     unsigned short nGroupId, const Vector& vPosition, unsigned long oidArea, unsigned long oidTarget, int bRun, float fRange, float fTimeout,
-    int bUsePath, int nMovementRate, int nMovementOption, int bClientMoving, int bUnknown2, int bUsePoint, const Vector& vOrientation, unsigned long nForceDay, unsigned long nForceTime, int bStopAtUseRange)
+    int bUsePath, int nMovementRate, int nMovementOption, int bClientMoving, int bPartialPathSearch, int bUsePoint, const Vector& vOrientation, unsigned long nForceDay, unsigned long nForceTime, int bStopAtUseRange)
 {
 #ifdef _XBOX
     m_nMoveToPointElapsed = -1;
@@ -302,7 +302,7 @@ int CSWSCreature::AddMoveToPointAction(
     {
         nFlags |= 4;
     }
-    nFlags |= (bUnknown2 | ((nMovementOption & 7) << 1)) << 3;
+    nFlags |= (bPartialPathSearch | ((nMovementOption & 7) << 1)) << 3;
     if (bClientMoving)
     {
         nFlags |= (bClientMoving & 3) << 7;
@@ -523,8 +523,8 @@ int CSWSCreature::RangeWeaponEquipped()
     return 0;
 }
 // PC 0x00519980 GOG 0x005199E0
-CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
-    : CSWSObject(CGameObject::OBJECT_TYPE_CREATURE, oidCreature, bFlag)
+CSWSCreature::CSWSCreature(unsigned long oidCreature, int bCharacterObject)
+    : CSWSObject(CGameObject::OBJECT_TYPE_CREATURE, oidCreature, bCharacterObject)
 {
     m_nRoomIndex = -1;
     m_nAssignedPup = -1;
@@ -1287,7 +1287,7 @@ void CSWSCreature::SpawnInHeartbeatPerception(int bForce)
             {
                 int nDebilitated = m_bDebilitated;
                 if (nDebilitated == CSWSEffectListHandler::STATE_CONFUSION ||
-                    nDebilitated == CSWSEffectListHandler::STATE_VARIANT_16)
+                    nDebilitated == CSWSEffectListHandler::STATE_DROID_CONFUSED)
                 {
                     m_bCommandable = 0;
                 }
@@ -1303,7 +1303,7 @@ void CSWSCreature::SpawnInHeartbeatPerception(int bForce)
                     nStateScript = CREATURE_STATE_SCRIPT_FEAR;
                     break;
                 case CSWSEffectListHandler::STATE_CONFUSION:
-                case CSWSEffectListHandler::STATE_VARIANT_16:
+                case CSWSEffectListHandler::STATE_DROID_CONFUSED:
                     nStateScript = CREATURE_STATE_SCRIPT_CONFUSION;
                     break;
                 }
@@ -2727,7 +2727,7 @@ int CSWSCreature::AddAttackActions(unsigned long oidTarget,
         ComputeAIState();
         if (m_bCommandable == 0 &&
             m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
-            m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16)
+            m_bDebilitated != CSWSEffectListHandler::STATE_DROID_CONFUSED)
             return 0;
         CSWVisibilityNode* pVisible = GetVisibleListElement(oidTarget);
         if (pVisible != NULL &&
@@ -2739,7 +2739,7 @@ int CSWSCreature::AddAttackActions(unsigned long oidTarget,
             if (pObject != NULL && pObject->AsSWSCreature() != NULL &&
                 GetAIStateReputation(oidTarget) == AI_STATE_REPUTATION_FRIEND &&
                 m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
-                m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16)
+                m_bDebilitated != CSWSEffectListHandler::STATE_DROID_CONFUSED)
             {
                 SendFeedbackMessage(FEEDBACK_CANNOT_ATTACK_FRIEND, NULL);
                 return 0;
@@ -6070,12 +6070,12 @@ int CSWSCreature::RequestBuy(unsigned long oidItem, unsigned long oidStore)
     if (pItem->m_pRepository != NULL &&
         pItem->m_pRepository->GetNumItems() != 0)
     {
-        SendFeedbackMessage(FEEDBACK_UNKNOWN_100, NULL);
+        SendFeedbackMessage(FEEDBACK_CANNOT_SELL_CONTAINER, NULL);
         return FALSE;
     }
     if ((unsigned long)m_nGold < pStore->CalculateItemSellPrice(pItem, m_nId))
     {
-        SendFeedbackMessage(FEEDBACK_UNKNOWN_102, NULL);
+        SendFeedbackMessage(FEEDBACK_NOT_ENOUGH_GOLD, NULL);
         return FALSE;
     }
     return TRUE;
@@ -6098,12 +6098,12 @@ int CSWSCreature::RequestSell(unsigned long oidItem, unsigned long oidStore)
     if (pItem->m_pRepository != NULL &&
         pItem->m_pRepository->GetNumItems() != 0)
     {
-        SendFeedbackMessage(FEEDBACK_UNKNOWN_100, NULL);
+        SendFeedbackMessage(FEEDBACK_CANNOT_SELL_CONTAINER, NULL);
         return FALSE;
     }
     if (pItem->m_bPlotObject == 1)
     {
-        SendFeedbackMessage(FEEDBACK_UNKNOWN_099, NULL);
+        SendFeedbackMessage(FEEDBACK_CANNOT_SELL_PLOT_ITEM, NULL);
         return FALSE;
     }
     if (GetItemRepository(TRUE)->GetItemInRepository(pItem, 0) != 0)
@@ -7219,7 +7219,7 @@ int CSWSCreature::SaveCreature(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x00526540 GOG 0x005265A0
 int CSWSCreature::DoStealthDetection(CSWSCreature* pCreature, int bCheckSpot,
                                      int* pnSpotDetected,
-                                     int* pnListenDetected, int bFlag)
+                                     int* pnListenDetected, int bInvisible)
 {
     int bSpotDetected;
     CSWSArea* pArea;
@@ -7239,10 +7239,10 @@ int CSWSCreature::DoStealthDetection(CSWSCreature* pCreature, int bCheckSpot,
         *pnListenDetected = 0;
         return 0;
     }
-    bListenDetected = DoListenDetection(pCreature, bFlag);
+    bListenDetected = DoListenDetection(pCreature, bInvisible);
     if (bCheckSpot != 0)
     {
-        bSpotDetected = DoSpotDetection(pCreature, bFlag);
+        bSpotDetected = DoSpotDetection(pCreature, bInvisible);
     }
     *pnListenDetected = bListenDetected;
     *pnSpotDetected = bSpotDetected;
@@ -8431,7 +8431,7 @@ int CSWSCreature::AddUseTalentAtLocationActions(
     return 0;
 }
 // PC 0x0051EDB0 GOG 0x0051EE10
-void CSWSCreature::Rest(int bFlag)
+void CSWSCreature::Rest(int bRestingWithMaster)
 {
     CExoString sRest;
     int nRestState = 0;
@@ -8919,11 +8919,11 @@ void CSWSCreature::SetInTransit(int bInTransit)
         m_bRestorePlotOnDownload = bInTransit;
         if (bInTransit)
         {
-            SendFeedbackMessage(FEEDBACK_UNKNOWN_074, NULL);
+            SendFeedbackMessage(FEEDBACK_CHARACTER_INTRANSIT, NULL);
         }
         else
         {
-            SendFeedbackMessage(FEEDBACK_UNKNOWN_075, NULL);
+            SendFeedbackMessage(FEEDBACK_CHARACTER_OUTTRANSIT, NULL);
         }
     }
 }
@@ -9056,19 +9056,19 @@ int CSWSSpellScriptData::LoadData(CResGFF* pRes, CResStruct* pStruct)
 }
 // PC 0x00515C70 GOG 0x00515CD0
 int CSWSCreature::GetTotalEffectBonus(unsigned char nEffectType, CSWSObject* pObject,
-    int& nCapped, int nA, int nB, unsigned char nSavingThrow, unsigned char nC,
-    unsigned char nD, unsigned char nE, int nF, int* pnDamageBonus)
+    int& nCapped, int bElementalDamage, int bForceMax, unsigned char nSavingThrow, unsigned char nSpecificType,
+    unsigned char nSkillType, unsigned char nAbilityScore, int bOffHand, int* pnDamageBonus)
 {
     nCapped = 0;
     CExoArrayList<CGameEffect*>& lstEffects = m_lstEffects;
     int nAttack = GetCombatRound()->m_nCurrentAttack;
     CSWSCombatAttackData* pAttack = GetCombatRound()->GetAttack(nAttack);
     int nWeaponType = pAttack->m_nWeaponAttackType;
-    if (nWeaponType == CSWSCombatRound::WEAPON_ATTACK_AUTOMATIC || nB != 0)
+    if (nWeaponType == CSWSCombatRound::WEAPON_ATTACK_AUTOMATIC || bForceMax != 0)
     {
-        if (nF == 0 && m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND) != NULL)
+        if (bOffHand == 0 && m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND) != NULL)
             nWeaponType = CSWSCombatRound::WEAPON_ATTACK_RIGHTHAND;
-        else if (nF == 0)
+        else if (bOffHand == 0)
             nWeaponType = CSWSCombatRound::WEAPON_ATTACK_UNARMED;
         else
             nWeaponType = CSWSCombatRound::WEAPON_ATTACK_LEFTHAND;
@@ -9272,8 +9272,8 @@ case EFFECT_BONUS_DAMAGE:
 
             if (!(((nEffectRace == g_pRules->m_nNumRaces || nEffectRace == nRace) &&
                    (nEffectAlignment == 0 || nEffectAlignment == nAlignment) && bWeaponMatch == TRUE &&
-                   ((nA == 0 && (nDamageType & DAMAGE_TYPE_PHYSICAL_MASK)) || (nDamageType & ~DAMAGE_TYPE_PHYSICAL_MASK))) ||
-                  (nA == 1 && !(nDamageType & DAMAGE_TYPE_PHYSICAL_MASK))))
+                   ((bElementalDamage == 0 && (nDamageType & DAMAGE_TYPE_PHYSICAL_MASK)) || (nDamageType & ~DAMAGE_TYPE_PHYSICAL_MASK))) ||
+                  (bElementalDamage == 1 && !(nDamageType & DAMAGE_TYPE_PHYSICAL_MASK))))
                 continue;
             nDamageIndex = Log_Base2(nDamageType);
             if (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_DAMAGE_INCREASE)
@@ -9288,7 +9288,7 @@ case EFFECT_BONUS_DAMAGE:
                     {
                         pDamage->GetINTEntry(nOldRank, "NumDice", &nNumDice);
                         pDamage->GetINTEntry(nOldRank, "Die", &nDie);
-                        if (nB)
+                        if (bForceMax)
                         {
                             nDamage = nNumDice * nDie;
                             nCapped += nNumDice - nDamage;
@@ -9297,7 +9297,7 @@ case EFFECT_BONUS_DAMAGE:
                         {
                             int bCritical = pAttack->m_nAttackResult ==
                                 CSWSCombatAttackData::ATTACK_RESULT_CRITICAL_HIT;
-                            int nMultiplier = bCritical ? GetStats()->GetCriticalHitMultiplier(nF) : 1;
+                            int nMultiplier = bCritical ? GetStats()->GetCriticalHitMultiplier(bOffHand) : 1;
                             for (int nRoll = nMultiplier; nRoll > 0; --nRoll)
                                 nDamage += g_pRules->RollDice(nNumDice, nDie);
                         }
@@ -9400,10 +9400,10 @@ case EFFECT_BONUS_DAMAGE:
         {
             if (pObject != NULL)
             {
-                nDamage = pObject->DoDamageImmunity(this, nDamage, nLastDamageType, nB, 1);
-                nDamage = pObject->DoDamageResistance(this, nDamage, nLastDamageType, nB, 1, 0);
+                nDamage = pObject->DoDamageImmunity(this, nDamage, nLastDamageType, bForceMax, 1);
+                nDamage = pObject->DoDamageResistance(this, nDamage, nLastDamageType, bForceMax, 1, 0);
             }
-            if (!nB)
+            if (!bForceMax)
                 pAttack->AddDamage(nLastDamageType, nDamage, 1);
             nTotalBonus += nDamage;
         }
@@ -9425,11 +9425,11 @@ case EFFECT_BONUS_DAMAGE:
             {
                 pDamage->GetINTEntry(m_nEffectBonus[nStack], "NumDice", &nNumDice);
                 pDamage->GetINTEntry(m_nEffectBonus[nStack], "Die", &nDie);
-                if (nB == 1)
+                if (bForceMax == 1)
                     nDamage = nNumDice * nDie;
                 else
                     nDamage = g_pRules->RollDice(nNumDice, nDie);
-                if (nA == 1)
+                if (bElementalDamage == 1)
                 {
                     if (nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_BLUDGEONING &&
                         nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_PIERCING &&
@@ -9437,10 +9437,10 @@ case EFFECT_BONUS_DAMAGE:
                     {
                         if (pObject != NULL)
                         {
-                            nDamage = pObject->DoDamageImmunity(this, nDamage, nLastDamageType, nB, 1);
-                            nDamage = pObject->DoDamageResistance(this, nDamage, nLastDamageType, nB, 1, 0);
+                            nDamage = pObject->DoDamageImmunity(this, nDamage, nLastDamageType, bForceMax, 1);
+                            nDamage = pObject->DoDamageResistance(this, nDamage, nLastDamageType, bForceMax, 1, 0);
                         }
-                        if (!nB)
+                        if (!bForceMax)
                             pAttack->AddDamage(anBonusType[nStack], nDamage, 1);
                         nEffectDamageBonus += nDamage;
                     }
@@ -9451,7 +9451,7 @@ case EFFECT_BONUS_DAMAGE:
             else
             {
                 nDamage = m_nEffectBonus[nStack];
-                if (nA == 1)
+                if (bElementalDamage == 1)
                 {
                     if (nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_BLUDGEONING &&
                         nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_PIERCING &&
@@ -9459,10 +9459,10 @@ case EFFECT_BONUS_DAMAGE:
                     {
                         if (pObject != NULL)
                         {
-                            nDamage = pObject->DoDamageImmunity(this, nDamage, nLastDamageType, nB, 1);
-                            nDamage = pObject->DoDamageResistance(this, nDamage, nLastDamageType, nB, 1, 0);
+                            nDamage = pObject->DoDamageImmunity(this, nDamage, nLastDamageType, bForceMax, 1);
+                            nDamage = pObject->DoDamageResistance(this, nDamage, nLastDamageType, bForceMax, 1, 0);
                         }
-                        if (!nB)
+                        if (!bForceMax)
                             pAttack->AddDamage(anBonusType[nStack], nDamage, 1);
                         nEffectDamageBonus += nDamage;
                     }
@@ -9478,11 +9478,11 @@ case EFFECT_BONUS_DAMAGE:
             {
                 pDamage->GetINTEntry(m_nEffectPenalty[nStack], "NumDice", &nNumDice);
                 pDamage->GetINTEntry(m_nEffectPenalty[nStack], "Die", &nDie);
-                if (nB == 1)
+                if (bForceMax == 1)
                     nDamage = nNumDice * nDie;
                 else
                     nDamage = g_pRules->RollDice(nNumDice, nDie);
-                if (nA == 1)
+                if (bElementalDamage == 1)
                 {
                     if (nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_BLUDGEONING &&
                         nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_PIERCING &&
@@ -9495,7 +9495,7 @@ case EFFECT_BONUS_DAMAGE:
             else
             {
                 nDamage = m_nEffectPenalty[nStack];
-                if (nA == 1)
+                if (bElementalDamage == 1)
                 {
                     if (nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_BLUDGEONING &&
                         nDamageIndex != CSWSCombatAttackData::DAMAGE_INDEX_PIERCING &&
@@ -9537,7 +9537,7 @@ case EFFECT_BONUS_SAVING_THROW:
             int nEffectAlignment = pEffect->GetInteger(5);
             if (nSave != 0 && nSave != nSavingThrow)
                 continue;
-            if (nVersus != 0 && nVersus != nC)
+            if (nVersus != 0 && nVersus != nSpecificType)
                 continue;
             if (nEffectRace != g_pRules->GetNumRaces() && nEffectRace != nRace)
                 continue;
@@ -9714,7 +9714,7 @@ case EFFECT_BONUS_ABILITY:
             bFound = FALSE;
             int nAbility = pEffect->GetInteger(0);
             pEffect->GetInteger(1);
-            if (nAbility != nE)
+            if (nAbility != nAbilityScore)
                 continue;
             if (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_ABILITY_INCREASE)
             {
@@ -9864,7 +9864,7 @@ case EFFECT_BONUS_SKILL:
             pEffect->GetInteger(1);
             nEffectRace = pEffect->GetInteger(2);
             int nEffectAlignment = pEffect->GetInteger(4);
-            if ((nSkill != EFFECT_SKILL_ALL && nSkill != nD) ||
+            if ((nSkill != EFFECT_SKILL_ALL && nSkill != nSkillType) ||
                 (nEffectRace != g_pRules->GetNumRaces() && nEffectRace != nRace) ||
                 (nEffectAlignment != 0 && nEffectAlignment != nAlignment))
                 continue;
@@ -10043,7 +10043,7 @@ void CSWSCreature::RemoveCombatInvisibilityEffects()
 }
 // PC 0x0051F5E0 GOG 0x0051F640
 int CSWSCreature::GetIsInUseRange(unsigned long oidObject, float fRange,
-                                 int bFlag, int bDoorSaber)
+                                 int bCheckTransparentDoors, int bDoorSaber)
 {
     CGameObject* pObject =
         g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
@@ -10076,7 +10076,7 @@ int CSWSCreature::GetIsInUseRange(unsigned long oidObject, float fRange,
         Vector vHit;
         unsigned long oidHit;
         if (pObject->AsSWSObject()->GetArea()->ClearLineOfSight(
-                vStart, vEnd, &vHit, &oidHit, GetId(), oidObject, bFlag, 0))
+                vStart, vEnd, &vHit, &oidHit, GetId(), oidObject, bCheckTransparentDoors, 0))
         {
             vStart.m_fZ = 0.0f;
             vEnd.m_fZ = 0.0f;

@@ -945,7 +945,7 @@ int CSWSObject::AddSwitchWeaponsAction(int bInstant)
 }
 // PC 0x004F9BF0 GOG 0x005093E0
 CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
-                       int bFlag)
+                       int bCharacterObject)
     : CGameObject(nObjectType, oidObject)
 {
     SetPosition(Vector(0.0f, 0.0f, 0.0f), 1, 0, 0);
@@ -958,7 +958,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
 
     CServerExoApp* pServerApp = g_pAppManager->m_pServerExoApp;
     if (oidObject == OBJECT_INVALID)
-        pServerApp->GetObjectArray()->AddInternalObject(m_nId, this, bFlag);
+        pServerApp->GetObjectArray()->AddInternalObject(m_nId, this, bCharacterObject);
     else
         pServerApp->GetObjectArray()->AddObjectAtPos(m_nId, this);
 
@@ -2318,15 +2318,15 @@ void CSWSObject::SaveListenData(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x004F66F0 GOG 0x00505EE0
 void CSWSObject::AddActionToFront(
     unsigned long nActionType, unsigned short nGroupId,
-    unsigned long nParamType1, void* pParam1, unsigned long nParamType2,
-    void* pParam2, unsigned long nParamType3, void* pParam3,
-    unsigned long nParamType4, void* pParam4, unsigned long nParamType5,
-    void* pParam5, unsigned long nParamType6, void* pParam6,
-    unsigned long nParamType7, void* pParam7, unsigned long nParamType8,
-    void* pParam8, unsigned long nParamType9, void* pParam9,
-    unsigned long nParamType10, void* pParam10, unsigned long nParamType11,
-    void* pParam11, unsigned long nParamType12, void* pParam12,
-    unsigned long nParamType13, void* pParam13)
+    unsigned long nParamType1, void* pParameter1, unsigned long nParamType2,
+    void* pParameter2, unsigned long nParamType3, void* pParameter3,
+    unsigned long nParamType4, void* pParameter4, unsigned long nParamType5,
+    void* pParameter5, unsigned long nParamType6, void* pParameter6,
+    unsigned long nParamType7, void* pParameter7, unsigned long nParamType8,
+    void* pParameter8, unsigned long nParamType9, void* pParameter9,
+    unsigned long nParamType10, void* pParameter10, unsigned long nParamType11,
+    void* pParameter11, unsigned long nParamType12, void* pParameter12,
+    unsigned long nParamType13, void* pParameter13)
 {
     CSWSObjectActionNode* pNode = new CSWSObjectActionNode;
 
@@ -2356,56 +2356,56 @@ void CSWSObject::AddActionToFront(
     }
     if (nParamType1 != 0)
     {
-        AddActionNodeParameter(pNode, 0, nParamType1, pParam1);
+        AddActionNodeParameter(pNode, 0, nParamType1, pParameter1);
         if (nParamType2 != 0)
         {
-            AddActionNodeParameter(pNode, 1, nParamType2, pParam2);
+            AddActionNodeParameter(pNode, 1, nParamType2, pParameter2);
             if (nParamType3 != 0)
             {
-                AddActionNodeParameter(pNode, 2, nParamType3, pParam3);
+                AddActionNodeParameter(pNode, 2, nParamType3, pParameter3);
                 if (nParamType4 != 0)
                 {
-                    AddActionNodeParameter(pNode, 3, nParamType4, pParam4);
+                    AddActionNodeParameter(pNode, 3, nParamType4, pParameter4);
                     if (nParamType5 != 0)
                     {
-                        AddActionNodeParameter(pNode, 4, nParamType5, pParam5);
+                        AddActionNodeParameter(pNode, 4, nParamType5, pParameter5);
                         if (nParamType6 != 0)
                         {
                             AddActionNodeParameter(pNode, 5, nParamType6,
-                                                   pParam6);
+                                                   pParameter6);
                             if (nParamType7 != 0)
                             {
                                 AddActionNodeParameter(pNode, 6, nParamType7,
-                                                       pParam7);
+                                                       pParameter7);
                                 if (nParamType8 != 0)
                                 {
                                     AddActionNodeParameter(
-                                        pNode, 7, nParamType8, pParam8);
+                                        pNode, 7, nParamType8, pParameter8);
                                     if (nParamType9 != 0)
                                     {
                                         AddActionNodeParameter(
-                                            pNode, 8, nParamType9, pParam9);
+                                            pNode, 8, nParamType9, pParameter9);
                                         if (nParamType10 != 0)
                                         {
                                             AddActionNodeParameter(pNode, 9,
                                                                    nParamType10,
-                                                                   pParam10);
+                                                                   pParameter10);
                                             if (nParamType11 != 0)
                                             {
                                                 AddActionNodeParameter(
                                                     pNode, 10, nParamType11,
-                                                    pParam11);
+                                                    pParameter11);
                                                 if (nParamType12 != 0)
                                                 {
                                                     AddActionNodeParameter(
                                                         pNode, 11, nParamType12,
-                                                        pParam12);
+                                                        pParameter12);
                                                     if (nParamType13 != 0)
                                                     {
                                                         AddActionNodeParameter(
                                                             pNode, 12,
                                                             nParamType13,
-                                                            pParam13);
+                                                            pParameter13);
                                                     }
                                                 }
                                             }
@@ -3974,7 +3974,7 @@ int CSWSObject::GetHasFeatEffectApplied(unsigned short nFeat)
     return 0;
 }
 // PC 0x004F84A0 GOG 0x00507C90
-void CSWSObject::ReportOverflow(int nType, int nValue, int nLimit, int nExtra)
+void CSWSObject::ReportOverflow(int nType, int nTotal, int nLimit, int bCritical)
 {
     if (g_pAppManager->m_pServerExoApp->GetDebugMode() == 1)
     {
@@ -3996,7 +3996,7 @@ void CSWSObject::ReportOverflow(int nType, int nValue, int nLimit, int nExtra)
                     if (pCreature != NULL)
                     {
                         CSWCCMessageData* pData = new CSWCCMessageData;
-                        pData->SetInteger(0, nValue);
+                        pData->SetInteger(0, nTotal);
                         pData->SetInteger(1, nLimit);
                         pData->SetObjectID(0, OBJECT_INVALID);
                         pData->SetObjectID(1, m_nId);
@@ -4106,15 +4106,15 @@ void CSWSObject::SetKeepCorpse(int bKeepCorpse)
 // PC 0x004F87E0 GOG 0x00507FD0
 void CSWSObject::AddAction(
     unsigned long nActionType, unsigned short nGroupId,
-    unsigned long nParamType1, void* pParam1, unsigned long nParamType2,
-    void* pParam2, unsigned long nParamType3, void* pParam3,
-    unsigned long nParamType4, void* pParam4, unsigned long nParamType5,
-    void* pParam5, unsigned long nParamType6, void* pParam6,
-    unsigned long nParamType7, void* pParam7, unsigned long nParamType8,
-    void* pParam8, unsigned long nParamType9, void* pParam9,
-    unsigned long nParamType10, void* pParam10, unsigned long nParamType11,
-    void* pParam11, unsigned long nParamType12, void* pParam12,
-    unsigned long nParamType13, void* pParam13)
+    unsigned long nParamType1, void* pParameter1, unsigned long nParamType2,
+    void* pParameter2, unsigned long nParamType3, void* pParameter3,
+    unsigned long nParamType4, void* pParameter4, unsigned long nParamType5,
+    void* pParameter5, unsigned long nParamType6, void* pParameter6,
+    unsigned long nParamType7, void* pParameter7, unsigned long nParamType8,
+    void* pParameter8, unsigned long nParamType9, void* pParameter9,
+    unsigned long nParamType10, void* pParameter10, unsigned long nParamType11,
+    void* pParameter11, unsigned long nParamType12, void* pParameter12,
+    unsigned long nParamType13, void* pParameter13)
 {
     CSWSObjectActionNode* pNode = new CSWSObjectActionNode;
 
@@ -4144,56 +4144,56 @@ void CSWSObject::AddAction(
     }
     if (nParamType1 != 0)
     {
-        AddActionNodeParameter(pNode, 0, nParamType1, pParam1);
+        AddActionNodeParameter(pNode, 0, nParamType1, pParameter1);
         if (nParamType2 != 0)
         {
-            AddActionNodeParameter(pNode, 1, nParamType2, pParam2);
+            AddActionNodeParameter(pNode, 1, nParamType2, pParameter2);
             if (nParamType3 != 0)
             {
-                AddActionNodeParameter(pNode, 2, nParamType3, pParam3);
+                AddActionNodeParameter(pNode, 2, nParamType3, pParameter3);
                 if (nParamType4 != 0)
                 {
-                    AddActionNodeParameter(pNode, 3, nParamType4, pParam4);
+                    AddActionNodeParameter(pNode, 3, nParamType4, pParameter4);
                     if (nParamType5 != 0)
                     {
-                        AddActionNodeParameter(pNode, 4, nParamType5, pParam5);
+                        AddActionNodeParameter(pNode, 4, nParamType5, pParameter5);
                         if (nParamType6 != 0)
                         {
                             AddActionNodeParameter(pNode, 5, nParamType6,
-                                                   pParam6);
+                                                   pParameter6);
                             if (nParamType7 != 0)
                             {
                                 AddActionNodeParameter(pNode, 6, nParamType7,
-                                                       pParam7);
+                                                       pParameter7);
                                 if (nParamType8 != 0)
                                 {
                                     AddActionNodeParameter(
-                                        pNode, 7, nParamType8, pParam8);
+                                        pNode, 7, nParamType8, pParameter8);
                                     if (nParamType9 != 0)
                                     {
                                         AddActionNodeParameter(
-                                            pNode, 8, nParamType9, pParam9);
+                                            pNode, 8, nParamType9, pParameter9);
                                         if (nParamType10 != 0)
                                         {
                                             AddActionNodeParameter(pNode, 9,
                                                                    nParamType10,
-                                                                   pParam10);
+                                                                   pParameter10);
                                             if (nParamType11 != 0)
                                             {
                                                 AddActionNodeParameter(
                                                     pNode, 10, nParamType11,
-                                                    pParam11);
+                                                    pParameter11);
                                                 if (nParamType12 != 0)
                                                 {
                                                     AddActionNodeParameter(
                                                         pNode, 11, nParamType12,
-                                                        pParam12);
+                                                        pParameter12);
                                                     if (nParamType13 != 0)
                                                     {
                                                         AddActionNodeParameter(
                                                             pNode, 12,
                                                             nParamType13,
-                                                            pParam13);
+                                                            pParameter13);
                                                     }
                                                 }
                                             }

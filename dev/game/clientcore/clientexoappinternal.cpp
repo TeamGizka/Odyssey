@@ -4042,17 +4042,17 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x59Cu, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_002:
+        case CSWSCreature::FEEDBACK_SKILL_ANIMALEMPATHY_VALID_TARGETS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_003:
+        case CSWSCreature::FEEDBACK_SKILL_TAUNT_VALID_TARGETS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_223:
+        case CSWSCreature::FEEDBACK_SKILL_TAUNT_TARGET_IMMUNE:
         {
             sFeedback = GetGUIString(0);
             bCombatMessage = 1;
@@ -4101,7 +4101,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_046:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_ATTEMPTING_TO_STEAL:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4114,12 +4114,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_150:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_ATTEMPT_DETECTED:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_048:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_STOLE_GOLD_TARGET:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4132,7 +4132,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_057:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_TARGET_BROKE:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4172,12 +4172,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5ECu);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_008:
+        case CSWSCreature::FEEDBACK_WEIGHT_TOO_ENCUMBERED_TO_RUN:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_009:
+        case CSWSCreature::FEEDBACK_WEIGHT_TOO_ENCUMBERED_WALK_SLOW:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4187,7 +4187,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x59Eu);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_012:
+        case CSWSCreature::FEEDBACK_INVENTORY_FULL:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4314,37 +4314,37 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x598u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_017:
+        case CSWSCreature::FEEDBACK_REST_EXCITED_CANT_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_018:
+        case CSWSCreature::FEEDBACK_REST_BEGINNING_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_019:
+        case CSWSCreature::FEEDBACK_REST_FINISHED_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_020:
+        case CSWSCreature::FEEDBACK_REST_CANCEL_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_054:
+        case CSWSCreature::FEEDBACK_REST_NOT_ALLOWED_IN_AREA:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_186:
+        case CSWSCreature::FEEDBACK_REST_NOT_ALLOWED_ENEMIES:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_213:
+        case CSWSCreature::FEEDBACK_REST_CANT_UNDER_THIS_EFFECT:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4354,37 +4354,37 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x599u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_052:
+        case CSWSCreature::FEEDBACK_CAST_CNTRSPELL_TARGET_LOST_TARGET:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_118:
+        case CSWSCreature::FEEDBACK_CAST_CNTRSPELL_TARGET_ARCANE_SPELL_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_022:
+        case CSWSCreature::FEEDBACK_CAST_CANT_CAST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_061:
+        case CSWSCreature::FEEDBACK_CAST_ARCANE_SPELL_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_065:
+        case CSWSCreature::FEEDBACK_CAST_ENTANGLE_CONCENTRATION_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_147:
+        case CSWSCreature::FEEDBACK_CAST_CNTRSPELL_TARGET_ENTANGLE_CONCENTRATION_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_072:
+        case CSWSCreature::FEEDBACK_CAST_SPELL_INTERRUPTED:
         {
             if (pCreature != NULL)
             {
@@ -4399,12 +4399,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_210:
+        case CSWSCreature::FEEDBACK_CAST_USE_HANDS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_211:
+        case CSWSCreature::FEEDBACK_CAST_USE_MOUTH:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4424,17 +4424,17 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x593u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_152:
+        case CSWSCreature::FEEDBACK_CONVERSATION_IN_COMBAT:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_074:
+        case CSWSCreature::FEEDBACK_CHARACTER_INTRANSIT:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_075:
+        case CSWSCreature::FEEDBACK_CHARACTER_OUTTRANSIT:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4448,12 +4448,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_076:
+        case CSWSCreature::FEEDBACK_EQUIP_UNIDENTIFIED:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_077:
+        case CSWSCreature::FEEDBACK_EQUIP_MONK_ABILITIES:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4468,7 +4468,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5C3u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_120:
+        case CSWSCreature::FEEDBACK_EQUIP_WEAPON_TOO_LARGE:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4523,7 +4523,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5C6u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_124:
+        case CSWSCreature::FEEDBACK_EQUIP_ONE_CHAIN_WEAPON:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4553,7 +4553,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5E2u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_200:
+        case CSWSCreature::FEEDBACK_EQUIP_RANGER_ABILITIES:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4563,27 +4563,27 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5E3u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_100:
+        case CSWSCreature::FEEDBACK_CANNOT_SELL_CONTAINER:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_099:
+        case CSWSCreature::FEEDBACK_CANNOT_SELL_PLOT_ITEM:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_101:
+        case CSWSCreature::FEEDBACK_CANNOT_SELL_ITEM:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_102:
+        case CSWSCreature::FEEDBACK_NOT_ENOUGH_GOLD:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_103:
+        case CSWSCreature::FEEDBACK_TRANSACTION_SUCCEEDED:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4833,7 +4833,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x592u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_032:
+        case CSWSCreature::FEEDBACK_PARTY_MEMBER_KICKED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4846,12 +4846,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_033:
+        case CSWSCreature::FEEDBACK_PARTY_KICKED_YOU:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_034:
+        case CSWSCreature::FEEDBACK_PARTY_ALREADY_CONSIDERING:
         {
             oidObject = pMessageData->GetObjectID(0);
             if ( GetObjectName(oidObject, sObjectName) != 0 )
@@ -4865,7 +4865,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_035:
+        case CSWSCreature::FEEDBACK_PARTY_ALREADY_INVOLVED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4878,7 +4878,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_036:
+        case CSWSCreature::FEEDBACK_PARTY_SENT_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4891,7 +4891,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_037:
+        case CSWSCreature::FEEDBACK_PARTY_RECEIVED_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4917,7 +4917,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x591u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_039:
+        case CSWSCreature::FEEDBACK_PARTY_INVITATION_IGNORED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4930,7 +4930,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_040:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_IGNORED_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4943,7 +4943,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_041:
+        case CSWSCreature::FEEDBACK_PARTY_INVITATION_REJECTED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4956,7 +4956,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_042:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_REJECTED_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4995,22 +4995,22 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x590u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_045:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_LEFT:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_196:
+        case CSWSCreature::FEEDBACK_PARTY_CANNOT_LEAVE_THE_ONE_PARTY:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_197:
+        case CSWSCreature::FEEDBACK_PARTY_CANNOT_KICK_FROM_THE_ONE_PARTY:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_202:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_INVITED_NON_SINGLETON:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -5023,42 +5023,42 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_078:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_NOT_SCROLL:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_079:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_CLASS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_224:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_DIVINE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_080:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_LEVEL:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_081:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_ABILITY:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_219:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_OPPOSITION:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_220:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_POSSESS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_221:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_KNOWN:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -5096,7 +5096,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0xA5C6u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_106:
+        case CSWSCreature::FEEDBACK_CHAT_TELL_PLAYER_NOT_FOUND:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -5118,7 +5118,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5BCu);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_097:
+        case CSWSCreature::FEEDBACK_ITEM_USE_UNIDENTIFIED:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -5548,7 +5548,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback.CStr();
             goto FeedbackDone;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_201:
+        case CSWSCreature::FEEDBACK_GUI_ONLY_PARTY_LEADER_MAY_CLICK:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
@@ -5563,22 +5563,22 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x5E5u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_225:
+        case CSWSCreature::FEEDBACK_SAVE_GAME_STARTED:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_226:
+        case CSWSCreature::FEEDBACK_SAVE_GAME_FINISHED:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_214:
+        case CSWSCreature::FEEDBACK_REST_YOU_MAY_NOT_AT_THIS_TIME:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_215:
+        case CSWSCreature::FEEDBACK_GUI_CHAR_EXPORT_REQUEST_SENT:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;

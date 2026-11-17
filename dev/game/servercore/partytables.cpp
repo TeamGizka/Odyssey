@@ -1622,7 +1622,7 @@ int CSWPartyTable::GetTotalPlayedSeconds()
     return m_nPlayedSeconds + (nElapsed + 5000000) / 10000000ui64;
 }
 // PC 0x0057A2F0 GOG 0x0057A370
-void CSWPartyTable::UnstealthParty(int nFlag)
+void CSWPartyTable::UnstealthParty(int nStealthModeValue)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     CSWSPlayer* pPlayer = pServerExoApp->GetClientObjectByObjectId(
@@ -1635,7 +1635,7 @@ void CSWPartyTable::UnstealthParty(int nFlag)
                 oidCreature);
         if (pCreature != NULL)
         {
-            pCreature->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nFlag);
+            pCreature->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nStealthModeValue);
         }
     }
 
@@ -1649,7 +1649,7 @@ void CSWPartyTable::UnstealthParty(int nFlag)
                 m_aoidNPC[m_anMembers[nMember]]);
             if (pMember != NULL)
             {
-                pMember->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nFlag);
+                pMember->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nStealthModeValue);
             }
             nMember++;
         } while (nMember < m_nNumMembers);

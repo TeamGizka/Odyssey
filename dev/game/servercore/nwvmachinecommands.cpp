@@ -3568,7 +3568,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
         break;
     case COMMAND_EFFECT_DROID_CONFUSED:
         pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
-        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_VARIANT_16);
+        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_DROID_CONFUSED);
         break;
     case COMMAND_EFFECT_MIND_TRICK:
         pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
@@ -10881,7 +10881,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectType(int nCommand,
     unsigned long oidTarget;
     CServerExoApp* pServerExoApp;
     CGameObject* pGameObject;
-    unsigned char nResult2;
+    unsigned char nObjectType;
 
     nResult = 0;
     if (g_pVirtualMachine->StackPopObject(&oidTarget) == 0)
@@ -10893,10 +10893,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectType(int nCommand,
             ->GetGameObject(oidTarget, &pGameObject) ==
         CGameObjectArray::SUCCESS)
     {
-        nResult2 = pGameObject->m_nObjectType;
-        if (nResult2 > (unsigned char)CGameObject::OBJECT_TYPE_AREA)
+        nObjectType = pGameObject->m_nObjectType;
+        if (nObjectType > (unsigned char)CGameObject::OBJECT_TYPE_AREA)
         {
-            switch (nResult2)
+            switch (nObjectType)
             {
             case 5:
                 nResult = 1;

@@ -2478,7 +2478,7 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
                 pCreature->Rest(0);
         }
         else
-            pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_UNKNOWN_213, NULL);
+            pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_REST_CANT_UNDER_THIS_EFFECT, NULL);
         return 0;
     case 16:
         ReadBYTE(8);
@@ -2834,7 +2834,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
             if (pCreature != NULL)
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
-                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_UNKNOWN_196, NULL);
+                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_PARTY_CANNOT_LEAVE_THE_ONE_PARTY, NULL);
             }
             break;
         }
@@ -2864,7 +2864,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 if (pCreature != NULL)
                 {
                     pCreature->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_045, NULL);
+                        CSWSCreature::FEEDBACK_PARTY_YOU_LEFT, NULL);
                 }
             }
         }
@@ -2877,7 +2877,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
         if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_bOnePartyOnly == 1)
         {
             CSWCCMessageData* pData = new CSWCCMessageData;
-            pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_UNKNOWN_197, NULL);
+            pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_PARTY_CANNOT_KICK_FROM_THE_ONE_PARTY, NULL);
             break;
         }
         CSWSCreature* pTarget = g_pAppManager->GetServerExoApp()->
@@ -2900,7 +2900,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                         CSWCCMessageData* pData = new CSWCCMessageData;
                         pData->SetObjectID(0, oidCreature);
                         pMember->SendFeedbackMessage(
-                            CSWSCreature::FEEDBACK_UNKNOWN_032, pData);
+                            CSWSCreature::FEEDBACK_PARTY_MEMBER_KICKED, pData);
                     }
                 }
                 CSWSCreature* pRemoved = g_pAppManager->GetServerExoApp()->
@@ -2908,7 +2908,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 if (pRemoved != NULL)
                 {
                     pRemoved->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_033, NULL);
+                        CSWSCreature::FEEDBACK_PARTY_KICKED_YOU, NULL);
                 }
             }
             if (pTarget->m_bNewAttackTarget)
@@ -2957,28 +2957,28 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_034, pData);
+                    CSWSCreature::FEEDBACK_PARTY_ALREADY_CONSIDERING, pData);
             }
             else if (pTarget->GetNumInvited() != 0)
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_035, pData);
+                    CSWSCreature::FEEDBACK_PARTY_ALREADY_INVOLVED, pData);
             }
             else if (pTarget->GetIsInInvitationsIgnored(pCreature->GetId()) == 1)
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_039, pData);
+                    CSWSCreature::FEEDBACK_PARTY_INVITATION_IGNORED, pData);
             }
             else if (!pTarget->GetFaction()->GetSingletonParty())
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_202, pData);
+                    CSWSCreature::FEEDBACK_PARTY_YOU_INVITED_NON_SINGLETON, pData);
             }
             else
             {
@@ -2991,11 +2991,11 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                     CSWCCMessageData* pData = new CSWCCMessageData;
                     pData->SetObjectID(0, pCreature->GetId());
                     pTarget->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_037, pData);
+                        CSWSCreature::FEEDBACK_PARTY_RECEIVED_INVITATION, pData);
                     pData = new CSWCCMessageData;
                     pData->SetObjectID(0, oidCreature);
                     pCreature->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_036, pData);
+                        CSWSCreature::FEEDBACK_PARTY_SENT_INVITATION, pData);
                     g_pAppManager->GetServerExoApp()->GetSWSMessage()->
                         SendServerToPlayerPopUpGUIPanel(
                             oidCreature, 1, 0, 0, 0,
@@ -3018,11 +3018,11 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
             CSWCCMessageData* pData = new CSWCCMessageData;
             pData->SetObjectID(0, pInviter->GetId());
             pCreature->SendFeedbackMessage(
-                CSWSCreature::FEEDBACK_UNKNOWN_040, pData);
+                CSWSCreature::FEEDBACK_PARTY_YOU_IGNORED_INVITATION, pData);
             pData = new CSWCCMessageData;
             pData->SetObjectID(0, pCreature->GetId());
             pInviter->SendFeedbackMessage(
-                CSWSCreature::FEEDBACK_UNKNOWN_039, pData);
+                CSWSCreature::FEEDBACK_PARTY_INVITATION_IGNORED, pData);
         }
         else
         {
@@ -3090,11 +3090,11 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, pInviter->GetId());
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_042, pData);
+                    CSWSCreature::FEEDBACK_PARTY_YOU_REJECTED_INVITATION, pData);
                 pData = new CSWCCMessageData;
                 pData->SetObjectID(0, pCreature->GetId());
                 pInviter->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_041, pData);
+                    CSWSCreature::FEEDBACK_PARTY_INVITATION_REJECTED, pData);
             }
             else
             {

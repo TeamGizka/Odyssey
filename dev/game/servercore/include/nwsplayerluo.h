@@ -188,7 +188,7 @@ public:
     short m_nBaseMaxHitPoints;
     short m_nTemporaryHitPoints;
     short m_nMaxHitPoints;
-    int m_bAIStateFlag0040;
+    int m_bFreeWill;
     int m_bPartyLeader;
     int m_bSingletonParty;
     int m_bInvitedToParty;
@@ -263,7 +263,7 @@ public:
     unsigned long m_oidArea;
     Vector m_vPosition;
     int m_nAreaWaitState;
-    int m_bAIStateFlag0040;
+    int m_bFreeWill;
     int m_bPartyLeader;
     int m_bSingletonParty;
     int m_bInvitedToParty;

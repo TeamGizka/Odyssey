@@ -200,7 +200,7 @@ CScriptLocation CSWSScriptVarTable::GetLocation(const CExoString& sName)
     return lLocation;
 }
 #ifndef _XBOX
-void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)  // PC 0x005A01F0 GOG 0x005A0260
+void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int bLoading)  // PC 0x005A01F0 GOG 0x005A0260
 {
     CSWSScriptVar* pVar = MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1);
     pVar->m_nValue = nValue;
@@ -214,22 +214,22 @@ void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag) 
                 if (sName[11] == 'E')
                 {
                     m_pCreature->GetJournal()->SetState(
-                        sName.SubString(16, 128), nValue, nFlag);
+                        sName.SubString(16, 128), nValue, bLoading);
                 }
                 else if (sName[11] == 'D')
                 {
                     m_pCreature->GetJournal()->SetDate(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'T')
                 {
                     m_pCreature->GetJournal()->SetTime(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'P')
                 {
                     m_pCreature->GetJournal()->SetPicture(
-                        sName.SubString(18, 128), nValue, nFlag);
+                        sName.SubString(18, 128), nValue, bLoading);
                 }
             }
         }
@@ -388,7 +388,7 @@ void CSWSScriptVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 
 #ifdef _XBOX
 
-void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)
+void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int bLoading)
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1)->m_nValue = nValue;
 
@@ -401,22 +401,22 @@ void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)
                 if (sName[11] == 'E')
                 {
                     m_pCreature->GetJournal()->SetState(
-                        sName.SubString(16, 128), nValue, nFlag);
+                        sName.SubString(16, 128), nValue, bLoading);
                 }
                 else if (sName[11] == 'D')
                 {
                     m_pCreature->GetJournal()->SetDate(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'T')
                 {
                     m_pCreature->GetJournal()->SetTime(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'P')
                 {
                     m_pCreature->GetJournal()->SetPicture(
-                        sName.SubString(18, 128), nValue, nFlag);
+                        sName.SubString(18, 128), nValue, bLoading);
                 }
             }
         }

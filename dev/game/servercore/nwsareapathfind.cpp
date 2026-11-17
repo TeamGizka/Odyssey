@@ -2566,18 +2566,18 @@ int CSWSArea::SmoothPointsOnPath()
     int nCount;
     float* pfSmoothed;
     {
-        int nA;
-        float* pfA;
-        SmoothSelection(nPoints, pfPoints, &nA, &pfA);
-        nCount = nA;
-        pfSmoothed = pfA;
+        int nResultCount;
+        float* pfResult;
+        SmoothSelection(nPoints, pfPoints, &nResultCount, &pfResult);
+        nCount = nResultCount;
+        pfSmoothed = pfResult;
     }
     {
-        int nB;
-        float* pfB;
-        SmoothCornerOptimize(nCount, pfSmoothed, &nB, &pfB);
-        m_pPathfindInformation->m_pWayPoints = pfB;
-        m_pPathfindInformation->m_nWayPointCount = nB;
+        int nResultCount;
+        float* pfResult;
+        SmoothCornerOptimize(nCount, pfSmoothed, &nResultCount, &pfResult);
+        m_pPathfindInformation->m_pWayPoints = pfResult;
+        m_pPathfindInformation->m_nWayPointCount = nResultCount;
     }
     delete[] pfSmoothed;
     return 1;

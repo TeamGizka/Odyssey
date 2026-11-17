@@ -54,7 +54,7 @@ public:
 
         STATE_FORCE_JUMP_TARGET = 13,
 
-        STATE_KNOCKDOWN = 14, STATE_VARIANT_16 = 16, STATE_VARIANT_18 = 18,
+        STATE_KNOCKDOWN = 14, STATE_DROID_CONFUSED = 16, STATE_VARIANT_18 = 18,
         STATE_VARIANT_15 = 15, STATE_VARIANT_17 = 17, STATE_VARIANT_19 = 19
     };
     enum VisualEffectSelector
@@ -478,7 +478,7 @@ public:
     int OnApplyBonusFeat(CSWSObject* pObject, CGameEffect* pEffect,
                          int bLoadingModule);
     int OnApplyInvisibility(CSWSObject* pObject, CGameEffect* pGameEffect,
-                            int nValue);
+                            int bLoadingModule);
     int OnRemoveInvisibility(CSWSObject* pObject, CGameEffect* pEffect);
     int OnApplySanctuary(CSWSObject* pObject, CGameEffect* pEffect,
                          int bLoadingModule);

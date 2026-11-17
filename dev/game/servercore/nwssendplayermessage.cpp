@@ -1826,7 +1826,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         if (g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(pCreature->GetId()) != NULL || bPlayerObject)
         {
             if (pCreature->AsSWSCreature()->m_nAreaWaitState != pLastUpdateObject->m_nAreaWaitState ||
-                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) == CSWSCreature::AI_STATE_FLAG_0040) != pLastUpdateObject->m_bAIStateFlag0040 ||
+                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) == CSWSCreature::AI_STATE_CAN_USE_MIND) != pLastUpdateObject->m_bFreeWill ||
                 pCreature->GetFaction()->GetSingletonParty() != pLastUpdateObject->m_bSingletonParty ||
                 pCreature->AsSWSCreature()->m_bInvitedToParty != pLastUpdateObject->m_bInvitedToParty ||
                 (pCreature->AsSWSCreature()->GetFaction()->GetLeader() == pCreature->GetId()) != pLastUpdateObject->m_bPartyLeader)
@@ -3970,8 +3970,8 @@ void CSWSMessage::TestPartyObjectUpdateDifferences(CSWSPlayer* pPlayer,
             }
 
             if (pCreature->AsSWSCreature()->m_nAreaWaitState != (*ppLastUpdateObject)->m_nAreaWaitState ||
-                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) ==
-                    CSWSCreature::AI_STATE_FLAG_0040) != (*ppLastUpdateObject)->m_bAIStateFlag0040 ||
+                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) ==
+                    CSWSCreature::AI_STATE_CAN_USE_MIND) != (*ppLastUpdateObject)->m_bFreeWill ||
                 (pCreature->AsSWSCreature()->GetFaction()->GetLeader() == pCreature->GetId() ? TRUE : FALSE) !=
                     (*ppLastUpdateObject)->m_bPartyLeader ||
                 pCreature->GetFaction()->GetSingletonParty() != (*ppLastUpdateObject)->m_bSingletonParty ||
@@ -4532,7 +4532,7 @@ int CSWSMessage::SendServerToPlayerInventory_DropCancel(unsigned long nPlayerId,
 int CSWSMessage::SendServerToPlayerInventory_Equip(unsigned long nPlayerId,
                                                    unsigned long oidObject,
                                                    unsigned long nInventorySlot,
-                                                   int bFlag)
+                                                   int bInstant)
 {
     int nResult;
     unsigned long nMessageSize;
@@ -4541,7 +4541,7 @@ int CSWSMessage::SendServerToPlayerInventory_Equip(unsigned long nPlayerId,
     CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
     WriteOBJECTIDServer(oidObject);
     WriteDWORD(nInventorySlot, 32);
-    WriteBOOL(bFlag);
+    WriteBOOL(bInstant);
     nResult = GetWriteMessage(&pMessage, &nMessageSize);
     if (nResult == 0)
     {
@@ -4666,17 +4666,17 @@ int CSWSMessage::SendServerToPlayerLogin_Fail(unsigned long nPlayerId,
 }
 // PC 0x0058C660 GOG 0x0058C6E0
 void CSWSMessage::WriteGameObjUpdate_WorkRemaining(CSWSObject* pObject,
-                                                   CSWSArea* pArea, int nValue,
+                                                   CSWSArea* pArea, int nStagesCompleted,
                                                    int nCompleteStage)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL && (pArea == NULL || pCreature->m_bWorkRemainingCompleteSent == 0) &&
-        (nValue != nCompleteStage || pCreature->m_bWorkRemainingCompleteSent == 0))
+        (nStagesCompleted != nCompleteStage || pCreature->m_bWorkRemainingCompleteSent == 0))
     {
         WriteBYTE(0x57, 8);
-        WriteBYTE(nValue, 8);
+        WriteBYTE(nStagesCompleted, 8);
         WriteBYTE(nCompleteStage, 8);
-        if (nValue == nCompleteStage)
+        if (nStagesCompleted == nCompleteStage)
         {
             pCreature->m_bWorkRemainingCompleteSent = 1;
         }
@@ -4735,9 +4735,9 @@ void CSWSMessage::StoreValuesInLastUpdatePartyObject(
     if (nUpdateMask & OBJECT_UPDATE_PARTY_STATE)
     {
         pLastUpdateObject->m_nAreaWaitState = pCreature->m_nAreaWaitState;
-        pLastUpdateObject->m_bAIStateFlag0040 =
-            (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) ==
-            CSWSCreature::AI_STATE_FLAG_0040;
+        pLastUpdateObject->m_bFreeWill =
+            (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) ==
+            CSWSCreature::AI_STATE_CAN_USE_MIND;
         pLastUpdateObject->m_bSingletonParty = pCreature->GetFaction()->GetSingletonParty();
         pLastUpdateObject->m_bPartyLeader =
             pCreature->GetFaction()->GetLeader() == pCreature->GetId();
@@ -7746,7 +7746,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
     if (nUpdateMask & OBJECT_UPDATE_PARTY_STATE)
     {
         WriteBOOL(pCreature->m_nAreaWaitState);
-        WriteBOOL((pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) == CSWSCreature::AI_STATE_FLAG_0040);
+        WriteBOOL((pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) == CSWSCreature::AI_STATE_CAN_USE_MIND);
         WriteBOOL(pCreature->GetFaction()->GetSingletonParty());
         WriteBOOL(pCreature->GetFaction()->GetLeader() == pObject->GetId());
         WriteBOOL(pCreature->m_bInvitedToParty);
@@ -7963,8 +7963,8 @@ void CSWSMessage::UpdateLastUpdateObject(
         if (nUpdateMask & OBJECT_UPDATE_PARTY_STATE)
         {
             pLastUpdateObject->m_nAreaWaitState = pCreature->m_nAreaWaitState;
-            pLastUpdateObject->m_bAIStateFlag0040 =
-                (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) == CSWSCreature::AI_STATE_FLAG_0040;
+            pLastUpdateObject->m_bFreeWill =
+                (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) == CSWSCreature::AI_STATE_CAN_USE_MIND;
             pLastUpdateObject->m_bSingletonParty = pCreature->GetFaction()->GetSingletonParty();
             pLastUpdateObject->m_bPartyLeader = pCreature->GetFaction()->GetLeader() == pCreature->GetId();
             pLastUpdateObject->m_bInvitedToParty = pCreature->m_bInvitedToParty;

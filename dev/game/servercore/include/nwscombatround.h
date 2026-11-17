@@ -520,7 +520,7 @@ public:
     void UpdateAttackTargetForAllActions(unsigned long oidTarget);
     int SaveCombatRound(CResGFF* pRes, CResStruct* pStruct);
     int LoadCombatRound(CResGFF* pRes, CResStruct* pStruct);
-    void EndCombatRound(int bArg);
+    void EndCombatRound(int bNotify);
     void IncrementTimer(int nAmount);
     void DecrementPauseTimer(int nAmount);
 

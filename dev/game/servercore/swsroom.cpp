@@ -60,11 +60,11 @@ int CSWSRoom::ClippedLineSegmentWalkable(const Vector& vStart,
 }
 // PC 0x0055B210 GOG 0x0055B430
 int CSWSRoom::NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd,
-                                   const float& fA, const float& fB,
-                                   const float& fC, CWalkHitInfo* pHitInfo)
+                                   const float& fMinHeight, const float& fMaxHeight,
+                                   const float& fRadius, CWalkHitInfo* pHitInfo)
 {
     CSWCollisionMesh* pMesh = m_pWalkMesh;
-    return pMesh->NoNonWalkPolys(vStart, vEnd, fA, fB, fC, pHitInfo);
+    return pMesh->NoNonWalkPolys(vStart, vEnd, fMinHeight, fMaxHeight, fRadius, pHitInfo);
 }
 // PC 0x0055B240 GOG 0x0055B460
 void CSWSRoom::TransformToWorld()

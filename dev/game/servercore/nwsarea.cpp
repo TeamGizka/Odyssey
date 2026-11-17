@@ -3180,7 +3180,7 @@ int CSWSArea::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
 int CSWSArea::NoNonWalkPolysDetailed(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
-    int bFlag, CExoArrayList<CGameObject*>* pExcludeList,
+    int bWalking, CExoArrayList<CGameObject*>* pExcludeList,
     int bCheckTransparentDoors, CWalkHitInfo* pWalkHitInfo, int bCheckDoors)
 {
     int bClear = 1;
@@ -3237,7 +3237,7 @@ int CSWSArea::NoNonWalkPolysDetailed(
                 continue;
             if (!GetIsIDInExcludeList(m_pBoundingBoxIds[i], pExcludeList) &&
                 !NoNoneWalkPolysInStaticObject(m_pBoundingBoxIds[i], vStart, vEnd,
-                    fMinHeight, fMaxHeight, fRadius, oidObject, bFlag, pWalkHitInfo))
+                    fMinHeight, fMaxHeight, fRadius, oidObject, bWalking, pWalkHitInfo))
             {
                 oidHitObject = m_pBoundingBoxIds[i];
                 if (pWalkHitInfo != NULL)
@@ -3245,7 +3245,7 @@ int CSWSArea::NoNonWalkPolysDetailed(
                 if (bCheckTransparentDoors == 1)
                 {
                     bClear &= HandleTransparentDoors(vStart, vEnd, fMinHeight,
-                        fMaxHeight, fRadius, oidObject, oidHitObject, bFlag,
+                        fMaxHeight, fRadius, oidObject, oidHitObject, bWalking,
                         pExcludeList, 1);
                 }
                 else
@@ -3521,7 +3521,7 @@ int CSWSArea::GetPlayerCanSetMines()
 int CSWSArea::HandleTransparentDoors(
     const Vector& vStart, const Vector& vEnd, float fDistance, float fWidth,
     float fHeight, unsigned long oidObject, unsigned long& oidHitObject,
-    int bFlag, CExoArrayList<CGameObject*>* pExcludeList, int bCheckObjects)
+    int bWalking, CExoArrayList<CGameObject*>* pExcludeList, int bCheckObjects)
 {
     if (oidHitObject != OBJECT_INVALID)
     {
@@ -3553,7 +3553,7 @@ int CSWSArea::HandleTransparentDoors(
                 pExcludeList->Add(pDoor->AsSWSObject());
                 return NoNonWalkPolysDetailed(
                     vStart, vEnd, fDistance, fWidth, fHeight, oidObject, oidHitObject,
-                    bFlag, pExcludeList, 0, NULL, 0);
+                    bWalking, pExcludeList, 0, NULL, 0);
             }
         }
     }
@@ -3695,7 +3695,7 @@ void CSWSArea::ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
 int CSWSArea::NoNonWalkPolysInDoors(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
-    CExoArrayList<CGameObject*>* pExcludeList, int bFlag,
+    CExoArrayList<CGameObject*>* pExcludeList, int bWalking,
     int bCheckTransparentDoors)
 {
     if (m_nBoundingBoxCount > 0)
@@ -3745,7 +3745,7 @@ int CSWSArea::NoNonWalkPolysInDoors(
             if (pObject != NULL && pObject->AsSWSDoor() != NULL &&
                 !GetIsIDInExcludeList(oidDoor, pExcludeList) &&
                 !NoNoneWalkPolysInStaticObject(m_pBoundingBoxIds[i], vStart,
-                    vEnd, fMinHeight, fMaxHeight, fRadius, oidObject, bFlag, NULL))
+                    vEnd, fMinHeight, fMaxHeight, fRadius, oidObject, bWalking, NULL))
             {
                 oidHitObject = m_pBoundingBoxIds[i];
                 if (bCheckTransparentDoors == 1)
@@ -3759,7 +3759,7 @@ int CSWSArea::NoNonWalkPolysInDoors(
                     }
                     int bClear = HandleTransparentDoors(vStart, vEnd,
                         fMinHeight, fMaxHeight, fRadius, oidObject, oidHitObject,
-                        bFlag, pExcludeList, 1);
+                        bWalking, pExcludeList, 1);
                     if (pExcludeList != NULL && bAllocatedExcludeList)
                         delete pExcludeList;
                     return bClear;

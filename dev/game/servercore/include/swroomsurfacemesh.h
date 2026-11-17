@@ -90,9 +90,9 @@ public:
     void ComputeTriangleAdjacency();
     void ComputeRoomBorder();
     int GetAdjacentRoom(int nEdge);
-    void GetTriangleAdjacency(int nUnused, int nTriangle, int* pnFirst,
+    void GetTriangleAdjacency(int nLevel, int nTriangle, int* pnFirst,
                               int* pnSecond, int* pnThird);
-    void GetTriangleVertices(int nUnused, int nTriangle, int* pnFirst,
+    void GetTriangleVertices(int nLevel, int nTriangle, int* pnFirst,
                              int* pnSecond, int* pnThird);
     int CheckAABBNode(int nNode, const Vector& vMinimum, Vector& vMaximum,
                       CSWRoomSurfaceMeshHitInfo& hitInfo);

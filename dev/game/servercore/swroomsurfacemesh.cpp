@@ -181,7 +181,7 @@ float CSWRoomSurfaceMesh::ComputeHeight(int nFace, Vector vPosition)
                               vPoint);
 }
 // PC 0x00575020 GOG 0x00575090
-void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nUnused, int nTriangle,
+void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nLevel, int nTriangle,
                                               int* pnFirst, int* pnSecond,
                                               int* pnThird)
 {
@@ -200,7 +200,7 @@ void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nUnused, int nTriangle,
     }
 }
 // PC 0x005750C0 GOG 0x00575130
-void CSWRoomSurfaceMesh::GetTriangleVertices(int nUnused, int nTriangle,
+void CSWRoomSurfaceMesh::GetTriangleVertices(int nLevel, int nTriangle,
                                              int* pnFirst, int* pnSecond,
                                              int* pnThird)
 {
