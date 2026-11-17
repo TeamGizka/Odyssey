@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "aurdraw.h"
+#include "mdlnodeinl.h"
 
 #define AURMODEL_DEBUG 0
 
@@ -108,7 +109,6 @@ MaxFace::MaxFace()
     m_nSurfaceType = 0;
 }
 const int TileData::FADE_NOT_CHECKED = 4;
-#include "mdlnodeinl.h"
 
 // PC 0x0044FD60 GOG 0x0044FEA0
 MaxFace_PostProcess::MaxFace_PostProcess()

@@ -12,6 +12,7 @@
 #include "swmain.h"
 #include "aurscene.h"
 #include "aurscenemanager.h"
+#include "aurpathinfoinl.h"
 
 float g_fGlobalAlpha = 1.0f;
 unsigned int g_rgbaPauseOverlayColor = 0x7f000000u;
@@ -79,7 +80,6 @@ int AurMakeCurrent()
     return AurTextureMakeCurrent();
 }
 
-#include "aurpathinfoinl.h"
 // PC 0x00462EC0 GOG 0x00462FD0
 CAurPathInfo::CAurPathInfo()
 {

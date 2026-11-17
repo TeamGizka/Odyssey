@@ -30,6 +30,7 @@
 #include "nwrules.h"
 #include "twodimarrays.h"
 #include "twodimarray.h"
+#include "nwsdialoginl.h"
 
 bool g_bVODebugEnabled;
 char sOut[255] = "                                                  ";
@@ -68,7 +69,6 @@ inline CSWSDialogReply::CSWSDialogReply()
     m_pEntries = NULL;
     m_nReplyIndex = -1;
 }
-#include "nwsdialoginl.h"
 // PC 0x005E56D0 GOG 0x005E5700
 inline CSWSDialogBase::CSWSDialogBase()
     : m_nWaitFlags(0),

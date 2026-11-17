@@ -6,6 +6,7 @@
 #include "nwsobject.h"
 #include "gameobjectarray.h"
 #include "nwsplayerluo.h"
+#include "swactionnodeinl.h"
 // PC 0x006151B0 GOG 0x00615190
 void CSWSPlayerLUOInventory::ClearSlots()
 {
@@ -44,7 +45,6 @@ void CSWSPlayerLastUpdateObject::SetKnownSpellUsesLeft(unsigned char nClass,
     }
 }
 
-#include "swactionnodeinl.h"
 // PC 0x00615250 GOG 0x00615230
 void CSWSPlayerLastUpdateObject::ClearActionQueue()
 {

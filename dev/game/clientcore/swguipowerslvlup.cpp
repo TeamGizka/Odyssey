@@ -10,6 +10,7 @@
 #include "swguileveluppanel.h"
 #include "swguipowerslvlup.h"
 #include "nwccreature.h"
+#include "swguiskillflowchartinl.h"
 // PC 0x00763590 GOG 0x007633B0
 CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
                                          unsigned long nCreature)
@@ -680,7 +681,6 @@ void CSWGuiPowersLevelUp::OnPowerPicked(unsigned long nPower)
     pMessageBox->SetMessage(nMessage);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-#include "swguiskillflowchartinl.h"
 
 #ifndef _XBOX
 void CSWGuiPowersLevelUp::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x00763520 GOG 0x00763340

@@ -82,6 +82,7 @@
 #define OPTIONS_SIGNATURE_SIZE 20
 #include "swguistartscreen.h"
 #include "exoinputinternal.h"
+#include "clientexoappinternalinl.h"
 
 #define RESTYPE_XMV 13
 enum
@@ -8640,7 +8641,6 @@ inline void CSWGuiManager::SetGuiScale(float fScale)
 
 #include "guiingameinl.h"
 
-#include "clientexoappinternalinl.h"
 #ifndef _XBOX
 int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
 {

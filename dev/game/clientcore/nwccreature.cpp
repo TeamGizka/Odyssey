@@ -69,23 +69,22 @@
 #include "swbehaviorcamera.h"
 #include "nwctrigger.h"
 #include "swguicontrol.h"
+#include "swmain.h"
+#include "resgff.h"
+#include "nwsdoor.h"
+#include "nwcdoor.h"
+#include "nwscombatround.h"
 
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-#include "swmain.h"
-#include "resgff.h"
-#include "nwsdoor.h"
 
 #define NWC_CREATURE_SIGHT_HEIGHT 1.5f
 #define SWCCREATURE_LIPSYNC_END_TIME_MIN 0.99999f
 #define SWCCREATURE_LIPSYNC_END_TIME_MAX 1.00001f
 #define LIP_VISEME_ANIMATION_SCALE 0.0625f
 
-#include "../../libsource/AURORA/aurpointer.h"
-#include "nwcdoor.h"
-#include "nwscombatround.h"
 
 #define NWCCREATURE_DEBUG 0
 

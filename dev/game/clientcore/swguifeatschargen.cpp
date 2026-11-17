@@ -7,6 +7,7 @@
 #include "swguiabilitieschargen.h"
 #include "swguifeatschargen.h"
 #include "nwccreature.h"
+#include "swguiskillflowchartinl.h"
 
 #define SWGUIFEATSCHARGEN_DEBUG 0
 
@@ -594,7 +595,6 @@ void CSWGuiFeatsCharGen::OnFeatPicked(unsigned short nFeat)
     pMessageBox->SetMessage(nStrRef);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-#include "swguiskillflowchartinl.h"
 
 #ifndef _XBOX
 void CSWGuiFeatsCharGen::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x00765190 GOG 0x00764FB0

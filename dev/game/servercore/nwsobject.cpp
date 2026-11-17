@@ -13,12 +13,16 @@
 #include "math3d.h"
 #include "nwseffect.h"
 #include "twodimarray.h"
+#include "twodimarrays.h"
+#include "nwfeat.h"
+#include "exotlktable.h"
+#include "nwitem.h"
+#include "nwscript.h"
 // PC 0x004F4460 GOG 0x00503C50
 CSWSpell* CSWRules::GetSpell(int nSpell)
 {
     return m_pSpellArray->GetSpell(nSpell);
 }
-#include "twodimarrays.h"
 
 #include "pathfindinfo.h"
 #include "serverexoapp.h"
@@ -27,7 +31,6 @@ CSWSpell* CSWRules::GetSpell(int nSpell)
 #include "guiingame.h"
 #include "nwcmodule.h"
 #include "nwcobject.h"
-#include "nwfeat.h"
 #include "nwmessage.h"
 #include "nwsarea.h"
 #include "nwscreaturestats.h"
@@ -38,9 +41,6 @@ CSWSpell* CSWRules::GetSpell(int nSpell)
 #include "nwsplayerluo.h"
 #include "nwsspellimpact.h"
 #include "serveraimaster.h"
-#include "exotlktable.h"
-#include "nwitem.h"
-#include "nwscript.h"
 #include "swparty.h"
 #include "clientexoappinternal.h"
 #include "nwclass.h"

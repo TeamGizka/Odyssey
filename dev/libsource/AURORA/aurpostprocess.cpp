@@ -17,10 +17,8 @@
 #include <new>
 #include "mdlnodeinl.h"
 #include <limits>
-#include "aurcamera.h"
 #include "aurgui.h"
 #include "aurtexcontrol.h"
-#include "aurconsole.h"
 #include "aurprimitiveinl.h"
 
 
