@@ -127,6 +127,19 @@ int CNetLayer::StartConnectToSession(unsigned long nPlayerId,
     delete[] pMessage;
     return 1;
 }
+
+int CNetLayer::EndConnectToSession()
+{
+    if (m_bConnecting == 0)
+    {
+        return 0;
+    }
+    m_bConnecting = 0;
+    m_bConnected = 0;
+    m_nConnectState = 0;
+    m_nReserved = 0;
+    return 1;
+}
 // PC 0x006212A0 GOG 0x00621270
 int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
 {
@@ -136,6 +149,19 @@ int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
         UpdateStatus();
     }
     return 1;
+}
+
+int CNetLayer::ConnectToSessionLoop()
+{
+    if (m_bConnecting == 0)
+    {
+        return 0;
+    }
+    if (m_bConnected == 1)
+    {
+        return m_nConnectState;
+    }
+    return CONNECTION_PENDING;
 }
 // PC 0x00620D90 GOG 0x00620D60
 int CNetLayer::UpdateStatus()
@@ -352,6 +378,11 @@ int CNetLayer::ShutDown()
     }
     m_bInitialized = 0;
     return 1;
+}
+
+void CNetLayer::SetDestNetLayer(CNetLayer* pNetLayer)
+{
+    m_pPeer = pNetLayer;
 }
 // PC 0x00621420 GOG 0x006213F0
 void CNetLayer::ProcessReceivedFrames(int bProcess)

@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
+inline void ByteSwap(unsigned long* pValue)
+{
+}
+
+inline void ByteSwap(unsigned __int64* pValue)
+{
+}
+
 char* CResGFF::VERSION = "V3.2";
 
 const int CResGFF::STRUCT_STARTSIZE = 110;
@@ -312,6 +320,30 @@ void CResGFF::ReleaseResource()
     m_nListIndicesAlloc = 0;
     m_nListIndicesLost = 0;
 }
+
+unsigned long CResGFF::ByteSwap(unsigned long nValue)
+{
+    ::ByteSwap(&nValue);
+    return nValue;
+}
+
+unsigned __int64 CResGFF::ByteSwap64(unsigned __int64 nValue)
+{
+    ::ByteSwap(&nValue);
+    return nValue;
+}
+
+unsigned long CResGFF::GetFieldCount(CResGFFStruct* pStruct)
+{
+    if (pStruct == NULL)
+    {
+        return 0xFFFFFFFF;
+    }
+
+    unsigned long nCount = pStruct->m_nFieldCount;
+    ::ByteSwap(&nCount);
+    return nCount;
+}
 // PC 0x00411AA0 GOG 0x00411A50
 inline CResGFFField* CResGFF::GetField(CResGFFStruct* pStruct, unsigned long nIndex)
 {
@@ -395,6 +427,20 @@ CResGFFField* CResGFF::GetField(CResStruct* pStructure, unsigned long nIndex)
     }
     return NULL;
 }
+
+char* CResGFF::GetLabel(CResStruct* pStructure, unsigned long nIndex)
+{
+    CResGFFField* pField = GetField(pStructure, nIndex);
+    if (pField == NULL || m_pLabels == NULL)
+    {
+        return NULL;
+    }
+    if (pField->m_nLabelIndex >= m_pHeader->m_nLabelCount)
+    {
+        return NULL;
+    }
+    return (char*)m_pLabels[pField->m_nLabelIndex].m_anName;
+}
 // PC 0x00411B90 GOG 0x00411B40
 unsigned char* CResGFF::GetDataField(CResGFFField* pField,
                                      unsigned long& nSize)
@@ -414,6 +460,27 @@ unsigned char* CResGFF::GetDataField(CResGFFField* pField,
     {
         nSize = nCount - nOffset;
         return m_pFieldData + pField->m_nDataOrDataOffset;
+    }
+    return NULL;
+}
+
+void* CResGFF::GetDataLayoutField(CResGFFField* pField, unsigned long& nSize)
+{
+    if (pField == NULL)
+    {
+        return NULL;
+    }
+    if (m_pFieldIndices == NULL)
+    {
+        return NULL;
+    }
+
+    unsigned long nOffset = pField->m_nDataOrDataOffset;
+    unsigned long nCount = m_pHeader->m_nFieldIndicesCount;
+    if (nOffset < nCount)
+    {
+        nSize = nCount - nOffset;
+        return m_pFieldIndices + pField->m_nDataOrDataOffset;
     }
     return NULL;
 }
@@ -438,6 +505,23 @@ unsigned char* CResGFF::GetDataLayoutList(CResGFFField* pField,
         return m_pListIndices + pField->m_nDataOrDataOffset;
     }
     return NULL;
+}
+
+int CResGFF::IsDataInPlace(unsigned long nType)
+{
+    switch (nType)
+    {
+    case 6:
+    case 7:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 15:
+        return 0;
+    }
+    return 1;
 }
 // PC 0x00411C10 GOG 0x00411BC0
 int CResGFF::InitializeForWriting()
@@ -775,6 +859,15 @@ int CResGFF::GetFileData(char* szFileName)
     InitializeForWriting();
     delete[] pData;
     return 1;
+}
+
+void CResGFF::GetGFFFileInfo(CExoString* psFileType, CExoString* psFileVersion)
+{
+    if (psFileVersion != NULL && psFileType != NULL && m_pHeader != NULL)
+    {
+        psFileType->Format("%.4s", &m_pHeader->m_nFileType);
+        psFileVersion->Format("%.4s", &m_pHeader->m_nVersion);
+    }
 }
 // PC 0x00412320 GOG 0x004122D0
 int CResGFF::GetElementType(CResStruct* pStructure)
@@ -1130,6 +1223,31 @@ int CResGFF::GetFieldType(CResStruct* pStructure, char* szLabel,
         return -1;
     }
     return pField->m_nType;
+}
+
+char* CResGFF::GetFieldLabel(CResStruct* pStructure, unsigned long nIndex)
+{
+    CResGFFField* pField = GetField(pStructure, nIndex);
+    if (pField == NULL || m_pLabels == NULL)
+    {
+        return NULL;
+    }
+    if (pField->m_nLabelIndex >= m_pHeader->m_nLabelCount)
+    {
+        return NULL;
+    }
+    return (char*)m_pLabels[pField->m_nLabelIndex].m_anName;
+}
+
+char* CResGFF::GetFieldStringID(CResStruct* pStructure, unsigned long nIndex)
+{
+    char* szLabel = GetFieldLabel(pStructure, nIndex);
+    if (szLabel == NULL)
+    {
+        return NULL;
+    }
+    memcpy(m_aUnmapped7C, szLabel, 16);
+    return (char*)m_aUnmapped7C;
 }
 
 unsigned long CResGFF::GetFieldSize(CResStruct* pStructure, char* szLabel,
@@ -1502,6 +1620,76 @@ unsigned __int64 CResGFF::ReadFieldDWORD64(CResStruct* pStructure,
     {
         bSuccess = 0;
         return nDefault;
+    }
+}
+
+__int64 CResGFF::ReadFieldINT64(CResStruct* pStructure, char* szLabel,
+                                int& bSuccess, __int64 nDefault)
+{
+    if (pStructure != NULL && szLabel != NULL)
+    {
+        unsigned long nField = GetFieldByLabel(pStructure, szLabel);
+        CResGFFField* pField = GetField(pStructure, nField);
+        if (pField != NULL && pField->m_nType == 7)
+        {
+            unsigned long nSize;
+            __int64* pData = (__int64*)GetDataField(pField, nSize);
+            if (pData != NULL && nSize >= 8)
+            {
+                bSuccess = 1;
+                return *pData;
+            }
+            else
+            {
+                bSuccess = 0;
+                return nDefault;
+            }
+        }
+        else
+        {
+            bSuccess = 0;
+            return nDefault;
+        }
+    }
+    else
+    {
+        bSuccess = 0;
+        return nDefault;
+    }
+}
+
+double CResGFF::ReadFieldDOUBLE(CResStruct* pStructure, char* szLabel,
+                                int& bSuccess, double fDefault)
+{
+    if (pStructure != NULL && szLabel != NULL)
+    {
+        unsigned long nField = GetFieldByLabel(pStructure, szLabel);
+        CResGFFField* pField = GetField(pStructure, nField);
+        if (pField != NULL && pField->m_nType == 9)
+        {
+            unsigned long nSize;
+            double* pData = (double*)GetDataField(pField, nSize);
+            if (pData != NULL && nSize >= 8)
+            {
+                bSuccess = 1;
+                return *pData;
+            }
+            else
+            {
+                bSuccess = 0;
+                return fDefault;
+            }
+        }
+        else
+        {
+            bSuccess = 0;
+            return fDefault;
+        }
+    }
+    else
+    {
+        bSuccess = 0;
+        return fDefault;
     }
 }
 // PC 0x00412F80 GOG 0x00412F30
@@ -2026,6 +2214,36 @@ BOOL CResGFF::WriteFieldDWORD64(CResStruct* pStructure, unsigned __int64 nValue,
     *pData = nValue;
     return 1;
 }
+
+BOOL CResGFF::WriteFieldINT64(CResStruct* pStructure, __int64 nValue,
+                              char* szLabel)
+{
+    if (pStructure == NULL || szLabel == NULL)
+    {
+        return 0;
+    }
+
+    if (m_bInResource)
+    {
+        InitializeForWriting();
+    }
+
+    CResGFFField* pField = AddField(pStructure, szLabel, 7);
+    if (pField == NULL)
+    {
+        return 0;
+    }
+
+    __int64* pData = (__int64*)AddDataField(0xFFFFFFFF, 0, 8);
+    if (pData == NULL)
+    {
+        return 0;
+    }
+
+    pField->m_nDataOrDataOffset = (unsigned char*)pData - m_pFieldData;
+    *pData = nValue;
+    return 1;
+}
 // PC 0x004139E0 GOG 0x00413990
 BOOL CResGFF::WriteFieldFLOAT(CResStruct* pStructure, float fValue,
                               char* szLabel)
@@ -2047,6 +2265,36 @@ BOOL CResGFF::WriteFieldFLOAT(CResStruct* pStructure, float fValue,
         return 1;
     }
     return 0;
+}
+
+BOOL CResGFF::WriteFieldDOUBLE(CResStruct* pStructure, double fValue,
+                               char* szLabel)
+{
+    if (pStructure == NULL || szLabel == NULL)
+    {
+        return 0;
+    }
+
+    if (m_bInResource)
+    {
+        InitializeForWriting();
+    }
+
+    CResGFFField* pField = AddField(pStructure, szLabel, 9);
+    if (pField == NULL)
+    {
+        return 0;
+    }
+
+    double* pData = (double*)AddDataField(0xFFFFFFFF, 0, 8);
+    if (pData == NULL)
+    {
+        return 0;
+    }
+
+    pField->m_nDataOrDataOffset = (unsigned char*)pData - m_pFieldData;
+    *pData = fValue;
+    return 1;
 }
 // PC 0x00413A30 GOG 0x004139E0
 BOOL CResGFF::WriteFieldCResRef(CResStruct* pStructure, const CResRef& cValue,

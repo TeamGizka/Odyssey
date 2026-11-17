@@ -212,7 +212,7 @@ public:
     void* GetDataLayoutField(CResGFFField* pField, unsigned long& nSize);
     unsigned long GetFieldCount(CResGFFStruct* pStruct);
     char* GetFieldLabel(CResStruct* pStructure, unsigned long nIndex);
-    unsigned long GetFieldStringID(CResStruct* pStructure, unsigned long nIndex);
+    char* GetFieldStringID(CResStruct* pStructure, unsigned long nIndex);
     void GetGFFFileInfo(CExoString* psFileType, CExoString* psFileVersion);
     char* GetLabel(CResStruct* pStructure, unsigned long nIndex);
     int IsDataInPlace(unsigned long nType);

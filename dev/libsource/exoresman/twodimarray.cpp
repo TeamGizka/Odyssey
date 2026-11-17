@@ -374,6 +374,17 @@ int C2DA::SetINTEntry(int nRow, const CExoString& sColumn, int nValue)
     m_ppEntries[nRow][nColumn] = szValue;
     return 1;
 }
+
+int C2DA::SetBlankEntry(int nRow, int nColumn)
+{
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = "";
+    return 1;
+}
 // PC 0x0041D7B0 GOG 0x0041D7A0
 unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 {

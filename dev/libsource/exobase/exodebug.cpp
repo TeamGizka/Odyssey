@@ -29,6 +29,21 @@ void CExoDebug::FlushScriptLogFile()
         m_pInternal->FlushScriptLogFile();
     }
 }
+
+unsigned long CExoDebug::GetMaxAllocatedMemory()
+{
+    return 0;
+}
+
+unsigned long CExoDebug::GetTotalMemoryAllocations()
+{
+    return 0;
+}
+
+unsigned long CExoDebug::GetCurrentMemoryAllocations()
+{
+    return 0;
+}
 // PC 0x00635760 GOG 0x00635650
 void CExoDebug::OpenLogFiles(const CExoString& path)
 {
@@ -44,6 +59,14 @@ void CExoDebug::Warning(int line, char* file, const char* message)
     {
         m_pInternal->Warning(line, file, message);
     }
+}
+
+void CExoDebug::WriteToErrorFile(const CExoString& text)
+{
+}
+
+void CExoDebug::WriteToLogFile(const CExoString& text)
+{
 }
 
 void CExoDebug::Assert(int line, char* file, const char* message)
