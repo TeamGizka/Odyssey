@@ -46,6 +46,8 @@ public:
         m_pCurrent = NULL;
     }
 
+    ~CSWSExpressionList();
+
     void DeleteAlternate(CSWSExpressionNode* pNode);
     int AddNode(CSWSExpressionNode* pNode);
     void AddNodeToHead(CSWSExpressionNode* pNode);

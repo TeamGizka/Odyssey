@@ -351,6 +351,12 @@ int CSWCCreatureAppearance::CreateTailAppearance(CCAppearanceInfo* pAppearance)
 
     return 1;
 }
+
+// Dead code: not in the PC executable
+int CSWCCreatureAppearance::CreateTail(unsigned char nType, CCAppearanceInfo* pAppearance)
+{
+    return 1;
+}
 // PC 0x006F1D90 GOG 0x006F1980
 int CSWCCreatureAppearance::CreateWingAppearance(CCAppearanceInfo* pAppearance)
 {
@@ -369,6 +375,12 @@ int CSWCCreatureAppearance::CreateWingAppearance(CCAppearanceInfo* pAppearance)
         m_pCreature->UnloadModel(252);
     }
 
+    return 1;
+}
+
+// Dead code: not in the PC executable
+int CSWCCreatureAppearance::CreateWing(unsigned char nType, CCAppearanceInfo* pAppearance)
+{
     return 1;
 }
 // PC 0x006F1E50 GOG 0x006F1A40

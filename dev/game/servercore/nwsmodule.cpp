@@ -2831,6 +2831,38 @@ CExoString CSWSModule::GetModuleResourceName()
     return sResourceName;
 }
 
+// Dead code: not in the PC executable
+CSWDomain::CSWDomain()
+{
+    m_nNameStrRef = 0xFFFFFFFF;
+    m_nDescriptionStrRef = 0xFFFFFFFF;
+    m_nSpell = 0xFFFFFFFF;
+    m_nGrantedFeat = 0xFFFF;
+    m_bValid = 1;
+    m_bCastableFeat = 0;
+}
+
+// Dead code: not in the PC executable
+CSWDomain::~CSWDomain()
+{
+}
+
+// Dead code: not in the PC executable
+CExoString CSWDomain::GetDescriptionText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nDescriptionStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+
+// Dead code: not in the PC executable
+CExoString CSWDomain::GetNameText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nNameStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+
 #ifdef _XBOX
 
 void CSWSModule::TestPathPoints(char* szArgs)

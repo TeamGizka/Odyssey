@@ -43,6 +43,8 @@ public:
     void ClearRepository();
     void ClearContainer();
     void ClearStore();
+    CSWSItem* ItemListGetItem(CExoLinkedListNode* pNode, unsigned char nList);
+    unsigned long ItemListGetItemObjectID(CExoLinkedListNode* pNode, unsigned char nList);
     CSWSPlayerLUOInventoryItem* ItemListGetUpdateItem(CExoLinkedListNode* pNode,
                                                       unsigned char nList);
     void ItemListSetStart(CExoLinkedListNode*& pNode, unsigned char nList);

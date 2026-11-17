@@ -108,6 +108,15 @@ int CSWSpell::GetSubRadialSpell(unsigned char nIndex)
     }
     return m_pSubRadialSpells[nIndex];
 }
+
+// Dead code: not in the PC executable
+void CSWSpell::SetSubRadialSpell(unsigned char nIndex, unsigned long nSpell)
+{
+    if (nIndex < m_nSubRadialSpellCount)
+    {
+        m_pSubRadialSpells[nIndex] = nSpell;
+    }
+}
 // PC 0x005FF150 GOG 0x005FF130
 CSWSpellArray::CSWSpellArray()
 {
@@ -556,6 +565,17 @@ void CSWSpell::SetMasterSpells(const CExoString& sSpells)
             m_aMasterSpells[i] = nValue;
         }
     }
+}
+
+// Dead code: not in the PC executable
+CSWSpell CSWSpellArray::operator[](int nIndex) const
+{
+    if (nIndex >= 0 && m_pSpells != NULL && nIndex < m_nNumSpells)
+    {
+        return m_pSpells[nIndex];
+    }
+    CSWSpell cSpell;
+    return cSpell;
 }
 // PC 0x005E2310 GOG 0x005E2340
 int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust, int nRoomForceRating,

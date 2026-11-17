@@ -3,6 +3,11 @@
 
 #define NWSEXPRESSION_DEBUG 0
 
+// Dead code: not in the PC executable
+CSWSExpressionList::~CSWSExpressionList()
+{
+}
+
 // PC 0x005E45F0 GOG 0x005E4620
 void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
 {

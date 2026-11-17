@@ -78,6 +78,18 @@ void CSWSPlayerInventoryGUI::SetOpen(int bOpen)
     }
     m_bOpen = bOpen;
 }
+
+// Dead code: not in the PC executable
+void CSWSPlayerContainerGUI::SetOpen(CSWSPlayer* pPlayer, unsigned long oidContainer,
+                                     int bOpen)
+{
+    if (m_oidContainer != oidContainer)
+    {
+        pPlayer->m_pInventoryGUI->m_pLastUpdateObject->ClearContainer();
+    }
+    m_oidContainer = oidContainer;
+    m_n04 = bOpen;
+}
 // PC 0x0059D780 GOG 0x0059D7F0
 int CSWSPlayer::GetIsAllowedToSave()
 {

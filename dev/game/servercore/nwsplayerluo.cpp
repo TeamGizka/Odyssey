@@ -1,6 +1,8 @@
 #include <string.h>
 #include "exobase.h"
 #include "exoresman.h"
+#include "appmanager.h"
+#include "serverexoapp.h"
 #include "nwsobject.h"
 #include "gameobjectarray.h"
 #include "nwsplayerluo.h"
@@ -66,6 +68,64 @@ void CSWSPlayerLUOInventory::ClearContainer()
     {
         delete m_lstContainer.RemoveHead();
     }
+}
+
+// Dead code: not in the PC executable
+CSWSItem* CSWSPlayerLUOInventory::ItemListGetItem(CExoLinkedListNode* pNode,
+                                                  unsigned char nList)
+{
+    CSWSPlayerLUOInventoryItem* pItem = NULL;
+    CGameObject* pObject;
+
+    if (nList == 0)
+    {
+        pItem = m_lstContainer.GetAtPos(pNode);
+    }
+    else if (nList == 1)
+    {
+        pItem = m_lstRepository.GetAtPos(pNode);
+    }
+    else if (nList == 2)
+    {
+        pItem = m_lstOverflow.GetAtPos(pNode);
+    }
+
+    if (pItem != NULL)
+    {
+        if (g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(
+                pItem->m_oidItem, &pObject) == CGameObjectArray::SUCCESS &&
+            pObject != NULL)
+        {
+            return pObject->AsSWSItem();
+        }
+    }
+    return NULL;
+}
+
+// Dead code: not in the PC executable
+unsigned long CSWSPlayerLUOInventory::ItemListGetItemObjectID(
+    CExoLinkedListNode* pNode, unsigned char nList)
+{
+    CSWSPlayerLUOInventoryItem* pItem = NULL;
+
+    if (nList == 0)
+    {
+        pItem = m_lstContainer.GetAtPos(pNode);
+    }
+    else if (nList == 1)
+    {
+        pItem = m_lstRepository.GetAtPos(pNode);
+    }
+    else if (nList == 2)
+    {
+        pItem = m_lstOverflow.GetAtPos(pNode);
+    }
+
+    if (pItem != NULL)
+    {
+        return pItem->m_oidItem;
+    }
+    return CGameObjectArray::INVALIDOBJID;
 }
 // PC 0x00615660 GOG 0x00615640
 CSWSPlayerLUOInventoryItem* CSWSPlayerLUOInventory::ItemListGetUpdateItem(

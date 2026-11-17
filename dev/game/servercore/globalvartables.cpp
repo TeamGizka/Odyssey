@@ -176,6 +176,14 @@ int CSWGlobalVariableTable::FindIdentifierIndex(const CExoString& sIdentifier)
 
     return nIdentifier;
 }
+
+// Dead code: not in the PC executable
+int CSWGlobalVariableTable::GetBit(unsigned char* pValues, int nIndex)
+{
+    int nByte = nIndex / 8;
+    int nBit = nIndex - 8 * nByte;
+    return (pValues[nByte] >> (7 - nBit)) & 1;
+}
 // PC 0x005AA9B0 GOG 0x005AAA20
 void CSWGlobalVariableTable::SetBit(unsigned char* pValues, int nIndex,
                                     int bValue)

@@ -261,6 +261,7 @@ public:
     void UnequipHItemForDialog(unsigned long oidObject);
     float SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
                          unsigned long nDelay, int bSound, unsigned long nFlag);
+    void SetDialogWaitFlags(CSWSObject* pObject, unsigned long nWaitFlags);
 
     int m_nEntries;
     CSWSDialogEntry* m_pEntries;

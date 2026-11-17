@@ -389,10 +389,12 @@ public:
                          int bForceUpdate);
 
     void GetDefaultActions();
+    int GetDebugMode();
     int SetDebugMode(int nDebugMode);
     int ServerToClientObjectId(unsigned long oidServerObject);
 
     void BeginIntro();
+    void HandleIntroDelete();
     CSWCJournal* GetQuestJournal();
     void CreateQuestJournal();
     void CreateWorldJournal();
@@ -406,6 +408,7 @@ public:
     void SetCharacterFile(unsigned long nDataSize, unsigned char* pCharacterData,
                          int nCharacterFileId);
     void DisplayMainMenu(int bScanContent);
+    void DestroyMainMenuPanel();
 #ifdef _XBOX
     void DisplayStartScreen();
 #endif
@@ -453,6 +456,7 @@ public:
     int GetControlledCharacterDead();
     CWorldTimer* GetActiveTimer(unsigned long nTimer);
     void AddToPauseExclusionList(unsigned long oidObject);
+    void ReprocessExclusionList();
 #ifdef _XBOX
     int SendSaveGameRequest(unsigned long nPlayerId,
                             const CExoString& sSaveName);
@@ -498,9 +502,13 @@ public:
     int ContinueMessageProcessing();
     int Initialize();
     int IsClientInitialized();
+    int IsHostingServer();
     void ClearCameraInput();
     int MainLoop();
     void ProcessInput(float fElapsed);
+    void OnGainFocus();
+    void OnLostFocus();
+    void OnCDChange();
     void UpdateSoundEngine();
     CGuiAreaLoadscreen* StartLoadBar(int nType, char* sImage, int bShow);
     void DoPassiveSelection(float fElapsed);
@@ -512,6 +520,7 @@ public:
                                       unsigned char nBitsPerPixel, unsigned long nRefreshRate);
     unsigned long GetVideoMode(unsigned long nWidth, unsigned long nHeight, unsigned char nBitsPerPixel, unsigned long nRefreshRate);
     void ReadAndSetVideoMode(int bStartup, int bFullScreen);
+    void OnVideoChange();
     void UpdateCamera(float fDeltaTime);
 
     enum { CAMERA_TURN_INPUT = 0x11C, CAMERA_SCROLL_PIXELS = 40,
@@ -526,6 +535,7 @@ public:
     void StartServices(int nServices, const CExoString& sModule, const CExoString& sLoadMusic, const CExoString& sLoadScreen, unsigned long nPlayerId);
 #endif
     void SetEventDescriptions();
+    void ReloadDynamicEventDescriptions();
     void StopServices();
     enum DoDLResDirParam { DLRESDIR_ADD = 0, DLRESDIR_REMOVE = 1 };
     void DoDownloadedResourceDirectories(DoDLResDirParam nParam, int bFlag);
@@ -568,6 +578,7 @@ public:
     int GetItemDropSound(unsigned char nType);
     int GetLoadBarState();
     void EndLoadBar();
+    void HandleLoadBarExit(int bExit);
     void RestartMoviesIfNecessary();
     void StartMenuMusic(int bCultTheme, int nVolume, int nPriorityGroup);
 
@@ -579,6 +590,7 @@ public:
     void SetStartMenuMusicOnMovieEnd(int bValue);
     unsigned char GetActivePauseState();
     void QueryExitProgram();
+    void OnExit();
     void SetInputActive(int nA, int nB);
     void TurnOffKeyboardModal();
     int IsPlayerCreature(CSWCCreature* pCreature);
@@ -594,6 +606,8 @@ public:
     int GetPlayerCharacterSet();
     int GetAreaNotReadyToDisplay() { return m_nAreaNotReadyToDisplay; }
     void SetAreaNotReadyToDisplay(int bNotReady);
+    int GetViewTriggers();
+    void SetViewTriggers(int bViewTriggers);
     CSWMiniGameObjectArray* GetMGOArray();
     int PlayLoadModuleMovies();
 #ifdef _XBOX
@@ -609,6 +623,8 @@ public:
     int WaitForMovie(int nFlags);
 #endif
     void StopMovie();
+    void PauseMovie();
+    void UnpauseMovie();
     int IsOnExclusionList(unsigned long oidObject);
     void InitializeMoviePlayer();
     void UpdateMoviePlayer();
@@ -629,6 +645,9 @@ public:
                    int bUnknown2);
     CSWCObject* SelectNearestObject(int bReverse, unsigned char nFilter);
     void ResetDriveAcceleration();
+    void ResetDrivingTimers(float fTime);
+    void DrivePlayer(unsigned char nDirection);
+    void UpdateDriveMode();
     void BarkString(unsigned long oidObject, const CExoString& sText,
                    const CResRef& cSound, int nFlags);
     void StopSoundPlayingInDialog();

@@ -52,6 +52,32 @@ unsigned long* cPhongFlatVPDeclaration = 0;
 unsigned long* cShadowTriMeshVariantVPDeclaration = 0;
 unsigned long* cSkinShadowVPDeclaration = 0;
 #endif
+
+// Dead code: not in the PC executable
+void VertexProgram::FindNumberOfAllowedLights()
+{
+    int nInstructions;
+    int nAllowedLights;
+    int i;
+
+    nInstructions = 0;
+    for (i = 0; i < (int)strlen(m_sProgram); i++)
+    {
+        if (m_sProgram[i] == ';')
+        {
+            nInstructions++;
+        }
+    }
+
+    nAllowedLights = (114 - nInstructions) / 14;
+    m_nAllowedLights = nAllowedLights;
+    if (nAllowedLights > 3)
+    {
+        nAllowedLights = 3;
+    }
+
+    m_nAllowedLights = nAllowedLights;
+}
 // PC 0x004CEB30 GOG 0x004CEC70
 void AurVertexProgramMakeCurrent()
 {

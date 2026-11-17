@@ -388,4 +388,22 @@ public:
 #endif
 };
 
+class CSWDomain
+{
+public:
+    CSWDomain();
+    ~CSWDomain();
+
+    CExoString GetNameText();
+    CExoString GetDescriptionText();
+
+    unsigned long m_nNameStrRef;
+    unsigned long m_nDescriptionStrRef;
+    CResRef m_cIcon;
+    unsigned long m_nSpell;
+    unsigned short m_nGrantedFeat;
+    int m_bValid;
+    int m_bCastableFeat;
+};
+
 #endif

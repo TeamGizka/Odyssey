@@ -104,6 +104,7 @@ public:
     void SetObject(const CExoString& sName, unsigned long oidValue);
     void SetLocation(const CExoString& sName, CScriptLocation lLocation);
 
+    void DestroyInt(const CExoString& sName);
     void DestroyFloat(const CExoString& sName);
     void DestroyString(const CExoString& sName);
     void DestroyObject(const CExoString& sName);
@@ -152,6 +153,7 @@ public:
     int AddIdentifierLocation(const CExoString& sIdentifier);
     int AddIdentifierString(const CExoString& sIdentifier);
     int FindIdentifierIndex(const CExoString& sIdentifier);
+    int GetBit(unsigned char* pValues, int nIndex);
     void SetBit(unsigned char* pValues, int nIndex, int bValue);
     void GetValueBoolean(const CExoString& sIdentifier, int& bValue);
     void GetValueNumber(const CExoString& sIdentifier, char& cValue);

@@ -83,6 +83,8 @@ public:
         m_oidContainer = CGameObjectArray::INVALIDOBJID;
     }
 
+    void SetOpen(CSWSPlayer* pPlayer, unsigned long oidContainer, int bOpen);
+
     unsigned long m_oidContainer;
     int m_n04;
 };

@@ -1710,6 +1710,7 @@ public:
 
     VertexProgram(char* sProgram, unsigned long* pnProgram);
     ~VertexProgram();
+    void FindNumberOfAllowedLights();
 
     void Enable(Part* pPart, bool bEnableLights);
 

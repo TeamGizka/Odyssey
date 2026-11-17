@@ -985,6 +985,12 @@ float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
     pObject->SetDialogDelay(fDelay);
     return fDelay;
 }
+
+// Dead code: not in the PC executable
+void CSWSDialog::SetDialogWaitFlags(CSWSObject* pObject, unsigned long nWaitFlags)
+{
+    pObject->m_nWaitFlags = nWaitFlags;
+}
 // PC 0x005E7930 GOG 0x005E7960
 int CSWSDialog::SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer)
 {

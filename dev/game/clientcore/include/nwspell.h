@@ -209,6 +209,7 @@ public:
                10;
     }
     int GetSubRadialSpell(unsigned char nIndex);
+    void SetSubRadialSpell(unsigned char nIndex, unsigned long nSpell);
 
     void SetLabel(const CExoString& value) { m_sLabel = value; }
     void SetIcon(const CResRef& value) { m_resIcon = value; }
@@ -266,6 +267,7 @@ public:
     ~CSWSpellArray();
 
     CSWSpell* GetSpell(int nIndex) const;
+    CSWSpell operator[](int nIndex) const;
 
     int GetNumSpells() const
     {

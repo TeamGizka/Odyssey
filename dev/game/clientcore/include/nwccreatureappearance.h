@@ -78,7 +78,9 @@ public:
     void ForceAnimate();
     int CreateHeadAppearance(CCAppearanceInfo* pAppearance);
     int CreateTailAppearance(CCAppearanceInfo* pAppearance);
+    int CreateTail(unsigned char nType, CCAppearanceInfo* pAppearance);
     int CreateWingAppearance(CCAppearanceInfo* pAppearance);
+    int CreateWing(unsigned char nType, CCAppearanceInfo* pAppearance);
     int RequestBType(CCAppearanceInfo* pAppearance);
     int CreateBTypeBody(unsigned char nType, CCAppearanceInfo* pAppearance);
     void SetAppearanceAlignment(short nAlignment);

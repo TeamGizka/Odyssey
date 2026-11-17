@@ -167,6 +167,7 @@ public:
 
     void AnimationUpdate();
     void AnimateFireAndForget();
+    int TestAIStateActionGroup(int nGroup);
 
     enum FireForgetLength
     {

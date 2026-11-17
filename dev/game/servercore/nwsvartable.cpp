@@ -280,6 +280,22 @@ CSWSScriptVarTable::~CSWSScriptVarTable()
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSScriptVarTable::DestroyInt(const CExoString& sName)
+{
+    DeleteIndex(sName, SCRIPTVAR_TYPE_INT);
+    if (m_pCreature != NULL)
+    {
+        if (sName.GetLength() > 10)
+        {
+            if (sName.Left(10) == "NW_JOURNAL")
+            {
+                m_pCreature->GetJournal()->Destroy(sName.SubString(16, 128));
+            }
+        }
+    }
+}
 // PC 0x005A0560 GOG 0x005A05D0
 void CSWSScriptVarTable::DestroyFloat(const CExoString& sName)
 {

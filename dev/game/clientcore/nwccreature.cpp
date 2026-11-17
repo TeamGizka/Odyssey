@@ -1983,6 +1983,26 @@ void CSWCCreature::SetDesiredOrientationForLock()
 }
 
 // Dead code: not in the PC executable
+int CSWCCreature::TestAIStateActionGroup(int nGroup)
+{
+    if (nGroup == 0 &&
+        (m_nReadyAnimationState == READY_ANIMATION_STATE_2 ||
+         m_nReadyAnimationState == READY_ANIMATION_STATE_3))
+        return 1;
+    if (nGroup == 1 &&
+        (m_nReadyAnimationState == 0 || m_nReadyAnimationState == 1))
+        return 1;
+    if (nGroup == 3 && m_nReadyAnimationState == READY_ANIMATION_STATE_14)
+        return 1;
+    if (nGroup == 2 &&
+        (m_nReadyAnimationState == 10 || m_nReadyAnimationState == 11 ||
+         m_nReadyAnimationState == 12 || m_nReadyAnimationState == 13 ||
+         m_nReadyAnimationState == 15 || m_nReadyAnimationState == 16))
+        return 1;
+    return 0;
+}
+
+// Dead code: not in the PC executable
 void CSWCCreature::LoadMonkVisuals()
 {
     unsigned short nAppearance = GetAppearance()->m_nAppearance;
