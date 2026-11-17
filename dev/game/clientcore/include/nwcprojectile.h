@@ -166,7 +166,7 @@ public:
 
     int m_bImpactAnimationStarted;
 
-    int m_nUnused;
+    int m_nMuzzleFlashState;
     Gob* m_pMuzzleFlash;
     Vector m_vSourcePosition;
     int m_nSourceDuration;

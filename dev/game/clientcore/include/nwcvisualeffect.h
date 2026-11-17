@@ -44,7 +44,6 @@ public:
     unsigned long m_nAnimationDelay;
     unsigned long m_nEffect;
     unsigned short m_nAnimation;
-    unsigned char m_aUnmapped10E[2];
     int m_bDurationActive;
     int m_bFinished;
     int m_bOneShot;

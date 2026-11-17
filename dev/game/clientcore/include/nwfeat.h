@@ -412,7 +412,7 @@ public:
     unsigned char m_nMinSpellLevel;
     unsigned char m_nUsesPerDay;
     unsigned char m_nMasterFeat;
-    unsigned char m_aUnmapped35[3];
+    unsigned short m_nMinSkillRank;
     unsigned short m_nPrereqFeat1;
 
     unsigned short GetPrereqFeat1() { return m_nPrereqFeat1; }

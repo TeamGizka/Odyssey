@@ -82,14 +82,14 @@ public:
     CResRef m_cIconResRef;
     int m_bAttached;
     int m_nAttachSlot;
-    int m_nUnknown150;
+    int m_nLastEquipSlot;
     int m_nEquipSlot;
     int m_nInventorySlot;
     unsigned char m_nContainerSlot;
     unsigned char m_nContainerType;
 
-    unsigned char m_nUnknownContainer1;
-    unsigned char m_nUnknownContainer2;
+    unsigned char m_nRepositoryPosX;
+    unsigned char m_nRepositoryPosY;
     unsigned long m_oidEquippedBy;
 
     unsigned long m_oidVisibleOwner;
@@ -104,7 +104,7 @@ public:
     Gob* m_pVisualEffect;
     int m_bVisualEffectLoaded;
     int m_bPowered;
-    int m_nUnknown1A0;
+    int m_bPowerSoundPlaying;
     CExoSoundSource* m_pPowerSound;
 };
 

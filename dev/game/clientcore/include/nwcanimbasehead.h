@@ -46,7 +46,7 @@ public:
     unsigned short m_aParts[10];
     unsigned char m_nPartCount;
     unsigned char m_nPartStart;
-    unsigned char m_aPad1A[2];
+    unsigned short m_nPartMask;
     CResRef m_cReplacedTexture;
     int m_bTextureReplaced;
     CResRef m_cEnvMap;

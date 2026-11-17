@@ -42,11 +42,11 @@ CSWCCreatureAppearance::CSWCCreatureAppearance(CSWCCreature* pCreature)
     m_nAlignment = 50;
     m_pCreature = pCreature;
     m_bHeadDirty = 0;
-    m_nUnknown44 = 0;
-    m_nUnknown48 = 0;
-    m_nUnknown4C = 0;
+    m_bTailDirty = 0;
+    m_bWingDirty = 0;
+    m_bBodyDirty = 0;
     m_bAlignmentDirty = 0;
-    m_nUnknown54 = 0;
+    m_bTextureDirty = 0;
     m_bForceAnimate = 0;
     m_bGroundTilt = 0;
 }
@@ -491,8 +491,8 @@ int CSWCCreatureAppearance::CreateBTypeBody(unsigned char nType, CCAppearanceInf
     }
     m_nAppearance = pAppearance->m_nAppearance;
     m_bHeadDirty = 1;
-    m_nUnknown44 = 1;
-    m_nUnknown48 = 1;
+    m_bTailDirty = 1;
+    m_bWingDirty = 1;
     SwitchWeaponEvent(0, "AppearanceForceUpdate", m_pCreature);
     if (pHeadModel)
     {
@@ -892,8 +892,8 @@ int CSWCCreatureAppearance::CreateSimple(unsigned char nType,
     }
     CCAppearanceInfo::operator=(*pAppearance);
     m_bHeadDirty = 1;
-    m_nUnknown44 = 1;
-    m_nUnknown48 = 1;
+    m_bTailDirty = 1;
+    m_bWingDirty = 1;
 
     CExoString sModelType;
     {

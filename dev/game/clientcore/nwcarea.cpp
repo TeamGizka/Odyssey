@@ -929,7 +929,7 @@ CSWCArea::CSWCArea()
     m_pAmbientSound = new CSWCAmbientSound(this);
     m_fLightningTimer = 0.0f;
     m_fLightningFlashTime = 0.0f;
-    m_nUnknown1E8 = 0;
+    m_nLightningFlashCount = 0;
     m_nWeatherDuration = 0;
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
@@ -940,7 +940,7 @@ CSWCArea::CSWCArea()
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
     m_nCalendarDay = nDay;
     m_nTimeOfDay = nTime;
-    m_nUnknown208 = 0;
+    m_bHitCheckIgnoreChanged = 0;
     m_bLightCountChanged = 0;
     m_bIsDark = 0;
     m_pAreaGrid = 0;
@@ -1442,7 +1442,7 @@ void CSWCArea::UnloadArea()
     }
     m_fLightningTimer = 0.0f;
     m_fLightningFlashTime = 0.0f;
-    m_nUnknown1E8 = 0;
+    m_nLightningFlashCount = 0;
     m_nWeatherDuration = 0;
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
@@ -2198,7 +2198,7 @@ int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
     pPlaceable->m_bTrapDisarmable = 0;
     pPlaceable->m_bLockable = 0;
     pPlaceable->m_bLocked = 0;
-    pPlaceable->m_nUnknown12C = 0;
+    pPlaceable->m_bSelectable = 0;
     pPlaceable->m_bHasDescription = 0;
     pPlaceable->m_bTrapDetected = 0;
     pPlaceable->SetAnimation(0, 0, 0);

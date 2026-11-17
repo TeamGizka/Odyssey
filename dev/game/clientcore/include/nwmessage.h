@@ -349,7 +349,7 @@ public:
     unsigned char* m_pReadFragmentsBuffer;
     unsigned long m_nReadFragmentsBufferSize;
     unsigned long m_nReadFragmentsIndex;
-    unsigned long m_nUnknown40;
+    unsigned long m_nReadFragmentsOffset;
     unsigned char m_nReadFragmentsBitPos; unsigned char m_nLastByteBits;
 #ifndef _XBOX
     unsigned char m_aUnknown46[2];
@@ -1003,8 +1003,8 @@ public:
     int SendServerToPlayerInventory_PickupCancel(unsigned long nPlayerId,
                                                  unsigned long oidObject);
     int SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
-                                            unsigned long oidObject, int bFlag,
-                                            int bUnknown = 0);
+                                            unsigned long oidObject, int bInstant,
+                                            int bSuppressDraw = 0);
     int SendServerToPlayerInventory_UnequipCancel(unsigned long nPlayerId,
                                                   unsigned long oidObject);
     int ComputeGameObjectUpdateForCategory(unsigned long nCategory,

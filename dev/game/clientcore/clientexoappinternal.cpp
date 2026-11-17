@@ -100,7 +100,7 @@ enum
 FILE* eventDumpFile = 0;
 int g_bLoggedIn = 0;
 
-int g_nClientUnused1 = 0;
+int g_bStartFullScreen = 0;
 int g_bEnableScreenCapture = 1;
 int g_bUseJoystick = 1;
 static int printanimqueue = 1;
@@ -2582,7 +2582,7 @@ static inline int GetHostileHiliteCount(CExoArrayList<CHostileHilite>* pList)
 }
 // PC 0x00645960 GOG 0x00645810
 void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
-                                      int bMoveCamera, int bUnused)
+                                      int bMoveCamera, int bUserAction)
 {
     IndicateObject(pObject, 0);
     if (pObject == NULL)
@@ -3613,26 +3613,26 @@ template <> inline CExoArrayList<CSWGuiInterfaceAction>::CExoArrayList(int nSize
 CClientExoAppInternal::CClientExoAppInternal()
 {
     m_bStartMenuMusicOnMovieEnd = 1;
-    m_nUnknown1D4 = 1;
+    m_bViewTriggers = 1;
     m_bAreaSoundsHeld = 0;
     m_bClientInitialized = 0;
     m_nDebugMode = 0;
-    m_nUnknown19C = 0;
+    m_nDebugTarget = 0;
     m_nPlayerCreatureId = OBJECT_INVALID;
     m_oidReattachedCreature = OBJECT_INVALID;
-    m_nUnknown44 = 0;
+    m_nMainMenuPanel = 0;
     m_pMainMenu = NULL;
     m_pStartupPanel = NULL;
-    m_nUnknown48 = 0;
-    m_nUnknown4C = 0;
+    m_nLoadGamePanel = 0;
+    m_nSaveGamePanel = 0;
     m_nPlayModulePanel = 0;
     m_pModule = NULL;
-    m_nUnknown54 = 0;
-    m_nUnknown68 = 0;
+    m_nLoadModulePanel = 0;
+    m_nSplashPanel = 0;
     m_pSWCMessage = NULL;
     m_pQuestJournal = NULL;
     m_pWorldJournal = NULL;
-    m_nUnknown6C = 0;
+    m_nCharGenPanel = 0;
     m_bSuppressLoadBar = 0;
     m_nLoadBarState = 0;
     m_pSWGuiManager = NULL;
@@ -3650,19 +3650,19 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nInputHistoryCount = 0;
     m_nHitCheckMaterialMask = 0;
     memset(m_anKeyboardModal, 0, sizeof(m_anKeyboardModal));
-    m_nUnknownEC = 0;
-    m_nUnknownF0 = 0;
-    m_nUnknownE4 = 0;
-    m_nUnknownE8 = 0;
-    m_nUnknownF4 = 0;
-    m_nUnknownF8 = 0;
+    m_nDriveTimeLow = 0;
+    m_nDriveTimeHigh = 0;
+    m_nDriveStopTimeLow = 0;
+    m_nDriveStopTimeHigh = 0;
+    m_nDriveInputTimeLow = 0;
+    m_nDriveInputTimeHigh = 0;
 #ifdef _XBOX
-    m_fXboxUnmapped120 = 0.0f;
-    m_fXboxUnmapped124 = 0.0f;
-    m_fXboxUnmapped128 = 0.0f;
-    m_fXboxUnmapped12C = 0.0f;
+    m_fLeftX = 0.0f;
+    m_fLeftY = 0.0f;
+    m_fRightX = 0.0f;
+    m_fRightY = 0.0f;
 #else
-    m_Unknown11C.Clear();
+    m_AnalogInput.Clear();
 #endif
     m_nCameraScrollX = 0;
     m_nCameraScrollY = 0;
@@ -3674,11 +3674,11 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nCaptureEventPlayBack = 0;
     m_nCaptureEventPlayBackRate = CAPTURE_PLAYBACK_DEFAULT_RATE;
     m_pGuiInGame = NULL;
-    m_oidUnknown58 = CGameObjectArray::INVALIDOBJID;
-    m_oidUnknown170 = CGameObjectArray::INVALIDOBJID;
-    m_nUnknown174 = 0;
-    m_nUnknown178 = 0;
-    m_nUnknown17C = 0;
+    m_oidContainerOpened = CGameObjectArray::INVALIDOBJID;
+    m_oidPlayerAnimationTarget = CGameObjectArray::INVALIDOBJID;
+    m_nPlayerAnimation = 0;
+    m_nPlayerAnimationFlags = 0;
+    m_nPlayerAnimationState = 0;
     m_fPlayerAnimationTime = 0.0f;
     m_nVideoMode = VIDEO_MODE_UNSET;
     m_nTexturePack = TEXTURE_PACK_UNSET;
@@ -3695,24 +3695,24 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_pAnimationTimer = NULL;
     m_pMoviePlayer = NULL;
     m_bEnableMouseAtEndOfLoadModuleMovie = 0;
-    m_nUnknown60 = 0;
+    m_nPageInternet = 0;
     m_bApplicationIdsMatch = 0;
     m_bInStartNewModule = 0;
-    m_nUnknown1F0 = 0;
+    m_bSendAreaLoadedMessageAfterMovie = 0;
     m_fCameraZoom = 0.0f;
     m_fCameraTilt = 0.0f;
     m_fCameraTurn = 0.0f;
-    m_oidUnknown224 = CGameObjectArray::INVALIDOBJID;
+    m_oidLastDialogSpeaker = CGameObjectArray::INVALIDOBJID;
     m_pMenuMusic = NULL;
     m_pLoadMusic = NULL;
-    m_nUnknown244 = 0;
+    m_bRenderTilePathNodes = 0;
     m_bSaveStallEventSuppressed = 0;
     m_bModuleServicesActive = 0;
-    m_nUnknown24C = 0;
+    m_bModuleServicesPending = 0;
     m_bExitGame = 0;
     m_bExitGamePending = 0;
-    m_nUnknown258 = 0;
-    m_nUnknown25C = 0;
+    m_bReachedMainMenu = 0;
+    m_bShowWalkToRingVFX = 0;
 #ifdef _XBOX
     m_nCodeWord = 0;
 #endif
@@ -3720,13 +3720,13 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_bShowEndGameDeathMessage = 1;
     m_nCharacterExportState = CHARACTER_EXPORT_IDLE;
     m_bShutDownToMainMenuPending = 0;
-    m_nUnknown268 = 0;
+    m_bOptionsPanelOpen = 0;
     m_pMiniGameObjectArray = new CSWMiniGameObjectArray;
     m_pSWParty = new CSWParty;
     m_nAreaNotReadyToDisplay = 1;
     m_fDriveActionDelay = -1.0f;
     m_pPlayerControl = NULL;
-    m_nUnknown29C = 1;
+    m_nControlType = 1;
     m_nGameOver = 0;
     m_bGameOverPending = 1;
     m_nDeathSequenceLastTime = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
@@ -3751,7 +3751,7 @@ CClientExoAppInternal::CClientExoAppInternal()
 #endif
     m_nLoadingSaveGame = 0;
     m_oidFutureLeader = OBJECT_INVALID;
-    m_oidUnknown364 = OBJECT_INVALID;
+    m_oidInvisibleTarget = OBJECT_INVALID;
     m_fTargetInvisibleTime = 0;
     m_fMovingTargetTime = 0.0f;
     m_fStatusSummaryDelay = 0.0f;
@@ -3773,7 +3773,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nDelayedAutoPauseType = AUTO_PAUSE_TYPE_UNSET;
 #endif
     m_fEnemyAutoPauseCooldown = 0.0f;
-    m_nUnknown3A4 = 0;
+    m_nEnemyAutoPauseCount = 0;
     m_nVideoEffect = CLIENT_VIDEO_EFFECT_DISABLED;
     m_nTutorialX = OBJECT_INVALID;
     m_nTutorialY = OBJECT_INVALID;
@@ -3782,8 +3782,8 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_oidCachedCreature = OBJECT_INVALID;
     m_pCachedCreature = NULL;
 #ifndef _XBOX
-    m_nUnknown3D4 = 0;
-    m_nUnknown3D0 = 0;
+    m_nLastMouseY = 0;
+    m_nLastMouseX = 0;
     m_nMouseY = 0;
     m_nMouseX = 0;
     m_nMouseHidden = 0;
@@ -6423,7 +6423,7 @@ int CClientExoAppInternal::SetDebugMode(int nDebugMode)
 }
 
 #ifndef _XBOX
-int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnknown)  // PC 0x0063C6E0 GOG 0x0063C5E0
+int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int bApplyNow)  // PC 0x0063C6E0 GOG 0x0063C5E0
 {
     CExoString sTexture;
     CExoString sTexturePath;
@@ -6774,9 +6774,9 @@ void CClientExoAppInternal::TurnOffKeyboardModal()  // PC 0x0063DD00 GOG 0x0063D
         if (m_anKeyboardModal[i] != 0)
         {
             memset(m_anKeyboardModal, 0, sizeof(m_anKeyboardModal));
-            m_nUnknownFC = 1;
-            m_nUnknownF4 = 0;
-            m_nUnknownF8 = 0;
+            m_bDriveAborted = 1;
+            m_nDriveInputTimeLow = 0;
+            m_nDriveInputTimeHigh = 0;
             m_pSWCMessage->SendPlayerToServerInput_AbortDriveControl();
             break;
         }
@@ -9686,7 +9686,7 @@ void CClientExoAppInternal::SetEventDescriptions()
     g_pExoInput->SetEventRepeatable(5, 500, 60);
 }
 
-int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnknown)
+int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int bApplyNow)
 {
     switch (nTexturePack)
     {
@@ -10547,9 +10547,9 @@ void CClientExoAppInternal::TurnOffKeyboardModal()
         {
             for (unsigned int j = 0; j < 7; j++)
                 m_anKeyboardModal[j] = 0;
-            m_nUnknownFC = 1;
-            m_nUnknownF4 = 0;
-            m_nUnknownF8 = 0;
+            m_bDriveAborted = 1;
+            m_nDriveInputTimeLow = 0;
+            m_nDriveInputTimeHigh = 0;
             m_pSWCMessage->SendPlayerToServerInput_AbortDriveControl();
             break;
         }

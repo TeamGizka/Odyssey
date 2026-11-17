@@ -143,7 +143,7 @@ struct CNearestStruct
     unsigned char m_aCanSeeAlignment[3];
 
     unsigned long m_bInFront : 1;
-    unsigned long m_nUnused : 31;
+    unsigned long m_nMuzzleFlashState : 31;
 };
 int TestNearestStruct(void* pObjectId, CNearestStruct cNearest);
 
@@ -299,7 +299,7 @@ public:
     {
         unsigned char m_bPaused : 1;
         unsigned char m_bPausedByCombat : 1;
-        unsigned char m_nUnused : 6;
+        unsigned char m_nMuzzleFlashState : 6;
     };
 
     struct SPauseFlagBits
@@ -309,9 +309,9 @@ public:
         unsigned long m_bTogglePauseAtEndOfFrame : 1;
 #ifdef _XBOX
         unsigned long m_bAutoPaused : 1;
-        unsigned long m_nUnused : 28;
+        unsigned long m_nMuzzleFlashState : 28;
 #else
-        unsigned long m_nUnused : 29;
+        unsigned long m_nMuzzleFlashState : 29;
 #endif
     };
 
@@ -323,24 +323,24 @@ public:
 
     struct SUnknown11C
     {
-        int m_nUnknown11C;
-        int m_nUnknown120;
-        int m_nUnknown124;
-        int m_nUnknown128;
+        int m_nLeftX;
+        int m_nLeftY;
+        int m_nRightX;
+        int m_nRightY;
 
         void Clear()
         {
-            m_nUnknown11C = 0;
-            m_nUnknown120 = 0;
-            m_nUnknown124 = 0;
-            m_nUnknown128 = 0;
+            m_nLeftX = 0;
+            m_nLeftY = 0;
+            m_nRightX = 0;
+            m_nRightY = 0;
         }
     };
 
     struct SAutoPauseFlagBits
     {
         unsigned long m_bAutoPaused : 1;
-        unsigned long m_nUnused : 31;
+        unsigned long m_nMuzzleFlashState : 31;
     };
 
     union SAutoPauseFlags
@@ -575,7 +575,7 @@ public:
     int SetVideoMode(unsigned long nVideoMode);
     int SetVideoMode(unsigned long nVideoMode, unsigned char nModeSelection);
     int SetTexturePack(unsigned char nTexturePack);
-    int SetTexturePack(unsigned char nTexturePack, int nUnknown);
+    int SetTexturePack(unsigned char nTexturePack, int bApplyNow);
     int GetSoundSetList();
     void LoadItemDropSoundList();
     int GetItemDropSound(unsigned char nType);
@@ -646,7 +646,7 @@ public:
     void IndicateObject(CSWCObject* pObject, int nFlags);
 
     void ShowObject(CSWCObject* pObject, int bLookAt, int bMoveCamera,
-                   int bUnknown2);
+                   int bUserAction);
     CSWCObject* SelectNearestObject(int bReverse, unsigned char nFilter);
     void ResetDriveAcceleration();
     void ResetDrivingTimers(float fTime);
@@ -834,17 +834,17 @@ public:
     CSWCJournal* m_pQuestJournal;
     CSWCWorldJournal* m_pWorldJournal;
     CGuiInGame* m_pGuiInGame;
-    int m_nUnknown44;
-    int m_nUnknown48;
-    int m_nUnknown4C;
+    int m_nMainMenuPanel;
+    int m_nLoadGamePanel;
+    int m_nSaveGamePanel;
     int m_nPlayModulePanel;
-    int m_nUnknown54;
-    unsigned long m_oidUnknown58;
-    unsigned char m_aUnmapped5C[4];
-    int m_nUnknown60;
-    unsigned char m_aUnmapped64[4];
-    int m_nUnknown68;
-    int m_nUnknown6C;
+    int m_nLoadModulePanel;
+    unsigned long m_oidContainerOpened;
+    int m_nLevelUpPanel;
+    int m_nPageInternet;
+    int m_nServerListPanel;
+    int m_nSplashPanel;
+    int m_nCharGenPanel;
 
     struct CPazaakData
     {
@@ -868,7 +868,7 @@ public:
     int m_nCaptureEventPlayBackRate;
     CExoLinkedList<CPlayBackEventNode> m_lstPlayBackEvents;
     int m_nInputClass;
-    unsigned char m_aUnmappedA0[0x4];
+    int m_nLastInputClass;
     int m_nHitCheckMaterialMask;
     unsigned char m_bPlayBackInputEnd;
     unsigned char m_aUnmappedA9[3];
@@ -876,32 +876,32 @@ public:
     float m_fCameraZoom;
     float m_fCameraTilt;
     float m_fCameraTurn;
-    Vector m_vUnknownB8;
-    Vector m_vUnknownC4;
+    Vector m_vCameraPosition;
+    Vector m_vCameraTarget;
     int m_nCameraScrollX;
     int m_nCameraScrollY;
-    unsigned char m_aUnmappedD8[4];
+    int m_nCameraScrollZ;
     int m_bClientImeUI;
     CExoImeUI* m_pImeUI;
-    int m_nXboxUnmappedE4;
-    int m_nUnknownE4;
-    int m_nUnknownE8;
-    int m_nUnknownEC;
-    int m_nUnknownF0;
-    int m_nUnknownF4;
-    int m_nUnknownF8;
-    int m_nUnknownFC;
+    int m_nDriveMode;
+    int m_nDriveStopTimeLow;
+    int m_nDriveStopTimeHigh;
+    int m_nDriveTimeLow;
+    int m_nDriveTimeHigh;
+    int m_nDriveInputTimeLow;
+    int m_nDriveInputTimeHigh;
+    int m_bDriveAborted;
     int m_anKeyboardModal[7];
 #ifdef _XBOX
-    float m_fXboxUnmapped120;
-    float m_fXboxUnmapped124;
-    float m_fXboxUnmapped128;
-    float m_fXboxUnmapped12C;
+    float m_fLeftX;
+    float m_fLeftY;
+    float m_fRightX;
+    float m_fRightY;
 #else
-    SUnknown11C m_Unknown11C;
+    SUnknown11C m_AnalogInput;
 #endif
     CExoMoviePlayer* m_pMoviePlayer;
-    unsigned char m_aUnmapped130[0xC];
+    unsigned char m_aMoviePlayerState[0xC];
     CExoString m_sClientName;
     int m_nClientLanguage;
     unsigned short m_nServerMode;
@@ -912,17 +912,17 @@ public:
     CExoLinkedList<CQueuedAnim> m_lstPlayerAnimations;
 
     float m_fPlayerAnimationTime;
-    unsigned long m_oidUnknown170;
-    int m_nUnknown174;
-    int m_nUnknown178;
-    unsigned char m_nUnknown17C;
+    unsigned long m_oidPlayerAnimationTarget;
+    int m_nPlayerAnimation;
+    int m_nPlayerAnimationFlags;
+    unsigned char m_nPlayerAnimationState;
     unsigned char m_aUnmapped17D[11];
     int m_bSuppressLoadBar;
     int m_nLoadBarState;
     CExoLinkedList<unsigned long> m_lstHitcheckIgnore;
     int m_nDebugMode;
-    unsigned char m_aUnmapped198[4];
-    int m_nUnknown19C;
+    int m_nDebugFlags;
+    int m_nDebugTarget;
 
     unsigned long m_nVideoMode;
     unsigned char m_nTexturePack;
@@ -939,21 +939,21 @@ public:
     SPauseState m_PauseState;
     unsigned char m_aUnmapped1CD[0x3];
     CExoLinkedList<unsigned long>* m_pPauseExclusionList;
-    int m_nUnknown1D4;
+    int m_bViewTriggers;
     CExoArrayList<CExoString> m_aTextureNames;
     CExoString m_sTexturePack;
     int m_bStartMenuMusicOnMovieEnd;
-    int m_nUnknown1F0;
-    unsigned char m_aUnmapped1F4[4];
+    int m_bSendAreaLoadedMessageAfterMovie;
+    int m_bMoviePending;
     int m_bMovieDisabled;
     int m_bSkipIntro;
     int m_bEnableMouseAtEndOfLoadModuleMovie;
     int m_bClientInitialized;
     int m_bApplicationIdsMatch;
-    Vector m_vUnknown20C;
+    Vector m_vLastWalkToPoint;
     unsigned char m_aUnmapped218[8];
     int m_bInStartNewModule;
-    unsigned long m_oidUnknown224;
+    unsigned long m_oidLastDialogSpeaker;
     int m_bCanSendDialog;
     int m_nCanSendDialogTime;
     int m_bDialogSent;
@@ -961,20 +961,20 @@ public:
     CExoStreamingSoundSource* m_pMenuMusic;
     CExoStreamingSoundSource* m_pLoadMusic;
     int m_bSaveStallEventSuppressed;
-    int m_nUnknown244;
+    int m_bRenderTilePathNodes;
     int m_bModuleServicesActive;
-    int m_nUnknown24C;
+    int m_bModuleServicesPending;
     int m_bExitGame;
     int m_bExitGamePending;
-    int m_nUnknown258;
-    int m_nUnknown25C;
+    int m_bReachedMainMenu;
+    int m_bShowWalkToRingVFX;
 #ifdef _XBOX
     unsigned char m_nCodeWord;
 #endif
 
     int m_nCharacterExportState;
     int m_bShutDownToMainMenuPending;
-    int m_nUnknown268;
+    int m_bOptionsPanelOpen;
     int m_bAreaSoundsHeld;
     CSWParty* m_pSWParty;
     CSWGuiManager* m_pSWGuiManager;
@@ -986,7 +986,7 @@ public:
     unsigned long m_oidReattachedCreature;
     int m_bPlayerCharacterNameSet;
     CExoString m_sPlayerCharacterName;
-    int m_nUnknown29C;
+    int m_nControlType;
     CSWPlayerControl* m_pPlayerControl;
 
     float m_fDriveActionDelay;
@@ -1030,7 +1030,7 @@ public:
     CExoArrayList<CSWRumblePattern> m_aRumblePatterns;
     CExoArrayList<CSWRumbleInstance> m_aRumbleInstances;
     CExoArrayList<CGuiStringStruct> m_aGuiStrings;
-    unsigned long m_oidUnknown364;
+    unsigned long m_oidInvisibleTarget;
     float m_fTargetInvisibleTime;
 
     float m_fMovingTargetTime;
@@ -1057,7 +1057,7 @@ public:
 #ifndef _XBOX
     float m_fMineSightedTime;
 #endif
-    int m_nUnknown3A4;
+    int m_nEnemyAutoPauseCount;
     int m_nVideoEffect;
     unsigned long m_nTutorialX;
     unsigned long m_nTutorialY;
@@ -1070,8 +1070,8 @@ public:
 #ifndef _XBOX
     int m_nMouseX;
     int m_nMouseY;
-    int m_nUnknown3D0;
-    int m_nUnknown3D4;
+    int m_nLastMouseX;
+    int m_nLastMouseY;
     int m_nMouseHidden;
     float m_fMouseHideTime;
 #endif
@@ -1106,7 +1106,7 @@ public:
 #else
 
     int m_bMissingFilePending;
-    unsigned char m_aXboxUnmapped46C[4];
+    int m_nMissingFileType;
 
     int m_nMouseX;
     int m_nMouseY;
@@ -1121,7 +1121,7 @@ class CSWCPlayer
 public:
     virtual CSWCDungeonMaster* AsSWCDungeonMaster() { return 0; }  // PC 0x004065A0 GOG 0x00406570
     unsigned long m_nPlayerId;
-    int m_nUnknown8;
+    int m_nLanguage;
     CExoString m_sPlayerName;
     CSWPortrait m_cPrimaryPCPortrait;
     short m_nPrimaryPCPortraitId;

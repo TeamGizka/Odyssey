@@ -223,7 +223,7 @@ public:
     unsigned short m_anPalette[10];
     unsigned char m_nPaletteCount;
     unsigned char m_nPaletteOffset;
-    unsigned char m_aUnmapped2A[2];
+    unsigned short m_nPaletteMask;
     CResRef m_resLoadedModel;
     int m_bPaletteReplaced;
     CResRef m_resEnvMap;

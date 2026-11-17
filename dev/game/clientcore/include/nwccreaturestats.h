@@ -48,9 +48,9 @@ public:
     CExoArrayList<unsigned long> m_lstKnownSpells[SPELL_LEVEL_COUNT];
     CExoArrayList<unsigned long> m_lstAdditionalSpells[1];
     unsigned char m_aSpellsPerDayLeft[SPELL_LEVEL_COUNT];
-    unsigned char m_nUnknown19;
-    unsigned char m_nUnknown1A;
-    unsigned char m_nUnknown1B;
+    unsigned char m_nSchool;
+    unsigned char m_nDomain1;
+    unsigned char m_nDomain2;
     unsigned char m_nClass;
     unsigned char m_nLevel;
     unsigned char m_aUnknown1E[2];
@@ -300,8 +300,8 @@ public:
     short m_nCurrentHitPoints;
     short m_nMaxHitPoints;
     short m_nDefenseBase;
-    unsigned char m_aUnknown52[2];
-    float m_fUnknown54;
+    unsigned char m_nMovementRate;
+    float m_fChallengeRating;
 
     unsigned long m_nExperience;
     char m_nFortitudeSave;

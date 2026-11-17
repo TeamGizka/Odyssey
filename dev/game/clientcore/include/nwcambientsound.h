@@ -92,7 +92,7 @@ public:
     unsigned long m_nTimeRemaining;
     unsigned long m_nLastUpdateLow;
     unsigned long m_nLastUpdateHigh;
-    int m_aUnknownDC[1];
+    int m_nUpdateInterval;
     CExoStreamingSoundSource* m_pMusicSource;
     CExoStreamingSoundSource* m_pAmbientSource;
     CSWCArea* m_pArea;

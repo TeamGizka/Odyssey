@@ -409,9 +409,9 @@ void CSWCCombatAttackData::Copy(CSWCCombatAttackData* pAttackData)
 // PC 0x00657A30 GOG 0x006578E0
 CSWCCreaturePartyStatus::CSWCCreaturePartyStatus()
 {
-    m_nUnknown04 = 1;
-    m_nUnknown08 = 1;
-    m_nUnknown0C = 0;
+    m_bSelectable = 1;
+    m_bAvailable = 1;
+    m_bLocked = 0;
     m_oidStatusObject = OBJECT_INVALID;
     m_sStatusName = "";
 }
@@ -1672,7 +1672,7 @@ CSWCCreature::CSWCCreature()
     m_nCurrentAnimation = CREATURE_ANIMATION_COMBAT_IDLE;
     m_bConjuringCreature = 0;
     m_bWeaponDrawBlocked = 0;
-    m_nUnknown150 = 0;
+    m_nWeaponDrawState = 0;
     m_bMovementSpeedLimited = 0;
     m_bOverrideLightsaberState = 0;
     m_oidVisibleRightWeapon = OBJECT_INVALID;
@@ -1695,7 +1695,7 @@ CSWCCreature::CSWCCreature()
     if (m_pAppearance == NULL)
         return;
 
-    m_nUnknown1EE = 0;
+    m_nWayPointState = 0;
     m_nLastWayPointSequence = 0;
     m_nWayPointSequence = 0;
     m_nSpeedRampMode = SPEED_RAMP_FAST;
@@ -1714,25 +1714,25 @@ CSWCCreature::CSWCCreature()
     m_oidLockTarget = CGameObjectArray::INVALIDOBJID;
     m_nWeaponOverlayState = 0xffff;
     m_nCombatState = 0;
-    m_pOwnedObject15C = NULL;
+    m_pWeaponOverlay = NULL;
     m_nDetectState = 0;
     m_nStealthState = 0;
     m_nParryState = 0;
     m_nPowerAttackState = 0;
     m_nImprovedPowerAttackState = 0;
-    m_nUnknown1A4 = 0;
+    m_nCriticalStrikeState = 0;
     m_nRapidShotState = 0;
     m_nFlurryState = 0;
     m_bInvisibilityVisualApplied = 0;
     for (int j = 0; j < 12; ++j)
         m_apOwnedObjects[j] = NULL;
     m_pBloodEffect = NULL;
-    m_pOwnedObject130 = NULL;
-    m_pOwnedObject134 = NULL;
+    m_pHitEffect = NULL;
+    m_pDeathEffect = NULL;
 #ifdef _XBOX
-    m_fUnknown148 = 0.0f;
+    m_fInventoryUpdateTime = 0.0f;
 #else
-    m_nUnknown148 = 0;
+    m_nInventoryUpdateTime = 0;
 #endif
     m_bWetFootstep = 0;
     m_fFootstepGroundHeight = 0.0f;
@@ -1743,7 +1743,7 @@ CSWCCreature::CSWCCreature()
     m_nMonkVisualTimer = 0;
     m_nHostile = HOSTILE_STATE_HOSTILE;
     m_nEncumbranceState = 0;
-    m_nUnknown308 = 200000;
+    m_nFootstepDelay = 200000;
     m_pPartyStatus = NULL;
     m_nGold = 0;
     m_nItemComponent = 0;
@@ -1760,7 +1760,7 @@ CSWCCreature::CSWCCreature()
     m_bCommandable = 0;
     m_bExcited = 0;
     for (int nObject = 0; nObject < 4; ++nObject)
-        m_aoidUnknown37C[nObject] = CGameObjectArray::INVALIDOBJID;
+        m_aoidRecentAttackers[nObject] = CGameObjectArray::INVALIDOBJID;
     m_nAmbientPauseTimer = 0;
     m_bAmbientPause = 0;
     m_nAmbientPauseDelay = 30000 * (rand() % 4 + 2);
@@ -1768,7 +1768,7 @@ CSWCCreature::CSWCCreature()
     m_oidArea = CGameObjectArray::INVALIDOBJID;
     m_pSpellLikeAbilities = NULL;
     m_nMode = 0;
-    m_nUnknown3AC = 0;
+    m_nPreviousMode = 0;
     m_fSWAnimationSpeed = 0.0f;
     m_fSWTargetAnimationSpeed = 0.0f;
     m_fDriveTurnAngle = 0.0f;
@@ -1812,10 +1812,10 @@ CSWCCreature::~CSWCCreature()
         delete m_pStats;
         m_pStats = NULL;
     }
-    if (m_pOwnedObject15C != NULL)
+    if (m_pWeaponOverlay != NULL)
     {
-        delete m_pOwnedObject15C;
-        m_pOwnedObject15C = NULL;
+        delete m_pWeaponOverlay;
+        m_pWeaponOverlay = NULL;
     }
     if (m_pLoopingSound != NULL)
     {
@@ -1851,8 +1851,8 @@ CSWCCreature::~CSWCCreature()
         m_pMonkVisual->AttachToScene(NULL);
         delete m_pMonkVisual;
     }
-    delete m_pOwnedObject130;
-    delete m_pOwnedObject134;
+    delete m_pHitEffect;
+    delete m_pDeathEffect;
     if (m_pPartyStatus != NULL)
     {
         delete m_pPartyStatus;
@@ -3826,19 +3826,19 @@ void GetPath(CAurObject* pObject, char* sProperty, void* pData)
     pPath->m_fZ = 0.0f;
 }
 // PC 0x0065A530 GOG 0x0065A3E0
-CSWCAnimBase* CSWCCreature::SetSpecialWalkAnimation(unsigned char a1)
+CSWCAnimBase* CSWCCreature::SetSpecialWalkAnimation(unsigned char nSpecialWalkAnimation)
 {
     CSWCAnimBase* result;
     result = ((CSWCObject*)this)->GetAnimationBase();
-    result->m_nSpecialWalkAnimation = a1;
+    result->m_nSpecialWalkAnimation = nSpecialWalkAnimation;
     return result;
 }
 // PC 0x0065A550 GOG 0x0065A400
-CSWCAnimBase* CSWCCreature::SetRunLooksAwful(int a1)
+CSWCAnimBase* CSWCCreature::SetRunLooksAwful(int bRunLooksAwful)
 {
     CSWCAnimBase* result;
     result = ((CSWCObject*)this)->GetAnimationBase();
-    result->m_bRunLooksAwful = a1;
+    result->m_bRunLooksAwful = bRunLooksAwful;
     return result;
 }
 // PC 0x0065A570 GOG 0x0065A420
@@ -5667,9 +5667,9 @@ void CSWCCreature::EvaluateNewWayPoints(int nWayPointCount, Vector* pWayPoints,
     }
 }
 // PC 0x0065B0D0 GOG 0x0065AF80
-void CSWCCreature::SetThrownLightsaber(unsigned long a1)
+void CSWCCreature::SetThrownLightsaber(unsigned long oidThrownLightsaber)
 {
-    this->m_oidThrownLightsaber = a1;
+    this->m_oidThrownLightsaber = oidThrownLightsaber;
 }
 // PC 0x00661B10 GOG 0x00661920
 void CSWCCreature::ForceAppearanceUpdate()

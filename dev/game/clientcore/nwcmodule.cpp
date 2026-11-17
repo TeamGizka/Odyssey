@@ -53,7 +53,7 @@ CSWCModule::CSWCModule()
     m_vPlayerPosition = Vector(0.0f, 0.0f, 0.0f);
     m_vCameraPosition = Vector(0.0f, 0.0f, 0.0f);
     m_pModuleCamera = NULL;
-    m_nReserved44 = 0;
+    m_nModuleCameraId = 0;
     m_pInfo = NULL;
     m_nCameraType = CAMERA_UNINITIALIZED;
     m_bCameraMoved = 0;
@@ -78,10 +78,10 @@ CSWCModule::CSWCModule()
     m_nTimeOfDayState = TIME_DEFAULT;
     m_fTimeOfDay = 0.0f;
     m_fTimeOfDayHours = 0.0f;
-    m_nReservedD4 = 0;
-    m_nReservedC8 = 0;
-    m_nReservedCC = 0;
-    m_nReservedD0 = 0;
+    m_nCameraMode = 0;
+    m_nCameraModeTime = 0;
+    m_nCameraModeDelay = 0;
+    m_bCameraModePending = 0;
     m_bCameraModeChanged = 0;
     m_nCameraShakeTime = 0;
     m_nCameraShakeAmount = 0;
@@ -93,7 +93,7 @@ CSWCModule::CSWCModule()
     m_bPlayerWasIdle = 1;
     m_bCameraTurnChanged = 0;
     m_bCameraZoomChanged = 0;
-    m_nReserved108 = 0;
+    m_bCameraTiltChanged = 0;
     m_cameraSettings.m_bValid = 0;
     m_pAnimatedCamera = NULL;
     m_nLastCameraMode = CAMERA_UNINITIALIZED;

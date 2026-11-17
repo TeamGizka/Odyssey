@@ -90,7 +90,7 @@ public:
     CResRef m_resStartMovie;
     CExoString m_sModuleName;
     CAurCamera* m_pModuleCamera;
-    int m_nReserved44;
+    int m_nModuleCameraId;
     CSWCArea* m_pInfo;
     Vector m_vPlayerPosition;
     Vector m_vCameraPosition;
@@ -119,11 +119,11 @@ public:
     unsigned char m_nDawnHour;
     unsigned char m_nDuskHour;
     unsigned char m_aUnusedC2[2];
-    int m_nReservedC4;
-    int m_nReservedC8;
-    int m_nReservedCC;
-    int m_nReservedD0;
-    char m_nReservedD4;
+    int m_nCameraModeParam;
+    int m_nCameraModeTime;
+    int m_nCameraModeDelay;
+    int m_bCameraModePending;
+    char m_nCameraMode;
     unsigned char m_nLastCameraMode;
     int m_bCameraModeChanged;
     int m_nCameraShakeTime;
@@ -137,7 +137,7 @@ public:
     int m_bPlayerWasIdle;
     int m_bCameraTurnChanged;
     int m_bCameraZoomChanged;
-    int m_nReserved108;
+    int m_bCameraTiltChanged;
     CCameraSettings m_cameraSettings;
     Gob* m_pAnimatedCamera;
     CExoString m_sAnimatedCamera;

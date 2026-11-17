@@ -61,10 +61,10 @@ public:
 class CSWCCreaturePartyStatus
 {
 public:
-    int m_nUnknown00;
-    int m_nUnknown04;
-    int m_nUnknown08;
-    int m_nUnknown0C;
+    int m_bPartyMember;
+    int m_bSelectable;
+    int m_bAvailable;
+    int m_bLocked;
     int m_bHasStatusObject;
     int m_oidStatusObject;
     CExoString m_sStatusName;
@@ -617,8 +617,8 @@ public:
     int RequestAppearance(CCAppearanceInfo* pCAppearanceInfo,
                           unsigned char bFlag);
     virtual void SetPortraitId(unsigned short nPortraitId);
-    CSWCAnimBase* SetSpecialWalkAnimation(unsigned char bFlag);
-    CSWCAnimBase* SetRunLooksAwful(int nValue);
+    CSWCAnimBase* SetSpecialWalkAnimation(unsigned char nSpecialWalkAnimation);
+    CSWCAnimBase* SetRunLooksAwful(int bRunLooksAwful);
     void HideEquippedHeadItem();
     void ShowEquippedHeadItem();
     void ShowEquippedItems();
@@ -676,8 +676,8 @@ public:
 
     Gob* m_pBloodEffect;
 
-    CAurObject* m_pOwnedObject130;
-    CAurObject* m_pOwnedObject134;
+    CAurObject* m_pHitEffect;
+    CAurObject* m_pDeathEffect;
     int m_nCombatState;
     int m_nEngagedState;
 
@@ -686,17 +686,17 @@ public:
     int m_nItemComponent;
     int m_nChemicals;
 #ifdef _XBOX
-    float m_fUnknown148;
+    float m_fInventoryUpdateTime;
 #else
-    int m_nUnknown148;
+    int m_nInventoryUpdateTime;
 #endif
 
     int m_bWeaponDrawBlocked;
-    int m_nUnknown150;
+    int m_nWeaponDrawState;
 
     int m_nWeaponCheckTimer;
     int m_nWeaponOverlayTimer;
-    CAurObject* m_pOwnedObject15C;
+    CAurObject* m_pWeaponOverlay;
 
     Gob* m_apAttachedModels[4];
     Gob* m_pMonkVisual;
@@ -716,7 +716,7 @@ public:
     int m_nParryState;
     int m_nPowerAttackState;
     int m_nImprovedPowerAttackState;
-    int m_nUnknown1A4;
+    int m_nCriticalStrikeState;
     int m_nRapidShotState;
     int m_nFlurryState;
 
@@ -731,7 +731,7 @@ public:
     Vector m_vDesiredPosition;
     unsigned long m_nDesiredPositionTimer;
     unsigned short m_nWayPointCount;
-    unsigned char m_nUnknown1EE;
+    unsigned char m_nWayPointState;
     unsigned char m_nLastWayPointSequence;
     unsigned char m_nWayPointSequence;
     unsigned char m_aWayPointStatePadding[3];
@@ -739,7 +739,7 @@ public:
     int m_nSpeedRampMode;
     float m_fSpeedFactor;
     float m_fCustomSpeed;
-    Vector m_vUnknown200;
+    Vector m_vVelocity;
 
     float m_fWalkSpeed;
 
@@ -793,7 +793,7 @@ public:
 
     enum { HOSTILE_STATE_HOSTILE = 2 };
     unsigned char m_nHostile;
-    CResRef m_cUnknown2DD;
+    CResRef m_cConversation;
     unsigned char m_aResourcePadding[3];
     CSWCSpellCastVisual* m_pSpellCastVisual;
 
@@ -805,7 +805,7 @@ public:
     int m_bWetFootstep;
 
     float m_fFootstepGroundHeight;
-    unsigned long m_nUnknown308;
+    unsigned long m_nFootstepDelay;
     CSWCCreaturePartyStatus* m_pPartyStatus;
     unsigned long m_nCameraFollowDelay;
     int m_bCameraFollowPending;
@@ -821,7 +821,7 @@ public:
     unsigned long m_bCommandable;
     unsigned long m_bExcited;
 
-    unsigned long m_aoidUnknown37C[4];
+    unsigned long m_aoidRecentAttackers[4];
 
     unsigned short m_nAppearance;
     unsigned char m_aUnmapped38E[2];
@@ -832,7 +832,7 @@ public:
     CExoArrayList<CSWCStats_SpellLikeAbility> *m_pSpellLikeAbilities;
     int m_bInParty;
     int m_nMode;
-    int m_nUnknown3AC;
+    int m_nPreviousMode;
     float m_fSWAnimationSpeed;
     float m_fSWTargetAnimationSpeed;
     float m_fDriveTurnAngle;

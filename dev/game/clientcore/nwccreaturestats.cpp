@@ -67,8 +67,8 @@ CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
     m_nHitPointBonus = 0;
     m_nMaxHitPoints = 0;
     m_nCurrentHitPoints = 0;
-    m_aUnknown52[0] = 0;
-    m_fUnknown54 = 6.0f;
+    m_nMovementRate = 0;
+    m_fChallengeRating = 6.0f;
     m_nExperience = 0;
     m_nFortitudeSave = 0;
     m_nWillSave = 0;
@@ -1627,9 +1627,9 @@ CSWCCreatureStats_ClassInfo::CSWCCreatureStats_ClassInfo()
     }
     m_nClass = 0;
     m_nLevel = 0;
-    m_nUnknown19 = 0;
-    m_nUnknown1A = 0xFF;
-    m_nUnknown1B = 0xFF;
+    m_nSchool = 0;
+    m_nDomain1 = 0xFF;
+    m_nDomain2 = 0xFF;
     memset(m_aSpellsPerDayLeft, 0, sizeof(m_aSpellsPerDayLeft));
 }
 

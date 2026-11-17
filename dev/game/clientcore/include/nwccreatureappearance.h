@@ -90,11 +90,11 @@ public:
 
     CSWCCreature* m_pCreature;
     unsigned long m_bHeadDirty;
-    unsigned long m_nUnknown44;
-    unsigned long m_nUnknown48;
-    unsigned long m_nUnknown4C;
+    unsigned long m_bTailDirty;
+    unsigned long m_bWingDirty;
+    unsigned long m_bBodyDirty;
     unsigned long m_bAlignmentDirty;
-    unsigned long m_nUnknown54;
+    unsigned long m_bTextureDirty;
 
     float m_fDriveAcceleration;
     float m_fDriveMaxSpeed;

@@ -131,7 +131,7 @@ public:
     unsigned long m_nDescriptionStrRef;
     CResRef m_resIcon;
     CExoString m_sRange;
-    CExoString m_sUnused28;
+    CExoString m_sComponent;
     short m_nTargetType;
     CExoString m_sImpactScript;
     unsigned char m_nGuardianLevel;
@@ -168,7 +168,7 @@ public:
     unsigned char m_nProjectileSpawnPoint;
     CResRef m_resProjectileSound;
     unsigned char m_nProjectileOrientation;
-    unsigned char m_bUnknown11E;
+    unsigned char m_nImmunityType;
     int m_bImmunityItem;
     int m_nCategory;
     int m_nMaxCR;

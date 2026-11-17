@@ -22,7 +22,7 @@ static int enableitemgroundalignment = 0;
 CSWCItem::CSWCItem(unsigned long nBaseItem)
     : CSWItem(), CSWCObject(CGameObject::OBJECT_TYPE_ITEM)
 {
-    m_nUnknown150 = -1;
+    m_nLastEquipSlot = -1;
     m_nAttachSlot = INVENTORY_SLOT_INVALID;
     m_oidEquippedBy = OBJECT_INVALID;
     m_nEquipSlot = INVENTORY_SLOT_INVALID;
@@ -31,8 +31,8 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
     m_nContainerType = 0xff;
     m_nContainerSlot = 0xff;
     m_nBaseItem = nBaseItem;
-    m_nUnknownContainer2 = 0xff;
-    m_nUnknownContainer1 = 0xff;
+    m_nRepositoryPosY = 0xff;
+    m_nRepositoryPosX = 0xff;
     m_nNumActiveProperties = 0;
     m_pActiveProperties = 0;
     m_bIdentified = 0;
@@ -52,7 +52,7 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
     m_bVisualEffectLoaded = 0;
     m_pPowerSound = 0;
     m_bPowered = 0;
-    m_nUnknown1A0 = 0;
+    m_bPowerSoundPlaying = 0;
 }
 // PC 0x0069D650 GOG 0x0069D430
 CSWCItem::~CSWCItem()

@@ -4607,7 +4607,7 @@ int CSWSMessage::SendServerToPlayerInventory_PickupCancel(
 // PC 0x00594C00 GOG 0x00594C70
 int CSWSMessage::SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
                                                      unsigned long oidObject,
-                                                     int bFlag, int bUnknown)
+                                                     int bInstant, int bSuppressDraw)
 {
     int nResult;
     unsigned long nMessageSize;
@@ -4615,8 +4615,8 @@ int CSWSMessage::SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
 
     CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
     WriteOBJECTIDServer(oidObject);
-    WriteBOOL(bFlag);
-    WriteBOOL(bUnknown);
+    WriteBOOL(bInstant);
+    WriteBOOL(bSuppressDraw);
     nResult = GetWriteMessage(&pMessage, &nMessageSize);
     if (nResult == 0)
     {

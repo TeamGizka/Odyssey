@@ -84,7 +84,7 @@ CSWCPlayer::CSWCPlayer(unsigned long nPlayerId)
       m_sPrimaryPCName()
 {
     m_nPlayerId = nPlayerId;
-    m_nUnknown8 = 0;
+    m_nLanguage = 0;
     m_nPrimaryPCPortraitId = -1;
 }
 // PC 0x0069FE60 GOG 0x0069FC40
@@ -1797,12 +1797,12 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             sModifiers = sModifiers + g_pSWTlkTable->Fetch(42388, NULL, 0, 0);
         }
 
-        CExoString sUnusedString1;
+        CExoString sSaveTypeText;
         CExoString sSave;
-        CExoString sUnusedString2;
+        CExoString sVersusText;
         CExoString sResult;
         CExoString sCreature;
-        CExoString sUnusedString3;
+        CExoString sTargetText;
         if (g_pAppManager->GetClientExoApp()->GetObjectName(oidObject, sCreature))
             g_pTlkTable->SetCustomToken(0, sCreature);
         else
@@ -1863,7 +1863,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
     case CC_MESSAGE_SPELL_DATA:
     {
 
-        CExoString sUnusedString;
+        CExoString sCasterText;
         CExoString sSpell;
         unsigned long oidCaster = ReadOBJECTIDClient();
         unsigned long oidTarget = ReadOBJECTIDClient();
@@ -1943,7 +1943,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
     {
         CExoString sSign;
 
-        CExoString sUnusedString;
+        CExoString sSkillText;
         CExoString sSkill;
         CExoString sReason;
         CExoString sResult;
@@ -2690,7 +2690,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         nDetectionBonus5 = ReadSHORT(16);
         if (MessageReadOverflow(1))
             return 0;
-        CExoString sUnused;
+        CExoString sObserverText;
         g_pAppManager->GetClientExoApp()->GetObjectName(oidObserver, sObserver);
         g_pAppManager->GetClientExoApp()->GetObjectName(oidCreature, sCreature);
         if (bDisplay)
@@ -2762,7 +2762,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         if (MessageReadOverflow(1))
             return 0;
 
-        CExoString sUnusedString;
+        CExoString sMineText;
         short nTotal = nModifier + nRoll;
         g_pAppManager->GetClientExoApp()->GetObjectName(oidCreature, sCreature);
         g_pAppManager->GetClientExoApp()->GetObjectName(oidMine, sMine);
@@ -2782,7 +2782,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
     }
     case CC_MESSAGE_FORCE_POINTS_SPENT:
     {
-        CExoString sUnused = ReadCExoString(32);
+        CExoString sForcePowerName = ReadCExoString(32);
         int nBaseCost = ReadINT(32);
         int nCost = ReadINT(32);
         ReadINT(32);
@@ -3034,7 +3034,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 sMessage = sMessage + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
             }
 
-            CExoString sUnusedString;
+            CExoString sAbilityText;
             int nAbilityBonus;
             unsigned long nAbilityString;
             if (nAlternateAbility)
@@ -5341,19 +5341,19 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     }
     if (nUpdateMask & CREATURE_UPDATE_PARTY_STATUS)
     {
-        int bStatus1 = ReadBOOL();
-        int bStatus2 = ReadBOOL();
-        int bStatus3 = ReadBOOL();
-        int bStatus4 = ReadBOOL();
-        int bStatus5 = ReadBOOL();
+        int bPartyMember = ReadBOOL();
+        int bSelectable = ReadBOOL();
+        int bAvailable = ReadBOOL();
+        int bLocked = ReadBOOL();
+        int bHasStatusObject = ReadBOOL();
         unsigned long oidStatus = OBJECT_INVALID;
         CExoString sStatus;
-        CExoString sUnusedStatus;
-        if (bStatus5)
+        CExoString sStatusDescription;
+        if (bHasStatusObject)
         {
             oidStatus = ReadOBJECTIDClient();
             sStatus = ReadCExoLocStringClient(CResRef(), NULL);
-            sUnusedStatus = ReadCExoLocStringClient(CResRef(), NULL);
+            sStatusDescription = ReadCExoLocStringClient(CResRef(), NULL);
         }
         ReadBOOL();
         ReadBOOL();
@@ -5363,12 +5363,12 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         {
             if (pCreature->GetPartyStatus() == NULL)
                 pCreature->m_pPartyStatus = new CSWCCreaturePartyStatus;
-            pCreature->GetPartyStatus()->m_nUnknown00 = bStatus1;
-            pCreature->GetPartyStatus()->m_nUnknown04 = bStatus2;
-            pCreature->GetPartyStatus()->m_nUnknown08 = bStatus3;
-            pCreature->GetPartyStatus()->m_nUnknown0C = bStatus4;
-            pCreature->GetPartyStatus()->m_bHasStatusObject = bStatus5;
-            if (bStatus5)
+            pCreature->GetPartyStatus()->m_bPartyMember = bPartyMember;
+            pCreature->GetPartyStatus()->m_bSelectable = bSelectable;
+            pCreature->GetPartyStatus()->m_bAvailable = bAvailable;
+            pCreature->GetPartyStatus()->m_bLocked = bLocked;
+            pCreature->GetPartyStatus()->m_bHasStatusObject = bHasStatusObject;
+            if (bHasStatusObject)
             {
                 pCreature->GetPartyStatus()->m_oidStatusObject = oidStatus;
                 pCreature->GetPartyStatus()->m_sStatusName = sStatus;
@@ -5606,7 +5606,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         if (MessageReadOverflow(1))
             return 0;
         if (pCreature != NULL)
-            pCreature->GetStats()->m_aUnknown52[0] = nValue;
+            pCreature->GetStats()->m_nMovementRate = nValue;
     }
     if (nUpdateMask & CREATURE_UPDATE_CLASSES)
     {
@@ -6193,7 +6193,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     int bLockable = ReadBOOL();
     int bLocked = ReadBOOL();
     int bNotBlastable = ReadBOOL();
-    int nFlag12C = ReadBOOL();
+    int bSelectable = ReadBOOL();
     int bHasDescription = ReadBOOL();
     if (MessageReadOverflow(1))
     {
@@ -6306,7 +6306,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     pPlaceable->m_bLockable = bLockable;
     pPlaceable->m_bLocked = bLocked;
     pPlaceable->m_bNotBlastable = bNotBlastable;
-    pPlaceable->m_nUnknown12C = nFlag12C;
+    pPlaceable->m_bSelectable = bSelectable;
     pPlaceable->m_bHasDescription = bHasDescription;
     pPlaceable->m_bTrapDetected = bTrapDetected;
     pPlaceable->SetAnimation(nAnimation, 0, 0);
@@ -8784,7 +8784,7 @@ int CSWCMessage::HandleServerToPlayerPlayerList(unsigned char nMinor)
 {
     CExoLinkedListNode* pNode;
     CExoString sPlayerName;
-    CExoString sUnused;
+    CExoString sCommunityName;
     CExoString sFirstName;
     CExoString sLastName;
     CResRef cPortrait;

@@ -41,7 +41,7 @@ CSWSpell::CSWSpell()
     m_nProjectileSpawnPoint = 0;
     m_nCastTime = 0;
     m_nProjectileOrientation = 0;
-    m_bUnknown11E = 0;
+    m_nImmunityType = 0;
     m_bImmunityItem = 0;
     m_pSubRadialSpells = 0;
     m_nSubRadialSpellCount = 0;

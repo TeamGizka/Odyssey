@@ -1068,7 +1068,7 @@ CSWCProjectile::CSWCProjectile()
     m_nImpactType = 0;
     m_sImpactHook = "impact";
     m_bImpactAnimationStarted = 0;
-    m_nUnused = 0;
+    m_nMuzzleFlashState = 0;
     m_pMuzzleFlash = NULL;
     m_nSourceDuration = 0;
     m_fSourceDistance = 0.0f;

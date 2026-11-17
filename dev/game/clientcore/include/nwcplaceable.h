@@ -81,12 +81,12 @@ public:
     int m_bHasDescription;
     int m_bTrapDetected;
     int m_bUseable;
-    int m_nUnknown12C;
+    int m_bSelectable;
     int m_bTrapDisarmable;
-    int m_nUnknown134;
-    int m_nUnknown138;
+    int m_nTrapType;
+    int m_nTrapDisarmDC;
     int m_bHilighted;
-    int m_nUnknown140;
+    int m_nHilightTime;
     CExoString m_sModel;
     Gob* m_pLight;
 

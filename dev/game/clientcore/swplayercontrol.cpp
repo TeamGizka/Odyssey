@@ -105,7 +105,7 @@ float CSWPlayerControlCamRelative::GetAcceleration()
 // PC 0x006CEB90 GOG 0x006CE890
 void CSWPlayerControlCamRelative::Init()
 {
-    m_fReserved34 = 480.0f;
+    m_fTurnRate = 480.0f;
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
     int nRow = pArea->m_nTurnRateRow;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;

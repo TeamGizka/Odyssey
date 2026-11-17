@@ -41,18 +41,18 @@ CSWCPlaceable::CSWCPlaceable()
     m_bLockable = 0;
     m_bLocked = 0;
     m_bUseable = 0;
-    m_nUnknown12C = 1;
+    m_bSelectable = 1;
     m_bTrapDisarmable = 1;
     m_bHilighted = 0;
     m_bHasDescription = 0;
     m_nAppearance = -1;
-    m_nUnknown134 = -1;
-    m_nUnknown138 = 0;
+    m_nTrapType = -1;
+    m_nTrapDisarmDC = 0;
     m_sName = "";
     m_sTag = "";
     m_sModel = "";
     m_pLight = NULL;
-    m_nUnknown140 = 0;
+    m_nHilightTime = 0;
 }
 // PC 0x006D96E0 GOG 0x006D93A0
 void CSWCPlaceable::AnimationUpdate()
