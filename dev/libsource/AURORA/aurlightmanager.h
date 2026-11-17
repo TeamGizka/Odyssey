@@ -98,7 +98,9 @@ public:
     int DisableThisLight(PartLight* pLight);
     int EnableThisLight(PartLight* pLight);
 
+    List<PartLight*>* GetPhongLights();
     void EnablePhongLights(int nMaxLights, int bSkipBumpMapLights);
+    void DisablePhongLights();
 
     enum LightProgramParameter
     {

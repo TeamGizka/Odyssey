@@ -133,6 +133,7 @@ public:
     unsigned long m_nTexCoordPool;
     ~VertexPrimitiveAnim();
     virtual VertexPrimitiveAnim* AsVertexPrimitiveAnim() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual int SetupArraysVAR(unsigned char*) { return 0; }  // PC 0x006955A0 GOG 0x00695350
     virtual void BuildVertexArrays();
     VertexPrimitiveAnim(PartTriMesh*);
 };
@@ -144,6 +145,7 @@ public:
     Vector* m_pOffsets;
     ~VertexPrimitiveDangly();
     virtual VertexPrimitiveDangly* AsVertexPrimitiveDangly() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual int SetupArraysVAR(unsigned char*) { return 0; }  // PC 0x006955A0 GOG 0x00695350
     virtual void BuildVertexArrays();
     VertexPrimitiveDangly(PartTriMesh*);
 };
@@ -153,6 +155,7 @@ class VertexPrimitiveSkinned : public VertexPrimitiveFlat
 public:
     ~VertexPrimitiveSkinned();
     virtual VertexPrimitiveSkinned* AsVertexPrimitiveSkinned() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual int SetupArraysVAR(unsigned char*) { return 0; }  // PC 0x006955A0 GOG 0x00695350
     virtual void BuildVertexArrays();
     virtual unsigned char* ReconnectArraysVAR(unsigned char*);
     VertexPrimitiveSkinned(PartSkin*);

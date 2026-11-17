@@ -4657,3 +4657,14 @@ char* reshape(char* sArguments)
     return sResult;
 }
 #endif
+
+// Dead code: not in the PC executable
+void Scene::ListSpecialParts(Part* pPart)
+{
+    ListSpecialPartsR(pPart);
+}
+
+// Dead code: not in the PC executable
+void Scene::ListSpringPartsR(Part* pPart)
+{
+}

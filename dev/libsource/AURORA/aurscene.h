@@ -246,8 +246,10 @@ public:
 
     static void RemoveFromSceneManager(Part* pPart);
     static void RemoveFromSceneManager(Gob* pGob);
+    void ListSpecialParts(Part* pPart);
     void UnlistSpecialParts(Part* pPart);
     void ListSpecialPartsR(Part* pPart);
+    void ListSpringPartsR(Part* pPart);
     void UpdateEmitters();
     CAurObject* HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
                            CHitInfo* pHitInfo);

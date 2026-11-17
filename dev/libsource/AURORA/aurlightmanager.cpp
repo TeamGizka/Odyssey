@@ -1243,6 +1243,12 @@ void LightManager::EnableBumpMapLights()
 }
 
 // Dead code: not in the PC executable
+List<PartLight*>* LightManager::GetPhongLights()
+{
+    return &m_lstExcludedShaderLights;
+}
+
+// Dead code: not in the PC executable
 void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
 {
     int i = m_lstExcludedShaderLights.m_nCount;
@@ -1273,6 +1279,17 @@ void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
             break;
         }
     }
+}
+
+// Dead code: not in the PC executable
+void LightManager::DisablePhongLights()
+{
+    int i = m_lstExcludedShaderLights.m_nCount;
+    while (i != 0)
+    {
+        EnableThisLight(m_lstExcludedShaderLights[--i]);
+    }
+    m_lstExcludedShaderLights.m_nCount = 0;
 }
 
 #ifdef _XBOX
