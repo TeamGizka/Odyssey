@@ -235,6 +235,7 @@ public:
     void PackModuleIntoMessage(unsigned long nPlayerId);
     void PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
         CExoArrayList<NWPlayerCharacterList_st*>& lstCharacters);
+    void UnloadModule();
     void AddObjectToLimbo(unsigned long oidObject);
     
     void SaveLimboCreatures(CResGFF* pRes, CResStruct* pStruct);

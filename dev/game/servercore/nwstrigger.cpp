@@ -1178,6 +1178,22 @@ CExoString* CSWSTrigger::GetScriptName(int nScript)
     }
     return &m_asScripts[nScript];
 }
+
+// Dead code: not in the PC executable
+Vector CSWSTrigger::GetFacingPosition()
+{
+    Vector vFacing;
+    float fMinimumX;
+    float fMinimumY;
+    float fMaximumX;
+    float fMaximumY;
+
+    ComputeBoundingBox(&fMinimumX, &fMinimumY, &fMaximumX, &fMaximumY);
+    vFacing.m_fX = (fMaximumX - fMinimumX) * 0.5f + fMinimumX;
+    vFacing.m_fY = (fMaximumY - fMinimumY) * 0.5f + fMinimumY;
+    vFacing.m_fZ = GetArea()->ComputeHeight(vFacing, 1, NULL);
+    return vFacing;
+}
 // PC 0x005841F0 GOG 0x00584270
 int CSWSTrigger::InTrigger(const Vector& vPosition)
 {

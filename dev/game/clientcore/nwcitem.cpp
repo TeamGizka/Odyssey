@@ -81,6 +81,15 @@ CSWCItem::~CSWCItem()
     m_pPowerSound = NULL;
 }
 
+// Dead code: not in the PC executable
+void CSWCItem::UnloadVisualEffect()
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel(MODEL_SLOT_VISUAL_EFFECT);
+    }
+}
+
 #include "appmanager.h"
 
 #define NWCITEM_DEBUG 0

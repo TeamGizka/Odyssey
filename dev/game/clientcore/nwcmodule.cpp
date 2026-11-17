@@ -1030,6 +1030,16 @@ void CSWCModule::LoadAnimatedCamera(const CResRef& cAnimatedCamera)
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWCModule::UnloadAnimatedCamera()
+{
+    if (m_pAnimatedCamera != NULL)
+    {
+        delete m_pAnimatedCamera;
+        m_pAnimatedCamera = NULL;
+    }
+}
 // PC 0x00697E30 GOG 0x00697BE0
 float CSWCModule::SetAnimatedCamera(unsigned short nAnimation,
                                     float fFieldOfView, unsigned long oidTarget)

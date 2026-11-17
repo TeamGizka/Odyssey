@@ -328,6 +328,12 @@ void CSWSArea::GridDFSTransTablePut(int nX, int nY, int nScore, int nTieBreak)
     m_pGridTransTable[nSlot].m_nScore = nScore;
     m_pGridTransTable[nSlot].m_nTieBreak = nTieBreak;
 }
+
+// Dead code: not in the PC executable
+int CSWSArea::GridDFSTransTableHash(int nX, int nY)
+{
+    return (17 * nX + 23 * nY + 6000) % 256;
+}
 // PC 0x004FCA20 GOG 0x004F4B00
 int CSWSArea::NoNoneWalkPolysInStaticObject(
     unsigned long oidObject, const Vector& vStart, const Vector& vEnd,
@@ -1818,6 +1824,13 @@ int CSWSArea::ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,
     } while (bRepeat == 1);
     return bShrunk;
 }
+
+// Dead code: not in the PC executable
+int CSWSArea::PlotPath(CPathfindInformation* pPathfind,
+                       unsigned __int64 nFlags)
+{
+    return 0;
+}
 // PC 0x00500E80 GOG 0x004F8F60
 int CSWSArea::SmoothCornerOptimize(int nPoints, float* pfPoints,
                                     int* pnResultCount, float** ppfResult)
@@ -2409,6 +2422,13 @@ int CSWSArea::ComputeSafeLocationInDirection(const Vector& vPosition,
         }
     }
     return ComputeSafeLocation(vPosition, fDistance, pPathfind, nFlags, pvLocation);
+}
+
+// Dead code: not in the PC executable
+int CSWSArea::TestLineWalkable(float fStartX, float fStartY, float fEndX,
+                               float fEndY, float fZ)
+{
+    return 1;
 }
 // PC 0x00502460 GOG 0x004FA540
 int CSWSArea::SmoothSelectionRestartable(int nPoints, float* pfPoints,

@@ -272,7 +272,9 @@ public:
                          float** ppfResult);
     int SmoothPointsOnPath();
     int SmoothPointsOnPathRestartable();
+    int TestLineWalkable(float fStartX, float fStartY, float fEndX, float fEndY, float fZ);
     int PlotGridPath(CPathfindInformation* pPathfind, unsigned __int64 nFlags);
+    int PlotPath(CPathfindInformation* pPathfind, unsigned __int64 nFlags);
     int PlotSoundPath(CPathfindInformation* pPathfind);
     int PlotPathPointPath(CPathfindInformation* pPathfind,
                           unsigned __int64 nFlags);
@@ -285,6 +287,7 @@ public:
     void GridDFSTransTableInitialize();
     int GridDFSTransTableGet(int nX, int nY, int* pnScore, int* pnTieBreak);
     void GridDFSTransTablePut(int nX, int nY, int nScore, int nTieBreak);
+    int GridDFSTransTableHash(int nX, int nY);
     void PathPointDFSTransTableInitialize();
     int PathPointDFSTransTableGet(float fX, float fY, float* pfScore,
                                   float* pfTieBreak);

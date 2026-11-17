@@ -918,6 +918,13 @@ CServerAIList::CServerAIList()
 {
     m_nCurrent = 0;
 }
+
+// Dead code: not in the PC executable
+BOOL CServerAIList::AddObject(unsigned long oidObject)
+{
+    AddUnique(oidObject);
+    return TRUE;
+}
 // PC 0x004DDFE0 GOG 0x004DE100
 CServerAIMaster::CServerAIMaster()
 {

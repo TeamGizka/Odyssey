@@ -298,6 +298,59 @@ void CWorldTimer::UnpauseWorldTimer()
             m_nPausedTimeOfDay - nMilliseconds % m_nMillisecondsPerDay;
     }
 }
+
+// Dead code: not in the PC executable
+unsigned long CWorldTimer::GetWorldTimeCalendarDay()
+{
+    unsigned long nCalendarDay;
+    unsigned long nTimeOfDay;
+    GetWorldTime(&nCalendarDay, &nTimeOfDay);
+    return nCalendarDay;
+}
+
+// Dead code: not in the PC executable
+CExoString CWorldTimer::TranslateWorldTimeToString(unsigned long nCalendarDay,
+                                                   unsigned long nTimeOfDay,
+                                                   CExoString& sDayLabel,
+                                                   CExoString& sMonthLabel)
+{
+    CExoString sResult;
+    unsigned long nYear;
+    unsigned long nMonth;
+    unsigned long nDay;
+    unsigned long nHour;
+    unsigned long nMinute;
+    unsigned long nSecond;
+    unsigned long nMillisecond;
+    ConvertFromCalendarDay(nCalendarDay, &nYear, &nMonth, &nDay);
+    ConvertFromTimeOfDay(nTimeOfDay, &nHour, &nMinute, &nSecond, &nMillisecond);
+    sResult.Format("%s %02d, %s %02d, %04d  [%02d:%02d]", sDayLabel.CStr(), nDay,
+                   sMonthLabel.CStr(), nMonth, nYear, nHour, nMinute);
+    return sResult;
+}
+
+// Dead code: not in the PC executable
+unsigned long CWorldTimer::GetWorldTimeYear()
+{
+    unsigned long nYear = GetWorldTimeCalendarDay() / DAYS_IN_MONTH / MONTHS_IN_YEAR;
+    if (nYear > MAX_YEAR_LIMIT)
+    {
+        nYear = DEFAULT_YEAR;
+    }
+    return nYear;
+}
+
+// Dead code: not in the PC executable
+unsigned long CWorldTimer::GetWorldTimeMonth()
+{
+    return GetWorldTimeCalendarDay() / DAYS_IN_MONTH % MONTHS_IN_YEAR + 1;
+}
+
+// Dead code: not in the PC executable
+unsigned long CWorldTimer::GetWorldTimeDay()
+{
+    return GetWorldTimeCalendarDay() % DAYS_IN_MONTH + 1;
+}
 // PC 0x004DB820 GOG 0x004DB960
 unsigned long CWorldTimer::GetWorldTimeHour()
 {

@@ -1587,6 +1587,7 @@ public:
     int ExecuteCommandGetLastAssociateCommand(int nCommand, int nArgs);
     int ExecuteCommandSetAssociateListenPatterns(int nCommand, int nArgs);
     int ExecuteCommandSetDislike(int nCommand, int nArgs);
+    int ExecuteCommandGetFactionNthNearestMember(int nCommand, int nArgs);
 };
 
 #endif

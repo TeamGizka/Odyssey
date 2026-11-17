@@ -55,6 +55,7 @@ class CServerAIList : public CExoArrayList<unsigned long>
 {
 public:
     CServerAIList();
+    BOOL AddObject(unsigned long oidObject);
 
     BOOL RemoveObject(unsigned long oidObject);
 

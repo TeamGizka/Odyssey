@@ -94,6 +94,12 @@ int CScriptEvent::operator==(const CScriptEvent& sev) const
 
     return TRUE;
 }
+
+// Dead code: not in the PC executable
+int CScriptEvent::operator!=(const CScriptEvent& sev) const
+{
+    return !(*this == sev);
+}
 // PC 0x005401A0 GOG 0x0052CAE0
 int CScriptEvent::SaveEvent(CResGFF* pRes, CResStruct* pStruct)
 {

@@ -59,6 +59,7 @@ public:
     void UpdateCameraModeBG();
     void UpdateCameraModeEQ(float fTimeStep);
     void LoadAnimatedCamera(const CResRef& cAnimatedCamera);
+    void UnloadAnimatedCamera();
     float SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView,
                             unsigned long oidTarget);
     int IsCameraAnimated();

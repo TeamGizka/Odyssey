@@ -7,6 +7,19 @@ class Vector;
 
 class CSWSCreature;
 
+class CPathfindInfoIntraTileSuccessors
+{
+public:
+    CPathfindInfoIntraTileSuccessors();
+
+    float m_fStartX;
+    float m_fStartY;
+    float m_fEndX;
+    float m_fEndY;
+    float m_fDistance;
+    int m_nTriangle;
+};
+
 class CPathfindInformation
 {
 public:
@@ -31,6 +44,9 @@ public:
     static const int SMOOTHING_STEP_4;
 
     void DeleteFirstTileFValueAlternatives();
+    void CreateFirstTileFValueAlternatives(int nCount);
+    void GetFirstTileFValueAlternatives(int nTile, int* pnFValue, int* pnFValue2, CPathfindInfoIntraTileSuccessors** ppSuccessors);
+    void SetFirstTileFValueAlternatives(int nTile, int nFValue, int nFValue2, CPathfindInfoIntraTileSuccessors* pSuccessors);
     void FlipStartEndPoints();
     void FlipTempEndPoints();
     void ComputeStepTolerance();
@@ -217,7 +233,7 @@ public:
     int m_nFirstTileCount;
     int* m_pFirstTileFValue;
     int* m_pFirstTileFValue2;
-    int** m_ppFirstTileFValueAlternatives;
+    CPathfindInfoIntraTileSuccessors** m_ppFirstTileFValueAlternatives;
     int* m_pField_F4;
     int m_bWayPointCut;
     int m_nWayPointCutState;
@@ -338,6 +354,7 @@ public:
 
     void ComputeHexPoints(const Vector& vCenter, const Vector& vDirection,
                          float fRadius);
+    void Render();
     int SideClearOfObstructions(unsigned long oidCreature, const Vector& vFrom,
                                 const Vector& vTo, unsigned long& oidBlocker);
     int IsPathClear(unsigned long oidCreature, Vector* pPoints, int nPoints,

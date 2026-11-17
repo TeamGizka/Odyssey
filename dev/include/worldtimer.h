@@ -3,6 +3,8 @@
 
 #define WORLD_TIMER_SNAPSHOT_TICKS_PER_MILLISECOND 1000
 
+class CExoString;
+
 #ifndef _XBOX
 #pragma pack(push, 1)
 #endif
@@ -75,6 +77,14 @@ public:
                           unsigned long nDay2, unsigned long nTime2);
     void PauseWorldTimer();
     void UnpauseWorldTimer();
+    unsigned long GetWorldTimeCalendarDay();
+    CExoString TranslateWorldTimeToString(unsigned long nCalendarDay,
+                                          unsigned long nTimeOfDay,
+                                          CExoString& sDayLabel,
+                                          CExoString& sMonthLabel);
+    unsigned long GetWorldTimeYear();
+    unsigned long GetWorldTimeMonth();
+    unsigned long GetWorldTimeDay();
     unsigned long GetWorldTimeHour();
     unsigned long GetWorldTimeMinute();
     unsigned long GetWorldTimeSecond();

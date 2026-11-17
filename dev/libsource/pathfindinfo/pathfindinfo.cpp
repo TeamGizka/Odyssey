@@ -251,6 +251,44 @@ void CPathfindInformation::ResetIntraTileSearchData()
     }
     m_pField_F4 = 0;
 }
+
+// Dead code: not in the PC executable
+void CPathfindInformation::GetFirstTileFValueAlternatives(
+    int nTile, int* pnFValue, int* pnFValue2,
+    CPathfindInfoIntraTileSuccessors** ppSuccessors)
+{
+    *pnFValue = m_pFirstTileFValue[nTile];
+    *pnFValue2 = m_pFirstTileFValue2[nTile];
+    *ppSuccessors = m_ppFirstTileFValueAlternatives[nTile];
+}
+
+// Dead code: not in the PC executable
+void CPathfindInformation::SetFirstTileFValueAlternatives(
+    int nTile, int nFValue, int nFValue2,
+    CPathfindInfoIntraTileSuccessors* pSuccessors)
+{
+    m_pFirstTileFValue[nTile] = nFValue;
+    m_pFirstTileFValue2[nTile] = nFValue2;
+    m_ppFirstTileFValueAlternatives[nTile] = pSuccessors;
+}
+
+// Dead code: not in the PC executable
+void CPathfindInformation::CreateFirstTileFValueAlternatives(int nCount)
+{
+    if (m_ppFirstTileFValueAlternatives != 0)
+    {
+        DeleteFirstTileFValueAlternatives();
+    }
+    m_ppFirstTileFValueAlternatives =
+        new CPathfindInfoIntraTileSuccessors*[nCount];
+    for (int i = 0; i < nCount; i++)
+    {
+        m_ppFirstTileFValueAlternatives[i] = 0;
+    }
+    m_pFirstTileFValue = new int[nCount];
+    m_pFirstTileFValue2 = new int[nCount];
+    m_nFirstTileCount = nCount;
+}
 // PC 0x0061A1D0 GOG 0x0061A1B0
 void CPathfindInformation::FlipStartEndPoints()
 {
@@ -515,6 +553,11 @@ void CAvoidCreature::ComputeHexPoints(const Vector& vCenter,
         g_pAppManager->GetServerExoApp()->GetModule()->GetArea()->GetResRef(),
         vPoint, 1);
     m_vHexPoints[5] = vPoint;
+}
+
+// Dead code: not in the PC executable
+void CAvoidCreature::Render()
+{
 }
 // PC 0x0061B0B0 GOG 0x0061B090
 Vector* CAvoidCreature::FindPath_Left(int& nPoints)
@@ -870,6 +913,17 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
         delete pSecondPath;
     }
     return bResult;
+}
+
+// Dead code: not in the PC executable
+CPathfindInfoIntraTileSuccessors::CPathfindInfoIntraTileSuccessors()
+{
+    m_fStartX = 0.0f;
+    m_fStartY = 0.0f;
+    m_fEndX = 0.0f;
+    m_fEndY = 0.0f;
+    m_fDistance = 0.0f;
+    m_nTriangle = 0;
 }
 // PC 0x0061C850 GOG 0x0061C830
 CPathfindInformation::CPathfindInformation()

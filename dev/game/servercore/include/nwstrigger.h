@@ -83,6 +83,7 @@ public:
     CExoArrayList<unsigned long>* GetCreatureList() { return &m_lstTrapTargets; }
 
     CExoString* GetScriptName(int nScript);
+    Vector GetFacingPosition();
     int GetTargetArea();
     int CalculateNearestPoint(Vector const&, Vector*);
     void ComputeBoundingBox(float*, float*, float*, float*);

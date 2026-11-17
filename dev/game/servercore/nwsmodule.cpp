@@ -2173,6 +2173,11 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
         nIndex++;
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSModule::UnloadModule()
+{
+}
 // PC 0x00509EF0 GOG 0x00501FA0
 int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
 {

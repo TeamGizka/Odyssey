@@ -50,6 +50,7 @@ public:
     int GetActivePropertySpellID(int nIndex);
     void SetStackSize(int nStackSize);
     int LoadVisualEffect(unsigned char nEffect);
+    void UnloadVisualEffect();
     void PlayDropSound();
     void ShowVisualEffect();
     void HideVisualEffect();

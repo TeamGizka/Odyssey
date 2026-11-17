@@ -311,6 +311,12 @@ void* CSWVirtualMachineCommands::CreateGameDefinedStructure(int nType)
     }
     return NULL;
 }
+
+// Dead code: not in the PC executable
+int CSWVirtualMachineCommands::ExecuteCommandGetFactionNthNearestMember(int, int)
+{
+    return 0;
+}
 // PC 0x005ADFA0 GOG 0x005AE010
 int CSWVirtualMachineCommands::ExecuteCommandActionBarkString(int nCommand,
                                                             int nArgs)
