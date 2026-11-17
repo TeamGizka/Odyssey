@@ -190,7 +190,7 @@ inline CAurCamera::~CAurCamera()
 {
     if (AURCAMERA_DEBUG)
     {
-        Vector vPosition;
+        printf("CAurCamera::~CAurCamera() position x %f\n", Vector().m_fX);
     }
 }
 // PC 0x00471530 GOG 0x00471670

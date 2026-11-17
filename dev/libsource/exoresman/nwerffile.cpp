@@ -26,7 +26,7 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
 {
     if (NWERFFILE_DEBUG)
     {
-        SetNumEntries(0);
+        printf("CERFFile::ExportFilesFromERF() set entries %d\n", SetNumEntries(0));
     }
 
     CExoFile file(sFileName, 2057, "rb");
@@ -388,7 +388,7 @@ int CERFFile::WriteResource(const CExoString& sFileName, void* hSignature)
 {
     if (NWERFFILE_DEBUG)
     {
-        SetNumEntries(m_nNumEntries);
+        printf("CERFFile::WriteResource() set entries %d\n", SetNumEntries(m_nNumEntries));
     }
     if (m_nCurEntry < m_nNumEntries && m_pFile != NULL)
     {
@@ -853,7 +853,7 @@ int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 {
     if (NWERFFILE_DEBUG)
     {
-        Write(*pOut, 0);
+        printf("CERFRes::CopyToFile() written %d\n", Write(*pOut, 0));
     }
     pIn->Seek(m_nOffset, 0);
 
@@ -896,7 +896,7 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
 {
     if (NWERFFILE_DEBUG)
     {
-        SetNumEntries(m_nNumEntries);
+        printf("CERFFile::WriteResource() set entries %d\n", SetNumEntries(m_nNumEntries));
     }
     CERFKey key;
     CERFRes res;

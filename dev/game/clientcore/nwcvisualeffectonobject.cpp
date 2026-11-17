@@ -2544,8 +2544,8 @@ void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
                 }
                 if (FALSE)
                 {
-                    CExoString sChunkModel;
-                    sChunkModel = sBloodColor;
+                    CExoString sChunkModel = sBloodColor;
+                    printf("CSWCVisualEffectOnObject::ApplyChunk() chunk model %s\n", sChunkModel.CStr());
                 }
             }
         }

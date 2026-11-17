@@ -82,7 +82,7 @@ CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 {
     if (NWSEXPRESSION_DEBUG)
     {
-        m_pList->AddNode(NULL);
+        EXOLOG("CSWSExpression::NewNode() add node %d\n", m_pList->AddNode(NULL));
     }
     CSWSExpressionNode* pNode = new CSWSExpressionNode;
     pNode->m_nType = nType;

@@ -30,7 +30,7 @@ void SJournalEntry::Update(SJournalEntry entry, unsigned short nFlags)
 {
     if (NWSJOURNAL_DEBUG)
     {
-        CSWSPlayerJournalQuestUpdates stUpdate;
+        EXOLOG("SJournalEntry::Update: quest update %d\n", CSWSPlayerJournalQuestUpdates().m_nQuest);
     }
     m_sPlotID = entry.m_sPlotID;
     if ((nFlags & 1) || (nFlags & 0x8000))

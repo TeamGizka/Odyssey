@@ -6820,7 +6820,7 @@ int CSWSEffectListHandler::OnRemoveInvisibility(CSWSObject* pObject,
 {
     if (NWSEFFECTLIST_DEBUG)
     {
-        OnApplyInvisibility(pObject, pEffect, 0);
+        EXOLOG("CSWSEffectListHandler::OnRemoveInvisibility() apply %d\n", OnApplyInvisibility(pObject, pEffect, 0));
     }
     CSWSCreature* pCreature;
     CGameEffect* pOther;

@@ -5879,7 +5879,7 @@ int CSWSCreature::CanUseItem(CSWSItem* pItem, int bIgnoreIdentifiedFlag,
     if (NWSCREATUREAI_DEBUG)
     {
         unsigned long nSlot;
-        CanEquipItem(pItem, &nSlot, 0, 0, 0);
+        EXOLOG("CSWSCreature::CanUseItem() can equip %d\n", CanEquipItem(pItem, &nSlot, 0, 0, 0));
     }
     int bCanUse = TRUE;
     if (pItem == NULL)

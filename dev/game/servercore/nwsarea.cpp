@@ -3436,7 +3436,7 @@ void CSWSArea::AwardStealthXP(unsigned long oidObject)
     if (NWSAREA_DEBUG)
     {
         unsigned long oidObjectInArea;
-        GetFirstObjectInArea(oidObjectInArea);
+        printf("CSWSArea::AwardStealthXP() object in area %d\n", GetFirstObjectInArea(oidObjectInArea));
     }
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidObject);

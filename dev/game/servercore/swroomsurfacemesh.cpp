@@ -218,7 +218,7 @@ int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
 {
     if (SWROOMSURFACEMESH_DEBUG)
     {
-        _CSWWalkMeshHeader stHeader;
+        EXOLOG("CSWRoomSurfaceMesh::LoadMeshBinary() header type %d\n", _CSWWalkMeshHeader().m_nType);
     }
     int nResult = CSWCollisionMesh::LoadMeshBinary(pMesh);
 

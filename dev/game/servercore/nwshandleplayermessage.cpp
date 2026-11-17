@@ -2811,7 +2811,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
 {
     if (NWSHANDLEPLAYERMESSAGE_DEBUG)
     {
-        HandlePlayerToServerInputMessage(pPlayer, nMinor);
+        printf("CSWSMessage::HandlePlayerToServerParty() input %d\n", HandlePlayerToServerInputMessage(pPlayer, nMinor));
     }
     STR_RES strRes;
     CExoString sMessage;

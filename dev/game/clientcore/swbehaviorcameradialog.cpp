@@ -533,7 +533,7 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
 {
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
     {
-        DestroyDialogCamera(this);
+        printf("CSWBehaviorCameraDialog::SetShot() shot %d\n", nShot);
     }
     Vector vHookPosition;
     Quaternion qHookOrientation;

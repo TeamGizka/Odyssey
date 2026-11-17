@@ -57,7 +57,7 @@ void CSWSDialog::AddPlayer(CSWSDialogPlayer* pPlayer)
 {
     if (NWSOBJECT_DEBUG)
     {
-        CSWSScriptVar var;
+        printf("CSWSDialog::AddPlayer() var type %d\n", CSWSScriptVar().m_nType);
     }
     if (pPlayer != NULL)
         m_lstPlayers.AddTail(pPlayer);
@@ -632,7 +632,7 @@ void CSWSObject::RemoveEffectTarget(unsigned long oidTarget)
 {
     if (NWSOBJECT_DEBUG)
     {
-        AddLoopingVisualEffect(0, oidTarget, 0);
+        printf("CSWSObject::RemoveEffectTarget() spell effect applied %d\n", HasSpellEffectApplied(0));
     }
     CGameObject* pTarget =
         g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);

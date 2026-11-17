@@ -231,7 +231,7 @@ int CSWCollisionMesh::LoadDefaultMesh()
     if (SWCOLLISIONMESH_DEBUG)
     {
         Vector avDefaultBounds[2];
-        GetMeshBoundingBox(avDefaultBounds[0], avDefaultBounds[1]);
+        EXOLOG("CSWCollisionMesh::LoadDefaultMesh() bounding box %d\n", GetMeshBoundingBox(avDefaultBounds[0], avDefaultBounds[1]));
     }
     return 1;
 }

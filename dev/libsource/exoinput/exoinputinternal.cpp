@@ -1780,7 +1780,7 @@ void CExoInputInternal::ClearAllInputEventDescriptions()
     if (EXOINPUTINTERNAL_DEBUG)
     {
         int nEvents = 0;
-        CExoArrayList<CExoInputEvent> lstEvents = GetEvents(nEvents, 0);
+        EXOLOG("CExoInputInternal::ClearAllInputEventDescriptions() events %d\n", GetEvents(nEvents, 0).num);
     }
     for (int nClass = 0; nClass < 6; nClass++)
     {

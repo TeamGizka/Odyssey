@@ -546,7 +546,7 @@ unsigned char CExoInput::GetMouseMode()  // PC 0x0062B9F0 GOG 0x0062B8E0
     if (EXOINPUT_DEBUG)
     {
         int nEvents = 0;
-        CExoArrayList<CExoInputEvent> lstEvents = GetEvents(nEvents, 0);
+        EXOLOG("CExoInput::GetMouseMode() events %d\n", GetEvents(nEvents, 0).num);
     }
     return m_pExoInputInternal->m_nMouseMode;
 }

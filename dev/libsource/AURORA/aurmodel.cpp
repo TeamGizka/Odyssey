@@ -979,10 +979,6 @@ inline CAurObject::~CAurObject()
 // PC 0x0045CD30 GOG 0x0045CE70
 Part* MdlNode::CreateInstanceDispatch(Gob* pGob)
 {
-    if (AURMODEL_DEBUG)
-    {
-        DestructorDispatch();
-    }
     switch (m_nNodeType)
     {
     case MDL_NODE_HEADER:

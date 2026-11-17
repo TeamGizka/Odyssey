@@ -59,7 +59,7 @@ int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 {
     if (NWVMACHINEINTERNAL_DEBUG)
     {
-        AssignLocationToLocation(0, 0);
+        EXOLOG("CVirtualMachineStack::SaveStack: stack pointer %d\n", GetStackPointer());
     }
     CResList cStackList;
     CResStruct cElement;
@@ -170,7 +170,7 @@ void CVirtualMachineStack::ClearStack()
 {
     if (NWVMACHINEINTERNAL_DEBUG)
     {
-        AssignLocationToLocation(0, 0);
+        EXOLOG("CVirtualMachineStack::ClearStack: base pointer %d\n", GetBasePointer());
     }
     int nLocation;
 

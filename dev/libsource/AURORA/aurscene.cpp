@@ -3229,7 +3229,7 @@ void InitGrassBins(Vector vMin, Vector vMax,
 {
     if (AURSCENE_DEBUG)
     {
-        SafePointer<CAurTexture> pTexture;
+        printf("InitGrassBins() texture %p\n", SafePointer<CAurTexture>().m_pObject);
     }
     lstBins.m_nCount = 0;
     int nBinsX;

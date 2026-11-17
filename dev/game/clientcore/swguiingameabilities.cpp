@@ -807,7 +807,7 @@ void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
 {
     if (SWGUIINGAMEABILITIES_DEBUG)
     {
-        DisplayPowers();
+        printf("CSWGuiInGameAbilities::SetDescription() strref %d\n", nStrRef);
     }
     STR_RES strDescription;
 

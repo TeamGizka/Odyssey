@@ -374,8 +374,8 @@ void Particle::randomDirection(int nWidth, int nHeight)
             Vector vAxis = cross(vCameraDirection, m_qOrientation.ydir());
             if (EMITTER_DEADSPACE_DEBUG)
             {
-                qNewOrientation.m_fW = 0.0f;
-                qNewOrientation.m_fZ = 0.0f;
+                printf("Particle::randomDirection() dead space %f %f\n", qNewOrientation.m_fW,
+                       qNewOrientation.m_fZ);
             }
             if (fFacing < 0.0f)
             {
@@ -1106,7 +1106,6 @@ void PartEmitter::RenderNothing()  // PC 0x004BB510 GOG 0x004BB620
     }
 }
 
-#define EMITTER_MOTIONBLUR_DEBUG 0
 #ifndef _XBOX
 void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630 GOG 0x004BB740
 {
@@ -4395,12 +4394,6 @@ void PartEmitter::RenderMotionBlurred()
         fFrameTime = 0.0f;
     m_pEmitterMaterial->BindTexture0();
     m_pEmitterMaterial->SetBlendingMode(0);
-    if (EMITTER_MOTIONBLUR_DEBUG)
-    {
-        vCameraDirection.m_fX = 0.0f;
-        vCameraDirection.m_fY = 0.0f;
-        vCameraDirection.m_fZ = 0.0f;
-    }
     vCameraDirection = CurrentCamera->m_qOrientation.zdir();
     qCamera = CurrentCamera->m_qOrientation;
 
@@ -4661,13 +4654,6 @@ void PartEmitter::RenderMotionBlurred()
     GLRender_Enable(ENABLE_CULL_FACE);
     if (bFog)
         GLRender_Enable(ENABLE_FOG);
-    if (EMITTER_MOTIONBLUR_DEBUG)
-    {
-        qCamera.m_fW = 0.0f;
-        qCamera.m_fX = 0.0f;
-        qCamera.m_fY = 0.0f;
-        qCamera.m_fZ = 0.0f;
-    }
 }
 #endif
 

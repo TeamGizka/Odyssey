@@ -798,8 +798,8 @@ int CSWCameraFreeLook::Control(float fTimeStep)
 {
     if (SWBEHAVIORCAMERA_DEBUG)
     {
-        CSWCameraOnAStick* pOnAStick = NULL;
-        Vector vHead = pOnAStick->GetTargetHeadPosition();
+        CSWCameraOnAStick* pOnAStick = (CSWCameraOnAStick*)m_pObject->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+        EXOLOG("CSWCameraFreeLook::Control() target head %f\n", pOnAStick->GetTargetHeadPosition().m_fZ);
     }
     if (CAurBehavior::Control(fTimeStep))
     {

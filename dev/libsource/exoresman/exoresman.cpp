@@ -3441,7 +3441,7 @@ int CResRef::operator!=(const CExoString& sString) const
 {
     if (EXORESMAN_DEBUG)
     {
-        CResRef cResRef(sString);
+        printf("CResRef::operator!=() resref %s\n", CResRef(sString).GetResRefStr());
     }
     sString.IsEmpty();
 

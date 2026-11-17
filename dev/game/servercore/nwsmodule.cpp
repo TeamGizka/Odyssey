@@ -2163,7 +2163,7 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
 {
     if (NWSMODULE_DEBUG)
     {
-        LoadLimboCreatures(NULL, NULL, 0);
+        EXOLOG("CSWSModule::PackPlayerCharacterListIntoMessage() limbo creatures %d\n", LoadLimboCreatures(NULL, NULL, 0));
     }
     int nIndex = 0;
     CResRef cPortrait;

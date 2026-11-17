@@ -1453,7 +1453,7 @@ CExoResFile::CExoResFile()
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoResFile::CExoResFile() files %d\n", CExoArrayList<CExoString>().num);
     }
     m_nRefCount = 0;
     Initialize();
@@ -1463,7 +1463,7 @@ CExoResFile::~CExoResFile()
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoResFile::~CExoResFile() files %d\n", CExoArrayList<CExoString>().num);
     }
     CloseFile();
 }
@@ -1481,7 +1481,7 @@ CExoEncapsulatedFile::~CExoEncapsulatedFile()
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoEncapsulatedFile::~CExoEncapsulatedFile() files %d\n", CExoArrayList<CExoString>().num);
     }
     CloseFile();
 }
@@ -1505,7 +1505,7 @@ CExoResourceImageFile::~CExoResourceImageFile()
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoResourceImageFile::~CExoResourceImageFile() files %d\n", CExoArrayList<CExoString>().num);
     }
     CExoResourceImageFile::CloseFile();
 }
@@ -1514,7 +1514,7 @@ unsigned long CExoResourceImageFile::GetResourceSize(unsigned long nId)
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoResourceImageFile::GetResourceSize() files %d\n", CExoArrayList<CExoString>().num);
     }
     CExoResourceImageFileEntry sEntry = GetKeyListEntry(nId & 0x3FFF);
 
@@ -1525,7 +1525,7 @@ void* CExoResourceImageFile::GetResource(unsigned long nId)
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoResourceImageFile::GetResource() files %d\n", CExoArrayList<CExoString>().num);
     }
     CExoResourceImageFileEntry sEntry = GetKeyListEntry(nId & 0x3FFF);
 
@@ -1539,7 +1539,7 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoResourceImageFile::ReadResource() files %d\n", CExoArrayList<CExoString>().num);
     }
     if (m_bFileOpened && pBuffer != NULL)
     {
@@ -1574,10 +1574,6 @@ template <>
 inline CExoArrayList<CExoString>::CExoArrayList(
     const CExoArrayList<CExoString>& list)
 {
-    if (EXORESFILE_DEBUG)
-    {
-        CExoArrayList<CExoString> lstFiles;
-    }
     num = 0;
     array_size = 0;
     element = NULL;
@@ -1591,7 +1587,7 @@ CExoKeyTable::~CExoKeyTable()
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("CExoKeyTable::~CExoKeyTable() files %d\n", CExoArrayList<CExoString>().num);
     }
     if (m_pPackedFiles != NULL)
     {
@@ -1831,10 +1827,6 @@ int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 // PC 0x004101F0 GOG 0x004101A0
 int CExoKeyTable::AddResourceImageContents(int bFlag)
 {
-    if (EXORESFILE_DEBUG)
-    {
-        CExoArrayList<CExoString> lstFiles;
-    }
     CResRef resRef;
     CExoResourceImageFileEntry sEntry;
     unsigned long i;
@@ -2358,6 +2350,6 @@ static inline void TraceListAllocate()
 {
     if (EXORESFILE_DEBUG)
     {
-        CExoArrayList<CExoString> lstFiles;
+        printf("TraceListAllocate() files %d\n", CExoArrayList<CExoString>().num);
     }
 }
