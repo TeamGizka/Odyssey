@@ -4,14 +4,14 @@ A reconstruction of the Odyssey game engine
 # Star Wars: Knights of the Old Republic II: The Sith Lords
 
 Source tree and build of the PC game executable, `swkotor2.exe` (Steam release, file version 2.2.0.0, linked
-2005-03-03). The tree started from the sources of the first game (branch `k1`). The `tier-b` build reproduces
+2005-03-03). The tree started from the sources of the first game (branch `k1`). The `tier-a` build reproduces
 `swkotor2.exe` byte for byte (see Build).
 
 ```
 dev/          the game: engine libraries (libsource/) and game layers and the executable (game/)
 3rdparty/     where the Miles Sound System, Bink and NvTriStrip SDKs go (not distributed, see below)
 cmake/        toolchain files, platform settings and build helpers
-scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.exe; keeperfill/: the tier-b filler block
+scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.exe; keeperfill/: the tier-a filler block
 ```
 
 ## Prerequisites
@@ -48,24 +48,24 @@ with the same options; they differ only in how the linker lays out the functions
 
 | Preset | |
 |---|---|
-| `tier-a` | the default. The linker places the functions in the order of the shipped file, listed in `cmake/order/swkotor2.txt` (`/ORDER`, `KOTOR_LINK_ORDER=ON`). Every function is identical to the shipped one; the file as a whole is not (see below). |
-| `tier-b` | byte-identical `swkotor2.exe` (SHA-256 `3144437a7e0009bb6b59165783d7ab233f66606ace83a68089153a13fd0a2c13`). No order file; a generated block of unreferenced functions is compiled into `appmanager.cpp` (`KOTOR_KEEPER_FILL=ON`, `scripts/keeperfill/`). |
-| `plain` | the source tree alone: no order file, no filler block. Every function is identical to the shipped one, in the linker's default order. |
+| `tier-a` | the default: byte-identical `swkotor2.exe` (SHA-256 `3144437a7e0009bb6b59165783d7ab233f66606ace83a68089153a13fd0a2c13`). No order file; a generated block of unreferenced functions is compiled into `appmanager.cpp` (`KOTOR_KEEPER_FILL=ON`, `scripts/keeperfill/`). |
+| `tier-b` | no filler block. The linker places the functions in the order of the shipped file, listed in `cmake/order/swkotor2.txt` (`/ORDER`, `KOTOR_LINK_ORDER=ON`). Every function is identical to the shipped one; the file as a whole is not (see below). |
+| `tier-c` | the source tree alone: no order file, no filler block. Every function is identical to the shipped one, in the linker's default order. |
 | `vc70` | the toolchain preset the three above inherit; its default options build the same as `tier-a` |
 | `xbox` | Xbox configuration, see below |
 
 The linker folds identical functions into one copy and keeps one of them. Which copy it keeps depends on every
 function in the link, including unreferenced ones that it discards afterwards; those of the original build are not
-known. In `plain` some kept copies therefore sit elsewhere than in the shipped file. The `tier-b` filler block is
+known. In `tier-c` some kept copies therefore sit elsewhere than in the shipped file. The `tier-a` filler block is
 never referenced and leaves no byte in the image: its only effect is that every folded group keeps the same copy
 as the original, which puts every function and every exception-handling funclet at its original address. It is not
-game code and exists only for that purpose. `tier-a` places the kept copies with the order file instead, but an order
+game code and exists only for that purpose. `tier-b` places the kept copies with the order file instead, but an order
 file can only name functions with external linkage: the static functions follow the listed ones, the C runtime
-behind them, and the exception-handling funclets keep the layout of `plain`. After a change to the sources, write
-the order file again from the map of a `tier-b` build:
+behind them, and the exception-handling funclets keep the layout of `tier-c`. After a change to the sources, write
+the order file again from the map of a `tier-a` build:
 
 ```
-python cmake/order/order_file.py from-map build/tier-b/dev/game/swmain/swkotor2.map cmake/order/swkotor2.txt
+python cmake/order/order_file.py from-map build/tier-a/dev/game/swmain/swkotor2.map cmake/order/swkotor2.txt
 ```
 
 Targets: `swmain` links `dev/game/swmain/swkotor2.exe` in the build directory; `swkotor2_release` (part of the

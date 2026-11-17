@@ -1,10 +1,10 @@
 """The order file of swkotor2.exe: cmake/order/swkotor2.txt, used when KOTOR_LINK_ORDER is ON.
 
-    python cmake/order/order_file.py from-map build/tier-b/dev/game/swmain/swkotor2.map cmake/order/swkotor2.txt
+    python cmake/order/order_file.py from-map build/tier-a/dev/game/swmain/swkotor2.map cmake/order/swkotor2.txt
     python cmake/order/order_file.py resolve cmake/order/swkotor2.txt <output> <build directory>
 
 from-map writes the order file from the link map of a build whose functions are in the original order, such as the
-tier-b build. It lists the functions of .text in address order, one decorated name per line, up to the first
+tier-a build. It lists the functions of .text in address order, one decorated name per line, up to the first
 function the build does not compile itself (an import thunk or the C runtime): the linker places the listed
 functions first and everything else after them in its default order, which keeps the functions behind the C runtime
 behind it, as in the original. Every name at an address is listed: the linker folds identical functions into one
