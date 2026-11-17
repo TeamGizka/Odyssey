@@ -4671,12 +4671,6 @@ int CSWSEffectListHandler::OnApplyForceFizzle(CSWSObject* pObject,
     return 1;
 }
 
-// Dead code: not in the PC executable
-int CSWSEffectListHandler::OnRemoveNothing(CSWSObject* pObject,
-                                           CGameEffect* pEffect)
-{
-    return 1;
-}
 // PC 0x00532EA0 GOG 0x00534C00
 int CSWSEffectListHandler::OnRemoveSpellLevelAbsorption(CSWSObject* pObject,
                                                        CGameEffect* pEffect)

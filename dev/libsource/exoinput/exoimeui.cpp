@@ -143,48 +143,6 @@ void CExoImeUI::TurnImeOff(HWND hWnd)
     }
 }
 
-// Dead code: not in the PC executable
-void CExoImeUI::TurnImeOn(HWND hWnd)
-{
-    m_bKatakana = 0;
-    HIMC hContext = ImmGetContext(hWnd);
-    if (hContext != 0)
-    {
-        DWORD nConversion;
-        DWORD nSentence;
-        ImmGetConversionStatus(hContext, &nConversion, &nSentence);
-        int nLanguage = PRIMARYLANGID(GetSystemDefaultLangID());
-        nConversion |= IME_CMODE_NATIVE;
-        if (nLanguage == LANG_CHINESE)
-        {
-            if (m_nPreviousKeyboardLayout == 0)
-                m_nPreviousKeyboardLayout = (int)ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
-            else
-                ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
-            if ((int)GetKeyboardLayout(0) == m_nPreviousKeyboardLayout)
-                ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
-        }
-        else if (nLanguage == LANG_JAPANESE)
-        {
-            if (m_nPreviousKeyboardLayout == 0)
-                m_nPreviousKeyboardLayout = (int)ActivateKeyboardLayout((HKL)HKL_NEXT, KLF_REORDER);
-            else
-                ActivateKeyboardLayout((HKL)HKL_NEXT, KLF_REORDER);
-            ImmSetOpenStatus(hContext, TRUE);
-            if (m_bKatakana == 0)
-                nConversion |= IME_CMODE_KATAKANA | IME_CMODE_FULLSHAPE;
-            else
-                nConversion = (nConversion & ~IME_CMODE_KATAKANA) | IME_CMODE_FULLSHAPE;
-            m_bKatakana = m_bKatakana == 0;
-        }
-        ImmSetConversionStatus(hContext, nConversion, nSentence);
-        m_nCompositionActive = 1;
-        ImmReleaseContext(hWnd, hContext);
-        m_sCandidate = "";
-        m_sComposition = "";
-        m_sResult = "";
-    }
-}
 // PC 0x0062BCE0 GOG 0x0062BBD0
 CExoString CExoImeUI::FormatCandidateList(CANDIDATELIST* pList)
 {
