@@ -323,6 +323,38 @@ void CExoStringList::Remove(int nIndex)
 
     m_nCount--;
 }
+
+// Dead code: not in the PC executable
+CExoStringList& CExoStringList::operator=(CExoStringList& list)
+{
+    int i;
+
+    if (this != NULL)
+    {
+        for (i = 0; i < m_nCount; i++)
+        {
+            if (m_pStrings[i])
+            {
+                delete m_pStrings[i];
+            }
+        }
+        free(m_pStrings);
+
+        m_nCount = list.m_nCount;
+        m_nAllocated = list.m_nAllocated;
+        m_nSortMode = list.m_nSortMode;
+        m_nDuplicateMode = list.m_nDuplicateMode;
+
+        m_pStrings = (CExoString**)calloc(m_nAllocated, sizeof(CExoString*));
+        for (i = 0; i < m_nCount; i++)
+        {
+            m_pStrings[i] = new CExoString(list.m_pStrings[i]->CStr());
+        }
+    }
+
+    return *this;
+}
+
 // PC 0x006CB4A0 GOG 0x006CB1A0
 int CExoStringList::GetCount()
 {

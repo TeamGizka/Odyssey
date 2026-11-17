@@ -107,6 +107,34 @@ void CExoDebugInternal::FlushVOTestFile()
 }
 
 // Dead code: not in the PC executable
+CExoFile* CExoDebugInternal::OpenLogFile(const CExoString& path, CExoString name)
+{
+    CExoString sFileName;
+    CExoString sMode;
+    CExoFile* pFile;
+
+    sFileName.Format("LOGS:%s%s", path.CStr(), name.CStr());
+
+    if (name == CExoString("Tracking"))
+    {
+        if (g_bExtendedResourceTracking)
+        {
+            pFile = new CExoFile(sFileName, 10, "a");
+        }
+        else
+        {
+            pFile = new CExoFile(sFileName, 10, "w");
+        }
+    }
+    else
+    {
+        pFile = new CExoFile(sFileName, 10, "w");
+    }
+
+    return pFile;
+}
+
+// Dead code: not in the PC executable
 void CExoDebugInternal::InitializeWarningFile()
 {
     time_t tNow;
@@ -122,6 +150,30 @@ void CExoDebugInternal::InitializeWarningFile()
     CExoString sHeader(szHeader);
 
     FILE* pFile = fopen("Logs\\swcWarnings.txt", "at");
+
+    if (pFile)
+    {
+        fprintf(pFile, sHeader.CStr());
+        fclose(pFile);
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::InitializeAssertFile()
+{
+    time_t tNow;
+    char szHeader[256];
+
+    time(&tNow);
+    sprintf(szHeader,
+            "\n--------------------------------------\n"
+            "Messages for: %s"
+            "--------------------------------------\n",
+            ctime(&tNow));
+
+    CExoString sHeader(szHeader);
+
+    FILE* pFile = fopen("Logs\\swcAsserts.txt", "at");
 
     if (pFile)
     {
