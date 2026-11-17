@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "aurora.h"
+#include "aurimage.h"
+#include "aurtexman.h"
+#include "aurrendergl.h"
+#include "swmain.h"
 
 template List<unsigned long>::List(int);
 template void List<unsigned long>::Remove(unsigned long);
@@ -15,31 +19,12 @@ template List<char*>::~List();
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-inline void PushMatrix()
-{
-    glPushMatrix();
-}
-
-inline void PopMatrix()
-{
-    glPopMatrix();
-}
-
-inline void LoadMatrix(const float* pMatrix)
-{
-    glLoadMatrixf(pMatrix);
-}
-
 inline void Viewport(int nX, int nY, int nWidth, int nHeight)
 {
     glViewport(nX, nY, nWidth, nHeight);
 }
 
-#include "aurimage.h"
-#include "aurtexman.h"
-#include "aurrendergl.h"
 #include "aurmodel.h"
-#include "swmain.h"
 #include "aurglext.h"
 
 extern float aquadraticterm;

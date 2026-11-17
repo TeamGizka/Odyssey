@@ -66,6 +66,9 @@
 #include "nwscreaturestats.h"
 #include "worldtimer.h"
 #include "clientaimaster.h"
+#include "swbehaviorcamera.h"
+#include "nwctrigger.h"
+#include "swguicontrol.h"
 
 static Vector* AllocateVectorArray(int nCount)
 {
@@ -5813,15 +5816,6 @@ void CSWCCreature::PerformCastSpell(unsigned long nSpell,
     }
 }
 
-#include "nwcplaceable.h"
-
-#include "nwsplaceable.h"
-
-#include "clientoptions.h"
-
-#include "swbehaviorcamera.h"
-
-#include "nwitem.h"
 // PC 0x0065B2A0 GOG 0x0065B150
 int CSWCCreature::SetInParty(int bInParty)
 {
@@ -6653,7 +6647,6 @@ int CSWCCreature::LipSync(const CResRef& cLip)
 }
 
 #include "nwcdoor.h"
-#include "nwctrigger.h"
 // PC 0x0065B710 GOG 0x0065B5C0
 int CSWCCreature::StopLipSync()
 {
@@ -7967,9 +7960,6 @@ void CSWCCreature::GetCombatFeatsSkills(
     }
 }
 
-#include "swguicontrol.h"
-
-#include "swmain.h"
 #ifndef _XBOX
 
 // Dead code: not in the PC executable

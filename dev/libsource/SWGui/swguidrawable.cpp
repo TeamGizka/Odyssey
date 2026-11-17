@@ -4,6 +4,7 @@
 #include "aurmodel.h"
 #include "resgff.h"
 #include "swgui.h"
+#include "aurgui.h"
 
 Vector CSWGuiDrawable::NO_COLOURING(-1.0f, -1.0f, -1.0f);
 
@@ -36,7 +37,6 @@ void CSWGuiDrawable::UpdatePulsing(float fElapsed)
                                       ((0.75f - m_fAlphaPulseTimer) * 1.3333334f);
 }
 
-#include "aurgui.h"
 // PC 0x00414300 GOG 0x004142B0
 void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage, int bForceReload)
 {

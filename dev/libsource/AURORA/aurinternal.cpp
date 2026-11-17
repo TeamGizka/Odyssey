@@ -8,6 +8,7 @@
 #include "aurtexman.h"
 #include "aurmodel.h"
 #include "swmain.h"
+#include <math.h>
 
 #define VIDEO_MAX_REFRESH_RATE 85.0f
 
@@ -165,8 +166,6 @@ void CAurInternalGL::MakeCurrentGLContext(HDC hDeviceContext, HGLRC hRenderConte
     wglMakeCurrent(hDeviceContext, hRenderContext);
 }
 #endif
-
-#include <math.h>
 
 #ifdef _XBOX
 

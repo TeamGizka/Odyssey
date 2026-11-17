@@ -1,4 +1,5 @@
 #include "math3d.h"
+#include <math.h>
 
 int quaternionidentityoptimization = 1;
 
@@ -28,7 +29,6 @@ float DegToRad(float fDegrees)
     return fDegrees * DEG_TO_RAD;
 }
 
-#include <math.h>
 #define SEGMENT_SMALL_NUM 0.00000001
 #define SEGMENT_SMALL_NUM_F 0.00000001f
 #define SEGMENT_DOT(a, b) ((a).m_fX * (b).m_fX + (a).m_fY * (b).m_fY + (a).m_fZ * (b).m_fZ)

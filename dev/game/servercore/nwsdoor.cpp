@@ -1752,8 +1752,6 @@ int CSWSDoor::LoadDoorExternal(CResGFF* pRes, CResStruct* pStruct,
     return bResult;
 }
 
-#include "nwportrait.h"
-
 #ifdef _XBOX
 
 int CSWSDoor::OpenDoor(unsigned long oidOpener)

@@ -5,6 +5,9 @@
 #include "aurtexman.h"
 #include "aurwindmanager.h"
 #include "aurscene.h"
+#include "aurmaterial.h"
+#include "aurmodel.h"
+#include <stdlib.h>
 
 void AurTextureRelease(CAurTexture* pTexture);
 #include "aurgrass.h"
@@ -407,14 +410,6 @@ int GrassSortTris(const void* pFirst, const void* pSecond)
         return 1;
     return 0;
 }
-
-#include "aurmaterial.h"
-
-#include "aurmodel.h"
-
-#include "aurrendergl.h"
-
-#include <stdlib.h>
 
 extern int enablelightmap;
 // PC 0x004D4170 GOG 0x004D42B0

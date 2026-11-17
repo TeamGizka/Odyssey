@@ -1,4 +1,12 @@
 #include "swgui.h"
+#include "exobase.h"
+#include "exoresman.h"
+#include "exoinput.h"
+#include "resgff.h"
+#include "appmanager.h"
+#include "clientexoapp.h"
+#include "clientoptions.h"
+#include <string.h>
 
 
 int g_bDrawSafeRegion = 0;
@@ -110,19 +118,10 @@ CExoString CSWGuiPanel::GetFullScreenBG()
 #include "nwccreature.h"
 #include "nwcanimbase.h"
 
-#include "exobase.h"
-#include "exoresman.h"
-#include "exoinput.h"
-#include "exobase.h"
-#include "resgff.h"
 #include "twodimarray.h"
-#include "appmanager.h"
-#include "clientexoapp.h"
 #include "clientexoappinternal.h"
-#include "clientoptions.h"
 #include "aurora.h"
 #include "aurcamera.h"
-#include <string.h>
 
 // Dead code: not in the PC executable
 CExoString CSWGuiManager::GetScreenResolutionString(unsigned long nWidth,

@@ -4112,7 +4112,6 @@ int CGuiInGame::SetTutorialReason(unsigned char nReason)
     return m_pTutorialBox->SetTutorialReason(nReason);
 }
 
-#include "swmain.h"
 // PC 0x00681F30 GOG 0x00681D10
 int CGuiInGame::GetTutorialWindowHasBeenShown(unsigned char nReason)
 {

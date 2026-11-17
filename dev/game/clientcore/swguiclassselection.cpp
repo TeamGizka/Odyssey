@@ -97,8 +97,6 @@ void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 
 }
 
-#include "nwclass.h"
-#include "nwscript.h"
 // PC 0x00749BA0 GOG 0x00749C10
 void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
 {

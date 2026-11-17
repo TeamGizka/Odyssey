@@ -5,6 +5,7 @@
 #include "aurlightmanager.h"
 #include "aurconsole.h"
 #include "aurmodel.h"
+#include "aurparse.h"
 
 MdlNode* ParseNode(char* sField, MaxTree* pTree);
 char* AurResGetNextLine();
@@ -37,7 +38,6 @@ inline void Parse(char* sText, unsigned int& nValue)
 void Parse(char* sText, Quaternion& qOrientation);
 template <class T> void Parse(char* sText, AurKey<T>& key);
 template <class T> void Parse(char* sText, List<T>& lstValues);
-#include "aurparse.h"
 
 Model* BinarySearchModel(char* sName, int nFirst, int nLast);
 void BinaryInsertModel(Model* pModel, int nFirst, int nLast);

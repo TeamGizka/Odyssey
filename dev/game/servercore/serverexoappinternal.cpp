@@ -8,6 +8,11 @@
 #include "clientexoapp.h"
 #include "swsareamap.h"
 #include "nwseffectlist.h"
+#include "twodimarray.h"
+#include "pathfindinfo.h"
+#include "nwseffect.h"
+#include "factionmanager.h"
+#include "nwerffile.h"
 
 template CExoLinkedList<unsigned long>::CExoLinkedList();
 #include "nwsscriptevent.h"
@@ -100,7 +105,6 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 
 #include "nwrules.h"
 #include "nwscript.h"
-#include "twodimarray.h"
 #include "clientoptions.h"
 #include "swparty.h"
 #include "nwccreature.h"
@@ -111,7 +115,6 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 #include "nwstrigger.h"
 #include "nwscreaturestats.h"
 #include "appmanager.h"
-#include "pathfindinfo.h"
 #include "nwswaypoint.h"
 #include "guiingame.h"
 #include "nwcmodule.h"
@@ -119,15 +122,11 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 #include "swbehaviorcamera.h"
 #include "swgui.h"
 #include "nwcarea.h"
-#include "nwseffect.h"
 #include "serveraimaster.h"
-#include "factionmanager.h"
 #include "nwvmachinecommands.h"
 #include "exotlktable.h"
 #include "twodimarrays.h"
 #include "clientexoappinternal.h"
-#include "nwerffile.h"
-#include "nwerffile.h"
 
 enum SaveGameStringRef
 {

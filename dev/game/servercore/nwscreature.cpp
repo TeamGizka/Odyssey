@@ -1,21 +1,21 @@
 #include "gameobjectarray.h"
 #include "nwscreature.h"
 #include "nwsobject.h"
+#include <stdlib.h>
+#include <math.h>
+#include "serverexoappinternal.h"
+#include "serveraimaster.h"
+#include "nwseffectlist.h"
 // PC 0x0050B650 GOG 0x0050B6B0
 void CSWSObject::SetSpellTargetPosition(const Vector& vPosition)
 {
     m_vSpellTargetPosition = vPosition;
 }
 
-#include <stdlib.h>
-#include <math.h>
 #include "appmanager.h"
 #include "serverexoapp.h"
-#include "serverexoappinternal.h"
-#include "serveraimaster.h"
 #include "nwscombatround.h"
 #include "nwseffect.h"
-#include "nwseffectlist.h"
 #include "nwsitem.h"
 #include "nwsstore.h"
 #include "nwitem.h"

@@ -1582,8 +1582,6 @@ int CSWSObject::AIActionPlaySound(CSWSObjectActionNode* pNode)
     return ACTION_COMPLETE;
 }
 
-#include "nwsdoor.h"
-#include "nwsscriptevent.h"
 // PC 0x005DDC30 GOG 0x005DDCA0
 int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
 {

@@ -2650,9 +2650,6 @@ void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
     }
 }
 
-#include "nwrules.h"
-
-#include "twodimarrays.h"
 // PC 0x00705D60 GOG 0x00705B70
 int CSWCVisualEffectOnObject::LoadHardCodedVisualEffect(
     unsigned short nVisualEffect)

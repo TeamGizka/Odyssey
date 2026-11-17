@@ -10778,7 +10778,6 @@ int CSWCMessage::HandleServerToPlayerItemScript_Add()
     return 1;
 }
 
-#include "guiingame.h"
 // PC 0x006C0790 GOG 0x006C0570
 int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
 {
@@ -10882,9 +10881,6 @@ int CSWCMessage::HandleServerToPlayerGameObjectUpdate(unsigned char nMinor)
     }
 }
 
-#include "twodimarray.h"
-
-#include "twodimarrays.h"
 // PC 0x006C09C0 GOG 0x006C07A0
 int CSWCMessage::HandleServerToPlayerMessage(unsigned char* pMessage,
                                             unsigned long nSize)

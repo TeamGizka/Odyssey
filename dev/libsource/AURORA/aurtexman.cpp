@@ -11,6 +11,7 @@
 #include "aurimage.h"
 #include "auremitter.h"
 #include "aurbehavior.h"
+#include "aurscenemanager.h"
 
 class CAurTextureBasic;
 template void List<CAurTextureBasic*>::DelIndex(int);
@@ -1511,7 +1512,6 @@ int AurTextureGetMaxTexID()
 }
 
 #include "aurrendergl.h"
-#include "aurscenemanager.h"
 #include "aurparse.h"
 // PC 0x00421640 GOG 0x00421650
 void GLRender::SetCurrentTID(unsigned int nTID)

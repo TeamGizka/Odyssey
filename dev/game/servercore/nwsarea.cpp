@@ -1,6 +1,15 @@
 #define NWSAREA_SOURCE
 #define NWSAREA_EXOARRAYLIST_REMOVE
 #include "exobase.h"
+#include <windows.h>
+#include "resgff.h"
+#include "nwerffile.h"
+#include "appmanager.h"
+#include "exoresman.h"
+#include "twodimarray.h"
+#include "aurtexcontrol.h"
+#include <float.h>
+#include "worldtimer.h"
 // PC 0x004E3B70
 template <class T> void CExoArrayList<T>::Remove(T value)
 {
@@ -14,10 +23,6 @@ template <class T> void CExoArrayList<T>::Remove(T value)
         return;
     DelIndex(nIndex);
 }
-#include <windows.h>
-#include "resgff.h"
-#include "nwerffile.h"
-#include "appmanager.h"
 #include "serverexoapp.h"
 #include "clientexoapp.h"
 #include "guiingame.h"
@@ -44,7 +49,6 @@ inline CGameObject::~CGameObject()
 #include "nwsmodule.h"
 #include "swsareamap.h"
 #include "swguicustompanel.h"
-#include "exoresman.h"
 #include "swsroom.h"
 #include "nwsarea.h"
 #include "nwsambientsound.h"
@@ -53,13 +57,9 @@ inline CGameObject::~CGameObject()
 #include "nwseffect.h"
 #include "nwrules.h"
 #include "twodimarrays.h"
-#include "twodimarray.h"
 #include "nwccreature.h"
 #include "nwscreature.h"
 #include "pathfindinfo.h"
-#include "aurtexcontrol.h"
-#include <float.h>
-#include "worldtimer.h"
 
 #define NWSAREA_DEBUG 0
 
