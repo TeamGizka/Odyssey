@@ -53,6 +53,60 @@ void CExoDebugInternal::Assert(int line, char* file, const char* message)
 }
 
 // Dead code: not in the PC executable
+void CExoDebugInternal::FlushErrorFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileOne->Flush();
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushLogFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pLogFile->Flush();
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushResourcesLogFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileTwo->Flush();
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushSoundLogFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileThree->Flush();
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushResourceTrackingFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileFour->Flush();
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushVOTestFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileFive->Flush();
+    }
+}
+
+// Dead code: not in the PC executable
 void CExoDebugInternal::InitializeWarningFile()
 {
     time_t tNow;
@@ -73,6 +127,63 @@ void CExoDebugInternal::InitializeWarningFile()
     {
         fprintf(pFile, sHeader.CStr());
         fclose(pFile);
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToErrorFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileOne->Write(text);
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToLogFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pLogFile->Write(text);
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToResourcesLogFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileTwo->Write(text);
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToSoundLogFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileThree->Write(text);
+        FlushSoundLogFile();
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToResourceTrackingFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileFour->Write(text);
+        FlushResourceTrackingFile();
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToVOTestFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileFive->Write(text);
+        FlushVOTestFile();
     }
 }
 // PC 0x00637A50 GOG 0x00637950

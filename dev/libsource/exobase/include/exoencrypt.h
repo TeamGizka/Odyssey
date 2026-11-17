@@ -11,6 +11,7 @@ public:
     void MD5Init();
     void MD5Update(unsigned char* pInput, unsigned long nInputLength);
     void MD5Final();
+    CExoString GenerateChallenge(unsigned short nLength);
     void Transform(unsigned long* pState, unsigned long* pInput);
 
     unsigned long m_anCount[2];

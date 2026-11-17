@@ -1443,6 +1443,19 @@ void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
         }
     }
 }
+// Dead code: not in the PC executable
+int CServerExoAppInternal::ValidatePlayerLogin(void* pPlayerData)
+{
+    CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayerData;
+
+    if (pPlayer->m_nAreaLoadState != CSWSPlayer::AREA_LOAD_PENDING)
+    {
+        pPlayer->m_nAreaLoadState = CSWSPlayer::AREA_LOAD_PENDING;
+        m_pSWSMessage->SendServerToPlayerLogin_Confirm(pPlayer->GetPlayerId());
+        m_pSWSMessage->SendServerToPlayerModule_Info(pPlayer->GetPlayerId());
+    }
+    return 1;
+}
 // PC 0x004EAA70 GOG 0x004EC850
 int CServerExoAppInternal::ContinueMessageProcessing()
 {

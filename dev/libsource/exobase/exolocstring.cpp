@@ -216,6 +216,12 @@ void CExoLocString::RemoveString(int nID, unsigned char nGender)
     int nStringID = nGender + 2 * nID;
     m_pExoLocStringInternal->RemoveString(nStringID);
 }
+// Dead code: not in the PC executable
+void CExoLocString::RemoveString(int nID)
+{
+    RemoveString(nID, 0);
+    RemoveString(nID, 1);
+}
 // PC 0x00631D50 GOG 0x00631C40
 int CExoLocString::AddString(int nID, const CExoString& sString,
                              unsigned char nGender)

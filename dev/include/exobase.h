@@ -53,7 +53,9 @@ public:
     BOOL operator<(const CExoString& sString) const;
     BOOL operator>(const CExoString& sString) const;
     BOOL operator<=(const CExoString& sString) const;
+    BOOL operator<=(const char* szString) const;
     BOOL operator>=(const CExoString& sString) const;
+    BOOL operator>=(const char* szString) const;
     char operator[](int nIndex) const;
     CExoString operator+(const CExoString& sString) const;
 
@@ -103,6 +105,7 @@ public:
                               BOOL bAllowPunctuation);
     int Find(const CExoString& sString, int nStart) const;
     int Find(char cChar, int nStart) const;
+    int FindNot(char cChar, int nStart) const;
     CExoString Left(int nCount) const;
     CExoString Right(int nCount) const;
     CExoString SubString(int nStart, int nCount) const;
@@ -173,12 +176,18 @@ public:
     void Add(CExoString* pString);
     void AddSorted(CExoString* pString);
     void Clear();
+    void Delete(CExoString* pString);
     CExoString* GetString(int nIndex);
     void Insert(CExoString* pString, int nPosition);
     CExoStringList* Merge(CExoStringList* pList, int nSortMode,
                           int nDuplicateMode);
+    void Remove(int nIndex);
+    CExoStringList& operator=(CExoStringList& list);
 
     int GetCount();
+    int GetDuplicate();
+    int GetSorted();
+    int GetSize();
     CExoString* operator[](int nIndex);
 
 private:
@@ -378,12 +387,22 @@ public:
 
 
     void Assert(int line, char* file, const char* message);
+    void CloseLogFiles();
+    void FlushErrorFile();
+    void FlushLogFile();
+    void FlushResourcesLogFile();
+    void FlushVOTestFile();
+    unsigned long GetCurrentAllocatedMemory();
     unsigned long GetCurrentMemoryAllocations();
     unsigned long GetMaxAllocatedMemory();
     unsigned long GetTotalMemoryAllocations();
     void SetRotateLogFile(int bRotate);
     void WriteToErrorFile(const CExoString& text);
     void WriteToLogFile(const CExoString& text);
+    void WriteToResourcesLogFile(const CExoString& text);
+    void WriteToSoundLogFile(const CExoString& text);
+    void WriteToResourceTrackingFile(const CExoString& text);
+    void WriteToVOTestFile(const CExoString& text);
 #ifdef _DEBUG
 
     void Log(const char* format, ...);
@@ -468,6 +487,7 @@ public:
     float GetSpokenTimeEstimate(int nID, unsigned char nGender) const;
     int AddString(int nID, const CExoString& sString, unsigned char nGender);
     void RemoveString(int nID, unsigned char nGender);
+    void RemoveString(int nID);
 
 private:
 
@@ -512,6 +532,9 @@ public:
     CExoRand();
     ~CExoRand();
     unsigned long Rand();
+    CExoString GetString(unsigned short nLength);
+    void SignalEvent();
+    void SignalEvent(unsigned long nEvent);
 
     CExoRandInternal* m_pInternal;
 };
@@ -543,6 +566,7 @@ class CExoDebug;
 class CExoRand;
 class CExoBaseInternal;
 class CExoString;
+class CFileInfo;
 
 class CExoAliasListInternal;
 
@@ -853,9 +877,11 @@ public:
                           int bDirectories, int nSortMode);
 #endif
     int GetDirectorySize(const CExoString& sPath);
+    int GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList, const CExoString& sDir, unsigned short nResType, int bSorted);
     const CExoString& GetResourceExtension(unsigned short resourceType);
     unsigned short GetResTypeFromExtension(const CExoString& extension);
     void LoadAliases(const CExoString& sFile);
+    void ShutDown();
     void SpawnExternalApplication(const CExoString& sApplication,
                                   const CExoString& sCommandLine,
                                   int bQuit);
@@ -882,8 +908,6 @@ extern CExoBase* g_pExoBase;
 
 
 
-class CFileInfo;
-
 class CExoBaseInternal
 {
 public:
@@ -898,6 +922,7 @@ public:
     const CExoString& GetResourceExtension(unsigned short resourceType);
     unsigned short GetResTypeFromExtension(const CExoString& extension);
     void LoadAliases(const CExoString& sFile);
+    void ShutDown();
     void SpawnExternalApplication(const CExoString& sApplication,
                                   const CExoString& sCommandLine,
                                   int bQuit);
@@ -937,10 +962,24 @@ public:
     ~CExoDebugInternal();
     void CloseLogFiles();
     void FlushScriptLogFile();
+    void FlushErrorFile();
+    void FlushLogFile();
+    void FlushResourcesLogFile();
+    void FlushSoundLogFile();
+    void FlushResourceTrackingFile();
+    void FlushVOTestFile();
+    CExoFile* OpenLogFile(const CExoString& path, CExoString name);
     void OpenLogFiles(const CExoString& path);
     void Assert(int line, char* file, const char* message);
     void InitializeWarningFile();
+    void InitializeAssertFile();
     void Warning(int line, char* file, const char* message);
+    void WriteToErrorFile(const CExoString& text);
+    void WriteToLogFile(const CExoString& text);
+    void WriteToResourcesLogFile(const CExoString& text);
+    void WriteToSoundLogFile(const CExoString& text);
+    void WriteToResourceTrackingFile(const CExoString& text);
+    void WriteToVOTestFile(const CExoString& text);
     void GetCurrentTimestamp(CExoString& timestamp);
     void WriteToScriptLogFile(const CExoString& text);
 

@@ -150,6 +150,23 @@ BOOL CExoString::operator<=(const CExoString& sString) const
 
     return TRUE;
 }
+
+// Dead code: not in the PC executable
+BOOL CExoString::operator<=(const char* szString) const
+{
+    if (m_sString != NULL && szString != NULL)
+    {
+        return strcmp(m_sString, szString) <= 0;
+    }
+
+    if ((m_sString != NULL || szString != NULL) &&
+        (m_sString == NULL || m_sString[0] != 0) && szString == NULL)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
 // PC 0x00630710 GOG 0x00630600
 BOOL CExoString::operator>=(const CExoString& sString) const
 {
@@ -160,6 +177,24 @@ BOOL CExoString::operator>=(const CExoString& sString) const
 
     if ((m_sString != NULL || sString.m_sString != NULL) &&
         (sString.m_sString == NULL || sString.m_sString[0] != 0) &&
+        m_sString == NULL)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+// Dead code: not in the PC executable
+BOOL CExoString::operator>=(const char* szString) const
+{
+    if (m_sString != NULL && szString != NULL)
+    {
+        return strcmp(m_sString, szString) >= 0;
+    }
+
+    if ((m_sString != NULL || szString != NULL) &&
+        (szString == NULL || szString[0] != 0) &&
         m_sString == NULL)
     {
         return FALSE;
@@ -610,6 +645,39 @@ int CExoString::Find(char cChar, int nStart) const
     while (*szPos != 0)
     {
         if (*szPos == cChar)
+        {
+            return nPosition;
+        }
+        nPosition++;
+        szPos++;
+    }
+
+    return -1;
+}
+
+// Dead code: not in the PC executable
+int CExoString::FindNot(char cChar, int nStart) const
+{
+    const char* szPos = m_sString;
+    int nPosition = nStart;
+
+    if (szPos == NULL || nStart < 0)
+    {
+        return -1;
+    }
+
+    for (int i = 0; i < nStart; i++)
+    {
+        if (*szPos == 0)
+        {
+            return -1;
+        }
+        szPos++;
+    }
+
+    while (*szPos != 0)
+    {
+        if (*szPos != cChar)
         {
             return nPosition;
         }

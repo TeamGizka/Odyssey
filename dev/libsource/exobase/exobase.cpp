@@ -32,6 +32,15 @@ int CExoBase::GetDirectorySize(const CExoString& sPath)
 {
     return m_pInternal->GetDirectorySize(sPath);
 }
+
+// Dead code: not in the PC executable
+int CExoBase::GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList,
+                                        const CExoString& sDir,
+                                        unsigned short nResType, int bSorted)
+{
+    return m_pInternal->GetAugmentedDirectoryList(pList, sDir, nResType,
+                                                  bSorted);
+}
 // PC 0x00631F90 GOG 0x00631E80
 const CExoString& CExoBase::GetResourceExtension(unsigned short resourceType)
 {
@@ -46,6 +55,12 @@ unsigned short CExoBase::GetResTypeFromExtension(const CExoString& extension)
 void CExoBase::LoadAliases(const CExoString& sFile)
 {
     m_pInternal->LoadAliases(sFile);
+}
+
+// Dead code: not in the PC executable
+void CExoBase::ShutDown()
+{
+    m_pInternal->ShutDown();
 }
 
 #ifndef _XBOX

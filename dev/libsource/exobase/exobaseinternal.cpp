@@ -619,6 +619,11 @@ void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380 GO
     }
 }
 #endif
+
+// Dead code: not in the PC executable
+void CExoBaseInternal::ShutDown()
+{
+}
 #ifndef _XBOX
 // Dead code: not in the PC executable
 void CExoBaseInternal::SpawnExternalApplication(const CExoString& sApplication,

@@ -159,6 +159,12 @@ void CExoEncrypt::MD5Final()
 }
 
 // Dead code: not in the PC executable
+CExoString CExoEncrypt::GenerateChallenge(unsigned short nLength)
+{
+    return g_pExoBase->m_pExoRand->GetString(nLength);
+}
+
+// Dead code: not in the PC executable
 void CExoEncrypt::Transform(unsigned long* pState, unsigned long* pInput)
 {
     unsigned long a = pState[0], b = pState[1], c = pState[2], d = pState[3];

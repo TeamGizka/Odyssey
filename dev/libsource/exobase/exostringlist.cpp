@@ -140,6 +140,45 @@ void CExoStringList::Add(CExoString* pString)
         Introduce(pString, nCount);
     }
 }
+
+// Dead code: not in the PC executable
+void CExoStringList::Delete(CExoString* pString)
+{
+    int nCount = m_nCount;
+    CExoString** pNewStrings =
+        (CExoString**)calloc(m_nAllocated, sizeof(CExoString*));
+    int i;
+
+    if (pNewStrings)
+    {
+        for (i = 0; i < m_nCount; i++)
+        {
+            if (m_pStrings[i])
+            {
+                if (strcmp(pString->CStr(), m_pStrings[i]->CStr()) == 0)
+                {
+                    delete m_pStrings[i];
+                    m_pStrings[i] = 0;
+                    nCount--;
+                }
+            }
+        }
+
+        int j = 0;
+        for (i = 0; i < m_nAllocated; i++)
+        {
+            if (m_pStrings[i])
+            {
+                pNewStrings[j] = m_pStrings[i];
+                j++;
+            }
+        }
+    }
+
+    m_nCount = nCount;
+    free(m_pStrings);
+    m_pStrings = pNewStrings;
+}
 // PC 0x00634EA0 GOG 0x00634D90
 void CExoStringList::AddSorted(CExoString* pString)
 {
@@ -268,8 +307,42 @@ CExoStringList* CExoStringList::Merge(CExoStringList* pList, int nSortMode,
 
     return pNewList;
 }
+
+// Dead code: not in the PC executable
+void CExoStringList::Remove(int nIndex)
+{
+    if (m_pStrings[nIndex])
+    {
+        delete m_pStrings[nIndex];
+    }
+
+    for (int i = nIndex; i < m_nCount - 1; i++)
+    {
+        m_pStrings[i] = m_pStrings[i + 1];
+    }
+
+    m_nCount--;
+}
 // PC 0x006CB4A0 GOG 0x006CB1A0
 int CExoStringList::GetCount()
 {
     return m_nCount;
+}
+
+// Dead code: not in the PC executable
+int CExoStringList::GetDuplicate()
+{
+    return m_nDuplicateMode;
+}
+
+// Dead code: not in the PC executable
+int CExoStringList::GetSorted()
+{
+    return m_nSortMode;
+}
+
+// Dead code: not in the PC executable
+int CExoStringList::GetSize()
+{
+    return m_nAllocated;
 }

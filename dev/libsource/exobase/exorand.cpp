@@ -9,6 +9,24 @@ unsigned long CExoRand::Rand()
 {
     return m_pInternal->Rand();
 }
+
+// Dead code: not in the PC executable
+CExoString CExoRand::GetString(unsigned short nLength)
+{
+    return m_pInternal->GetString(nLength);
+}
+
+// Dead code: not in the PC executable
+void CExoRand::SignalEvent()
+{
+    m_pInternal->SignalEvent();
+}
+
+// Dead code: not in the PC executable
+void CExoRand::SignalEvent(unsigned long nEvent)
+{
+    m_pInternal->SignalEvent(nEvent);
+}
 // PC 0x00635E90 GOG 0x00635D80
 CExoRand::~CExoRand()
 {
