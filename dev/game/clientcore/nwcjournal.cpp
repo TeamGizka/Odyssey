@@ -497,6 +497,15 @@ CSWCSortedJournalArrayList::CSWCSortedJournalArrayList()
     m_nSortBy = SORT_BY_DATE;
     m_bHasChanged = 0;
 }
+
+SJournalEntry* CSWCSortedJournalArrayList::GetEntryAt(int nIndex)
+{
+    if (nIndex >= 0 && nIndex < m_lstEntries.num)
+    {
+        return &m_lstEntries[m_lstOrder[nIndex]];
+    }
+    return 0;
+}
 // PC 0x006CC6D0 GOG 0x006CC3D0
 void CSWCWorldJournal::SortList()
 {

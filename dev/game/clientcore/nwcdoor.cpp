@@ -350,6 +350,11 @@ void CSWCDoor::AnimationUpdate()
         }
     }
 }
+
+unsigned char CSWCDoor::GetState()
+{
+    return m_nState;
+}
 // PC 0x006DBCB0 GOG 0x006DB970
 int CSWCDoor::LoadModel(const CResRef& cModel, unsigned char nModel,
                         unsigned char nFlags)

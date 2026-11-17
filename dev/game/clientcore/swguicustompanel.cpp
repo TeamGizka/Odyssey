@@ -272,6 +272,11 @@ void CSWGuiCustomPanel::ClearAbilities()
 #endif
     m_pCreature->m_pStats->m_nCreationStage = 30;
 }
+
+void CSWGuiCustomPanel::PlayGame()
+{
+    ((CSWGuiMainCharGen*)m_pParentPanel)->BeginPlayGame();
+}
 // PC 0x00760680 GOG 0x007604F0
 void CSWGuiCustomPanel::CancelPanel()
 {

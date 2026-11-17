@@ -315,6 +315,10 @@ void CSWCSoundObject::UpdateVolumeVariation()
         }
     }
 }
+
+void CSWCSoundObject::UpdateRandomPosition()
+{
+}
 // PC 0x0069E170 GOG 0x0069DF50
 void CSWCSoundObject::UpdateIntervalVariation()
 {

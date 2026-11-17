@@ -84,6 +84,10 @@ void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
 #endif
 }
 
+void CSWGuiInGameAbilities::OnChangeCharacter(CSWGuiControl* pControl)
+{
+}
+
 void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
 {
     m_lblDescription.m_cText.m_cParams.SetText(sText);
@@ -577,6 +581,10 @@ void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
         }
         UpdateView();
     }
+}
+
+void CSWGuiInGameAbilities::UpdatePortraits()
+{
 }
 // PC 0x00736E90 GOG 0x00736BF0
 void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)

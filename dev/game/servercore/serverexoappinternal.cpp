@@ -1443,6 +1443,14 @@ int CServerExoAppInternal::ContinueMessageProcessing()
     return GetReentrantServerStats()->m_bOperationActive == 1;
 }
 
+int CServerExoAppInternal::StartShutdownTimer(unsigned __int64 nTime,
+                                               unsigned __int64 nDelay)
+{
+    m_nShutdownStartTime = nTime;
+    m_nShutdownTimeout = nDelay;
+    return 0;
+}
+
 // PC 0x004EAA90 GOG 0x004E9D90
 CSWSItem* CServerExoAppInternal::GetItemByGameObjectID(unsigned long oidObject)
 {
@@ -3544,6 +3552,39 @@ int CServerExoAppInternal::IsOnActiveExclusionList(unsigned long oidObject)
         pList->GetNext(pNode);
     }
     return 0;
+}
+
+int CServerExoAppInternal::IsOnExclusionList(unsigned long oidObject)
+{
+    CExoLinkedListNode* pNode;
+
+    if (GetActivePauseState() == PAUSE_STATE_PAUSED)
+    {
+        pNode = m_pPauseExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pPauseExclusionList->GetAtPos(pNode) == oidObject)
+            {
+                return 1;
+            }
+            m_pPauseExclusionList->GetNext(pNode);
+        }
+        return 0;
+    }
+    else if (GetActivePauseState() == PAUSE_STATE_COMBAT)
+    {
+        pNode = m_pTimestopExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pTimestopExclusionList->GetAtPos(pNode) == oidObject)
+            {
+                return 1;
+            }
+            m_pTimestopExclusionList->GetNext(pNode);
+        }
+        return 0;
+    }
+    return 1;
 }
 // PC 0x004EED90 GOG 0x004ED170
 int CServerExoAppInternal::ResolvePlayerByFirstName(const CExoString& sFirstName)

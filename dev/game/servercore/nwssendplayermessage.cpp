@@ -260,6 +260,12 @@ int CSWSMessage::ComputeLastUpdate_GuiKnownSpells(CSWSCreature* pCreature,
             return 1;
     return 0;
 }
+
+int CSWSMessage::ComputeLastUpdate_GuiMemorizedSpells(CSWSCreature* pCreature,
+    CSWSPlayerLastUpdateObject* pLastUpdateObject)
+{
+    return 0;
+}
 // PC 0x00595B70 GOG 0x00595BE0
 void CSWSMessage::ComputeLastUpdate_StoreUpdateSpellLikeAbility(
     CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pLastUpdateObject)
@@ -1054,6 +1060,15 @@ void CSWSMessage::WriteGameObjUpdate_UpdateAppearance(
         if (bResetLeftHand)
             pCreature->SetLastInstantEquip(INVENTORY_SLOT_LEFTHAND, FALSE);
     }
+}
+
+int CSWSMessage::ComputeGameObjectUpdateForYourself(CSWSPlayer* pPlayer,
+    CSWSObject* pPlayerObject, CGameObjectArray* pObjectArray,
+    unsigned long oidObject)
+{
+    ComputeGameObjectUpdateForObject(pPlayer, pPlayerObject, pObjectArray,
+        oidObject);
+    return 0;
 }
 // PC 0x00597960 GOG 0x005979D0
 void CSWSMessage::WriteGameObjUpdate_MinorGUIPanels(CSWSPlayer* pPlayer)
@@ -2165,6 +2180,23 @@ int CSWSMessage::SendServerToPlayerModule_SaveGameStatus(unsigned char nStatus)
     }
     return SendServerToPlayerMessage(CNetLayer::PLAYERID_ALL_PLAYERS, 3, 13,
                                      pMessage, nMessageSize);
+}
+
+int CSWSMessage::SendServerToPlayerModule_EndGame(unsigned long nPlayerId,
+                                                  const CExoString& sMovie)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sMovie, 32);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_MODULE, MODULE_END_GAME, pMessage, nMessageSize);
 }
 // PC 0x00591700 GOG 0x00591770
 int CSWSMessage::SendServerToPlayerLoadBar_StartStallEvent(unsigned long nEvent)
@@ -3325,6 +3357,12 @@ int CSWSMessage::ComputeInventoryUpdateRequired(CSWSPlayer* pPlayer,
     }
     return 0;
 }
+
+int CSWSMessage::ComputeRepositoryUpdateRequired(CSWSPlayer* pPlayer,
+    CExoLinkedListNode* pRepositoryNode, CExoLinkedListNode* pLastUpdateNode)
+{
+    return 1;
+}
 // PC 0x0058BD80 GOG 0x0058BE00
 int CSWSMessage::CompareVisualEffectLists(CExoArrayList<CLoopingVisualEffect*>* pFirst,
                                          CExoArrayList<CLoopingVisualEffect*>* pSecond)
@@ -3470,6 +3508,12 @@ int CSWSMessage::ComputeLastUpdate_ActionQueue(
             return 1;
         }
     }
+    return 0;
+}
+
+int CSWSMessage::ComputeLastUpdate_GuiNumberMemorizedSpells(
+    CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pLastUpdateObject)
+{
     return 0;
 }
 // PC 0x0058C0A0 GOG 0x0058C120
@@ -4436,6 +4480,11 @@ void CSWSMessage::WriteGameObjUpdate_CharacterSheet(CSWSPlayer* pPlayer,
     }
     pCreature->m_pStats->UpdateLastStatsObject(nUpdateMask, pLastStats);
 }
+
+int CSWSMessage::SendServerToPlayerDialogClose(unsigned long nPlayerId)
+{
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_DIALOG, 5, NULL, 0);
+}
 // PC 0x00594A00 GOG 0x00594A70
 int CSWSMessage::SendServerToPlayerInventory_Drop(unsigned long nPlayerId,
                                                   unsigned long oidObject)
@@ -4469,6 +4518,27 @@ int CSWSMessage::SendServerToPlayerInventory_DropCancel(unsigned long nPlayerId,
         return nResult;
     }
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_INVENTORY, 4, pMessage, nMessageSize);
+}
+
+int CSWSMessage::SendServerToPlayerInventory_Equip(unsigned long nPlayerId,
+                                                   unsigned long oidObject,
+                                                   unsigned long nInventorySlot,
+                                                   int bFlag)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDServer(oidObject);
+    WriteDWORD(nInventorySlot, 32);
+    WriteBOOL(bFlag);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_INVENTORY, INVENTORY_EQUIP, pMessage, nMessageSize);
 }
 // PC 0x00594AC0 GOG 0x00594B30
 int CSWSMessage::SendServerToPlayerInventory_EquipCancel(
@@ -4566,6 +4636,23 @@ int CSWSMessage::SendServerToPlayerInventory_UnequipCancel(
 int CSWSMessage::SendServerToPlayerLogin_Confirm(unsigned long nPlayerId)
 {
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_LOGIN, 5, NULL, 0);
+}
+
+int CSWSMessage::SendServerToPlayerLogin_Fail(unsigned long nPlayerId,
+                                              unsigned long nReason)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteDWORD(nReason, 32);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_LOGIN, 18, pMessage, nMessageSize);
 }
 // PC 0x0058C660 GOG 0x0058C6E0
 void CSWSMessage::WriteGameObjUpdate_WorkRemaining(CSWSObject* pObject,
@@ -4903,6 +4990,12 @@ int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)  // PC 0
     return 0;
 }
 #endif
+
+int CSWSMessage::SendServerToPlayerParty_Invite(unsigned long nPlayerId,
+                                                unsigned long oidInviter)
+{
+    return 1;
+}
 int CSWSMessage::SendServerToPlayerParty_List(unsigned long nPlayerId,  // PC 0x0058CA50 GOG 0x0058CAD0
                                               int nCount,
                                               unsigned long* pMembers,
@@ -5693,6 +5786,42 @@ int CSWSMessage::SendServerToPlayerCheatNasty(unsigned long nPlayerId,
     }
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_CHEAT, 11, pMessage, nMessageSize);
 }
+
+int CSWSMessage::SendServerToPlayerCheatPonyRide(unsigned long nPlayerId,
+                                                 unsigned long oidObject)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDServer(oidObject);
+    WriteBOOL(1);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_CHEAT, 12, pMessage, nMessageSize);
+}
+
+int CSWSMessage::SendServerToPlayerCheatRainOfCows(unsigned long nPlayerId,
+                                                   unsigned long oidObject)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDServer(oidObject);
+    WriteBOOL(1);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_CHEAT, 13, pMessage, nMessageSize);
+}
 // PC 0x0058E970 GOG 0x0058E9F0
 int CSWSMessage::SendServerToPlayerCheatDebugMode(int bDebugMode)
 {
@@ -5777,6 +5906,22 @@ int CSWSMessage::SendServerToPlayerGameObjUpdateVisEffect(CSWSPlayer* pPlayer,
     return SendServerToPlayerMessage(nPlayerId,
         MESSAGE_GAME_OBJECT_UPDATE, GAME_OBJECT_UPDATE_VISUAL_EFFECT,
         pMessage, nMessageSize);
+}
+
+int CSWSMessage::SendServerToPlayerCombatRoundStarted(CSWSPlayer* pPlayer)
+{
+    unsigned long nPlayerId;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(1, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(1, 8);
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    nPlayerId = pPlayer->m_nPlayerId;
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_COMBAT_ROUND, 1, pMessage, nMessageSize);
 }
 // PC 0x0058EBA0 GOG 0x0058EC20
 int CSWSMessage::SendServerToPlayerUpdateActiveItemProperties(

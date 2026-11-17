@@ -383,6 +383,11 @@ int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
     }
     return 1;
 }
+
+int CSWCMessage::HandleServerToPlayerQuickChat(unsigned char nMinor)
+{
+    return 1;
+}
 // PC 0x006AAA60 GOG 0x006AA840
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
 {
@@ -3466,6 +3471,31 @@ int CSWCMessage::HandleServerToPlayerGuiInfoPopupMessage(unsigned char nMinor)
     }
     return 0;
 }
+
+int CSWCMessage::HandleServerToPlayerExamineGui_CreatureData()
+{
+    return 0;
+}
+
+int CSWCMessage::HandleServerToPlayerExamineGui_ItemData()
+{
+    return 1;
+}
+
+int CSWCMessage::HandleServerToPlayerExamineGui_PlaceableData()
+{
+    return 0;
+}
+
+int CSWCMessage::HandleServerToPlayerExamineGui_MineData()
+{
+    return 0;
+}
+
+int CSWCMessage::HandleServerToPlayerExamineGui_DoorData()
+{
+    return 0;
+}
 // PC 0x006B9110 GOG 0x006B8EF0
 int CSWCMessage::HandleServerToPlayerCheatMessage(unsigned char nMinor)
 {
@@ -3571,6 +3601,11 @@ CSWCItem* CSWCMessage::CreateItem(unsigned long nBaseItem,
     }
     pItem->m_cModelResRef = cResRef;
     return pItem;
+}
+
+int CSWCMessage::HandleServerToPlayerDialog(unsigned char nMinor)
+{
+    return 1;
 }
 // PC 0x006A0230 GOG 0x006A0010
 int CSWCMessage::HandleServerToPlayerCamera(unsigned char nMinor)
@@ -3782,6 +3817,11 @@ int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
         return 1;
     }
     }
+    return 0;
+}
+
+int CSWCMessage::HandleServerToPlayerCharacterList(unsigned char nMinor)
+{
     return 0;
 }
 // PC 0x006A08A0 GOG 0x006A0680
@@ -6478,6 +6518,16 @@ int CSWCMessage::HandleServerToPlayerGuiInventory(unsigned char nMinor)
         }
     }
     return bSuccess;
+}
+
+int CSWCMessage::HandleInventoryFindSourceAndUnghost(CSWCItem* pItem)
+{
+    return 0;
+}
+
+int CSWCMessage::HandleInventoryUnghostSourceItem(CSWCItem* pItem)
+{
+    return 0;
 }
 inline CSWGuiStore* CClientExoApp::GetStorePanel()
 {
@@ -10284,6 +10334,11 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Placeable(unsigned long oidObject
                            CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
     return 1;
 }
+
+int CSWCMessage::HandleServerToPlayerDebugInfo_Area(unsigned long oidArea)
+{
+    return 1;
+}
 // PC 0x006A8E40 GOG 0x006A8C20
 int CSWCMessage::HandleServerToPlayerPopUpGUIPanel(unsigned char nMinor)
 {
@@ -10622,6 +10677,11 @@ int CSWCMessage::HandleServerToPlayerGuiTimingEvent_Info()
             return 0;
         }
     }
+    return 1;
+}
+
+int CSWCMessage::HandleServerToPlayerPlayModuleCharacterList(unsigned char nMinor)
+{
     return 1;
 }
 // PC 0x006A96D0 GOG 0x006A94B0

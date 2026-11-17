@@ -115,6 +115,26 @@ void CSWGuiLevelUpPanel::PowersSelectionCompleted()
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
+
+void CSWGuiLevelUpPanel::ClearPowers()
+{
+    m_pParent->ClearPowers();
+}
+
+void CSWGuiLevelUpPanel::ClearAbilities()
+{
+    m_pParent->ClearAbilities();
+}
+
+void CSWGuiLevelUpPanel::ClearSkills()
+{
+    m_pParent->ClearSkills();
+}
+
+void CSWGuiLevelUpPanel::ClearFeats()
+{
+    m_pParent->ClearFeats();
+}
 // PC 0x0075D3C0 GOG 0x0075D160
 void CSWGuiLevelUpPanel::PlayGame()
 {

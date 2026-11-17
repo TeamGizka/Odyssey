@@ -173,6 +173,10 @@ void CSWGuiInGameInventory::SetNextFilter(CSWGuiControl* pControl)
     pButton->m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     m_bUpdateItems = 1;
 }
+
+void CSWGuiInGameInventory::OnChangeCharacter(CSWGuiControl* pControl)
+{
+}
 // PC 0x00738FD0 GOG 0x00738D30
 int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
                                        int nSlot)
@@ -815,6 +819,10 @@ void CSWGuiInGameInventory::OnPanelAdded()
 #endif
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(20, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
+}
+
+void CSWGuiInGameInventory::UpdatePortraits()
+{
 }
 
 #endif

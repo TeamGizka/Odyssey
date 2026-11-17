@@ -1365,6 +1365,113 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
     }
     return 1;
 }
+
+int CSWSMessage::HandlePlayerToServerGroupInputWalkToWaypoint(
+    CSWSPlayer* pPlayer, CSWSCreature* pCreature, unsigned long oidArea,
+    float fPositionX, float fPositionY, float fPositionZ,
+    unsigned char nMovementRate, int bRun, int bUsePath,
+    unsigned long oidTarget)
+{
+    float fRange = 2.0f;
+
+    if (pCreature == NULL)
+    {
+        return 1;
+    }
+
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    Vector vDestination;
+    unsigned long oidDestinationArea;
+    if (pPathfind->m_bPathReversed == 0)
+    {
+        vDestination = Vector(pPathfind->m_fStartX, pPathfind->m_fStartY,
+                              pPathfind->m_fStartZ);
+        oidDestinationArea = pPathfind->m_nStartArea;
+    }
+    else
+    {
+        vDestination = Vector(pPathfind->m_fEndX, pPathfind->m_fEndY,
+                              pPathfind->m_fEndZ);
+        oidDestinationArea = pPathfind->m_nEndArea;
+    }
+
+    Vector vDelta =
+        Vector(fPositionX, fPositionY, fPositionZ) - vDestination;
+    if (oidDestinationArea == oidArea && vDelta * vDelta < 0.01f)
+    {
+        pPathfind->m_nMovementRate = nMovementRate;
+    }
+
+    Vector vWaypoint(fPositionX, fPositionY, fPositionZ);
+    Vector vOffset = pCreature->m_vPosition - vWaypoint;
+    if (vOffset * vOffset < 2.25f && pCreature->m_nAIState == 2)
+    {
+        unsigned long oidAITarget = pCreature->m_oidAITarget;
+        Vector vCross;
+        Vector vToWaypoint;
+        Vector vToTarget;
+        CGameObject* pGameObject =
+            g_pAppManager->GetServerExoApp()->GetGameObject(oidAITarget);
+        if (pGameObject == NULL || pGameObject->AsSWSObject() == NULL)
+        {
+            return 1;
+        }
+        CSWSObject* pTarget = pGameObject->AsSWSObject();
+        if (pTarget == NULL)
+        {
+            return 1;
+        }
+        pCreature->m_pcCombatRound->SetRoundPaused(1, pCreature->m_nId);
+        pCreature->m_pcCombatRound->SetPauseTimer(500, 0);
+        vToTarget = normalize(pTarget->m_vPosition - pCreature->m_vPosition);
+        vToWaypoint = normalize(vWaypoint - pCreature->m_vPosition);
+        vToWaypoint.m_fZ = vToTarget.m_fZ;
+        float fDot = vToTarget * vToWaypoint;
+        if (fDot >= 0.707f)
+        {
+            pCreature->DoCombatStep(2, 500, oidAITarget);
+        }
+        else if (fDot <= -0.707f)
+        {
+            pCreature->DoCombatStep(3, 500, oidAITarget);
+        }
+        else
+        {
+            vCross = cross(vToTarget, vToWaypoint);
+            if (vCross.m_fZ >= 0.0f)
+            {
+                pCreature->DoCombatStep(4, 500, oidAITarget);
+            }
+            else
+            {
+                pCreature->DoCombatStep(5, 500, oidAITarget);
+            }
+        }
+        return 1;
+    }
+
+    if (pCreature->m_bCommandable == 1)
+    {
+        pCreature->ClearAllActions(1);
+        pCreature->ActionManager(CSWSCreature::ACTION_MANAGER_REST);
+        pCreature->AddMoveToPointAction(CSWSObject::ACTION_GROUP_NEW,
+            Vector(fPositionX, fPositionY, fPositionZ), oidArea, oidTarget,
+            bRun, fRange, 0.0f, bUsePath, nMovementRate, 0, 0, 0, 0,
+            Vector(), 0, 0, 0);
+        pCreature->m_pPathfindInformation->ResetAtEndOfPath();
+        pCreature->AddAction(CSWSObject::ACTION_CHECK_MOVE_TO_POINT_RADIUS,
+            CSWSObject::ACTION_GROUP_NEW,
+            CSWSObject::ACTION_PARAM_FLOAT, &fPositionX,
+            CSWSObject::ACTION_PARAM_FLOAT, &fPositionY,
+            CSWSObject::ACTION_PARAM_FLOAT, &fPositionZ,
+            CSWSObject::ACTION_PARAM_OBJECT, &oidArea,
+            CSWSObject::ACTION_PARAM_OBJECT, &oidTarget,
+            CSWSObject::ACTION_PARAM_INTEGER, &bRun,
+            CSWSObject::ACTION_PARAM_FLOAT, &fRange,
+            0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
+    }
+    return 1;
+}
 // PC 0x005A5000 GOG 0x005A5070
 int CSWSMessage::HandlePlayerToServerGoldMessage(CSWSPlayer* pPlayer,
                                                  unsigned char nMinor)

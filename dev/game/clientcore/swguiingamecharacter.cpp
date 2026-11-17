@@ -613,6 +613,10 @@ void CSWGuiInGameCharacter::SetStats()
 #endif
     }
 }
+
+void CSWGuiInGameCharacter::UpdatePortraits()
+{
+}
 // PC 0x0071C750 GOG 0x0071D690
 void CSWGuiInGameCharacter::Draw(float fElapsed)
 {
@@ -750,6 +754,10 @@ void CSWGuiInGameCharacter::DoAutoLevelup(CSWGuiControl* pControl)
             pServerCreature->m_pStats->AutoLevelup(0);
         }
     }
+}
+
+void CSWGuiInGameCharacter::OnChangeCharacter(CSWGuiControl* pControl)
+{
 }
 // PC 0x0071B3B0 GOG 0x0071B480
 void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
