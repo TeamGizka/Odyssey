@@ -2034,11 +2034,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
     else
     {
         sDisableSound.Format("%d", 0);
-        CExoString sKey2("Disable Sound");
-        CExoString sSection2("Sound Options");
-        CExoString sFileName2(".\\swkotor2.ini");
+        CExoString sKey("Disable Sound");
+        CExoString sSection("Sound Options");
+        CExoString sFileName(".\\swkotor2.ini");
 
-        cIni.WriteIniEntry(sDisableSound, sFileName2, sSection2, sKey2);
+        cIni.WriteIniEntry(sDisableSound, sFileName, sSection, sKey);
     }
 
     ProcessCommandLine(__argc, __argv);

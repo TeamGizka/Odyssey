@@ -29,16 +29,16 @@ unsigned char* CRes4PC::Get4PCDataPtr()
     return m_pData;
 }
 // PC 0x00784820 GOG 0x007845D0
-int CRes4PC::Get4PCAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC, int* pnD)
+int CRes4PC::Get4PCAttrib(unsigned long* pnWidth, unsigned long* pnHeight, float* pfAlpha, int* pnFormat)
 {
     if (m_pHeader == 0)
     {
         return 0;
     }
-    *pnA = m_pHeader[0];
-    *pnB = m_pHeader[1];
-    *pfC = ((float*)m_pHeader)[2];
-    *pnD = m_pHeader[3];
+    *pnWidth = m_pHeader[0];
+    *pnHeight = m_pHeader[1];
+    *pfAlpha = ((float*)m_pHeader)[2];
+    *pnFormat = m_pHeader[3];
     return 1;
 }
 

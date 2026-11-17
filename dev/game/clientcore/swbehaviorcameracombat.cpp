@@ -194,7 +194,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
 {
     Vector vHit;
     CHitInfo hitInfo(0, ~CHitInfo::HIT_TRIGGER, 0);
-    hitInfo.m_bResult0 = 1;
+    hitInfo.m_bIgnoreCharacters = 1;
     Vector vSafe = vDesired;
     hitInfo.ClearOutput();
 
@@ -205,7 +205,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
 
     Vector vProbe = vSafe + vOffset;
     hitInfo.ClearOutput();
-    hitInfo.m_bResult2 = 1;
+    hitInfo.m_bUseIgnoreHitCheck = 1;
     if (((Gob*)m_pObject)->GetScene()->HitCheck(vCurrent, vProbe, &vHit,
                                                 &hitInfo))
     {
@@ -215,7 +215,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
 
     vProbe = vSafe - vOffset;
     hitInfo.ClearOutput();
-    hitInfo.m_bResult2 = 1;
+    hitInfo.m_bUseIgnoreHitCheck = 1;
     if (((Gob*)m_pObject)->GetScene()->HitCheck(vCurrent, vProbe, &vHit,
                                                 &hitInfo))
     {
@@ -226,7 +226,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
     vOffset = Vector(0.0f, 0.0f, 1.0f) * CameraPersonalSpace;
     vProbe = vSafe + vOffset;
     hitInfo.ClearOutput();
-    hitInfo.m_bResult2 = 1;
+    hitInfo.m_bUseIgnoreHitCheck = 1;
     if (((Gob*)m_pObject)->GetScene()->HitCheck(vCurrent, vProbe, &vHit,
                                                 &hitInfo))
     {
@@ -236,7 +236,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
 
     vProbe = vSafe - vOffset;
     hitInfo.ClearOutput();
-    hitInfo.m_bResult2 = 1;
+    hitInfo.m_bUseIgnoreHitCheck = 1;
     if (((Gob*)m_pObject)->GetScene()->HitCheck(vCurrent, vProbe, &vHit,
                                                 &hitInfo))
     {

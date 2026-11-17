@@ -279,8 +279,8 @@ public:
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
 
-    int Get4PCAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC,
-                     int* pnD);
+    int Get4PCAttrib(unsigned long* pnWidth, unsigned long* pnHeight, float* pfAlpha,
+                     int* pnFormat);
     unsigned char* Get4PCDataPtr();
     unsigned long* Get4PCHeaderPtr();
     int Get4PCSize();
@@ -429,7 +429,7 @@ public:
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
 
-    int GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long* pnC);
+    int GetPLTAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned long* pnReserved);
     unsigned char* GetPLTDataPtr();
     unsigned long* GetPLTHeaderPtr();
     unsigned long GetPLTSize();
@@ -525,9 +525,9 @@ struct TPCHeader
     float m_fAlphaBlending;
     unsigned short m_nWidth;
     unsigned short m_nHeight;
-    unsigned char m_bFormat1 : 1;
-    unsigned char m_bFormat3 : 1;
-    unsigned char m_bFormat4 : 1;
+    unsigned char m_bEncodingGray : 1;
+    unsigned char m_bEncodingRGB : 1;
+    unsigned char m_bEncodingRGBA : 1;
     unsigned char m_nFormatUnused : 5;
     unsigned char m_nMipMapCount;
     unsigned char m_aReserved[114];

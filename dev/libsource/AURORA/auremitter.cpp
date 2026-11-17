@@ -2791,7 +2791,7 @@ void PartEmitter::MoveFunc(float fTimeStep)
 void LightningEmitter::UpdateControlPoints()
 {
     int nInterpolationPoint;
-    float fA, fB, fC, fD, fTime;
+    float fStartWeight, fStartControlWeight, fEndControlWeight, fEndWeight, fTime;
     int nPositionRandom = (int)(m_fControlPointRadius * 100.0f);
     int nTangentRandom = (int)(m_fTangentSpread * 100.0f);
     Vector vTarget = m_pTarget->GetPosition();
@@ -2834,26 +2834,26 @@ void LightningEmitter::UpdateControlPoints()
             if (fTime > 1.0f)
                 fTime = 1.0f;
             float fOther = 1.0f - fTime;
-            fA = fOther * fOther * fOther;
-            fB = fOther * fOther * fTime * 3.0f;
-            fC = fOther * fTime * fTime * 3.0f;
-            fD = fTime * fTime * fTime;
+            fStartWeight = fOther * fOther * fOther;
+            fStartControlWeight = fOther * fOther * fTime * 3.0f;
+            fEndControlWeight = fOther * fTime * fTime * 3.0f;
+            fEndWeight = fTime * fTime * fTime;
             m_lstControlPoints[nInterpolationPoint] =
-                m_lstControlPoints[0] * fA +
-                (m_lstControlPoints[0] + vForward * m_fTangentLength) * fB +
+                m_lstControlPoints[0] * fStartWeight +
+                (m_lstControlPoints[0] + vForward * m_fTangentLength) * fStartControlWeight +
                 (m_lstControlPoints[m_lstControlPoints.m_nCount - 1] +
-                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fC +
-                m_lstControlPoints[m_lstControlPoints.m_nCount - 1] * fD;
-            fA = fOther * fOther * -3.0f;
-            fB = (1.0f - 3.0f * fTime) * fOther * 3.0f;
-            fC = (2.0f - 3.0f * fTime) * fTime * 3.0f;
-            fD = fTime * fTime * 3.0f;
+                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fEndControlWeight +
+                m_lstControlPoints[m_lstControlPoints.m_nCount - 1] * fEndWeight;
+            fStartWeight = fOther * fOther * -3.0f;
+            fStartControlWeight = (1.0f - 3.0f * fTime) * fOther * 3.0f;
+            fEndControlWeight = (2.0f - 3.0f * fTime) * fTime * 3.0f;
+            fEndWeight = fTime * fTime * 3.0f;
             vTangent =
-                m_lstControlPoints[0] * fA +
-                (m_lstControlPoints[0] + vForward * m_fTangentLength) * fB +
+                m_lstControlPoints[0] * fStartWeight +
+                (m_lstControlPoints[0] + vForward * m_fTangentLength) * fStartControlWeight +
                 (m_lstControlPoints[m_lstControlPoints.m_nCount - 1] +
-                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fC +
-                m_lstControlPoints[m_lstControlPoints.m_nCount - 1] * fD;
+                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fEndControlWeight +
+                m_lstControlPoints[m_lstControlPoints.m_nCount - 1] * fEndWeight;
             vTangent.Normalize();
             m_lstTangents[nInterpolationPoint] = vTangent * m_fTangentLength;
         }

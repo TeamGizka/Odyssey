@@ -1194,8 +1194,8 @@ public:
     ~CExoSound();
     int Play3DOneShotSound(const CResRef& cResRef, Vector vPosition,
                            float fRadius, unsigned char nGroup,
-                           unsigned long nA, unsigned char nB, float fA,
-                           float fB);
+                           unsigned long nOneShotDelay, unsigned char nVolume, float fFixedVariance,
+                           float fPitchVariance);
     int GetBestEAXAvailable();
     void SetMusicVolume(float fVolume, int bFade);
     void SetDialogVolume(float fVolume);
@@ -1214,8 +1214,8 @@ public:
     void SetListenerOrientation(const Vector& vOrientation, const Vector& vUp);
     void SetListenerPosition(const Vector& vPosition);
     int PlayOneShotSound(const CResRef& cResRef, unsigned char nType,
-                         unsigned long nDelay, unsigned char nGroup,
-                         float fVolume, float fPitchVariance);
+                         unsigned long nOneShotDelay, unsigned char nVolume,
+                         float fFixedVariance, float fPitchVariance);
     void StopAllOneShots();
     void Set2D3DBias(float fBias);
     float Get2D3DBias();

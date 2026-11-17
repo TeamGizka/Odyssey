@@ -2709,9 +2709,9 @@ CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
     if (!pInfo)
         pInfo = &DefaultHitInfo;
     if (!m_pModel || IsAllRooms() ||
-        (pInfo->m_bResult2 && m_bIgnoreHitCheck))
+        (pInfo->m_bUseIgnoreHitCheck && m_bIgnoreHitCheck))
         return 0;
-    if (pInfo->m_bResult1)
+    if (pInfo->m_bIgnoreFaded)
     {
         if (bool(m_pModel->m_Classification.m_bDoor))
         {
@@ -2748,10 +2748,10 @@ CAurObject* Gob::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
     if (!pInfo)
         pInfo = &DefaultHitInfo;
     if (!m_pModel || IsAllRooms() ||
-        (pInfo->m_bResult2 && m_bIgnoreHitCheck))
+        (pInfo->m_bUseIgnoreHitCheck && m_bIgnoreHitCheck))
         return 0;
 
-    if (pInfo->m_bResult1)
+    if (pInfo->m_bIgnoreFaded)
     {
         if (bool(m_pModel->m_Classification.m_bDoor))
         {

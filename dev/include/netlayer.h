@@ -125,9 +125,9 @@ public:
     CNetLayerPlayerInfo m_cPlayerInfo;
     int m_bServerMode;
     CExoString m_sServerName;
-    CExoString m_sServerString1;
-    CExoString m_sServerString2;
-    CExoString m_sServerString3;
+    CExoString m_sPlayerPassword;
+    CExoString m_sGameMasterPassword;
+    CExoString m_sServerAdminPassword;
     int m_bConnecting;
     CExoString m_sSessionName;
     int m_nClientType;

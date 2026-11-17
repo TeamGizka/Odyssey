@@ -289,8 +289,8 @@ public:
     CAurora16BitTexture(CResRef cResRef, int bRequest);
     virtual ~CAurora16BitTexture();
 
-    int GetTextureAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC,
-                         int* pnD);
+    int GetTextureAttrib(unsigned long* pnWidth, unsigned long* pnHeight, float* pfAlpha,
+                         int* pnFormat);
     unsigned char* GetTextureDataPtr();
     int Load();
     void Unload();
@@ -342,8 +342,8 @@ public:
     CAuroraLayeredTexture(CResRef cResRef, int bRequest);
     virtual ~CAuroraLayeredTexture();
 
-    int GetTextureAttrib(unsigned long* pnA, unsigned long* pnB,
-                         unsigned long* pnC);
+    int GetTextureAttrib(unsigned long* pnWidth, unsigned long* pnHeight,
+                         unsigned long* pnReserved);
     int Load();
     void Unload();
     unsigned char* GetTextureDataPtr();

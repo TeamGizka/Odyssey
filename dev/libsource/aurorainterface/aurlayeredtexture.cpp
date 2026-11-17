@@ -9,13 +9,13 @@ unsigned char* CAuroraLayeredTexture::GetTextureDataPtr()
     return 0;
 }
 // PC 0x00781290 GOG 0x00781060
-int CAuroraLayeredTexture::GetTextureAttrib(unsigned long* pnA,
-                                            unsigned long* pnB,
-                                            unsigned long* pnC)
+int CAuroraLayeredTexture::GetTextureAttrib(unsigned long* pnWidth,
+                                            unsigned long* pnHeight,
+                                            unsigned long* pnReserved)
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
     {
-        return m_pRes->GetPLTAttrib(pnA, pnB, pnC);
+        return m_pRes->GetPLTAttrib(pnWidth, pnHeight, pnReserved);
     }
     else
     {
@@ -27,22 +27,22 @@ int CAuroraLayeredTexture::Load()
 {
     unsigned char* pPLTData;
     SPLTLayeredTrailer* pTrailer;
-    unsigned long nA;
-    unsigned long nB;
-    unsigned long nC;
+    unsigned long nWidth;
+    unsigned long nHeight;
+    unsigned long nReserved;
 
     if (m_pRes->Demand() == NULL)
     {
         return 0;
     }
-    m_pRes->GetPLTAttrib(&nA, &nB, &nC);
+    m_pRes->GetPLTAttrib(&nWidth, &nHeight, &nReserved);
     pPLTData = m_pRes->GetPLTDataPtr();
     if (pPLTData == NULL)
     {
         m_pRes->Release();
         return 0;
     }
-    pTrailer = (SPLTLayeredTrailer*)(pPLTData + 2 * (nB * nA) + 4);
+    pTrailer = (SPLTLayeredTrailer*)(pPLTData + 2 * (nHeight * nWidth) + 4);
     pTrailer->pOwner = this;
     pTrailer->nType = 6;
     return 1;
@@ -59,15 +59,15 @@ void CAuroraLayeredTexture::Unload()
 unsigned char* CAuroraLayeredTexture::GetPtrToResHelperInfo()
 {
     unsigned char* nPLTDataPtr;
-    unsigned long nA;
-    unsigned long nB;
-    unsigned long nC;
+    unsigned long nWidth;
+    unsigned long nHeight;
+    unsigned long nReserved;
 
     if (!(m_pRes == NULL || m_pRes->GetDemands() < 1))
     {
         nPLTDataPtr = GetTextureDataPtr();
-        GetTextureAttrib(&nA, &nB, &nC);
-        return (nPLTDataPtr + 2 * (nB * nA)) + 4;
+        GetTextureAttrib(&nWidth, &nHeight, &nReserved);
+        return (nPLTDataPtr + 2 * (nHeight * nWidth)) + 4;
     }
     return 0;
 }

@@ -2576,12 +2576,12 @@ const char* disablelowendenvmapping(char* sCommand)
 }
 
 // Dead code: not in the PC executable
-int sorttexturelist(const void* pA, const void* pB)
+int sorttexturelist(const void* pFirstName, const void* pSecondName)
 {
 #ifdef _XBOX
-    return strcmp((const char*)pA, (const char*)pB);
+    return strcmp((const char*)pFirstName, (const char*)pSecondName);
 #else
-    int nResult = strcmp((const char*)pA, (const char*)pB);
+    int nResult = strcmp((const char*)pFirstName, (const char*)pSecondName);
     if (nResult != 0)
     {
         return nResult < 0 ? -1 : 1;

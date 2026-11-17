@@ -268,7 +268,7 @@ int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x00633100
 {
     CExoString sPath;
     CExoString sFile;
-    CExoString sUnused;
+    CExoString sExtension;
     WIN32_FIND_DATA sFindData;
     int nSize = 0;
 

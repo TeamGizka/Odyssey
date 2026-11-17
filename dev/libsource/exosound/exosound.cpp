@@ -544,15 +544,15 @@ void CExoSound::SetListenerPosition(const Vector& vPosition)
 }
 // PC 0x00621A50 GOG 0x00621A20
 int CExoSound::PlayOneShotSound(const CResRef& cResRef, unsigned char nType,
-                                unsigned long nA, unsigned char nB, float fA,
-                                float fB)
+                                unsigned long nOneShotDelay, unsigned char nVolume, float fFixedVariance,
+                                float fPitchVariance)
 {
     CExoSoundInternal* pInternal;
 
     pInternal = m_pInternal;
     if (pInternal != NULL)
     {
-        return pInternal->PlayOneShotSound(cResRef, nType, nA, nB, fA, fB);
+        return pInternal->PlayOneShotSound(cResRef, nType, nOneShotDelay, nVolume, fFixedVariance, fPitchVariance);
     }
     else
     {
@@ -562,8 +562,8 @@ int CExoSound::PlayOneShotSound(const CResRef& cResRef, unsigned char nType,
 // PC 0x00621A60 GOG 0x00621A30
 int CExoSound::Play3DOneShotSound(const CResRef& cResRef, Vector vPosition,
                                   float fRadius, unsigned char nGroup,
-                                  unsigned long nA, unsigned char nB, float fA,
-                                  float fB)
+                                  unsigned long nOneShotDelay, unsigned char nVolume, float fFixedVariance,
+                                  float fPitchVariance)
 {
     CExoSoundInternal* pInternal;
 
@@ -571,8 +571,8 @@ int CExoSound::Play3DOneShotSound(const CResRef& cResRef, Vector vPosition,
     if (pInternal != NULL)
     {
         vPosition.m_fZ += fRadius;
-        return pInternal->Play3DOneShotSound(cResRef, vPosition, nGroup, nA, nB,
-                                             fA, fB);
+        return pInternal->Play3DOneShotSound(cResRef, vPosition, nGroup, nOneShotDelay, nVolume,
+                                             fFixedVariance, fPitchVariance);
     }
     else
     {

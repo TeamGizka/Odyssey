@@ -910,12 +910,12 @@ void CHitInfo::Reset(int nType, int nFlags, int nMask)
     m_nMask = nMask;
     m_lstHits.m_nCount = 0;
     m_nResult = 0;
-    m_bResult0 = 0;
-    m_bResult1 = 1;
-    m_bResult2 = 0;
-    m_bResult3 = 0;
+    m_bIgnoreCharacters = 0;
+    m_bIgnoreFaded = 1;
+    m_bUseIgnoreHitCheck = 0;
+    m_bSkipStatic = 0;
 #ifndef _XBOX
-    m_bResult4 = 0;
+    m_bHitEmitterBounds = 0;
 #endif
     ClearOutput();
 }
@@ -1810,13 +1810,13 @@ CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
              pGob->m_bDistortion ||
 #else
             ((bool(pGob->m_pModel->m_Classification.m_bEmitterBounds) &&
-              !pHitInfo->m_bResult4) || pGob->m_bDistortion ||
+              !pHitInfo->m_bHitEmitterBounds) || pGob->m_bDistortion ||
 #endif
              bool(pGob->m_pModel->m_Classification.m_bSceneHitDisabled) ||
              pGob->IsSceneHitExcluded()))
             continue;
 
-        if (pHitInfo->m_bResult0 && pGob->m_pModel &&
+        if (pHitInfo->m_bIgnoreCharacters && pGob->m_pModel &&
             (bool(pGob->m_pModel->m_Classification.m_bCharacter) ||
              bool(pGob->m_pModel->m_Classification.m_bRenderEarly) ||
              (bool(pGob->m_pModel->m_Classification.m_bAlternateShadowCaster) &&
@@ -3175,7 +3175,7 @@ int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo
     CurrentHitInfo = pHitInfo;
     CAurObject* pHitObject = 0;
 
-    if (!pHitInfo->m_bResult3)
+    if (!pHitInfo->m_bSkipStatic)
     {
         if (!m_lstRooms.m_nCount)
         {

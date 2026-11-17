@@ -1012,7 +1012,7 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
     Vector vHitDown;
     CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
     int nChecks = 1;
-    hitInfo.m_bResult0 = 1;
+    hitInfo.m_bIgnoreCharacters = 1;
     int bContinue = 1;
     hitInfo.m_lstHits.Add(m_pTarget);
     while (bContinue && nChecks-- > 0)
@@ -1032,14 +1032,14 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
 
         Vector vProbeRight = vPosition + vOffset;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneRight = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitRight = pSceneRight->HitCheck(
             vStart, vProbeRight, &vHitRight, &hitInfo) != 0;
 
         Vector vProbeLeft = vPosition - vOffset;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneLeft = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitLeft = pSceneLeft->HitCheck(
             vStart, vProbeLeft, &vHitLeft, &hitInfo) != 0;
@@ -1048,14 +1048,14 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
         Vector vVertical = vUp * CameraPersonalSpace;
         Vector vProbeUp = vPosition + vVertical;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneUp = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitUp = pSceneUp->HitCheck(
             vStart, vProbeUp, &vHitUp, &hitInfo) != 0;
 
         Vector vProbeDown = vPosition - vVertical;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneDown = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitDown = pSceneDown->HitCheck(
             vStart, vProbeDown, &vHitDown, &hitInfo) != 0;
@@ -1252,11 +1252,11 @@ int CSWCameraDeath::Control(float fTimeStep)
         Vector vPosition = fDistance * qOrientation.zdir() + vTarget;
         Vector vHit;
         CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
-        hitInfo.m_bResult0 = 1;
+        hitInfo.m_bIgnoreCharacters = 1;
         hitInfo.m_lstHits.Add(m_pTarget);
         hitInfo.ClearOutput();
         Vector vOffset = normalize(vPosition - vTarget) * CAMERA_COLLISION_CLEARANCE;
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         int bHit = static_cast<Gob*>(m_pObject)->GetScene()->HitCheck(
             vTarget, vPosition + vOffset, &vHit, &hitInfo) != 0;
         if (bHit)

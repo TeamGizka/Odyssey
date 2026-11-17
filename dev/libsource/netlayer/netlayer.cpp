@@ -78,9 +78,9 @@ int CNetLayer::StartServerMode(const CExoString& sServerName,
     }
     m_bServerMode = 1;
     m_sServerName = sServerName;
-    m_sServerString1 = "";
-    m_sServerString2 = "";
-    m_sServerString3 = "";
+    m_sPlayerPassword = "";
+    m_sGameMasterPassword = "";
+    m_sServerAdminPassword = "";
     return 1;
 }
 // PC 0x00620C40 GOG 0x00620C10
@@ -210,7 +210,7 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
     m_cPlayerInfo.m_nPlayerId = 1;
     if (nClientType == CONNECTTYPE_SERVERADMIN)
     {
-        if (m_sServerString3 == "")
+        if (m_sServerAdminPassword == "")
         {
             m_cPlayerInfo.m_bGameMaster = 0;
             m_cPlayerInfo.m_bPlayer = 0;
@@ -219,7 +219,7 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
     }
     else if (nClientType == CONNECTTYPE_GAMEMASTER)
     {
-        if (m_sServerString2 == "")
+        if (m_sGameMasterPassword == "")
         {
             m_cPlayerInfo.m_bAuthorized = 0;
             m_cPlayerInfo.m_bGameMaster = 1;
@@ -228,7 +228,7 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
     }
     else
     {
-        if (m_sServerString1 == "")
+        if (m_sPlayerPassword == "")
         {
             m_cPlayerInfo.m_bGameMaster = 0;
             m_cPlayerInfo.m_bPlayer = 1;
@@ -236,9 +236,9 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
         }
     }
     pReply[4] = 'A';
-    if ((nClientType == CONNECTTYPE_PLAYER && m_sServerString1 == "") ||
-        (nClientType == CONNECTTYPE_GAMEMASTER && m_sServerString2 == "") ||
-        (nClientType == CONNECTTYPE_SERVERADMIN && m_sServerString3 == ""))
+    if ((nClientType == CONNECTTYPE_PLAYER && m_sPlayerPassword == "") ||
+        (nClientType == CONNECTTYPE_GAMEMASTER && m_sGameMasterPassword == "") ||
+        (nClientType == CONNECTTYPE_SERVERADMIN && m_sServerAdminPassword == ""))
     {
         pReply[5] = 'C';
         m_pExoApp->PlayerListChange(0, 1, 0);

@@ -1847,7 +1847,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
             {
                 CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
 #ifndef _XBOX
-                hitInfo.m_bResult4 = 1;
+                hitInfo.m_bHitEmitterBounds = 1;
 #endif
                 Vector vHitPosition;
 #ifndef _XBOX

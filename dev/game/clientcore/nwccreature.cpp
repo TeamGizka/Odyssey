@@ -4378,7 +4378,7 @@ int CSWCCreature::CanSee(CSWCObject* pObject)
     vEnd.m_fZ += pObject->GetCanSeeHeight();
 
     DefaultHitInfo.ClearOutput();
-    DefaultHitInfo.m_bResult0 = 1;
+    DefaultHitInfo.m_bIgnoreCharacters = 1;
     DefaultHitInfo.m_lstHits.m_nCount = 0;
     DefaultHitInfo.m_lstHits.Add(GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1));
     Gob* pModel = GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1);

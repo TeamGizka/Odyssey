@@ -4546,7 +4546,7 @@ void Gob::Render(bool bRenderLast)
         Vector vCamera = CurrentCamera->m_vPosition;
         Vector vFocus = currentscene->m_vSceneFocus;
         CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
-        hitInfo.m_bResult1 = 0;
+        hitInfo.m_bIgnoreFaded = 0;
         if (HitCheck(vCamera, vFocus, &vFocus, &hitInfo))
             m_fOcclusionAlpha -= DeltaT / fadeToZeroTime;
         else

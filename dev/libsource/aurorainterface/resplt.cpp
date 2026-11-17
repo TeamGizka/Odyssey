@@ -27,15 +27,15 @@ int CResPLT::CopyPLTData(unsigned char* pPLTData)
     return 1;
 }
 // PC 0x007843C0 GOG 0x00784190
-int CResPLT::GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long* pnC)
+int CResPLT::GetPLTAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned long* pnReserved)
 {
     if (m_pPLTHeader == 0)
     {
         return 0;
     }
-    *pnA = m_pPLTHeader[4];
-    *pnB = m_pPLTHeader[5];
-    *pnC = m_pPLTHeader[2];
+    *pnWidth = m_pPLTHeader[4];
+    *pnHeight = m_pPLTHeader[5];
+    *pnReserved = m_pPLTHeader[2];
     return 1;
 }
 // PC 0x00784400 GOG 0x007841D0

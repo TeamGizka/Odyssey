@@ -36,21 +36,21 @@ int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
         *pnCompressedSize = m_nCompressedSize;
         *pnUncompressedSize = m_nUncompressedSize;
         *pnRemainingSize = m_nRemainingSize;
-        if (m_pHeader->m_bFormat1)
+        if (m_pHeader->m_bEncodingGray)
         {
             *pnFormat = 1;
             return 1;
         }
         else
         {
-            if (m_pHeader->m_bFormat3)
+            if (m_pHeader->m_bEncodingRGB)
             {
                 *pnFormat = 3;
                 return 1;
             }
             else
             {
-                if (m_pHeader->m_bFormat4)
+                if (m_pHeader->m_bEncodingRGBA)
                 {
                     *pnFormat = 4;
                 }
@@ -152,15 +152,15 @@ int CResTPC::OnResourceServiced()
     m_pHeader = pTPC;
     m_pData = (unsigned char*)pTPC + sizeof(TPCHeader);
 
-    if (pTPC->m_bFormat1)
+    if (pTPC->m_bEncodingGray)
     {
         nFormat = 1;
     }
-    else if (pTPC->m_bFormat3)
+    else if (pTPC->m_bEncodingRGB)
     {
         nFormat = 3;
     }
-    else if (pTPC->m_bFormat4)
+    else if (pTPC->m_bEncodingRGBA)
     {
         nFormat = 4;
     }

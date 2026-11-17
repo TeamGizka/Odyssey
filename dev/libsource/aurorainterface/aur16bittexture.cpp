@@ -1,12 +1,12 @@
 #include "aurora.h"
 // PC 0x00783FA0 GOG 0x00783DA0
-int CAurora16BitTexture::GetTextureAttrib(unsigned long* pnA,
-                                          unsigned long* pnB, float* pfC,
-                                          int* pnD)
+int CAurora16BitTexture::GetTextureAttrib(unsigned long* pnWidth,
+                                          unsigned long* pnHeight, float* pfAlpha,
+                                          int* pnFormat)
 {
     if (m_pRes != 0 && m_pRes->GetDemands() >= 1)
     {
-        return m_pRes->Get4PCAttrib(pnA, pnB, pfC, pnD);
+        return m_pRes->Get4PCAttrib(pnWidth, pnHeight, pfAlpha, pnFormat);
     }
     return 0;
 }

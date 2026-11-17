@@ -1624,8 +1624,8 @@ CExoKeyTable::~CExoKeyTable()
 // PC 0x0040FC00 GOG 0x0040FBB0
 int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 {
-    CExoString sString1;
-    CExoString sString2;
+    CExoString sDrive;
+    CExoString sFileName;
     CResRef resRef;
     unsigned char nType;
     unsigned long nCount;
