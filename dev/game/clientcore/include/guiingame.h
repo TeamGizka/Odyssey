@@ -270,6 +270,7 @@ public:
     enum { TUTORIAL_WINDOW_COUNT = 256 };
 #endif
     int GetTutorialWindowHasBeenShown(unsigned char nReason);
+    void SetTutorialWindowHasBeenShown(unsigned char nReason, int bShown);
     int ShowTutorialWindow(unsigned char nReason, unsigned long oidInstigator,
                            unsigned long oidTarget, unsigned long nActionParam);
     int SetTutorialReason(unsigned char nReason);
@@ -284,7 +285,9 @@ public:
     int ChangeCharacter();
 #endif
     CExoString GetCameraAnimationName(unsigned short nAnimation);
+    int IsDialogStuntAnimation(unsigned short nAnimation);
     int IsLoopingDialogStuntAnimation(unsigned short nAnimation);
+    int IsFireForgetDialogStuntAnimation(unsigned short nAnimation);
     int IsFireForgetDialogAnimation(unsigned short nAnimation);
     int IsLoopingDialogAnimation(unsigned short nAnimation);
     int IsOverlayDialogAnimation(unsigned short nAnimation);
@@ -336,6 +339,7 @@ public:
     int InitializeStuntModelData(unsigned long nModels);
     int LoadStuntModelsForDialog();
     void UnloadStuntModelsForDialog();
+    void ShowReplyChosen(unsigned long nReply, unsigned long nReplyCount, const CExoString& sText);
     void SetConversationType(unsigned long nType, unsigned char nComputerType);
     void ClearRepliesData();
     int InitializeRepliesData(unsigned long nReplies);
@@ -447,6 +451,7 @@ public:
     void ShowDialogMessage();
     void ShowDialogReplies(unsigned long nStartIndex, unsigned long nReplyContext);
     void UnlockDialogParticipantOrientations();
+    void SetDialogFade(int bFadeIn, float fDelay, float fLength, const Vector& vColor);
     void UpdateShotCamera(unsigned long nShot, int nCamera, float fPitch,
                           float fHeight, unsigned long oidTarget, int nVideoEffect);
     int IsInDialog(unsigned long oidObject);
@@ -482,6 +487,8 @@ public:
     void UpdateMessageGUI(CSWGuiPanel* pPanel);
 
     void StopBarkBubble(int bFade);
+    void PauseBarkBubble();
+    void ResumeBarkBubble();
     void UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen);
     void ShowFlashingStatus(unsigned char nStatus);
     void EndControllerPauseState();

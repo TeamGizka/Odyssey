@@ -238,6 +238,7 @@ public:
     enum { GUISOUND_DARK_SIDE = 17, GUISOUND_LIGHT_SIDE = 18 };
     enum { VFX_IMP_DARK_SIDE = 9014, VFX_IMP_LIGHT_SIDE = 9015 };
     void PlayPendingSounds();
+    void Clear();
 
     void DisplayStatus();
     virtual void OnPanelAdded();

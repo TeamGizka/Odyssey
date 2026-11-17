@@ -25,6 +25,16 @@ class CResStruct;
 class CSWSCreatureAppearanceInfo;
 class CSWCreatureStatsUpdate;
 
+class CSWSStats_Spell
+{
+public:
+    CSWSStats_Spell();
+    unsigned long m_nSpell;
+    unsigned long m_nReady;
+    unsigned char m_nMetaType;
+    int m_bDomainSpell;
+};
+
 class CSWSStats_SpellLikeAbility
 {
 public:

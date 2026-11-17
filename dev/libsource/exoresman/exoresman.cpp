@@ -146,6 +146,7 @@ int CResRef::operator==(char* pString) const
     }
     return 1;
 }
+
 // PC 0x004061C0 GOG 0x00406190
 CResRef CResRef::operator=(const CResRef& other)
 {
@@ -238,6 +239,12 @@ CResRef CResRef::operator+=(const CExoString& sString)
                                                     : sTemp.GetLength());
     }
     return *this;
+}
+
+// Dead code: not in the PC executable
+int CResRef::operator!()
+{
+    return m_resRef[0] == 0;
 }
 #ifndef _XBOX
 int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)  // PC 0x006955A0 GOG 0x00695350
@@ -411,6 +418,18 @@ int CExoResMan::RemoveFixedKeyTableFile(const CExoString& sFileName)
 int CExoResMan::RemoveResourceDirectory(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_DIRECTORY);
+}
+
+// Dead code: not in the PC executable
+int CExoResMan::UpdateEncapsulatedResourceFile(const CExoString& sFileName)
+{
+    return UpdateKeyTable(sFileName, TABLE_ENCAPSULATED);
+}
+
+// Dead code: not in the PC executable
+int CExoResMan::UpdateFixedKeyTableFile(const CExoString& sFileName)
+{
+    return UpdateKeyTable(sFileName, TABLE_KEY);
 }
 // PC 0x00408B40 GOG 0x00408B10
 int CExoResMan::UpdateResourceDirectory(const CExoString& sFileName)
@@ -1292,6 +1311,27 @@ int CExoResMan::ReleaseResObject(CRes* pRes)
 
     return 0;
 }
+
+// Dead code: not in the PC executable
+void CExoResMan::ResumeServicing()
+{
+    m_bUpdateDisabled = 0;
+}
+
+// Dead code: not in the PC executable
+int CExoResMan::ValidateSignedResource(const CExoString& sFileName,
+                                       unsigned short nType,
+                                       unsigned long nSize,
+                                       unsigned long nFlags)
+{
+    return 1;
+}
+
+// Dead code: not in the PC executable
+void CExoResMan::SuspendServicing()
+{
+    m_bUpdateDisabled = 1;
+}
 // PC 0x0040A050 GOG 0x0040A020
 CRes::~CRes()
 {
@@ -1343,6 +1383,44 @@ int CExoResMan::Free(CRes* pRes)
 
     return 0;
 }
+
+// Dead code: not in the PC executable
+void CExoResMan::DumpAll()
+{
+    DumpTable(m_lstEncapsulated);
+    DumpTable(m_lstResourceImages);
+    DumpTable(m_lstDirectories);
+    DumpTable(m_lstKeyTables);
+}
+
+// Dead code: not in the PC executable
+void CExoResMan::DumpTable(CExoLinkedList<CExoKeyTable>& lstTables)
+{
+    CExoKeyTable* pTable;
+    CExoLinkedListNode* pPos = lstTables.GetHeadPos();
+
+    if (pPos != NULL)
+    {
+        pTable = lstTables.GetAtPos(pPos);
+    }
+
+    while (pPos != NULL)
+    {
+        if (pTable != NULL)
+        {
+            for (unsigned long i = 0; i < pTable->m_nTableSize; i++)
+            {
+                CKeyTableEntry* pEntry = &pTable->m_pKeyTable[i];
+                if (pEntry != NULL)
+                {
+                    Dump(pEntry->m_pRes, 1);
+                }
+            }
+        }
+
+        pTable = lstTables.GetNext(pPos);
+    }
+}
 // PC 0x004071A0 GOG 0x00407170
 int CExoResMan::FreeChunk()
 {
@@ -1388,6 +1466,32 @@ int CExoResMan::FreeChunk()
     }
 
     return nFreed > 0;
+}
+
+// Dead code: not in the PC executable
+CExoLocString CExoResMan::GetEncapsulatedFileDescription(
+    const CExoString& sFileName)
+{
+    CExoLocString lsDescription;
+    CExoEncapsulatedFile* pFile = new CExoEncapsulatedFile;
+
+    if (pFile == NULL)
+    {
+        return CExoLocString();
+    }
+
+    pFile->m_sFileName = sFileName;
+
+    if (!pFile->OpenFile())
+    {
+        return CExoLocString();
+    }
+
+    lsDescription = pFile->m_lsDescription;
+    pFile->CloseFile();
+    delete pFile;
+
+    return lsDescription;
 }
 // PC 0x004072A0 GOG 0x00407270
 int CExoResMan::GetKeyEntryFromTable(CExoLinkedList<CExoKeyTable>& lstTables,
@@ -1648,6 +1752,20 @@ void CExoResMan::SetResObject(const CResRef& cResRef, unsigned short nType,
             pEntry->m_pRes->m_nResId = pEntry->m_nResId;
         }
     }
+}
+
+// Dead code: not in the PC executable
+unsigned long CExoResMan::GetResID(const CResRef& cResRef, unsigned short nType)
+{
+    CExoKeyTable* pTable = NULL;
+    CKeyTableEntry* pEntry = NULL;
+
+    if (GetKeyEntry(cResRef, nType, &pTable, &pEntry))
+    {
+        return pEntry->m_nResId;
+    }
+
+    return 0xFFFFFFFF;
 }
 // PC 0x004077E0 GOG 0x004077B0
 CExoKeyTable* CExoResMan::GetTable(CRes* pRes)
@@ -2422,6 +2540,12 @@ int CExoResMan::GetIsStaticType(unsigned short nType)
     }
 
     return 0;
+}
+
+// Dead code: not in the PC executable
+unsigned long CExoResMan::GetTotalPhysicalMemory()
+{
+    return m_nTotalPhysicalMemory;
 }
 // PC 0x004068D0 GOG 0x004068A0
 int CExoResMan::GetFreeDiskSpace(const CExoString& sPath,

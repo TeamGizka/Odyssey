@@ -121,6 +121,7 @@ public:
     int operator==(const CResRef& other) const;
     int operator==(char* pString) const;
     int operator!=(char* pString) const;
+    int operator!();
     CResRef operator=(const CResRef& other);
     CResRef operator=(unsigned char* pResRef);
     CResRef operator=(char* pString);
@@ -1018,6 +1019,10 @@ public:
                            unsigned long nResId, int, CExoString sDirectory);
     CKeyTableEntry* FindKey(const CResRef& resRef, unsigned short nType);
     CExoStringList* GetKeysOfType(unsigned short nType);
+    CRes* GetRes(const CResRef& resRef, unsigned short nType);
+    unsigned long GetResID(const CResRef& resRef, unsigned short nType);
+    int GetTableEntry(unsigned long nIndex, CResRef& resRef,
+                      unsigned short& nType);
     void DestroyTable();
     int LocateBifFile(const CExoString& sFileName);
     int AddDirectoryContents(int bFlag);
@@ -1172,6 +1177,7 @@ public:
 
 
     virtual void* GetResource(unsigned long nId);
+    CExoResourceImageFileEntry* GetKeyList();
 
 
     CExoResourceImageFileEntry GetKeyListEntry(unsigned long nIndex)
@@ -1181,6 +1187,7 @@ public:
                                                    m_pImageFile)
                                                   ->m_nEntryOffset))[nIndex];
     }
+    CExoResourceImageFileHeader* GetHeader();
 
     unsigned char* m_pImageFile;
 };
@@ -1297,6 +1304,8 @@ public:
                             unsigned long nSize, unsigned long nArg4);
     void* Demand(CRes* pRes);
     void Dump(CRes* pRes, int bFlag);
+    void DumpAll();
+    void DumpTable(CExoLinkedList<CExoKeyTable>& lstTables);
     int Exists(const CResRef& cResRef, unsigned short nType,
                unsigned long* pnTableType);
     int Exists(const CResRef& cResRef, unsigned short nType,
@@ -1309,6 +1318,7 @@ public:
     int Free(CRes* pRes);
     int FreeChunk();
     void FreeResourceData(CRes* pRes);
+    CExoLocString GetEncapsulatedFileDescription(const CExoString& sFileName);
     int GetFreeDiskSpace(const CExoString& sPath,
                          unsigned __int64* pnFreeBytes);
     int GetIsStaticType(unsigned short nType);
@@ -1320,6 +1330,7 @@ public:
                              unsigned long nId);
     int GetNewResRef(const CResRef& cResRef, unsigned short nType,
                      CResRef& cNewResRef);
+    unsigned long GetResID(const CResRef& cResRef, unsigned short nType);
     CExoStringList* GetResOfType(unsigned short nType, int bEncapsulatedOnly);
     CExoStringList* GetResOfType(unsigned short nType, CRes* pRes);
     CExoStringList* GetResOfTypeFromTable(
@@ -1333,6 +1344,7 @@ public:
     unsigned short GetResTypeFromFile(const CExoString& sFileName);
     CExoKeyTable* GetTable(CRes* pRes);
     int GetTableCount(CRes* pRes, int bCountAll);
+    unsigned long GetTotalPhysicalMemory();
     int Malloc(CRes* pRes);
     int NukeDirectory(const CExoString& sPath, int bDeleteFiles, int bRecurse);
     int ReadRaw(CRes* pRes, int nSize, char* pBuffer);
@@ -1371,6 +1383,7 @@ public:
         return 1;
     }
 
+    void ResumeServicing();
     int ServiceCurrentAsyncRes();
     int ServiceFromDirectory(CRes* pRes, int bAsync);
     int ServiceFromDirectoryRaw(CRes* pRes, int nSize, char* pBuffer);
@@ -1381,9 +1394,15 @@ public:
     int ServiceFromResFile(CRes* pRes, int bAsync);
     int ServiceFromResFileRaw(CRes* pRes, int nSize, char* pBuffer);
     void SetResObject(const CResRef& cResRef, unsigned short nType, CRes* pRes);
+    void SuspendServicing();
     void Update(unsigned long nTime);
+    int UpdateEncapsulatedResourceFile(const CExoString& sFileName);
+    int UpdateFixedKeyTableFile(const CExoString& sFileName);
     int UpdateKeyTable(const CExoString& sFileName, unsigned long nType);
     int UpdateResourceDirectory(const CExoString& sFileName);
+    int ValidateSignedResource(const CExoString& sFileName,
+                               unsigned short nType, unsigned long nSize,
+                               unsigned long nFlags);
     int WipeDirectory(const CExoString& sPath, int bDeleteFiles,
                       int bRemoveDirectory, int bRecurseClean, int bRecurse);
 

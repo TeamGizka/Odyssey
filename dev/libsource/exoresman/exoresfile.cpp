@@ -63,6 +63,51 @@ CExoStringList* CExoKeyTable::GetKeysOfType(unsigned short nType)
 
     return pList;
 }
+
+// Dead code: not in the PC executable
+CRes* CExoKeyTable::GetRes(const CResRef& resRef, unsigned short nType)
+{
+    CKeyTableEntry* pEntry = FindKey(resRef, nType);
+
+    if (pEntry != NULL)
+    {
+        return pEntry->m_pRes;
+    }
+
+    return NULL;
+}
+
+// Dead code: not in the PC executable
+unsigned long CExoKeyTable::GetResID(const CResRef& resRef,
+                                     unsigned short nType)
+{
+    CKeyTableEntry* pEntry = FindKey(resRef, nType);
+
+    if (pEntry != NULL)
+    {
+        return pEntry->m_nResId;
+    }
+
+    return 0xFFFFFFFF;
+}
+
+// Dead code: not in the PC executable
+int CExoKeyTable::GetTableEntry(unsigned long nIndex, CResRef& resRef,
+                                unsigned short& nType)
+{
+    if (m_pKeyTable != NULL && nIndex < m_nTableSize)
+    {
+        CKeyTableEntry* pEntry = &m_pKeyTable[nIndex];
+        if (pEntry != NULL)
+        {
+            resRef = pEntry->m_resRef;
+            nType = pEntry->m_nType;
+            return 1;
+        }
+    }
+
+    return 0;
+}
 // PC 0x0040D8F0 GOG 0x0040D8B0
 CExoKeyTable::CExoKeyTable()
 {
@@ -1169,6 +1214,19 @@ void CExoResourceImageFile::DeleteRefCount()
         nRefCount--;
         m_nRefCount = nRefCount;
     }
+}
+
+// Dead code: not in the PC executable
+CExoResourceImageFileEntry* CExoResourceImageFile::GetKeyList()
+{
+    return (CExoResourceImageFileEntry*)(m_pImageFile +
+                                         GetHeader()->m_nEntryOffset);
+}
+
+// Dead code: not in the PC executable
+CExoResourceImageFileHeader* CExoResourceImageFile::GetHeader()
+{
+    return (CExoResourceImageFileHeader*)m_pImageFile;
 }
 // PC 0x0040F0A0 GOG 0x0040F050
 int CExoResourceImageFile::Initialize()

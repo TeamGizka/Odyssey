@@ -2402,6 +2402,12 @@ void CGuiInGame::UnloadStuntModelsForDialog()
     }
     m_nStuntModels = 0;
 }
+
+// Dead code: not in the PC executable
+void CGuiInGame::ShowReplyChosen(unsigned long nReply, unsigned long nReplyCount,
+                                 const CExoString& sText)
+{
+}
 // PC 0x0067F930 GOG 0x0067F710
 void CGuiInGame::SetSWGuiStatus(int nStatus, int bActive)
 {
@@ -2714,10 +2720,24 @@ int CGuiInGame::IsAnimationPlayingInDialog()
     }
     return bPlaying;
 }
+
+// Dead code: not in the PC executable
+int CGuiInGame::IsDialogStuntAnimation(unsigned short nAnimation)
+{
+    return nAnimation >= CUTSCENE_ANIMATION_FIRST &&
+           nAnimation <= CUTSCENE_ANIMATION_WL_LAST;
+}
 // PC 0x0067FFF0 GOG 0x0067FDD0
 int CGuiInGame::IsLoopingDialogStuntAnimation(unsigned short nAnimation)
 {
     return (nAnimation >= 0x578u) && (nAnimation <= 0x6BFu);
+}
+
+// Dead code: not in the PC executable
+int CGuiInGame::IsFireForgetDialogStuntAnimation(unsigned short nAnimation)
+{
+    return nAnimation >= CUTSCENE_ANIMATION_FIRST &&
+           nAnimation <= CUTSCENE_ANIMATION_W_LAST;
 }
 // PC 0x00680010 GOG 0x0067FDF0
 int CGuiInGame::IsOverlayDialogAnimation(unsigned short nAnimation)
@@ -2813,6 +2833,16 @@ void CGuiInGame::UnlockDialogParticipantOrientations()
     pObject = g_pAppManager->m_pClientExoApp->GetGameObject(oidObject);
     if (pObject != 0 && pObject->AsSWCCreature() != 0)
         pObject->AsSWCCreature()->SetLockOrientationToObject(OBJECT_INVALID, 0);
+}
+
+// Dead code: not in the PC executable
+void CGuiInGame::SetDialogFade(int bFadeIn, float fDelay, float fLength,
+                               const Vector& vColor)
+{
+    if (m_pDialogFade != 0)
+    {
+        m_pDialogFade->SetFade(bFadeIn, fDelay, fLength, vColor);
+    }
 }
 // PC 0x00680220 GOG 0x00680000
 void CGuiInGame::DialogGuiDoneScroll()
@@ -3412,6 +3442,18 @@ void CGuiInGame::UpdateMessageGUI(CSWGuiPanel* pPanel)
         ((CSWGuiInGameMessages*)pPanel)
             ->AddCombatMessages(m_pCombatBuffer, m_nCombatBufferSize);
     }
+}
+
+// Dead code: not in the PC executable
+void CGuiInGame::PauseBarkBubble()
+{
+    m_pBarkBubble->Pause();
+}
+
+// Dead code: not in the PC executable
+void CGuiInGame::ResumeBarkBubble()
+{
+    m_pBarkBubble->Resume();
 }
 
 
@@ -4081,6 +4123,25 @@ int CGuiInGame::GetTutorialWindowHasBeenShown(unsigned char nReason)
     unsigned char nByte = nReason / 8;
     unsigned char nBit = nReason - nByte * 8;
     return m_aTutorialWindowsShown[nByte] & (1 << nBit);
+}
+
+// Dead code: not in the PC executable
+void CGuiInGame::SetTutorialWindowHasBeenShown(unsigned char nReason, int bShown)
+{
+    if (nReason >= TUTORIAL_WINDOW_COUNT)
+    {
+        return;
+    }
+    unsigned char nByte = nReason / 8;
+    unsigned char nBit = nReason - nByte * 8;
+    if (bShown)
+    {
+        m_aTutorialWindowsShown[nByte] |= 1 << nBit;
+    }
+    else
+    {
+        m_aTutorialWindowsShown[nByte] &= ~(1 << nBit);
+    }
 }
 // PC 0x00681F70 GOG 0x00681D50
 int CGuiInGame::ShowTutorialWindow(unsigned char nReason,

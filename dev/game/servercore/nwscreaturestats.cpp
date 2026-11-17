@@ -52,6 +52,15 @@ int CSWSCreatureStats::GetFavoredEnemyBonus(CSWSCreature* pCreature)
     }
     return 0;
 }
+
+// Dead code: not in the PC executable
+CSWSStats_Spell::CSWSStats_Spell()
+{
+    m_nSpell = 0;
+    m_nReady = 1;
+    m_nMetaType = 0;
+    m_bDomainSpell = 0;
+}
 // PC 0x006FB590 GOG 0x006FB180
 CSWSStats_SpellLikeAbility::CSWSStats_SpellLikeAbility()
 {

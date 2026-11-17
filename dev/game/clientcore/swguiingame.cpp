@@ -1210,6 +1210,31 @@ CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     m_bPositioned = 1;
 #endif
 }
+
+// Dead code: not in the PC executable
+void CSWGuiStatusSummary::Clear()
+{
+    m_cStatusSummary.m_bDisplaySPending = 0;
+    m_cStatusSummary.m_bSoundPending = 0;
+    m_cStatusSummary.m_bItemReceived = 0;
+    m_cStatusSummary.m_bItemLost = 0;
+    m_cStatusSummary.m_bJournal = 0;
+    m_cStatusSummary.m_bLevelUpSound = 0;
+    m_cStatusSummary.m_bNewQuestSound = 0;
+    m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bDarkAlignSound = 0;
+    m_cStatusSummary.m_bLightAlignSound = 0;
+    m_cStatusSummary.m_bCreditsNet = 0;
+    m_cStatusSummary.m_nCredits = 0;
+    m_cStatusSummary.m_nLightShift = 0;
+    m_cStatusSummary.m_nDarkShift = 0;
+    m_cStatusSummary.m_nExperience = 0;
+    m_cStatusSummary.m_nStealthExperience = 0;
+    m_cStatusSummary.m_nInfluenceGain = 0;
+    m_cStatusSummary.m_nInfluenceLost = 0;
+    m_cStatusSummary.m_nMaxForcePointsGain = 0;
+    m_cStatusSummary.m_nMaxForcePointsLost = 0;
+}
 // PC 0x006758B0 GOG 0x00675650
 void CSWGuiInGameMessages::ShowDialogMessages()
 {
