@@ -643,6 +643,8 @@ public:
                                 void* pData);
     int AnimationStationary(unsigned short nAnimation);
     int AnimationWalking(unsigned short nAnimation);
+    int AnimationPause(unsigned short nAnimation);
+    int AnimationRunning(unsigned short nAnimation);
     void SetDamageImmunity(unsigned short nFlags, char nValue);
 
     enum { LAST_DAMAGE_TYPE_COUNT = 15 };
@@ -2337,10 +2339,6 @@ public:
         FEEDBACK_OBJECT_ALREADY_UNLOCKED = 14,
         FEEDBACK_OBJECT_KEY_REQUIRED = 15,
 
-        FEEDBACK_REST_IN_COMBAT = 17,
-        FEEDBACK_REST_STARTED = 18,
-        FEEDBACK_REST_NOT_ALLOWED = 54,
-        FEEDBACK_REST_ENEMIES_NEARBY = 186,
 
 
         FEEDBACK_INVITATION_EXPIRED = 43,

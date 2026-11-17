@@ -8440,18 +8440,18 @@ void CSWSCreature::Rest(int bRestingWithMaster)
         int nPlayerState = GetIsPC();
         if (nPlayerState != 0 && GetArea() != NULL && GetArea()->m_bNoRest != 0)
         {
-            SendFeedbackMessage(FEEDBACK_REST_NOT_ALLOWED, NULL);
+            SendFeedbackMessage(FEEDBACK_REST_NOT_ALLOWED_IN_AREA, NULL);
         }
         else if (GetNearestEnemy(30.0f, OBJECT_INVALID, OBJECT_INVALID) != OBJECT_INVALID)
         {
-            SendFeedbackMessage(FEEDBACK_REST_ENEMIES_NEARBY, NULL);
+            SendFeedbackMessage(FEEDBACK_REST_NOT_ALLOWED_ENEMIES, NULL);
         }
         else
         {
             ClearAllActions(1);
             if (nPlayerState != 0 && m_nExcitedStateTimer > 0)
             {
-                SendFeedbackMessage(FEEDBACK_REST_IN_COMBAT, NULL);
+                SendFeedbackMessage(FEEDBACK_REST_EXCITED_CANT_REST, NULL);
             }
             else
             {
@@ -8464,7 +8464,7 @@ void CSWSCreature::Rest(int bRestingWithMaster)
                 ActionManager(ACTION_MANAGER_REST);
                 if (nPlayerState != 0)
                 {
-                    SendFeedbackMessage(FEEDBACK_REST_STARTED, NULL);
+                    SendFeedbackMessage(FEEDBACK_REST_BEGINNING_REST, NULL);
                     CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
                     CScriptEvent* pEvent = new CScriptEvent;
                     pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_PLAYER_REST;
