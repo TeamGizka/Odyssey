@@ -42,20 +42,16 @@ public:
     List<Vector> m_lstHighlightSide;
     void* m_pHitData;
     bool m_bHighlighted;
-    char m_abReservedA9[3];
     float m_fHighlightOffset;
     bool m_bHighlightReverse;
-    char m_abReservedB1[3];
 
     float m_fHighlightColorRed;
     float m_fHighlightColorGreen;
     float m_fHighlightColorBlue;
     float m_fHighlightAlpha;
     bool m_bHighlightColor;
-    char m_abReservedC5[3];
     float m_fHighlightBlend;
     bool m_bAdditiveBlend;
-    char m_abReservedCD[3];
     List<Vector> m_lstTriangles;
 
     PartTrigger(MdlNode* pNode);

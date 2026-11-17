@@ -252,7 +252,6 @@ public:
     int m_bMuted;
 
     unsigned char m_nCurrentEnvironment;
-    char gap_11[3];
     float m_fVolumeScale;
     float m_fVolumeScaleStart;
     float m_fVolumeScaleTarget;
@@ -262,7 +261,6 @@ public:
     unsigned char m_n3DVoices;
 
     unsigned char m_nPriorityGroups;
-    char gap_2B[1];
     C2DVoice* m_p2DVoices;
     C3DVoice* m_p3DVoices;
     CExoLinkedList<CExoSoundSourceInternal> m_lstDelayedOneShots;
@@ -834,11 +832,9 @@ public:
     int m_nPausePosition;
     unsigned short m_nResourceType;
     unsigned char m_nVolume;
-    char m_aUnmapped47[1];
     float m_fMinDistance;
     float m_fMaxDistance;
     unsigned char m_nPriorityVolume;
-    char m_aUnmapped51[3];
     float m_fVolume;
     int m_b3D;
     Vector m_vPosition;

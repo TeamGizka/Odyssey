@@ -44,7 +44,6 @@ public:
     enum { HAS_VERTEX_DATA = 1, HAS_BOUNDING_BOX = 2, GRASS_POLYS_BUILT = 4,
            MULTI_TEXTURE = 8, FOUR_COMPONENTS = 16 };
     unsigned char m_nFlags;
-    char m_bUnmapped03;
     float m_fDistance;
     float m_fRadius;
     int m_nTriangles;
