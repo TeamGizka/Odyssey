@@ -6439,7 +6439,7 @@ int CSWSCreature::GetNumInvited()
 {
     if (NWSCREATUREAI_DEBUG)
     {
-        CleanInvitationLists();
+        EXOLOG("CSWSCreature::GetNumInvited() invitation offered %d\n", GetIsInInvitationsOffered(OBJECT_INVALID));
     }
     if (m_pInvitationsOffered != NULL)
     {

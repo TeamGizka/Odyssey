@@ -5036,7 +5036,7 @@ int CServerExoAppInternal::LoadGame(unsigned long nSlot,
     CExoString sDirectory;
     CExoString sGameName;
 
-    CExoString sUnused1;
+    CExoString sSaveModulePath;
     CExoString sUnused2;
 
 #ifdef _XBOX

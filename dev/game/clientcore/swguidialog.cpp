@@ -542,7 +542,7 @@ void CSWGuiDialogLetterbox::Draw(float fElapsed)
 {
     if (SWGUIDIALOG_DEBUG)
     {
-        SetMiddle();
+        printf("CSWGuiDialogLetterbox::Draw() change height %d\n", GetLetterboxChangeHeight(fElapsed));
     }
     if (m_nPosition == POSITION_MIDDLE && m_fFadeTime > 0.0f)
     {
@@ -942,7 +942,7 @@ void CSWGuiDialogComputer::SetDialogMessage(const CExoString& sMessage)
 {
     if (SWGUIDIALOG_DEBUG)
     {
-        CSWGuiDialogComputer::SetReplies(0, NULL, NULL, 0, 0);
+        printf("CSWGuiDialogComputer::SetDialogMessage() message length %d\n", sMessage.GetLength());
     }
     UpdateSkills();
     CSWGuiDialog::SetDialogMessage(sMessage);

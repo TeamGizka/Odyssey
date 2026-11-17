@@ -1493,7 +1493,7 @@ void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        AddSkillPointsPerLevel();
+        printf("CSWCLevelUpStats::CalcNumberFeats() level %d\n", GetLevel());
     }
     CSWClass* pClass = &g_pRules->m_pClasses[GetClassLeveledUpIn()];
     unsigned char nLevel = GetClassLevel(m_nClassCount - 1);
@@ -1506,7 +1506,7 @@ unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        AddSkillPointsPerLevel();
+        printf("CSWCLevelUpStats::ComputeNumberKnownSpellsLeft() level %d\n", GetLevel());
     }
     unsigned char nClass = GetClass(m_nClassCount - 1);
     CSWClass* pClass = &g_pRules->m_pClasses[nClass];
@@ -1539,7 +1539,7 @@ void CSWCLevelUpStats::SetNormalBonusFlags(unsigned short nFeat, int& bNormal,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        AddSkillPointsPerLevel();
+        printf("CSWCLevelUpStats::SetNormalBonusFlags() INT mod %d\n", GetINTMod());
     }
     bNormal = 0;
     bBonus = 0;
@@ -1607,7 +1607,7 @@ void CSWCCreatureStats::RemoveKnownSpell(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        AddKnownSpell(nClass, 0);
+        printf("CSWCCreatureStats::RemoveKnownSpell() classes %d\n", GetNumClasses());
     }
     if (nClass < 2)
     {

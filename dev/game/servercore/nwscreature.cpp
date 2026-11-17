@@ -873,7 +873,7 @@ void CSWSCreature::ActivityManager(unsigned long nAction)
 {
     if (NWSCREATURE_DEBUG)
     {
-        ActionManager(nAction);
+        EXOLOG("CSWSCreature::ActivityManager() following leader %d\n", GetCurrentlyFollowingLeader());
     }
     if (nAction != ACTIVITY_ACTION_COUNTERSPELL)
     {

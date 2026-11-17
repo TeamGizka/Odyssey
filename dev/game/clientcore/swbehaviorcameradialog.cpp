@@ -291,7 +291,7 @@ int CSWBehaviorCameraDialog::GetSideUnobstructed()
 {
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
     {
-        DestroyDialogCamera(this);
+        printf("CSWBehaviorCameraDialog::GetSideUnobstructed() second offset %f\n", GetSecondOffset());
     }
     Vector vHookPosition;
     Quaternion qOrientation;
