@@ -1,25 +1,6 @@
 #ifndef AURSTRING_H
 #define AURSTRING_H
 
-#include "aurtexcontrol.h"
-#ifndef _XBOX
-
-class CAurString : public TextureController
-{
-public:
-    CAurString(CAurTexture* pTexture);
-    virtual void Control();
-    virtual void Init();
-    int LoadFont(char* szFontName);
-    void DieWithoutParent();
-
-    int m_nFont;
-};
-
-CAurString* NewCAurString(int nMaxLength);
-#endif
-#ifdef _XBOX
-
 #include "aurmodel.h"
 
 class CStringItem
@@ -106,7 +87,10 @@ public:
     virtual int SuggestDeleteCurrentFont() = 0;
     virtual CStringItem** GetStringsArray() = 0;
     virtual void SetColorSelected(float fRed, float fGreen, float fBlue, float fAlpha) = 0;
+    void DieWithoutParent();
 };
+
+CAurString* NewCAurString(int nMaxLength);
 
 class StringGob : public Gob, public CAurString
 {
@@ -193,5 +177,4 @@ public:
     List<CStringColor> m_lstColors;
     CStringDisplayInfo m_DisplayInfo;
 };
-#endif
 #endif

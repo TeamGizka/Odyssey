@@ -47,11 +47,7 @@ CStringColor g_cDefCol2(1.0f, 1.0f, 1.0f, 1.0f);
 
 int countreset();
 
-#ifdef _XBOX
 static StringGob* g_pStringObj;
-#else
-static CAurString* g_pStringObj;
-#endif
 #ifdef _XBOX
 
 void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
@@ -196,9 +192,9 @@ int SetConsoleFont(char* szFontName)
     g_bUseTexturedFont = true;
     if (g_pStringObj == NULL)
     {
-        g_pStringObj = NewCAurString(1);
+        g_pStringObj = new StringGob(1);
     }
-    g_nFontNum = g_pStringObj->LoadFont(szFontName);
+    g_nFontNum = g_pStringObj->SetFont(szFontName);
     if ((int)g_nFontNum >= CAurFont::s_LoadedFontList.m_nCount)
     {
         g_bUseTexturedFont = false;
