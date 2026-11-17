@@ -1890,7 +1890,7 @@ void CSWGuiCreateMedicalItem::PopulateInventoryItemListBox()
                     {
                         if (SWGUIUPGRADE_DEBUG)
                         {
-                            GetItemBuyValue(pItem);
+                            printf("CSWGuiCreateMedicalItem::PopulateInventoryItemListBox() buy value %d\n", GetItemBuyValue(pItem));
                         }
                         nResult = CreateItemEntry(nEntryIndex, lControls,
                                                   pItem->GetId(), 1, "");

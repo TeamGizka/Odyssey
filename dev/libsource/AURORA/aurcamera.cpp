@@ -415,7 +415,7 @@ Vector Camera::MouseDir(int nX, int nY)
 {
     if (AURCAMERA_DEBUG)
     {
-        Camera::HitCheck(nX, nY, NULL, NULL);
+        printf("Camera::MouseDir() hit check %d\n", Camera::HitCheck(nX, nY, NULL, NULL));
     }
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)
@@ -443,7 +443,7 @@ Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 {
     if (AURCAMERA_DEBUG)
     {
-        Camera::HitCheck(0, 0, NULL, NULL);
+        printf("Camera::MapToScreen() hit check %d\n", Camera::HitCheck(0, 0, NULL, NULL));
     }
 
     GLint aViewport[4];

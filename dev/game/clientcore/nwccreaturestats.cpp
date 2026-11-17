@@ -759,7 +759,7 @@ inline char CSWCCreatureStats::GetSTRMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetSTRMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nStrength * 0.5) - 5;
 }
@@ -768,7 +768,7 @@ inline char CSWCCreatureStats::GetDEXMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetDEXMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return CalcStatModifier(m_nDexterity) + m_nDexterityBonus;
 }
@@ -777,7 +777,7 @@ inline int CSWCCreatureStats::GetCONMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetCONMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nConstitution * 0.5) - 5;
 }
@@ -786,7 +786,7 @@ inline int CSWCCreatureStats::GetINTMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nIntelligence * 0.5) - 5;
 }
@@ -795,7 +795,7 @@ inline int CSWCCreatureStats::GetWISMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetWISMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nWisdom * 0.5) - 5;
 }
@@ -804,7 +804,7 @@ inline int CSWCCreatureStats::GetCHAMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetCHAMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_nCharisma * 0.5) - 5;
 }
@@ -813,7 +813,7 @@ inline char CSWCCreatureStats::GetBaseINTMod()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetBaseINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     return (int)floor(m_aAbilities[3] * 0.5) - 5;
 }
@@ -848,7 +848,7 @@ unsigned char CSWCCreatureStats::GetLevel()
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetLevel() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     int nLevel = 0;
     for (int i = 0; i < m_nClassCount; i++)
@@ -905,7 +905,7 @@ CExoString CSWCCreatureStats::GetClassesString(char cSeparator)
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetClassesString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     CExoString sClasses;
     char szSeparator[2];
@@ -1100,7 +1100,7 @@ CExoString CSWCCreatureStats::GetAlignmentString(int nAlignment)
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetAlignmentString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     STR_RES strRes;
 
@@ -1127,7 +1127,7 @@ unsigned short CSWCCreatureStats::GetNumberKnownSpells(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetNumberKnownSpells() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     if (nClass >= 2)
     {
@@ -1141,7 +1141,7 @@ unsigned char CSWCCreatureStats::GetSpellsPerDayLeft(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        CalculateUnarmedDamageDice();
+        printf("CSWCCreatureStats::GetSpellsPerDayLeft() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
     }
     if (nClass >= 2)
     {
