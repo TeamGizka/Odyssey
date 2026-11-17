@@ -6,7 +6,7 @@
 #include "exobase.h"
 #include "gameobjectarray.h"
 
-static inline void SWPazaakDebugCards()
+static inline void DebugPazaakCards()
 {
     CPazaakCard aCards[2];
 }

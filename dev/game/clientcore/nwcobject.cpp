@@ -1082,7 +1082,7 @@ int CSWCObject::AbortFireForgetAnimation(int bAbort)
 }
 // PC 0x00693870 GOG 0x006935E0
 int CSWCObject::Hilite(const Vector& vColor, unsigned char nModel,
-                       float fUnused, int bPulse)
+                       float fSpeed, int bPulse)
 {
     if (m_pAnimBase == NULL)
     {

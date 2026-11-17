@@ -11,7 +11,7 @@
 #include "nwscreaturestats.h"
 #include "nwrules.h"
 
-static inline void NWSItemPropertyDebugDelete(CGameEffect* pEffect)
+static inline void DeleteGameEffect(CGameEffect* pEffect)
 {
     delete pEffect;
 }

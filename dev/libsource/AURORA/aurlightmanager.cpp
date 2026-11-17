@@ -1277,7 +1277,7 @@ void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
 #ifdef _XBOX
 void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
 
-static inline float AurLightAbs(float fValue)
+static inline float FastAbs(float fValue)
 {
     if (fValue < 0.0f)
         return 0.0f - fValue;
@@ -1305,8 +1305,8 @@ void LightManager::DebugPrintLightInfo(int nMaxLights, Vector vPosition)
             sprintf(sColor, "B");
         else if (i == 3)
             sprintf(sColor, "Y");
-        float fDistanceX = AurLightAbs(m_lstEnabledLights[i]->m_vWorldPosition.m_fX - vPosition.m_fX);
-        float fDistanceY = AurLightAbs(m_lstEnabledLights[i]->m_vWorldPosition.m_fY - vPosition.m_fY);
+        float fDistanceX = FastAbs(m_lstEnabledLights[i]->m_vWorldPosition.m_fX - vPosition.m_fX);
+        float fDistanceY = FastAbs(m_lstEnabledLights[i]->m_vWorldPosition.m_fY - vPosition.m_fY);
         MdlNodeLight* pNode = (MdlNodeLight*)m_lstEnabledLights[i]->m_pNode;
         float fHeight = m_lstEnabledLights[i]->m_vWorldPosition.m_fZ - (vPosition.m_fZ + 1.75f);
         int nIndex = pNode->m_nIndex;

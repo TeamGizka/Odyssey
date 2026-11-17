@@ -55,7 +55,7 @@ CTlkTable::CTlkTable()
     m_bDebugMode = 0;
 }
 
-inline void TlkTableProbeFile(CTlkTable::SCustomToken* pToken)
+inline void DestroyCustomToken(CTlkTable::SCustomToken* pToken)
 {
     pToken->~SCustomToken();
 }

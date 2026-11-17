@@ -18,7 +18,7 @@
 
 #include "factionmanager.h"
 
-static inline CEncounterSpawnPoint* NWSEncounterDebugSpawnPoints(int nCount)
+static inline CEncounterSpawnPoint* AllocateSpawnPointArray(int nCount)
 {
     return new CEncounterSpawnPoint[nCount];
 }

@@ -2036,13 +2036,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
 
     int bStartFailed;
     {
-        CExoString sArg1("");
-        CExoString sArg2("");
-        CExoString sArg3("");
+        CExoString sLoadScreen("");
+        CExoString sLoadMusic("");
+        CExoString sModule("");
 
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
 
-        bStartFailed = pClientExoApp->StartServices(0, sArg3, sArg2, sArg1, 0);
+        bStartFailed = pClientExoApp->StartServices(0, sModule, sLoadMusic, sLoadScreen, 0);
     }
     if (bStartFailed != 0)
     {

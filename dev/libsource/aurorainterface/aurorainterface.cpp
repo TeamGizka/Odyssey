@@ -86,7 +86,7 @@ void CAuroraInterface::ReleaseLayeredRaster(void* pRaster, int nWidth,
 // PC 0x00780040 GOG 0x0077FE10
 void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
                                     int nBytesPerPixel, int nSize,
-                                    int nReservedSize, int nTXISize,
+                                    int nDataSize, int nTXISize,
                                     bool bProcessed)
 {
     if (bProcessed)
@@ -102,7 +102,7 @@ void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
         else
         {
             pTrailer = (SProcessedTextureDataTrailer*)((unsigned char*)pRaster +
-                                                       nReservedSize + nTXISize +
+                                                       nDataSize + nTXISize +
                                                        sizeof(unsigned long));
         }
 #ifdef _XBOX

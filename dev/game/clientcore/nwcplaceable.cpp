@@ -747,8 +747,8 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
 void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
                                                CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
-    int nFlag11C = m_bNotBlastable;
-    if (nFlag11C)
+    int bNotBlastable = m_bNotBlastable;
+    if (bNotBlastable)
     {
         return;
     }

@@ -98,7 +98,7 @@ void CSWSMessage::AddActiveItemPropertiesToMessage(CSWSItem* pItem,
     int nActiveProperties;
     int i;
     CSWItemProperty* pActiveProperty;
-    unsigned char* pUnknown;
+    unsigned char* pUsesLeft;
     int j;
 
     if (pItem->GetBaseItem()->m_nItemType >= 31 &&
@@ -135,10 +135,10 @@ void CSWSMessage::AddActiveItemPropertiesToMessage(CSWSItem* pItem,
     }
     WriteBYTE(pItem->m_nUsableActivePropertyMask, 8);
     WriteBYTE(0xFF, 8);
-    pUnknown = pItem->m_aActivePropertyUsesLeft;
+    pUsesLeft = pItem->m_aActivePropertyUsesLeft;
     for (j = 8; j != 0; j--)
     {
-        WriteBYTE(*pUnknown++, 8);
+        WriteBYTE(*pUsesLeft++, 8);
     }
 }
 // PC 0x00595500 GOG 0x00595570

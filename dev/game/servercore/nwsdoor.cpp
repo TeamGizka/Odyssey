@@ -42,7 +42,7 @@
 
 extern int nRenderDoorBBox;
 // PC 0x0057F290 GOG 0x0057F310
-int CSWSDoor::GetMeshOutline(Vector vPosition, Vector vUnused, Vector& vFirst,
+int CSWSDoor::GetMeshOutline(Vector vPosition, Vector vOrientation, Vector& vFirst,
                              Vector& vSecond, Vector& vThird, Vector& vFourth)
 {
     m_apCollisionMesh[CSWDoorSurfaceMesh::DOOR_STATE_CLOSED]->m_vWorldPosition =
@@ -1079,7 +1079,7 @@ int CSWSDoor::InDoor(Vector vPoint)  // PC 0x0057FD30 GOG 0x0057FDB0
     return nCrossings % 2 == 1;
 }
 #endif
-int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vUnused,  // PC 0x0057FEF0 GOG 0x0057FF70
+int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vOrientation,  // PC 0x0057FEF0 GOG 0x0057FF70
                                  Vector& vMinimum, Vector& vMaximum)
 {
     int nMesh;

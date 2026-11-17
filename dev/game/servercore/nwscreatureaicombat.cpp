@@ -3233,14 +3233,14 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                     pAction->m_oidTarget == OBJECT_INVALID)
                     goto MoveToPoint;
                 int bUnknown2 = 0;
-                int bUnknown1 = 0;
+                int bUseRange = 0;
                 float fRange = 0.2f;
                 int bUsePath = 1;
                 AddActionToFront(ACTION_CHECK_MOVE_TO_OBJECT_RADIUS, pNode->m_nGroupId,
                     ACTION_PARAM_OBJECT, &pAction->m_oidTarget,
                     ACTION_PARAM_INTEGER, &pAction->m_nEquipFlags,
                     ACTION_PARAM_FLOAT, &fRange, ACTION_PARAM_FLOAT, &fRange,
-                    ACTION_PARAM_INTEGER, &bUsePath, ACTION_PARAM_INTEGER, &bUnknown1,
+                    ACTION_PARAM_INTEGER, &bUsePath, ACTION_PARAM_INTEGER, &bUseRange,
                     ACTION_PARAM_INTEGER, &bUnknown2,
                     0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
                 Vector vOrientation;

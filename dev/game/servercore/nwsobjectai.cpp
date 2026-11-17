@@ -43,7 +43,7 @@
 #include "nwskill.h"
 #include "aurdraw.h"
 
-static inline void NWSObjectAIDebugDelete(CSWSObjectActionNode* pAction)
+static inline void DeleteActionNode(CSWSObjectActionNode* pAction)
 {
     delete pAction;
 }
