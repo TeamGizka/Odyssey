@@ -29,7 +29,7 @@
 #define AREA_PATH_POINT_BLOCKER_POST_ROW 15
 #define AREA_PATH_POINT_BLOCKER_POST_DURATION 5.0f
 
-int nPathfindUnused1 = 0;
+int bTEST = 0;
 int DumpRoomBBox = 0;
 int RenderTest = 0;
 int SmoothTime = 10000;

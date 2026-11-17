@@ -168,7 +168,7 @@ int CSWSMessage::GetLocStringServerTime(unsigned long nPlayerId,
     fTime = 0.0f;
     if (NWSMESSAGE_DEBUG)
     {
-        GetLocStringServer(nPlayerId, lsString, lsString, sResult, nGender);
+        EXOLOG("CNWSMessage: loc string %d\n", GetLocStringServer(nPlayerId, lsString, lsString, sResult, nGender));
     }
     if (g_pAppManager->m_pServerExoApp == NULL)
     {

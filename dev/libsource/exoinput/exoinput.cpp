@@ -568,7 +568,7 @@ void CExoInput::SetCaptureKeyboardKeys(int bCapture)  // PC 0x0062BA30 GOG 0x006
 {
     if (EXOINPUT_DEBUG)
     {
-        unsigned char nMouseMode = GetMouseMode();
+        EXOLOG("CExoInput: mouse mode %d\n", GetMouseMode());
     }
     m_pExoInputInternal->m_bCaptureKeyboardKeys = bCapture;
 }
@@ -577,7 +577,7 @@ int CExoInput::GetLastSetMouseDownState()
 {
     if (EXOINPUT_DEBUG)
     {
-        unsigned char nMouseMode = GetMouseMode();
+        EXOLOG("CExoInput: mouse mode %d\n", GetMouseMode());
     }
     return m_pExoInputInternal->m_nLastSetMouseDownState;
 }

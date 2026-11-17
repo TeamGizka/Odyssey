@@ -109,7 +109,7 @@ int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 {
     if (NWVMACHINEINTERNAL_DEBUG)
     {
-        SaveStack(pGFF, pStruct);
+        EXOLOG("CVirtualMachineStack::LoadStack: saved %d\n", SaveStack(pGFF, pStruct));
     }
     CResList cStackList;
     CResStruct cElement;

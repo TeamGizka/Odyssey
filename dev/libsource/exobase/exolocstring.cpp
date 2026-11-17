@@ -52,7 +52,7 @@ int CExoLocString::Compare(const CExoLocString& lsString) const
 {
     if (EXOLOCSTRING_DEBUG)
     {
-        GetStringInternal(0, NULL);
+        EXOLOG("CExoLocString: string 0 found %d\n", GetStringInternal(0, NULL));
     }
     if (m_pExoLocStringInternal->m_bFetched &&
         lsString.m_pExoLocStringInternal->m_bFetched)
@@ -89,7 +89,7 @@ CExoLocString::CExoLocString(const CExoLocString& lsString)
     }
     if (EXOLOCSTRING_DEBUG)
     {
-        Compare(lsString);
+        EXOLOG("CExoLocString::Compare %d\n", Compare(lsString));
     }
 }
 // PC 0x006318C0 GOG 0x006317B0
