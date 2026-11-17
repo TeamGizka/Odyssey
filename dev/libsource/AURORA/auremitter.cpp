@@ -277,7 +277,7 @@ void PartEmitter::chkRandom(Particle* pParticle)
     }
 }
 // PC 0x004B8630 GOG 0x004B8740
-int PartEmitter::GetNeighborFrame(int nFrame)
+int PartEmitter::GetPreviousParticleFrame(int nFrame)
 {
     if (m_fFrameStart != m_fFrameEnd)
     {
@@ -648,9 +648,9 @@ void PartEmitter::RecursiveFractal(int nIndex, int nStep, int nCount,
     }
 }
 #ifdef _XBOX
-#define GetNextFrame(pEmitter, nFrame) (pEmitter)->GetNextFrame(nFrame)
+#define GetNextParticleFrame(pEmitter, nFrame) (pEmitter)->GetNextParticleFrame(nFrame)
 #else
-static int GetNextFrame(PartEmitter* pEmitter, int nFrame);
+static int GetNextParticleFrame(PartEmitter* pEmitter, int nFrame);
 #endif
 // PC 0x004B9BD0 GOG 0x004B9CE0
 void PartEmitter::RenderBoundingSphere()
@@ -680,7 +680,7 @@ void PartEmitter::StartEmitterLayer()
 
 #ifndef _XBOX
 // Dead code: not in the PC executable
-static int GetNextFrame(PartEmitter* pEmitter, int nFrame)
+static int GetNextParticleFrame(PartEmitter* pEmitter, int nFrame)
 {
     if (pEmitter->m_fFrameStart != pEmitter->m_fFrameEnd)
     {
@@ -961,7 +961,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
             int nRow = 0;
             if (nPass == 1)
             {
-                nNextFrame = GetNextFrame(this, pParticle->m_nFrame);
+                nNextFrame = GetNextParticleFrame(this, pParticle->m_nFrame);
                 if (nNextFrame >= 0)
                 {
                     fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
@@ -972,7 +972,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
             }
             else if (nPass == 2)
             {
-                nPreviousFrame = GetNeighborFrame(pParticle->m_nFrame);
+                nPreviousFrame = GetPreviousParticleFrame(pParticle->m_nFrame);
                 if (nPreviousFrame >= 0)
                 {
                     fAge = (pParticle->m_fAge - pParticle->m_fFrameAge) / fFrameTime;
@@ -983,7 +983,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
             }
             else if (nPass == 3)
             {
-                nNextFrame = GetNextFrame(this, nNextFrame);
+                nNextFrame = GetNextParticleFrame(this, nNextFrame);
                 if (nNextFrame >= 0)
                 {
                     fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
@@ -994,7 +994,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
             }
             else if (nPass == 4)
             {
-                nPreviousFrame = GetNeighborFrame(nPreviousFrame);
+                nPreviousFrame = GetPreviousParticleFrame(nPreviousFrame);
                 if (nPreviousFrame >= 0)
                 {
                     fAge = (pParticle->m_fAge - pParticle->m_fFrameAge) / fFrameTime;
@@ -4012,9 +4012,9 @@ unsigned char MdlNodeEmitter::IsInheritingVelocity()
 }
 
 #ifdef _XBOX
-#undef GetNextFrame
+#undef GetNextParticleFrame
 
-int PartEmitter::GetNextFrame(int nFrame)
+int PartEmitter::GetNextParticleFrame(int nFrame)
 {
     if (m_fFrameStart != m_fFrameEnd)
     {
@@ -4954,7 +4954,7 @@ void PartEmitter::RenderStandard()
             int nRow = 0;
             if (nPass == 1)
             {
-                nNextFrame = GetNextFrame(pParticle->m_nFrame);
+                nNextFrame = GetNextParticleFrame(pParticle->m_nFrame);
                 if (nNextFrame >= 0)
                 {
                     fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
@@ -4965,7 +4965,7 @@ void PartEmitter::RenderStandard()
             }
             else if (nPass == 2)
             {
-                nPreviousFrame = GetNeighborFrame(pParticle->m_nFrame);
+                nPreviousFrame = GetPreviousParticleFrame(pParticle->m_nFrame);
                 if (nPreviousFrame >= 0)
                 {
                     fAge = (pParticle->m_fAge - pParticle->m_fFrameAge) / fFrameTime;
@@ -4976,7 +4976,7 @@ void PartEmitter::RenderStandard()
             }
             else if (nPass == 3)
             {
-                nNextFrame = GetNextFrame(nNextFrame);
+                nNextFrame = GetNextParticleFrame(nNextFrame);
                 if (nNextFrame >= 0)
                 {
                     fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
@@ -4987,7 +4987,7 @@ void PartEmitter::RenderStandard()
             }
             else if (nPass == 4)
             {
-                nPreviousFrame = GetNeighborFrame(nPreviousFrame);
+                nPreviousFrame = GetPreviousParticleFrame(nPreviousFrame);
                 if (nPreviousFrame >= 0)
                 {
                     fAge = (pParticle->m_fAge - pParticle->m_fFrameAge) / fFrameTime;

@@ -1352,7 +1352,7 @@ void CAurTextureBasic::ConstructImage()
     {
         LoadImageA();
     }
-    ClampMissingImageSize();
+    CheckAttributes();
     if (m_pImage == NULL)
     {
         if (m_pController != NULL)
@@ -2856,7 +2856,7 @@ void AurTextureMemCheck(List<CAurTextureBasic*>& lstTextures, int nBudget,
             {
                 CAurTextureBasic* pTexture = lstTextures[i];
 #ifdef _XBOX
-                if (pTexture->CanReduceLevel())
+                if (pTexture->CanDownSampleFurther())
 #else
                 int nShift = pTexture->m_nLevel - pTexture->m_nUploadedLevels;
                 if (pTexture->m_nLevel < pTexture->m_nMaxLevel &&
@@ -2887,7 +2887,7 @@ void AurTextureMemCheck(List<CAurTextureBasic*>& lstTextures, int nBudget,
             pStats->m_nInterface -= stats.m_nInterface;
             pStats->m_nTotal -= stats.m_nTotal;
 #ifdef _XBOX
-            pWorst->RaiseLevel(1);
+            pWorst->SetNewDownSampleLevel(1);
 #else
             pWorst->m_nLevel =
                 min(pWorst->m_nLevel + 1, pWorst->m_nMaxLevel);
@@ -4016,7 +4016,7 @@ CAurTexture* AurTextureGet(char* sName, CAurTexture* pReference, char* sExtra,
     {
         pResult = new CAurTexture();
 #ifdef _XBOX
-        pResult->SetReferencedTexture(pReference);
+        pResult->SetReference(pReference);
 #else
         pResult->m_pReferenced = pReference;
 #endif
@@ -4067,7 +4067,7 @@ int AurTextureReplaceSingleReference(CAurTexture* pTexture, char* sName,
         if (stricmp(sNewName, pBasic->m_sFileName) == 0)
         {
 #ifdef _XBOX
-            pTexture->SetReferencedTexture(NULL);
+            pTexture->SetReference(NULL);
 #else
             pTexture->m_pReferenced = NULL;
 #endif
@@ -4081,7 +4081,7 @@ int AurTextureReplaceSingleReference(CAurTexture* pTexture, char* sName,
         if (stricmp(sName, pBasic->m_sName) == 0)
         {
 #ifdef _XBOX
-            pTexture->SetReferencedTexture(NULL);
+            pTexture->SetReference(NULL);
 #else
             pTexture->m_pReferenced = NULL;
 #endif
@@ -4115,7 +4115,7 @@ int AurTextureReplaceSingleReference(CAurTexture* pTexture, char* sName,
         return 0;
     }
 #ifdef _XBOX
-    pTexture->SetReferencedTexture(pNew);
+    pTexture->SetReference(pNew);
 #else
     pTexture->m_pReferenced = pNew;
 #endif
@@ -4176,7 +4176,7 @@ int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPos,
         for (int j = 0; j < lstMatches.m_nCount; j++)
         {
 #ifdef _XBOX
-            lstMatches[j]->SetReferencedTexture(pNew);
+            lstMatches[j]->SetReference(pNew);
 #else
             CAurTexture* pTile = lstMatches[j];
             pTile->m_pReferenced = pNew;
@@ -4255,7 +4255,7 @@ unsigned char* AurGetLayeredImageWrapper(char* sFileName, int* pWidth, int* pHei
 
 int logbase2(unsigned int nValue);
 
-void CAurTextureBasic::ClampMissingImageSize()
+void CAurTextureBasic::CheckAttributes()
 {
     if (m_pImage == NULL)
     {
@@ -4375,12 +4375,12 @@ void CAurTextureBasic::CalculateHashID()
     m_nOrder = AurTextureCalculateHashID(m_sFileName, m_nSchemeSize, m_pScheme);
 }
 
-void CAurTexture::SetReferencedTexture(CAurTexture* pTexture)
+void CAurTexture::SetReference(CAurTexture* pTexture)
 {
     m_pReferenced = pTexture;
 }
 
-int CAurTextureBasic::CanReduceLevel()
+int CAurTextureBasic::CanDownSampleFurther()
 {
     int nShift = m_nLevel - m_nUploadedLevels;
     if (m_nLevel < m_nMaxLevel && (m_nWidth >> nShift) > 2 && (m_nHeight >> nShift) > 2)
@@ -4390,7 +4390,7 @@ int CAurTextureBasic::CanReduceLevel()
     return 0;
 }
 
-void CAurTextureBasic::RaiseLevel(int nLevels)
+void CAurTextureBasic::SetNewDownSampleLevel(int nLevels)
 {
     m_nLevel = min(m_nLevel + nLevels, m_nMaxLevel);
     if (m_nLevel != m_nUploadedLevels)

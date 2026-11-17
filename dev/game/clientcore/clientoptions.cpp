@@ -1368,14 +1368,14 @@ void CClientOptions::SetMovieShown(const CResRef& sMovie, int bShown)
 #include "nwcarea.h"
 #include "aurrendergl.h"
 
-void CClientOptions::SetGeometryFadeMode(unsigned char nMode)
+void CClientOptions::SetHideFadeGeometryMode(unsigned char nMode)
 {
     if (m_nGeometryFadeMode != nMode)
     {
         if (g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
             g_pAppManager->m_pClientExoApp->GetModule()->GetArea() != NULL)
         {
-            g_pAppManager->m_pClientExoApp->GetModule()->GetArea()->SetGeometryFadeMode(nMode);
+            g_pAppManager->m_pClientExoApp->GetModule()->GetArea()->SetHideFadeGeometryMode(nMode);
         }
         m_nGeometryFadeMode = nMode;
     }

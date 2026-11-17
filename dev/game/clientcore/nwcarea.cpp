@@ -2276,7 +2276,7 @@ ConsoleFunc ConFsetweatherdensity("setweatherdensity", setweatherdensity);
 #ifdef _XBOX
 
 
-void CSWCArea::SetGeometryFadeMode(unsigned char nMode)
+void CSWCArea::SetHideFadeGeometryMode(unsigned char nMode)
 {
     if (m_pScene)
     {

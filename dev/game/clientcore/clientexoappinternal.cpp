@@ -9849,18 +9849,18 @@ void CClientExoAppInternal::InitializeClientOptions()
         int nValue = sValue.AsINT();
         if (nValue >= 0 && nValue <= 2)
         {
-            m_pClientOptions->SetGeometryFadeMode(nValue);
+            m_pClientOptions->SetHideFadeGeometryMode(nValue);
         }
         else
         {
-            m_pClientOptions->SetGeometryFadeMode(0);
+            m_pClientOptions->SetHideFadeGeometryMode(0);
             sValue.Format("%d", 0);
             cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Hide SecondStoryTiles");
         }
     }
     else
     {
-        m_pClientOptions->SetGeometryFadeMode(0);
+        m_pClientOptions->SetHideFadeGeometryMode(0);
         sValue.Format("%d", 0);
         cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Hide SecondStoryTiles");
     }

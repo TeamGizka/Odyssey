@@ -100,7 +100,7 @@ public:
 
     void SetDefaultVideoOptions();
 
-    void SetGeometryFadeMode(unsigned char nMode);
+    void SetHideFadeGeometryMode(unsigned char nMode);
     void SetNumShadowCastingLights(unsigned char nLights);
     void SetVSyncEnabled(int bEnabled);
     void SetAnisotropicFiltering(int bEnabled);

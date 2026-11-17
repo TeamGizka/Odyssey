@@ -459,7 +459,7 @@ public:
                 CExoArrayList<unsigned long>& lstPlayers);
     int AddObjectToArea(unsigned long oidObject, int bLoadingGame);
 
-    void AddSubArea(CSWSObject* pObject)
+    void AddSubArea(CGameObject* pObject)
     {
         m_lstTriggerIds.Add(pObject->GetId());
     }

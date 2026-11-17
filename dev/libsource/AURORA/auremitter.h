@@ -476,9 +476,9 @@ public:
     void moveParticleP2PGrav(float fTimeStep);
 
     float GetRadius();
-    int GetNeighborFrame(int nFrame);
+    int GetPreviousParticleFrame(int nFrame);
 #ifdef _XBOX
-    int GetNextFrame(int nFrame);
+    int GetNextParticleFrame(int nFrame);
     float GetObjectAlpha();
 #endif
 

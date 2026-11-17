@@ -180,7 +180,7 @@ public:
     void SetHeight(int nHeight);
     void SetDepth(int nDepth);
 #ifdef _XBOX
-    void SetReferencedTexture(CAurTexture* pTexture);
+    void SetReference(CAurTexture* pTexture);
 #endif
 
     SafePointer<CAurTexture> m_pReferenced;
@@ -283,10 +283,10 @@ public:
 #ifdef _XBOX
 
     void ReduceToLevel();
-    void ClampMissingImageSize();
+    void CheckAttributes();
     void CalculateHashID();
-    int CanReduceLevel();
-    void RaiseLevel(int nLevels);
+    int CanDownSampleFurther();
+    void SetNewDownSampleLevel(int nLevels);
 #endif
     void GetMemoryUsage(TEXTUREMEMORYSTATS* pStats);
     void AsNormalizeVectorCubeMap();
