@@ -486,6 +486,12 @@ void AurGetClearColor(float* pColor)
 {
     glGetFloatv(GL_COLOR_CLEAR_VALUE, pColor);
 }
+
+// Dead code: not in the PC executable
+void GLRender::GetClearColor(float* pfColor)
+{
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, pfColor);
+}
 // PC 0x00463450 GOG 0x00463560
 int SetAnisotropicFilter(int nLevel)
 {

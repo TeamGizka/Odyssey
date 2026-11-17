@@ -29,3 +29,9 @@ CAurString* NewCAurString(int nMaxLength)
 void CAurString::DieWithoutParent()
 {
 }
+
+// Dead code: not in the PC executable
+CStringItem::~CStringItem()
+{
+    delete[] m_sString;
+}

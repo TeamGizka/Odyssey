@@ -5063,3 +5063,16 @@ void PartEmitter::RenderStandard()
     if (bFog) GLRender_Enable(ENABLE_FOG);
 }
 #endif
+
+// Dead code: not in the PC executable
+unsigned char MdlNodeEmitter::IsTinted()
+{
+    unsigned char bTinted = m_EmitterFlags.m_bTinted;
+    return bTinted;
+}
+
+// Dead code: not in the PC executable
+unsigned char MdlNodeEmitter::UsesDepthTexture()
+{
+    return false;
+}

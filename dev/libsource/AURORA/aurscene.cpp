@@ -1554,6 +1554,12 @@ int Scene::SaveVisibility(char* sPath, char* sName)
     fclose(pFile);
     return 1;
 }
+
+// Dead code: not in the PC executable
+int Scene::QueryVisibility(CAurRoom* pRoom, CAurRoom* pVisibleRoom)
+{
+    return pRoom->m_lstVisibleRooms.Contains(pVisibleRoom);
+}
 // PC 0x00466D70 GOG 0x00466E80
 CAurRoom* Scene::GetRoom(int nRoom)
 {

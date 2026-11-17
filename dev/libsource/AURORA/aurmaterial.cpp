@@ -164,6 +164,40 @@ int Material::BindTexture1()
     AsTexture(m_pTexture1)->Bind();
     return AurTextureGetTID(AsTexture(m_pTexture1));
 }
+
+// Dead code: not in the PC executable
+int Material::BindTexture2()
+{
+    PurgeBadTexture(m_pTexture2);
+
+    AsTexture(m_pTexture2)->Bind();
+    return AurTextureGetTID(AsTexture(m_pTexture2));
+}
+
+// Dead code: not in the PC executable
+int Material::BindTexture3()
+{
+    PurgeBadTexture(m_pTexture3);
+
+    AsTexture(m_pTexture3)->Bind();
+    return AurTextureGetTID(AsTexture(m_pTexture3));
+}
+
+// Dead code: not in the PC executable
+int Material::BindBumpMap()
+{
+    AsTexture(m_pBumpMap)->Bind();
+    return AurTextureGetTID(AsTexture(m_pBumpMap));
+}
+
+// Dead code: not in the PC executable
+int Material::BindBumpyShinyMap()
+{
+    PurgeBadTexture(m_pEnvMap);
+
+    AsTexture(m_pEnvMap)->Bind();
+    return AurTextureGetTID(AsTexture(m_pEnvMap));
+}
 // PC 0x004AB520 GOG 0x004AB5E0
 int Material::BindEnvMap()
 {
@@ -177,6 +211,24 @@ int Material::GetTextureTID()
 {
     return AurTextureGetTID(AsTexture(m_pTexture0));
 }
+
+// Dead code: not in the PC executable
+int Material::GetBumpMapTID()
+{
+    return AurTextureGetTID(AsTexture(m_pBumpMap));
+}
+
+// Dead code: not in the PC executable
+int Material::GetBumpyShinyMapTID()
+{
+    return AurTextureGetTID(AsTexture(m_pEnvMap));
+}
+
+// Dead code: not in the PC executable
+int Material::GetEnvMapTID()
+{
+    return AurTextureGetTID(AsTexture(m_pEnvMap));
+}
 // PC 0x004AB580 GOG 0x004AB640
 int Material::SetDownSampling(int nMax)
 {
@@ -184,6 +236,19 @@ int Material::SetDownSampling(int nMax)
 
     sprintf(sCommand, "downsamplemax %d", nMax);
     return AurTextureMessage((CAurTexture*)m_pTexture0.m_pObject, sCommand);
+}
+
+// Dead code: not in the PC executable
+int Material::BumpMapIsDiffuse()
+{
+    if (AsTexture(m_pBumpMap) != 0)
+    {
+        return AsTexture(m_pBumpMap)->IsDiffuseBumpMap();
+    }
+    else
+    {
+        return 0;
+    }
 }
 // PC 0x004AB5C0 GOG 0x004AB680
 int Material::BumpMapIsSpecular()

@@ -30,6 +30,16 @@ int CAuroraCompressedTexture::GetCompressedTextureAttrib(
         return 0;
     }
 }
+
+// Dead code: not in the PC executable
+int CAuroraCompressedTexture::GetCompressedTextureDataSize()
+{
+    if (m_pRes != 0 && m_pRes->GetDemands() >= 1)
+    {
+        return m_pRes->GetDDSSize();
+    }
+    return 0;
+}
 // PC 0x00783C30 GOG 0x00783A30
 int CAuroraCompressedTexture::Load()
 {

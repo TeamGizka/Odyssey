@@ -1152,6 +1152,18 @@ float FindAnimScale(Model* pModel, Animation* pAnimation)
 
     return fScale;
 }
+
+// Dead code: not in the PC executable
+void Gob::Reset()
+{
+    for (int i = 0; i < m_lOutOfOrderAnimations.m_nCount; i++)
+    {
+        AnimRun* pRun = m_lOutOfOrderAnimations[i];
+        pRun->m_fScale = FindAnimScale(m_pModel, FindAnimation(m_pModel, pRun->m_pAnimation->m_sName));
+    }
+    position_scale_factor = 1.0f;
+    AnimateHierarchy(m_pRootPart, m_pRootPart->m_pNode, 0.0f, 0.0f, 1.0f, false);
+}
 // PC 0x004B5C10 GOG 0x004B5D20
 OOAnimRun* Gob::GetAnimation(char* sName, float* pfTime, float* pfLength)
 {

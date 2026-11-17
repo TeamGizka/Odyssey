@@ -4765,3 +4765,81 @@ void MdlNodeAABB::InternalDestructor()
     MdlNodeTriMesh::InternalDestructor();
 }
 #endif
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeAABB()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeAnimMesh()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeCamera()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_CAMERA)) == (MDL_NODE_HEADER | MDL_NODE_CAMERA);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeDanglyMesh()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_DANGLYMESH)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_DANGLYMESH);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeEmitter()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_EMITTER)) == (MDL_NODE_HEADER | MDL_NODE_EMITTER);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeLight()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_LIGHT)) == (MDL_NODE_HEADER | MDL_NODE_LIGHT);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeReference()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_REFERENCE)) == (MDL_NODE_HEADER | MDL_NODE_REFERENCE);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeSkin()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_SKIN)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_SKIN);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeTrigger()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIGGER)) == (MDL_NODE_HEADER | MDL_NODE_TRIGGER);
+}
+
+// Dead code: not in the PC executable
+int MdlNode::IsMdlNodeTriMesh()
+{
+    return (m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH);
+}
+
+// Dead code: not in the PC executable
+int Gob::ShouldWeCheckVisibilityHACK()
+{
+    if (IsInCutscene())
+    {
+        return 0;
+    }
+    if (m_pModel != 0)
+    {
+        if (m_pModel->m_Classification.m_bAlternateShadowCaster || m_pModel->m_Classification.m_bAllRooms)
+        {
+            return 0;
+        }
+        return !m_pModel->m_Classification.m_bEmitterBounds;
+    }
+    return 1;
+}

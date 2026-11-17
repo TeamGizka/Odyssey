@@ -10983,6 +10983,16 @@ void GLRender::RemoveSquareToRender(unsigned long nPool)
         }
     }
 }
+
+// Dead code: not in the PC executable
+void GLRender::RemoveAllDrawableSquares()
+{
+    int i = cm_listSquaresToRender.m_nCount;
+    while (i != 0)
+    {
+        RemoveSquareToRender(cm_listSquaresToRender.m_pList[--i]);
+    }
+}
 // PC 0x00447610 GOG 0x00447760
 void GLRender::InitExtensions()
 {

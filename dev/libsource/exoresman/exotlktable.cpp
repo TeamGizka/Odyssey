@@ -131,6 +131,25 @@ int CTlkTable::AddFile(const CExoString& sResRef, int nContentPkg)
     return TRUE;
 }
 
+// Dead code: not in the PC executable
+int CTlkTable::RemoveFile(int nContentPackage)
+{
+    if (nContentPackage <= 0 || nContentPackage > NUM_CONTENT_PKGS)
+    {
+        return FALSE;
+    }
+
+    if (m_aFiles[nContentPackage * 2 + 1] == m_aFiles[nContentPackage * 2])
+    {
+        m_aFiles[nContentPackage * 2 + 1] = NULL;
+    }
+    delete m_aFiles[nContentPackage * 2 + 1];
+    m_aFiles[nContentPackage * 2 + 1] = NULL;
+    delete m_aFiles[nContentPackage * 2];
+    m_aFiles[nContentPackage * 2] = NULL;
+    return TRUE;
+}
+
 // PC 0x0041EF40 GOG 0x0041EF50
 void CTlkTable::SetCustomToken(int nToken, const CExoString& sValue)
 {
