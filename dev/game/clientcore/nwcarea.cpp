@@ -2273,9 +2273,7 @@ char* setweatherdensity(char* sArguments)
 ConsoleFunc ConFsetweatherdensity("setweatherdensity", setweatherdensity);
 #endif
 
-#ifdef _XBOX
-
-
+// Dead code: not in the PC executable
 void CSWCArea::SetHideFadeGeometryMode(unsigned char nMode)
 {
     if (m_pScene)
@@ -2290,7 +2288,6 @@ void CSWCArea::SetHideFadeGeometryMode(unsigned char nMode)
         m_pScene->SetGeomFadeProperties(nFade);
     }
 }
-#endif
 
 #ifdef _XBOX
 

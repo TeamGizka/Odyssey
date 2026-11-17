@@ -389,6 +389,8 @@ public:
                          int bForceUpdate);
 
     void GetDefaultActions();
+    int WalkPlayerToPoint(float fX, float fY, float fZ, int bRun, unsigned long oidTarget,
+                          int bShowWalkTo);
     int GetDebugMode();
     int SetDebugMode(int nDebugMode);
     int ServerToClientObjectId(unsigned long oidServerObject);
@@ -441,6 +443,7 @@ public:
         return pGameObject;
     }
     CSWCPlayer* GetPlayerByGameObjectID(unsigned long oidObject);
+    CSWCStore* GetStoreByGameObjectID(unsigned long oidObject);
     CSWCItem* GetItemByGameObjectID(unsigned long nId);
     CSWCCreature* GetCreatureByGameObjectID(unsigned long nId);
     CSWCArea* GetAreaByGameObjectID(unsigned long oidObject);

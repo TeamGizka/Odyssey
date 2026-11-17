@@ -1831,6 +1831,40 @@ int CSWSArea::PlotPath(CPathfindInformation* pPathfind,
 {
     return 0;
 }
+// Dead code: not in the PC executable
+int CSWSArea::RemoveInterTileExit(int nTileX, int nTileY, int nExitX,
+                                  int nExitY)
+{
+    int nEntries = m_pPathfindInformation->m_nField_C0 * 2;
+    int* pTileClosed = new int[nEntries + 2];
+    int* pTileOpen = new int[nEntries + 2];
+
+    for (int i = 0; i < nEntries; i++)
+    {
+        pTileClosed[i] = m_pPathfindInformation->m_pTileClosed[i];
+        pTileOpen[i] = m_pPathfindInformation->m_pTileOpen[i];
+    }
+
+    m_pPathfindInformation->m_nField_C0++;
+    pTileClosed[nEntries] = nExitX;
+    pTileClosed[nEntries + 1] = nExitY;
+    pTileOpen[nEntries] = nTileX;
+    pTileOpen[nEntries + 1] = nTileY;
+
+    if (m_pPathfindInformation->m_pTileClosed != NULL)
+    {
+        delete[] m_pPathfindInformation->m_pTileClosed;
+        m_pPathfindInformation->m_pTileClosed = NULL;
+    }
+    if (m_pPathfindInformation->m_pTileOpen != NULL)
+    {
+        delete[] m_pPathfindInformation->m_pTileOpen;
+        m_pPathfindInformation->m_pTileOpen = NULL;
+    }
+    m_pPathfindInformation->m_pTileClosed = pTileClosed;
+    m_pPathfindInformation->m_pTileOpen = pTileOpen;
+    return 1;
+}
 // PC 0x00500E80 GOG 0x004F8F60
 int CSWSArea::SmoothCornerOptimize(int nPoints, float* pfPoints,
                                     int* pnResultCount, float** ppfResult)

@@ -1734,6 +1734,7 @@ class VertexProgramManager
 public:
     static int ResetVertexPrograms();
     static void AddVertexProgram(VertexProgram* pProgram);
+    static void RemoveVertexProgram(VertexProgram* pProgram);
 
     static List<VertexProgram*> cm_listExistentVertexPrograms;
 };

@@ -275,6 +275,7 @@ public:
     int TestLineWalkable(float fStartX, float fStartY, float fEndX, float fEndY, float fZ);
     int PlotGridPath(CPathfindInformation* pPathfind, unsigned __int64 nFlags);
     int PlotPath(CPathfindInformation* pPathfind, unsigned __int64 nFlags);
+    int RemoveInterTileExit(int nTileX, int nTileY, int nExitX, int nExitY);
     int PlotSoundPath(CPathfindInformation* pPathfind);
     int PlotPathPointPath(CPathfindInformation* pPathfind,
                           unsigned __int64 nFlags);

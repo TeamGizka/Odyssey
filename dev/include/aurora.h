@@ -533,6 +533,8 @@ public:
     char gap_0[1];
     static unsigned char* GetLayeredRaster(char*, int*, int*, int*);
     static unsigned char* GetRaster(char*, int*, int*, int*);
+    static unsigned char* GetFontRaster(char* sFileName, void** ppFontData,
+                                        int* pWidth, int* pHeight, int* pBPP);
     static void ReleaseLayeredRaster(void*, int, int);
     static void ReleaseRaster(void*, int, int, int, int, int, int, bool);
     static void* GetResource(char*, char*, int*);

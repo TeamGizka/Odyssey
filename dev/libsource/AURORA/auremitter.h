@@ -477,8 +477,8 @@ public:
 
     float GetRadius();
     int GetPreviousParticleFrame(int nFrame);
-#ifdef _XBOX
     int GetNextParticleFrame(int nFrame);
+#ifdef _XBOX
     float GetObjectAlpha();
 #endif
 

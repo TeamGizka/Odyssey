@@ -1327,6 +1327,10 @@ unsigned char* CAurTextureBasic::LoadImagePLT()
     }
     return pImage;
 }
+// Dead code: not in the PC executable
+void CAurTextureBasic::DownSample()
+{
+}
 
 #ifdef _XBOX
 
@@ -4254,7 +4258,9 @@ unsigned char* AurGetLayeredImageWrapper(char* sFileName, int* pWidth, int* pHei
 }
 
 int logbase2(unsigned int nValue);
+#endif
 
+// Dead code: not in the PC executable
 void CAurTextureBasic::CheckAttributes()
 {
     if (m_pImage == NULL)
@@ -4267,6 +4273,8 @@ void CAurTextureBasic::CheckAttributes()
         m_nHeight = max(2, m_nHeight);
     }
 }
+
+#ifdef _XBOX
 
 void CAurTextureBasic::ReduceToLevel()
 {
@@ -4374,12 +4382,15 @@ void CAurTextureBasic::CalculateHashID()
 {
     m_nOrder = AurTextureCalculateHashID(m_sFileName, m_nSchemeSize, m_pScheme);
 }
+#endif
 
+// Dead code: not in the PC executable
 void CAurTexture::SetReference(CAurTexture* pTexture)
 {
     m_pReferenced = pTexture;
 }
 
+// Dead code: not in the PC executable
 int CAurTextureBasic::CanDownSampleFurther()
 {
     int nShift = m_nLevel - m_nUploadedLevels;
@@ -4390,6 +4401,7 @@ int CAurTextureBasic::CanDownSampleFurther()
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CAurTextureBasic::SetNewDownSampleLevel(int nLevels)
 {
     m_nLevel = min(m_nLevel + nLevels, m_nMaxLevel);
@@ -4399,6 +4411,8 @@ void CAurTextureBasic::SetNewDownSampleLevel(int nLevels)
         RefreshTextures.AddUnique(this);
     }
 }
+
+#ifdef _XBOX
 
 int AurAddPalette(int nIndex, char* sName)
 {

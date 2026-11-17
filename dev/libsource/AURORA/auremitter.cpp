@@ -647,11 +647,6 @@ void PartEmitter::RecursiveFractal(int nIndex, int nStep, int nCount,
         RecursiveFractal(nIndex + nHalfStep, nHalfStep, nCount, vDirection, vOffset, fRange * 0.5f);
     }
 }
-#ifdef _XBOX
-#define GetNextParticleFrame(pEmitter, nFrame) (pEmitter)->GetNextParticleFrame(nFrame)
-#else
-static int GetNextParticleFrame(PartEmitter* pEmitter, int nFrame);
-#endif
 // PC 0x004B9BD0 GOG 0x004B9CE0
 void PartEmitter::RenderBoundingSphere()
 {
@@ -680,20 +675,20 @@ void PartEmitter::StartEmitterLayer()
 
 #ifndef _XBOX
 // Dead code: not in the PC executable
-static int GetNextParticleFrame(PartEmitter* pEmitter, int nFrame)
+int PartEmitter::GetNextParticleFrame(int nFrame)
 {
-    if (pEmitter->m_fFrameStart != pEmitter->m_fFrameEnd)
+    if (m_fFrameStart != m_fFrameEnd)
     {
-        if (pEmitter->m_fFrameEnd < pEmitter->m_fFrameStart)
+        if (m_fFrameEnd < m_fFrameStart)
         {
             int nPrev = nFrame - 1;
-            if (nPrev >= pEmitter->m_fFrameEnd)
+            if (nPrev >= m_fFrameEnd)
                 return nPrev;
         }
         else
         {
             int nNext = nFrame + 1;
-            if (nNext <= pEmitter->m_fFrameEnd)
+            if (nNext <= m_fFrameEnd)
                 return nNext;
         }
     }
@@ -961,7 +956,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
             int nRow = 0;
             if (nPass == 1)
             {
-                nNextFrame = GetNextParticleFrame(this, pParticle->m_nFrame);
+                nNextFrame = GetNextParticleFrame(pParticle->m_nFrame);
                 if (nNextFrame >= 0)
                 {
                     fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
@@ -983,7 +978,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
             }
             else if (nPass == 3)
             {
-                nNextFrame = GetNextParticleFrame(this, nNextFrame);
+                nNextFrame = GetNextParticleFrame(nNextFrame);
                 if (nNextFrame >= 0)
                 {
                     fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
@@ -4012,7 +4007,6 @@ unsigned char MdlNodeEmitter::IsInheritingVelocity()
 }
 
 #ifdef _XBOX
-#undef GetNextParticleFrame
 
 int PartEmitter::GetNextParticleFrame(int nFrame)
 {

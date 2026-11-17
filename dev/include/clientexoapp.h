@@ -175,6 +175,8 @@ public:
                                       unsigned char nBitsPerPixel, unsigned long nRefreshRate);
     unsigned long GetVideoMode(unsigned long nWidth, unsigned long nHeight,
                                unsigned char nBitsPerPixel, unsigned long nRefreshRate);
+    int GetVideoModeSpec(unsigned long nVideoMode, unsigned long* pnWidth, unsigned long* pnHeight,
+                         unsigned char* pnBitsPerPixel, unsigned long* pnRefreshRate);
     void ReadAndSetVideoMode(int bStartup, int bFullScreen);
     CGuiAreaLoadscreen* StartLoadBar(int nType, char* sImage, int bShow);
     int GetLoadScreenVisible();
@@ -282,6 +284,7 @@ public:
     void ExitProgram();
     void BusyWaitMenuMusic();
     CExoString GetClientName();
+    void SetClientName(const CExoString& sName);
     CExoString& SetPlayerCharacterName(const CExoString& sName);
     void DisableInput();
     CExoString GetLoadMusicByModuleName(const CExoString& sModule);
@@ -407,6 +410,7 @@ public:
     void AttachPlayerGameObjectToArea();
     int InitializeInGameGUI();
     void ServerModeChange(unsigned char nServerMode);
+    int WalkPlayerToPoint(float fX, float fY, float fZ, int bRun, unsigned long oidTarget);
     void AddObjectToHitcheckIgnoreList(unsigned long oidObject);
     void AddObjectModelDirectlyToIgnoreList(unsigned long oidObject,
                                            List<CAurObject*>* pIgnoreList);

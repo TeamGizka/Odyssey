@@ -172,6 +172,9 @@ public:
     void ClearValues();
     void ReadTableWithCatalogue(CResGFF* pRes, CResStruct& sStruct);
     int ReadTable(const CExoString& sFileName);
+    void GetPerformanceInfo(int& nIdentifiers, int& nCollisions,
+                            int& nAverageCollisionSteps,
+                            int& nMaximumCollisionSteps);
     void Save(const CExoString& sDirectory);
     int Load();
     void ReadCatalogue(const CResRef& cResRef);

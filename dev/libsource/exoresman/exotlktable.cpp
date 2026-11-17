@@ -81,6 +81,11 @@ int CTlkTable::ExoIsDBCSLeadByte(unsigned char c)
     return FALSE;
 }
 #endif
+// Dead code: not in the PC executable
+char* CTlkTable::RemapFontName(char* sFontName)
+{
+    return sFontName;
+}
 // PC 0x0041ED10 GOG 0x0041ED20
 int CTlkTable::AddFile(const CExoString& sResRef, int nContentPkg)
 {

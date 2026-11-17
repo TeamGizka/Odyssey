@@ -105,6 +105,7 @@ public:
     ~CTlkTable();
     int OpenFile(const CExoString& sResRef);
     int AddFile(const CExoString& sResRef, int nContentPackage);
+    int RemoveFile(int nContentPackage);
     int Fetch(unsigned long nStrRef, STR_RES& pResult, unsigned char nGender);
     CExoString GetSimpleString(unsigned long nStrRef);
     void ClearCustomTokens();
@@ -112,6 +113,7 @@ public:
     void ParseStr(CExoString& sText);
     int GetLanguageVersion();
     int ExoIsDBCSLeadByte(unsigned char c);
+    char* RemapFontName(char* sFontName);
     // PC 0x006049D0 GOG 0x006049B0
     virtual void GetTokenValue(const CTlkTableToken&, CExoString&)
     {

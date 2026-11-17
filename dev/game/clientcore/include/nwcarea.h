@@ -150,9 +150,9 @@ public:
     CSWCAmbientSound* m_pAmbientSound;
 #ifdef _XBOX
     CSWCAmbientSound* GetAmbientSound() { return m_pAmbientSound; }
+#endif
 
     void SetHideFadeGeometryMode(unsigned char nMode);
-#endif
     float m_fLightningTimer;
 
 
