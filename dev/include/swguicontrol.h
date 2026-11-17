@@ -428,6 +428,37 @@ public:
     CSWGuiText m_cText;
 };
 
+class CSWGuiLabelHilight : public CSWGuiLabel
+{
+public:
+#ifndef _XBOX
+    virtual ~CSWGuiLabelHilight()  // PC 0x0041B000 GOG 0x0041AFF0
+    {
+    }
+#endif
+    using CSWGuiLabel::Initialize;
+    virtual void SetExtent(const CSWGuiExtent& cExtent);
+    virtual void Draw(float fElapsed);
+#ifndef _XBOX
+    virtual void SetActive(int bActive);
+#endif
+    virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
+    // PC 0x00698BD0 GOG 0x00698980
+    virtual CSWGuiLabelHilight* AsLabelHilight()
+    {
+        return this;
+    }
+
+    virtual void Initialize(const CSWGuiExtent& cExtent,
+                            const CSWGuiTextParams& cText,
+                            const CSWGuiBorderParams& cBorder,
+                            const CSWGuiBorderParams& cHilite);
+    virtual void Initialize(const CSWGuiExtent& cExtent,
+                            CSWGuiLabelHilight* pProto);
+
+    CSWGuiBorder m_cHilite;
+};
+
 class CSWGuiButton : public CSWGuiNavigable
 {
 public:
@@ -511,37 +542,6 @@ public:
 };
 
 #define SWGUI_SCROLLBAR_MIN_THUMB_SIZE 4
-
-class CSWGuiLabelHilight : public CSWGuiLabel
-{
-public:
-#ifndef _XBOX
-    virtual ~CSWGuiLabelHilight()  // PC 0x0041B000 GOG 0x0041AFF0
-    {
-    }
-#endif
-    using CSWGuiLabel::Initialize;
-    virtual void SetExtent(const CSWGuiExtent& cExtent);
-    virtual void Draw(float fElapsed);
-#ifndef _XBOX
-    virtual void SetActive(int bActive);
-#endif
-    virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
-    virtual CSWGuiLabelHilight* AsLabelHilight()
-    {
-        return this;
-    }
-
-    virtual void Initialize(const CSWGuiExtent& cExtent,
-                            const CSWGuiTextParams& cText,
-                            const CSWGuiBorderParams& cBorder,
-                            const CSWGuiBorderParams& cHilite);
-    virtual void Initialize(const CSWGuiExtent& cExtent,
-                            CSWGuiLabelHilight* pProto);
-
-    CSWGuiBorder m_cHilite;
-};
 
 class CSWGuiScrollBar : public CSWGuiControl
 {
