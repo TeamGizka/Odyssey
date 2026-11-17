@@ -4441,6 +4441,12 @@ void CSWSCreature::ComputeAIState()
         ComputeAIStateOnAction(m_nCurrentAction, m_oidCurrentActionTarget);
     }
 }
+
+// Dead code: not in the PC executable
+int CSWSCreature::TestAIStateAsMode(int nAIState)
+{
+    return nAIState < 10;
+}
 // PC 0x0050C0A0 GOG 0x0050C100
 void CSWSCreature::ComputeAIStateOnAction(int nAction, unsigned long oidTarget)
 {

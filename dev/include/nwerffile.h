@@ -31,6 +31,7 @@ public:
         m_nLanguageId = 0;
         m_nLength = 0;
     }
+    int Reset();
 
     int Read(CExoFile& file);
     int Write(CExoFile& file);

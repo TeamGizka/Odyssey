@@ -625,6 +625,7 @@ public:
     enum { BODY_BAG_SPAWN_DELAY = 500 };
     int GetIsPCDying() { return 0; }
     void UpdateEffectList(unsigned long nDay, unsigned long nTime);
+    void ClearSpellEffectsOnOthers();
     void RunActions(unsigned long nDay, unsigned long nTime,
                    unsigned __int64 nTimer);
     int TerminateAISliceAfterAction(unsigned long nAction);
@@ -675,6 +676,7 @@ public:
     int IsFadingInDialog();
     void SetDialogOwner(unsigned long oidOwner);
     int RemoveObjectFromDialog(unsigned long oidObject);
+    void PlaySoundSet(class CSWSPlayer* pPlayer, unsigned char nVoiceChat);
     void SetDirtyFlag(unsigned long nFlag);
     void SetCurrentHitPoints(int nHitPoints);
     void AttachmentFromClientObject(CSWCObject* pObject);
@@ -812,6 +814,7 @@ public:
     CSWSObjectActionNode* GetNodeById(unsigned short nNodeId);
     int GetNumActionGroups();
     void RemoveGroup(unsigned short nGroupId);
+    unsigned short GetNewGroupID();
     void SetGroupInterruptable(unsigned short nGroupId, int bInterruptable);
     void DeleteCurrentAIAction();
     void SetOrientation(const Vector& vOrientation);
@@ -826,6 +829,7 @@ public:
                          int bCheckVisibility);
     CSWSExpression* GetListenExpressionObj(int nId);
     int HasSpellEffectApplied(unsigned long nSpellId);
+    void RemoveEffectBySpellId(unsigned long nSpellId);
     void BroadcastSafeProjectile(unsigned long oidSource, unsigned long oidTarget,
                                  const Vector& vStart, const Vector& vEnd,
                                  unsigned long nProjectileType,
@@ -1505,6 +1509,7 @@ public:
     void RemoveSpellActionFromRound();
     int UpdateSpecialAttacks();
     void ComputeAIState();
+    int TestAIStateAsMode(int nAIState);
     float CalculateDeathExperience();
     void ApplyDeathExperience();
 

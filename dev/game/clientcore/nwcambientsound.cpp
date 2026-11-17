@@ -863,6 +863,14 @@ void CSWCAmbientSound::StopSounds(int bMusicOnly)
     }
 }
 
+// Dead code: not in the PC executable
+void CSWCAmbientSound::StopAllMusic()
+{
+    PlayMusic(0);
+    m_bBattleMusic = 0;
+    m_nTimeRemaining = 0;
+}
+
 #ifdef _XBOX
 
 #include "aurconsole.h"

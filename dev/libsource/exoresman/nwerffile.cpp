@@ -967,6 +967,20 @@ int CERFRes::Write(CExoFile& file, unsigned long nTableOffset)
 }
 
 // Dead code: not in the PC executable
+int CERFString::Reset()
+{
+    if (m_pText != NULL)
+    {
+        delete m_pText;
+        m_pText = NULL;
+    }
+
+    m_nLanguageId = 0;
+    m_nLength = 0;
+    return 1;
+}
+
+// Dead code: not in the PC executable
 CExoString CERFString::GetText()
 {
     return CExoString(m_pText, m_nLength);

@@ -89,6 +89,7 @@ public:
     void ShowGame(CSWGuiControl* pControl);
     int CopyGameToFutureGame(unsigned long nSaveGame,
                              const CExoString& sSaveName);
+    void DisplayLoadError(unsigned long nStrRef);
     void LoadPCAutoSave(const CExoString& sModuleName);
     void DeleteGame(CSWGuiControl* pControl);
     int UnpackGame(unsigned long nSaveGame, const CExoString& sSaveName,

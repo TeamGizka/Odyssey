@@ -1969,6 +1969,42 @@ void CSWSObject::UpdateEffectList(unsigned long nDay, unsigned long nTime)
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSObject::ClearSpellEffectsOnOthers()
+{
+    for (int i = m_lstEffectTargets.num - 1; i >= 0; i--)
+    {
+        CGameObject* pObject =
+            g_pAppManager->m_pServerExoApp->GetGameObject(m_lstEffectTargets[i]);
+        if (pObject != NULL && pObject->AsSWSObject() != NULL)
+        {
+            if (pObject->AsSWSAreaOfEffectObject() != NULL &&
+                pObject->AsSWSAreaOfEffectObject()->m_oidCreator == m_nId)
+            {
+                g_pAppManager->m_pServerExoApp->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, m_nId, m_lstEffectTargets[i],
+                    CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+            }
+            else
+            {
+                CSWSObject* pTarget = pObject->AsSWSObject();
+                for (int j = 0; j < pTarget->m_lstEffects.num; j++)
+                {
+                    if (pTarget->m_lstEffects[j]->m_oidCreator == m_nId &&
+                        (pTarget->m_lstEffects[j]->m_nSubType & CGameEffect::SUBTYPE_MASK) ==
+                            SUBTYPE_MAGICAL)
+                    {
+                        pObject->AsSWSObject()->RemoveEffectById(
+                            pTarget->m_lstEffects[j]->m_nID);
+                        j = 0;
+                    }
+                }
+            }
+        }
+    }
+    m_lstEffectTargets.num = 0;
+}
 // PC 0x004FBD50 GOG 0x0050B540
 void CSWSObject::LoadEffectList(CResGFF* pRes, CResStruct* pStruct)
 {
@@ -2185,6 +2221,19 @@ void CSWSObject::SetGroupInterruptable(unsigned short nGroupId,  // PC 0x004F638
         }
         pAction = m_lstActions.GetNext(pPos);
     }
+}
+
+// Dead code: not in the PC executable
+unsigned short CSWSObject::GetNewGroupID()
+{
+    unsigned short nNewGroupId = m_nNextGroupId;
+    m_nNextGroupId = nNewGroupId + 1;
+    if (m_nNextGroupId == ACTION_GROUP_NEW)
+    {
+        m_nNextGroupId = 0;
+    }
+    m_nLastGroupId = nNewGroupId;
+    return nNewGroupId;
 }
 // PC 0x004F63D0 GOG 0x00505BC0
 void CSWSObject::SaveActionQueue(CResGFF* pRes, CResStruct* pStruct)
@@ -2879,6 +2928,21 @@ int CSWSObject::HasSpellEffectApplied(unsigned long nSpellId)
     }
     return 0;
 }
+
+// Dead code: not in the PC executable
+void CSWSObject::RemoveEffectBySpellId(unsigned long nSpellId)
+{
+    if (nSpellId != -1)
+    {
+        for (int i = 0; i < m_lstEffects.num; i++)
+        {
+            if (m_lstEffects[i]->m_nSpellId == nSpellId)
+            {
+                RemoveEffect(m_lstEffects[i]);
+            }
+        }
+    }
+}
 // PC 0x004F76F0 GOG 0x00506EE0
 void CSWSObject::BroadcastSafeProjectile(
     unsigned long oidSource, unsigned long oidTarget, const Vector& vStart,
@@ -3493,6 +3557,37 @@ unsigned long CSWSObject::GetNearestObjectByName(const CExoString& sName,
         bMore = pArea->GetNextObjectInArea(oidObject);
     }
     return oidNearest;
+}
+
+// Dead code: not in the PC executable
+void CSWSObject::PlaySoundSet(CSWSPlayer* pPlayer, unsigned char nVoiceChat)
+{
+    CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
+
+    if (pPlayer != NULL)
+    {
+        pMessage->SendServerToPlayerVoiceChat_Play(pPlayer, m_nId, nVoiceChat);
+    }
+    else
+    {
+        CExoLinkedList<CSWSClient>* pPlayerList =
+            g_pAppManager->m_pServerExoApp->GetPlayerList();
+        if (pPlayerList != NULL)
+        {
+            CExoLinkedListNode* pPosition = pPlayerList->GetHeadPos();
+            while (pPosition != NULL)
+            {
+                CSWSPlayer* pListPlayer =
+                    (CSWSPlayer*)pPlayerList->GetAtPos(pPosition);
+                if (pListPlayer != NULL)
+                {
+                    pMessage->SendServerToPlayerVoiceChat_Play(pListPlayer, m_nId,
+                                                              nVoiceChat);
+                }
+                pPlayerList->GetNext(pPosition);
+            }
+        }
+    }
 }
 // PC 0x004F54C0 GOG 0x00504CB0
 void CSWSObject::SetDialogOwner(unsigned long oidOwner)

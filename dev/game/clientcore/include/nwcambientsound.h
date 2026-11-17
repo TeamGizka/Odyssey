@@ -78,6 +78,7 @@ public:
 
     void PlayTruncated(int bPlay, CSWCAmbientSoundPriority nPriority);
     void StopSounds(int bMusicOnly);
+    void StopAllMusic();
     void LoadFromMessage(CSWCMessage* pMessage);
 
     void Update();

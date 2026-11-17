@@ -66,8 +66,16 @@ public:
     }
 
     int GetKnownSpell(unsigned char nLevel, unsigned char nIndex);
+    unsigned char GetSpellsPerDayLeft(unsigned char nSpellLevel);
+    void SetSpellsPerDayLeft(unsigned char nSpellLevel, unsigned char nSpells);
+    unsigned char GetMaxSpellsPerDayLeft(unsigned char nSpellLevel);
+    void SetMaxSpellsPerDayLeft(unsigned char nSpellLevel, unsigned char nSpells);
+    void DecrementSpellsPerDayLeft(unsigned char nSpellLevel);
+    void IncrementSpellsPerDayLeft(unsigned char nSpellLevel);
+    void ResetSpellsPerDayLeft(unsigned char nSpellLevel, unsigned char nSpellGain);
 
     void RemoveKnownSpell(unsigned char nSpellLevel, unsigned long nSpell);
+    int HasSpell(unsigned char nSpellLevel, unsigned long nSpell);
 
 };
 
@@ -151,6 +159,9 @@ public:
     enum { DARK_PORTRAIT_ALIGNMENT_THRESHOLD = 50 };
 
     int CalcStatModifier(unsigned char nScore);
+    CExoString& GetTag();
+    void SetTag(const CExoString& sTag);
+    CExoString GetAlignmentString();
     int EffectId2Effect2DAId(int nEffectId, int nEffectInteger);
     int GetEffectLinkImmunity(CGameEffect* pEffect);
     unsigned long CalculateExpNeededForNextLevel();
@@ -162,6 +173,9 @@ public:
     void GetTotalDamageRange(CSWSCreature* pCreature, CSWSItem* pItem,
                              int& nMinimum, int& nMaximum, int bOffHand,
                              int bIncludeEffects);
+    CResRef GetSmallPortrait();
+    CResRef GetLargePortrait();
+    CExoString GetRaceString();
 
     enum { WEAPON_SPECIALIZATION_DAMAGE_BONUS = 2 };
     // PC 0x005ED200 GOG 0x005ED1E0
@@ -206,6 +220,7 @@ public:
             m_aClassInfo[nClass].m_nLevel = nLevel;
     }
     int ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget);
+    unsigned char GetIsClass(unsigned char nClass);
     int ResolveSpecialAttackDamageBonus(CSWSCreature* pTarget);
     unsigned char GetClassLevel(unsigned char nClass,
                                 int bExcludeNegativeLevels);
@@ -240,6 +255,7 @@ public:
                                        unsigned char nSpellLevel);
     int HasFeat(unsigned short nFeat);
     int HasClassSkillFeat(unsigned short nSkill);
+    unsigned char GetCasterLevel(unsigned char nMultiClass);
     int FeatAcquired(unsigned short nFeat, CExoArrayList<unsigned short>* pList);
     int FeatRequirementsMet(unsigned short nFeat, CExoArrayList<unsigned short>* pList,
                             int bNextLevel);
@@ -255,6 +271,7 @@ public:
     void RemoveFeat(unsigned short nFeat);
     void DecrementFeatRemainingUses(unsigned short nFeat);
     unsigned char GetFeatRemainingUses(unsigned short nFeat);
+    void ResetFeatRemainingUses();
     int GetWeaponSpecialization(CSWSItem* pItem);
     int GetRangedDamageBonus();
     int GetWeaponFocus(CSWSItem* pItem);
@@ -300,11 +317,14 @@ public:
     short GetForcePointAbilityMod() { return GetWISMod() + GetCHAMod(); }
     unsigned char GetLevel(int bExcludeNegativeLevels);
     CSWLevelStats* GetLevelStats(unsigned char nLevel);
+    int GetHasLostClassAbilities(unsigned char nMultiClass);
+    void SetHasLostClassAbilities(unsigned char nMultiClass, int bLostClassAbilities);
     int ValidateLevelUp(CSWLevelStats* pLevelStats);
 
     void LevelUp(CSWLevelStats* pLevelStats, int bStoreLevelStats);
     int CanLevelUp();
     unsigned char GetPotentialLevel();
+    unsigned char GetEffectiveCRForPotentialLevel();
     unsigned long GetExpNeededForLevelUp();
     void UpdateCombatInformation();
     void UpdateLastStatsObject(unsigned __int64 nUpdateMask,
@@ -345,6 +365,7 @@ public:
     void UpdateCHAModifier() { m_nCharismaModifier = CalcStatModifier(GetCHAStat()); }
     void RemoveKnownSpell(unsigned char nClass, unsigned long nSpell);
     void SetForceResistance(char nResistance);
+    int GetIsInKnownSpellList(unsigned char nMultiClass, unsigned long nSpell);
     void SetArcaneSpellFailure(unsigned char nFailure);
     void SetForceResistancePenalty(char nPenalty);
     void SetExperience(unsigned long nExperience, int bUseThreshold);
@@ -366,7 +387,11 @@ public:
     }
     void SetSpellLikeAbilityReady(unsigned long nSpell, unsigned char bReady,
                                   unsigned char nClass);
+    void ResetSpellLikeAbilities();
     int UnReadySpell(unsigned long nSpell);
+    void DecrementSpellsPerDayLeft(unsigned char nMultiClass, unsigned char nSpellLevel);
+    void IncrementSpellsPerDayLeft(unsigned char nMultiClass, unsigned char nSpellLevel);
+    void ResetSpellsPerDayLeft(unsigned char nMultiClass, unsigned char nSpellLevel);
     bool GetSpellUsesLeft(unsigned long nSpell, unsigned char nMultiClass,
                           unsigned char nSpellLevel, unsigned char nSpellIndex);
     void AutoLevelup(int bFeedback);
@@ -444,6 +469,7 @@ public:
                                     int& nTalentType, int& nTalent,
                                     unsigned char& nClass, int nExclusion,
                                     int nExcludedFeat);
+    int GetSpellMinAbilityMet(unsigned char nMultiClass, unsigned char nSpellLevel);
     int GetCreatureTalentRandomPower(int nFilter, int nSelection,
                                     int& nTalentType, int& nTalent,
                                     unsigned char& nClass, int nExclusion,
