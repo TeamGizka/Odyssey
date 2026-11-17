@@ -63,7 +63,7 @@ inline CGameObject::~CGameObject()
 
 #define NWSAREA_DEBUG 0
 
-
+// Dead code: not in the PC executable
 static CResRef* AllocateResRefArray(int nCount)
 {
     return new CResRef[nCount];

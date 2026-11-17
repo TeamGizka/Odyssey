@@ -52,7 +52,7 @@ CSWSAreaOfEffectObject::CSWSAreaOfEffectObject(unsigned long oidObject)
     m_nSpellLevel = 0;
     m_nSpellSaveDC = DEFAULT_SPELL_SAVE_DC;
 }
-
+// Dead code: not in the PC executable
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];

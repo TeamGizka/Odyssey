@@ -876,6 +876,7 @@ void CSWCAnimBase::SetLean(float fLean)
 {
     m_fLean = min(1.0f, max(-1.0f, fLean)) * g_fMaxLean;
 }
+// Dead code: not in the PC executable
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];

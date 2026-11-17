@@ -137,7 +137,7 @@ void Parse(char* sText, char* sValue)
 {
     if (sscanf(sText, "%s", sValue) == 0)
     {
-        strcpy(sValue, (char*)0);
+        strcpy(sValue, NULL);
     }
 }
 // PC 0x004797A0 GOG 0x00479930

@@ -70,7 +70,7 @@ float fSpringFactor = 0.5f;
 
 int CreaturePartyIndex;
 char sRet[255] = "                                                  ";
-
+// Dead code: not in the PC executable
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];

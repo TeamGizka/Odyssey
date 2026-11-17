@@ -132,7 +132,7 @@ static void DestroyAppObjects(CAppManager* pManager)
     delete pManager->m_pReentrantServerStats;
     pManager->m_pReentrantServerStats = NULL;
 }
-
+// Dead code: not in the PC executable
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];

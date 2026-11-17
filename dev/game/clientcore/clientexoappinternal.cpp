@@ -809,6 +809,7 @@ void CClientExoAppInternal::SetEventDescriptions()
     }
 }
 #endif
+// Dead code: not in the PC executable
 static CResRef* AllocateResRefArray(int nCount)
 {
     return new CResRef[nCount];

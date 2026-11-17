@@ -372,17 +372,17 @@ void RequestPoolManagerSys::BackUpPoolManager()
 void RequestPoolManagerSys::RestorePoolManager()
 {
 }
-
+// Dead code: not in the PC executable
 inline void SetMatrixMode(unsigned int nMode)
 {
     glMatrixMode(nMode);
 }
-
+// Dead code: not in the PC executable
 inline void LoadIdentity()
 {
     glLoadIdentity();
 }
-
+// Dead code: not in the PC executable
 inline void SetBlendFunc(unsigned int nSource, unsigned int nDestination)
 {
     glBlendFunc(nSource, nDestination);
@@ -506,7 +506,7 @@ inline void SetStencilFunc(unsigned int nFunc, int nRef, unsigned int nMask)
 {
     glStencilFunc(nFunc, nRef, nMask);
 }
-
+// Dead code: not in the PC executable
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];

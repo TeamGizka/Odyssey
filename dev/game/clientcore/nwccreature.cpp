@@ -74,7 +74,7 @@
 #include "nwsdoor.h"
 #include "nwcdoor.h"
 #include "nwscombatround.h"
-
+// Dead code: not in the PC executable
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
