@@ -52,6 +52,7 @@ public:
     void OnExitButton(CSWGuiControl* pControl);
     void LaunchDashboard(CSWGuiControl* pControl);
     void OnQuitButtonPressed(CSWGuiControl* pControl);
+    void ClearListBox();
     void DeleteModuleList();
 #ifdef _XBOX
     void AddErrorMessage(const CErrorMessageData& cMessage);

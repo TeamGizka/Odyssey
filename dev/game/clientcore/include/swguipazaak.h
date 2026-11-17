@@ -152,8 +152,10 @@ public:
 
     void PlaceRightOf(CSWGuiControl* pControl);
     void PlaceAbove(CSWGuiControl* pControl);
+    unsigned long GetHelpText();
     void ShowHelp(unsigned long nHelpStrRef, unsigned long nTitleStrRef,
                   unsigned long nButtonStrRef);
+    void SetBButtonEnabled(int bEnabled);
     void ShowMultipleHelp(const unsigned long* pStrRefs, int nCount);
 
     int GetEnabled()

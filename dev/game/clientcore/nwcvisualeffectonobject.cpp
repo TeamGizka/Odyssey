@@ -379,6 +379,14 @@ char CSWCVisualEffectOnObject::GetHardCodedEffectClass(
     }
     return 0;
 }
+
+void CSWCVisualEffectOnObject::EnableHardCodedEffectShadow(int bEnable)
+{
+    if (m_pEffectModel != 0)
+    {
+        m_bLightSourceDynamic = bEnable != 0;
+    }
+}
 // PC 0x00700FB0 GOG 0x00700C20
 void CSWCVisualEffectOnObject::DetachVisualEffect()
 {
@@ -2273,6 +2281,20 @@ int CSWCVisualEffectOnObject::LoadLightSource(unsigned short nVisualEffect)
         return 0;
     }
     static_cast<Gob*>(m_pEffectModel)->SetLightPriority(Gob::LIGHT_PRIORITY_VISUAL_EFFECT);
+    return 1;
+}
+
+int CSWCVisualEffectOnObject::LoadAlpha(unsigned short nVisualEffect)
+{
+    unsigned short nAlphaEffect = nVisualEffect - VFX_ALPHA_BEGIN;
+    switch (nAlphaEffect)
+    {
+    case ALPHA_HALF:
+    case ALPHA_HALF_BLUE_HILITE:
+    case ALPHA_HALF_PURPLE_HILITE:
+        m_fAlphaTarget = 0.5f;
+        break;
+    }
     return 1;
 }
 // PC 0x007053B0 GOG 0x007052A0

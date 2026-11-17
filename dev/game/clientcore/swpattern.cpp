@@ -1,4 +1,12 @@
 #include "swpattern.h"
+
+CSWRumbleMotorData::CSWRumbleMotorData()
+{
+    m_pfMagnitudes = 0;
+    m_pfTimes = 0;
+    m_nNumSamplePoints = 0;
+    m_nCurrentSamplePoint = 0;
+}
 // PC 0x006E91E0 GOG 0x006E8EA0
 CSWRumbleMotorData::~CSWRumbleMotorData()
 {
@@ -56,6 +64,11 @@ float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
                (m_pfMagnitudes[m_nCurrentSamplePoint + 1] -
                 m_pfMagnitudes[m_nCurrentSamplePoint]) +
            m_pfMagnitudes[m_nCurrentSamplePoint];
+}
+
+CSWRumblePattern::CSWRumblePattern()
+{
+    m_bLoop = 0;
 }
 // PC 0x006E9320 GOG 0x006E8FE0
 int CSWRumblePattern::GetMagnitudes(float fTime, float& fLeftMagnitude,

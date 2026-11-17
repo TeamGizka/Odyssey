@@ -192,6 +192,16 @@ void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
     }
 }
 
+void PrintCreatureList(CEncounterListEntry* pEntries, int nCount)
+{
+    CExoString sResRef;
+    for (int i = 0; i < nCount; i++)
+    {
+        pEntries[i].m_cResRef.CopyToString(sResRef);
+        sResRef.CStr();
+    }
+}
+
 void CSWSEncounter::TallyEnemyRadiusPoints()
 {
     return;

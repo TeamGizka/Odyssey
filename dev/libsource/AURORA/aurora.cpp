@@ -330,6 +330,11 @@ int AurQueryMaximumAnisotropy()  // PC 0x004631A0 GOG 0x004632B0
 {
     return (int)largest_supported_anisotropy;
 }
+
+float QueryMaxAnisotropicFilter()
+{
+    return largest_supported_anisotropy;
+}
 #endif
 // PC 0x004631B0 GOG 0x004632C0
 bool AurIsSpeedBlurEnabled()

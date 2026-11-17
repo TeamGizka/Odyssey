@@ -387,6 +387,11 @@ inline void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,  // PC 0x0048
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 }
+
+void DrawFrame(const Vector& vMinimum, const Vector& vMaximum, const Vector& vColor)
+{
+    GLRender::DrawAxisAlignedFrame(vMinimum, vMaximum, vColor);
+}
 // PC 0x00486060 GOG 0x00486120
 inline void GLRender::Transform(const Vector& vPosition,
                          const Quaternion& qOrientation, int nForce)
@@ -2509,6 +2514,14 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)  // PC 0x00488800 GOG 0x004888C
     GLRender_Enable(ENABLE_ALPHA_TEST);
     GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
                 BLEND_ONE_MINUS_SRC_ALPHA);
+}
+
+void RenderShadowSkinnedVariant(VertexPrimitiveSkinned* pPrimitive)
+{
+}
+
+void RenderShadowTriMesh(VertexPrimitiveFlat* pPrimitive)
+{
 }
 
 // PC 0x00488E30 GOG 0x00488EE0

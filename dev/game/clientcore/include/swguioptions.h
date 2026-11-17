@@ -23,6 +23,9 @@ public:
 
     void SetDescription(unsigned long nStrRef);
     void OnEnterSlot(CSWGuiControl* pControl);
+#ifndef _XBOX
+    void SetActiveButton(int nOption);
+#endif
     void OnGameplayOpt(CSWGuiControl* pControl);
     void OnFeedbackOpt(CSWGuiControl* pControl);
     void OnAutopauseOpt(CSWGuiControl* pControl);

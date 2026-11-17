@@ -138,6 +138,14 @@ void AurFreeFont()
 
 #ifndef _XBOX
 
+void PrintStringScreenPos(char* szString, float fX, float fY)
+{
+    if (szString != NULL && *szString != 0)
+    {
+        GLRender::PrintStringAtScreenPos(szString, fX, fY);
+    }
+}
+
 void PrintStringScreenPos_UseTextureFont(char* szString, float fX, float fY)
 {
     GLint aViewport[4];

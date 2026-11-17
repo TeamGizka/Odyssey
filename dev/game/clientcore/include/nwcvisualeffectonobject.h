@@ -287,12 +287,14 @@ public:
     int GetHardCodedImpactLength(unsigned short nVisualEffect);
 
     int GetHardCodedCessationLength(unsigned short nVisualEffect);
+    int LoadAlpha(unsigned short);
     int LoadBeam(unsigned short);
     int LoadSpellVisual(unsigned short);
     int LoadModelAttachment(unsigned short);
     void UnloadHardCodedVisualEffect();
     char GetHardCodedEffectClass();
     char GetHardCodedEffectClass(unsigned short);
+    void EnableHardCodedEffectShadow(int);
     CSWCVisualEffectOnObject();
     void UnloadVisualEffect();
     void DetachVisualEffect();

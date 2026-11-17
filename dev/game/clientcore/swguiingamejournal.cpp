@@ -12,6 +12,7 @@
 #include "swparty.h"
 #include "nwccreature.h"
 #include "nwtlktable.h"
+#include "resset.h"
 
 int g_nJournalSortType = 0;
 int g_bOverrideJournalSortType = 0;
@@ -715,4 +716,331 @@ void CSWGuiInGameJournal::OnPanelRemoved()
     }
 #endif
     MarkNewQuestsObserved();
+}
+
+CResSET::CResSET()
+{
+    m_bServiced = 0;
+    m_nSETSize = 0;
+    m_pSection = NULL;
+    m_nNumSections = 0;
+}
+
+CResSET::~CResSET()
+{
+}
+
+int CResSET::CopySETData(unsigned char* pSETData)
+{
+    if (m_bServiced == 0)
+    {
+        return 0;
+    }
+    memcpy(pSETData, m_pResource, m_nSETSize);
+    return 1;
+}
+
+char* CResSET::GetSETDataPtr()
+{
+    return (char*)m_pResource;
+}
+
+unsigned long CResSET::GetSETSize()
+{
+    return m_nSETSize;
+}
+
+int CResSET::IsLoaded()
+{
+    return m_bServiced;
+}
+
+int CResSET::OnResourceFreed()
+{
+    unsigned long nSection;
+
+    m_bServiced = 0;
+    m_nSETSize = 0;
+    if (m_pSection != NULL)
+    {
+        for (nSection = 0; nSection < m_nNumSections; nSection++)
+        {
+            if (m_pSection[nSection].m_pEntry != NULL)
+            {
+                delete[] m_pSection[nSection].m_pEntry;
+            }
+        }
+        delete[] m_pSection;
+        m_pSection = NULL;
+    }
+    m_nNumSections = 0;
+    return 1;
+}
+
+int CResSET::OnResourceServiced()
+{
+    char szValue[256];
+
+    if (m_pResource == NULL)
+    {
+        return 0;
+    }
+    if (m_bServiced != 0)
+    {
+        return 1;
+    }
+
+    m_nSETSize = m_nSize;
+    if (CreateSectionTable() == 0)
+    {
+        return 0;
+    }
+
+    GetSectionEntryValue("GENERAL", "Type", szValue);
+    if (strcmp(szValue, "SET") == 0)
+    {
+        GetSectionEntryValue("GENERAL", "Version", szValue);
+        if (strcmp(szValue, "V1.0") == 0)
+        {
+            m_bServiced = 1;
+            return 1;
+        }
+    }
+
+    m_nSETSize = 0;
+    return 0;
+}
+
+int CResSET::CreateSectionTable()
+{
+    char szLine[256];
+    char* pLine;
+    char* pEnd;
+    char* pEOL;
+    char* pCR;
+    char* pEquals;
+    char* pTrim;
+    unsigned long nOffset;
+    unsigned long nEntryOffset;
+    unsigned long nNumSections;
+    unsigned long nSection;
+    unsigned long nNumEntries;
+    unsigned long nEntry;
+    int bNewLine;
+
+    pLine = (char*)m_pResource;
+    nOffset = 0;
+    nNumSections = 0;
+    while (nOffset < m_nSETSize)
+    {
+        pLine = SkipWhiteSpace(pLine);
+        if (*pLine == '[' && strchr(pLine, ']') != NULL)
+        {
+            nNumSections++;
+        }
+        pLine = GetNextLine(nOffset, &nOffset);
+    }
+
+    m_pSection = new SETSection[nNumSections];
+    if (m_pSection == NULL)
+    {
+        return 0;
+    }
+
+    pLine = (char*)m_pResource;
+    nOffset = 0;
+    nSection = 0;
+    while (nOffset < m_nSETSize)
+    {
+        pLine = SkipWhiteSpace(pLine);
+        if (*pLine == '[' && (pEnd = strchr(pLine, ']')) != NULL)
+        {
+            *pEnd = '\0';
+            m_pSection[nSection].m_sSection = pLine + 1;
+            *pEnd = ']';
+
+            nEntryOffset = nOffset;
+            nNumEntries = 0;
+            pLine = GetNextLine(nOffset, &nOffset);
+            while (nOffset < m_nSETSize)
+            {
+                pLine = SkipWhiteSpace(pLine);
+                if (*pLine == '[')
+                {
+                    break;
+                }
+                nNumEntries++;
+                pLine = GetNextLine(nOffset, &nOffset);
+            }
+
+            m_pSection[nSection].m_pEntry = new SETEntry[nNumEntries];
+            if (m_pSection[nSection].m_pEntry == NULL)
+            {
+                return 0;
+            }
+
+            nEntry = 0;
+            pLine = GetNextLine(nEntryOffset, &nEntryOffset);
+            while (nEntryOffset < m_nSETSize)
+            {
+                pLine = SkipWhiteSpace(pLine);
+                if (*pLine == '[')
+                {
+                    break;
+                }
+
+                pEOL = strchr(pLine, '\n');
+                pCR = strchr(pLine, '\r');
+                bNewLine = 1;
+                if (pCR < pEOL || pEOL == NULL)
+                {
+                    pEOL = pCR;
+                    bNewLine = 0;
+                }
+                if (pEOL != NULL)
+                {
+                    *pEOL = '\0';
+                }
+                if (pEOL == NULL)
+                {
+                    strncpy(szLine, pLine, m_nSETSize - nEntryOffset);
+                    szLine[m_nSETSize - nEntryOffset] = '\0';
+                }
+                else
+                {
+                    strcpy(szLine, pLine);
+                }
+
+                pEquals = strchr(szLine, '=');
+                if (pEquals != NULL)
+                {
+                    *pEquals = '\0';
+                    pTrim = pEquals - 1;
+                    while (*pTrim == ' ' || *pTrim == '\t')
+                    {
+                        pTrim--;
+                    }
+                    pTrim = szLine;
+                    while (*pTrim == ' ' || *pTrim == '\t')
+                    {
+                        pTrim++;
+                    }
+                    m_pSection[nSection].m_pEntry[nEntry].m_sEntry = pTrim;
+
+                    if (pEOL == NULL)
+                    {
+                        strncpy(szLine, pLine, m_nSETSize - nEntryOffset);
+                    }
+                    else
+                    {
+                        strcpy(szLine, pLine);
+                    }
+                    pTrim = szLine + strlen(szLine) - 1;
+                    while (*pTrim == ' ' || *pTrim == '\t')
+                    {
+                        pTrim--;
+                    }
+                    pTrim = strchr(szLine, '=') + 1;
+                    while (*pTrim == ' ' || *pTrim == '\t')
+                    {
+                        pTrim++;
+                    }
+                    m_pSection[nSection].m_pEntry[nEntry].m_sValue = pTrim;
+                    nEntry++;
+
+                    if (pEOL != NULL)
+                    {
+                        if (bNewLine != 0)
+                        {
+                            *pEOL = '\n';
+                        }
+                        else
+                        {
+                            *pEOL = '\r';
+                        }
+                    }
+                }
+                pLine = GetNextLine(nEntryOffset, &nEntryOffset);
+            }
+            nOffset = nEntryOffset;
+
+            if (nEntry != nNumEntries)
+            {
+                return 0;
+            }
+            m_pSection[nSection].m_nNumEntries = nNumEntries;
+            nSection++;
+        }
+        else
+        {
+            pLine = GetNextLine(nOffset, &nOffset);
+        }
+    }
+
+    if (nSection != nNumSections)
+    {
+        return 0;
+    }
+    m_nNumSections = nNumSections;
+    return 1;
+}
+
+void CResSET::GetSectionEntryValue(char* szSection, char* szEntry, char* szValue)
+{
+    unsigned long nSection;
+    unsigned long nEntry;
+
+    for (nSection = 0; nSection < m_nNumSections; nSection++)
+    {
+        if (m_pSection[nSection].m_sSection == szSection)
+        {
+            break;
+        }
+    }
+    if (nSection == m_nNumSections)
+    {
+        szValue[0] = '\0';
+        return;
+    }
+
+    for (nEntry = 0; nEntry < m_pSection[nSection].m_nNumEntries; nEntry++)
+    {
+        if (m_pSection[nSection].m_pEntry[nEntry].m_sEntry == szEntry)
+        {
+            strcpy(szValue, m_pSection[nSection].m_pEntry[nEntry].m_sValue.CStr());
+            break;
+        }
+    }
+    if (nEntry == m_pSection[nSection].m_nNumEntries)
+    {
+        szValue[0] = '\0';
+    }
+}
+
+char* CResSET::SkipWhiteSpace(char* pLine)
+{
+    while (*pLine == ' ' || *pLine == '\t')
+    {
+        pLine++;
+    }
+    return pLine;
+}
+
+char* CResSET::GetNextLine(unsigned long nOffsetStart, unsigned long* pOffsetEnd)
+{
+    char* pLine;
+
+    pLine = (char*)m_pResource + nOffsetStart;
+    while (nOffsetStart < m_nSETSize && *pLine != '\n' && *pLine != '\r')
+    {
+        nOffsetStart++;
+        pLine++;
+    }
+    while (nOffsetStart < m_nSETSize && (*pLine == '\n' || *pLine == '\r'))
+    {
+        nOffsetStart++;
+        pLine++;
+    }
+    *pOffsetEnd = nOffsetStart;
+    return pLine;
 }

@@ -22,6 +22,11 @@ unsigned long CResNSS::GetNSSSize()
     return m_nNSSSize;
 }
 
+int CResNSS::IsLoaded()
+{
+    return m_bServiced;
+}
+
 int CResNSS::OnResourceFreed()
 {
     m_bServiced = 0;

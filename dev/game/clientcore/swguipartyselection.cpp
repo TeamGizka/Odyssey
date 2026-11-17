@@ -61,6 +61,11 @@ void CSWGuiPartySelectionButton::SetSelected(int bSelected)
         m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
     }
 }
+
+int CSWGuiPartySelectionButton::GetSelected()
+{
+    return m_bPartySelected;
+}
 #endif
 
 #ifdef _XBOX

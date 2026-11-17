@@ -685,6 +685,15 @@ void CSWGuiTutorial::PlaceAbove(CSWGuiControl* pControl)
     cExtent.m_nTop = nTop - cExtent.m_nHeight;
     SetExtent(cExtent);
 }
+
+unsigned long CSWGuiTutorial::GetHelpText()
+{
+    if (m_nHelpIndex < m_lHelp.m_nCount)
+    {
+        return m_lHelp[m_nHelpIndex];
+    }
+    return 0;
+}
 void CSWGuiWagerPopup::UpdateWagerText()  // PC 0x006D3940 GOG 0x006D3720
 {
     CExoString sWager(m_nWager);
@@ -1278,6 +1287,11 @@ void CSWGuiTutorial::ShowHelp(unsigned long nHelpStrRef,
         SetMessage(nHelpStrRef);
         m_pManager->AddPanel(this, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
+}
+
+void CSWGuiTutorial::SetBButtonEnabled(int bEnabled)
+{
+    SetAllowCancel(bEnabled);
 }
 // PC 0x006D5490 GOG 0x006D47A0
 void CSWGuiTutorial::ShowMultipleHelp(const unsigned long* pStrRefs, int nCount)

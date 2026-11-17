@@ -7,6 +7,7 @@
 #ifdef _XBOX
 #include "guiingame.h"
 #endif
+#include "reswok.h"
 
 // PC 0x00761970 GOG 0x00761790
 void CSWGuiQuickOrCustomPanel::HandleCancelButton()
@@ -163,4 +164,59 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
 #endif
+}
+
+CResWOK::CResWOK()
+{
+    m_bServiced = 0;
+    m_nWOKSize = 0;
+    m_pWOKData = 0;
+}
+
+CResWOK::~CResWOK()
+{
+}
+
+unsigned char* CResWOK::GetWOKDataPtr()
+{
+    return m_pWOKData;
+}
+
+unsigned long CResWOK::GetWOKSize()
+{
+    return m_nWOKSize;
+}
+
+int CResWOK::IsLoaded()
+{
+    return m_bServiced;
+}
+
+int CResWOK::OnResourceFreed()
+{
+    m_bServiced = 0;
+    m_nWOKSize = 0;
+    m_pWOKData = 0;
+    return 1;
+}
+
+int CResWOK::OnResourceServiced()
+{
+    unsigned char* pData;
+
+    pData = (unsigned char*)m_pResource;
+    if (pData == NULL)
+    {
+        return 0;
+    }
+
+    if (m_bServiced != 0)
+    {
+        return 1;
+    }
+
+    m_nWOKSize = m_nSize;
+    m_pWOKData = pData;
+    m_bServiced = 1;
+    return 1;
 }

@@ -45,6 +45,9 @@ public:
     void OnQuit(CSWGuiControl*);
     void OnEnterSlot(CSWGuiControl*);
 #ifndef _XBOX
+    void SetActiveButton(int);
+#endif
+#ifndef _XBOX
     enum
     {
         STRREF_DESC_LOAD_GAME = 42300,

@@ -1864,6 +1864,16 @@ void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+
+#ifndef _XBOX
+void CSWGuiOptionsMain::SetActiveButton(int nOption)
+{
+    if (nOption >= 0 && nOption < 6)
+    {
+        SetActiveControl(&m_btnOptions[nOption], 0);
+    }
+}
+#endif
 // PC 0x0074FAE0 GOG 0x0074FAB0
 void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
 {

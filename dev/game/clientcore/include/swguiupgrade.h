@@ -144,6 +144,9 @@ public:
     void UpdateItems();
     void OnEnterSlot(CSWGuiControl*);
     ~CSWGuiUpgrade();
+#ifndef _XBOX
+    unsigned char GetNumUpgrades();
+#endif
     void CloseItems();
     virtual void OnPanelAdded();
     void OnControlEntered(CSWGuiControl*);

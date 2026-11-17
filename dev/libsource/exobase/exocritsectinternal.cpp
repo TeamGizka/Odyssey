@@ -19,3 +19,8 @@ void CExoCriticalSectionInternal::LeaveCriticalSection()
 {
     ::LeaveCriticalSection(&m_CriticalSection);
 }
+
+int GetInstallVersion(CExoString& sVersion)
+{
+    return 0;
+}

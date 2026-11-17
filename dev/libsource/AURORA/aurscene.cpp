@@ -2422,6 +2422,10 @@ void RenderPersonalSpace(Scene* pScene)
     GLRender_Enable(ENABLE_DEPTH_TEST);
 }
 
+void RenderDrawableSquares()
+{
+}
+
 #define DEBUG_RENDERPATHS 0
 // PC 0x00465310 GOG 0x00465420
 void RenderPaths(Scene* pScene)

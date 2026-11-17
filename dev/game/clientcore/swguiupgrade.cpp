@@ -4271,6 +4271,27 @@ CSWGuiUpgrade::~CSWGuiUpgrade()
         m_pCrystalTable = 0;
     }
 }
+
+#ifndef _XBOX
+unsigned char CSWGuiUpgrade::GetNumUpgrades()
+{
+    unsigned char nSlots = 0;
+    switch (m_nItemListMode)
+    {
+    case ITEMLIST_LIGHTSABER:
+        nSlots = 6;
+        break;
+    case ITEMLIST_BLASTER:
+    case ITEMLIST_MELEE:
+        nSlots = 3;
+        break;
+    case ITEMLIST_ARMOR:
+        nSlots = 2;
+        break;
+    }
+    return nSlots;
+}
+#endif
 // PC 0x00727560 GOG 0x00727270
 void CSWGuiUpgrade::CloseItems()
 {

@@ -413,6 +413,11 @@ CSWGuiMainMenu::~CSWGuiMainMenu()
     }
 }
 
+void CSWGuiMainMenu::ClearListBox()
+{
+    m_lbModules.ClearItems();
+}
+
 #ifdef _XBOX
 
 static int s_bSaveSpaceChecked = 0;

@@ -276,6 +276,11 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->AddDefaultPackageSkills(nClass, 1);
     m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
+
+void CSWGuiQuickPanel::PlayGame()
+{
+    m_pMainCharGen->BeginPlayGame();
+}
 // PC 0x007614D0 GOG 0x00761310
 void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
 {

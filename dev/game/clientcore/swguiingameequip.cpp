@@ -1097,6 +1097,10 @@ void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
         }
     }
 }
+
+void CSWGuiInGameEquip::OnChangeCharacter(CSWGuiControl* pControl)
+{
+}
 #endif
 
 #ifndef _XBOX
@@ -2955,6 +2959,14 @@ void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
             m_pComparedCopy = 0;
         }
         CloseDescription();
+    }
+}
+
+void CSWGuiInGameEquip::SetActiveSlot(int nSlot)
+{
+    if (nSlot > 0 && nSlot < NUM_EQUIPMENT_SLOTS)
+    {
+        SetActiveControl(&m_aSlotButtons[nSlot], 0);
     }
 }
 #endif

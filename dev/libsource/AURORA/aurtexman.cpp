@@ -2938,6 +2938,21 @@ bool AurTextureSetMem(int nMem)
     AurTextureBuildAndStoreAll();
     return usedtexturememory <= maxtexmem;
 }
+
+void SwapTex(void* pFirst, void* pSecond)
+{
+    CAurTextureBasic* pTemp = *(CAurTextureBasic**)pFirst;
+    *(CAurTextureBasic**)pFirst = *(CAurTextureBasic**)pSecond;
+    *(CAurTextureBasic**)pSecond = pTemp;
+}
+
+unsigned char* AurGetLayeredRasterWrapper(char* sFileName, int* pWidth, int* pHeight, int* pBPP)
+{
+    int nReserved;
+    unsigned char* pImage = AurGetLayeredRaster(sFileName, pWidth, pHeight, &nReserved);
+    *pBPP = 2;
+    return pImage;
+}
 // PC 0x00423650 GOG 0x00423700
 int AurTextureMakeCurrent()
 {

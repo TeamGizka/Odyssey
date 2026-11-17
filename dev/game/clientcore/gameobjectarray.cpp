@@ -1,6 +1,7 @@
 #include "exobase.h"
 #include "gameobjectarray.h"
 #include "nwsobject.h"
+#include "respwk.h"
 
 const unsigned char CGameObject::OBJECT_TYPE_GUI = 1;
 const unsigned char CGameObject::OBJECT_TYPE_TILE = 2;
@@ -491,4 +492,60 @@ unsigned char CGameObjectArray::Delete(unsigned long oidObject)
 {
     CGameObject* pObject;
     return Delete(oidObject, &pObject);
+}
+
+CResPWK::CResPWK()
+{
+    m_bServiced = 0;
+    m_nPWKSize = 0;
+    m_pPWKData = 0;
+    m_bAllocPrefix = 1;
+}
+
+CResPWK::~CResPWK()
+{
+}
+
+unsigned char* CResPWK::GetPWKDataPtr()
+{
+    return m_pPWKData;
+}
+
+unsigned long CResPWK::GetPWKSize()
+{
+    return m_nPWKSize;
+}
+
+int CResPWK::IsLoaded()
+{
+    return m_bServiced;
+}
+
+int CResPWK::OnResourceFreed()
+{
+    m_bServiced = 0;
+    m_nPWKSize = 0;
+    m_pPWKData = 0;
+    return 1;
+}
+
+int CResPWK::OnResourceServiced()
+{
+    unsigned char* pData;
+
+    pData = (unsigned char*)m_pResource;
+    if (pData == NULL)
+    {
+        return 0;
+    }
+
+    if (m_bServiced != 0)
+    {
+        return 1;
+    }
+
+    m_nPWKSize = m_nSize;
+    m_pPWKData = pData;
+    m_bServiced = 1;
+    return 1;
 }

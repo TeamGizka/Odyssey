@@ -100,6 +100,8 @@ public:
     virtual void Draw(float fElapsed);
 
     int IsFadeDone();
+    int GetLetterboxChangeHeight(const float& fElapsed);
+    int GetLetterboxChangeTop(const float& fElapsed);
     void SetExtentSpecial(CSWGuiExtent cExtent);
     void SetTop();
     void SetBottom();

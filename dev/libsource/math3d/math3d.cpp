@@ -25,6 +25,19 @@ double Round(float fValue, float fRoundTo)
 {
     return floor(fValue / fRoundTo + 0.5f) * fRoundTo;
 }
+
+int argmin(float* pValues, int nValues)
+{
+    int nMinimum = 0;
+    for (int i = 1; i < nValues; i++)
+    {
+        if (pValues[i] < pValues[nMinimum])
+        {
+            nMinimum = i;
+        }
+    }
+    return nMinimum;
+}
 // PC 0x004D69A0 GOG 0x004D6AE0
 float SphereAbovePlane(const Vector& vCenter, float fRadius, const Plane& plane)
 {
@@ -125,6 +138,13 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vNormal,
         *pHit = the_point;
     }
     return nHit;
+}
+
+int BoxInside(const Vector& vPoint, const Vector& vMinimum, const Vector& vMaximum)
+{
+    return vPoint.m_fX >= vMinimum.m_fX && vPoint.m_fX <= vMaximum.m_fX &&
+           vPoint.m_fY >= vMinimum.m_fY && vPoint.m_fY <= vMaximum.m_fY &&
+           vPoint.m_fZ >= vMinimum.m_fZ && vPoint.m_fZ <= vMaximum.m_fZ;
 }
 // PC 0x004D6E10 GOG 0x004D6F50
 void BoxOutCode(const Vector& vPoint, const Vector& vMinimum,
@@ -414,6 +434,50 @@ float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vF
     return SEGMENT_MAX(SegmentAbs(dP.m_fX),
                        SEGMENT_MAX(SegmentAbs(dP.m_fY), SegmentAbs(dP.m_fZ)));
 }
+
+int IsPowerOf2(int nValue)
+{
+    return (nValue & (nValue - 1)) == 0;
+}
+
+Quaternion VirtualTrackBall(const Vector& vProjectionCenter, const Vector& vRotationCenter,
+                            const Vector& vFirstDirection, const Vector& vSecondDirection)
+{
+    Vector vNormal = vRotationCenter - vProjectionCenter;
+    float fFudgeFactor = 1.0f / (magnitude(vNormal) * 0.25f);
+    vNormal = normalize(vNormal);
+    float fDistance = -(vNormal * vRotationCenter);
+
+    Vector vFirst = planelineintersection(vNormal, fDistance, vProjectionCenter,
+                                          vProjectionCenter + vFirstDirection);
+    vFirst = vFirst - vRotationCenter;
+    vFirst = vFirst * fFudgeFactor;
+    float fMagnitude = magnitude(vFirst);
+    if (fMagnitude > 1.0f)
+    {
+        vFirst /= fMagnitude;
+    }
+    else
+    {
+        vFirst = vFirst - vNormal * (float)sqrt(1.0f - fMagnitude * fMagnitude);
+    }
+
+    Vector vSecond = planelineintersection(vNormal, fDistance, vProjectionCenter,
+                                           vProjectionCenter + vSecondDirection);
+    vSecond = vSecond - vRotationCenter;
+    vSecond = vSecond * fFudgeFactor;
+    fMagnitude = magnitude(vSecond);
+    if (fMagnitude > 1.0f)
+    {
+        vSecond /= fMagnitude;
+    }
+    else
+    {
+        vSecond = vSecond - vNormal * (float)sqrt(1.0f - fMagnitude * fMagnitude);
+    }
+
+    return RotationArc(vFirst, vSecond);
+}
 // PC 0x004D7A90 GOG 0x004D7BD0
 void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,
                    const Quaternion& quaternion)
@@ -471,6 +535,22 @@ float InterpolateBezier(float fStart, float fEnd, float fControl1,
 
     float fResult = fInverse * afPoints[0] + fPosition * afPoints[1];
     return fResult;
+}
+
+int FloorLogBase2(unsigned long nValue)
+{
+    int nLog = 0;
+    int nShift = 16;
+    for (int i = 0; i < 5; i++)
+    {
+        if (nValue & topMask[i])
+        {
+            nValue &= topMask[i];
+            nLog += nShift;
+        }
+        nShift /= 2;
+    }
+    return nLog;
 }
 // PC 0x004D7C20 GOG 0x004D7D60
 int IntersectCircle2d(const Vector& vCenter, float fRadius,
@@ -603,6 +683,19 @@ Vector VectorMax(List<Vector>& vectors)
     }
     return vResult;
 }
+
+int VectorMaxDir(List<Vector>& vectors, Vector vDirection)
+{
+    int nMaximum = 0;
+    for (int i = 0; i < vectors.m_nCount; i++)
+    {
+        if (vectors.m_pList[i] * vDirection > vectors.m_pList[nMaximum] * vDirection)
+        {
+            nMaximum = i;
+        }
+    }
+    return nMaximum;
+}
 // PC 0x004D8130 GOG 0x004D8270
 Vector VectorMin(List<Vector>& vectors)
 {
@@ -623,6 +716,27 @@ Vector VectorMin(List<Vector>& vectors)
         }
     }
     return vResult;
+}
+
+void Scale(List<Vector>& vectors, float fScale)
+{
+    for (int i = 0; i < vectors.m_nCount; i++)
+    {
+        vectors.m_pList[i] = vectors.m_pList[i] * fScale;
+    }
+}
+
+float ComputeArea(List<Vector>& vectors)
+{
+    float fArea = 0.0f;
+    for (int i = 0; i < vectors.m_nCount; i++)
+    {
+        Vector vFirst = vectors.m_pList[0];
+        Vector vSecond = vectors.m_pList[(i + 1) % vectors.m_nCount];
+        Vector vThird = vectors.m_pList[(i + 2) % vectors.m_nCount];
+        fArea += magnitude(cross(vSecond - vFirst, vThird - vSecond)) * 0.5f;
+    }
+    return fArea;
 }
 // PC 0x004D9690 GOG 0x004D97D0
 Vector InterpolateBezier(const Vector& vStart, const Vector& vEnd,
@@ -862,6 +976,17 @@ float magnitude(const Vector& vector)
     return (float)sqrt(vector.m_fX * vector.m_fX + vector.m_fY * vector.m_fY +
                        vector.m_fZ * vector.m_fZ);
 }
+
+Vector Orth(const Vector& vector)
+{
+    Vector vOrth = cross(vector, Vector(1.0f, 0.0f, 0.0f));
+    if (magnitude(vOrth) < 0.01)
+    {
+        vOrth = cross(vector, Vector(0.0f, 1.0f, 0.0f));
+    }
+    vOrth = normalize(vOrth);
+    return vOrth;
+}
 // PC 0x004D8200 GOG 0x004D8340
 void Vector::Normalize()
 {
@@ -893,6 +1018,26 @@ Vector normalize(const Vector& vector)
                   vector.m_fZ * fReciprocal);
 }
 
+Vector Orth(const Vector& vFirst, const Vector& vSecond)
+{
+    Vector vOrth = cross(vFirst, vSecond);
+    vOrth = normalize(vOrth);
+    return vOrth;
+}
+
+int bitcount(unsigned char nValue)
+{
+    int nCount = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        if ((nValue >> i) & 1)
+        {
+            nCount++;
+        }
+    }
+    return nCount;
+}
+
 // PC 0x004D82B0 GOG 0x004D83F0
 Vector planelineintersection(const Vector& vNormal, float fDistance,
                              const Vector& vStart, const Vector& vEnd)
@@ -910,6 +1055,34 @@ Vector planelineintersection(const Vector& vNormal, float fDistance,
             -(vStart.m_fX * vNormal.m_fX + vStart.m_fY * vNormal.m_fY +
               vStart.m_fZ * vNormal.m_fZ + fDistance) /
             fDenominator;
+    }
+    return vStart + dif * fProjection;
+}
+
+Vector planesegmentintersection(const Vector& vNormal, float fDistance,
+                                const Vector& vStart, const Vector& vEnd)
+{
+
+    static Vector dif(0.0f, 0.0f, 0.0f);
+    dif = vEnd - vStart;
+    float fDenominator = dif.m_fX * vNormal.m_fX;
+    fDenominator += dif.m_fZ * vNormal.m_fZ;
+    fDenominator += dif.m_fY * vNormal.m_fY;
+    float fProjection = 0.0f;
+    if (fDenominator != 0.0f)
+    {
+        fProjection =
+            -(vStart.m_fX * vNormal.m_fX + vStart.m_fY * vNormal.m_fY +
+              vStart.m_fZ * vNormal.m_fZ + fDistance) /
+            fDenominator;
+        if (1.0f < fProjection)
+        {
+            fProjection = 1.0f;
+        }
+        else if (0.0f > fProjection)
+        {
+            fProjection = 0.0f;
+        }
     }
     return vStart + dif * fProjection;
 }
@@ -965,6 +1138,51 @@ Vector segmentproject(const Vector& vStart, const Vector& vEnd,
     }
     return vStart + w * fProjection;
 }
+
+float Determinant(Matrix matrix)
+{
+    return matrix.m_vFirst.m_fX * matrix.m_vSecond.m_fY * matrix.m_vThird.m_fZ +
+           matrix.m_vSecond.m_fX * matrix.m_vThird.m_fY * matrix.m_vFirst.m_fZ +
+           matrix.m_vThird.m_fX * matrix.m_vFirst.m_fY * matrix.m_vSecond.m_fZ -
+           matrix.m_vFirst.m_fX * matrix.m_vThird.m_fY * matrix.m_vSecond.m_fZ -
+           matrix.m_vSecond.m_fX * matrix.m_vFirst.m_fY * matrix.m_vThird.m_fZ -
+           matrix.m_vThird.m_fX * matrix.m_vSecond.m_fY * matrix.m_vFirst.m_fZ;
+}
+
+Matrix Inverse(Matrix matrix)
+{
+    static Matrix b;
+    float fDeterminant = Determinant(matrix);
+    float (*aafMatrix)[3] = (float (*)[3])&matrix;
+    float (*aafInverse)[3] = (float (*)[3])&b;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            aafInverse[j][i] = (aafMatrix[(i + 1) % 3][(j + 1) % 3] * aafMatrix[(i + 2) % 3][(j + 2) % 3] -
+                                aafMatrix[(i + 1) % 3][(j + 2) % 3] * aafMatrix[(i + 2) % 3][(j + 1) % 3]) /
+                               fDeterminant;
+        }
+    }
+    return b;
+}
+
+Matrix inverse2(Matrix matrix)
+{
+    matrix.m_vThird = Vector(0.0f, 0.0f, 1.0f);
+    matrix.m_vSecond.m_fZ = 0.0f;
+    matrix.m_vFirst.m_fZ = 0.0f;
+    float fDeterminant = Determinant(matrix);
+    float fTemp = matrix.m_vFirst.m_fX;
+    matrix.m_vFirst.m_fX = matrix.m_vSecond.m_fY;
+    matrix.m_vSecond.m_fY = fTemp;
+    matrix.m_vFirst.m_fY = -matrix.m_vFirst.m_fY;
+    matrix.m_vSecond.m_fX = -matrix.m_vSecond.m_fX;
+    float fInverse = 1.0f / fDeterminant;
+    matrix.m_vFirst = matrix.m_vFirst * fInverse;
+    matrix.m_vSecond = matrix.m_vSecond * fInverse;
+    return matrix;
+}
 // PC 0x004D8620 GOG 0x004D8760
 Matrix Transpose(const Matrix& matrix)
 {
@@ -974,6 +1192,43 @@ Matrix Transpose(const Matrix& matrix)
                          matrix.m_vThird.m_fY),
                   Vector(matrix.m_vFirst.m_fZ, matrix.m_vSecond.m_fZ,
                          matrix.m_vThird.m_fZ));
+}
+
+inline float norm(const Vector& vector)
+{
+    return SEGMENT_MAX(AbsoluteValue(vector.m_fX),
+                       SEGMENT_MAX(AbsoluteValue(vector.m_fY), AbsoluteValue(vector.m_fZ)));
+}
+
+float norm(const Matrix& matrix)
+{
+    return SEGMENT_MAX(norm(matrix.m_vFirst),
+                       SEGMENT_MAX(norm(matrix.m_vSecond), norm(matrix.m_vThird)));
+}
+
+Matrix operator*(const Matrix& left, const Matrix& right)
+{
+    return Matrix(left * right.m_vFirst, left * right.m_vSecond, left * right.m_vThird);
+}
+
+float* Augment(const Matrix& matrix)
+{
+    static float a[16];
+    for (int i = 0; i < 16; i++)
+    {
+        a[i] = 0.0f;
+    }
+    a[15] = 1.0f;
+    a[0] = matrix.m_vFirst.m_fX;
+    a[4] = matrix.m_vFirst.m_fY;
+    a[8] = matrix.m_vFirst.m_fZ;
+    a[1] = matrix.m_vSecond.m_fX;
+    a[5] = matrix.m_vSecond.m_fY;
+    a[9] = matrix.m_vSecond.m_fZ;
+    a[2] = matrix.m_vThird.m_fX;
+    a[6] = matrix.m_vThird.m_fY;
+    a[10] = matrix.m_vThird.m_fZ;
+    return a;
 }
 // PC 0x004D86D0 GOG 0x004D8810
 void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
@@ -985,6 +1240,11 @@ void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
     origin = -qOrientation * (-m_vNormal * m_fDistance - vPosition);
     m_vNormal = newnormal;
     m_fDistance = -(origin * newnormal);
+}
+
+Vector operator*(const Vector& vector, const Quaternion& quaternion)
+{
+    return Vector();
 }
 
 // PC 0x004D8A90 GOG 0x004D8BD0
@@ -1101,6 +1361,12 @@ Quaternion lerp(Quaternion first, const Quaternion& second, float fPosition)
         return slerp(first, second, fPosition);
     }
     return normalize(first * (1.0f - fPosition) + second * fPosition);
+}
+
+int isnormalized(const Vector& vector)
+{
+    float fLengthSquared = vector * vector;
+    return fLengthSquared >= 0.99 && fLengthSquared <= 1.01;
 }
 // PC 0x004D8CA0 GOG 0x004D8DE0
 float Pitch(const Quaternion& quaternion)

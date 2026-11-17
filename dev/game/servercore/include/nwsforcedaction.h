@@ -14,6 +14,7 @@ public:
     ~CSWSForcedAction();
 
     BOOL SaveForcedAction(CResGFF* pRes, CResStruct* pStruct);
+    BOOL LoadForcedAction(CResGFF* pRes, CResStruct* pStruct);
 
     Vector GetTargetLocation() { return m_vTargetLocation; }
 

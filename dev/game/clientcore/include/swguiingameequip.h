@@ -190,12 +190,14 @@ public:
     void OnNextNPCClicked(CSWGuiControl*);
     void ShowDescription(int bShow);
     void OnItemExited(CSWGuiControl*);
+    void OnChangeCharacter(CSWGuiControl*);
     void OnItemSelected(CSWGuiControl*);
     void CloseDescription();
     ~CSWGuiInGameEquip();
     virtual void OnPanelRemoved();
     void OnSelectSlot(CSWGuiControl*);
     void OnOKPressed(CSWGuiControl*);
+    void SetActiveSlot(int nSlot);
     CSWGuiInGameItemEntry* AddItemEntryToList(int);
     void OnEnterSlot(CSWGuiControl*);
 

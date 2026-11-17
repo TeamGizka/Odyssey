@@ -9,6 +9,8 @@ public:
     int m_nNumSamplePoints;
     int m_nCurrentSamplePoint;
 
+    CSWRumbleMotorData();
+
     ~CSWRumbleMotorData();
     float GetMagnitude(float fTime, int bLoop);
 
@@ -40,6 +42,8 @@ public:
     CSWRumbleMotorData m_LeftMotor;
     CSWRumbleMotorData m_RightMotor;
     int m_bLoop;
+
+    CSWRumblePattern();
 
     int GetMagnitudes(float fTime, float& fLeftMagnitude,
                       float& fRightMagnitude);

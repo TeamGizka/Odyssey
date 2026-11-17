@@ -288,6 +288,16 @@ void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
     }
 #endif
 }
+
+#ifndef _XBOX
+void CSWGuiInGameOptions::SetActiveButton(int nOption)
+{
+    if (nOption >= 0 && nOption < 8)
+    {
+        SetActiveControl(&m_aOptions[nOption], 0);
+    }
+}
+#endif
 // PC 0x00735E50 GOG 0x00735B70
 CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
