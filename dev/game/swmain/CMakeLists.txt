@@ -60,7 +60,7 @@ kotor_archive(exoresman
     exoresman/twodimarray.cpp
     SWGui/swguidrawable.cpp
     SWGui/swguicontrol.cpp
-    exoresman/exoresfileinfo.cpp
+    exobase/exomemman.cpp
     SWGui/swguidynamic.cpp
     exoresman/res2da.cpp
     exoresman/exotlktable.cpp
@@ -271,8 +271,7 @@ kotor_archive(exobase
     exobase/exocritsectinternal.cpp
     exobase/exodebuginternal.cpp
     exobase/exolocstringinternal.cpp
-    exobase/exorandinternal.cpp
-    exobase/exomemman.cpp)
+    exobase/exorandinternal.cpp)
 kotor_archive(clientcore
   OBJECTS
     clientcore/clientexoapp.cpp

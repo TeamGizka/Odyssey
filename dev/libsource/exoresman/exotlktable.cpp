@@ -572,10 +572,10 @@ int CTlkTable::GetLanguageVersion()
     }
 }
 
-long ExoLogFileInfo(const char* szFileName);
+int SetComment(const char* szComment);
 
 // Dead code: not in the PC executable
 long ExoLogResFileInfo(const CExoString& sFileName)
 {
-    return ExoLogFileInfo(sFileName.CStr());
+    return SetComment(sFileName.CStr());
 }

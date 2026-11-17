@@ -14,8 +14,7 @@ set(sources
   res2da.cpp
   reslip.cpp
   reslyt.cpp
-  reswave.cpp
-  exoresfileinfo.cpp)
+  reswave.cpp)
 if(KOTOR_PLATFORM STREQUAL "xbox")
   # Not built for Xbox yet
   list(REMOVE_ITEM sources
