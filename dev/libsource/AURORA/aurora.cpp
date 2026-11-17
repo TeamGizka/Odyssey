@@ -38,7 +38,6 @@ void DestroyCAurora()
 {
     CAurInternal::DestroyCAuroraInstance();
 }
-
 #ifdef _XBOX
 
 void sleep(int nMilliseconds)
@@ -48,6 +47,7 @@ void sleep(int nMilliseconds)
         ;
 }
 #else
+// Dead code: not in the PC executable
 void sleep(unsigned long nMilliseconds)
 {
     unsigned long nEndTime = clock() + nMilliseconds;
@@ -135,7 +135,7 @@ void AurSetVSyncState(bool bEnabled)
     }
 }
 #endif
-
+// Dead code: not in the PC executable
 const char* AurGetVersionString()
 {
     sprintf(versionstring, "SWPC 0027");
@@ -161,7 +161,7 @@ void AurSetPauseOverlayColor(float fRed, float fGreen, float fBlue,
                               ((unsigned int)(fBlue * 255.0f) << 16) |
                               ((unsigned int)(fAlpha * 255.0f) << 24);
 }
-
+// Dead code: not in the PC executable
 char* testsetpausecolor(char* sArguments)
 {
     double afColor[4];
@@ -287,7 +287,7 @@ void AurRemoveAllDrawableSquares()
     GLRender::RemoveAllSquaresToRender();
 }
 #endif
-
+// Dead code: not in the PC executable
 char* addsquaretorender(char* sArguments)
 {
     float fVertices[12];

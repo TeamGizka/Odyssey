@@ -704,6 +704,7 @@ Vector VectorMax(List<Vector>& vectors)
     return vResult;
 }
 
+// Dead code: not in the PC executable
 int VectorMaxDir(List<Vector>& vectors, Vector vDirection)
 {
     int nMaximum = 0;
@@ -738,6 +739,7 @@ Vector VectorMin(List<Vector>& vectors)
     return vResult;
 }
 
+// Dead code: not in the PC executable
 void Scale(List<Vector>& vectors, float fScale)
 {
     for (int i = 0; i < vectors.m_nCount; i++)
@@ -746,6 +748,7 @@ void Scale(List<Vector>& vectors, float fScale)
     }
 }
 
+// Dead code: not in the PC executable
 float ComputeArea(List<Vector>& vectors)
 {
     float fArea = 0.0f;

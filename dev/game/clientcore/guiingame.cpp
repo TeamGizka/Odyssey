@@ -4656,6 +4656,7 @@ template <> inline CExoLinkedList<CExoString>::CExoLinkedList()
 {
     m_pInternal = new CExoLinkedListInternal;
 }
+// Dead code: not in the PC executable
 int CGuiInGame::GetPartyAccessPanelUp(int bAny)
 {
     if (m_pGuiManager == 0)

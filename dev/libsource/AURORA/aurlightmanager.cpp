@@ -118,6 +118,7 @@ LightManager::~LightManager()
 {
 }
 
+// Dead code: not in the PC executable
 Vector LightManager::GetEmitterLighting(Vector vPosition,
                                         List<PartLight*>* pExcludeLights)
 {

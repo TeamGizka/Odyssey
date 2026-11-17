@@ -944,6 +944,7 @@ int CExoBaseInternal::CheckForCD()
 }
 #endif
 
+// Dead code: not in the PC executable
 int CExoBaseInternal::GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList,
                                                 const CExoString& sDir,
                                                 unsigned short nResType,

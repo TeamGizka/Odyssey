@@ -23,6 +23,7 @@ extern int g_nReInitializing;
 const int LARGE_TEMP_BUFFER_SIZE = 0x40000;
 
 #include "keeperfill_appmanager.inc"
+// Dead code: not in the PC executable
 void FreeAppObjectTables(CAppManager* pManager)
 {
     unsigned long nTable;
@@ -54,6 +55,7 @@ CSWReentrantServerStats::~CSWReentrantServerStats()
 {
 }
 
+// Dead code: not in the PC executable
 void CAppManager::FreeLargeTempBuffer()
 {
     if (m_pLargeTempBuffer)
@@ -84,6 +86,7 @@ void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x0040108
     AurSaveGameSnapshot((char*)sName.CStr(), 256, true);
 }
 
+// Dead code: not in the PC executable
 void BuildStatusMessage(CExoLocString& lsMessage, const CExoString& sText)
 {
     lsMessage.ClearLocString();
@@ -98,6 +101,7 @@ void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0 GOG 0x004010A0
     }
 }
 
+// Dead code: not in the PC executable
 void FreeFileNames(CExoString* pNames)
 {
     delete [] pNames;
@@ -265,6 +269,7 @@ const char* SetResolution(char* sCommand)
     return sBuffer;
 }
 #else
+// Dead code: not in the PC executable
 const char* SetResolution(char* sBuffer)
 {
     int nWidth = 0;

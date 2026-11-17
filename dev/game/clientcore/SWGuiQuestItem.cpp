@@ -133,6 +133,7 @@ CSWGuiQuestItem::~CSWGuiQuestItem()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGuiQuestItem::OnPanelAdded()
 {
     PopulateItemListBox();

@@ -4887,6 +4887,7 @@ enum
     XBOX_ACTION_STEALTH = 1021
 };
 
+// Dead code: not in the PC executable
 void CSWCCreature::GetMines(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     CSWSCreature* pCreature = GetServerCreature();
@@ -7971,6 +7972,7 @@ void CSWCCreature::GetCombatFeatsSkills(
 #include "swmain.h"
 #ifndef _XBOX
 
+// Dead code: not in the PC executable
 void CSWCCreature::GetFriendlyInterfaceActions(
     CSWCObject* pTarget, int nType,
     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
