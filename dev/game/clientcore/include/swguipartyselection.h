@@ -40,7 +40,6 @@ public:
     unsigned long m_bSelectable : 1;
     unsigned long m_bSpawned : 1;
     unsigned long m_bForced : 1;
-    unsigned long m_nFlagsUnused : 29;
     int m_nPartyIndex;
     int m_nNPC;
     int m_bHidden;

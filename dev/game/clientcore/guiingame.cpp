@@ -251,20 +251,20 @@ CGuiInGame::CGuiInGame()
     for (int nScreen = 0; nScreen < IN_GAME_SCREEN_COUNT; nScreen++)
         m_apScreenPanels[nScreen] = 0;
     m_asReplyText = 0;
-    m_pnReplyValue1 = 0;
-    m_pnReplyValue2 = 0;
-    m_pnReplyValue3 = 0;
-    m_pnReplyValue4 = 0;
-    m_pfReplyValue5 = 0;
-    m_pfReplyValue6 = 0;
-    m_pnReplyValue7 = 0;
-    m_pnReplyValue8 = 0;
-    m_pfReplyValue9 = 0;
-    m_pnReplyValue10 = 0;
-    m_pnReplyValue11 = 0;
-    m_pvReplyValue12 = 0;
-    m_pfReplyValue13 = 0;
-    m_pfReplyValue14 = 0;
+    m_pnReplyIndex = 0;
+    m_poidReplyListener = 0;
+    m_pnReplyCameraAngle = 0;
+    m_pnReplyCameraId = 0;
+    m_pfReplyCameraHeight = 0;
+    m_pfReplyTargetHeight = 0;
+    m_pnReplyWaitFlags = 0;
+    m_pnReplyCameraAnimation = 0;
+    m_pfReplyFieldOfView = 0;
+    m_pnReplyVideoEffect = 0;
+    m_pnReplyFadeType = 0;
+    m_pvReplyFadeColor = 0;
+    m_pfReplyFadeDelay = 0;
+    m_pfReplyFadeLength = 0;
     m_pnReplyAnimations = 0;
     m_ppnReplyAnimationIDs = 0;
     m_ppnReplyAnimationFlags = 0;
@@ -545,20 +545,20 @@ void CGuiInGame::SetReplyData(
     if (nReply < m_nReplies)
     {
         m_asReplyText[nReply] = sText;
-        m_pnReplyValue1[nReply] = nReplyIndex;
-        m_pnReplyValue2[nReply] = oidListener;
-        m_pnReplyValue3[nReply] = nCameraAngle;
-        m_pnReplyValue4[nReply] = nCameraId;
-        m_pfReplyValue5[nReply] = fCameraHeight;
-        m_pfReplyValue6[nReply] = fTargetHeight;
-        m_pnReplyValue7[nReply] = nWaitFlags;
-        m_pnReplyValue8[nReply] = nCameraAnimation;
-        m_pfReplyValue9[nReply] = fFieldOfView;
-        m_pnReplyValue10[nReply] = nVideoEffect;
-        m_pnReplyValue11[nReply] = nFadeType;
-        m_pvReplyValue12[nReply] = vFadeColor;
-        m_pfReplyValue13[nReply] = fFadeDelay;
-        m_pfReplyValue14[nReply] = fFadeLength;
+        m_pnReplyIndex[nReply] = nReplyIndex;
+        m_poidReplyListener[nReply] = oidListener;
+        m_pnReplyCameraAngle[nReply] = nCameraAngle;
+        m_pnReplyCameraId[nReply] = nCameraId;
+        m_pfReplyCameraHeight[nReply] = fCameraHeight;
+        m_pfReplyTargetHeight[nReply] = fTargetHeight;
+        m_pnReplyWaitFlags[nReply] = nWaitFlags;
+        m_pnReplyCameraAnimation[nReply] = nCameraAnimation;
+        m_pfReplyFieldOfView[nReply] = fFieldOfView;
+        m_pnReplyVideoEffect[nReply] = nVideoEffect;
+        m_pnReplyFadeType[nReply] = nFadeType;
+        m_pvReplyFadeColor[nReply] = vFadeColor;
+        m_pfReplyFadeDelay[nReply] = fFadeDelay;
+        m_pfReplyFadeLength[nReply] = fFadeLength;
         m_pnReplyAnimations[nReply] = nAnimations;
         if (nAnimations != 0)
         {
@@ -4782,75 +4782,75 @@ void CGuiInGame::ClearRepliesData()
         delete[] m_asReplyText;
         m_asReplyText = 0;
     }
-    if (m_pnReplyValue1 != 0)
+    if (m_pnReplyIndex != 0)
     {
-        delete m_pnReplyValue1;
-        m_pnReplyValue1 = 0;
+        delete m_pnReplyIndex;
+        m_pnReplyIndex = 0;
     }
-    if (m_pnReplyValue2 != 0)
+    if (m_poidReplyListener != 0)
     {
-        delete m_pnReplyValue2;
-        m_pnReplyValue2 = 0;
+        delete m_poidReplyListener;
+        m_poidReplyListener = 0;
     }
-    if (m_pnReplyValue3 != 0)
+    if (m_pnReplyCameraAngle != 0)
     {
-        delete m_pnReplyValue3;
-        m_pnReplyValue3 = 0;
+        delete m_pnReplyCameraAngle;
+        m_pnReplyCameraAngle = 0;
     }
-    if (m_pnReplyValue4 != 0)
+    if (m_pnReplyCameraId != 0)
     {
-        delete m_pnReplyValue4;
-        m_pnReplyValue4 = 0;
+        delete m_pnReplyCameraId;
+        m_pnReplyCameraId = 0;
     }
-    if (m_pfReplyValue5 != 0)
+    if (m_pfReplyCameraHeight != 0)
     {
-        delete m_pfReplyValue5;
-        m_pfReplyValue5 = 0;
+        delete m_pfReplyCameraHeight;
+        m_pfReplyCameraHeight = 0;
     }
-    if (m_pfReplyValue6 != 0)
+    if (m_pfReplyTargetHeight != 0)
     {
-        delete m_pfReplyValue6;
-        m_pfReplyValue6 = 0;
+        delete m_pfReplyTargetHeight;
+        m_pfReplyTargetHeight = 0;
     }
-    if (m_pnReplyValue7 != 0)
+    if (m_pnReplyWaitFlags != 0)
     {
-        delete m_pnReplyValue7;
-        m_pnReplyValue7 = 0;
+        delete m_pnReplyWaitFlags;
+        m_pnReplyWaitFlags = 0;
     }
-    if (m_pnReplyValue8 != 0)
+    if (m_pnReplyCameraAnimation != 0)
     {
-        delete m_pnReplyValue8;
-        m_pnReplyValue8 = 0;
+        delete m_pnReplyCameraAnimation;
+        m_pnReplyCameraAnimation = 0;
     }
-    if (m_pfReplyValue9 != 0)
+    if (m_pfReplyFieldOfView != 0)
     {
-        delete m_pfReplyValue9;
-        m_pfReplyValue9 = 0;
+        delete m_pfReplyFieldOfView;
+        m_pfReplyFieldOfView = 0;
     }
-    if (m_pnReplyValue10 != 0)
+    if (m_pnReplyVideoEffect != 0)
     {
-        delete m_pnReplyValue10;
-        m_pnReplyValue10 = 0;
+        delete m_pnReplyVideoEffect;
+        m_pnReplyVideoEffect = 0;
     }
-    if (m_pnReplyValue11 != 0)
+    if (m_pnReplyFadeType != 0)
     {
-        delete m_pnReplyValue11;
-        m_pnReplyValue11 = 0;
+        delete m_pnReplyFadeType;
+        m_pnReplyFadeType = 0;
     }
-    if (m_pvReplyValue12 != 0)
+    if (m_pvReplyFadeColor != 0)
     {
-        delete m_pvReplyValue12;
-        m_pvReplyValue12 = 0;
+        delete m_pvReplyFadeColor;
+        m_pvReplyFadeColor = 0;
     }
-    if (m_pfReplyValue13 != 0)
+    if (m_pfReplyFadeDelay != 0)
     {
-        delete m_pfReplyValue13;
-        m_pfReplyValue13 = 0;
+        delete m_pfReplyFadeDelay;
+        m_pfReplyFadeDelay = 0;
     }
-    if (m_pfReplyValue14 != 0)
+    if (m_pfReplyFadeLength != 0)
     {
-        delete m_pfReplyValue14;
-        m_pfReplyValue14 = 0;
+        delete m_pfReplyFadeLength;
+        m_pfReplyFadeLength = 0;
     }
     for (int i = 0; i < m_nReplies; i++)
     {
@@ -4892,38 +4892,38 @@ int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
     ClearRepliesData();
     m_nReplies = nReplies;
     m_asReplyText = new CExoString[nReplies];
-    m_pnReplyValue1 = new unsigned long[m_nReplies];
-    m_pnReplyValue2 = new unsigned long[m_nReplies];
-    m_pnReplyValue3 = new unsigned long[m_nReplies];
-    m_pnReplyValue4 = new int[m_nReplies];
-    m_pfReplyValue5 = new float[m_nReplies];
-    m_pfReplyValue6 = new float[m_nReplies];
-    m_pnReplyValue7 = new unsigned long[m_nReplies];
-    m_pnReplyValue8 = new unsigned short[m_nReplies];
-    m_pfReplyValue9 = new float[m_nReplies];
-    m_pnReplyValue10 = new int[m_nReplies];
-    m_pnReplyValue11 = new unsigned char[m_nReplies];
-    m_pvReplyValue12 = new Vector[m_nReplies];
-    m_pfReplyValue13 = new float[m_nReplies];
-    m_pfReplyValue14 = new float[m_nReplies];
+    m_pnReplyIndex = new unsigned long[m_nReplies];
+    m_poidReplyListener = new unsigned long[m_nReplies];
+    m_pnReplyCameraAngle = new unsigned long[m_nReplies];
+    m_pnReplyCameraId = new int[m_nReplies];
+    m_pfReplyCameraHeight = new float[m_nReplies];
+    m_pfReplyTargetHeight = new float[m_nReplies];
+    m_pnReplyWaitFlags = new unsigned long[m_nReplies];
+    m_pnReplyCameraAnimation = new unsigned short[m_nReplies];
+    m_pfReplyFieldOfView = new float[m_nReplies];
+    m_pnReplyVideoEffect = new int[m_nReplies];
+    m_pnReplyFadeType = new unsigned char[m_nReplies];
+    m_pvReplyFadeColor = new Vector[m_nReplies];
+    m_pfReplyFadeDelay = new float[m_nReplies];
+    m_pfReplyFadeLength = new float[m_nReplies];
     m_pnReplyAnimations = new int[m_nReplies];
     m_ppnReplyAnimationIDs = new unsigned long*[m_nReplies];
     m_ppnReplyAnimationFlags = new unsigned short*[m_nReplies];
     if (m_asReplyText != 0 &&
-        m_pnReplyValue1 != 0 &&
-        m_pnReplyValue2 != 0 &&
-        m_pnReplyValue3 != 0 &&
-        m_pnReplyValue4 != 0 &&
-        m_pfReplyValue5 != 0 &&
-        m_pfReplyValue6 != 0 &&
-        m_pnReplyValue7 != 0 &&
-        m_pnReplyValue8 != 0 &&
-        m_pfReplyValue9 != 0 &&
-        m_pnReplyValue10 != 0 &&
-        m_pnReplyValue11 != 0 &&
-        m_pvReplyValue12 != 0 &&
-        m_pfReplyValue13 != 0 &&
-        m_pfReplyValue14 != 0 &&
+        m_pnReplyIndex != 0 &&
+        m_poidReplyListener != 0 &&
+        m_pnReplyCameraAngle != 0 &&
+        m_pnReplyCameraId != 0 &&
+        m_pfReplyCameraHeight != 0 &&
+        m_pfReplyTargetHeight != 0 &&
+        m_pnReplyWaitFlags != 0 &&
+        m_pnReplyCameraAnimation != 0 &&
+        m_pfReplyFieldOfView != 0 &&
+        m_pnReplyVideoEffect != 0 &&
+        m_pnReplyFadeType != 0 &&
+        m_pvReplyFadeColor != 0 &&
+        m_pfReplyFadeDelay != 0 &&
+        m_pfReplyFadeLength != 0 &&
         m_pnReplyAnimations != 0 &&
         *m_ppnReplyAnimationIDs != 0 &&
         *m_ppnReplyAnimationFlags != 0)
@@ -7036,15 +7036,15 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
                 m_ppnReplyAnimationFlags[nReply][nAnimation]);
         }
 
-        unsigned char nFade = m_pnReplyValue11[nReply];
+        unsigned char nFade = m_pnReplyFadeType[nReply];
         if (nFade != DIALOG_FADE_NONE)
         {
             int bFadeIn = 1;
             if (nFade == DIALOG_FADE_OUT_ALTERNATE || nFade == DIALOG_FADE_OUT)
                 bFadeIn = 0;
-            const Vector& vColor = m_pvReplyValue12[nReply];
-            float fLength = m_pfReplyValue14[nReply];
-            float fDelay = m_pfReplyValue13[nReply];
+            const Vector& vColor = m_pvReplyFadeColor[nReply];
+            float fLength = m_pfReplyFadeLength[nReply];
+            float fDelay = m_pfReplyFadeDelay[nReply];
             if (m_pDialogFade != 0)
                 m_pDialogFade->SetFade(bFadeIn, fDelay, fLength, vColor);
         }
@@ -7052,7 +7052,7 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
         if (bSelected)
         {
             UnlockDialogParticipantOrientations();
-            unsigned long oidListener = m_pnReplyValue2[nReply];
+            unsigned long oidListener = m_poidReplyListener[nReply];
             if (oidListener == OBJECT_INVALID)
             {
                 m_oidPreviousDialogObject2 = m_oidDialogObject2;
@@ -7069,22 +7069,22 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
             SetDialogAnimations();
             if (m_pDialog != 0 && m_pDialog == m_pCameraDialog)
             {
-                int bAnimated = SetAnimatedCamera(m_pnReplyValue8[nReply], m_pfReplyValue9[nReply]);
+                int bAnimated = SetAnimatedCamera(m_pnReplyCameraAnimation[nReply], m_pfReplyFieldOfView[nReply]);
                 if (bAnimated == 0)
                 {
                     if (m_bShotCameraInitialized == 0)
                         InitializeShotCamera();
-                    UpdateShotCamera(m_pnReplyValue3[nReply], m_pnReplyValue4[nReply],
-                                     m_pfReplyValue5[nReply], m_pfReplyValue6[nReply],
-                                     m_pnReplyValue7[nReply], m_pnReplyValue10[nReply]);
+                    UpdateShotCamera(m_pnReplyCameraAngle[nReply], m_pnReplyCameraId[nReply],
+                                     m_pfReplyCameraHeight[nReply], m_pfReplyTargetHeight[nReply],
+                                     m_pnReplyWaitFlags[nReply], m_pnReplyVideoEffect[nReply]);
                 }
             }
-            else if (m_pnReplyValue3[nReply] == DIALOG_SHOT_COMPUTER)
+            else if (m_pnReplyCameraAngle[nReply] == DIALOG_SHOT_COMPUTER)
             {
                 if (m_bShotCameraInitialized == 0)
                     InitializeShotCamera();
-                SetComputerCameraShot(m_pnReplyValue4[nReply], m_pnReplyValue7[nReply],
-                                      m_pnReplyValue10[nReply]);
+                SetComputerCameraShot(m_pnReplyCameraId[nReply], m_pnReplyWaitFlags[nReply],
+                                      m_pnReplyVideoEffect[nReply]);
                 CSWBehaviorCameraDialog* pBehavior = reinterpret_cast<CSWBehaviorCameraDialog*>(
                     g_pAppManager->GetClientExoApp()->GetModule()->GetCamera()->
                         GetBehavior(AUR_BEHAVIOR_CAMERA_DIALOG));
@@ -7122,10 +7122,10 @@ void CGuiInGame::UpdateDialog()
         return;
     unsigned long oidTarget = m_oidDialogObject1;
     int nReply = m_nDialogReply;
-    if (m_pnReplyValue2 == 0)
+    if (m_poidReplyListener == 0)
         return;
-    if (m_pnReplyValue2[nReply] != OBJECT_INVALID)
-        oidTarget = m_pnReplyValue2[nReply];
+    if (m_poidReplyListener[nReply] != OBJECT_INVALID)
+        oidTarget = m_poidReplyListener[nReply];
     unsigned long oidSpeaker = m_oidDialogCamera;
     CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(oidTarget);
     if (pObject == 0 || pObject->AsSWCObject() == 0)
@@ -7301,7 +7301,7 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
         unsigned long oidPlayer = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(oidServerCreature);
         if (m_nReplies == 1 && m_asReplyText[0] == "")
         {
-            m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyValue1,
+            m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyIndex,
                                   nStartIndex, 0);
             m_pDialog->m_nReplyContext = nReplyContext;
             int nReplyCount = 1;
@@ -7316,7 +7316,7 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
             m_pDialog->SetActiveControl(0, 0);
             return;
         }
-        m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyValue1,
+        m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyIndex,
                               nStartIndex, 1);
         m_pDialog->m_nReplyContext = nReplyContext;
         UnlockDialogParticipantOrientations();
@@ -7347,9 +7347,9 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
         {
             if (!m_bShotCameraInitialized)
                 InitializeShotCamera();
-            UpdateShotCamera(m_pnReplyValue3[0], m_pnReplyValue4[0],
-                             m_pfReplyValue5[0], m_pfReplyValue6[0],
-                             m_pnReplyValue7[0], m_pnReplyValue10[0]);
+            UpdateShotCamera(m_pnReplyCameraAngle[0], m_pnReplyCameraId[0],
+                             m_pfReplyCameraHeight[0], m_pfReplyTargetHeight[0],
+                             m_pnReplyWaitFlags[0], m_pnReplyVideoEffect[0]);
         }
     }
 }

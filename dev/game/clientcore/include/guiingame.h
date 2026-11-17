@@ -515,7 +515,7 @@ public:
     void SetSWGuiStatus(int nStatus, int bActive);
 
     int m_bInitialized;
-    unsigned char m_aUnknown04[4];
+    int m_bPanelsLoaded;
 
     CSWGuiInGameMenu* m_pInGameMenu;
     CSWGuiPanel* m_apScreenPanels[IN_GAME_SCREEN_COUNT];
@@ -562,7 +562,7 @@ public:
     CSWGuiTutorialBox* m_pTutorialBox;
     CSWGuiControllerLossBox* m_pControllerLossBox;
     CSWGuiStatusSummary* m_pStatusSummary;
-    int m_nBC;
+    int m_nDemoScreenState;
     CSWDemoScreen* m_pDemoScreen;
     CStatusSummary* m_pPendingStatusSummary;
     int m_bDialogEntryShown;
@@ -593,20 +593,20 @@ public:
     int m_bReplyPending;
     int m_nReplies;
     CExoString* m_asReplyText;
-    unsigned long* m_pnReplyValue1;
-    unsigned long* m_pnReplyValue2;
-    unsigned long* m_pnReplyValue3;
-    int* m_pnReplyValue4;
-    float* m_pfReplyValue5;
-    float* m_pfReplyValue6;
-    unsigned long* m_pnReplyValue7;
-    unsigned short* m_pnReplyValue8;
-    float* m_pfReplyValue9;
-    int* m_pnReplyValue10;
-    unsigned char* m_pnReplyValue11;
-    Vector* m_pvReplyValue12;
-    float* m_pfReplyValue13;
-    float* m_pfReplyValue14;
+    unsigned long* m_pnReplyIndex;
+    unsigned long* m_poidReplyListener;
+    unsigned long* m_pnReplyCameraAngle;
+    int* m_pnReplyCameraId;
+    float* m_pfReplyCameraHeight;
+    float* m_pfReplyTargetHeight;
+    unsigned long* m_pnReplyWaitFlags;
+    unsigned short* m_pnReplyCameraAnimation;
+    float* m_pfReplyFieldOfView;
+    int* m_pnReplyVideoEffect;
+    unsigned char* m_pnReplyFadeType;
+    Vector* m_pvReplyFadeColor;
+    float* m_pfReplyFadeDelay;
+    float* m_pfReplyFadeLength;
 
     int* m_pnReplyAnimations;
     unsigned long** m_ppnReplyAnimationIDs;
@@ -646,7 +646,7 @@ public:
     int m_bAnimatedCameraActive;
     int m_bAnimatedCameraLoaded;
     float m_fAnimatedCameraTime;
-    unsigned char m_aUnknownB30[0xB34 - 0xB30];
+    int m_nAnimatedCameraFrame;
     int m_nDialogCameraState;
     int m_bPaused;
 

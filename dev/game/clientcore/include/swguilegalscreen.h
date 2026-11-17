@@ -27,7 +27,7 @@ public:
 
     unsigned long m_nShowTime;
     unsigned long m_nMinShowTime;
-    int m_n70;
+    int m_nStrRef;
     CSWGuiLabel m_lblDemoText;
     int m_bShowing;
 };

@@ -49,7 +49,7 @@ public:
     CExoArrayList<CMusicItemInfo> m_lMusic;
     CExoStreamingSoundSource* m_pStreamingSound;
     int m_nMusicResType;
-    CExoString m_s1738;
+    CExoString m_sCurrentSong;
     CSWGuiButton* m_pSelectedSong;
     int m_bLooping;
     int m_bPlaying;

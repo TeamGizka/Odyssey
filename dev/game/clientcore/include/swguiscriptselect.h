@@ -41,7 +41,7 @@ public:
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnAccept;
 #endif
-    int m_nUnknownC84;
+    int m_nSelectedScript;
     unsigned long m_oidCreature;
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void OnPanelAdded();

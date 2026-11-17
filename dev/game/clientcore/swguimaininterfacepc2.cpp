@@ -2210,7 +2210,7 @@ void CSWGuiTargetActionMenu::SelectPrevAction(int nMenu)  // PC 0x006E0640 GOG 0
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::DoTargetAction(int nMenu, int bUnknown)  // PC 0x006E0710 GOG 0x006E1B60
+void CSWGuiTargetActionMenu::DoTargetAction(int nMenu, int bFromHotKey)  // PC 0x006E0710 GOG 0x006E1B60
 {
     if (m_pMainInterface != NULL)
     {
@@ -3160,7 +3160,7 @@ void CSWGuiMainInterface::RemoveFloatyText(CSWGuiFloatyText* pFloatyText)
 }
 
 #ifndef _XBOX
-void CSWGuiMainInterface::DoTargetAction(int nAction, int bUnknown)  // PC 0x006E2670 GOG 0x006E3370
+void CSWGuiMainInterface::DoTargetAction(int nAction, int bFromHotKey)  // PC 0x006E2670 GOG 0x006E3370
 {
     if (nAction >= 0 && nAction < 3)
     {
@@ -3174,7 +3174,7 @@ void CSWGuiMainInterface::DoTargetAction(int nAction, int bUnknown)  // PC 0x006
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::DoPersonalAction(int nMenu, int bUnknown)  // PC 0x006E26B0 GOG 0x006E33B0
+void CSWGuiMainInterface::DoPersonalAction(int nMenu, int bFromHotKey)  // PC 0x006E26B0 GOG 0x006E33B0
 {
     if (nMenu >= 0 && nMenu < 7)
     {
@@ -3707,7 +3707,7 @@ void CSWGuiMainInterfaceChar::Initialize(CSWGuiMainInterface* pMainInterface,
 }
 
 #ifdef _XBOX
-void CSWGuiMainInterface::PopulateMenus(int bUnknown)
+void CSWGuiMainInterface::PopulateMenus(int bForce)
 {
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
@@ -3871,7 +3871,7 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)
     }
 }
 #else
-void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x006E21A0
+void CSWGuiMainInterface::PopulateMenus(int bForce)  // PC 0x006E3530 GOG 0x006E21A0
 {
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();

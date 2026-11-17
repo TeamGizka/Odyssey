@@ -26,7 +26,7 @@ public:
     unsigned long m_bSaveMode : 1;
     unsigned long m_bExitToMainMenu : 1;
     unsigned long m_bFiltersLoaded : 1;
-    unsigned long m_nFlagsUnused : 29;
+    unsigned long m_nShownHelpFlags : 29;
     int m_nMaxSaveGame;
 
     CExoString m_sResourceDirectory;
@@ -60,7 +60,7 @@ public:
     CExoArrayList<CSWGuiSaveLoadEntry*> m_lEntries;
     int m_nCurrentFilter;
     CExoArrayList<CExoString> m_lFilterNames;
-    int m_n1B6C;
+    int m_nFilterCount;
     int m_bEndGameMode;
     void SetEndGameMode();
     int LaunchMostRecentSave();

@@ -16,7 +16,6 @@ public:
     int m_bWasPausedByCombat;
     unsigned char m_nTutorialReason;
     unsigned char m_nMessageIndex;
-    char gap_996[2];
 
     CSWGuiTutorialBox(CSWGuiManager* pManager);
     virtual void SetMessage(unsigned long nStrRef);

@@ -604,7 +604,7 @@ void CSWGuiStore::Draw(float fElapsed)
 CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    m_nUnknown226C = 0;
+    m_nPreviousGold = 0;
 
     StartLoadFromLayout("store_p");
     InitControl(m_lblBuySell, "LBL_BUYSELL", 1);
@@ -645,8 +645,8 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     SetActiveControl(pStoreItems, 0);
     pInventoryItems->m_bEnabled = 0;
 
-    m_nUnknown64 = 0;
-    m_nUnknown2274 = 0;
+    m_nPendingAction = 0;
+    m_nSelectedEntry = 0;
     m_nGold = 0;
 
     CSWGuiButton* pCancel = &m_btnCancel;
@@ -776,7 +776,7 @@ void CSWGuiStore::PopulateInventoryItemListBox()
             m_lblOnHandValue.m_cText.m_cParams.SetText("");
         }
     }
-    m_nUnknown2274 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x00723780 GOG 0x00723490
 void CSWGuiStore::OnPanelAdded()
@@ -916,7 +916,7 @@ void CSWGuiStore::PopulateStoreItemListBox()
             m_lblOnHandValue.m_cText.m_cParams.SetText("");
         }
     }
-    m_nUnknown2274 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x00722710 GOG 0x00722420
 int CSWGuiStore::CreateItemEntry(int& nEntries,

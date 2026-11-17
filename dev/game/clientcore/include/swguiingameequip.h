@@ -33,7 +33,6 @@ public:
 
     unsigned long m_oidContainer;
     unsigned char m_nContainerType;
-    char gap_69[3];
     unsigned long m_nGiveModeFlags;
     CSWGuiLabel m_lblMessage;
     CSWGuiLabel m_lblButton;
@@ -250,7 +249,6 @@ public:
     unsigned int m_bUnavailable : 1;
     unsigned int : 29;
     unsigned char m_nCanUse;
-    char gap_399[3];
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float);
     // PC 0x006049D0 GOG 0x006049B0

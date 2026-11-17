@@ -68,7 +68,6 @@ public:
     unsigned long m_bDialogActive : 1;
     unsigned long m_bDialogWaiting : 1;
     unsigned long m_bDialogEnded : 1;
-    unsigned long m_nDialogFlagsUnused : 29;
 #endif
 };
 
@@ -114,7 +113,7 @@ public:
     CSWGuiZeroExtent m_cStart;
     int m_nPosition;
     int m_bDone;
-    CExoString m_sUnused;
+    CExoString m_sFadeText;
     float m_fFadeDelay;
     float m_fFadeLength;
     float m_fFadeTime;

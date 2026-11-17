@@ -24,7 +24,7 @@ public:
     CSWGuiLabel m_lblScrollIcon;
     CSWGuiListBox m_lbDescription;
 #ifndef _XBOX
-    CSWGuiButton m_btnUnknown;
+    CSWGuiButton m_btnResume;
     CSWGuiButton m_btnExit;
     CSWGuiLabel m_alblBar[5];
 #endif

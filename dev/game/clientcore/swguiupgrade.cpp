@@ -193,7 +193,7 @@ inline int CSWGuiUpgradeItemSelect::GetUpgradeItemEquipped()
 // PC 0x007327B0 GOG 0x007324C0
 void CSWGuiCreateMedicalItem::OnControlXButton(CSWGuiControl* pControl)
 {
-    m_n33F8 = !m_n33F8;
+    m_bAlternateList = !m_bAlternateList;
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     if (m_lbxStoreItems.m_bEnabled)
         ShowSellGUI();
@@ -1227,7 +1227,7 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
         pTable->Unload2DArray();
         delete pTable;
     }
-    m_n3EC8 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x00729E20 GOG 0x00729B30
 void CSWGuiCreateItem::OnBreakdownFilterPicked(CSWGuiControl* pControl)
@@ -1649,7 +1649,7 @@ CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
                                    unsigned long oidCreature)
     : CSWGuiPanel(pManager)
 {
-    m_n3EBC = 0;
+    m_nItemCount = 0;
 
     StartLoadFromLayout("component_p");
     InitControl(m_lbxStoreItems, "LB_SHOPITEMS", 1);
@@ -1700,9 +1700,9 @@ CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
     SetActiveControl(pStoreItems, 0);
     pInventoryItems->m_bEnabled = 0;
 
-    m_n68 = 0;
-    m_n3EC8 = 0;
-    m_n3EC0 = 0;
+    m_nPendingAction = 0;
+    m_nSelectedEntry = 0;
+    m_nPreviousComponents = 0;
     m_nComponents = 0;
     m_pStore = new CSWSStore(OBJECT_INVALID);
     m_nCreateFilter = 0;
@@ -1723,7 +1723,7 @@ CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
     if (fFactor >= 1.0f)
         fFactor = 1.0f;
     m_fRepairFactor = fFactor;
-    m_n3ED8 = 0;
+    m_bAlternateList = 0;
     m_nBackground = 1;
 
     for (int i = 0; i < 5; i++)
@@ -1922,7 +1922,7 @@ void CSWGuiCreateMedicalItem::PopulateInventoryItemListBox()
             m_lblDescription.m_cText.m_cParams.SetText("");
         }
     }
-    m_n33E8 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x0072B1B0 GOG 0x0072AEC0
 void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
@@ -2406,7 +2406,7 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
 // PC 0x00732430 GOG 0x00732140
 void CSWGuiCreateItem::OnControlXButton(CSWGuiControl* pControl)
 {
-    m_n3ED8 = !m_n3ED8;
+    m_bAlternateList = !m_bAlternateList;
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     if (m_lbxStoreItems.m_bEnabled)
         ShowSellGUI();
@@ -2961,7 +2961,7 @@ void CSWGuiCreateItem::PopulateStoreItemListBox()
             m_lblDescription.m_cText.m_cParams.SetText("");
         }
     }
-    m_n3EC8 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x00725F90 GOG 0x00725CA0
 void CSWGuiCreateItem::PopulateStore()
@@ -4341,7 +4341,7 @@ CSWGuiCreateMedicalItem::CSWGuiCreateMedicalItem(CSWGuiManager* pManager,
                                                  unsigned long oidCreature)
     : CSWGuiPanel(pManager)
 {
-    m_n33DC = 0;
+    m_nItemCount = 0;
 
     StartLoadFromLayout("chemical_p");
     InitControl(m_lbxStoreItems, "LB_SHOPITEMS", 1);
@@ -4387,9 +4387,9 @@ CSWGuiCreateMedicalItem::CSWGuiCreateMedicalItem(CSWGuiManager* pManager,
     SetActiveControl(&m_lbxStoreItems, 0);
     pInventoryItems->m_bEnabled = 0;
 
-    m_n68 = 0;
-    m_n33E8 = 0;
-    m_n33E0 = 0;
+    m_nPendingAction = 0;
+    m_nSelectedEntry = 0;
+    m_nPreviousChemicals = 0;
     m_nChemicals = 0;
     m_pStore = new CSWSStore(OBJECT_INVALID);
     m_nCreateFilter = 0;
@@ -4412,7 +4412,7 @@ CSWGuiCreateMedicalItem::CSWGuiCreateMedicalItem(CSWGuiManager* pManager,
     if (fFactor >= 1.0f)
         fFactor = 1.0f;
     m_fRepairFactor = fFactor;
-    m_n33F8 = 0;
+    m_bAlternateList = 0;
 
     for (int i = 0; i < 4; i++)
     {
@@ -5085,7 +5085,7 @@ void CSWGuiCreateMedicalItem::PopulateStoreItemListBox()
             m_lblDescription.m_cText.m_cParams.SetText("");
         }
     }
-    m_n33E8 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x00728600 GOG 0x00728310
 void CSWGuiCreateMedicalItem::BuyItemCallback(CSWGuiControl* pControl)

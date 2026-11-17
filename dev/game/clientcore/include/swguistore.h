@@ -41,7 +41,7 @@ public:
         STRREF_CONFIRM_BUY = 42020,
         STRREF_INSUFFICIENT_CREDITS = 41950
     };
-    int m_nUnknown64;
+    int m_nPendingAction;
 
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
@@ -49,7 +49,7 @@ public:
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblCancel;
-    CSWGuiLabel m_lblUnknown580;
+    CSWGuiLabel m_lblY;
     CSWGuiLabel m_lblExamine;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
@@ -74,9 +74,9 @@ public:
     CSWGuiLabel m_lblOnHandValue;
     CSWGuiButton m_abtnFilter[STORE_FILTER_COUNT];
 #endif
-    int m_nUnknown226C;
+    int m_nPreviousGold;
     int m_nGold;
-    int m_nUnknown2274;
+    int m_nSelectedEntry;
     unsigned long m_nStoreId;
     unsigned long m_nCreatureId;
 #ifndef _XBOX

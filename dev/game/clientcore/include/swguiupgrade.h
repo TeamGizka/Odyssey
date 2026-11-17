@@ -91,7 +91,7 @@ public:
     CSWGuiLabel m_lblTitle2;
 #endif
     CSWGuiLabel m_cDescription;
-    CSWGuiLabel m_cLabel20A0;
+    CSWGuiLabel m_cLightsaberDescription;
     CSWGuiLabel m_cDescriptionBackground;
     CSWGuiLabel m_cLightsaberDescriptionBackground;
     CSWGuiLabel m_cProperty;
@@ -119,7 +119,7 @@ public:
     unsigned long m_bItemListShown : 1;
     unsigned long m_nFlagsUnused : 31;
     unsigned char m_nItemListMode;
-    char gap_2F4D[7];
+    int m_nPreviousItemListMode;
 
     CSWSItem* m_pSelectedItem;
 
@@ -192,7 +192,7 @@ public:
     CSWGuiListBox m_lbDescLs;
     CSWGuiLabel m_cTitle;
     CSWGuiLabel m_cDescription;
-    CSWGuiLabel m_cLabel2AB8;
+    CSWGuiLabel m_cLightsaberDescription;
     CSWGuiLabel m_cDescriptionBackground;
     CSWGuiLabel m_cLightsaberDescriptionBackground;
     CSWGuiLabel m_cProperty;
@@ -214,7 +214,7 @@ public:
     unsigned long m_bItemListShown : 1;
     unsigned long m_nFlagsUnused : 31;
     unsigned char m_nItemListMode;
-    char gap_4345[7];
+    int m_nPreviousItemListMode;
     CSWSItem* m_pSelectedItem;
     CSWSItem* m_pSelectedItemCopy;
     CExoArrayList<CSWSItem*> m_aItemsTaken;
@@ -227,7 +227,7 @@ public:
     C2DA* m_pCrystalTable;
     C2DA* m_pUpgradeTable;
     CSWGuiControl* m_pItemListControl;
-    int m_n43F4;
+    int m_nItemListSelection;
 
     void ShowItems(int);
     virtual void OnPanelRemoved();
@@ -275,7 +275,6 @@ public:
 #endif
 
     unsigned char m_nUpgradeType;
-    char gap_C2D[3];
 
     unsigned long m_bDualWield : 1;
     unsigned long m_bLeftHandItem : 1;
@@ -283,7 +282,7 @@ public:
     unsigned long m_oidOtherWeapon;
 
     int m_bExitAfterUpgrade;
-    unsigned long m_nC88;
+    unsigned long m_nPresetItemCount;
 
     CSWSItem* m_pPresetItem;
     CSWUpgradeItemEntry* m_pUpgradeItem;
@@ -370,14 +369,14 @@ public:
 
     static const unsigned long COMPONENT_VALUE_DIVISOR = 20;
 
-    int m_n68;
+    int m_nPendingAction;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblCancel;
-    CSWGuiLabel m_lbl5A4;
+    CSWGuiLabel m_lblY;
     CSWGuiLabel m_lblExamine;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
@@ -401,14 +400,14 @@ public:
     CSWGuiListBox m_lbxStoreItems;
     CSWGuiListBox m_lbxInventoryItems;
     CSWGuiListBox m_lbxDescription;
-    int m_n3EBC;
-    int m_n3EC0;
+    int m_nItemCount;
+    int m_nPreviousComponents;
     int m_nComponents;
-    int m_n3EC8;
+    int m_nSelectedEntry;
     unsigned long m_nStoreId;
     unsigned long m_nCreatureId;
     float m_fRepairFactor;
-    int m_n3ED8;
+    int m_bAlternateList;
     CSWSStore* m_pStore;
     int m_nCreateFilter;
     int m_bBuyMode;
@@ -468,14 +467,14 @@ public:
 
     static const unsigned long CHEMICAL_VALUE_DIVISOR = 2;
 
-    int m_n68;
+    int m_nPendingAction;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblCancel;
-    CSWGuiLabel m_lbl5A4;
+    CSWGuiLabel m_lblY;
     CSWGuiLabel m_lblExamine;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
@@ -498,19 +497,19 @@ public:
     CSWGuiListBox m_lbxStoreItems;
     CSWGuiListBox m_lbxInventoryItems;
     CSWGuiListBox m_lbxDescription;
-    int m_n33DC;
-    int m_n33E0;
+    int m_nItemCount;
+    int m_nPreviousChemicals;
     int m_nChemicals;
-    int m_n33E8;
+    int m_nSelectedEntry;
     unsigned long m_nStoreId;
     unsigned long m_nCreatureId;
     float m_fRepairFactor;
-    int m_n33F8;
+    int m_bAlternateList;
     unsigned long m_oidCreature;
     CSWSStore* m_pStore;
     int m_nCreateFilter;
     int m_bBuyMode;
-    int m_n340C;
+    int m_nBreakdownFilter;
 
     void PopulateStore();
     void CloseChemical(CSWGuiControl*);

@@ -366,7 +366,7 @@ public:
     CSWGuiLabel m_lblFilter;
     CSWGuiLabel m_lblAbilities;
     CSWGuiListBox m_lbDescFeats;
-    CSWGuiLabel m_lbl3F74;
+    CSWGuiLabel m_lblDescFeatsTitle;
 #endif
     CSWGuiListBox m_lbAbility;
     CSWGuiListBox m_lbDescription;
@@ -561,7 +561,7 @@ public:
 #else
     CSWGuiInGameMessages* m_pMessagesPanel;
 #endif
-    CSWGuiControl* m_pUnknownFB8;
+    CSWGuiControl* m_pLastSelectedItem;
     CExoArrayList<int> m_aNewQuests;
 };
 
@@ -649,7 +649,7 @@ public:
     unsigned char m_nTextCount;
     unsigned char m_aUnmapped5ED[3];
     float m_fScrollInterval;
-    unsigned char m_aUnmapped5F4[4];
+    float m_fScrollPosition;
 };
 
 #ifdef _XBOX

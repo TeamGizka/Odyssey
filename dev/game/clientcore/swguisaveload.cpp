@@ -1650,7 +1650,7 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     }
 #ifndef _XBOX
     m_bEndGameMode = bEndGameMode;
-    m_n1B6C = 0;
+    m_nFilterCount = 0;
     m_bFiltersLoaded = 0;
 #endif
     PopulateGameList();

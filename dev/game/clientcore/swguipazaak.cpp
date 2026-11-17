@@ -1927,7 +1927,7 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
     m_bShownOpponentTurnHelp = 0;
     m_bShownGameStartHelp = 0;
     m_bShownTwentyHelp = 0;
-    m_nFlagsUnused = 0;
+    m_nShownHelpFlags = 0;
 #ifndef _XBOX
     m_nPlayedCard = -1;
 #endif

@@ -163,8 +163,8 @@ public:
     void AttachModel();
     void RotateCharacter(int bLeft);
 #ifndef _XBOX
-    void RotateCharacterLeft(int nUnused);
-    void RotateCharacterRight(int nUnused);
+    void RotateCharacterLeft(int nControl);
+    void RotateCharacterRight(int nControl);
 #endif
     void SetStats();
     int ShowLevelUpGUI(int bAutomatic);

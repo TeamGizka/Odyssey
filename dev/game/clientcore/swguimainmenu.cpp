@@ -749,8 +749,8 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     m_lblWarp.SetEnabledFlag(0);
 #else
     LoadFromLayout(pManager);
-    m_lbl12C4.SetEnabledFlag(0);
-    m_lbl140C.SetEnabledFlag(0);
+    m_lblBioWare.SetEnabledFlag(0);
+    m_lblLucasArts.SetEnabledFlag(0);
     m_btnWarp.SetEnabledFlag(0);
 #endif
     m_lblNewContent.SetEnabledFlag(0);

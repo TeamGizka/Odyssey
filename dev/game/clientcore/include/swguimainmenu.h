@@ -65,7 +65,7 @@ public:
     void OnLoadGamePicked();
     void OnWarpButtonPressed(CSWGuiControl* pControl);
 
-    int m_n68;
+    int m_nSelectedModule;
     CSWGuiListBox m_lbModules;
     CExoArrayList<CExoString> m_lstModules;
     int m_nMenuState;
@@ -76,15 +76,15 @@ public:
     CSWGuiButton m_btnMovies;
     CSWGuiButton m_btnMusic;
     CSWGuiButton m_btnOptions;
-    CSWGuiButton m_btnUnused;
+    CSWGuiButton m_btnCredits;
 #ifdef _XBOX
     CSWGuiLabel m_lblWarp;
     CSWGuiLabel m_lblY;
 #endif
     CSWGuiLabel m_lblNewContent;
     CSWGuiLabel m_alblBackdrop[2];
-    CSWGuiLabel m_lbl12C4;
-    CSWGuiLabel m_lbl140C;
+    CSWGuiLabel m_lblBioWare;
+    CSWGuiLabel m_lblLucasArts;
 #ifndef _XBOX
     CSWGuiButton m_btnExit;
     CSWGuiButton m_btnWarp;

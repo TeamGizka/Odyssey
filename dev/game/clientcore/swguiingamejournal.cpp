@@ -64,7 +64,7 @@ inline void CSWGuiJournalItemEntry::SetEncouraged(int bEncouraged)
 CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    m_pUnknownFB8 = 0;
+    m_pLastSelectedItem = 0;
 #ifdef _XBOX
     m_pQuestItemPanel = new CSWGuiQuestItem(m_pManager);
 #else
@@ -384,9 +384,9 @@ void CSWGuiInGameJournal::PopulateItemListBox()
     }
 
     pItems->AddControls(aControls, 1, 1, 0);
-    if (m_pUnknownFB8 != 0)
+    if (m_pLastSelectedItem != 0)
     {
-        m_pUnknownFB8->SetActive(0);
+        m_pLastSelectedItem->SetActive(0);
     }
     if (aControls.num > 0)
     {

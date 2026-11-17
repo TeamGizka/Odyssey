@@ -17,7 +17,7 @@ CSWGuiScriptSelect::CSWGuiScriptSelect(CSWGuiManager* pManager)
     int nDescriptionStrRef;
     int nAIState;
 
-    m_nUnknownC84 = 0;
+    m_nSelectedScript = 0;
 
 #ifdef _XBOX
     StartLoadFromLayout("ScriptSelect");

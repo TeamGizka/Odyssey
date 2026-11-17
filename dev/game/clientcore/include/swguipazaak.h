@@ -346,7 +346,7 @@ public:
     unsigned long m_bShownOpponentTurnHelp : 1;
     unsigned long m_bShownGameStartHelp : 1;
     unsigned long m_bShownTwentyHelp : 1;
-    unsigned long m_nFlagsUnused : 27;
+    unsigned long m_nShownHelpFlags : 27;
 #ifndef _XBOX
     int m_nPlayedCard;
     int m_nHandAction;
@@ -393,7 +393,7 @@ public:
 #ifdef _XBOX
     struct CFlashLabel { CSWGuiLabel* pLabel; float fTimer; }; CExoArrayList<CFlashLabel> m_lFlashLabels; void FlashLabel(CSWGuiLabel* pLabel);
 #else
-    CExoArrayList<int> m_lUnknownC9C;
+    CExoArrayList<int> m_lFlashLabels;
 #endif
     CSWGuiPazaakStart* m_pStart;
 };

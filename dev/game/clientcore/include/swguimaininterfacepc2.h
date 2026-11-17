@@ -31,9 +31,9 @@ struct CSWGuiControlFlags
     unsigned long m_bAttackJustQueued : 1;
     unsigned long m_bEnabled : 1;
 #ifdef _XBOX
-    unsigned long m_nUnused : 29;
+    unsigned long m_nMuzzleFlashState : 29;
 #else
-    unsigned long m_nUnused : 30;
+    unsigned long m_nMuzzleFlashState : 30;
 #endif
 };
 class CSWSCombatRound;
@@ -623,7 +623,7 @@ public:
     void SelectPrevPersonalAction(int);
     void UpdateStickyTarget();
     void SetupPauseGuiExtent(CSWGuiExtent*);
-    void PopulateMenus(int bUnknown);
+    void PopulateMenus(int bForce);
     void UpdateActionQueue();
     void UpdateIndicator(float);
     void DrawMap(float);

@@ -787,13 +787,13 @@ void CSWGuiInGameCharacter::RotateCharacter(int nDirection)
 }
 
 #ifndef _XBOX
-void CSWGuiInGameCharacter::RotateCharacterLeft(int nUnused)
+void CSWGuiInGameCharacter::RotateCharacterLeft(int nControl)
 {
     m_pCreature->SetOrientation(
         YawPitchRoll(-10.0f, 0.0f, 0.0f) * m_pCreature->m_vOrientation);
 }
 
-void CSWGuiInGameCharacter::RotateCharacterRight(int nUnused)
+void CSWGuiInGameCharacter::RotateCharacterRight(int nControl)
 {
     m_pCreature->SetOrientation(
         YawPitchRoll(10.0f, 0.0f, 0.0f) * m_pCreature->m_vOrientation);
