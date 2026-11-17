@@ -96,6 +96,9 @@ inline CExoString CSWPartyTable::GetPCName()
 
 #include "serverexoapp.h"
 #include "swguisaveload.h"
+#ifdef _XBOX
+template <> inline int CExoArrayList<unsigned long>::Contains(unsigned long value) const;
+#endif
 // PC 0x004EC420 GOG 0x004EAF10
 inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 {

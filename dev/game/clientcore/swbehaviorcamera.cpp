@@ -649,6 +649,36 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
     return qResult;
 }
 #endif
+#ifdef _XBOX
+Quaternion CSWCameraOnAStick::Control_SetCameraOrientation(float fTimeStep)
+{
+    Gob* pTarget = static_cast<Gob*>(m_pTarget.m_pObject);
+    Vector vDirection =
+        pTarget->GetPosition() - static_cast<Gob*>(m_pObject)->GetPosition();
+    vDirection.m_fZ = 0.0f;
+    float fPitch = Pitch(static_cast<Gob*>(m_pObject)->GetOrientation());
+    if (fabs(m_fTilt) > 1.0f)
+    {
+        m_fTilt = m_fTilt * 0.013333334f;
+    }
+    if (m_fTilt > 0.0f)
+    {
+        m_fDesiredPitch =
+            min(CameraLookUp + m_fPresetPitch,
+                m_fTiltSpeed * m_fTilt * fTimeStep + m_fDesiredPitch);
+    }
+    if (m_fTilt < 0.0f)
+    {
+        m_fDesiredPitch =
+            max(m_fPresetPitch - CameraLookDown,
+                m_fTiltSpeed * m_fTilt * fTimeStep + m_fDesiredPitch);
+    }
+    float fDelta = (m_fDesiredPitch - fPitch) * fTimeStep * 0.5f;
+    m_fTilt = 0.0f;
+    return YawPitchRoll(Yaw(normalize(vDirection)) + m_fShakeYaw,
+                        m_fDesiredPitch - fDelta + m_fShakePitch, 0.0f);
+}
+#else
 // PC 0x00690220 GOG 0x0068FF90
 Quaternion CSWCameraOnAStick::Control_SetCameraOrientation(float fTimeStep)
 {
@@ -688,6 +718,7 @@ Quaternion CSWCameraOnAStick::Control_SetCameraOrientation(float fTimeStep)
     return YawPitchRoll(Yaw(normalize(vDirection)) + m_fShakeYaw,
                         m_fDesiredPitch + m_fShakePitch + 90.0f, 0.0f);
 }
+#endif
 // PC 0x00690480 GOG 0x006901F0
 Vector CSWCameraOnAStick::Control_ComputeNewCameraPosition(
     Vector vDesiredPosition, Vector vPosition, Vector vTargetPosition,

@@ -6144,7 +6144,7 @@ void CClientExoAppInternal::AddFloatyText(unsigned long oidObject,
 #ifdef _XBOX
 
 int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
-                                     int bAnyButtonSkips, int bNoMusic)
+                                     int bAnyButtonSkips, int bNoMusic, int nSoundModeFlags)
 {
 
     m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = bAnyButtonSkips;
@@ -8264,7 +8264,7 @@ int CClientExoAppInternal::SaveOptions()
     return 1;
 }
 
-int CClientExoAppInternal::LoadOptions()
+int CClientExoAppInternal::LoadOptions(int bSetAntiAliasing)
 {
     unsigned char aSignature[OPTIONS_SIGNATURE_SIZE];
     CResStruct cStruct;

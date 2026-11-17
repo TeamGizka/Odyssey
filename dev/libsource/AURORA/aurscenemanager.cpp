@@ -128,10 +128,6 @@ char* GetToken(char** psLine)
 }
 
 #ifdef _XBOX
-int checkprimitive = 1;
-#endif
-
-#ifdef _XBOX
 
 void nodedata::ClearMovingObjects()
 {
@@ -174,21 +170,6 @@ template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& 
     return *this;
 }
 
-
-#ifdef _XBOX
-
-static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
-{
-    for (int i = 0; i < pNodeData->m_lstTriMeshes.m_nCount; i++)
-    {
-        PartTriMesh* pTriMesh = pNodeData->m_lstTriMeshes[i];
-        if (!PartOutside(pTriMesh, planes))
-        {
-            AddPartToMeshBuckets(pTriMesh);
-        }
-    }
-}
-#endif
 
 #ifdef _XBOX
 Scene* FindScene(char* sName);
@@ -1147,7 +1128,17 @@ void DeleteNonGobParts(BSPNode* pNode, void* pData)
 }
 
 #ifdef _XBOX
-static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes);
+static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
+{
+    for (int i = 0; i < pNodeData->m_lstTriMeshes.m_nCount; i++)
+    {
+        PartTriMesh* pTriMesh = pNodeData->m_lstTriMeshes[i];
+        if (!PartOutside(pTriMesh, planes))
+        {
+            AddPartToMeshBuckets(pTriMesh);
+        }
+    }
+}
 #endif
 // PC 0x00483AC0 GOG 0x00483B80
 static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)

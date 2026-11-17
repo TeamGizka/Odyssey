@@ -193,11 +193,11 @@ public:
     CSWSArea* m_pServerArea;
 #ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;
+#endif
     List<CAurObject*> m_lstToBeDeletedEmitters;
     void AddToBeDeletedEmitter(CAurObject* pEmitter);
     void AddCAurObjectToHitCheckIgnoreList(CAurObject* pObject);
     void UnhighlightAreaTransitions();
-#endif
 };
 
 #endif

@@ -57,13 +57,17 @@ public:
     CSWGuiButton m_btnDelete;
     CSWGuiButton m_btnFilter;
     CSWGuiLabel m_alblBar[4];
+#endif
     CExoArrayList<CSWGuiSaveLoadEntry*> m_lEntries;
+#ifndef _XBOX
     int m_nCurrentFilter;
     CExoArrayList<CExoString> m_lFilterNames;
     int m_nFilterCount;
+#endif
     int m_bEndGameMode;
     void SetEndGameMode();
     int LaunchMostRecentSave();
+#ifndef _XBOX
     void HandleFilterPress(CSWGuiControl* pControl);
     void PopulateGameLB();
     void SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lControls);
@@ -193,11 +197,10 @@ public:
     int GetSaveSpaceNeeded() { return m_nSaveSpaceNeeded; }
     unsigned char m_nGameplayHint;
     unsigned char GetGameplayHint() { return m_nGameplayHint; }
-#ifndef _XBOX
     enum { STORY_HINT_AREAS = 10, SAVE_ENTRY_HEIGHT = 36 };
     unsigned char m_anStoryHint[STORY_HINT_AREAS];
     unsigned char GetStoryHint(unsigned char nArea) { return m_anStoryHint[nArea]; }
-#else
+#ifdef _XBOX
     unsigned char m_nStoryHint;
 #endif
 #ifndef _XBOX

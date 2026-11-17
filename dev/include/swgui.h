@@ -211,9 +211,7 @@ public:
     CExoArrayList<CSWGuiControl*> m_lControls;
     CResGFF* m_pLayout;
     CResList m_lLayoutControls;
-#ifndef _XBOX
     unsigned long m_bPositioned : 1;
-#endif
     unsigned long m_bLoadingLayout : 1;
     unsigned long m_bVisible : 1;
     unsigned long m_bModal : 1;
@@ -223,9 +221,7 @@ public:
     unsigned long m_bDeferredRemoval : 1;
     unsigned long m_nExitState : 2;
     unsigned long : 21;
-#ifndef _XBOX
     unsigned char m_nBackground;
-#endif
     float m_fAlpha;
     Vector m_vColor;
     CSWGuiBorder* m_pBorder;
@@ -584,10 +580,8 @@ public:
     unsigned long m_nDisabledReason : 4;
 
     unsigned long : 27;
-#ifndef _XBOX
     int m_nStackSize;
     unsigned char m_bRevertActionBar;
-#endif
 };
 #ifndef _XBOX
 #pragma pack(pop)

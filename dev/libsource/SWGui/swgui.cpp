@@ -9,6 +9,10 @@
 #include <string.h>
 #include "twodimarray.h"
 #include "swmain.h"
+#ifdef _XBOX
+template <> void CExoArrayList<CSWGuiPanel*>::Add(CSWGuiPanel* value);
+template <> void CExoArrayList<CSWGuiPanel*>::Insert(CSWGuiPanel* value, int nIndex);
+#endif
 
 
 int g_bDrawSafeRegion = 0;

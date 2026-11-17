@@ -559,6 +559,11 @@ public:
     int m_nQueuedAction;
     CSWGuiExtent m_cActionTextBackExtent;
     CSWGuiMainInterfaceStatus m_aEffects[9];
+    int m_bSelectingUseItemTarget;
+    int m_nUseItemTargetMember;
+    unsigned long m_oidUseItemPending;
+    float m_fFormMessageTime;
+    unsigned long m_nFormMessage;
 #endif
     void SetActionDescription(CExoString const&);
     int SetTarget(unsigned long, int);

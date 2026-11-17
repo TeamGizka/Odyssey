@@ -2943,7 +2943,8 @@ float CExoSoundInternal::GetSliderVolume(int nSlider, int nTemporary)
 #ifdef _XBOX
 void CExoSoundInternal::ShutDown()
 {
-    m_pStreamManager->ShutDown();
+    delete m_pStreamManager;
+    m_pStreamManager = NULL;
     while (m_lstPlaying.GetHeadPos() != NULL)
     {
         CExoSoundSourceInternal* pSource = m_lstPlaying.GetHead();
@@ -3566,7 +3567,7 @@ void CExoSoundInternal::SetEnvironmentEffectLevel(float fLevel)
 }
 
 
-void CExoSoundInternal::SetSoundMode(int nMode)
+void CExoSoundInternal::SetSoundMode(int nMode, int bMovie)
 {
     if (nMode != CExoSound::CEXOSOUND_MODE_GENERIC &&
         nMode == m_anSoundMode[m_nSoundMode])
@@ -3613,7 +3614,14 @@ void CExoSoundInternal::SetSoundMode(int nMode)
         nMode == CExoSound::CEXOSOUND_MODE_PAUSE_ALL ||
         nMode == CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC)
     {
-        PauseAllSounds();
+        if (bMovie)
+        {
+            PauseAllButStreamingMusicForMovie();
+        }
+        else
+        {
+            PauseAllSounds();
+        }
     }
 }
 #endif

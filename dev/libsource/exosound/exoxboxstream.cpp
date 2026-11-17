@@ -89,7 +89,7 @@ DWORD CExoXboxStream::GetPacketSize(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)
     }
     DWORD nSize = max(nAlignment, nBytes);
     m_nBlockAlign = pFormat->wfx.nBlockAlign;
-    return (nSize + nAlignment - 1) / nAlignment * nAlignment;
+    return (nSize - 1 + nAlignment) / nAlignment * nAlignment;
 }
 
 int CExoXboxStream::GetPendingPackets(DWORD* pnPending)
@@ -212,14 +212,21 @@ void CExoXboxStream::Set3D(int b3D)
 CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
 {
     m_bLooping = 0;
+    m_pSoundInternal = pSoundInternal;
     m_nPausePosition = 0;
     m_nFadeDuration = 0;
     m_nFadeStartTime = 0;
     m_b3D = 0;
-    m_pSoundInternal = pSoundInternal;
     m_nPriorityGroup = CPriorityGroup::MUSIC_GROUP;
-    unsigned char nPriorityVolume =
-        pSoundInternal->m_pPriorityGroups[CPriorityGroup::MUSIC_GROUP].m_nVolume;
+    CPriorityGroup* pGroup = pSoundInternal->GetPriorityGroup(CPriorityGroup::MUSIC_GROUP);
+    if (pGroup != NULL)
+    {
+        m_nPriorityVolume = pGroup->m_nVolume;
+    }
+    else
+    {
+        m_nPriorityVolume = MAX_VOLUME;
+    }
     m_pFileObject = NULL;
     m_pStream = NULL;
     m_pBuffer = NULL;
@@ -227,7 +234,6 @@ CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
     m_nFilePosition = 0;
     m_bPaused = 0;
     m_hFile = NULL;
-    m_nPriorityVolume = nPriorityVolume;
     m_bFinished = 1;
     int nSourceId = pSoundInternal->m_nNextSourceId++;
     m_fMaxVolumeDist = 1.0f;
@@ -236,12 +242,12 @@ CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
     m_bStarting = 0;
     m_bDeleted = 0;
     m_nStartTime = 0;
-    m_bHasStartedStreaming = 0;
     m_nSourceId = nSourceId;
     m_bStopped = 1;
     m_nMagic = STREAM_MAGIC;
     m_nVolume = MAX_VOLUME;
     m_fMinVolumeDist = 10.0f;
+    m_bHasStartedStreaming = 0;
     m_bReverbEnabled = 1;
     m_fFixedVariance = 0.0f;
     m_fPitchVariance = 0.0f;
@@ -415,7 +421,9 @@ void CExoXboxStream::Stop(int bKeepPlaying)
 {
     if (m_pStream != NULL)
     {
-        m_pStream->FlushEx(0, DSSTREAMFLUSHEX_ASYNC);
+        m_pStream->FlushEx(0, 0);
+        m_pStream->Release();
+        m_pStream = NULL;
     }
     if (m_pBuffer != NULL)
     {
@@ -436,6 +444,7 @@ void CExoXboxStream::Stop(int bKeepPlaying)
     m_nStartTime = 0;
     m_bHasStartedStreaming = 0;
     m_bStopped = 1;
+    m_bPaused = 0;
 }
 
 void CExoXboxStream::FadeAndStop(unsigned long nFadeTime)
@@ -562,7 +571,7 @@ void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fSc
     int nLevel = nVolume;
     if (bDirect == 0)
     {
-        nLevel = (int)((float)m_nPriorityVolume * (float)nVolume * fVolumeScale * fSlider * (1.0f / 127.0f));
+        nLevel = (int)((float)m_nPriorityVolume * (float)nVolume * fSlider * fVolumeScale * (1.0f / 127.0f));
     }
     long nMillibels = ExoSoundVolumeToMillibels((unsigned char)nLevel, EXOSOUND_MIN_VOLUME);
     if (m_pStream != NULL)
@@ -573,14 +582,18 @@ void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fSc
 
 void CExoXboxStream::SetPriorityGroup(unsigned char nPriorityGroup)
 {
-    CPriorityGroup* pGroup = &m_pSoundInternal->m_pPriorityGroups[nPriorityGroup];
+    CPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(nPriorityGroup);
     if (pGroup != NULL)
     {
         m_nPriorityGroup = nPriorityGroup;
     }
     else
     {
-        pGroup = &m_pSoundInternal->m_pPriorityGroups[m_nPriorityGroup];
+        pGroup = m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
+        if (pGroup == NULL)
+        {
+            return;
+        }
     }
     m_nPriorityVolume = pGroup->m_nVolume;
     SetVolume(m_nVolume, 0, 1.0f, 0);
@@ -636,25 +649,7 @@ int CExoXboxStream::Play(const CExoString& sFileName, unsigned short nResourceTy
     }
     m_resRef = sFileName;
     m_sFileName = sFileName;
-    if (m_pStream != NULL)
-    {
-        m_pStream->FlushEx(0, DSSTREAMFLUSHEX_ASYNC);
-    }
-    if (m_pBuffer != NULL)
-    {
-        XPhysicalFree(m_pBuffer);
-        m_pBuffer = NULL;
-    }
-    m_nResourceType = RESTYPE_INVALID;
-    m_nFadeDuration = 0;
-    m_nFadeStartTime = 0;
-    m_nPausePosition = 0;
-    m_bFinished = 1;
-    m_bEndOfFile = 1;
-    m_bStarting = 0;
-    m_nStartTime = 0;
-    m_bStopped = 1;
-    m_bHasStartedStreaming = 0;
+    Stop(1);
     if (m_hFile != NULL)
     {
         CloseHandle(m_hFile);

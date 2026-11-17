@@ -110,6 +110,15 @@ unsigned int GLRender::cm_uiCurrentStage;
 unsigned int GLRender::cm_nGLCurrentTID[4];
 CAurTexture* GLRender::cm_pFilmNoiseTexture;
 CAurTexture* GLRender::cm_pForceDistortionTexture;
+float GLRender::m_ForceSightColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+float GLRender::m_PerInstanceIllumination[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+CAurTexture* GLRender::m_pDreamDistortTexture = 0;
+bool GLRender::m_bDreamDistortEnabled = 0;
+bool GLRender::m_bDreamDistortLetterbox = 0;
+CAurTexture* GLRender::m_pHologramFilterTexture = 0;
+short GLRender::m_FuryLevel = 0;
+CAurTexture* GLRender::m_pFuryTexture = 0;
+CAurTexture* GLRender::m_pDirtyTexture[3];
 
 LPDIRECT3DDEVICE8 g_pD3DDevice;
 bool g_bVertexProgramEnabled;
@@ -821,6 +830,12 @@ static float AdjustBrightness(float fValue)
     return fResult;
 }
 
+// Xbox 0x0029BA40
+void GLRender::SetDirtyTexture(int nIndex, CAurTexture* pTexture)
+{
+    m_pDirtyTexture[nIndex] = pTexture;
+}
+
 void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
 {
     cm_pFilmNoiseTexture = pTexture;
@@ -912,6 +927,20 @@ char* AllocateShadowMemory(int nSize)
     }
 
     return data;
+}
+
+// Xbox 0x0029BD50
+void GLRender::EnableDreamDistortion(bool bLetterbox)
+{
+    m_bDreamDistortEnabled = true;
+    m_bDreamDistortLetterbox = bLetterbox;
+}
+
+// Xbox 0x0029BD70
+void GLRender::DisableDreamDistortion()
+{
+    m_bDreamDistortEnabled = false;
+    m_bDreamDistortLetterbox = false;
 }
 
 void GLRender::Rotate(float fAngle, float fX, float fY, float fZ)
@@ -3433,6 +3462,51 @@ void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
     g_pD3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, 0, nStrip, indexToken,
                                          D3DFMT_INDEX16, cm_pUserShadowData, 12);
     countfaces += nEdges * 8;
+}
+
+// Xbox 0x002A0130
+void GLRender::EnableFury(short nLevel)
+{
+    if (nLevel > 3)
+        nLevel = 3;
+    else if (nLevel < 0)
+        nLevel = 0;
+    if (nLevel != 0)
+    {
+        if (m_FuryLevel != nLevel)
+        {
+            if (m_pFuryTexture != 0)
+            {
+                SetCurrentStageTID(3, 0);
+                AurTextureRelease(m_pFuryTexture);
+            }
+            switch (nLevel)
+            {
+                case 2:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury02", 0);
+                    break;
+                case 3:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury03", 0);
+                    break;
+                default:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury01", 0);
+                    break;
+            }
+            m_FuryLevel = nLevel;
+        }
+    }
+    else
+    {
+        if (m_pFuryTexture != 0)
+        {
+            ActivateTextureStage(3);
+            Disable(Aurora::ENABLE_TEXTURE_2D);
+            ActivateTextureStage(0);
+            AurTextureRelease(m_pFuryTexture);
+            m_pFuryTexture = 0;
+        }
+        m_FuryLevel = 0;
+    }
 }
 
 void GLRender::EnableLight(unsigned long nLight)

@@ -3567,7 +3567,6 @@ inline CAurScene::CAurScene()
 {
 }
 
-#ifndef _XBOX
 bool Gob::VisibilityCheck()  // PC 0x0046C2E0 GOG 0x0046C440
 {
     if (!enablevisibilitytest)
@@ -3603,7 +3602,6 @@ bool Gob::VisibilityCheck()  // PC 0x0046C2E0 GOG 0x0046C440
     }
     return true;
 }
-#endif
 // PC 0x0046C630 GOG 0x0046C790
 void Scene::DoGobBuckets()
 {
@@ -3831,10 +3829,14 @@ void Scene::RenderLensFlares()
             afColor[1] = 0.0f;
             afColor[2] = 0.0f;
             afColor[3] = 0.75f;
+#ifdef _XBOX
+            g_pD3DDevice->SetPixelShaderConstant(6, afColor, 1);
+#else
             if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
                 glSetFragmentShaderConstantATI(GL_CON_1_ATI, afColor);
             else
                 glCombinerParameterfvNV(GL_CONSTANT_COLOR1_NV, afColor);
+#endif
         }
 
         for (int i = 0; i < lights.m_nCount; i++)

@@ -4,6 +4,7 @@
 #ifdef _XBOX
 #include <xtl.h>
 #include <xmv.h>
+#include "bink.h"
 #else
 #include <windows.h>
 #include "bink.h"
@@ -33,10 +34,18 @@ private:
     static DWORD WINAPI PlayMoviesAsync(LPVOID pParam);
     void RenderFrame(int nWait);
     void FinishMovie();
+    void ShutDown();
 
 public:
 
     enum { FADE_PANEL_HOLD_TIME = 4000 };
+    enum { NUM_FRAME_BUFFERS = 2 };
+
+    struct CMovieFrameBuffer
+    {
+        D3DTexture* m_pTexture;
+        D3DSurface* m_pSurface;
+    };
 
     int m_bExitRequested;
     HANDLE m_hWakeEvent;
@@ -53,6 +62,8 @@ public:
     CExoCriticalSection m_critSect;
     CSWGuiFade* m_pFadePanel;
     unsigned long m_nFinishTime;
+    CMovieFrameBuffer m_aFrameBuffers[NUM_FRAME_BUFFERS];
+    HBINK m_hBink;
 };
 #else
 class CExoMoviePlayerInternal

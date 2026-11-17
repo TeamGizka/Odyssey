@@ -463,9 +463,7 @@ public:
     enum { MAX_ANIMATION_DEPTH = 100 };
     void AddAttachment(Gob* pAttachment);
     void RemoveAttachment(Gob* pAttachment);
-#ifndef _XBOX
     bool VisibilityCheck();
-#endif
     void PartDraw(Part* pPart, bool bRenderLast);
     void PartVolumeProject(Part* pPart, Vector vPosition, float fRadius,
                           Plane plane);
@@ -485,11 +483,9 @@ public:
 
     bool m_bFirstAnimate;
 
-#ifndef _XBOX
     bool m_bVisible;
     char m_abReserved19[3];
     float m_fVisibilityCheckTime;
-#endif
 
     short m_nForcePoints;
     short m_nAlignmentValue;

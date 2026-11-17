@@ -139,9 +139,6 @@ elseif(KOTOR_PLATFORM STREQUAL "xbox")
   # PC only
   list(REMOVE_ITEM sources
     swguiinOPTKeyMapping.cpp)
-  # Not built for Xbox yet
-  list(REMOVE_ITEM sources
-    clientexoappinternal.cpp swbehaviorcamera.cpp swguioptions.cpp swguiingameautopause.cpp)
 endif()
 kotor_library(clientcore ${sources})
 

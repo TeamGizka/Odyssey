@@ -601,7 +601,8 @@ public:
     void SetViewTriggers(int bViewTriggers);
     int PlayLoadModuleMovies();
 #ifdef _XBOX
-    int PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips, int bNoMusic);
+    int PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips, int bNoMusic,
+                  int nSoundModeFlags = 0);
 #else
     int PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips, int bNoMusic,
                   int nSoundModeFlags);
@@ -1050,6 +1051,7 @@ public:
     CExoArrayList<CSWGuiInterfaceAction> m_aDefaultActions;
     unsigned char m_nSuperModelSet;
 #else
+    unsigned char m_nSuperModelSet;
 
     int m_bMissingFilePending;
     int m_nMissingFileType;

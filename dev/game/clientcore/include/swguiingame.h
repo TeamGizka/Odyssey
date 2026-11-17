@@ -512,7 +512,9 @@ public:
     void OnFilterPressed(CSWGuiControl* pControl);
     void UpdateFilterLabelHighlights();
     int GetNextSortType();
+#endif
     int GetPreviousSortType();
+#ifndef _XBOX
 
     static const unsigned long STRREF_ACTIVE_QUESTS_BY = 49145;
     static const unsigned long STRREF_COMPLETED_QUESTS_BY = 49146;

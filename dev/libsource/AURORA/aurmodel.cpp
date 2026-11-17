@@ -3804,10 +3804,8 @@ Gob::Gob(char* sName)
     m_bAnimateUV = 0;
     ++g_nSpawnedGobs;
     m_bRenderPersonalSpace = false;
-#ifndef _XBOX
     m_bVisible = true;
     m_fVisibilityCheckTime = 0.0f;
-#endif
     ++g_nCountOfGobs;
     m_sName[0] = 0;
     if (sName)

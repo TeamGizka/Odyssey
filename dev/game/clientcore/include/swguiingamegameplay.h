@@ -28,9 +28,7 @@ public:
     void OnInvertCam(CSWGuiControl* pControl);
     void OnReverse(CSWGuiControl* pControl);
     void OnCombatMovement(CSWGuiControl* pControl);
-#ifndef _XBOX
     void OnReverseIngame(CSWGuiControl* pControl);
-#endif
     void OnKeyMap(CSWGuiControl* pControl);
     void OnMouse(CSWGuiControl* pControl);
     void SetDifficultyText();

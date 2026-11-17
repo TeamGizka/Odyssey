@@ -1513,11 +1513,13 @@ int AurTextureGetMaxTexID()
 }
 
 #include "aurrendergl.h"
+#ifndef _XBOX
 // PC 0x00421640 GOG 0x00421650
 void GLRender::SetCurrentTID(unsigned int nTID)
 {
     cm_nGLCurrentTID[cm_uiCurrentStage] = nTID;
 }
+#endif
 // PC 0x004015A0 GOG 0x004015A0
 void AurTextureClearAll()
 {

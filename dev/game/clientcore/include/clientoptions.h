@@ -143,6 +143,7 @@ public:
     unsigned int m_bMouseLook : 1;
     unsigned int m_bAutoSave : 1;
     unsigned int m_bReverseMinigameYAxis : 1;
+    unsigned int m_bReverseIngame : 1;
     unsigned int m_bCombatMovement : 1;
     unsigned int m_bHideUnequippable : 1;
     unsigned int m_bTutorialPopups : 1;
@@ -157,7 +158,7 @@ public:
     unsigned int m_bAutopauseActionMenu : 1;
     unsigned int m_bPauseVertMenu : 1;
     unsigned int m_bAutopauseNewTargetSelected : 1;
-    unsigned int m_nAutopauseBits : 30;
+    unsigned int m_nAutopauseBits : 29;
     unsigned char m_nGeometryFadeMode;
     enum ObjectShadowMode
     {
@@ -195,6 +196,12 @@ public:
     unsigned int m_bGUIsInScreenShot : 1;
     float m_fGuiScale;
     int m_bMouseTeleporting;
+    unsigned char m_nCurSithLord;
+    unsigned char m_bGameCompleted;
+    unsigned char m_nPCGender;
+    unsigned short m_nAppearanceType;
+    unsigned char m_nBodyVariation;
+    unsigned char m_nTextureVariation;
     unsigned long m_nShadows;
     unsigned long m_nSoftShadows;
     unsigned long m_nGrass;

@@ -13075,15 +13075,6 @@ CResRef CSWSCreature::GetPortraitBasedOnAlignment()
 
 #ifdef _XBOX
 
-float CSWSCreature::GetMovementRateFactor(int bIncludeFeats)
-{
-    float fMovementRateFactor = m_fMovementRateFactor;
-    if (fMovementRateFactor < 0.125f)
-        fMovementRateFactor = 0.125f;
-    else if (fMovementRateFactor > 1.5f)
-        fMovementRateFactor = 1.5f;
-    return fMovementRateFactor;
-}
 
 void CSWSCreature::SetMovementRateFactor(float fMovementRateFactor)
 {

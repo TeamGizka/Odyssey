@@ -39,21 +39,40 @@ if(KOTOR_PLATFORM STREQUAL "pc")
     aurString.cpp)
 else()
   set(sources
+    aurtexman.cpp
+    aurdxcore.cpp
+    aurpostprocess.cpp
     aurmodel.cpp
     aurconsole.cpp
-    aurmodelparse.cpp
-    aurtexcontrol.cpp
-    aurscenemanager.cpp
-    auranim.cpp
-    aurio.cpp
-    aurdxcore.cpp
+    aurfont.cpp
+    aurinternal.cpp
+    aurora.cpp
+    aurscene.cpp
+    aurgui.cpp
+    aurcamera.cpp
     aurimage.cpp
-    aurlite.cpp
+    aurtexcontrol.cpp
+    aurmodelparse.cpp
+    aurscenemanager.cpp
     aurrenderinterfacecore.cpp
-    aurStringFont.cpp
+    aurmodelrender.cpp
+    aurprimitive.cpp
+    auraticore.cpp
+    aurmaterial.cpp
     aurtristripper.cpp
-    aurvertexcache.cpp
+    auranim.cpp
+    aurskin.cpp
+    auremitter.cpp
+    aurtrigger.cpp
+    aurbehavior.cpp
+    aurio.cpp
+    aurStringFont.cpp
+    aurvertexprog.cpp
+    aurlightmanager.cpp
     aurwindmanager.cpp
+    aurgrass.cpp
+    aurvertexcache.cpp
+    aurlite.cpp
     aurString.cpp)
 endif()
 kotor_library(AURORA ${sources})

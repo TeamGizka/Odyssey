@@ -45,10 +45,8 @@ public:
     int m_nFirstState;
     int m_anStateUsed[STATE_COUNT];
     int m_bCanCancel;
-#ifndef _XBOX
     int m_bShowGrantedFeats;
     int m_bShowGrantedPowers;
-#endif
     CSWGuiLevelUpPanel(CSWGuiManager* pManager, unsigned long nCreature);
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void OnPanelAdded();

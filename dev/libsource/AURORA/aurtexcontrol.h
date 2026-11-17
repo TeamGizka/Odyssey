@@ -267,7 +267,11 @@ public:
     virtual ~DirtyTextureController();
     virtual void Control();
     virtual void Init();
+#ifdef _XBOX
+    virtual bool IsLinear()
+#else
     virtual char IsLinear()
+#endif
     {
         return 0;
     }

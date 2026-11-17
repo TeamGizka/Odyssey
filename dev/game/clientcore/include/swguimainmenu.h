@@ -90,9 +90,9 @@ public:
     CSWGuiButton m_btnWarp;
     int m_bReady;
     int m_nDrawCount;
+#endif
     CSWCCreature* m_pCreature;
     int m_bIdleTimerDisabled;
-#endif
 };
 
 #include "swgui.h"

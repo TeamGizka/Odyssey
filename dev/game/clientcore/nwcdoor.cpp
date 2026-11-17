@@ -38,6 +38,7 @@ void CSWCDoor::UnloadModel(unsigned char nModel)
     }
 }
 // PC 0x006DBDD0 GOG 0x006DBA90
+#ifndef _XBOX
 void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
                            CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -55,6 +56,7 @@ void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
         }
     }
 }
+#endif
 // PC 0x006DB510 GOG 0x006DB100
 CSWCDoor::CSWCDoor()
     : CSWCObject(CGameObject::OBJECT_TYPE_DOOR)

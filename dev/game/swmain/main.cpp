@@ -1,6 +1,8 @@
 #define _WIN32_WINNT 0x0400
 #include <windows.h>
+#ifndef _XBOX
 #include <zmouse.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -193,8 +193,11 @@ public:
     static void SetActiveTexture(unsigned long nStage);
     static void SetTextureCoordGenerationState(
         Aurora::AuroraTexCoordMappingModes nMode);
+    static void SetCurrentTID(unsigned int nTID);
     static int SetCurrentStageTID(unsigned long nStage, unsigned int nTID);
     static bool cm_bVSync;
+    static float m_ForceSightColor[4];
+    static float m_PerInstanceIllumination[4];
     static bool m_bSpeedBlurEnabled;
     static bool m_bSaturationEnabled;
     static bool m_bScanNoiseEnabled;
@@ -476,6 +479,21 @@ public:
         int nRowCount, float fScale, int bUpdate, bool bNormalMap);
     static int SetUpImposters(int nType, float* pfValues);
     static void SetFilmNoiseTexture(CAurTexture* pTexture);
+    static void SetDirtyTexture(int nIndex, CAurTexture* pTexture);
+    static void EnableDreamDistortion(bool bLetterbox);
+    static void DisableDreamDistortion();
+    static void EnableFury(short nLevel);
+    static void RenderDreamDistortion(D3DTexture* pFrame, D3DTexture* pTarget);
+    static void RenderFury(D3DTexture* pFrame, D3DTexture* pTarget);
+    static CAurTexture* m_pDreamDistortTexture;
+    static bool m_bDreamDistortEnabled;
+    static bool m_bDreamDistortLetterbox;
+    static CAurTexture* m_pHologramFilterTexture;
+    static short m_FuryLevel;
+    static CAurTexture* m_pFuryTexture;
+private:
+    static CAurTexture* m_pDirtyTexture[3];
+public:
     static void InitRenderSystem();
     static int GetFogArraysInfoRef();
     static void SetViewTransform(Vector& vPosition, Quaternion& qOrientation);
@@ -834,6 +852,17 @@ inline void GLRender::Disable(Aurora::AuroraEnableEnums nCap)
     }
 }
 
+inline void GLRender::SetCurrentTID(unsigned int nTID)
+{
+    cm_nGLCurrentTID[cm_uiCurrentStage] = nTID;
+}
+
+inline int GLRender::SetCurrentStageTID(unsigned long nStage, unsigned int nTID)
+{
+    cm_nGLCurrentTID[nStage] = nTID;
+    return nTID;
+}
+
 inline void GLRender::SetBlendFunc(Aurora::AuroraBlendModes nSource, Aurora::AuroraBlendModes nDestination)
 {
     if (nSource != g_nCurrentBlendSource || nDestination != g_nCurrentBlendDestination)
@@ -1077,6 +1106,21 @@ inline unsigned char AurBumpMapCardValidate()
 inline int AurBumpyShinyAvailable()
 {
     return 1;
+}
+
+inline bool AurNV1xLevelShadersAvailable()
+{
+    return true;
+}
+
+inline int AurFrameBufferModificationsAvailable()
+{
+    return 1;
+}
+
+inline int AurATIFrameBufferModificationsAvailable()
+{
+    return 0;
 }
 
 inline int AurATIFragmentShaderAvailable()

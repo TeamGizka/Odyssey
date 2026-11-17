@@ -378,6 +378,7 @@ public:
 
     void HideLoadScreen(int bFade);
     void HideLoadScreen(int bFade, int bUpdateScreen) { HideLoadScreen(bFade); }
+    void HideLoadScreen(int bFade, int bStopLoadMusic, int bUpdateScreen);
 #else
     void HideLoadScreen(int bFade, int bStopLoadMusic, int bUpdateScreen = 1);
 #endif

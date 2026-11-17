@@ -42,6 +42,9 @@
 #include "nwspell.h"
 #include "nwrace.h"
 #include "aurdraw.h"
+#ifdef _XBOX
+template <> inline void CExoArrayList<CSWSInvitationDetails>::DelIndex(int nIndex);
+#endif
 
 #define NWSCREATUREAI_DEBUG 0
 

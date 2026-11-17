@@ -337,7 +337,7 @@ void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
             GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
             nParameter--;
 #ifdef _XBOX
-            float fRadius = lstLights[i]->m_fRadius;
+            float fRadius = (*pLights)[i]->m_fRadius;
             GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f,
                 AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
 #else

@@ -730,6 +730,7 @@ public:
     enum { THREAD_STACK_SIZE = 0x10000 };
 
     CExoXboxStreamManager(CExoSoundInternal* pSoundInternal);
+    ~CExoXboxStreamManager();
 
     int QueueCommand(CExoXboxStreamCommand cCommand);
     int GetNextCommand(CExoXboxStreamCommand& cCommand);
@@ -781,6 +782,7 @@ public:
     unsigned long m_nObstructionTime;
     float m_fOcclusion;
     unsigned long m_nFadeDuration;
+    int m_bStreamingMusicForMovie;
 
     unsigned char GetPriorityGroup();
     int Get3D();
@@ -798,8 +800,9 @@ public:
     int GetPlayFailed();
     int IsPlaying();
     int GetHasStartedStreaming();
+    int IsDone();
     void SetLooping(int);
-    void Stop();
+    void Stop(int bCloseStream = 0);
     void Pause();
     void FadeAndStop(unsigned long);
     int GetWithinRangeOfListener();

@@ -66,6 +66,9 @@
 #include "nwsplaceable.h"
 #include "swguiingame.inl"
 #ifdef _XBOX
+template <> inline CExoLinkedList<CExoString>::CExoLinkedList();
+#endif
+#ifdef _XBOX
 
 #undef SWGUI_PANEL_MODE_OVERLAY
 #define SWGUI_PANEL_MODE_OVERLAY 0

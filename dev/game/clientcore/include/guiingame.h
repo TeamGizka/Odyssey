@@ -713,13 +713,13 @@ public:
 
     int m_bCameraRelativeAreaTransition;
     int m_bDanceDanceMalak;
+#endif
     int m_bFadeUntilScript;
     int m_bVideoEffectEnabled;
     int m_bKeepStealthInDialog;
     CExoArrayList<CExoLocString> m_aItemsReceived;
     CExoArrayList<unsigned short> m_aSortedFeats;
     CExoArrayList<unsigned long> m_aSortedPowers;
-#endif
     void ShowGalaxyMapGui(int nPlanet);
     int ShowLevelUpGUI(int bAutomatic);
     void ShowUpgradeScreen(unsigned long oidItem, unsigned long oidCharacter = 0x7f000000,
@@ -732,10 +732,8 @@ public:
     void SetLockHeadFollowInDialog(unsigned long oidObject, int bLock);
     int IsAnimationPlayingInDialog();
     int IsFadingInDialog();
-#ifndef _XBOX
     void AddReceivedItemToList(const CExoLocString& sName) { m_aItemsReceived.Add(sName); }
     void SetKeepStealthInDialog(int bKeep) { m_bKeepStealthInDialog = bKeep; }
-#endif
 };
 
 #include "swgui.h"

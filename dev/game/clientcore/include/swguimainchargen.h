@@ -28,9 +28,7 @@ public:
     void PortraitChanged();
     void AbilitiesChanged();
     void ClearAbilities();
-#ifndef _XBOX
     void ClearFeats();
-#endif
     void NameChanged();
     void BeginPlayGame();
 

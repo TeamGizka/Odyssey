@@ -1,5 +1,6 @@
 #include <xtl.h>
 #include <xmv.h>
+#include "bink.h"
 
 #include "appmanager.h"
 #include "clientexoapp.h"
@@ -12,31 +13,42 @@
 
 extern int g_bMovieNotification;
 
-unsigned char ExoSoundMillibelsToVolume(long nMillibels, long nMinVolume);
-long ExoSoundVolumeToMillibels(unsigned char nVolume, long nMinVolume);
+#define MOVIE_BINK_VOLUME_FULL 32768
+#define MOVIE_SOUND_TRACKS 4
 
-#define MOVIE_SCREEN_WIDTH 640
-#define MOVIE_SCREEN_HEIGHT 480
-#define MOVIE_VOLUME_MIN -6400
-#define MOVIE_VOLUME_SURROUND -1204
-#define MOVIE_MIXBIN_VOLUME(nDecibels)     (m_nPlaybackMode ? MOVIE_VOLUME_MIN :      ExoSoundVolumeToMillibels((unsigned char)(ExoSoundMillibelsToVolume(nDecibels, MOVIE_VOLUME_MIN) * fVolume),                               MOVIE_VOLUME_MIN))
-
-int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
+inline void CExoMoviePlayerInternal::ShutDown()
 {
-    if (!sMovie.IsEmpty())
+    if (m_hBink != NULL)
     {
-        m_sCurrentMovie = sMovie;
-        if (FAILED(XMVDecoder_CreateDecoderForFile(0, m_sCurrentMovie.CStr(), &m_pDecoder)))
-        {
-            m_sCurrentMovie = "";
-            return 0;
-        }
-        m_bMoviePlaying = 1;
-        return 1;
+        BinkSetVolume(m_hBink, 0, 0);
+        BinkSetVolume(m_hBink, 1, 0);
+        BinkSetSoundOnOff(m_hBink, 0);
+        BinkClose(m_hBink);
+        m_hBink = NULL;
     }
-    return 0;
 }
 
+inline void CExoMoviePlayerInternal::FinishMovie()
+{
+    m_critSect.EnterCriticalSection();
+    BinkSetVolume(m_hBink, 0, 0);
+    BinkClose(m_hBink);
+    m_hBink = NULL;
+    m_nFinishTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
+    m_bMoviePlaying = 0;
+    m_critSect.LeaveCriticalSection();
+}
+// Xbox 0x0033A710
+int CExoMoviePlayerInternal::IsMoviePlaying()
+{
+    return m_bMoviePlaying;
+}
+// Xbox 0x0033A720
+void CExoMoviePlayerInternal::CancelMovie()
+{
+    m_bCancelMovie = 1;
+}
+// Xbox 0x0033A730
 void CExoMoviePlayerInternal::SetFadeMsg(unsigned long nStrRef)
 {
     if (m_pFadePanel != NULL && g_bMovieNotification != 0)
@@ -48,75 +60,126 @@ void CExoMoviePlayerInternal::SetFadeMsg(unsigned long nStrRef)
         }
     }
 }
-
-void CExoMoviePlayerInternal::FinishMovie()
+// Xbox 0x0033A770
+int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
 {
-    m_critSect.EnterCriticalSection();
-    if (m_pDecoder != NULL)
+    if (m_hBink != NULL)
     {
-        delete m_pDecoder;
-        m_pDecoder = NULL;
+        BinkClose(m_hBink);
+        m_hBink = NULL;
     }
-    m_nFinishTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
-    m_bMoviePlaying = 0;
-    m_critSect.LeaveCriticalSection();
-}
+    if (BinkSoundUseDirectSound(g_pExoSound->GetEAX()))
+    {
+        U32 aTrackIDs[MOVIE_SOUND_TRACKS];
+        U32 aMixBins[2];
 
+        aTrackIDs[0] = 0;
+        aTrackIDs[1] = 1;
+        aTrackIDs[2] = 2;
+        aTrackIDs[3] = 3;
+        BinkSetSoundTrack(MOVIE_SOUND_TRACKS, aTrackIDs);
+        m_hBink = BinkOpen(sMovie.CStr(), BINKNOTHREADEDIO);
+        aMixBins[0] = DSMIXBIN_FRONT_LEFT;
+        aMixBins[1] = DSMIXBIN_FRONT_RIGHT;
+        BinkSetMixBins(m_hBink, 0, aMixBins, 2);
+        aMixBins[0] = DSMIXBIN_FRONT_CENTER;
+        BinkSetMixBins(m_hBink, 1, aMixBins, 1);
+        aMixBins[0] = DSMIXBIN_LOW_FREQUENCY;
+        BinkSetMixBins(m_hBink, 2, aMixBins, 1);
+        aMixBins[0] = DSMIXBIN_BACK_LEFT;
+        aMixBins[1] = DSMIXBIN_BACK_RIGHT;
+        BinkSetMixBins(m_hBink, 3, aMixBins, 2);
+    }
+    if (m_hBink == NULL)
+    {
+        CExoString sMessage;
+
+        sMessage = "CExoMoviePlayerInternal::CExoMoviePlayerInternal()  Can't open movie: ";
+        sMessage = sMessage + sMovie;
+        ShutDown();
+        m_bMoviePlaying = 0;
+        return 0;
+    }
+
+    m_bCancelMovie = 0;
+    D3DDevice::CreateTexture(m_hBink->Width, m_hBink->Height, 1, 0, D3DFMT_YUY2, D3DPOOL_DEFAULT,
+                             &m_aFrameBuffers[0].m_pTexture);
+    D3DDevice::CreateTexture(m_hBink->Width, m_hBink->Height, 1, 0, D3DFMT_YUY2, D3DPOOL_DEFAULT,
+                             &m_aFrameBuffers[1].m_pTexture);
+    if (m_aFrameBuffers[0].m_pTexture != NULL && m_aFrameBuffers[1].m_pTexture != NULL)
+    {
+        D3DDevice::EnableOverlay(TRUE);
+        m_aFrameBuffers[0].m_pTexture->GetSurfaceLevel(0, &m_aFrameBuffers[0].m_pSurface);
+        m_aFrameBuffers[1].m_pTexture->GetSurfaceLevel(0, &m_aFrameBuffers[1].m_pSurface);
+    }
+    BinkSetVolume(m_hBink, 0,
+                  (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMovieVolume *
+                   MOVIE_BINK_VOLUME_FULL) / 100);
+    return 1;
+}
+// Xbox 0x0033A990
 void CExoMoviePlayerInternal::RenderFrame(int nWait)
 {
-    RECT rect;
-    DSMIXBINS mixBins;
-    DSMIXBINVOLUMEPAIR aPairs[6];
+    D3DSurface* pBackBuffer;
+    D3DSURFACE_DESC desc;
+    D3DLOCKED_RECT lockedRect;
+    RECT rectSource;
+    RECT rectDest;
+    unsigned long nCenterX;
+    unsigned long nCenterY;
+    int nBuffer;
 
-    if (m_pDecoder == NULL)
+    if (m_hBink == NULL)
     {
         return;
     }
-    XMVDecoder_GetVideoDescriptor(m_pDecoder, &m_VideoDesc);
-    rect.left = (MOVIE_SCREEN_WIDTH - m_VideoDesc.Width) / 2;
-    rect.right = MOVIE_SCREEN_WIDTH - rect.left;
-    rect.top = (MOVIE_SCREEN_HEIGHT - m_VideoDesc.Height) / 2;
-    rect.bottom = MOVIE_SCREEN_HEIGHT - rect.top;
-    if (m_VideoDesc.AudioStreamCount != 0)
+    nBuffer = 0;
+    D3DDevice::GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
+    pBackBuffer->GetDesc(&desc);
+    nCenterX = desc.Width / 2;
+    nCenterY = desc.Height / 2;
+    while (m_hBink->Frames != m_hBink->FrameNum && m_bMoviePlaying)
     {
-        float fVolume = g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMovieVolume * 0.01f;
-
-        long nVolume;
-
-        mixBins.dwMixBinCount = 6;
-        mixBins.lpMixBinVolumePairs = aPairs;
-        aPairs[0].dwMixBin = DSMIXBIN_FRONT_LEFT;
-        nVolume = MOVIE_MIXBIN_VOLUME(0);
-        aPairs[0].lVolume = nVolume;
-        aPairs[1].lVolume = nVolume;
-        aPairs[1].dwMixBin = DSMIXBIN_FRONT_RIGHT;
-        aPairs[3].dwMixBin = DSMIXBIN_LOW_FREQUENCY;
-        nVolume = MOVIE_MIXBIN_VOLUME(0);
-        aPairs[3].lVolume = nVolume;
-        aPairs[4].dwMixBin = DSMIXBIN_BACK_LEFT;
-        nVolume = MOVIE_MIXBIN_VOLUME(MOVIE_VOLUME_SURROUND);
-        aPairs[4].lVolume = nVolume;
-        aPairs[5].lVolume = nVolume;
-        aPairs[2].lVolume = nVolume;
-        aPairs[5].dwMixBin = DSMIXBIN_BACK_RIGHT;
-        aPairs[2].dwMixBin = DSMIXBIN_FRONT_CENTER;
-        XMVDecoder_EnableAudioStream(m_pDecoder, 0, 0, &mixBins, NULL);
+        BinkDoFrame(m_hBink);
+        nBuffer ^= 1;
+        m_aFrameBuffers[nBuffer].m_pTexture->LockRect(0, &lockedRect, NULL, 0);
+        BinkCopyToBuffer(m_hBink, lockedRect.pBits, lockedRect.Pitch, m_hBink->Height, 0, 0,
+                         BINKSURFACEYUY2 | BINKCOPYALL);
+        rectSource.left = 0;
+        rectSource.top = 0;
+        rectSource.right = m_hBink->Width;
+        rectSource.bottom = m_hBink->Height;
+        rectDest.left = nCenterX - m_hBink->Width / 2;
+        rectDest.right = m_hBink->Width / 2 + nCenterX;
+        rectDest.top = nCenterY - m_hBink->Height / 2;
+        rectDest.bottom = m_hBink->Height / 2 + nCenterY;
+        D3DDevice::UpdateOverlay(m_aFrameBuffers[nBuffer].m_pSurface, &rectSource, &rectDest, FALSE, 0);
+        BinkNextFrame(m_hBink);
+        while (BinkWait(m_hBink) == 1)
+        {
+            Sleep(1);
+        }
+        if (m_bCancelMovie == 1)
+        {
+            break;
+        }
     }
-    XMVDecoder_Play(m_pDecoder, 0, &rect);
-    XMVDecoder_CloseDecoder(m_pDecoder);
-    m_pDecoder = NULL;
-    m_sCurrentMovie = "";
-}
-
-void CExoMoviePlayerInternal::CancelMovie()
-{
-    if (m_pDecoder != NULL)
+    D3DDevice::BlockUntilVerticalBlank();
+    D3DDevice::EnableOverlay(FALSE);
+    m_aFrameBuffers[0].m_pSurface->Release();
+    m_aFrameBuffers[1].m_pSurface->Release();
+    if (m_aFrameBuffers[0].m_pTexture != NULL)
     {
-        XMVDecoder_TerminatePlayback(m_pDecoder);
-        m_bCancelMovie = 1;
+        m_aFrameBuffers[0].m_pTexture->Release();
+        m_aFrameBuffers[0].m_pTexture = NULL;
+    }
+    if (m_aFrameBuffers[1].m_pTexture != NULL)
+    {
+        m_aFrameBuffers[1].m_pTexture->Release();
+        m_aFrameBuffers[1].m_pTexture = NULL;
     }
 }
-
+// Xbox 0x0033AB20
 void CExoMoviePlayerInternal::ShowFadePanel()
 {
     m_critSect.EnterCriticalSection();
@@ -130,7 +193,7 @@ void CExoMoviePlayerInternal::ShowFadePanel()
     UpdateScreen(1.0f / 30.0f, 0, 0);
     m_critSect.LeaveCriticalSection();
 }
-
+// Xbox 0x0033ABE0
 void CExoMoviePlayerInternal::HideFadePanel(int bWait)
 {
     m_critSect.EnterCriticalSection();
@@ -146,7 +209,7 @@ void CExoMoviePlayerInternal::HideFadePanel(int bWait)
     }
     m_critSect.LeaveCriticalSection();
 }
-
+// Xbox 0x0033AC50
 DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
 {
     CExoMoviePlayerInternal* self;
@@ -179,7 +242,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
     }
     ExitThread(0);
 }
-
+// Xbox 0x0033AD20
 CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     : m_lstMovies(0)
 {
@@ -194,14 +257,16 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
         0, (LPDWORD)&m_dwWorkerThreadId);
     m_nCurrentMovie = 0;
     m_bCancelMovie = 0;
+    m_hBink = NULL;
     m_pFadePanel = NULL;
     m_nFinishTime = -1;
 }
-
+// Xbox 0x0033ADA0
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
 {
     DWORD dwExitCode;
 
+    ShutDown();
     m_bExitRequested = 1;
     SetEvent(m_hWakeEvent);
     do
@@ -218,7 +283,7 @@ CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
         m_pFadePanel = NULL;
     }
 }
-
+// Xbox 0x0033AE50
 int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,
                                              int nMode)
 {
@@ -227,12 +292,7 @@ int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& ls
     m_bMoviePlaying = 1;
     return SetEvent(m_hWakeEvent);
 }
-
-int CExoMoviePlayerInternal::IsMoviePlaying()
-{
-    return m_bMoviePlaying;
-}
-
+// Xbox 0x001500F0
 int CExoMoviePlayerInternal::Initialize(void* pParam)
 {
     return 1;

@@ -169,11 +169,6 @@ static char* ConvertPlaceable(char* szArgs)
     return "FAILURE";
 }
 
-ConsoleFunc ConVrendercollisionboxes("rendercollisionboxes", &rendercollisionboxes);
-ConsoleFunc ConVWalkTestMaterial("WalkTestMaterial", &WalkTestMaterial);
-ConsoleFunc ConFConvertDoor("ConvertDoor", ConvertDoor);
-ConsoleFunc ConFConvertPlaceable("ConvertPlaceable", ConvertPlaceable);
-ConsoleFunc ConFConvertRooms("ConvertRooms", ConvertRooms);
 #endif
 // PC 0x00556FF0 GOG 0x00557110
 CSWCollisionMesh::~CSWCollisionMesh()
@@ -342,6 +337,13 @@ int CSWCollisionMesh::LoadMeshBinary(CResBWM* pMesh)
 
 static int WalkTestMaterial = 1;
 static int rendercollisionboxes = 0;
+#ifdef _XBOX
+ConsoleFunc ConVrendercollisionboxes("rendercollisionboxes", &rendercollisionboxes);
+ConsoleFunc ConVWalkTestMaterial("WalkTestMaterial", &WalkTestMaterial);
+ConsoleFunc ConFConvertDoor("ConvertDoor", ConvertDoor);
+ConsoleFunc ConFConvertPlaceable("ConvertPlaceable", ConvertPlaceable);
+ConsoleFunc ConFConvertRooms("ConvertRooms", ConvertRooms);
+#endif
 
 int bDumpData = 0;
 // PC 0x00557560 GOG 0x005573D0

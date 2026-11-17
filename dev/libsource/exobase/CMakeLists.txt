@@ -21,11 +21,6 @@ set(sources
   exocritsectinternal.cpp
   exotimersinternal.cpp
   exomemman.cpp)
-if(KOTOR_PLATFORM STREQUAL "xbox")
-  # Not built for Xbox yet
-  list(REMOVE_ITEM sources
-    exobaseinternal.cpp exostringlist.cpp exorandinternal.cpp exocritsectinternal.cpp)
-endif()
 kotor_library(exobase ${sources})
 
 # No precompiled header. K2 emits header inlines such as CExoString::GetLength and CExoDebug::NoLog

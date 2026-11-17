@@ -48,6 +48,7 @@ void ClearNodeControllers(MdlNode* pNode)
 #ifdef _XBOX
 
 MdlNode* findnode(MdlNode* pNode, char* sName);
+extern int pruneanimations;
 
 void Animation::PruneNodes(MdlNode* pNode)
 {

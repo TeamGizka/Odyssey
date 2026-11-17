@@ -3583,10 +3583,14 @@ void PartEmitter::RenderFunc()
     {
         GLRender_EnablePixelShaders(MODEL_SHADER_DESAT, 0, 0, 0, 0);
         float afColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+#ifdef _XBOX
+        g_pD3DDevice->SetPixelShaderConstant(6, afColor, 1);
+#else
         if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
             glSetFragmentShaderConstantATI(GL_CON_1_ATI, afColor);
         else
             glCombinerParameterfvNV(GL_CONSTANT_COLOR1_NV, afColor);
+#endif
     }
 
     if (m_nRenderMode == Linked)

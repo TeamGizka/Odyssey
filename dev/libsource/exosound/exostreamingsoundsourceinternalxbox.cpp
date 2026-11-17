@@ -1,7 +1,10 @@
 #include "exosoundinternal.h"
 #include "exobase.h"
+#include "appmanager.h"
+#include "clientexoapp.h"
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 static const int MAX_VOLUME = 127;
 
@@ -133,15 +136,17 @@ CExoXboxStreamCommand::CExoXboxStreamCommand()
     m_sFileName = "";
 }
 
+// Xbox 0x001661E0
 void CExoXboxStreamManager::ShutDown()
 {
+    CExoLinkedListNode* pPosition = m_lstStreams.GetHeadPos();
     CExoXboxStream* pStream = m_lstStreams.GetHead();
 
-    while (m_lstStreams.GetHeadPos() != NULL)
+    while (pPosition != NULL)
     {
         pStream->Stop(0);
         delete pStream;
-        pStream = m_lstStreams.GetHead();
+        pStream = m_lstStreams.GetNext(pPosition);
     }
 }
 
@@ -159,6 +164,25 @@ void CExoXboxStreamManager::RemoveStream(CExoXboxStream* pStream)
         }
         pListStream = m_lstStreams.GetNext(pPosition);
     }
+}
+
+// Xbox 0x00166290
+CExoXboxStreamManager::~CExoXboxStreamManager()
+{
+    if (m_hEvent != INVALID_HANDLE_VALUE)
+    {
+        SetEvent(m_hEvent);
+    }
+    if (m_hThread != INVALID_HANDLE_VALUE)
+    {
+        WaitForSingleObject(m_hThread, INFINITE);
+        CloseHandle(m_hThread);
+    }
+    if (m_hEvent != INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(m_hEvent);
+    }
+    ShutDown();
 }
 
 void CExoXboxStreamManager::ProcessCommand(CExoXboxStreamCommand cCommand)
@@ -439,6 +463,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInte
     m_nSourceId = m_pStream->m_nSourceId;
     m_vObstructionListenerPosition = Vector();
     m_nObstructionTime = 0;
+    m_bStreamingMusicForMovie = 0;
     m_fOcclusion = 0.0f;
 }
 
@@ -549,7 +574,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume, int nSli
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::Stop()
+void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)
 {
     int bPlaying = m_pStream->m_bPlaying;
 
@@ -642,12 +667,11 @@ void CExoStreamingSoundSourceInternal::DoObstructionWork()
     }
 }
 
+// Xbox 0x001695F0
 void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)
 {
-    CExoSoundInternal* pSoundInternal = m_pSoundInternal;
-    CPriorityGroup* pGroup = &pSoundInternal->m_pPriorityGroups[nPriorityGroup];
-    CExoXboxStream* pStream = m_pStream;
-    int bPlaying = pStream->m_bPlaying;
+    int bPlaying = m_pStream->m_bPlaying;
+    CPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(nPriorityGroup);
 
     if (pGroup != NULL)
     {
@@ -655,11 +679,11 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityG
     }
     else
     {
-        pGroup = &pSoundInternal->m_pPriorityGroups[m_nPriorityGroup];
+        pGroup = m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
     }
     if (bPlaying == 0)
     {
-        pStream->SetPriorityGroup(m_nPriorityGroup);
+        m_pStream->SetPriorityGroup(m_nPriorityGroup);
     }
     else
     {
@@ -669,9 +693,12 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityG
         cCommand.m_fParam1 = (float)m_nPriorityGroup;
         m_pSoundInternal->m_pStreamManager->QueueCommand(cCommand);
     }
-    float fMinVolumeDist = pGroup->m_fMinVolumeDist;
-    m_fMaxVolumeDist = pGroup->m_fMaxVolumeDist;
-    m_fMinVolumeDist = fMinVolumeDist;
+    if (pGroup != NULL)
+    {
+        float fMinVolumeDist = pGroup->m_fMinVolumeDist;
+        m_fMaxVolumeDist = pGroup->m_fMaxVolumeDist;
+        m_fMinVolumeDist = fMinVolumeDist;
+    }
 }
 
 void CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)
@@ -751,6 +778,11 @@ int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned shor
     {
         bDirect = 0;
     }
+    if (bPlaying == 0 && bDirect != 0 && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->IsMoviePlaying() != 0)
+    {
+        return 0;
+    }
     if (bCached != 0)
     {
         m_sFileName.Format("CACHE:STREAMMUSIC\\%s", m_sFileName.CStr());
@@ -758,37 +790,49 @@ int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned shor
     else if (bMusic != 0)
     {
         m_sFileName.Format("HD0:STREAMMUSIC\\%s", m_sFileName.CStr());
+        m_sFileName = g_pExoResMan->CacheResource(m_sFileName, nResourceType);
     }
     else if (bVoice != 0)
     {
-
-        if ((m_sFileName[0] == 'n' || m_sFileName[0] == 'N') && m_sFileName.GetLength() == 16 &&
-            m_sFileName[1] != '_')
+        unsigned int nLength = m_sFileName.GetLength();
+        if (nLength > 0)
         {
-            char szModule[8];
-            char szDialog[8];
-            int nChar;
+            unsigned int i;
+            char szDirectory[4];
 
-            for (nChar = 0; nChar < 5; nChar++)
+            for (i = 0; i < 3; i++)
             {
-                szModule[nChar] = m_sFileName[nChar + 1];
+                szDirectory[i] = m_sFileName[i];
             }
-            szModule[nChar] = '\0';
-            for (nChar = 0; nChar < 6; nChar++)
+            szDirectory[i] = 0;
+            int nDirectory = atoi(szDirectory);
+            if (stricmp(szDirectory, "gbl") == 0 || stricmp(szDirectory, "avo") == 0 ||
+                stricmp(szDirectory, "000") == 0 || nDirectory > 0)
             {
-                szDialog[nChar] = m_sFileName[nChar + 6];
+                char szSubDirectory[32];
+
+                for (; i < nLength - 3; i++)
+                {
+                    szSubDirectory[i - 3] = m_sFileName[i];
+                }
+                szSubDirectory[i - 3] = 0;
+                m_sFileName.Format("HD0:STREAMVOICE\\%s\\%s\\%s", szDirectory, szSubDirectory,
+                                   m_sFileName.CStr());
             }
-            szDialog[nChar] = '\0';
-            m_sFileName.Format("HD0:STREAMWAVES\\%s\\%s\\%s", szModule, szDialog, m_sFileName.CStr());
+            else
+            {
+                m_sFileName.Format("HD0:STREAMVOICE\\%s", m_sFileName.CStr());
+            }
         }
         else
         {
-            m_sFileName.Format("HD0:STREAMWAVES\\%s", m_sFileName.CStr());
+            m_sFileName = "HD0:STREAMVOICE\\";
         }
     }
     else
     {
         m_sFileName.Format("HD0:STREAMSOUNDS\\%s", m_sFileName.CStr());
+        m_sFileName = g_pExoResMan->CacheResource(m_sFileName, nResourceType);
     }
     m_sFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(m_sFileName, nResourceType);
     if (bDirect != 0)

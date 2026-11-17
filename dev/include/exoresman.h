@@ -1500,4 +1500,9 @@ extern int g_bModifiedSound;
 #define RESTYPE_TPC 3006
 #endif
 
+#if defined(_XBOX) && defined(EXORESFILE_KEYTABLE)
+template <> inline CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<CExoString>& list);
+template <> inline CExoArrayList<CExoArrayList<CExoString> >::~CExoArrayList();
+#endif
+
 #endif

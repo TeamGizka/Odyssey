@@ -412,6 +412,7 @@ public:
         unsigned long nDescriptionStrRef;
     };
     static const SlotInfo SLOT_INFO[NUM_EQUIPMENT_SLOTS];
+    void ShutdownCleanup();
 };
 #endif
 

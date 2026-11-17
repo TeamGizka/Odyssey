@@ -58,11 +58,6 @@ set(sources
   ResBWM.cpp
   resmdl.cpp
   resncs.cpp)
-if(KOTOR_PLATFORM STREQUAL "xbox")
-  # Not built for Xbox yet
-  list(REMOVE_ITEM sources
-    serverexoappinternal.cpp nwsarea.cpp nwsencounter.cpp)
-endif()
 kotor_library(servercore ${sources})
 
 kotor_source_pch(nwsobject.cpp math3d.h)

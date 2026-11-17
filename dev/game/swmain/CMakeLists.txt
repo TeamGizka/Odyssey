@@ -25,11 +25,6 @@ file(REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/keeperfill_appmanager.inc")
 set(sources
   appmanager.cpp
   main.cpp)
-if(KOTOR_PLATFORM STREQUAL "xbox")
-  # Not built for Xbox yet
-  list(REMOVE_ITEM sources
-    main.cpp)
-endif()
 kotor_executable(swmain ${sources})
 target_include_directories(swmain PRIVATE "${keeperfill_dir}")
 set_property(SOURCE appmanager.cpp APPEND PROPERTY OBJECT_DEPENDS "${keeperfill_dir}/keeperfill_appmanager.inc")
@@ -39,12 +34,18 @@ target_compile_options(swmain PRIVATE /YX)
 kotor_automatic_pch_order(swmain)
 
 if(KOTOR_PLATFORM STREQUAL "xbox")
-  set_target_properties(swmain PROPERTIES OUTPUT_NAME default)
-  target_link_options(swmain PRIVATE /NODEFAULTLIB)
+  # The XBE records d:\KotOR2\Code\game\swmain\Xbox_Release_DVD_SHIP\swmain.exe: the linked image is swmain.exe.
+  set_target_properties(swmain PROPERTIES OUTPUT_NAME swmain)
+  target_link_options(swmain PRIVATE /NODEFAULTLIB "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swmain.map")
+  # The movie player links Bink for Xbox, not XMV. KOTOR_XBOX_BINK_LIB: its library; the default is the 1.5t one next to
+  # the headers the movie player compiles against (3rdparty/Bink/xbox-1.5t/README.md: retail links a later release).
+  # That library holds link-time code generation objects, so the link takes /LTCG.
+  set(KOTOR_XBOX_BINK_LIB "${THIRDPARTY}/Bink/xbox-1.5t/lib/binkxbox.lib" CACHE FILEPATH "Xbox Bink library (binkxbox.lib)")
+  target_link_options(swmain PRIVATE /LTCG)
   target_link_libraries(swmain PRIVATE
     exomovieplayer exoresman SWGui AURORA math3d worldtimer servercore pathfindinfo nwscript netlayer exosound
     exoinput exobase clientcore aurorainterface namegen NvTriStrip xapilib.lib d3d8.lib d3dx8.lib xboxkrnl.lib
-    libcmt.lib libcpmt.lib xmv.lib xgraphics.lib dsound.lib)
+    libcmt.lib libcpmt.lib oldnames.lib xgraphics.lib dsound.lib ${KOTOR_XBOX_BINK_LIB})
   return()
 endif()
 

@@ -19,11 +19,6 @@ set(sources
   resvis.cpp
   aurfonttexture.cpp
   resfnt.cpp)
-if(KOTOR_PLATFORM STREQUAL "xbox")
-  # Not built for Xbox yet
-  list(REMOVE_ITEM sources
-    aurorainterface.cpp)
-endif()
 kotor_library(aurorainterface ${sources})
 
 target_compile_options(aurorainterface PRIVATE /YX)

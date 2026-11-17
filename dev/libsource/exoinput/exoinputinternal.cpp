@@ -1430,11 +1430,7 @@ CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEv
         return CExoArrayList<CExoInputEvent>();
     if (nEventClass >= 6)
     {
-#ifdef _XBOX
-        g_pExoBase->m_pExoDebug->Warning(1381, "exoinputinternal.cpp",
-#else
         g_pExoBase->m_pExoDebug->Warning(1506, "exoinputinternal.cpp",
-#endif
             "CExoInputInternal::GetEvents() Invalid InputClass parameter");
         return CExoArrayList<CExoInputEvent>();
     }
@@ -1857,7 +1853,7 @@ float CExoInputInternal::ScaledValue(CExoInputEventDesc* pDesc,
                                      unsigned long nValue)
 {
     float fValue = (float)(int)nValue;
-    float fResult = fValue;
+    float fResult = (float)(int)nValue;
 
     if (pDesc->IsDetailed() &&
         ((CExoInputEventDescDetailed*)pDesc)->m_bScaled != 0 && nValue != 0)

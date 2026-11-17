@@ -259,11 +259,13 @@ void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_CANCEL_ALTERNATE:
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
+#ifndef _XBOX
             if (SWGUIINGAMECREDITS_DEBUG)
             {
                 delete m_pMusic;
                 m_pMusic = NULL;
             }
+#endif
             break;
         }
     }
