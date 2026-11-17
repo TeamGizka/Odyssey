@@ -320,7 +320,7 @@ public:
     char GetModelVariation();
     char m_nBodyVariation;
     char m_nTextureVar;
-    char m_aUnmapped267[1];
+    void ShowModel();
     unsigned long GetPossessor() { return m_oidPossessor; }
     unsigned long m_oidPossessor;
     CItemRepository* m_pRepository;

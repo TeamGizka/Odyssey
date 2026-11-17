@@ -21,8 +21,6 @@ public:
     unsigned char m_nTextureVar;
 
     unsigned short m_anArmorModelPart[6];
-    unsigned char m_bUnknown0E;
-    unsigned char m_bUnknown0F;
     unsigned long m_oidHeadItem;
 
     unsigned long m_bUseBodyVariation;
@@ -36,7 +34,6 @@ public:
     unsigned char m_nColorTattoo2;
     unsigned char m_nTail;
     unsigned char m_nWing;
-    unsigned char m_bUnknown23;
     float m_fCameraHeight;
     float m_fDefaultHeight;
     short m_nAlignment;
@@ -69,6 +66,7 @@ public:
     float GetHeight();
     CAurObject* GetCameraFollowPart();
     int GetFollowingBody();
+    void GetPartVariations(unsigned char* pVariations, unsigned char nPart);
     int GetArmourClass();
     float GetHeadHeightOffset();
     float GetCameraOffset();

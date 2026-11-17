@@ -16,14 +16,6 @@ class C2DA;
 class CSWClass;
 class CSWBaseItemArray;
 
-class CSW2DAArrays
-{
-public:
-    char m_aReserved[0x74];
-    C2DA* m_pAreaTurnRates;
-    C2DA* m_pGenericDoorTypes;
-};
-
 extern CSWRules* g_pRules;
 
 #include "twodimarray.h"
@@ -140,6 +132,9 @@ class CSWPlayerControlCamRelative : public CSWPlayerControl
 public:
     CSWPlayerControlCamRelative();
     CSWPlayerControlCamRelative(unsigned long oidPlayer, CAurCamera* pCamera);
+    void SetMaxSpeed(float fSpeed);
+    void SetAcceleration(float fAcceleration);
+    void SetTurnVelocity(float fVelocity);
     // PC 0x006CEEF0 GOG 0x006CEBF0
     virtual void UpDown(float fValue)
     {

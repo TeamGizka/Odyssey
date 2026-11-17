@@ -283,7 +283,6 @@ public:
     unsigned char m_nTimeMonth;
     unsigned char m_nTimeDay;
     unsigned char m_nTimeHour;
-    unsigned char m_nUnknown47;
     unsigned short m_nTimeMinute;
     unsigned short m_nTimeSecond;
     unsigned short m_nTimeMillisecond;

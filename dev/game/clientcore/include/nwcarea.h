@@ -99,6 +99,8 @@ public:
     int GetObjectsAtPositionVisible(const Vector& vPosition);
     CSWCMapPin* GetMapPin(unsigned long nReference, int nType);
     void AddMapPin(CSWCMapPin* pMapPin);
+    void RemoveMapPin(unsigned long nReference);
+    void LoadBorder();
     void AddCorpse(unsigned long oidCorpse);
     int TestDirectLine(unsigned long oidObject, const Vector& vStart,
                        const Vector& vEnd, const float& fDistance, float fWidth,
@@ -161,7 +163,6 @@ public:
     unsigned long m_nWeatherDuration;
     unsigned char m_nWeatherType;
     unsigned char m_nNewWeatherType;
-    unsigned char m_aWeatherTypeAlignment[0x2];
 
     float m_fWeatherStrength;
     float m_fWindGustTimer;
@@ -182,7 +183,6 @@ public:
     unsigned char m_nGridX;
     unsigned char m_nGridY;
     unsigned char m_nGridZ;
-    unsigned char m_aGridAlignment[0x1];
     int m_nGridCellCount;
     int m_nRoomCount;
     CSWCRoom* m_pRooms;
@@ -190,7 +190,6 @@ public:
     unsigned long m_anCorpseObjectIds[4];
     unsigned char m_nCorpseReadIndex;
     unsigned char m_nCorpseWriteIndex;
-    unsigned char m_aCorpseIndexAlignment[0x2];
     CSWSArea* m_pServerArea;
 #ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;

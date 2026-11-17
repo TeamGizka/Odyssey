@@ -31,7 +31,6 @@ public:
     union { short m_nAttackRoll; unsigned short m_nAttackDuration; };
     short m_nDamage;
     char m_nAttackResult;
-    char m_aAttackPadding0D[3];
     int m_nTargetObjectId;
 
     unsigned long m_oidAttackObject;
@@ -44,7 +43,6 @@ public:
     int m_nImpactVisual;
     int m_nImpactX;
     char m_nImpactY;
-    char m_aImpactPadding29[3];
     Vector m_vImpactPosition;
     int m_nAttackIndex;
     int m_nWeaponIndex;
@@ -560,6 +558,12 @@ public:
     void PerformGiveItem(unsigned long oidItem, unsigned long oidTarget,
                          int nStack);
     void PerformAttack(unsigned long oidTarget);
+    void PerformExamine(unsigned long oidTarget);
+    void PerformDialog(unsigned long oidTarget);
+    void PerformPickupItem(unsigned long oidItem);
+    void PerformDropItem(unsigned long oidItem);
+    void PerformEquipItem(unsigned long oidItem, unsigned long nSlot);
+    void PerformUnEquipItem(unsigned long oidItem);
     void PerformSkill(unsigned char nSkill, unsigned char nUseType,
                       unsigned long oidTarget);
     void PerformCastSpell(unsigned long nSpell, unsigned long oidTarget,
@@ -706,7 +710,6 @@ public:
 
     int m_bLoopingSoundPlaying;
     unsigned short m_nLoopingSoundId;
-    unsigned char m_aLoopingSoundPadding[2];
 
     int m_bDeadSelectable;
     int m_bLoopingSoundEnabled;
@@ -734,7 +737,6 @@ public:
     unsigned char m_nWayPointState;
     unsigned char m_nLastWayPointSequence;
     unsigned char m_nWayPointSequence;
-    unsigned char m_aWayPointStatePadding[3];
 
     int m_nSpeedRampMode;
     float m_fSpeedFactor;
@@ -746,7 +748,6 @@ public:
     float m_fDriveSpeed;
     int m_bCustomSpeed;
     unsigned char m_nCreatureType;
-    unsigned char m_aUnmapped219[0x3];
     CSWCCreatureAppearance* m_pAppearance;
 
     enum EquippedItemIndex
@@ -781,26 +782,22 @@ public:
         READY_ANIMATION_STATE_14 = 14
     };
     unsigned char m_nReadyAnimationState;
-    unsigned char m_aUnmapped2D3;
 
     union
     {
         unsigned short m_nMovementFlags;
         struct { unsigned short m_bRunning : 1; unsigned short : 15; };
     };
-    unsigned char m_aUnmapped2D6[2];
     unsigned long m_oidCombatTarget;
 
     enum { HOSTILE_STATE_HOSTILE = 2 };
     unsigned char m_nHostile;
     CResRef m_cConversation;
-    unsigned char m_aResourcePadding[3];
     CSWCSpellCastVisual* m_pSpellCastVisual;
 
     unsigned long m_oidLockTarget;
     CSWCLevelUpStats* m_pStats;
     unsigned short m_nSoundSet;
-    unsigned char m_aSoundSetPadding[2];
 
     int m_bWetFootstep;
 
@@ -824,7 +821,6 @@ public:
     unsigned long m_aoidRecentAttackers[4];
 
     unsigned short m_nAppearance;
-    unsigned char m_aUnmapped38E[2];
     unsigned long m_nAmbientPauseTimer;
     unsigned long m_nAmbientPauseDelay;
     int m_bAmbientPause;
@@ -845,12 +841,10 @@ public:
     int m_bEquippedHeadItemHidden;
 
     unsigned short m_nServerUpdateValue;
-    unsigned char m_aUnmapped3D6[2];
     int m_bOverrideLightsaberState;
     unsigned long m_oidParentCorpse;
 
     unsigned char m_bDriveRunning;
-    unsigned char m_aLookAtStatePadding[3];
     unsigned long m_oidLookAtTarget;
     int m_nAttackAnimationOverride;
     CallBack* m_apAnimationCallbacks[17];
@@ -864,7 +858,6 @@ public:
     unsigned long : 30;
 
     unsigned short m_nDrawAnimation;
-    unsigned char m_aUnmapped446[2];
 #ifndef _XBOX
     float m_fFreeLookTurn;
 #endif

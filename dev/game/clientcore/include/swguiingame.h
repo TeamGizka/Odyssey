@@ -208,7 +208,6 @@ public:
     static const int STATUS_ROW_HEIGHT = 37;
     CStatusSummary m_cStatusSummary;
     unsigned int m_bWasPaused : 1;
-    unsigned int m_nStatusFlagsUnused : 31;
     int m_bAlignmentShifted;
 #ifdef _XBOX
     CSWGuiLabel m_lblA; CSWGuiLabel m_lblOk;
@@ -375,7 +374,6 @@ public:
 #endif
     unsigned char m_nSelectedSkill;
     signed char m_nCharacterIndex;
-    unsigned char m_aUnmapped3F72[2];
     CSWCCreature* m_pCreature;
     CSWGuiSkillFlowChart m_cPowerChart;
     CSWGuiSkillFlowChart m_cFeatChart;
@@ -468,7 +466,6 @@ public:
     unsigned long m_bRestoreSelection : 1;
     unsigned long m_bUpdateUseItem : 1;
     unsigned long m_bUpdateItems : 1;
-    unsigned long m_nInventoryFlagsUnused : 29;
 };
 #endif
 
@@ -494,7 +491,6 @@ public:
 
     int m_nEntryIndex;
     unsigned long m_bEncouraged : 1;
-    unsigned long m_nEncouragedFlagsUnused : 31;
 };
 
 class CSWGuiInGameJournal : public CSWGuiPanel
@@ -515,6 +511,8 @@ public:
     void OnControlExited(CSWGuiControl* pControl);
     void OnFilterPressed(CSWGuiControl* pControl);
     void UpdateFilterLabelHighlights();
+    int GetNextSortType();
+    int GetPreviousSortType();
 
     static const unsigned long STRREF_ACTIVE_QUESTS_BY = 49145;
     static const unsigned long STRREF_COMPLETED_QUESTS_BY = 49146;
@@ -643,11 +641,9 @@ public:
     float m_fFadeTime;
     int m_nPreviousInputClass;
     unsigned char m_nCurrentText;
-    unsigned char m_aUnmapped5E1[3];
     int m_bFading;
     int m_bFadeIn;
     unsigned char m_nTextCount;
-    unsigned char m_aUnmapped5ED[3];
     float m_fScrollInterval;
     float m_fScrollPosition;
 };

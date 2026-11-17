@@ -176,10 +176,8 @@ public:
 
     C2DA** m_ppIPRPCostTables;
     unsigned char m_nIPRPCostTableCount;
-    unsigned char m_aUnknown05[3];
     C2DA** m_ppIPRPParamTables;
     unsigned char m_nIPRPParamTableCount;
-    unsigned char m_aUnknown0D[3];
     C2DA* m_pAppearance;
     C2DA* m_pGender;
     C2DA* m_pSurfaceMaterial;

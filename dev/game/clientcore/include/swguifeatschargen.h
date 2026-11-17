@@ -86,7 +86,6 @@ public:
     unsigned char m_nGeneralFeatChoices;
     unsigned char m_nBonusFeatChoices;
     unsigned char m_nFeatsRemaining;
-    unsigned char m_nUnmapped19F3;
     unsigned long m_bLevelUp : 1;
     unsigned long m_bBonusFeatSelection : 1;
     unsigned long m_bShowGrantedTutorial : 1;

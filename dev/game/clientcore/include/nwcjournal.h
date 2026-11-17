@@ -12,7 +12,6 @@ public:
     unsigned char m_aEntryFields[0x1C];
     unsigned long m_nCompletedChangedFlags : 2;
     unsigned long m_bNew : 1;
-    unsigned long m_nJournalFlagsUnused : 29;
     unsigned char m_aPlotIndex[4];
     int m_nQuestRow;
     unsigned char m_aXP[4];

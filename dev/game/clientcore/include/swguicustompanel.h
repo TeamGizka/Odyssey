@@ -73,7 +73,6 @@ public:
 #endif
     unsigned char m_nParentType;
     unsigned long m_bRandomName : 1;
-    unsigned long m_nNameFlagsUnused : 31;
     CExoString m_sName;
     CSWNameGen m_cNameGen;
 };

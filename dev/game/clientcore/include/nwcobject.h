@@ -400,6 +400,10 @@ public:
         CSWCVisualEffectOnObject* pEffect);
     float GetVisualEffectAlpha();
     float GetFinalFadeAlpha();
+    float GetAlpha();
+    void AnimationDamage(unsigned short nAnimation);
+    void AnimationDodge(unsigned short nAnimation);
+    void ShowPopUpBubble(const Vector& vPosition);
     int FadeObject();
     void SetObjectVisibilityOnSetArea(CSWCArea* pArea);
 

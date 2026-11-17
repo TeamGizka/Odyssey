@@ -142,7 +142,6 @@ public:
     unsigned char m_nFavoredClass;
     int m_bPlayerRace;
     unsigned short m_nFirstLevelGrantedFeatCount;
-    unsigned char m_aFeatCountAlignment[2];
     unsigned short* m_pFirstLevelGrantedFeats;
     int m_nAge;
 
@@ -154,7 +153,6 @@ public:
     unsigned char GetCharismaAdjust() { return m_nCharismaAdjust; }
 
     unsigned short m_nAppearance;
-    unsigned char m_aUnmapped32[2];
 };
 
 #endif

@@ -255,10 +255,8 @@ public:
     unsigned char m_nAnimSet;
     unsigned char m_nOffHandType;
     unsigned char m_nSpecialWalkAnimation;
-    unsigned char m_aUnmappedC9[3];
     int m_bRunLooksAwful;
     unsigned char m_bLightsaber;
-    unsigned char m_aUnmappedD1[3];
     int m_bComplexUnarmed;
     int m_nCurrentForm;
     int m_bUseable;

@@ -80,6 +80,8 @@ public:
     void SetVSync(unsigned long nVSync);
     void SetToolTipTimeDelay(float fDelay);
     void SetUseSmallFonts(int bSmallFonts);
+    void SetAlwaysRun(int bAlwaysRun);
+    void ToggleCameraMode();
     void SetDefaultFeedbackOptions();
     int SetDefaultGraphicsOptions();
     void SetDefaultMouseOptions();

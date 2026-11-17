@@ -190,7 +190,6 @@ public:
     unsigned long m_nOffHandWeaponEquipped;
     unsigned char m_nOffHandCriticalRange;
     unsigned char m_nOffHandCriticalMultiplier;
-    unsigned char m_aUnmapped12[2];
     CExoArrayList<CCombatInformationNode*> m_lstAttacks;
     CExoArrayList<CCombatInformationNode*> m_lstDamage;
     unsigned long m_nRightEquipment;
@@ -199,7 +198,6 @@ public:
     CExoString m_sLeftString;
     unsigned char m_nDamageDice;
     unsigned char m_nDamageDie;
-    unsigned char m_aUnmapped46[2];
 };
 
 class CSWRules

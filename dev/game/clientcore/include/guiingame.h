@@ -438,6 +438,7 @@ public:
     void SetCombatMessage(unsigned long nMessage);
     CSWGuiPanel* GetGuiInGameScreenPanel(unsigned char nScreen);
     void HideItemCreateMenu();
+    void CreateDeathMenuGUI();
     void DestroyDeathMenuGUI();
     void ShowSubItemCreateMenu(unsigned long nSubType);
     void ShowDemoScreen(CExoString sImage, int nMinShowTime, int nStrRef, int nLeft, int nTop);
@@ -480,6 +481,8 @@ public:
     void SetDialogAnimations();
 
     void HandleDialogSelection(int nReply, int bSelected);
+    void HandleDialogClose(int bClose);
+    void HandleInventoryClose(int bClose);
     void UpdateDialogLipSync();
     void FadeAndStopDialogAmbientTrack();
     void LoadAmbientTrackForDialog(const CResRef& cAmbientTrack);
@@ -614,7 +617,6 @@ public:
 
     unsigned long m_oidComputerCameraTarget;
     unsigned short m_nDialogCameraAnimation;
-    unsigned char m_aCameraAnimationAlignment[2];
 
     int m_bDialogCameraAnimationActive;
 
@@ -671,7 +673,6 @@ public:
 #endif
     unsigned long m_oidPostDialogCharacterSwitch;
     unsigned char m_aTutorialWindowsShown[33];
-    unsigned char m_aUnmappedFA9[3];
     int m_bCreditSequenceInProgress;
     void StartCreditSequence(const Vector& vColor, const CExoString& sMusic);
     int m_nDialogScrollWait;
@@ -684,13 +685,10 @@ public:
 #endif
     unsigned char m_nAbilityMode;
     unsigned char m_nInventoryFilter;
-    unsigned char m_aInventoryFilterAlignment[2];
     unsigned long m_bJournalDone : 1;
-    unsigned long m_nJournalFlagsUnused : 31;
 
     enum { MESSAGE_TYPE_DIALOG = 0, MESSAGE_TYPE_FEEDBACK = 1, MESSAGE_TYPE_COMBAT = 2, MESSAGE_TYPE_EFFECTS = 3 };
     unsigned char m_nMessageType;
-    unsigned char m_aMessageTypeAlignment[0xBCC - 0xBC9];
     unsigned long m_nNoClickDay;
     unsigned long m_nNoClickTime;
     unsigned long m_nNoClickDuration;

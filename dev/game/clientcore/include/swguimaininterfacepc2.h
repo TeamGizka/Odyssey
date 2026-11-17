@@ -113,7 +113,6 @@ public:
     CSWGuiButton m_btnDown;
     float m_fFadeTimer;
     char m_nFadeSteps;
-    char gap_715[3];
     int m_bTarget;
     void Pulse(int bPulse);
     CSWGuiControl* HitCheckMouse(int, int);
@@ -254,7 +253,6 @@ public:
     short m_nEndX;
     unsigned char m_nBuffCount;
     unsigned char m_nDebuffCount;
-    char gap_EA2[2];
 #ifndef _XBOX
     int m_bToolTipDirty;
 #else
@@ -489,7 +487,6 @@ public:
     CSWGuiLabel m_cActionTextBack;
     int m_nActionTextBottom;
     unsigned char m_nInterfaceOffset;
-    char gap_A459[3];
     CSWGuiControlFlags m_cActionDescriptionState;
 
     CSWGuiMainInterfaceStatus m_aEffects[13];
@@ -619,9 +616,19 @@ public:
     void ClearOneAction();
     void ClearAllActions();
     void QueueActiveAction();
+    void ClearSelectedAction();
+    int GetActiveActionIdx(int);
+    void RelayoutActionMenu(int, bool);
+    void AddHelpPanel(int, bool);
     void SelectNextPersonalAction(int);
     void SelectPrevPersonalAction(int);
     void UpdateStickyTarget();
+    int GetActionMenuSelected();
+    void UpdateActionMenuSelected(int);
+    void PopupActionMenu(int);
+    void ShowHelp(CSWGuiControl*);
+    void HideHelp(CSWGuiControl*);
+    void HandleButtonActionX(CSWGuiControl*);
     void SetupPauseGuiExtent(CSWGuiExtent*);
     void PopulateMenus(int bForce);
     void UpdateActionQueue();

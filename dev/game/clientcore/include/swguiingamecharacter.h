@@ -80,7 +80,6 @@ public:
     float m_fRepeatRate;
     float m_fTimeToRepeat;
     unsigned long m_bIncrease : 1;
-    unsigned long m_nUnmapped1D0Rest : 31;
 };
 
 extern int g_bDo3DGUIs;
@@ -102,14 +101,6 @@ public:
 
 class CAurScene;
 class CAurObject;
-
-class CSWServerInfo
-{
-public:
-    unsigned char m_aUnknown00[0x104];
-    unsigned long m_bPartyPicking : 1;
-    unsigned long m_nPartyPickingFlagsUnused : 31;
-};
 
 class CSWCCreature;
 

@@ -140,7 +140,6 @@ struct CNearestStruct
 
     unsigned long m_oidObject;
     char m_nCanSee;
-    unsigned char m_aCanSeeAlignment[3];
 
     unsigned long m_bInFront : 1;
     unsigned long m_nMuzzleFlashState : 31;
@@ -454,6 +453,7 @@ public:
     CSWCAreaOfEffectObject* GetAreaOfEffectByGameObjectID(
         unsigned long oidObject);
     CSWCSoundObject* GetSoundObjectByGameObjectID(unsigned long oidObject);
+    CSWCModule* GetModuleByGameObjectID(unsigned long oidObject);
     void SetInStartNewModule(int bInStartNewModule);
     int GetPauseState(unsigned char nPauseType);
     int GetControlledCharacterDead();
@@ -475,6 +475,8 @@ public:
     CClientAIMaster* GetClientAIMaster();
     int GetPlayerList();
     CSWCPlayer* GetPlayerByPlayerID(unsigned long nPlayerId);
+    CSWCPlayer* GetPlayerByPlayerName(const CExoString& sPlayerName);
+    CSWCPlayer* GetPlayerByCreatureName(const CExoString& sCreatureName);
     CNetLayer* GetNetLayer();
     CSWCMessage* GetSWCMessage();
     CServerInfo* GetServerInfo();
@@ -582,6 +584,9 @@ public:
     int GetLoadBarState();
     void EndLoadBar();
     void HandleLoadBarExit(int bExit);
+    void HandleCDKeyPanelExit(int bExit);
+    void OnPlayModulePanelExit(int bExit);
+    void SendCharacterResponse(int nResponse);
     void RenderTilePathNodes(int bRender);
     void RestartMoviesIfNecessary();
     void StartMenuMusic(int bCultTheme, int nVolume, int nPriorityGroup);
@@ -871,7 +876,6 @@ public:
     int m_nLastInputClass;
     int m_nHitCheckMaterialMask;
     unsigned char m_bPlayBackInputEnd;
-    unsigned char m_aUnmappedA9[3];
 
     float m_fCameraZoom;
     float m_fCameraTilt;
@@ -905,7 +909,6 @@ public:
     CExoString m_sClientName;
     int m_nClientLanguage;
     unsigned short m_nServerMode;
-    unsigned char m_aUnmapped14A[0x2];
     CSWCMessage* m_pSWCMessage;
     int m_bScreenShot;
     char m_szScreenShot[SCREENSHOT_NAME_LENGTH];
@@ -926,7 +929,6 @@ public:
 
     unsigned long m_nVideoMode;
     unsigned char m_nTexturePack;
-    unsigned char m_aUnmapped1A5[3];
     int m_bEndGamePending;
     int m_bShowEndGameDeathMessage;
     int m_bGuiGameSlow;
@@ -937,7 +939,6 @@ public:
     CSoundSetList* m_pSoundSetList;
     CResRef* m_pItemDropSounds;
     SPauseState m_PauseState;
-    unsigned char m_aUnmapped1CD[0x3];
     CExoLinkedList<unsigned long>* m_pPauseExclusionList;
     int m_bViewTriggers;
     CExoArrayList<CExoString> m_aTextureNames;
@@ -1044,14 +1045,12 @@ public:
     SAutoPauseFlags m_AutoPauseFlags;
 #endif
     unsigned char m_nTogglePauseType;
-    unsigned char m_aUnmapped389[0x3];
     float m_fEnemyAutoPauseDelay;
     float m_fEnemyAutoPauseTimer;
 
     float m_fCombatAutoPauseTimer;
 #ifndef _XBOX
     unsigned char m_nDelayedAutoPauseType;
-    unsigned char m_aUnmapped399[3];
 #endif
     float m_fEnemyAutoPauseCooldown;
 #ifndef _XBOX
@@ -1063,7 +1062,6 @@ public:
     unsigned long m_nTutorialY;
     unsigned long m_nTutorialZ;
     unsigned char m_nTutorialReason;
-    unsigned char m_aUnmapped3B9[0x3];
     unsigned long m_oidCachedCreature;
     CSWCCreature* m_pCachedCreature;
     CExoStreamingSoundSource* m_pEvilEndingHackSound;
@@ -1081,16 +1079,13 @@ public:
     enum { INPUT_HISTORY_LENGTH = 10 };
     unsigned long m_anInputHistory[INPUT_HISTORY_LENGTH];
     unsigned char m_nInputHistoryCount;
-    unsigned char m_aInputHistoryAlignment[3];
     CLiveContentStruct m_aLiveContentNames[7];
     unsigned long m_nLoadScreenHintUpdateTimer;
     unsigned long m_nLoadScreenStartTime;
     unsigned char m_nGamePlayHint;
     unsigned char m_anStoryHint[STORY_HINT_AREAS];
-    unsigned char m_aUnmapped49B[0x1];
     int m_bMainMenuTransition;
     unsigned char m_nModuleResourcesLoaded;
-    unsigned char m_aUnmapped499[3];
     int m_bEndGameInputLocked;
     int m_nEndGameInputLockTime;
 #ifndef _XBOX
@@ -1125,7 +1120,6 @@ public:
     CExoString m_sPlayerName;
     CSWPortrait m_cPrimaryPCPortrait;
     short m_nPrimaryPCPortraitId;
-    char m_aPortraitIdAlignment[2];
 
     unsigned long m_oidControlledObject;
 

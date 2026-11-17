@@ -57,12 +57,14 @@ public:
     void SetTimeOfDayState(unsigned char nState, unsigned long nTime);
     void UpdateCameraModeChaseCam();
     void UpdateCameraModeBG();
+    void UpdateCameraModeNormal();
     void UpdateCameraModeEQ(float fTimeStep);
     void LoadAnimatedCamera(const CResRef& cAnimatedCamera);
     void UnloadAnimatedCamera();
     float SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView,
                             unsigned long oidTarget);
     int IsCameraAnimated();
+    int CanUpdate();
     void SetDialogCamera(int nDialogType);
     int SetFreeLookCamera(unsigned long oidTarget);
     int SetCombatCamera();
@@ -118,7 +120,6 @@ public:
 
     unsigned char m_nDawnHour;
     unsigned char m_nDuskHour;
-    unsigned char m_aUnusedC2[2];
     int m_nCameraModeParam;
     int m_nCameraModeTime;
     int m_nCameraModeDelay;

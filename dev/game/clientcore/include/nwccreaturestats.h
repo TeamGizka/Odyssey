@@ -53,7 +53,6 @@ public:
     unsigned char m_nDomain2;
     unsigned char m_nClass;
     unsigned char m_nLevel;
-    unsigned char m_aUnknown1E[2];
 };
 
 class CSWCCreatureStats
@@ -258,6 +257,11 @@ public:
     int GetINTMod();
     int GetWISMod();
     int GetCHAMod();
+    int GetNumOnHandAttacks();
+    int GetNumOffHandAttacks();
+    int GetBonusFeat(unsigned short nFeat);
+    unsigned char GetCasterLevel(unsigned char nClass);
+    unsigned char GetFeatRemainingUses(unsigned short nFeat);
     char GetBaseINTMod();
     char GetSkillModifier(unsigned short nSkill);
     unsigned char GetSpellsPerDayLeft(unsigned char nClass,
@@ -278,7 +282,6 @@ public:
     CExoString m_sFirstName;
     CExoString m_sLastName;
     unsigned short m_nRace;
-    unsigned char m_aUnknown26[2];
     CExoString m_sSubRace;
     unsigned char m_nSubraceIndex;
     unsigned char m_nGender;
@@ -293,7 +296,6 @@ public:
     unsigned char m_aAbilities[6];
     unsigned char m_nDexterityBonus;
     unsigned char m_aBaseAbilities[6];
-    unsigned char m_nUnknown47;
     short m_nHitPointsBase;
 
     short m_nHitPointBonus;
@@ -307,10 +309,8 @@ public:
     char m_nFortitudeSave;
     char m_nWillSave;
     char m_nReflexSave;
-    unsigned char m_nUnknown5F;
     int m_bUseMonkAttackTables;
     unsigned char m_nBaseAttackBonus;
-    unsigned char m_aUnknown65[3];
     CCombatInformation* m_pCombatInformation;
     int m_bOwnsCombatInformation;
     CSWPortrait m_cPortrait;
@@ -328,15 +328,12 @@ public:
     unsigned char m_nPhenotype;
     unsigned char m_nAppearanceHead;
     unsigned char m_nDuplicatingHead;
-    unsigned char m_aUnknown95[3];
     int m_bUseBackupHead;
     unsigned char m_nTail;
     unsigned char m_nWings;
-    unsigned char m_aUnknown9E[2];
     CExoString m_sDescription;
     int m_nAge;
     unsigned char m_nCreationStage;
-    unsigned char m_nUnknownAD;
     unsigned short m_nSkillPoints;
     CExoArrayList<unsigned short> m_lstFeats;
     CExoArrayList<unsigned short> m_lstBonusFeats;

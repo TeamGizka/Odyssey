@@ -139,6 +139,7 @@ struct CSWClass
     int IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel);
     int IsPCGrantedFeat(unsigned short nFeat);
     int IsFeatUseable(unsigned short nFeat);
+    int IsDroid(int nRace);
     int GetRecommendedFeat(int nIndex);
     int GetRecommendedSkill(int nIndex);
     void LoadSpellsTable();

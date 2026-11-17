@@ -73,9 +73,7 @@ public:
     CSWGuiImage m_cRightImage;
     unsigned long m_nSkill;
     unsigned char m_nStatus;
-    unsigned char m_aUnmapped121[3];
     unsigned long m_bSelected : 1;
-    unsigned long m_nUnmapped124 : 31;
     // PC 0x0073ABF0 GOG 0x0073A950
     CSWGuiFlowSkillStruct()
     {
@@ -83,13 +81,6 @@ public:
     ~CSWGuiFlowSkillStruct()  // PC 0x0073AC40 GOG 0x0073A9A0
     {
     }
-};
-
-struct CSWGuiSkillFlowCell
-{
-    unsigned char m_aUnmapped00[0x50];
-    int m_nSkill;
-    unsigned char m_aUnmapped54[0xD4];
 };
 
 class CSWGuiSkillFlow : public CSWGuiControl
@@ -111,6 +102,7 @@ public:
     }
 
     void SetSkillStatus(unsigned char nSkill, unsigned char nStatus);
+    int GetSkillIDIndex(unsigned long nSkill);
 
     enum SkillStatus
     {
@@ -151,6 +143,7 @@ public:
     int ClearChart();
     void SetSkillStatus(unsigned long nSkill, unsigned char nStatus);
     int SetSkillStatusAll(unsigned char nStatus);
+    unsigned char GetSkillStatus(unsigned long nSkill);
     int SetTopLeft();
     int HandleInput(int nEvent);
     void CreatePowerChart(CSWSCreatureStats* pStats, int bAllPowers);
@@ -170,7 +163,6 @@ public:
     CExoArrayList<CSWGuiSkillFlow*> m_cFlows;
     unsigned char m_nSelectedCol;
     unsigned char m_nSelectedRow;
-    unsigned char m_aUnmapped0E[2];
 };
 
 #endif

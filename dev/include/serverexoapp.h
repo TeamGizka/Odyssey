@@ -70,6 +70,7 @@ public:
 
     void Initialize();
     void Uninitialize();
+    void RunDeathSequence();
     void SetForceUpdate();
     void StartServices(int nServices);
     void StopServices();
@@ -100,6 +101,7 @@ public:
     CSWSEncounter* GetEncounterByGameObjectID(unsigned long oidObject);
     CSWSSoundObject* GetSoundObjectByGameObjectID(unsigned long oidObject);
     unsigned long GetPlayerIDByGameObjectID(unsigned long oidObject);
+    void ChangePlayerGameObject(unsigned long oidObject);
     int GetPlayerLanguage(unsigned long nPlayerId);
     int GetModuleLanguage();
     CWorldTimer* GetActiveTimer(unsigned long nTimer);
@@ -187,6 +189,10 @@ public:
     void SetLoadingModule(int bLoading);
     void SetAutoSavePending(int bPending);
     int GetAutoSavePending();
+    unsigned long GetAutoSaveTimer();
+    void SetAutoSaveTimer(unsigned long nTimer, int bReset);
+    void KillActiveCharacter();
+    void DumpServerOptionsToLog();
     void SetMoveToModuleStartWaypoint(const CExoString& sWaypoint);
     CExoString GetMoveToModuleStartWaypoint();
     CGameObjectArray* GetObjectArray();
