@@ -75,7 +75,7 @@ CSWMiniGameObject* CSWMiniGameObjectArray::GetMiniGameObjectByName(const CExoStr
     return 0;
 }
 // PC 0x006C11E0 GOG 0x006C0FC0
-inline unsigned long CSWMiniGameObjectArray::FindNextEmptyIndex()
+inline unsigned long CSWMiniGameObjectArray::GetNextID()
 {
     unsigned long nStart = m_nCurrentObject;
     while (m_apObjects[m_nCurrentObject] != 0)
@@ -232,7 +232,7 @@ CSWMiniGameObject::CSWMiniGameObject(unsigned long nType)
 {
     CSWMiniGameObjectArray* pArray =
         g_pAppManager->m_pClientExoApp->GetMGOArray();
-    m_nObjectId = pArray->FindNextEmptyIndex();
+    m_nObjectId = pArray->GetNextID();
     g_pAppManager->m_pClientExoApp->GetMGOArray()->m_apObjects[m_nObjectId] = this;
     m_nType = nType;
     m_bCreated = 0;

@@ -1814,9 +1814,9 @@ public:
     float ComputeTotalWalkDistance();
     float ComputeSpeedFactor(float fDistance, int nTime);
     int SetAttackResult(int nAttackResult);
-    int IsAttackResultHit(int nAttackResult);
-    int IsAttackResultMiss(int nAttackResult);
-    int IsAttackResultParried(int nAttackResult);
+    int IsAttackSuccessful(int nAttackResult);
+    int IsAttackMiss(int nAttackResult);
+    int IsAttackParried(int nAttackResult);
     unsigned long GetFirstAttacker();
     unsigned long GetNextAttacker();
     void ClearAttackerList();

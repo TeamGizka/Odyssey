@@ -340,7 +340,7 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
             BroadcastEffectApplicationBreakdown(oidTarget, pMessage);
             delete pMessage;
         }
-        if (IsAttackResultParried(pAttack->m_nAttackResult))
+        if (IsAttackParried(pAttack->m_nAttackResult))
         {
             pMessage = new CSWCCMessageData;
             pMessage->SetObjectID(CSWCCMessageData::BREAKDOWN_REACT_OBJECT, pAttack->m_oidReactObject);
@@ -780,7 +780,7 @@ void CSWSCreature::ResolveOnHitVisuals(CSWSObject* pTarget)
         }
     }
 
-    if (IsAttackResultParried(pAttack->m_nAttackResult))
+    if (IsAttackParried(pAttack->m_nAttackResult))
     {
         CGameEffect* pEffect = new CGameEffect(1);
         pEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
@@ -1589,7 +1589,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                 else if (GetStats()->HasFeat(FEAT_RANGED_ASSASSINATE_1))
                     nAssassinateLevel = 1;
                 if (nAssassinateLevel != 0 &&
-                    IsAttackResultHit(pAttack->m_nAttackResult) &&
+                    IsAttackSuccessful(pAttack->m_nAttackResult) &&
                     pTarget->AsSWSCreature() != NULL &&
                     pAttack->m_nAttackResult == ATTACK_RESULT_CRITICAL_HIT &&
                     rand() % 100 < RANGED_ASSASSINATE_CHANCE)
@@ -1628,7 +1628,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
             case CSWFeat::FEAT_POWER_BLAST:
             case CSWFeat::FEAT_MASTER_POWER_BLAST:
                 {
-                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                    if (IsAttackSuccessful(pAttack->m_nAttackResult) &&
                         pTarget->AsSWSCreature() != NULL &&
                         pAttack->m_nAttackResult == ATTACK_RESULT_CRITICAL_HIT)
                     {
@@ -1718,7 +1718,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                     pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_DAMAGE_FLAGS,
                                         CSWSEffectListHandler::DAMAGE_FLAG_PHYSICAL);
                     ApplyEffect(pEffect, 0, 0);
-                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                    if (IsAttackSuccessful(pAttack->m_nAttackResult) &&
                         pTarget->AsSWSCreature() != NULL)
                     {
                         CGameEffect* pStunEffect = new CGameEffect(1);
@@ -1803,7 +1803,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
             else if (GetStats()->HasFeat(FEAT_UNARMED_DAMAGE_1))
                 nUnarmedLevel = 1;
             if (nUnarmedLevel != 0 &&
-                IsAttackResultHit(pAttack->m_nAttackResult) &&
+                IsAttackSuccessful(pAttack->m_nAttackResult) &&
                 pTarget->AsSWSCreature() != NULL)
             {
                 int nDamage = g_pRules->RollDice(nUnarmedLevel, UNARMED_DAMAGE_DIE);
@@ -1903,7 +1903,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                     pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_DAMAGE_FLAGS,
                                         CSWSEffectListHandler::DAMAGE_FLAG_PHYSICAL);
                     ApplyEffect(pEffect, 0, 0);
-                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                    if (IsAttackSuccessful(pAttack->m_nAttackResult) &&
                         pTarget->AsSWSCreature() != NULL)
                     {
                         CGameEffect* pStunEffect = new CGameEffect(1);
@@ -1976,7 +1976,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
             case CSWFeat::FEAT_POWER_ATTACK:
             case CSWFeat::FEAT_MASTER_POWER_ATTACK:
                 {
-                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                    if (IsAttackSuccessful(pAttack->m_nAttackResult) &&
                         pTarget->AsSWSCreature() != NULL &&
                         pAttack->m_nAttackResult == ATTACK_RESULT_CRITICAL_HIT)
                     {
@@ -2007,7 +2007,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                 }
             case FEAT_SHIELD_BREAKER:
                 {
-                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                    if (IsAttackSuccessful(pAttack->m_nAttackResult) &&
                         pTarget->AsSWSCreature() != NULL)
                     {
                         CGameEffect* pVisualEffect = new CGameEffect(1);
@@ -2433,15 +2433,15 @@ void CSWSCreature::ResolveRangedAttack(CSWSObject* pTarget, int nAttacks,
                     : CSWSCombatRound::WEAPON_ATTACK_RIGHTHAND;
                 ResolveAttackRoll(pTarget, bUseAttackResult, nAttackRollResult);
                 ResolveRangedSpecialAttack(pTarget, nAttack);
-                if (IsAttackResultHit(pAttack->m_nAttackResult) ||
-                    IsAttackResultParried(pAttack->m_nAttackResult))
+                if (IsAttackSuccessful(pAttack->m_nAttackResult) ||
+                    IsAttackParried(pAttack->m_nAttackResult))
                 {
                     bHit = 1;
                     bAnyHit = 1;
                 }
                 ++nAttack;
             }
-            if (IsAttackResultMiss(pAttack->m_nAttackResult))
+            if (IsAttackMiss(pAttack->m_nAttackResult))
             {
                 int nWeaponHand = GetWeaponDischargeHand(nRangedAnimation, nShot);
                 bHit = ResolveRangedMissToParry(pTarget, 1, nWeaponHand);
@@ -2449,7 +2449,7 @@ void CSWSCreature::ResolveRangedAttack(CSWSObject* pTarget, int nAttacks,
             if (bHit)
             {
                 ResolveRangedHit(pTarget);
-                if (IsAttackResultHit(pAttack->m_nAttackResult) ||
+                if (IsAttackSuccessful(pAttack->m_nAttackResult) ||
                     pAttack->m_nAttackResult == ATTACK_RESULT_DEFLECTED)
                 {
                     ResolveDamage(pTarget, bUseAttackResult, nDamage);
@@ -2526,7 +2526,7 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
         int nImpactTime = GetWeaponImpactTime(nMeleeAnimation, nAttack);
         int bStateApplied = 0;
         ResolveMeleeSpecialAttack(nAttack, nAttacks, pTarget, nImpactTime, &bStateApplied);
-        if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+        if (IsAttackSuccessful(pAttack->m_nAttackResult) &&
             pTarget->AsSWSCreature() != NULL && !bStateApplied)
         {
             if ((pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_UNARMED ||
@@ -2570,7 +2570,7 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
                 }
             }
         }
-        if (IsAttackResultHit(pAttack->m_nAttackResult))
+        if (IsAttackSuccessful(pAttack->m_nAttackResult))
         {
             ResolveDamage(pTarget, bUseAttackResult, nDamage);
             CSWSCombatAttackData* pDamageAttack =
@@ -3512,11 +3512,11 @@ void CSWSCreature::ResolveRangedHit(CSWSObject* pTarget)
         CSWSCombatAttackData* pAttack =
             m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
 
-        if (IsAttackResultHit(pAttack->m_nAttackResult))
+        if (IsAttackSuccessful(pAttack->m_nAttackResult))
         {
             pAttack->m_nReactionAnimation = CREATURE_ANIMATION_DAMAGE;
         }
-        else if (IsAttackResultParried(pAttack->m_nAttackResult))
+        else if (IsAttackParried(pAttack->m_nAttackResult))
         {
             pAttack->m_nReactionAnimation = CREATURE_ANIMATION_PARRY;
         }
@@ -3777,7 +3777,7 @@ void CSWSCreature::SignalRangedDamage(unsigned long oidTarget)
         int bDeflected = 0;
         CSWSCreature* pTarget = g_pAppManager->GetServerExoApp()->
             GetCreatureByGameObjectID(oidTarget);
-        if (IsAttackResultParried(pAttack->m_nAttackResult) && pTarget != NULL)
+        if (IsAttackParried(pAttack->m_nAttackResult) && pTarget != NULL)
         {
             if (pAttack->m_nAttackResult == CSWSCombatAttackData::ATTACK_RESULT_DEFLECTED ||
                 pAttack->m_nAttackResult == CSWSCombatAttackData::ATTACK_RESULT_WIDE_MISS)
@@ -3882,11 +3882,11 @@ inline int CSWSCreature::SetAttackResult(int nAttackResult)
         return nResult;
     }
 
-    if (IsAttackResultHit(nAttackResult))
+    if (IsAttackSuccessful(nAttackResult))
     {
         m_nAttackResult = 0;
     }
-    else if (IsAttackResultMiss(nAttackResult))
+    else if (IsAttackMiss(nAttackResult))
     {
         m_nAttackResult = 1;
     }
@@ -3919,15 +3919,15 @@ void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
         return;
     }
 
-    if (IsAttackResultHit(pAttack->m_nAttackResult))
+    if (IsAttackSuccessful(pAttack->m_nAttackResult))
     {
         pAttack->m_nReactionAnimation = CREATURE_ANIMATION_DAMAGE;
     }
-    else if (IsAttackResultParried(pAttack->m_nAttackResult))
+    else if (IsAttackParried(pAttack->m_nAttackResult))
     {
         pAttack->m_nReactionAnimation = CREATURE_ANIMATION_PARRY;
     }
-    else if (IsAttackResultMiss(pAttack->m_nAttackResult))
+    else if (IsAttackMiss(pAttack->m_nAttackResult))
     {
         pAttack->m_nReactionAnimation = CREATURE_ANIMATION_DODGE;
     }
@@ -3994,7 +3994,7 @@ void CSWSCreature::SignalMeleeDamage(unsigned long oidTarget, int nAttacks)
                                    pAttack);
 
         m_pcCombatRound->GetAttack(nAttack);
-        if (IsAttackResultHit(pAttack->m_nAttackResult))
+        if (IsAttackSuccessful(pAttack->m_nAttackResult))
         {
             CGameEffect* pDamage = new CGameEffect(1);
             unsigned short nSubType = pDamage->m_nSubType;
@@ -4063,7 +4063,7 @@ void CSWSCreature::SignalMeleeDamage(unsigned long oidTarget, int nAttacks)
     }
 }
 // PC 0x00604050 GOG 0x00604030
-int CSWSCreature::IsAttackResultHit(int nAttackResult)
+int CSWSCreature::IsAttackSuccessful(int nAttackResult)
 {
     int bHit = 0;
 
@@ -4084,7 +4084,7 @@ int CSWSCreature::IsAttackResultHit(int nAttackResult)
     return bHit;
 }
 // PC 0x00604080 GOG 0x00604060
-int CSWSCreature::IsAttackResultMiss(int nAttackResult)
+int CSWSCreature::IsAttackMiss(int nAttackResult)
 {
     int bMiss = 0;
 
@@ -4105,7 +4105,7 @@ int CSWSCreature::IsAttackResultMiss(int nAttackResult)
     return bMiss;
 }
 // PC 0x006040B0 GOG 0x00604090
-int CSWSCreature::IsAttackResultParried(int nAttackResult)
+int CSWSCreature::IsAttackParried(int nAttackResult)
 {
     int bParried = 0;
 

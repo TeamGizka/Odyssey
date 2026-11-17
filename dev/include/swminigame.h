@@ -408,7 +408,7 @@ public:
     CSWMiniGameObject* GetMiniGameObjectByName(const CExoString& sName);
 
     enum { MAX_OBJECTS = 255, INVALID_OBJECT_ID = 255 };
-    unsigned long FindNextEmptyIndex();
+    unsigned long GetNextID();
 
     unsigned long m_nCurrentObject;
     CSWMiniGameObject* m_apObjects[MAX_OBJECTS];
