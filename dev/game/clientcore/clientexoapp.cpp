@@ -33,15 +33,39 @@ void CClientExoApp::EndLoadBar()
 {
     m_pcExoAppInternal->EndLoadBar();
 }
+
+// Dead code: not in the PC executable
+void CClientExoApp::CreateQuestJournal()
+{
+    m_pcExoAppInternal->CreateQuestJournal();
+}
 // PC 0x00638550 GOG 0x00638440
 CSWCJournal* CClientExoApp::GetQuestJournal()
 {
     return m_pcExoAppInternal->m_pQuestJournal;
 }
+
+// Dead code: not in the PC executable
+void CClientExoApp::DestroyQuestJournal()
+{
+    m_pcExoAppInternal->DestroyQuestJournal();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::CreateWorldJournal()
+{
+    m_pcExoAppInternal->CreateWorldJournal();
+}
 // PC 0x00638560 GOG 0x00638450
 CSWCWorldJournal* CClientExoApp::GetWorldJournal()
 {
     return m_pcExoAppInternal->m_pWorldJournal;
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::DestroyWorldJournal()
+{
+    m_pcExoAppInternal->DestroyWorldJournal();
 }
 // PC 0x00638570 GOG 0x00638460
 void CClientExoApp::JournalUpdated(int nType, int nIndex,
@@ -81,6 +105,12 @@ void CClientExoApp::SetCharacterFile(unsigned long nDataSize,
 void CClientExoApp::DisplayMainMenu(int bScanContent)
 {
     m_pcExoAppInternal->DisplayMainMenu(bScanContent);
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::DestroyMainMenuPanel()
+{
+    m_pcExoAppInternal->DestroyMainMenuPanel();
 }
 
 #ifdef _XBOX
@@ -125,6 +155,12 @@ int CClientExoApp::GetCaptureEventPlayBack()
 CExoString CClientExoApp::GetClientName()
 {
     return m_pcExoAppInternal->m_sClientName;
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::SetClientName(const CExoString& sName)
+{
+    m_pcExoAppInternal->m_sClientName = sName;
 }
 // PC 0x006386F0 GOG 0x006385E0
 int CClientExoApp::GetClientLanguage()
@@ -273,10 +309,28 @@ void CClientExoApp::SetPauseState(unsigned char nPauseState, int bPause,
     m_pcExoAppInternal->SetPauseState(nPauseState, bPause,
                                              pExclusionList);
 }
+
+// Dead code: not in the PC executable
+void CClientExoApp::ReprocessExclusionList()
+{
+    m_pcExoAppInternal->ReprocessExclusionList();
+}
 // PC 0x006388B0 GOG 0x006387A0
 CWorldTimer* CClientExoApp::GetActiveTimer(unsigned long nTimer)
 {
     return m_pcExoAppInternal->GetActiveTimer(nTimer);
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::ClearPauseExclusionList()
+{
+    m_pcExoAppInternal->ClearPauseExclusionList();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::AddToPauseExclusionList(unsigned long oidObject)
+{
+    m_pcExoAppInternal->AddToPauseExclusionList(oidObject);
 }
 
 #ifdef _XBOX
@@ -419,6 +473,36 @@ int CClientExoApp::CreatureAcquireItem(unsigned long oidObject,
     pServer = g_pAppManager->m_pServerExoApp;
     return pServer->CreatureAcquireItem(oidObject, cResRef);
 }
+
+// Dead code: not in the PC executable
+void CClientExoApp::OnCDChange()
+{
+    m_pcExoAppInternal->OnCDChange();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::OnExit()
+{
+    m_pcExoAppInternal->OnExit();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::OnGainFocus()
+{
+    m_pcExoAppInternal->OnGainFocus();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::OnLostFocus()
+{
+    m_pcExoAppInternal->OnLostFocus();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::OnVideoChange()
+{
+    m_pcExoAppInternal->OnVideoChange();
+}
 // PC 0x00638A60 GOG 0x00638950
 int CClientExoApp::Uninitialize()
 {
@@ -444,6 +528,24 @@ int CClientExoApp::SetDebugMode(int nDebugMode)
 {
     return m_pcExoAppInternal->SetDebugMode(nDebugMode);
 }
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetDebugMode()
+{
+    return m_pcExoAppInternal->GetDebugMode();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::SetViewTriggers(int bViewTriggers)
+{
+    m_pcExoAppInternal->SetViewTriggers(bViewTriggers);
+}
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetViewTriggers()
+{
+    return m_pcExoAppInternal->GetViewTriggers();
+}
 #ifndef _XBOX
 int CClientExoApp::StartServices(int nServices, const CExoString& sModule,  // PC 0x00638AB0 GOG 0x006389A0
                                  const CExoString& sLoadMusic,
@@ -463,6 +565,12 @@ void CClientExoApp::StopServices()
     m_pcExoAppInternal->StopServices();
 }
 
+// Dead code: not in the PC executable
+void CClientExoApp::CleanUpModuleServices()
+{
+    m_pcExoAppInternal->CleanUpModuleServices();
+}
+
 #ifdef _XBOX
 void CClientExoApp::ShutDownLegalScreen()
 {
@@ -478,6 +586,12 @@ void CClientExoApp::ShutDownToMainMenu()
 void CClientExoApp::ShowServerMem()
 {
     m_pcExoAppInternal->ShowServerMem();
+}
+
+// Dead code: not in the PC executable
+int CClientExoApp::IsHostingServer()
+{
+    return m_pcExoAppInternal->IsHostingServer();
 }
 // PC 0x00638AF0 GOG 0x006389E0
 void CClientExoApp::SetApplicationIdsMatch(int bMatch)
@@ -499,6 +613,26 @@ int CClientExoApp::GetHitCheckMaterialMask()
 int CClientExoApp::SetVideoMode(unsigned long nVideoMode)  // PC 0x00638B20 GOG 0x00638A10
 {
     return m_pcExoAppInternal->SetVideoMode(nVideoMode, 0);
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::ReadAndSetVideoMode(int bStartup, int bFullScreen)
+{
+    m_pcExoAppInternal->ReadAndSetVideoMode(bStartup, bFullScreen);
+}
+
+// Dead code: not in the PC executable
+unsigned long CClientExoApp::GetNearestVideoMode(unsigned long nWidth, unsigned long nHeight,
+                                                 unsigned char nBitsPerPixel, unsigned long nRefreshRate)
+{
+    return m_pcExoAppInternal->GetNearestVideoMode(nWidth, nHeight, nBitsPerPixel, nRefreshRate);
+}
+
+// Dead code: not in the PC executable
+unsigned long CClientExoApp::GetVideoMode(unsigned long nWidth, unsigned long nHeight,
+                                          unsigned char nBitsPerPixel, unsigned long nRefreshRate)
+{
+    return m_pcExoAppInternal->GetVideoMode(nWidth, nHeight, nBitsPerPixel, nRefreshRate);
 }
 #endif
 // PC 0x00638B40 GOG 0x00638A30
@@ -527,10 +661,40 @@ int CClientExoApp::GetLoadBarState()
     return m_pcExoAppInternal->m_nLoadBarState;
 }
 
+// Dead code: not in the PC executable
+void CClientExoApp::SetEndMovie(CExoString& sMovie)
+{
+    m_pcExoAppInternal->m_sTexturePack = sMovie;
+}
+
+// Dead code: not in the PC executable
+CExoString CClientExoApp::GetEndMovie()
+{
+    return m_pcExoAppInternal->m_sTexturePack;
+}
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetDisableMovies()
+{
+    return m_pcExoAppInternal->m_bMovieDisabled;
+}
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetDisableIntroMovies()
+{
+    return m_pcExoAppInternal->m_bSkipIntro;
+}
+
 #ifndef _XBOX
 void CClientExoApp::RestartMoviesIfNecessary()  // PC 0x00638BD0 GOG 0x00638AC0
 {
     m_pcExoAppInternal->RestartMoviesIfNecessary();
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::ReloadDynamicEventDescriptions()
+{
+    m_pcExoAppInternal->ReloadDynamicEventDescriptions();
 }
 #endif
 // PC 0x00638BE0 GOG 0x00638AD0
@@ -538,12 +702,30 @@ int CClientExoApp::GetApplicationId()
 {
     return g_pAppManager->m_nAppId;
 }
+
+// Dead code: not in the PC executable
+CGuiAreaLoadscreen* CClientExoApp::StartLoadBar(int nType, char* sImage, int bShow)
+{
+    return m_pcExoAppInternal->StartLoadBar(nType, sImage, bShow);
+}
 // PC 0x00638BF0 GOG 0x00638AE0
 void CClientExoApp::AddObjectModelDirectlyToIgnoreList(
     unsigned long oidObject, List<CAurObject*>* pIgnoreList)
 {
     m_pcExoAppInternal->AddObjectModelDirectlyToIgnoreList(oidObject,
                                                                   pIgnoreList);
+}
+
+// Dead code: not in the PC executable
+unsigned long CClientExoApp::GetLastDialogSpeaker()
+{
+    return m_pcExoAppInternal->m_oidLastDialogSpeaker;
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::SetLastDialogSpeaker(unsigned long oidSpeaker)
+{
+    m_pcExoAppInternal->m_oidLastDialogSpeaker = oidSpeaker;
 }
 // PC 0x00638C00 GOG 0x00638AF0
 void CClientExoApp::StartMenuMusic(int bCultTheme, int nVolume, int nPriorityGroup)
@@ -581,11 +763,41 @@ void CClientExoApp::QueryExitProgram()  // PC 0x00638C60 GOG 0x00638B50
 {
     m_pcExoAppInternal->QueryExitProgram();
 }
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetQuitClicked()
+{
+    return m_pcExoAppInternal->m_bExitGame;
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::SetQuitClicked(int bQuitClicked)
+{
+    m_pcExoAppInternal->m_bExitGame = bQuitClicked;
+}
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetWMCLOSEQuery()
+{
+    return m_pcExoAppInternal->m_bExitGamePending;
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::SetWMCLOSEQuery(int bQuery)
+{
+    m_pcExoAppInternal->m_bExitGamePending = bQuery;
+}
 #endif
 // PC 0x00638C70 GOG 0x00638B60
 void CClientExoApp::SetInputActive(int bActive, int bClearEvents)
 {
     m_pcExoAppInternal->SetInputActive(bActive, bClearEvents);
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::InitializeClientOptions()
+{
+    m_pcExoAppInternal->InitializeClientOptions();
 }
 // PC 0x00638C80 GOG 0x00638B70
 void CClientExoApp::TurnOffKeyboardModal()
@@ -640,6 +852,12 @@ void CClientExoApp::HideLoadScreen(int bFade, int bStopLoadMusic,
                                    int bUpdateScreen)  // PC 0x00638CF0 GOG 0x00638BE0
 {
     m_pcExoAppInternal->HideLoadScreen(bFade, bStopLoadMusic, bUpdateScreen);
+}
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetLoadScreenVisible()
+{
+    return m_pcExoAppInternal->GetLoadScreenVisible();
 }
 #endif
 // PC 0x00638D00 GOG 0x00638BF0
@@ -772,6 +990,12 @@ void CClientExoApp::ChangeCharacter(int nCharacter, int bPlaySound)
 {
     m_pcExoAppInternal->ChangeCharacter(nCharacter, bPlaySound);
 }
+
+// Dead code: not in the PC executable
+int CClientExoApp::GetControlledCharacterDead()
+{
+    return m_pcExoAppInternal->GetControlledCharacterDead();
+}
 // PC 0x00638EA0 GOG 0x00638DA0
 void CClientExoApp::RunDeathSequence()
 {
@@ -787,10 +1011,22 @@ int CClientExoApp::GetGameOver()
 {
     return m_pcExoAppInternal->m_nGameOver;
 }
+
+// Dead code: not in the PC executable
+void CClientExoApp::SetGameSpeed(float fSpeed)
+{
+    m_pcExoAppInternal->SetGameSpeed(fSpeed);
+}
 // PC 0x00638ED0 GOG 0x00638DD0
 void CClientExoApp::SetLastPartyMemberTempKilled(unsigned long oidObject)
 {
     m_pcExoAppInternal->SetLastPartyMemberTempKilled(oidObject);
+}
+
+// Dead code: not in the PC executable
+void CClientExoApp::HurryDeathSequence()
+{
+    m_pcExoAppInternal->HurryDeathSequence();
 }
 // PC 0x00638EE0 GOG 0x00638DE0
 void CClientExoApp::SetCanSendDialog(int bCanSend)

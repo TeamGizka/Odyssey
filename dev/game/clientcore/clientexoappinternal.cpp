@@ -485,6 +485,41 @@ int CClientExoAppInternal::SendLoadGameRequest(unsigned long nPlayerId,
 
     return 0;
 }
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::PlayerListChange(unsigned long nPlayerId, int bAdded, int bGuaranteed)
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::OnCDChange()
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::OnExit()
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::OnGainFocus()
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::OnLostFocus()
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::OnPlayModulePanelExit(int bExit)
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::OnVideoChange()
+{
+}
 // PC 0x00639DC0 GOG 0x00639CC0
 void CClientExoAppInternal::ServerModeChange(unsigned char nServerMode)
 {
@@ -904,6 +939,12 @@ RenderSound:
 
     g_pExoSound->Render();
 }
+
+// Dead code: not in the PC executable
+int CClientExoAppInternal::AdmitNetworkAddress(unsigned long nAddress, const CExoString& sAddress)
+{
+    return 1;
+}
 #endif
 
 // Dead code: not in the PC executable
@@ -967,6 +1008,11 @@ void CClientExoAppInternal::StopMovie()  // PC 0x004015A0 GOG 0x004015A0
 }
 // PC 0x004015A0 GOG 0x004015A0
 void CClientExoAppInternal::EndLoadBar()
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::HandleLoadBarExit(int bExit)
 {
 }
 // PC 0x00641090 GOG 0x00640F40
@@ -1358,6 +1404,18 @@ void CClientExoAppInternal::StopServices()  // PC 0x00650110 GOG 0x0064FFC0
     m_nCharacterFileSize = 0;
     m_nCharacterFileId = 0;
 }
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::ResetCharacterFile()
+{
+    if (m_pCharacterFile != NULL)
+    {
+        delete[] m_pCharacterFile;
+        m_pCharacterFile = NULL;
+    }
+    m_nCharacterFileSize = 0;
+    m_nCharacterFileId = 0;
+}
 CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId)  // PC 0x00641650 GOG 0x00641500
 {
     CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
@@ -1367,6 +1425,26 @@ CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId) 
     while (pPlayer != NULL)
     {
         if (pPlayer->m_nPlayerId == nPlayerId)
+        {
+            return pPlayer;
+        }
+
+        pPlayer = (CSWCPlayer*)m_lstPlayerList.GetNext(pNode);
+    }
+
+    return NULL;
+}
+
+// Dead code: not in the PC executable
+CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerName(const CExoString& sPlayerName)
+{
+    CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
+    void* pData = m_lstPlayerList.GetHead();
+    CSWCPlayer* pPlayer = (CSWCPlayer*)pData;
+
+    while (pPlayer != NULL)
+    {
+        if (pPlayer->m_sPlayerName == sPlayerName)
         {
             return pPlayer;
         }
@@ -1391,6 +1469,22 @@ CSWCPlayer* CClientExoAppInternal::GetPlayerByGameObjectID(unsigned long oidObje
         }
 
         pPlayer = (CSWCPlayer*)m_lstPlayerList.GetNext(pNode);
+    }
+
+    return NULL;
+}
+
+// Dead code: not in the PC executable
+CSWCStore* CClientExoAppInternal::GetStoreByGameObjectID(unsigned long oidObject)
+{
+    CGameObject* pObject = NULL;
+
+    if (m_pGameObjectArray->GetGameObject(oidObject, &pObject) ==
+            CGameObjectArray::SUCCESS &&
+        pObject != NULL &&
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_STORE)
+    {
+        return pObject->AsSWCStore();
     }
 
     return NULL;
@@ -1721,6 +1815,26 @@ void CClientExoAppInternal::SetPauseState(unsigned char nPauseState, int bPause,
             }
             delete pExclusionList;
         }
+    }
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::ReprocessExclusionList()
+{
+    CExoLinkedListNode* pNode = m_pPauseExclusionList->GetHeadPos();
+
+    while (pNode != NULL)
+    {
+        unsigned long oidObject = (unsigned long)m_pPauseExclusionList->GetAtPos(pNode);
+        unsigned long nCalendarDay;
+        unsigned long nTimeOfDay;
+        GetActiveTimer(oidObject)->GetWorldTime(&nCalendarDay, &nTimeOfDay);
+
+        CGameObject* pObject;
+        m_pGameObjectArray->GetGameObject(oidObject, &pObject);
+        pObject->ResetUpdateTimes(nCalendarDay, nTimeOfDay);
+
+        m_pPauseExclusionList->GetNext(pNode);
     }
 }
 
@@ -2093,6 +2207,24 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
     }
 }
 
+// Dead code: not in the PC executable
+int CClientExoAppInternal::GetDebugMode()
+{
+    return m_nDebugMode;
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::SetViewTriggers(int bViewTriggers)
+{
+    m_bViewTriggers = bViewTriggers;
+}
+
+// Dead code: not in the PC executable
+int CClientExoAppInternal::GetViewTriggers()
+{
+    return m_bViewTriggers;
+}
+
 #ifndef _XBOX
 void CClientExoAppInternal::RestartMoviesIfNecessary()  // PC 0x00645490 GOG 0x00645340
 {
@@ -2108,6 +2240,17 @@ void CClientExoAppInternal::RestartMoviesIfNecessary()  // PC 0x00645490 GOG 0x0
 
         m_pMoviePlayer->HideFadePanel();
     }
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::InformMoviePlayerOfWindowsPosChanging(long nPosition)
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::ReloadDynamicEventDescriptions()
+{
+    SetEventDescriptions();
 }
 #endif
 // PC 0x006454F0 GOG 0x006453A0
@@ -2263,6 +2406,11 @@ void CClientExoAppInternal::StartMenuMusic(int bCultTheme, int nVolume,
 #endif
     }
 }
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::DestroyMainMenuPanel()
+{
+}
 // PC 0x00641F20 GOG 0x00641DD0
 void CClientExoAppInternal::StopMenuMusic()
 {
@@ -2287,6 +2435,31 @@ void CClientExoAppInternal::StopMenuMusic()
         delete m_pMenuMusic;
         m_pMenuMusic = NULL;
     }
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::RenderTilePathNodes(int bRender)
+{
+}
+
+// Dead code: not in the PC executable
+CSWCPlayer* CClientExoAppInternal::GetPlayerByCreatureName(const CExoString& sCreatureName)
+{
+    CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
+    void* pData = m_lstPlayerList.GetHead();
+    CSWCPlayer* pPlayer = (CSWCPlayer*)pData;
+
+    while (pNode != NULL)
+    {
+        if (pPlayer != NULL && pPlayer->m_sPrimaryPCName == sCreatureName)
+        {
+            return pPlayer;
+        }
+
+        pPlayer = (CSWCPlayer*)m_lstPlayerList.GetNext(pNode);
+    }
+
+    return NULL;
 }
 // PC 0x00641F60 GOG 0x00641E10
 void CClientExoAppInternal::StartLoadMusic()
@@ -2420,6 +2593,22 @@ CSWCItem* CClientExoAppInternal::GetItemByGameObjectID(unsigned long nId)
         pObject->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
     {
         return pObject->AsSWCItem();
+    }
+
+    return NULL;
+}
+
+// Dead code: not in the PC executable
+CSWCModule* CClientExoAppInternal::GetModuleByGameObjectID(unsigned long oidObject)
+{
+    CGameObject* pObject = NULL;
+
+    if (m_pGameObjectArray->GetGameObject(oidObject, &pObject) ==
+            CGameObjectArray::SUCCESS &&
+        pObject != NULL &&
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_MODULE)
+    {
+        return pObject->AsSWCModule();
     }
 
     return NULL;
@@ -2576,6 +2765,12 @@ void CClientExoAppInternal::ChangeCharacter(int nCharacter, int bPlaySound)
         m_bCharacterChangeInProgress = 1;
 #endif
     }
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::NextPartyFormation()
+{
+    m_pSWParty->SetFormation(CSWParty::FORMATION_NEXT);
 }
 
 static inline int GetHostileHiliteCount(CExoArrayList<CHostileHilite>* pList)
@@ -3274,6 +3469,17 @@ void CClientExoAppInternal::SetLoadBarProgress(int nProgress, int bUpdateHint)
 #endif
     }
 }
+
+// Dead code: not in the PC executable
+int CClientExoAppInternal::GetLoadBarProgress()
+{
+    if (m_pGuiLoadScreen != NULL)
+    {
+        return m_pGuiLoadScreen->m_pbProgress.m_nCurValue;
+    }
+
+    return 0;
+}
 // PC 0x00647130 GOG 0x00646FE0
 int CClientExoAppInternal::PlayRumblePattern(int nPattern)
 {
@@ -3502,6 +3708,36 @@ void CClientExoAppInternal::LookUpAndPerformRumbleWithCutOff(
     PlayRumblePattern(nRumblePattern);
 }
 
+// Dead code: not in the PC executable
+unsigned char CClientExoAppInternal::CanFlourish()
+{
+    CSWCCreature* pCreature = GetPlayerCreature();
+
+    if (pCreature != NULL)
+    {
+        CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+
+        if (pServerCreature != NULL && pServerCreature->GetDead() == 0 &&
+            pServerCreature->GetDeadTemp() == 0)
+        {
+            if (pServerCreature->GetArea()->GetPlayerRestrictMode() != 0)
+            {
+                return 0;
+            }
+
+            switch (pServerCreature->GetClientCreature()->GetAnimationBase()
+                        ->m_nWieldClass)
+            {
+            case CSWCAnimBase::WIELD_CLASS_1:
+            case CSWCAnimBase::WIELD_CLASS_UNARMED:
+                return 0;
+            }
+        }
+    }
+
+    return 1;
+}
+
 #ifndef _XBOX
 // PC 0x00647890 GOG 0x00647740
 int CClientExoAppInternal::AddMovieToExoArrayList(
@@ -3572,6 +3808,11 @@ int CClientExoAppInternal::AddMovieToMovieQueue(const CExoString& sMovie,
     m_aMovieQueueFlags.Add(nFlags);
 
     return AddMovieToExoArrayList(sMovie, m_aMovieQueue);
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::HandleIntroDelete()
+{
 }
 #endif
 
@@ -3921,6 +4162,11 @@ void CClientExoAppInternal::DisplayStartScreen()
     }
 }
 #endif
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::HandleCDKeyPanelExit(int bExit)
+{
+}
 #include "nwcjournalinl.h"
 // PC 0x0064ECB0 GOG 0x0064EB60
 void CClientExoAppInternal::StallServerCode()
@@ -3996,6 +4242,23 @@ void CClientExoAppInternal::ShowServerMem()
     {
         m_pSWCMessage->SendPlayerToServerCheat_ShowServerMem();
     }
+}
+
+// Dead code: not in the PC executable
+int CClientExoAppInternal::IsHostingServer()
+{
+    return 1;
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::AddQueuedAnim(const CExoString& sObject, unsigned short nAnimation, float fSpeed, int bLoop)
+{
+    CQueuedAnim* pAnim = new CQueuedAnim;
+    pAnim->sAnimation = sObject;
+    pAnim->fDuration = fSpeed;
+    pAnim->bLooping = bLoop;
+    pAnim->nAnimation = nAnimation;
+    m_lstPlayerAnimations.AddTail(pAnim);
 }
 // PC 0x006489E0 GOG 0x00648890
 void CClientExoAppInternal::AddObjectModelDirectlyToIgnoreList(

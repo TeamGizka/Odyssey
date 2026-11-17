@@ -42,6 +42,19 @@ void CClientOptions::SetCameraMode(unsigned char nMode)
         g_ForceSight = false;
     }
 }
+
+// Dead code: not in the PC executable
+void CClientOptions::ToggleCameraMode()
+{
+    if (m_nCameraMode == CAMERA_MODE_EQ)
+    {
+        SetCameraMode(m_nCameraStyle);
+    }
+    else
+    {
+        SetCameraMode(CAMERA_MODE_EQ);
+    }
+}
 // PC 0x0066A6E0 GOG 0x0066A480
 void CClientOptions::SetFullScreenEnabled(int bEnabled)
 {
