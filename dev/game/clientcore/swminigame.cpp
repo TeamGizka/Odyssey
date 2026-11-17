@@ -738,9 +738,9 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
     m_pCurrentRoom = NULL;
     m_pImpactSound = new CExoStreamingSoundSource(1);
     m_pImpactSound->SetLooping(1);
-    m_fF0 = 1.0f;
-    m_fF4 = 1.0f;
-    m_fF8 = 1.0f;
+    m_fEngineUpgradeScale = 1.0f;
+    m_fAccelUpgradeScale = 1.0f;
+    m_fFrameUpgradeScale = 1.0f;
     SetResRef(pArea->m_cAreaResRef, 0);
     m_pSwoopUpgrade2DA = new C2DA("swoopupgrade", 0);
     m_pSwoopUpgrade2DA->Load2DArray();

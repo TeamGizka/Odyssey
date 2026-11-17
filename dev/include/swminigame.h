@@ -305,9 +305,9 @@ public:
     float m_fLateralAccel;
     CSWMGPhysicsState m_CurrentState;
     CSWMGPhysicsState m_NextState;
-    float m_fF0;
-    float m_fF4;
-    float m_fF8;
+    float m_fEngineUpgradeScale;
+    float m_fAccelUpgradeScale;
+    float m_fFrameUpgradeScale;
     C2DA* m_pSwoopUpgrade2DA;
     int m_anSwoopUpgrades[6];
     float m_fJumpSpeed;
