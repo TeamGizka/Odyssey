@@ -32,6 +32,7 @@ CSWSCombatSubAttack::~CSWSCombatSubAttack()
 {
 }
 
+// Dead code: not in the PC executable
 unsigned short CSWSCombatRound::GetNewAttackID()
 {
     if (m_nAttackId == ATTACK_ID_WRAP)
@@ -39,6 +40,7 @@ unsigned short CSWSCombatRound::GetNewAttackID()
     return m_nAttackId++;
 }
 
+// Dead code: not in the PC executable
 void CSWSCombatRound::InsertSpecialAttack(unsigned short nAttack, int nIndex)
 {
     m_lstSpecialAttacks.Add(nAttack);

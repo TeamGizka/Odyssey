@@ -2483,6 +2483,7 @@ void CSWSCreature::ResolveRangedAttack(CSWSObject* pTarget, int nAttacks,
     }
 }
 
+// Dead code: not in the PC executable
 int CSWSCreature::GetClientMeleeAnimation(unsigned long oidTarget, unsigned short nAnimation,
                                           int nAttackType, int bUseAttackResult,
                                           int nAttackResult)
@@ -3617,6 +3618,7 @@ int CSWSCreature::ResolveProjectileMissImpact(const Vector& vImpact, int nDelay)
         0, nDelay, oidSelf, oidArea, CServerAIMaster::EVENT_APPLY_EFFECT, pEffect);
 }
 
+// Dead code: not in the PC executable
 int CSWSCreature::GetWeaponImpactHits(int nWeapon)
 {
     CExoString sRow(nWeapon);

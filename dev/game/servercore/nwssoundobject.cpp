@@ -474,6 +474,7 @@ int CSWSSoundObject::LoadFromTemplate(const CResRef& resTemplate)
     return bSuccess;
 }
 
+// Dead code: not in the PC executable
 void CSWSSoundObject::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -483,6 +484,7 @@ void CSWSSoundObject::RemoveFromArea()
     SetArea(NULL);
 }
 
+// Dead code: not in the PC executable
 CSWCSoundObject* CSWSSoundObject::GetClientSoundObject()
 {
     unsigned long oidSelf = m_nId;

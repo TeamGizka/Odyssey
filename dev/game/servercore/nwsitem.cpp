@@ -280,6 +280,7 @@ void CSWSItem::RemoveFromArea()
     SetPosition(Vector(), 1, 1, 0);
 }
 
+// Dead code: not in the PC executable
 void CSWSItem::SetNumActiveProperties(int nNumProperties)
 {
     m_nActiveProperties = nNumProperties;

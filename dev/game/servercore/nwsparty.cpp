@@ -663,6 +663,7 @@ CSWSFaction::CSWSFaction()
     Initialise();
 }
 
+// Dead code: not in the PC executable
 CFactionManager* CSWSFaction::GetFactionManager()
 {
     CServerExoAppInternal* pServerMode =

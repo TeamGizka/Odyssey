@@ -24,6 +24,7 @@ inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
 int g_bRenderClipWalkable = 0;
 
 float checkaabbtime;
+// Dead code: not in the PC executable
 __int64 QueryTimerFrequency()
 {
     LARGE_INTEGER nFrequency;
@@ -41,6 +42,7 @@ inline void AddExternalEdge(
     }
 }
 
+// Dead code: not in the PC executable
 int CSWRoomSurfaceMesh::SetEdgeVertex(int nEdge, Vector& vVertex)
 {
     if (nEdge < m_lstExternalEdges.num)

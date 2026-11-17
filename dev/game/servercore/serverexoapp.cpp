@@ -31,6 +31,7 @@ int CServerExoApp::SaveGame(unsigned long nSlot, const CExoString& sName,
     return m_pcExoAppInternal->SaveGame(nSlot, sName, pPlayer, bAutoSave);
 }
 
+// Dead code: not in the PC executable
 int CServerExoApp::SendCharacterQuery(CSWSPlayer* pPlayer)
 {
     return m_pcExoAppInternal->SendCharacterQuery(pPlayer);
@@ -42,6 +43,7 @@ int CServerExoApp::LoadGame(unsigned long nSlot, const CExoString& sName,
     return m_pcExoAppInternal->LoadGame(nSlot, sName, sModule, pPlayer);
 }
 
+// Dead code: not in the PC executable
 int CServerExoApp::StartNewModule(const CExoString& sModule)
 {
     return m_pcExoAppInternal->StartNewModule(sModule);
@@ -62,6 +64,7 @@ void CServerExoApp::SetMoveToModuleString(const CExoString& sModule)
     m_pcExoAppInternal->m_sMoveToModule = sModule;
 }
 
+// Dead code: not in the PC executable
 CExoString CServerExoApp::GetMoveToModuleString()
 {
     return m_pcExoAppInternal->m_sMoveToModule;
@@ -72,6 +75,7 @@ void CServerExoApp::SetExportAllCharactersPending(int bPending)
     m_pcExoAppInternal->m_bExportAllCharactersPending = bPending;
 }
 
+// Dead code: not in the PC executable
 int CServerExoApp::ExportAllPlayers()
 {
     return m_pcExoAppInternal->ExportAllPlayers();
@@ -120,6 +124,7 @@ int CServerExoApp::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
     return m_pcExoAppInternal->LoadCharacterFinish(pPlayer, bSuccess);
 }
 
+// Dead code: not in the PC executable
 int CServerExoApp::LoadPrimaryPlayer(CSWSPlayer* pPlayer)
 {
     return m_pcExoAppInternal->LoadPrimaryPlayer(pPlayer);
@@ -318,26 +323,31 @@ CExoString CServerExoApp::GetPlayerListString()
     return m_pcExoAppInternal->GetPlayerListString();
 }
 
+// Dead code: not in the PC executable
 void CServerExoApp::OnCDChange()
 {
     m_pcExoAppInternal->OnCDChange();
 }
 
+// Dead code: not in the PC executable
 void CServerExoApp::OnExit()
 {
     m_pcExoAppInternal->OnExit();
 }
 
+// Dead code: not in the PC executable
 void CServerExoApp::OnGainFocus()
 {
     m_pcExoAppInternal->OnGainFocus();
 }
 
+// Dead code: not in the PC executable
 void CServerExoApp::OnLostFocus()
 {
     m_pcExoAppInternal->OnLostFocus();
 }
 
+// Dead code: not in the PC executable
 void CServerExoApp::OnVideoChange()
 {
     m_pcExoAppInternal->OnVideoChange();
@@ -426,6 +436,7 @@ CExoLinkedList<unsigned long>* CServerExoApp::GetActiveExclusionList()
     return m_pcExoAppInternal->GetActiveExclusionList();
 }
 
+// Dead code: not in the PC executable
 int CServerExoApp::IsOnActiveExclusionList(unsigned long oidObject)
 {
     return m_pcExoAppInternal->IsOnActiveExclusionList(oidObject);
@@ -451,6 +462,7 @@ int CServerExoApp::GetFirstPCObject()
     return m_pcExoAppInternal->GetFirstPCObject();
 }
 
+// Dead code: not in the PC executable
 int CServerExoApp::GetNextPCObject()
 {
     return m_pcExoAppInternal->GetNextPCObject();
@@ -461,6 +473,7 @@ CSWGlobalVariableTable* CServerExoApp::GetGlobalVariableTable()
     return &m_pcExoAppInternal->m_globalVariableTable;
 }
 
+// Dead code: not in the PC executable
 void CServerExoApp::SetCreatureFollowing(unsigned long oidCreature,
                                          unsigned long oidTarget, int bRun,
                                          const Vector& vDestination)
@@ -664,6 +677,7 @@ void CServerExoApp::SetIgnoreConversationStartRange(int bIgnore)
     m_pcExoAppInternal->m_bIgnoreConversationStartRange = bIgnore;
 }
 
+// Dead code: not in the PC executable
 int CServerExoApp::GetIgnoreConversationStartRange()
 {
     return m_pcExoAppInternal->m_bIgnoreConversationStartRange;

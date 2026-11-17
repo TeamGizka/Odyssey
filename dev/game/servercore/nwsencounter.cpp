@@ -23,6 +23,7 @@ static inline CEncounterSpawnPoint* AllocateSpawnPointArray(int nCount)
     return new CEncounterSpawnPoint[nCount];
 }
 
+// Dead code: not in the PC executable
 CEncounterListEntry& CEncounterListEntry::operator=(
     const CEncounterListEntry& other)
 {
@@ -36,6 +37,7 @@ CEncounterListEntry& CEncounterListEntry::operator=(
     return *this;
 }
 
+// Dead code: not in the PC executable
 void CSWSEncounter::PadOutCreatureCount(CEncounterListEntry* pEntries,
                                         int& nCount)
 {
@@ -136,6 +138,7 @@ void CSWSEncounter::PadOutCreatureCount(CEncounterListEntry* pEntries,
     return;
 }
 
+// Dead code: not in the PC executable
 void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
                                           int& nCount, int nIndex,
                                           CEncounterListEntry cEntry)
@@ -192,6 +195,7 @@ void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
     }
 }
 
+// Dead code: not in the PC executable
 void PrintCreatureList(CEncounterListEntry* pEntries, int nCount)
 {
     CExoString sResRef;
@@ -202,6 +206,7 @@ void PrintCreatureList(CEncounterListEntry* pEntries, int nCount)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWSEncounter::TallyEnemyRadiusPoints()
 {
     return;
@@ -963,6 +968,7 @@ int CSWSEncounter::SaveEncounter(CResGFF* pRes, CResStruct* pStruct)
     return 1;
 }
 
+// Dead code: not in the PC executable
 void CSWSEncounter::CalculateSpawnPool(float fChallengeRating)
 {
     return;
@@ -982,6 +988,7 @@ void CSWSEncounter::CalculateSpawnPool(float fChallengeRating)
     }
 }
 
+// Dead code: not in the PC executable
 float CSWSEncounter::CalculatePointsFromCR(float fChallengeRating)
 {
     if (fChallengeRating > 0.0f && fChallengeRating < 1.0f)

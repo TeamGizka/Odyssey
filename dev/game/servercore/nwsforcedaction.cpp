@@ -27,6 +27,7 @@ BOOL CSWSForcedAction::SaveForcedAction(CResGFF* pRes, CResStruct* pStruct)
     return TRUE;
 }
 
+// Dead code: not in the PC executable
 BOOL CSWSForcedAction::LoadForcedAction(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;

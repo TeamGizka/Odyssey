@@ -4671,6 +4671,7 @@ int CSWSEffectListHandler::OnApplyForceFizzle(CSWSObject* pObject,
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWSEffectListHandler::OnRemoveNothing(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {

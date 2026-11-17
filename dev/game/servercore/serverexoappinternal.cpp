@@ -555,10 +555,12 @@ void CServerExoAppInternal::MovePlayerToArea(void* pData)
     }
 }
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnCDChange()
 {
 }
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnExit()
 {
     if (SERVEREXOAPPINTERNAL_DEBUG)
@@ -571,14 +573,17 @@ void CServerExoAppInternal::OnExit()
     }
 }
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnGainFocus()
 {
 }
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnLostFocus()
 {
 }
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnVideoChange()
 {
 }
@@ -778,6 +783,7 @@ int CServerExoAppInternal::StorePlayerCharacters()
     return nStored > 0;
 }
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::ValidateCreateServerCharacter(CSWSPlayer* pPlayer, void* pData,
                                                           unsigned long nSize)
 {
@@ -1443,6 +1449,7 @@ int CServerExoAppInternal::ContinueMessageProcessing()
     return GetReentrantServerStats()->m_bOperationActive == 1;
 }
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::StartShutdownTimer(unsigned __int64 nTime,
                                                unsigned __int64 nDelay)
 {
@@ -2325,12 +2332,14 @@ void CServerExoAppInternal::Uninitialize()
 {
 }
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::InitializeNetLayer()
 {
     m_pNetLayer->Initialize(g_pAppManager->GetServerExoApp());
 }
 #ifndef _XBOX
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
                                              int bTempWayPoints)
 {
@@ -2393,6 +2402,7 @@ int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
     return bValid;
 }
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::DebugValidatePath_Point(CSWSArea* pArea,
                                                    const Vector& vPoint)
 {
@@ -2401,6 +2411,7 @@ int CServerExoAppInternal::DebugValidatePath_Point(CSWSArea* pArea,
     return bInRoom & bWalkable;
 }
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::DebugValidatePath_Segment(
     CSWSArea* pArea, CPathfindInformation* pPathfind, const Vector& vStart,
     const Vector& vEnd)
@@ -2447,6 +2458,7 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
 }
 #endif
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::RunDeathSequence()
 {
     g_pAppManager->GetClientExoApp()->RunDeathSequence();
@@ -3554,6 +3566,7 @@ int CServerExoAppInternal::IsOnActiveExclusionList(unsigned long oidObject)
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::IsOnExclusionList(unsigned long oidObject)
 {
     CExoLinkedListNode* pNode;
@@ -3671,6 +3684,7 @@ int CServerExoAppInternal::GetFirstPCObject()
     return CGameObjectArray::INVALIDOBJID;
 }
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::GetNextPCObject()
 {
     CSWSPlayer* pPlayer;
@@ -3976,6 +3990,7 @@ CServerExoAppInternal::CServerExoAppInternal()
 #endif
 }
 
+// Dead code: not in the PC executable
 void CServerExoAppInternal::SendStartStallEvent(unsigned long nEvent)
 {
     CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
@@ -4949,6 +4964,7 @@ int CServerExoAppInternal::LoadGame(unsigned long nSlot,
     return LoadModule(sModule, pPlayer);
 }
 
+// Dead code: not in the PC executable
 int CServerExoAppInternal::SendEnteringStartNewModuleMessage()
 {
     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerModule_StartStartNewModule();

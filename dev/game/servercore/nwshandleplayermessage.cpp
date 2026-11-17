@@ -57,6 +57,7 @@ CSWSMessage::~CSWSMessage()
 {
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::HandlePlayerToServerServerChatMessage(CSWSPlayer* pPlayer,
                                                        unsigned char nMinor)
 {
@@ -1366,6 +1367,7 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
     return 1;
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::HandlePlayerToServerGroupInputWalkToWaypoint(
     CSWSPlayer* pPlayer, CSWSCreature* pCreature, unsigned long oidArea,
     float fPositionX, float fPositionY, float fPositionZ,

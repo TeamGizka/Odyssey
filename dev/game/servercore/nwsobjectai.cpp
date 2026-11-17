@@ -199,6 +199,7 @@ unsigned short CSWSObject::GetAQActionIDByID(unsigned short nActionType,
 
 }
 
+// Dead code: not in the PC executable
 unsigned short CSWSObject::GetIDByAQActionID(unsigned short nAQActionID)
 {
     switch (nAQActionID)

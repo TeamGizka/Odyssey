@@ -13,6 +13,7 @@ CSWInventory::CSWInventory()
     }
 }
 
+// Dead code: not in the PC executable
 CSWInventory::~CSWInventory()
 {
 }

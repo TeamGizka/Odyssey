@@ -2468,6 +2468,7 @@ int CSWSArea::PositionWalkable(Vector vPosition)
 }
 #ifndef _XBOX
 
+// Dead code: not in the PC executable
 int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 {
     int bFailed = FALSE;

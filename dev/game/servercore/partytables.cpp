@@ -1231,6 +1231,7 @@ int CSWPartyTable::SetInfluence(int nNPC, int nInfluence)
     return nNPC;
 }
 
+// Dead code: not in the PC executable
 unsigned char CSWPartyTable::GetNumNPCAvailable()
 {
     unsigned char nNum = 0;

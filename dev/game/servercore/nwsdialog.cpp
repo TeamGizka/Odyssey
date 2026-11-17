@@ -33,6 +33,7 @@
 
 bool g_bVODebugEnabled;
 char sOut[255] = "                                                  ";
+// Dead code: not in the PC executable
 char* vodebug(char* szArgs)
 {
     int nEnable = 0;

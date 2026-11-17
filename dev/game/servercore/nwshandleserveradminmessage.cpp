@@ -128,6 +128,7 @@ int CSWSMessage::ParseGetString(unsigned char* pString, unsigned long nLength,
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::ParseGetBool(unsigned char* pString, unsigned long nLength,
                               int& bValue)
 {

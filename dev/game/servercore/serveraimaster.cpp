@@ -72,6 +72,7 @@ void CServerAIMaster::SetExoAppInternal(CServerExoAppInternal* pExoAppInternal)
 
 
 
+// Dead code: not in the PC executable
 CSWSObject* CServerAIList::GetObjectAtPosition(int nPosition)
 {
     if (num == 0)
@@ -92,6 +93,7 @@ CSWSObject* CServerAIList::GetObjectAtPosition(int nPosition)
     return NULL;
 }
 
+// Dead code: not in the PC executable
 CSWSObject* CServerAIList::GetNextObject()
 {
     if (num == 0)
@@ -119,6 +121,7 @@ CSWSObject* CServerAIList::GetNextObject()
     return NULL;
 }
 
+// Dead code: not in the PC executable
 BOOL CServerAIMaster::GetPendingEvent(unsigned long* pnCalendarDay,
                                       unsigned long* pnTimeOfDay,
                                       unsigned long* poidCaller,
@@ -143,6 +146,7 @@ BOOL CServerAIMaster::GetPendingEvent(unsigned long* pnCalendarDay,
     return TRUE;
 }
 
+// Dead code: not in the PC executable
 BOOL CServerAIMaster::EventPending(unsigned long nCalendarDay,
                                    unsigned long nTimeOfDay)
 {
@@ -1503,6 +1507,7 @@ void CServerAIMaster::AdjustTargetAndWitnessReputations(
 {
 }
 
+// Dead code: not in the PC executable
 int IsCreatureDeadTemp(CSWSCreature* pCreature)
 {
     return pCreature->GetDeadTemp();

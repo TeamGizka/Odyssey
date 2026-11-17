@@ -60,6 +60,7 @@ CSWSStats_SpellLikeAbility::CSWSStats_SpellLikeAbility()
     m_nLevel = 0;
 }
 
+// Dead code: not in the PC executable
 int CSWSCreatureStats::GetWeaponFocus(CSWSItem* pItem)
 {
     int nBonus = 0;
@@ -2797,6 +2798,7 @@ void CSWSCreatureStats::SetCHABase(unsigned char nScore)
     AdjustSpellUsesPerDay();
 }
 
+// Dead code: not in the PC executable
 void CSWSCreatureStats::SetStatById(int nStatId, float fValue)
 {
     switch (nStatId)
@@ -3502,6 +3504,7 @@ int CSWSCreatureStats::GetCanUseSkill(unsigned char nSkill)
     return 0;
 }
 
+// Dead code: not in the PC executable
 char CSWSCreatureStats::GetPrimaryMod(unsigned char nMultiClass)
 {
     unsigned char nAbility = ABILITY_STRENGTH;
@@ -7365,6 +7368,7 @@ int CSWSCreatureStats::CalcStatModifier(unsigned char nScore)
     return nModifier / 2;
 }
 
+// Dead code: not in the PC executable
 unsigned long CSWSCreatureStats::CalculateExpNeededForNextLevel()
 {
     for (int nLevel = 0; nLevel <= CSWRules::EXPERIENCE_TABLE_LAST_INDEX; ++nLevel)
@@ -7887,6 +7891,7 @@ int CSWSCreatureStats::GetBaseAttackBonus()
     return m_nBaseAttackBonus;
 }
 
+// Dead code: not in the PC executable
 float CSWSCreatureStats::GetStatById(int nStatId)
 {
     switch (nStatId)
@@ -8140,6 +8145,7 @@ int CSWSCreatureStats::GetItemDetailsForPower(int nPower,
     return 1;
 }
 
+// Dead code: not in the PC executable
 static int IsActivatePowerProperty(CSWSItem* pItem, int nProperty, int nPower, int bAllowCharges)
 {
     if (pItem->GetActiveProperty(nProperty)->m_nPropertyType ==

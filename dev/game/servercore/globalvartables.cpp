@@ -593,6 +593,7 @@ void CSWGlobalVariableTable::ReadTableWithoutCatalogue(CResGFF* pRes,
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGlobalVariableTable::ClearValues()
 {
     memset(m_aBooleanValues, 0, sizeof(m_aBooleanValues));
@@ -857,6 +858,7 @@ void CSWGlobalVariableTable::ReadCatalogue(const CResRef& cResRef)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWGlobalVariableTable::ClearIdentifiers()
 {
     memset(m_aIdentifiers, 0, sizeof(m_aIdentifiers));

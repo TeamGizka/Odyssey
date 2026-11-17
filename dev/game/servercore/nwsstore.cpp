@@ -31,6 +31,7 @@ void CSWSStore::AIUpdate()
 {
 }
 
+// Dead code: not in the PC executable
 unsigned long CSWSStore::CalculateItemBuyPrice(CSWSItem* pItem,
                                                unsigned long oidCreature)
 {
@@ -50,6 +51,7 @@ unsigned long CSWSStore::CalculateItemBuyPrice(CSWSItem* pItem,
     return nCost;
 }
 
+// Dead code: not in the PC executable
 unsigned long CSWSStore::CalculateItemSellPrice(CSWSItem* pItem,
                                                 unsigned long oidCreature)
 {

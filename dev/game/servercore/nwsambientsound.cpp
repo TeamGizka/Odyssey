@@ -41,6 +41,7 @@ int CSWSAmbientSound::Load(CResGFF* pRes, CResStruct* pStruct)
     return bSuccess;
 }
 
+// Dead code: not in the PC executable
 void CSWSAmbientSound::CacheSound(int nTrack, int bMusic)
 {
     CExoString sResource;

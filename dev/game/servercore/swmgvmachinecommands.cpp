@@ -1740,6 +1740,7 @@ void CSWVirtualMachineCommands::InitializeSWMGCommands()
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce;
 }
 
+// Dead code: not in the PC executable
 CSWMGPhysicsState GetDefaultPhysicsState()
 {
     CSWMGPhysicsState state;

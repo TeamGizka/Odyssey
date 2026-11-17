@@ -4874,6 +4874,7 @@ int CSWSCreature::LoadFollowInfo(CResGFF* pResGFF, CResStruct* pResStruct)
     return nResult;
 }
 
+// Dead code: not in the PC executable
 void CSWSCreature::SaveFollowInfo(CResGFF* pRes, CResStruct* pStruct)
 {
     if (m_pFollowInfo != NULL)
@@ -6041,6 +6042,7 @@ void CSWSCreature::UpdateAppearanceForEquippedItems()
     }
 }
 
+// Dead code: not in the PC executable
 int CSWSCreature::RequestBuy(unsigned long oidItem, unsigned long oidStore)
 {
     CSWSItem* pItem =
@@ -6073,6 +6075,7 @@ int CSWSCreature::RequestBuy(unsigned long oidItem, unsigned long oidStore)
     return TRUE;
 }
 
+// Dead code: not in the PC executable
 int CSWSCreature::RequestSell(unsigned long oidItem, unsigned long oidStore)
 {
     CSWSItem* pItem =
@@ -11300,6 +11303,7 @@ int CSWSCreature::GetCurrentlyFollowingLeader()
     return FALSE;
 }
 
+// Dead code: not in the PC executable
 int CSWSCreature::GetTotalACEffectBonus()
 {
     CExoArrayList<CGameEffect*>* pEffects = &m_lstEffects;
@@ -12464,6 +12468,7 @@ int CSWSCreature::CalculateSpellSaveDC(int nSpellId)
     return nDC;
 }
 
+// Dead code: not in the PC executable
 int CSWSCreature::UpdateSpecialAttacks()
 {
     return 0;

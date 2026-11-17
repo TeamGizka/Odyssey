@@ -201,6 +201,7 @@ void CSWSPlayerLastUpdateObject::ClearVisibilityList()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWSPlayerLUOInventory::ClearStore()
 {
     while (!m_lstOverflow.IsEmpty())

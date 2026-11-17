@@ -261,6 +261,7 @@ int CSWSMessage::ComputeLastUpdate_GuiKnownSpells(CSWSCreature* pCreature,
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::ComputeLastUpdate_GuiMemorizedSpells(CSWSCreature* pCreature,
     CSWSPlayerLastUpdateObject* pLastUpdateObject)
 {
@@ -757,6 +758,7 @@ int CSWSMessage::SendServerToPlayerChatMessage(unsigned char nType,
     return nResult;
 }
 
+// Dead code: not in the PC executable
 void CSWSMessage::WriteGameObjUpdate_WriteInventorySlotDelete(
     CSWSCreature* pCreature, unsigned long nSlot)
 {
@@ -1062,6 +1064,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateAppearance(
     }
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::ComputeGameObjectUpdateForYourself(CSWSPlayer* pPlayer,
     CSWSObject* pPlayerObject, CGameObjectArray* pObjectArray,
     unsigned long oidObject)
@@ -1168,6 +1171,7 @@ void CSWSMessage::TestPlayerUpdateDifferences(CSWSPlayer* pPlayer,
     }
 }
 
+// Dead code: not in the PC executable
 void CSWSMessage::AddAreaOfEffectObjectToMessage(CSWSAreaOfEffectObject* pObject)
 {
     WriteINT(pObject->m_nAreaEffectId, 32);
@@ -2182,6 +2186,7 @@ int CSWSMessage::SendServerToPlayerModule_SaveGameStatus(unsigned char nStatus)
                                      pMessage, nMessageSize);
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerModule_EndGame(unsigned long nPlayerId,
                                                   const CExoString& sMovie)
 {
@@ -3358,6 +3363,7 @@ int CSWSMessage::ComputeInventoryUpdateRequired(CSWSPlayer* pPlayer,
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::ComputeRepositoryUpdateRequired(CSWSPlayer* pPlayer,
     CExoLinkedListNode* pRepositoryNode, CExoLinkedListNode* pLastUpdateNode)
 {
@@ -3511,6 +3517,7 @@ int CSWSMessage::ComputeLastUpdate_ActionQueue(
     return 0;
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::ComputeLastUpdate_GuiNumberMemorizedSpells(
     CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pLastUpdateObject)
 {
@@ -4481,6 +4488,7 @@ void CSWSMessage::WriteGameObjUpdate_CharacterSheet(CSWSPlayer* pPlayer,
     pCreature->m_pStats->UpdateLastStatsObject(nUpdateMask, pLastStats);
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerDialogClose(unsigned long nPlayerId)
 {
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_DIALOG, 5, NULL, 0);
@@ -4520,6 +4528,7 @@ int CSWSMessage::SendServerToPlayerInventory_DropCancel(unsigned long nPlayerId,
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_INVENTORY, 4, pMessage, nMessageSize);
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerInventory_Equip(unsigned long nPlayerId,
                                                    unsigned long oidObject,
                                                    unsigned long nInventorySlot,
@@ -4638,6 +4647,7 @@ int CSWSMessage::SendServerToPlayerLogin_Confirm(unsigned long nPlayerId)
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_LOGIN, 5, NULL, 0);
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerLogin_Fail(unsigned long nPlayerId,
                                               unsigned long nReason)
 {
@@ -4991,6 +5001,7 @@ int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)  // PC 0
 }
 #endif
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerParty_Invite(unsigned long nPlayerId,
                                                 unsigned long oidInviter)
 {
@@ -5787,6 +5798,7 @@ int CSWSMessage::SendServerToPlayerCheatNasty(unsigned long nPlayerId,
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_CHEAT, 11, pMessage, nMessageSize);
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerCheatPonyRide(unsigned long nPlayerId,
                                                  unsigned long oidObject)
 {
@@ -5805,6 +5817,7 @@ int CSWSMessage::SendServerToPlayerCheatPonyRide(unsigned long nPlayerId,
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_CHEAT, 12, pMessage, nMessageSize);
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerCheatRainOfCows(unsigned long nPlayerId,
                                                    unsigned long oidObject)
 {
@@ -5908,6 +5921,7 @@ int CSWSMessage::SendServerToPlayerGameObjUpdateVisEffect(CSWSPlayer* pPlayer,
         pMessage, nMessageSize);
 }
 
+// Dead code: not in the PC executable
 int CSWSMessage::SendServerToPlayerCombatRoundStarted(CSWSPlayer* pPlayer)
 {
     unsigned long nPlayerId;

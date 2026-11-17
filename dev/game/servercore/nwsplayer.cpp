@@ -930,6 +930,7 @@ CSWSPlayer::CSWSPlayer(unsigned long nPlayerId)
     m_nPlayerIndex = 0;
 }
 
+// Dead code: not in the PC executable
 void CSWSPlayer::ClearPlayerLastUpdateObject()
 {
     if (m_pLastUpdateObject != NULL)

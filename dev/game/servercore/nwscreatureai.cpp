@@ -5842,6 +5842,7 @@ int CSWSCreature::AIActionSurrenderToEnemies(CSWSObjectActionNode*)
     return CSWSObject::ACTION_COMPLETE;
 }
 
+// Dead code: not in the PC executable
 void CSWSCreature::PossessCreature(unsigned long oidCreature)
 {
     if (oidCreature != OBJECT_INVALID)
@@ -5858,6 +5859,7 @@ void CSWSCreature::PossessCreature(unsigned long oidCreature)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWSCreature::UnpossessCreature()
 {
     CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId());
@@ -7331,6 +7333,7 @@ int CSWSCreature::AIActionJumpToPoint(CSWSObjectActionNode* pAction)
     return ACTION_FAILED;
 }
 
+// Dead code: not in the PC executable
 int CSWSCreature::CheckUseMagicDeviceSkill(CSWSItem* pItem, int nRestrictionType)
 {
     return 0;

@@ -93,6 +93,7 @@ CSWSObjectActionNode::~CSWSObjectActionNode()
     }
 }
 
+// Dead code: not in the PC executable
 void CSWSObject::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     m_lScriptVars.SaveVarTable(pRes, pStruct);
@@ -107,6 +108,7 @@ int CSWSObject::SaveObjectState(CResGFF* pRes, CResStruct* pStruct)
     return pRes->WriteFieldBYTE(pStruct, m_bCommandable, "Commandable");
 }
 
+// Dead code: not in the PC executable
 void CSWSObject::TestActionList()
 {
     CExoLinkedListNode* pPos = m_lstActions.GetHeadPos();
@@ -456,6 +458,7 @@ unsigned char CSWSObject::GetDamageLevel()
     return DAMAGE_LEVEL_NEAR_DEATH;
 }
 
+// Dead code: not in the PC executable
 CSWSpell* CSWSObject::GetLastSpell()
 {
     return g_pRules->GetSpell(m_nLastSpellId);
@@ -1051,6 +1054,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_bForceAlwaysUpdate = 0;
 }
 
+// Dead code: not in the PC executable
 void CSWSObject::CopyScriptVars(CSWSScriptVarTable* pVarTable)
 {
     CExoString sName;
@@ -1993,6 +1997,7 @@ void CSWSObject::LoadEffectList(CResGFF* pRes, CResStruct* pStruct)
     }
 }
 
+// Dead code: not in the PC executable
 void CSWSObject::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     m_lScriptVars.LoadVarTable(pRes, pStruct);
@@ -2545,16 +2550,19 @@ void CSWSObject::RemoveLoopingVisualEffect(unsigned short nVisualEffectId)
     }
 }
 
+// Dead code: not in the PC executable
 int CSWSObject::IsSoundPlayingInDialog()
 {
     return g_pAppManager->m_pClientExoApp->IsSoundPlayingInDialog();
 }
 
+// Dead code: not in the PC executable
 int CSWSObject::IsStuntAnimationPlayingInDialog()
 {
     return g_pAppManager->m_pClientExoApp->GetInGameGui()->IsAnimationPlayingInDialog();
 }
 
+// Dead code: not in the PC executable
 int CSWSObject::IsFadingInDialog()
 {
     return g_pAppManager->m_pClientExoApp->GetInGameGui()->IsFadingInDialog();
@@ -4114,6 +4122,7 @@ void CSWSObject::AddAction(
     TestActionList();
 }
 
+// Dead code: not in the PC executable
 int RemoveFromObjectDialog(CSWSObject* pObject, unsigned long oidObject)
 {
     return pObject->RemoveObjectFromDialog(oidObject);

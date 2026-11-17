@@ -1169,6 +1169,7 @@ void CSWSTrigger::RemoveFromArea()
     SetPosition(Vector(0.0f, 0.0f, 0.0f), 1, 1, 0);
 }
 
+// Dead code: not in the PC executable
 CExoString* CSWSTrigger::GetScriptName(int nScript)
 {
     if (nScript < 0 || nScript > SCRIPT_ONCLICK)

@@ -256,6 +256,7 @@ CSWSModule::~CSWSModule()
     m_oidAreaCached = OBJECT_INVALID;
 }
 
+// Dead code: not in the PC executable
 void CSWSModule::ClearAreaVisitedFlags()
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -908,6 +909,7 @@ int CSWSModule::LoadModuleFinish()
     return 0;
 }
 
+// Dead code: not in the PC executable
 void CSWSModule::PostProcess()
 {
 }
