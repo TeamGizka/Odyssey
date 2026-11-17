@@ -113,7 +113,7 @@ public:
     char m_nFadeSteps;
     char gap_715[3];
     int m_bTarget;
-    void Pulse();
+    void Pulse(int bPulse);
     CSWGuiControl* HitCheckMouse(int, int);
     int GetActive();
 #else

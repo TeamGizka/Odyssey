@@ -57,11 +57,10 @@ CSWSMessage::~CSWSMessage()
 {
 }
 
-void ResetPlayerInventoryLastUpdate(CSWSPlayer* pPlayer)
+int CSWSMessage::HandlePlayerToServerServerChatMessage(CSWSPlayer* pPlayer,
+                                                       unsigned char nMinor)
 {
-    CSWSPlayerLUOInventory* pLastUpdate =
-        pPlayer->m_pInventoryGUI->m_pLastUpdateObject;
-    pLastUpdate->ClearSlots();
+    return 1;
 }
 // PC 0x005A1E40 GOG 0x005A1EB0
 int CSWSMessage::HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer,

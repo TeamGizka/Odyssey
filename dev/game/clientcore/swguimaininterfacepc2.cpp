@@ -87,10 +87,19 @@ void CSWGuiMainInterfaceAction::Draw(float fElapsed)
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterfaceAction::Pulse()
+void CSWGuiMainInterfaceAction::Pulse(int bPulse)
 {
-    m_nFadeSteps = 2;
-    m_fFadeTimer = 0.1f;
+    if (bPulse)
+    {
+        m_nFadeSteps = 2;
+        m_fFadeTimer = 0.1f;
+    }
+    else
+    {
+        m_nFadeSteps = 0;
+        m_btnIcon.m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
+        m_btnIcon.m_cHilite.m_cParams.m_fHilightAlpha = 1.0f;
+    }
 }
 #endif
 
@@ -2241,7 +2250,7 @@ void CSWGuiTargetActionMenu::DoTargetAction(int nMenu, int bUnknown)  // PC 0x00
                         g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PlayGuiSound(
                             CSWGuiManager::GUISOUND_WORLD_ACTION);
                         (pObject->*pAction->m_pfnAction)(pAction->m_nAction, pPlayer);
-                        m_aActions[nMenu].Pulse();
+                        m_aActions[nMenu].Pulse(1);
                         if (pPlayer->m_bCombatMode == 0)
                         {
                             if (bStartCombat)
@@ -3204,7 +3213,7 @@ void CSWGuiMainInterface::DoPersonalAction(int nMenu, int bUnknown)  // PC 0x006
                             }
                             (pObject->*pAction->m_pfnAction)(pAction->m_nAction,
                                                              pPlayer);
-                            m_aPersonalActions[nMenu].Pulse();
+                            m_aPersonalActions[nMenu].Pulse(1);
                             if (pPlayer->m_bCombatMode == 0 &&
                                 pPlayer->GetServerCreature() != NULL)
                             {
