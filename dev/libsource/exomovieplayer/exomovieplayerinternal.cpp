@@ -20,13 +20,13 @@ HWND g_hMovieWnd;
 
 #define EXOMOVIEPLAYERINTERNAL_DEBUG 0
 
-template <class T> inline void ExoMovieListTrace(CExoArrayList<T>*)
+template <class T> inline void TraceListRelease(CExoArrayList<T>*)
 {
 }
 
 template <class T> inline void ExoArrayListReleased(CExoArrayList<T>* pList)
 {
-    ExoMovieListTrace(pList);
+    TraceListRelease(pList);
 }
 
 void MovieSetUpProjection()

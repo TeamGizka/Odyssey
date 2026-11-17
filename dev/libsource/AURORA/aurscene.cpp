@@ -517,14 +517,14 @@ inline void SetFogMode(int nFogMode)
     GLRender_SetFogMode(nFogMode);
 }
 
-inline void SetFogModef(Aurora::AuroraEnableEnums nMode, float fValue)
+inline void SetFogf(Aurora::AuroraEnableEnums nMode, float fValue)
 {
-    GLRender_SetFogModef(nMode, fValue);
+    GLRender_SetFogf(nMode, fValue);
 }
 
-inline void SetFogModev(Aurora::AuroraEnableEnums nMode, Vector& vValue)
+inline void SetFogfv(Aurora::AuroraEnableEnums nMode, Vector& vValue)
 {
-    GLRender_SetFogModev(nMode, vValue);
+    GLRender_SetFogfv(nMode, vValue);
 }
 
 inline int IsEnabled(Aurora::AuroraEnableEnums nCap)
@@ -1102,19 +1102,19 @@ void Scene::DoFadeBuckets()
                         float fFade = pTriMesh->m_pTileData->m_fFadeAlpha *
                             pTriMesh->m_pTileData->m_fFadeAlpha;
                         Vector vFogColor = fFade * m_vFogColor;
-                        SetFogModev(FOG_COLOR, vFogColor);
-                        SetFogModef(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
-                        SetFogModef(FOG_START,
+                        SetFogfv(FOG_COLOR, vFogColor);
+                        SetFogf(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
+                        SetFogf(FOG_START,
                             (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogNear));
-                        SetFogModef(FOG_END,
+                        SetFogf(FOG_END,
                             (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogFar) + 0.1f);
                         pTriMesh->Draw(false);
                         if (!m_bFog)
                             GLRender_Disable(ENABLE_FOG);
-                        SetFogModef(FOG_DENSITY, m_fFogDensity);
-                        SetFogModef(FOG_START, m_fFogNear);
-                        SetFogModef(FOG_END, m_fFogFar);
-                        SetFogModev(FOG_COLOR, m_vFogColor);
+                        SetFogf(FOG_DENSITY, m_fFogDensity);
+                        SetFogf(FOG_START, m_fFogNear);
+                        SetFogf(FOG_END, m_fFogFar);
+                        SetFogfv(FOG_COLOR, m_vFogColor);
                     }
                     else
                         pTriMesh->Draw(false);
@@ -1143,19 +1143,19 @@ void Scene::DoFadeBuckets()
                 float fFade = pTriMesh->m_pTileData->m_fFadeAlpha *
                     pTriMesh->m_pTileData->m_fFadeAlpha;
                 Vector vFogColor = fFade * m_vFogColor;
-                SetFogModev(FOG_COLOR, vFogColor);
-                SetFogModef(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
-                SetFogModef(FOG_START,
+                SetFogfv(FOG_COLOR, vFogColor);
+                SetFogf(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
+                SetFogf(FOG_START,
                     (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogNear));
-                SetFogModef(FOG_END,
+                SetFogf(FOG_END,
                     (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogFar) + 0.1f);
                 pTriMesh->Draw(false);
                 if (!m_bFog)
                     GLRender_Disable(ENABLE_FOG);
-                SetFogModef(FOG_DENSITY, m_fFogDensity);
-                SetFogModef(FOG_START, m_fFogNear);
-                SetFogModef(FOG_END, m_fFogFar);
-                SetFogModev(FOG_COLOR, m_vFogColor);
+                SetFogf(FOG_DENSITY, m_fFogDensity);
+                SetFogf(FOG_START, m_fFogNear);
+                SetFogf(FOG_END, m_fFogFar);
+                SetFogfv(FOG_COLOR, m_vFogColor);
             }
             else
                 pTriMesh->Draw(false);
@@ -1193,7 +1193,7 @@ void Scene::DoStaticMeshShadows()
         staticshadowbucket.m_pList[i]->Draw(false);
     }
 }
-inline bool TriggerHighlightReverse(PartTrigger* p) { return p->m_bHighlightReverse; }
+inline bool IsTriggerHighlightReversed(PartTrigger* p) { return p->m_bHighlightReverse; }
 // PC 0x0046AB40 GOG 0x0046ACA0
 void Scene::DoHighlightTriggers(bool bHighlight)
 {
@@ -1216,7 +1216,7 @@ void Scene::DoHighlightTriggers(bool bHighlight)
             AurDrawLine(pTrigger->m_vMinimum, pTrigger->m_vMaximum);
             AurDrawLine(pTrigger->m_vMinimum + Vector(0.0f, 0.0f, 1.0f), pTrigger->m_vMaximum + Vector(0.0f, 0.0f, 1.0f), 1);
             bool bHighlighted = pTrigger->m_bHighlighted;
-            if (bHighlighted && bHighlight == TriggerHighlightReverse(pTrigger))
+            if (bHighlighted && bHighlight == IsTriggerHighlightReversed(pTrigger))
                 lstTriggers.Add(pTrigger);
         }
 
@@ -2344,22 +2344,22 @@ void Scene::DoFog()
             if (LightManager::m_pOnlyGob)
             {
                 Vector vBlack(0.0f, 0.0f, 0.0f);
-                GLRender_SetFogModev(FOG_COLOR, vBlack);
+                GLRender_SetFogfv(FOG_COLOR, vBlack);
             }
             else if (g_ForceSight)
             {
-                GLRender_SetFogModev(FOG_COLOR, m_vDesaturatedFogColor);
+                GLRender_SetFogfv(FOG_COLOR, m_vDesaturatedFogColor);
             }
             else
             {
-                GLRender_SetFogModev(FOG_COLOR, m_vFogColor);
+                GLRender_SetFogfv(FOG_COLOR, m_vFogColor);
             }
             float fNear = m_fFogNear;
-            GLRender_SetFogModef(FOG_START, fNear);
+            GLRender_SetFogf(FOG_START, fNear);
             float fFar = m_fFogFar;
-            GLRender_SetFogModef(FOG_END, fFar);
+            GLRender_SetFogf(FOG_END, fFar);
             float fDensity = m_fFogDensity;
-            GLRender_SetFogModef(FOG_DENSITY, fDensity);
+            GLRender_SetFogf(FOG_DENSITY, fDensity);
         }
         else
         {
@@ -2378,15 +2378,15 @@ void Scene::DoFog()
             m_nFogMode == FOG_MODE_EXP ? FOG_MODE_EXP : FOG_MODE_EXP2);
         {
             Vector vRed(1.0f, 0.0f, 0.0f);
-            GLRender_SetFogModev(FOG_COLOR, vRed);
+            GLRender_SetFogfv(FOG_COLOR, vRed);
         }
         m_vFogColor = Vector(1.0f, 0.0f, 0.0f);
-        GLRender_SetFogModef(FOG_START, AUR_FOG_TEST_START);
+        GLRender_SetFogf(FOG_START, AUR_FOG_TEST_START);
         m_fFogNear = 0.0f;
         m_fFogFar = AUR_FOG_TEST_END;
         m_fFogDensity = AUR_FOG_TEST_DENSITY;
-        GLRender_SetFogModef(FOG_END, AUR_FOG_TEST_END);
-        GLRender_SetFogModef(FOG_DENSITY, AUR_FOG_TEST_DENSITY);
+        GLRender_SetFogf(FOG_END, AUR_FOG_TEST_END);
+        GLRender_SetFogf(FOG_DENSITY, AUR_FOG_TEST_DENSITY);
     }
 }
 // PC 0x004651C0 GOG 0x004652D0

@@ -31,10 +31,10 @@
 
 #include <math.h>
 
-static inline void Swguimaininterfacepc2Trace4();
-static inline void Swguimaininterfacepc2Trace3();
-static inline void Swguimaininterfacepc2Trace2();
-static inline void Swguimaininterfacepc2Trace1();
+static inline void TraceFloatyText();
+static inline void TraceInterfaceEvent();
+static inline void TraceActionScroll();
+static inline void TraceMainInterface();
 #define SWGUIMAININTERFACEPC2_DEBUG 0
 
 // PC 0x004015A0 GOG 0x004015A0
@@ -132,22 +132,22 @@ void CSWGuiMainInterface::OnCharacterRightClicked(CSWGuiControl* pControl)  // P
 }
 #endif
 
-static inline void Swguimaininterfacepc2Trace4()
+static inline void TraceFloatyText()
 {
-    Swguimaininterfacepc2Trace3();
+    TraceInterfaceEvent();
 }
 
-static inline void Swguimaininterfacepc2Trace3()
+static inline void TraceInterfaceEvent()
 {
-    Swguimaininterfacepc2Trace2();
+    TraceActionScroll();
 }
 
-static inline void Swguimaininterfacepc2Trace2()
+static inline void TraceActionScroll()
 {
-    Swguimaininterfacepc2Trace1();
+    TraceMainInterface();
 }
 
-static inline void Swguimaininterfacepc2Trace1()
+static inline void TraceMainInterface()
 {
 }
 
@@ -4373,7 +4373,7 @@ void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x
 #ifndef _XBOX
 void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3A70 GOG 0x006E3660
 {
-    Swguimaininterfacepc2Trace2();
+    TraceActionScroll();
     if (pControl->m_bSelected != 0)
     {
         ResetPartyMemberItemUse();
@@ -4394,7 +4394,7 @@ void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC
 #ifndef _XBOX
 void CSWGuiMainInterface::OnActionDownArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3AF0 GOG 0x006E36E0
 {
-    Swguimaininterfacepc2Trace2();
+    TraceActionScroll();
     if (pControl->m_bSelected != 0)
     {
         ResetPartyMemberItemUse();
@@ -4796,7 +4796,7 @@ void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
                                         const CExoString& sText,
                                         const Vector& vColor, float fDuration)
 {
-    Swguimaininterfacepc2Trace4();
+    TraceFloatyText();
     CSWGuiFloatyText* pFloatyText = new CSWGuiFloatyText;
     pFloatyText->CreateEntry(oidObject, sText, vColor, fDuration);
 

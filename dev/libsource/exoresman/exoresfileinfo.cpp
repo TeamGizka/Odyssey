@@ -11,7 +11,7 @@ static long g_nFileInfoSize;
 static long g_nFileInfoTime;
 static int g_nFileInfoCount = 0;
 
-long ExoResFileInfoSize(const char* szFileName)
+long ExoGetFileInfoSize(const char* szFileName)
 {
     FILE* pFile = fopen(szFileName, "rb");
     if (pFile == NULL)
@@ -24,13 +24,13 @@ long ExoResFileInfoSize(const char* szFileName)
     return g_nFileInfoSize;
 }
 
-struct tm* ExoResFileInfoStamp()
+struct tm* ExoGetFileInfoTime()
 {
     time(&g_nFileInfoTime);
     return localtime(&g_nFileInfoTime);
 }
 
-long ExoResFileInfo(const char* szFileName)
+long ExoLogFileInfo(const char* szFileName)
 {
     struct tm* pTime;
 
@@ -42,9 +42,9 @@ long ExoResFileInfo(const char* szFileName)
             return 0;
         }
     }
-    if (ExoResFileInfoSize(szFileName) != 0)
+    if (ExoGetFileInfoSize(szFileName) != 0)
     {
-        pTime = ExoResFileInfoStamp();
+        pTime = ExoGetFileInfoTime();
         strncpy(g_szFileInfoLine, ctime(&g_nFileInfoTime), EXORESFILEINFO_LINE - 1);
         g_szFileInfoLine[EXORESFILEINFO_LINE - 1] = 0;
         fprintf(g_pFileInfoLog, "%-64s %10ld %04d%02d%02d %s %s", szFileName, g_nFileInfoSize,

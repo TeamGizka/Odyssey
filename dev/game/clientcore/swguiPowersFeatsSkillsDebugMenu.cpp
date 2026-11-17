@@ -14,7 +14,7 @@
 
 #define SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG 0
 
-static inline void DebugMenuOptionTrace1();
+static inline void TraceDebugMenuOption();
 
 // PC 0x0073D000 GOG 0x0073CE20
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
@@ -22,7 +22,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
 {
     if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
     {
-        DebugMenuOptionTrace1();
+        TraceDebugMenuOption();
     }
     const int nNoPrerequisiteSpell = -1;
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
@@ -108,7 +108,7 @@ CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
 {
     if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
     {
-        DebugMenuOptionTrace1();
+        TraceDebugMenuOption();
     }
 #ifdef _XBOX
     CSWGuiButton* pButton = NULL;
@@ -149,12 +149,12 @@ CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
     return pButton;
 #endif
 }
-static inline void DebugMenuOptionTrace2();
-static inline void DebugMenuOptionTrace1()
+static inline void TraceDebugMenu();
+static inline void TraceDebugMenuOption()
 {
-    DebugMenuOptionTrace2();
+    TraceDebugMenu();
 }
-static inline void DebugMenuOptionTrace2()
+static inline void TraceDebugMenu()
 {
 }
 

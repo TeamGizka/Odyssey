@@ -241,48 +241,48 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
     {
         SendAttackSummaryFeedback(oidTarget);
         CSWCCMessageData* pMessage = new CSWCCMessageData;
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_TOTAL, pAttack->m_Extra1.m_nAttackRoll + (char)pAttack->m_Extra1.m_nAttackModifier);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_ROLL, pAttack->m_Extra1.m_nAttackRoll);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_BONUS, (char)pAttack->m_Extra1.m_nAttackModifier);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER1, (char)pAttack->m_Extra1.m_nStrengthModifier);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER2, (char)pAttack->m_Extra1.m_nDexterityModifier);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_TOTAL, pAttack->m_AttackBreakdown.m_nAttackRoll + (char)pAttack->m_AttackBreakdown.m_nAttackModifier);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_ROLL, pAttack->m_AttackBreakdown.m_nAttackRoll);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_BONUS, (char)pAttack->m_AttackBreakdown.m_nAttackModifier);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER1, (char)pAttack->m_AttackBreakdown.m_nStrengthModifier);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER2, (char)pAttack->m_AttackBreakdown.m_nDexterityModifier);
         pMessage->SetInteger(CSWCCMessageData::ATTACK_TYPE, pAttack->m_nAttackType);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER3, (char)pAttack->m_Extra1.m_nSpecialAttackBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL, pAttack->m_Extra1.m_nOffHand);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER4, (char)pAttack->m_Extra1.m_nWeaponSizeBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER5, (char)pAttack->m_Extra1.m_nTwoWeaponFeatBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL1, pAttack->m_Extra1.m_nTwoWeaponFeat);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER6, (char)pAttack->m_Extra1.m_nDuelingBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL2, pAttack->m_Extra1.m_nDuelingFeat);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER7, (char)pAttack->m_Extra1.m_nGoodAimBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER8, (char)pAttack->m_Extra1.m_nOffensiveTrainingBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER9, (char)pAttack->m_Extra1.m_nWeaponFocusBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER10, (char)pAttack->m_Extra1.m_nEffectAttackBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL3, pAttack->m_Extra1.m_nBaseAttackBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER11, (char)pAttack->m_Extra1.m_nTwoWeaponPenalty);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DEFENSE_ROLL, pAttack->m_Extra1.m_bAutomaticHit);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DEFENSE_MODIFIER, pAttack->m_Extra1.m_bAutomaticMiss);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER12, (char)pAttack->m_Extra1.m_nDualStrikeBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL4, pAttack->m_Extra1.m_nTargetingFeat);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER13, (char)pAttack->m_Extra1.m_nTargetingBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL5, pAttack->m_Extra1.m_nCrushOppositionSpell);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER14, (char)pAttack->m_Extra1.m_nCrushOppositionPenalty);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL6, pAttack->m_Extra1.m_nInspireFollowersSpell);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER15, (char)pAttack->m_Extra1.m_nInspireFollowersBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER16, (char)pAttack->m_Extra1.m_nLeaderCharismaBonus);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL7, pAttack->m_Extra1.m_nForm);
-        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER17, (char)pAttack->m_Extra1.m_nFormBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER3, (char)pAttack->m_AttackBreakdown.m_nSpecialAttackBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL, pAttack->m_AttackBreakdown.m_nOffHand);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER4, (char)pAttack->m_AttackBreakdown.m_nWeaponSizeBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER5, (char)pAttack->m_AttackBreakdown.m_nTwoWeaponFeatBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL1, pAttack->m_AttackBreakdown.m_nTwoWeaponFeat);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER6, (char)pAttack->m_AttackBreakdown.m_nDuelingBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL2, pAttack->m_AttackBreakdown.m_nDuelingFeat);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER7, (char)pAttack->m_AttackBreakdown.m_nGoodAimBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER8, (char)pAttack->m_AttackBreakdown.m_nOffensiveTrainingBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER9, (char)pAttack->m_AttackBreakdown.m_nWeaponFocusBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER10, (char)pAttack->m_AttackBreakdown.m_nEffectAttackBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL3, pAttack->m_AttackBreakdown.m_nBaseAttackBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER11, (char)pAttack->m_AttackBreakdown.m_nTwoWeaponPenalty);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DEFENSE_ROLL, pAttack->m_AttackBreakdown.m_bAutomaticHit);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DEFENSE_MODIFIER, pAttack->m_AttackBreakdown.m_bAutomaticMiss);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER12, (char)pAttack->m_AttackBreakdown.m_nDualStrikeBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL4, pAttack->m_AttackBreakdown.m_nTargetingFeat);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER13, (char)pAttack->m_AttackBreakdown.m_nTargetingBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL5, pAttack->m_AttackBreakdown.m_nCrushOppositionSpell);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER14, (char)pAttack->m_AttackBreakdown.m_nCrushOppositionPenalty);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL6, pAttack->m_AttackBreakdown.m_nInspireFollowersSpell);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER15, (char)pAttack->m_AttackBreakdown.m_nInspireFollowersBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER16, (char)pAttack->m_AttackBreakdown.m_nLeaderCharismaBonus);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_DETAIL7, pAttack->m_AttackBreakdown.m_nForm);
+        pMessage->SetInteger(CSWCCMessageData::ATTACK_MODIFIER17, (char)pAttack->m_AttackBreakdown.m_nFormBonus);
         BroadcastAttackBreakdown(oidTarget, pMessage);
         delete pMessage;
 
         pMessage = new CSWCCMessageData;
-        pMessage->SetInteger(CSWCCMessageData::THREAT_ATTACK_ROLL, pAttack->m_Extra1.m_nAttackRoll);
-        pMessage->SetInteger(CSWCCMessageData::THREAT_ROLL, pAttack->m_Extra2.m_nThreatRange);
-        pMessage->SetInteger(CSWCCMessageData::THREAT_DETAIL, pAttack->m_Extra2.m_bThreat);
-        pMessage->SetInteger(CSWCCMessageData::THREAT_TOTAL, (char)pAttack->m_Extra1.m_nAttackModifier + pAttack->m_Extra2.m_nCriticalRoll);
+        pMessage->SetInteger(CSWCCMessageData::THREAT_ATTACK_ROLL, pAttack->m_AttackBreakdown.m_nAttackRoll);
+        pMessage->SetInteger(CSWCCMessageData::THREAT_ROLL, pAttack->m_ThreatBreakdown.m_nThreatRange);
+        pMessage->SetInteger(CSWCCMessageData::THREAT_DETAIL, pAttack->m_ThreatBreakdown.m_bThreat);
+        pMessage->SetInteger(CSWCCMessageData::THREAT_TOTAL, (char)pAttack->m_AttackBreakdown.m_nAttackModifier + pAttack->m_ThreatBreakdown.m_nCriticalRoll);
         pMessage->SetInteger(CSWCCMessageData::THREAT_DEFENSE, (char)pAttack->m_Flags.m_nArmorClass);
-        pMessage->SetInteger(CSWCCMessageData::THREAT_DETAIL1, pAttack->m_Extra2.m_nUnknown10);
-        pMessage->SetInteger(CSWCCMessageData::THREAT_MODIFIER, pAttack->m_Extra2.m_bCriticalConfirmed);
+        pMessage->SetInteger(CSWCCMessageData::THREAT_DETAIL1, pAttack->m_ThreatBreakdown.m_nUnknown10);
+        pMessage->SetInteger(CSWCCMessageData::THREAT_MODIFIER, pAttack->m_ThreatBreakdown.m_bCriticalConfirmed);
         BroadcastThreatBreakdown(oidTarget, pMessage);
         delete pMessage;
 
@@ -312,7 +312,7 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nUnusedDamageFeedback);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nSneakAttackDamage);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nWeaponSpecializationDamage);
-        pMessage->SetInteger(nIndex++, (char)pAttack->m_Extra2.m_nCriticalMultiplier);
+        pMessage->SetInteger(nIndex++, (char)pAttack->m_ThreatBreakdown.m_nCriticalMultiplier);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nToughnessReduction);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nEnduranceReduction);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nResistedDamageType);
@@ -324,19 +324,19 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
         BroadcastDamageBreakdown(oidTarget, pMessage);
         delete pMessage;
 
-        if (pAttack->m_Extra4.m_bEffectApplied)
+        if (pAttack->m_EffectBreakdown.m_bEffectApplied)
         {
             pMessage = new CSWCCMessageData;
             pMessage->SetObjectID(CSWCCMessageData::BREAKDOWN_REACT_OBJECT, pAttack->m_oidReactObject);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_TYPE, pAttack->m_Extra4.m_nSavingThrowType);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_STATE, pAttack->m_Extra4.m_nState);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_VERSUS_TYPE, pAttack->m_Extra4.m_nSaveVersusType);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_ROLL, pAttack->m_Extra4.m_nSavingThrowRoll);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_EFFECT_BONUS, pAttack->m_Extra4.m_nSavingThrowEffectBonus);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_BONUS, pAttack->m_Extra4.m_nSavingThrowBonus);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_TOTAL, pAttack->m_Extra4.m_nSavingThrowTotal);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_DC, pAttack->m_Extra4.m_nSavingThrowDC);
-            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_RESULT, (char)pAttack->m_Extra4.m_nSavingThrowResult);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_TYPE, pAttack->m_EffectBreakdown.m_nSavingThrowType);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_STATE, pAttack->m_EffectBreakdown.m_nState);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_VERSUS_TYPE, pAttack->m_EffectBreakdown.m_nSaveVersusType);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_ROLL, pAttack->m_EffectBreakdown.m_nSavingThrowRoll);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_EFFECT_BONUS, pAttack->m_EffectBreakdown.m_nSavingThrowEffectBonus);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_BONUS, pAttack->m_EffectBreakdown.m_nSavingThrowBonus);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_TOTAL, pAttack->m_EffectBreakdown.m_nSavingThrowTotal);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_DC, pAttack->m_EffectBreakdown.m_nSavingThrowDC);
+            pMessage->SetInteger(CSWCCMessageData::EFFECT_SAVE_RESULT, (char)pAttack->m_EffectBreakdown.m_nSavingThrowResult);
             BroadcastEffectApplicationBreakdown(oidTarget, pMessage);
             delete pMessage;
         }
@@ -344,23 +344,23 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
         {
             pMessage = new CSWCCMessageData;
             pMessage->SetObjectID(CSWCCMessageData::BREAKDOWN_REACT_OBJECT, pAttack->m_oidReactObject);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL0, pAttack->m_Extra5.m_nDeflectResult);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL1, pAttack->m_Extra5.m_nAttackTotal);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL2, pAttack->m_Extra5.m_nDeflectTotal);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL3, pAttack->m_Extra5.m_nDeflectRoll);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL4, pAttack->m_Extra5.m_nJediDefenseBonus);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL5, pAttack->m_Extra5.m_nJediDefenseFeat);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL6, pAttack->m_Extra5.m_nBaseAttackBonus);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL7, pAttack->m_Extra5.m_nArmorCheckPenalty);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL8, pAttack->m_Extra5.m_nEffectBonus);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL9, pAttack->m_Extra5.m_nDeflectionSpellBonus);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL10, pAttack->m_Extra5.m_nDeflectionSpell);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL11, pAttack->m_Extra5.m_nFormDeflectionBonus);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL12, pAttack->m_Extra5.m_nForm);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL13, pAttack->m_Extra5.m_nClassBonus);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL14, pAttack->m_Extra5.m_nDeflectionClassFeat);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL15, pAttack->m_Extra5.m_nPenalty);
-            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL16, pAttack->m_Extra5.m_nPenaltyFeat);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL0, pAttack->m_DeflectBreakdown.m_nDeflectResult);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL1, pAttack->m_DeflectBreakdown.m_nAttackTotal);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL2, pAttack->m_DeflectBreakdown.m_nDeflectTotal);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL3, pAttack->m_DeflectBreakdown.m_nDeflectRoll);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL4, pAttack->m_DeflectBreakdown.m_nJediDefenseBonus);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL5, pAttack->m_DeflectBreakdown.m_nJediDefenseFeat);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL6, pAttack->m_DeflectBreakdown.m_nBaseAttackBonus);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL7, pAttack->m_DeflectBreakdown.m_nArmorCheckPenalty);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL8, pAttack->m_DeflectBreakdown.m_nEffectBonus);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL9, pAttack->m_DeflectBreakdown.m_nDeflectionSpellBonus);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL10, pAttack->m_DeflectBreakdown.m_nDeflectionSpell);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL11, pAttack->m_DeflectBreakdown.m_nFormDeflectionBonus);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL12, pAttack->m_DeflectBreakdown.m_nForm);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL13, pAttack->m_DeflectBreakdown.m_nClassBonus);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL14, pAttack->m_DeflectBreakdown.m_nDeflectionClassFeat);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL15, pAttack->m_DeflectBreakdown.m_nPenalty);
+            pMessage->SetInteger(CSWCCMessageData::DEFLECT_DETAIL16, pAttack->m_DeflectBreakdown.m_nPenaltyFeat);
             BroadcastDeflectBreakdown(oidTarget, pMessage);
             delete pMessage;
         }
@@ -573,24 +573,24 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
         else
         {
             int nRoll = (unsigned short)g_pRules->RollDice(1, 20);
-            pAttack->m_Extra5.m_nDeflectRoll = nRoll;
+            pAttack->m_DeflectBreakdown.m_nDeflectRoll = nRoll;
             if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_MASTER_JEDI_DEFENSE))
             {
                 nRoll += 6;
-                pAttack->m_Extra5.m_nJediDefenseFeat = CSWFeat::FEAT_MASTER_JEDI_DEFENSE;
-                pAttack->m_Extra5.m_nJediDefenseBonus = 6;
+                pAttack->m_DeflectBreakdown.m_nJediDefenseFeat = CSWFeat::FEAT_MASTER_JEDI_DEFENSE;
+                pAttack->m_DeflectBreakdown.m_nJediDefenseBonus = 6;
             }
             else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_ADVANCED_JEDI_DEFENSE))
             {
                 nRoll += 3;
-                pAttack->m_Extra5.m_nJediDefenseFeat = CSWFeat::FEAT_ADVANCED_JEDI_DEFENSE;
-                pAttack->m_Extra5.m_nJediDefenseBonus = 3;
+                pAttack->m_DeflectBreakdown.m_nJediDefenseFeat = CSWFeat::FEAT_ADVANCED_JEDI_DEFENSE;
+                pAttack->m_DeflectBreakdown.m_nJediDefenseBonus = 3;
             }
             if (pCreature->m_pStats->HasSpell(0, SPELL_DEFLECTION_BONUS, 0))
             {
                 nRoll += DEFLECTION_SPELL_BONUS;
-                pAttack->m_Extra5.m_nDeflectionSpell = SPELL_DEFLECTION_BONUS;
-                pAttack->m_Extra5.m_nDeflectionSpellBonus = DEFLECTION_SPELL_BONUS;
+                pAttack->m_DeflectBreakdown.m_nDeflectionSpell = SPELL_DEFLECTION_BONUS;
+                pAttack->m_DeflectBreakdown.m_nDeflectionSpellBonus = DEFLECTION_SPELL_BONUS;
             }
             if (pCreature->m_pStats->HasFeat(FEAT_CLASS_DEFLECTION_BONUS) &&
                 pCreature->IsWieldingLightsaber())
@@ -602,8 +602,8 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
                         unsigned char nClassBonus =
                             (pCreature->m_pStats->GetClassLevel(nClass, 0) + 1) / 2;
                         nRoll += nClassBonus;
-                        pAttack->m_Extra5.m_nDeflectionClassFeat = FEAT_CLASS_DEFLECTION_BONUS;
-                        pAttack->m_Extra5.m_nClassBonus = nClassBonus;
+                        pAttack->m_DeflectBreakdown.m_nDeflectionClassFeat = FEAT_CLASS_DEFLECTION_BONUS;
+                        pAttack->m_DeflectBreakdown.m_nClassBonus = nClassBonus;
                         break;
                     }
                 }
@@ -615,66 +615,66 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
                 {
                 case FORM_SABER_II_MAKASHI:
                     nRoll -= 5;
-                    pAttack->m_Extra5.m_nFormDeflectionBonus = -5;
-                    pAttack->m_Extra5.m_nForm = nForm;
+                    pAttack->m_DeflectBreakdown.m_nFormDeflectionBonus = -5;
+                    pAttack->m_DeflectBreakdown.m_nForm = nForm;
                     break;
                 case FORM_SABER_III_DEFLECTION:
                     nRoll += 4;
-                    pAttack->m_Extra5.m_nFormDeflectionBonus = 4;
-                    pAttack->m_Extra5.m_nForm = nForm;
+                    pAttack->m_DeflectBreakdown.m_nFormDeflectionBonus = 4;
+                    pAttack->m_DeflectBreakdown.m_nForm = nForm;
                     break;
                 case FORM_SABER_IV_DEFLECTION:
                     nRoll -= 4;
-                    pAttack->m_Extra5.m_nFormDeflectionBonus = -4;
-                    pAttack->m_Extra5.m_nForm = nForm;
+                    pAttack->m_DeflectBreakdown.m_nFormDeflectionBonus = -4;
+                    pAttack->m_DeflectBreakdown.m_nForm = nForm;
                     break;
                 case FORM_SABER_V_SHIEN:
                     nRoll += 2;
-                    pAttack->m_Extra5.m_nFormDeflectionBonus = 2;
-                    pAttack->m_Extra5.m_nForm = nForm;
+                    pAttack->m_DeflectBreakdown.m_nFormDeflectionBonus = 2;
+                    pAttack->m_DeflectBreakdown.m_nForm = nForm;
                     break;
                 case FORM_SABER_VI_NIMAN:
                     nRoll += 1;
-                    pAttack->m_Extra5.m_nFormDeflectionBonus = 1;
-                    pAttack->m_Extra5.m_nForm = nForm;
+                    pAttack->m_DeflectBreakdown.m_nFormDeflectionBonus = 1;
+                    pAttack->m_DeflectBreakdown.m_nForm = nForm;
                     break;
                 }
             }
             if (m_pStats->HasFeat(FEAT_DEFLECTION_PENALTY_5))
             {
-                pAttack->m_Extra5.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_5;
-                pAttack->m_Extra5.m_nPenalty = -10;
+                pAttack->m_DeflectBreakdown.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_5;
+                pAttack->m_DeflectBreakdown.m_nPenalty = -10;
                 nRoll -= 10;
             }
             else if (m_pStats->HasFeat(FEAT_DEFLECTION_PENALTY_4))
             {
-                pAttack->m_Extra5.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_4;
-                pAttack->m_Extra5.m_nPenalty = -8;
+                pAttack->m_DeflectBreakdown.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_4;
+                pAttack->m_DeflectBreakdown.m_nPenalty = -8;
                 nRoll -= 8;
             }
             else if (m_pStats->HasFeat(FEAT_DEFLECTION_PENALTY_3))
             {
-                pAttack->m_Extra5.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_3;
-                pAttack->m_Extra5.m_nPenalty = -6;
+                pAttack->m_DeflectBreakdown.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_3;
+                pAttack->m_DeflectBreakdown.m_nPenalty = -6;
                 nRoll -= 6;
             }
             else if (m_pStats->HasFeat(FEAT_DEFLECTION_PENALTY_2))
             {
-                pAttack->m_Extra5.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_2;
-                pAttack->m_Extra5.m_nPenalty = -4;
+                pAttack->m_DeflectBreakdown.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_2;
+                pAttack->m_DeflectBreakdown.m_nPenalty = -4;
                 nRoll -= 4;
             }
             else if (m_pStats->HasFeat(FEAT_DEFLECTION_PENALTY_1))
             {
-                pAttack->m_Extra5.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_1;
-                pAttack->m_Extra5.m_nPenalty = -2;
+                pAttack->m_DeflectBreakdown.m_nPenaltyFeat = FEAT_DEFLECTION_PENALTY_1;
+                pAttack->m_DeflectBreakdown.m_nPenalty = -2;
                 nRoll -= 2;
             }
             nRoll += pCreature->GetStats()->GetBaseAttackBonus();
-            pAttack->m_Extra5.m_nBaseAttackBonus = pCreature->m_pStats->GetBaseAttackBonus();
+            pAttack->m_DeflectBreakdown.m_nBaseAttackBonus = pCreature->m_pStats->GetBaseAttackBonus();
             CSWSCreatureStats* pStats = pCreature->m_pStats;
             nRoll += (char)(pStats->m_nArmorCheckPenalty + pStats->m_nShieldCheckPenalty);
-            pAttack->m_Extra5.m_nArmorCheckPenalty = pCreature->m_pStats->m_nArmorCheckPenalty +
+            pAttack->m_DeflectBreakdown.m_nArmorCheckPenalty = pCreature->m_pStats->m_nArmorCheckPenalty +
                                       pCreature->m_pStats->m_nShieldCheckPenalty;
             CExoArrayList<CGameEffect*>* pEffects = &pCreature->m_lstEffects;
             if (pEffects != NULL)
@@ -689,11 +689,11 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
                         nEffectBonus -= pEffect->GetInteger(1);
                 }
                 nRoll += nEffectBonus;
-                pAttack->m_Extra5.m_nEffectBonus = nEffectBonus;
+                pAttack->m_DeflectBreakdown.m_nEffectBonus = nEffectBonus;
             }
-            int nAttackRoll = pAttack->m_Extra1.m_nAttackRoll + (char)pAttack->m_Extra1.m_nAttackModifier;
-            pAttack->m_Extra5.m_nDeflectTotal = nRoll;
-            pAttack->m_Extra5.m_nAttackTotal = nAttackRoll;
+            int nAttackRoll = pAttack->m_AttackBreakdown.m_nAttackRoll + (char)pAttack->m_AttackBreakdown.m_nAttackModifier;
+            pAttack->m_DeflectBreakdown.m_nDeflectTotal = nRoll;
+            pAttack->m_DeflectBreakdown.m_nAttackTotal = nAttackRoll;
             if (nRoll >= nAttackRoll)
             {
                 bResult = 1;
@@ -708,7 +708,7 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
             else
                 nResult = CSWSCombatAttackData::ATTACK_RESULT_DEFLECTED;
             pAttack->m_nAttackResult = nResult;
-            pAttack->m_Extra5.m_nDeflectResult = nResult;
+            pAttack->m_DeflectBreakdown.m_nDeflectResult = nResult;
         }
     }
     return bResult;
@@ -942,20 +942,20 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
     {
         CSWSCombatRound* pCombatRound = pSaveVersus->m_pcCombatRound;
         pAttack = pCombatRound->GetAttack(pCombatRound->m_nCurrentAttack);
-        pAttack->m_Extra4.m_nSavingThrowType = nSaveType;
-        pAttack->m_Extra4.m_nSaveVersusType = nSaveVersusType;
-        pAttack->m_Extra4.m_nSavingThrowRoll = (unsigned char)nRoll;
-        pAttack->m_Extra4.m_nSavingThrowEffectBonus = (unsigned char)nEffectBonus;
-        pAttack->m_Extra4.m_nSavingThrowBonus = (unsigned char)nSaveBonus;
-        pAttack->m_Extra4.m_nSavingThrowTotal = (unsigned char)nTotal;
-        pAttack->m_Extra4.m_nSavingThrowDC = (unsigned char)nDC;
+        pAttack->m_EffectBreakdown.m_nSavingThrowType = nSaveType;
+        pAttack->m_EffectBreakdown.m_nSaveVersusType = nSaveVersusType;
+        pAttack->m_EffectBreakdown.m_nSavingThrowRoll = (unsigned char)nRoll;
+        pAttack->m_EffectBreakdown.m_nSavingThrowEffectBonus = (unsigned char)nEffectBonus;
+        pAttack->m_EffectBreakdown.m_nSavingThrowBonus = (unsigned char)nSaveBonus;
+        pAttack->m_EffectBreakdown.m_nSavingThrowTotal = (unsigned char)nTotal;
+        pAttack->m_EffectBreakdown.m_nSavingThrowDC = (unsigned char)nDC;
     }
 
     if (nTotal >= nDC)
     {
         if (pAttack != NULL)
         {
-            pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_SUCCESS;
+            pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_SUCCESS;
         }
         return SAVING_THROW_RESULT_SUCCESS;
     }
@@ -967,7 +967,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
         {
             if (pAttack != NULL)
             {
-                pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
+                pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
             }
             return SAVING_THROW_RESULT_IMMUNE;
         }
@@ -979,7 +979,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
         {
             if (pAttack != NULL)
             {
-                pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
+                pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
             }
             return SAVING_THROW_RESULT_IMMUNE;
         }
@@ -991,7 +991,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
         {
             if (pAttack != NULL)
             {
-                pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
+                pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
             }
             return SAVING_THROW_RESULT_IMMUNE;
         }
@@ -1003,7 +1003,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
         {
             if (pAttack != NULL)
             {
-                pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
+                pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
             }
             return SAVING_THROW_RESULT_IMMUNE;
         }
@@ -1023,7 +1023,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
                 {
                     if (pAttack != NULL)
                     {
-                        pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
+                        pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
                     }
                     return SAVING_THROW_RESULT_IMMUNE;
                 }
@@ -1037,7 +1037,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
         {
             if (pAttack != NULL)
             {
-                pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
+                pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_IMMUNE;
             }
             return SAVING_THROW_RESULT_IMMUNE;
         }
@@ -1045,7 +1045,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
 
     if (pAttack != NULL)
     {
-        pAttack->m_Extra4.m_nSavingThrowResult = SAVING_THROW_RESULT_FAILED;
+        pAttack->m_EffectBreakdown.m_nSavingThrowResult = SAVING_THROW_RESULT_FAILED;
     }
     return SAVING_THROW_RESULT_FAILED;
 }
@@ -1643,7 +1643,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                                                           GetId(), 1, 0, 1) == 0)
                             {
                                 pAttack->m_lstEffects.Add(pPushEffect);
-                                pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
+                                pAttack->m_EffectBreakdown.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
                             }
                             else
                             {
@@ -1654,7 +1654,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                         {
                             delete pPushEffect;
                         }
-                        pAttack->m_Extra4.m_bEffectApplied = 1;
+                        pAttack->m_EffectBreakdown.m_bEffectApplied = 1;
                     }
                     break;
                 }
@@ -1732,7 +1732,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                                                           GetId(), 1, 0, 1) == 0)
                             {
                                 pAttack->m_lstEffects.Add(pStunEffect);
-                                pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
+                                pAttack->m_EffectBreakdown.m_nState = CSWSEffectListHandler::STATE_STUN;
                             }
                             else
                             {
@@ -1743,7 +1743,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                         {
                             delete pStunEffect;
                         }
-                        pAttack->m_Extra4.m_bEffectApplied = 1;
+                        pAttack->m_EffectBreakdown.m_bEffectApplied = 1;
                     }
                     break;
                 }
@@ -1917,7 +1917,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                                                           GetId(), 1, 0, 1) == 0)
                             {
                                 pAttack->m_lstEffects.Add(pStunEffect);
-                                pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
+                                pAttack->m_EffectBreakdown.m_nState = CSWSEffectListHandler::STATE_STUN;
                                 *pbStateApplied = 1;
                             }
                             else
@@ -1929,7 +1929,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         {
                             delete pStunEffect;
                         }
-                        pAttack->m_Extra4.m_bEffectApplied = 1;
+                        pAttack->m_EffectBreakdown.m_bEffectApplied = 1;
                     }
                     break;
                 }
@@ -1989,14 +1989,14 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                                                       GetId(), 1, 0, 1) == 0)
                         {
                             pAttack->m_lstEffects.Add(pPushEffect);
-                            pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
+                            pAttack->m_EffectBreakdown.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
                             *pbStateApplied = 1;
                         }
                         else
                         {
                             delete pPushEffect;
                         }
-                        pAttack->m_Extra4.m_bEffectApplied = 1;
+                        pAttack->m_EffectBreakdown.m_bEffectApplied = 1;
                     }
                     break;
                 }
@@ -2040,7 +2040,7 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
         CSWSCombatRound* pRound = m_pcCombatRound;
         int nCurrentAttack = pRound->m_nCurrentAttack;
         CSWSCombatAttackData* pAttack = pRound->GetAttack(nCurrentAttack);
-        pAttack->m_Extra2.Clear();
+        pAttack->m_ThreatBreakdown.Clear();
         int bOffHand = pRound->GetOffHandAttack();
         pAttack->m_nWeaponAttackType = m_pcCombatRound->GetWeaponAttackType();
 
@@ -2066,20 +2066,20 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
         if (pAttack->m_bCoupDeGrace)
         {
             pAttack->m_nAttackResult = ATTACK_RESULT_AUTOMATIC_HIT;
-            pAttack->m_Extra1.m_nAttackRoll = CSWRules::ATTACK_ROLL_AUTOMATIC_HIT;
-            pAttack->m_Extra1.m_nAttackModifier = nModifier;
+            pAttack->m_AttackBreakdown.m_nAttackRoll = CSWRules::ATTACK_ROLL_AUTOMATIC_HIT;
+            pAttack->m_AttackBreakdown.m_nAttackModifier = nModifier;
             return;
         }
         if (m_bAssuredHit)
         {
             pAttack->m_nAttackResult = ATTACK_RESULT_HIT_SUCCESSFUL;
-            pAttack->m_Extra1.m_nAttackRoll = nRoll;
-            pAttack->m_Extra1.m_nAttackModifier = nModifier;
+            pAttack->m_AttackBreakdown.m_nAttackRoll = nRoll;
+            pAttack->m_AttackBreakdown.m_nAttackModifier = nModifier;
             return;
         }
 
-        pAttack->m_Extra1.m_nAttackRoll = nRoll;
-        pAttack->m_Extra1.m_nAttackModifier = nModifier;
+        pAttack->m_AttackBreakdown.m_nAttackRoll = nRoll;
+        pAttack->m_AttackBreakdown.m_nAttackModifier = nModifier;
         int bHit = 0;
         int nTotalRoll = nRoll + nModifier;
         if (nTotalRoll >= nArmorClass)
@@ -2089,13 +2089,13 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
 
         if (nRoll != CSWRules::ATTACK_ROLL_AUTOMATIC_MISS)
         {
-            pAttack->m_Extra1.m_bAutomaticMiss = 0;
+            pAttack->m_AttackBreakdown.m_bAutomaticMiss = 0;
             if (nTotalRoll >= nArmorClass || nRoll == CSWRules::ATTACK_ROLL_AUTOMATIC_HIT)
             {
                 if (nRoll == CSWRules::ATTACK_ROLL_AUTOMATIC_HIT)
-                    pAttack->m_Extra1.m_bAutomaticHit = 1;
+                    pAttack->m_AttackBreakdown.m_bAutomaticHit = 1;
                 else
-                    pAttack->m_Extra1.m_bAutomaticHit = 0;
+                    pAttack->m_AttackBreakdown.m_bAutomaticHit = 0;
                 int nThreatRoll = GetStats()->GetCriticalHitRoll(bOffHand);
                 if (m_nCurrentForm == FORM_SABER_III_SORESU && IsWieldingLightsaber())
                 {
@@ -2107,18 +2107,18 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
                 {
                     nThreatRoll--;
                 }
-                pAttack->m_Extra2.m_nThreatRange = nThreatRoll;
+                pAttack->m_ThreatBreakdown.m_nThreatRange = nThreatRoll;
                 if (nRoll >= nThreatRoll)
                 {
-                    pAttack->m_Extra2.m_bThreat = 1;
+                    pAttack->m_ThreatBreakdown.m_bThreat = 1;
                     int nCriticalRoll = g_pRules->RollDice(1, 20);
-                    pAttack->m_Extra2.m_nCriticalRoll = nCriticalRoll;
+                    pAttack->m_ThreatBreakdown.m_nCriticalRoll = nCriticalRoll;
                     if (m_nCurrentForm == FORM_SABER_VII_JUYO && IsWieldingLightsaber())
                         nCriticalRoll += FORM_SABER_VII_JUYO_CRITICAL_BONUS;
                     if (nCriticalRoll + nModifier >= nArmorClass)
                     {
-                        pAttack->m_Extra2.m_bCriticalConfirmed = 1;
-                        pAttack->m_Extra2.m_nCriticalMultiplier =
+                        pAttack->m_ThreatBreakdown.m_bCriticalConfirmed = 1;
+                        pAttack->m_ThreatBreakdown.m_nCriticalMultiplier =
                             GetStats()->GetCriticalHitMultiplier(bOffHand);
                         if (pCreature != NULL &&
                             pCreature->GetStats()->GetEffectImmunity(
@@ -2136,17 +2136,17 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
                     }
                     else
                     {
-                        pAttack->m_Extra2.m_bCriticalConfirmed = 0;
-                        pAttack->m_Extra2.m_nCriticalMultiplier = 0;
+                        pAttack->m_ThreatBreakdown.m_bCriticalConfirmed = 0;
+                        pAttack->m_ThreatBreakdown.m_nCriticalMultiplier = 0;
                         pAttack->m_nAttackResult = ATTACK_RESULT_HIT_SUCCESSFUL;
                     }
                 }
                 else
                 {
-                    pAttack->m_Extra2.m_bThreat = 0;
-                    pAttack->m_Extra2.m_bCriticalConfirmed = 0;
-                    pAttack->m_Extra2.m_nCriticalRoll = 0;
-                    pAttack->m_Extra2.m_nCriticalMultiplier = 0;
+                    pAttack->m_ThreatBreakdown.m_bThreat = 0;
+                    pAttack->m_ThreatBreakdown.m_bCriticalConfirmed = 0;
+                    pAttack->m_ThreatBreakdown.m_nCriticalRoll = 0;
+                    pAttack->m_ThreatBreakdown.m_nCriticalMultiplier = 0;
                     pAttack->m_nAttackResult = ATTACK_RESULT_HIT_SUCCESSFUL;
                 }
             }
@@ -2155,7 +2155,7 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
         }
         else
         {
-            pAttack->m_Extra1.m_bAutomaticMiss = 1;
+            pAttack->m_AttackBreakdown.m_bAutomaticMiss = 1;
             pAttack->m_nAttackResult = ATTACK_RESULT_MISS;
         }
     }
@@ -2554,13 +2554,13 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
                         rand() % 100 < nChance)
                     {
                         pAttack->m_lstEffects.Add(pPushEffect);
-                        pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
+                        pAttack->m_EffectBreakdown.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
                     }
                     else
                     {
                         delete pPushEffect;
                     }
-                    pAttack->m_Extra4.m_bEffectApplied = 1;
+                    pAttack->m_EffectBreakdown.m_bEffectApplied = 1;
                 }
             }
         }
@@ -4744,16 +4744,16 @@ void CSWSCreature::SendAttackSummaryFeedback(unsigned long oidTarget)
         pMessage->SetInteger(CSWCCMessageData::SUMMARY_ATTACK_RESULT, pAttack->m_nAttackResult);
         pMessage->SetInteger(CSWCCMessageData::SUMMARY_ATTACK_TYPE, pAttack->m_nAttackType);
         pMessage->SetInteger(CSWCCMessageData::SUMMARY_DEFENSE_TOTAL,
-            pAttack->m_Extra1.m_nAttackRoll + (char)pAttack->m_Extra1.m_nAttackModifier);
+            pAttack->m_AttackBreakdown.m_nAttackRoll + (char)pAttack->m_AttackBreakdown.m_nAttackModifier);
         pMessage->SetInteger(CSWCCMessageData::SUMMARY_ATTACK_FLAGS, (char)pAttack->m_Flags.m_nArmorClass);
         pMessage->SetInteger(CSWCCMessageData::SUMMARY_BASE_DAMAGE, nDamage);
-        pMessage->SetInteger(CSWCCMessageData::SUMMARY_DAMAGE_DETAIL, pAttack->m_Extra2.m_bCriticalConfirmed);
+        pMessage->SetInteger(CSWCCMessageData::SUMMARY_DAMAGE_DETAIL, pAttack->m_ThreatBreakdown.m_bCriticalConfirmed);
         pMessage->SetInteger(CSWCCMessageData::SUMMARY_SNEAK_ATTACK, pAttack->m_bSneakAttack);
         pMessage->SetInteger(CSWCCMessageData::SUMMARY_COUP_DE_GRACE, pAttack->m_bCoupDeGrace);
-        pMessage->SetInteger(CSWCCMessageData::SUMMARY_HIT_DETAIL, pAttack->m_Extra4.m_nState);
-        pMessage->SetInteger(CSWCCMessageData::SUMMARY_HIT_MODIFIER, pAttack->m_Extra4.m_bStateImmune);
-        pMessage->SetInteger(CSWCCMessageData::SUMMARY_DEFENSE_ROLL, pAttack->m_Extra1.m_bAutomaticHit);
-        pMessage->SetInteger(CSWCCMessageData::SUMMARY_DEFENSE_MODIFIER, pAttack->m_Extra1.m_bAutomaticMiss);
+        pMessage->SetInteger(CSWCCMessageData::SUMMARY_HIT_DETAIL, pAttack->m_EffectBreakdown.m_nState);
+        pMessage->SetInteger(CSWCCMessageData::SUMMARY_HIT_MODIFIER, pAttack->m_EffectBreakdown.m_bStateImmune);
+        pMessage->SetInteger(CSWCCMessageData::SUMMARY_DEFENSE_ROLL, pAttack->m_AttackBreakdown.m_bAutomaticHit);
+        pMessage->SetInteger(CSWCCMessageData::SUMMARY_DEFENSE_MODIFIER, pAttack->m_AttackBreakdown.m_bAutomaticMiss);
         pMessage->SetObjectID(CSWCCMessageData::SUMMARY_ATTACKER, m_nId);
         pMessage->SetObjectID(CSWCCMessageData::SUMMARY_TARGET, oidTarget);
         BroadcastAttackSummaryToParty(pMessage);
@@ -4774,13 +4774,13 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
     {
         CSWSCombatAttackData* pAttack =
             m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
-        switch (pAttack->m_Extra4.m_nState)
+        switch (pAttack->m_EffectBreakdown.m_nState)
         {
         case CSWSEffectListHandler::STATE_SLEEP:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_SLEEP, this))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_HOLD:
@@ -4788,14 +4788,14 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_PARALYSIS, this) ||
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_PARALYSIS))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_MIND_TRICK_18:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_MIND_AFFECTING, this))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_STUN:
@@ -4804,21 +4804,21 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_STUN, this) ||
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_STUN) ||
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_PARALYSIS))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_CONFUSION:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_CONFUSED, this))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_VARIANT_16:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_DROID_CONFUSED, this))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_FEAR:
@@ -4829,20 +4829,20 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_STUN) ||
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_PARALYSIS) ||
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_KNOCKDOWN:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_KNOCKDOWN, this))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_HORRIFIED:
         {
             if (pTarget->m_pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE))
-                pAttack->m_Extra4.m_bStateImmune = 1;
+                pAttack->m_EffectBreakdown.m_bStateImmune = 1;
             break;
         }
         }

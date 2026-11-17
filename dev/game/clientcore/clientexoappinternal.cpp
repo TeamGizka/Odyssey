@@ -2558,7 +2558,7 @@ void CClientExoAppInternal::ChangeCharacter(int nCharacter, int bPlaySound)
     }
 }
 
-static inline int ClientexoappinternalHiliteCount(CExoArrayList<CHostileHilite>* pList)
+static inline int GetHostileHiliteCount(CExoArrayList<CHostileHilite>* pList)
 {
     return pList->num;
 }
@@ -2592,7 +2592,7 @@ void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
                 int bFound = 0;
                 pObject->Hilite(CGuiInGame::COLOR_RED,
                                 CSWCObject::HILITE_CHANNEL_HOSTILE, 0.0f, 1);
-                for (int i = 0; i < ClientexoappinternalHiliteCount(&m_aHostileHilites) && !bFound; i++)
+                for (int i = 0; i < GetHostileHiliteCount(&m_aHostileHilites) && !bFound; i++)
                 {
                     if (m_aHostileHilites[i].m_oidObject == pObject->GetId())
                     {
@@ -6894,7 +6894,7 @@ void CClientExoAppInternal::BarkString(unsigned long oidObject,
 
     m_pGuiInGame->ShowBarkBubble(OBJECT_INVALID, sText, cSound, nFlags);
 }
-inline CExoStreamingSoundSource* ClientExoAppInternalGetDialogSound(CGuiInGame* pGuiInGame)
+inline CExoStreamingSoundSource* GetDialogSound(CGuiInGame* pGuiInGame)
 {
     return pGuiInGame->m_pDialogSound;
 }
@@ -6930,7 +6930,7 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
             char szSound[17];
             if (m_pGuiInGame->m_pDialogSound != NULL)
             {
-                ClientExoAppInternalGetDialogSound(m_pGuiInGame)->GetFilePlaying().CopyToString(szSound);
+                GetDialogSound(m_pGuiInGame)->GetFilePlaying().CopyToString(szSound);
             }
             EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
                    g_pExoSound->GetSoundMode());

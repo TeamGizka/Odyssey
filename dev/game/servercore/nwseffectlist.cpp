@@ -1883,8 +1883,8 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
             pCreator->m_pcCombatRound->m_nCurrentAttack);
         if (pAttack != NULL)
         {
-            pAttack->m_Extra4.m_nState = (unsigned char)nState;
-            pAttack->m_Extra4.m_bEffectApplied = 1;
+            pAttack->m_EffectBreakdown.m_nState = (unsigned char)nState;
+            pAttack->m_EffectBreakdown.m_bEffectApplied = 1;
             pCreator->SetAttackSummaryFeedbackEffectData(nState, pCreature->GetId());
         }
     }
@@ -5828,7 +5828,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                     pCreator->m_pcCombatRound->m_nCurrentAttack);
                 if (pAttack != NULL)
                 {
-                    pAttack->m_Extra4.m_nState = (unsigned char)nState;
+                    pAttack->m_EffectBreakdown.m_nState = (unsigned char)nState;
                 }
             }
             if (nState == STATE_SLEEP)
@@ -5846,7 +5846,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_SLEEP_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -5871,7 +5871,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_PARALYSIS_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -5895,7 +5895,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_MIND_SPELLS_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -5921,7 +5921,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_STUN_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -5944,7 +5944,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_CONFUSED_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -5967,7 +5967,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_UNKNOWN_231, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -5991,7 +5991,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_FEAR_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -6015,7 +6015,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_HORRIFIED_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -6039,7 +6039,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                             CSWSCreature::FEEDBACK_KNOCKDOWN_IMMUNITY, pCreatorMessageData);
                         if (pAttack != NULL)
                         {
-                            pAttack->m_Extra4.m_bStateImmune = 1;
+                            pAttack->m_EffectBreakdown.m_bStateImmune = 1;
                         }
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
@@ -7336,17 +7336,17 @@ int CSWSEffectListHandler::OnApplyUltraVision(CSWSObject* pObject,
     return 0;
 }
 
-static inline unsigned short NwseffectlistBlindnessIndex(CSWSCreatureStats* pStats)
+static inline unsigned short GetBlindnessEffectIndex(CSWSCreatureStats* pStats)
 {
     return pStats->m_nBlindnessEffectIndex;
 }
 
-static inline unsigned short NwseffectlistTrueSeeingIndex(CSWSCreatureStats* pStats)
+static inline unsigned short GetTrueSeeingEffectIndex(CSWSCreatureStats* pStats)
 {
     return pStats->m_nTrueSeeingEffectIndex;
 }
 
-static inline int NwseffectlistEffectCount(CExoArrayList<CGameEffect*>* pList)
+static inline int GetEffectCount(CExoArrayList<CGameEffect*>* pList)
 {
     return pList->num;
 }
@@ -7368,7 +7368,7 @@ int CSWSEffectListHandler::OnRemoveUltraVision(CSWSObject* pObject,
         pCreature = pObject->AsSWSCreature();
         pEffects = &pCreature->m_lstEffects;
 
-        nIndex = NwseffectlistTrueSeeingIndex(pCreature->m_pStats);
+        nIndex = GetTrueSeeingEffectIndex(pCreature->m_pStats);
         nCount = pEffects->num;
         nVisionFlags = pCreature->m_nVisionFlags;
         nFlags = nVisionFlags & ~CSWSCreature::VISION_ULTRAVISION;
@@ -7385,8 +7385,8 @@ int CSWSEffectListHandler::OnRemoveUltraVision(CSWSObject* pObject,
             }
         }
         pCreature->m_nVisionFlags = nFlags;
-        for (nIndex = NwseffectlistBlindnessIndex(pCreature->m_pStats);
-             nIndex < NwseffectlistEffectCount(&pCreature->m_lstEffects) &&
+        for (nIndex = GetBlindnessEffectIndex(pCreature->m_pStats);
+             nIndex < GetEffectCount(&pCreature->m_lstEffects) &&
              (*pEffects)[nIndex]->m_nType <= EFFECT_BLINDNESS;
              nIndex++)
         {

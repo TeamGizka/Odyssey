@@ -2266,7 +2266,7 @@ static inline int GetListCount(const CExoArrayList<CExoString>* pList)
     return pList->num;
 }
 
-static inline void ExoResFileTrace();
+static inline void TraceListAllocate();
 // PC 0x00410BE0 GOG 0x00410B90
 template <>
 inline CExoArrayList<CExoArrayList<CExoString> >::~CExoArrayList()
@@ -2278,7 +2278,7 @@ inline CExoArrayList<CExoArrayList<CExoString> >::~CExoArrayList()
 template <>
 inline void CExoArrayList<CExoArrayList<CExoString> >::Allocate(int nSize)
 {
-    ExoResFileTrace();
+    TraceListAllocate();
     CExoArrayList<CExoString>* pOld = element;
 
     array_size = nSize;
@@ -2295,7 +2295,7 @@ inline void CExoArrayList<CExoArrayList<CExoString> >::Allocate(int nSize)
     }
 }
 
-static inline void ExoResFileTrace()
+static inline void TraceListAllocate()
 {
     if (EXORESFILE_DEBUG)
     {

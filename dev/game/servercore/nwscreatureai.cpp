@@ -6118,7 +6118,7 @@ CAvoidCreature::CAvoidCreature()
     m_bAvoidLeft = 0;
     Reset();
 }
-static inline int CastSpellRequireItemMask(CSWSpell* pSpell) { return pSpell->m_nRequireItemMask; }
+static inline int GetRequireItemMask(CSWSpell* pSpell) { return pSpell->m_nRequireItemMask; }
 // PC 0x0054A110 GOG 0x0054A230
 int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
 {
@@ -6185,7 +6185,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
     }
     int nForceItemMask = GetForceItemMask();
     if ((nForceItemMask & pSpell->m_nForbidItemMask) ||
-        (nForceItemMask & CastSpellRequireItemMask(pSpell)) != pSpell->m_nRequireItemMask)
+        (nForceItemMask & GetRequireItemMask(pSpell)) != pSpell->m_nRequireItemMask)
     {
         RemoveSpellActionFromRound();
         ProcessPendingCombatActions();

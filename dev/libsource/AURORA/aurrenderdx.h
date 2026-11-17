@@ -94,9 +94,9 @@ class GLRender
     friend void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive);
 public:
 
-    static void SetFogModef(Aurora::AuroraEnableEnums nMode, float fValue);
+    static void SetFogf(Aurora::AuroraEnableEnums nMode, float fValue);
 
-    static void SetFogModev(Aurora::AuroraEnableEnums nMode, Vector& vValue);
+    static void SetFogfv(Aurora::AuroraEnableEnums nMode, Vector& vValue);
 
     static void Clear(unsigned long nFlags);
 
@@ -889,13 +889,13 @@ inline void GLRender::SetColorMask(unsigned char bRed, unsigned char bGreen, uns
     }
 }
 
-inline void GLRender::SetFogModef(Aurora::AuroraEnableEnums nMode, float fValue)
+inline void GLRender::SetFogf(Aurora::AuroraEnableEnums nMode, float fValue)
 {
     fValue = 0.0f - fValue;
     g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)enableTranslationTable[nMode], *(unsigned long*)&fValue);
 }
 
-inline void GLRender::SetFogModev(Aurora::AuroraEnableEnums nMode, Vector& vValue)
+inline void GLRender::SetFogfv(Aurora::AuroraEnableEnums nMode, Vector& vValue)
 {
     g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)enableTranslationTable[nMode],
                                  D3DCOLOR_ARGB(0, (int)(vValue.m_fX * 255.0f), (int)(vValue.m_fY * 255.0f),
@@ -1375,7 +1375,7 @@ inline void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOf
 #define GLRender_SetClearColor GLRender::SetClearColor
 #define GLRender_Rotate GLRender::Rotate
 
-#define GLRender_SetFogModef GLRender::SetFogModef
+#define GLRender_SetFogf GLRender::SetFogf
 
 #define GLRender_SetColor4f GLRender::SetColor4f
 #define GLRender_SetAlphaFunc GLRender::SetAlphaFunc
@@ -1396,7 +1396,7 @@ inline void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOf
 #define GLRender_EnableLight GLRender::EnableLight
 #define GLRender_DisableLight GLRender::DisableLight
 #define GLRender_SetFogMode GLRender::SetFogMode
-#define GLRender_SetFogModev GLRender::SetFogModev
+#define GLRender_SetFogfv GLRender::SetFogfv
 #define GLRender_SetDepthFunc GLRender::SetDepthFunc
 #define GLRender_SetColorv GLRender::SetColorv
 #define GLRender_SetVertexProgramParameter4f AurSetVertexProgramParameter4f

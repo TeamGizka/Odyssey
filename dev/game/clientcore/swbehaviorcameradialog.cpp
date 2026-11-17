@@ -14,7 +14,7 @@
 
 #define SWBEHAVIORCAMERADIALOG_DEBUG 0
 
-static inline void CameraDialogTrace(CSWBehaviorCameraDialog* pBehavior);
+static inline void DestroyDialogCamera(CSWBehaviorCameraDialog* pBehavior);
 
 // PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWBehaviorCameraDialog::Message(char* sMessage)
@@ -283,7 +283,7 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
                                 0.0f);
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
     {
-        CameraDialogTrace(this);
+        DestroyDialogCamera(this);
     }
 }
 // PC 0x00711390 GOG 0x007110E0
@@ -291,7 +291,7 @@ int CSWBehaviorCameraDialog::GetSideUnobstructed()
 {
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
     {
-        CameraDialogTrace(this);
+        DestroyDialogCamera(this);
     }
     Vector vHookPosition;
     Quaternion qOrientation;
@@ -533,7 +533,7 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
 {
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
     {
-        CameraDialogTrace(this);
+        DestroyDialogCamera(this);
     }
     Vector vHookPosition;
     Quaternion qHookOrientation;
@@ -720,7 +720,7 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
     Control(0.0f);
     m_nCameraState = INITIAL_CAMERA_STATE;
 }
-static inline void CameraDialogTrace(CSWBehaviorCameraDialog* pBehavior)
+static inline void DestroyDialogCamera(CSWBehaviorCameraDialog* pBehavior)
 {
     pBehavior->CSWBehaviorCameraDialog::~CSWBehaviorCameraDialog();
 }

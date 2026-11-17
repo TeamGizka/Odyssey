@@ -45,8 +45,8 @@ char* vodebug(char* szArgs)
                           : "VO Debug logging terminated.");
     return sOut;
 }
-static inline C2DA* NwsdialogEmotionTable();
-static inline C2DA* NwsdialogAlienVOTable();
+static inline C2DA* GetEmotionTable();
+static inline C2DA* GetAlienVOTable();
 // PC 0x005E6960 GOG 0x005E6990
 inline CSWSDialogLinkEntry::CSWSDialogLinkEntry()
     : m_bDisplayInactive(0)
@@ -740,10 +740,10 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
         {
             CExoString sEmotion;
             CExoString sAlienVO;
-            int bFound = NwsdialogEmotionTable()->GetCExoStringEntry(
+            int bFound = GetEmotionTable()->GetCExoStringEntry(
                 dialogBase.m_nEmotion, "LABEL", &sEmotion);
             if (bFound &&
-                NwsdialogAlienVOTable()->GetCExoStringEntry(
+                GetAlienVOTable()->GetCExoStringEntry(
                     nAlienRace, sEmotion, &sAlienVO))
             {
                 dialogBase.m_cSoundResRef = sAlienVO;
@@ -3088,12 +3088,12 @@ inline CSWSDialog::~CSWSDialog()
     Cleanup();
 }
 
-static inline C2DA* NwsdialogEmotionTable()
+static inline C2DA* GetEmotionTable()
 {
     return g_pRules->Get2DArrays()->m_pEmotion;
 }
 
-static inline C2DA* NwsdialogAlienVOTable()
+static inline C2DA* GetAlienVOTable()
 {
     return g_pRules->Get2DArrays()->m_pAlienVO;
 }

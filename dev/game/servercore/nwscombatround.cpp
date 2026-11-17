@@ -69,11 +69,11 @@ void CSWSCombatAttackData::ResolveAttackToMeleeSubAttack(
         m_nDamage[i] = -1;
     }
 
-    subAttack.m_Extra1 = m_Extra1;
-    subAttack.m_Extra2 = m_Extra2;
+    subAttack.m_AttackBreakdown = m_AttackBreakdown;
+    subAttack.m_ThreatBreakdown = m_ThreatBreakdown;
     subAttack.m_Flags = m_Flags;
     subAttack.m_DamageBreakdown = m_DamageBreakdown;
-    subAttack.m_Extra4 = m_Extra4;
+    subAttack.m_EffectBreakdown = m_EffectBreakdown;
 
     m_lstSubAttacks.Add(subAttack);
 }
@@ -102,11 +102,11 @@ void CSWSCombatAttackData::ResolveAttackToRangedSubAttack(
         m_nDamage[i] = -1;
     }
 
-    subAttack.m_Extra1 = m_Extra1;
-    subAttack.m_Extra2 = m_Extra2;
+    subAttack.m_AttackBreakdown = m_AttackBreakdown;
+    subAttack.m_ThreatBreakdown = m_ThreatBreakdown;
     subAttack.m_Flags = m_Flags;
     subAttack.m_DamageBreakdown = m_DamageBreakdown;
-    subAttack.m_Extra4 = m_Extra4;
+    subAttack.m_EffectBreakdown = m_EffectBreakdown;
 
     m_lstSubAttacks.Add(subAttack);
 }
@@ -981,43 +981,43 @@ void CSWSCombatAttackData::ClearAttackData()
     m_lstSubAttacks.num = 0;
     m_bUseAttackResult = 0;
     m_nForcedAttackResult = 0;
-    m_Extra1.m_nUnknown0 = 0;
-    m_Extra1.m_nAttackRoll = 0;
-    m_Extra1.m_nAttackModifier = 0;
-    m_Extra1.m_nStrengthModifier = 0;
-    m_Extra1.m_nDexterityModifier = 0;
-    m_Extra1.m_nUnknown5 = 0;
-    m_Extra1.m_nSpecialAttackBonus = 0;
-    m_Extra1.m_nBaseAttackBonus = 0;
-    m_Extra1.m_nOffHand = 0;
-    m_Extra1.m_nTwoWeaponPenalty = 0;
-    m_Extra1.m_nWeaponSizeBonus = 0;
-    m_Extra1.m_nTwoWeaponFeatBonus = 0;
-    m_Extra1.m_nTwoWeaponFeat = 0;
-    m_Extra1.m_nDuelingBonus = 0;
-    m_Extra1.m_nDuelingFeat = 0;
-    m_Extra1.m_nGoodAimBonus = 0;
-    m_Extra1.m_nOffensiveTrainingBonus = 0;
-    m_Extra1.m_nWeaponFocusBonus = 0;
-    m_Extra1.m_nEffectAttackBonus = 0;
-    m_Extra1.m_bAutomaticHit = 0;
-    m_Extra1.m_bAutomaticMiss = 0;
-    m_Extra1.m_nDualStrikeBonus = 0;
-    m_Extra1.m_nTargetingFeat = 0;
-    m_Extra1.m_nTargetingBonus = 0;
-    m_Extra1.m_nCrushOppositionSpell = 0;
-    m_Extra1.m_nCrushOppositionPenalty = 0;
-    m_Extra1.m_nInspireFollowersSpell = 0;
-    m_Extra1.m_nInspireFollowersBonus = 0;
-    m_Extra1.m_nLeaderCharismaBonus = 0;
-    m_Extra1.m_nForm = 0;
-    m_Extra1.m_nFormBonus = 0;
-    m_Extra2.m_nThreatRange = 0;
-    m_Extra2.m_bThreat = 0;
-    m_Extra2.m_nCriticalRoll = 0;
-    m_Extra2.m_bCriticalConfirmed = 0;
-    m_Extra2.m_nUnknown10 = 0;
-    m_Extra2.m_nCriticalMultiplier = 0;
+    m_AttackBreakdown.m_nUnknown0 = 0;
+    m_AttackBreakdown.m_nAttackRoll = 0;
+    m_AttackBreakdown.m_nAttackModifier = 0;
+    m_AttackBreakdown.m_nStrengthModifier = 0;
+    m_AttackBreakdown.m_nDexterityModifier = 0;
+    m_AttackBreakdown.m_nUnknown5 = 0;
+    m_AttackBreakdown.m_nSpecialAttackBonus = 0;
+    m_AttackBreakdown.m_nBaseAttackBonus = 0;
+    m_AttackBreakdown.m_nOffHand = 0;
+    m_AttackBreakdown.m_nTwoWeaponPenalty = 0;
+    m_AttackBreakdown.m_nWeaponSizeBonus = 0;
+    m_AttackBreakdown.m_nTwoWeaponFeatBonus = 0;
+    m_AttackBreakdown.m_nTwoWeaponFeat = 0;
+    m_AttackBreakdown.m_nDuelingBonus = 0;
+    m_AttackBreakdown.m_nDuelingFeat = 0;
+    m_AttackBreakdown.m_nGoodAimBonus = 0;
+    m_AttackBreakdown.m_nOffensiveTrainingBonus = 0;
+    m_AttackBreakdown.m_nWeaponFocusBonus = 0;
+    m_AttackBreakdown.m_nEffectAttackBonus = 0;
+    m_AttackBreakdown.m_bAutomaticHit = 0;
+    m_AttackBreakdown.m_bAutomaticMiss = 0;
+    m_AttackBreakdown.m_nDualStrikeBonus = 0;
+    m_AttackBreakdown.m_nTargetingFeat = 0;
+    m_AttackBreakdown.m_nTargetingBonus = 0;
+    m_AttackBreakdown.m_nCrushOppositionSpell = 0;
+    m_AttackBreakdown.m_nCrushOppositionPenalty = 0;
+    m_AttackBreakdown.m_nInspireFollowersSpell = 0;
+    m_AttackBreakdown.m_nInspireFollowersBonus = 0;
+    m_AttackBreakdown.m_nLeaderCharismaBonus = 0;
+    m_AttackBreakdown.m_nForm = 0;
+    m_AttackBreakdown.m_nFormBonus = 0;
+    m_ThreatBreakdown.m_nThreatRange = 0;
+    m_ThreatBreakdown.m_bThreat = 0;
+    m_ThreatBreakdown.m_nCriticalRoll = 0;
+    m_ThreatBreakdown.m_bCriticalConfirmed = 0;
+    m_ThreatBreakdown.m_nUnknown10 = 0;
+    m_ThreatBreakdown.m_nCriticalMultiplier = 0;
     m_Flags.m_nArmorClass = 0;
     m_Flags.m_nArmorModifier = 0;
     m_Flags.m_nDexterityModifier = 0;
@@ -1045,19 +1045,19 @@ void CSWSCombatAttackData::ClearAttackData()
     {
         m_DamageBreakdown.m_nUnknownDamage[nDamage] = -1;
     }
-    m_Extra4.m_oidUnknown0 = OBJECT_INVALID;
-    m_Extra4.m_nSavingThrowType = 0;
-    m_Extra4.m_nState = 0;
-    m_Extra4.m_nSaveVersusType = 0;
-    m_Extra4.m_nSavingThrowRoll = 0;
-    m_Extra4.m_nSavingThrowEffectBonus = 0;
-    m_Extra4.m_nSavingThrowBonus = 0;
-    m_Extra4.m_nSavingThrowTotal = 0;
-    m_Extra4.m_nSavingThrowDC = 0;
-    m_Extra4.m_nSavingThrowResult = 0xFF;
-    m_Extra4.m_bStateImmune = 0;
-    m_Extra4.m_bEffectApplied = 0;
-    m_Extra5.Clear();
+    m_EffectBreakdown.m_oidUnknown0 = OBJECT_INVALID;
+    m_EffectBreakdown.m_nSavingThrowType = 0;
+    m_EffectBreakdown.m_nState = 0;
+    m_EffectBreakdown.m_nSaveVersusType = 0;
+    m_EffectBreakdown.m_nSavingThrowRoll = 0;
+    m_EffectBreakdown.m_nSavingThrowEffectBonus = 0;
+    m_EffectBreakdown.m_nSavingThrowBonus = 0;
+    m_EffectBreakdown.m_nSavingThrowTotal = 0;
+    m_EffectBreakdown.m_nSavingThrowDC = 0;
+    m_EffectBreakdown.m_nSavingThrowResult = 0xFF;
+    m_EffectBreakdown.m_bStateImmune = 0;
+    m_EffectBreakdown.m_bEffectApplied = 0;
+    m_DeflectBreakdown.Clear();
 }
 // PC 0x00528670 GOG 0x005286F0
 void CSWSCombatAttackData::RemoveTopSubAttack()
@@ -1818,11 +1818,11 @@ void CSWSCombatAttackData::ResolveSubAttackToAttack(
         m_nDamage[i] = subAttack.m_nDamage[i];
     }
 
-    m_Extra1 = subAttack.m_Extra1;
-    m_Extra2 = subAttack.m_Extra2;
+    m_AttackBreakdown = subAttack.m_AttackBreakdown;
+    m_ThreatBreakdown = subAttack.m_ThreatBreakdown;
     m_Flags = subAttack.m_Flags;
     m_DamageBreakdown = subAttack.m_DamageBreakdown;
-    m_Extra4 = subAttack.m_Extra4;
+    m_EffectBreakdown = subAttack.m_EffectBreakdown;
 }
 // PC 0x00527B70 GOG 0x00527BD0
 void CSWSCombatRound::SetSpellCastRound(int nSpellId, int nRound)
@@ -2154,7 +2154,7 @@ int CSWSCombatRound::GetActualBonusEffectAttacks()
     return m_nEffectAttacks;
 }
 // PC 0x005281D0 GOG 0x00528230
-void CSWSCombatAttackExtra1::Clear()
+void CSWSCombatAttackBreakdown::Clear()
 {
     m_nUnknown0 = 0;
     m_nAttackRoll = 0;

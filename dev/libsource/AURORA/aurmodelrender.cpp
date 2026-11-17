@@ -3149,22 +3149,22 @@ inline void Gob::ProxyPartDraw(Part* pPart, bool bRenderLast)
         GLRender_Enable(ENABLE_FOG);
         float fAlphaSquared = m_pTileData->m_fFadeAlpha * m_pTileData->m_fFadeAlpha;
         Vector vFogColor = m_pScene->m_vFogColor * fAlphaSquared;
-        GLRender_SetFogModev(FOG_COLOR, vFogColor);
-        GLRender_SetFogModef(FOG_DENSITY, m_pScene->m_fFogDensity + m_pScene->m_fFogDensity);
-        GLRender_SetFogModef(FOG_START, m_pScene->m_fFogNear * m_pTileData->m_fFadeAlpha);
-        GLRender_SetFogModef(FOG_END, m_pScene->m_fFogFar * m_pTileData->m_fFadeAlpha + 0.1f);
+        GLRender_SetFogfv(FOG_COLOR, vFogColor);
+        GLRender_SetFogf(FOG_DENSITY, m_pScene->m_fFogDensity + m_pScene->m_fFogDensity);
+        GLRender_SetFogf(FOG_START, m_pScene->m_fFogNear * m_pTileData->m_fFadeAlpha);
+        GLRender_SetFogf(FOG_END, m_pScene->m_fFogFar * m_pTileData->m_fFadeAlpha + 0.1f);
         PartDraw(m_pRootPart, bRenderLast);
         if (!m_pScene->m_bFog)
         {
             GLRender_Disable(ENABLE_FOG);
         }
         float fDensity = m_pScene->m_fFogDensity;
-        GLRender_SetFogModef(FOG_DENSITY, fDensity);
+        GLRender_SetFogf(FOG_DENSITY, fDensity);
         float fNear = m_pScene->m_fFogNear;
-        GLRender_SetFogModef(FOG_START, fNear);
+        GLRender_SetFogf(FOG_START, fNear);
         float fFar = m_pScene->m_fFogFar;
-        GLRender_SetFogModef(FOG_END, fFar);
-        GLRender_SetFogModev(FOG_COLOR, m_pScene->m_vFogColor);
+        GLRender_SetFogf(FOG_END, fFar);
+        GLRender_SetFogfv(FOG_COLOR, m_pScene->m_vFogColor);
     }
     else
     {
@@ -3463,10 +3463,10 @@ void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive)
                                    1.0f, -1.0f, 0.0f, 0.0f);
     GLRender_Enable(ENABLE_FOG);
     GLRender_SetFogMode(FOG_MODE_LINEAR);
-    GLRender_SetFogModef(FOG_START, 0.0f);
-    GLRender_SetFogModef(FOG_END, 1.0f);
+    GLRender_SetFogf(FOG_START, 0.0f);
+    GLRender_SetFogf(FOG_END, 1.0f);
     Vector vFogColor;
-    GLRender_SetFogModev(FOG_COLOR, vFogColor);
+    GLRender_SetFogfv(FOG_COLOR, vFogColor);
 
     List<PartLight*> lstLights(*currentscene->m_pLightManager->GetBumpMapLights());
     Vector& vAmbient = currentscene->m_vAmbient;
@@ -3554,10 +3554,10 @@ void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive)
                 BLEND_ONE);
     GLRender_Enable(ENABLE_FOG);
     GLRender_SetFogMode(FOG_MODE_LINEAR);
-    GLRender_SetFogModef(FOG_START, 0.0f);
-    GLRender_SetFogModef(FOG_END, 1.0f);
+    GLRender_SetFogf(FOG_START, 0.0f);
+    GLRender_SetFogf(FOG_END, 1.0f);
     Vector vFogColor;
-    GLRender_SetFogModev(FOG_COLOR, vFogColor);
+    GLRender_SetFogfv(FOG_COLOR, vFogColor);
 
     List<PartLight*> lstLights(*currentscene->m_pLightManager->GetBumpMapLights());
 #ifndef _XBOX

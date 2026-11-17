@@ -37,9 +37,9 @@
 #include "swparty.h"
 #include "nwccreature.h"
 
-static inline void NwscreaturestatsTrace2();
-static inline void NwscreaturestatsTrace1();
-#define NWSCREATURESTATS_TRACE() NwscreaturestatsTrace1()
+static inline void TraceRemoveFeat();
+static inline void TraceCreatureStats();
+#define NWSCREATURESTATS_TRACE() TraceCreatureStats()
 
 enum { DEFAULT_CRITICAL_HIT_ROLL = 20, INVALID_FACTION = -1,
        NO_DUPLICATING_HEAD = 255 };
@@ -1285,7 +1285,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     {
         nBaseAttackBonus = GetBaseAttackBonus();
     }
-    pAttack->m_Extra1.m_nBaseAttackBonus = nBaseAttackBonus;
+    pAttack->m_AttackBreakdown.m_nBaseAttackBonus = nBaseAttackBonus;
     if (g_bEnableCombatDebugging)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1316,7 +1316,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     }
     if (nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_RIGHTHAND)
     {
-        pAttack->m_Extra1.m_nOffHand = 0;
+        pAttack->m_AttackBreakdown.m_nOffHand = 0;
         if (pOffHand != NULL &&
             g_pRules->m_pBaseItems->GetBaseItem(pOffHand->GetBaseItemType())->m_nWeaponType != 0)
         {
@@ -1358,7 +1358,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     }
     else if (nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_LEFTHAND)
     {
-        pAttack->m_Extra1.m_nOffHand = 1;
+        pAttack->m_AttackBreakdown.m_nOffHand = 1;
         if (pOffHand != NULL)
         {
             nBaseTwoWeaponPenalty = -10;
@@ -1394,10 +1394,10 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     int nAttackBonus = nBaseAttackBonus + nTwoWeaponPenalty;
-    pAttack->m_Extra1.m_nTwoWeaponPenalty = nBaseTwoWeaponPenalty;
-    pAttack->m_Extra1.m_nWeaponSizeBonus = nWeaponSizeBonus;
-    pAttack->m_Extra1.m_nTwoWeaponFeatBonus = nTwoWeaponFeatBonus;
-    pAttack->m_Extra1.m_nTwoWeaponFeat = nTwoWeaponFeat;
+    pAttack->m_AttackBreakdown.m_nTwoWeaponPenalty = nBaseTwoWeaponPenalty;
+    pAttack->m_AttackBreakdown.m_nWeaponSizeBonus = nWeaponSizeBonus;
+    pAttack->m_AttackBreakdown.m_nTwoWeaponFeatBonus = nTwoWeaponFeatBonus;
+    pAttack->m_AttackBreakdown.m_nTwoWeaponFeat = nTwoWeaponFeat;
     if (g_bEnableCombatDebugging && nTwoWeaponPenalty != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1408,7 +1408,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
 
     int nSpecialAttackBonus = ResolveSpecialAttackAttackBonus(pTarget);
     nAttackBonus += nSpecialAttackBonus;
-    pAttack->m_Extra1.m_nSpecialAttackBonus = nSpecialAttackBonus;
+    pAttack->m_AttackBreakdown.m_nSpecialAttackBonus = nSpecialAttackBonus;
     if (g_bEnableCombatDebugging && nSpecialAttackBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1455,8 +1455,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nDuelingBonus;
-    pAttack->m_Extra1.m_nDuelingBonus = nDuelingBonus;
-    pAttack->m_Extra1.m_nDuelingFeat = nDuelingFeat;
+    pAttack->m_AttackBreakdown.m_nDuelingBonus = nDuelingBonus;
+    pAttack->m_AttackBreakdown.m_nDuelingFeat = nDuelingFeat;
     if (g_bEnableCombatDebugging && nSpecialAttackBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1482,7 +1482,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             }
         }
     }
-    pAttack->m_Extra1.m_nGoodAimBonus = nGoodAimBonus;
+    pAttack->m_AttackBreakdown.m_nGoodAimBonus = nGoodAimBonus;
     nAttackBonus += nGoodAimBonus;
     if (g_bEnableCombatDebugging && nGoodAimBonus != 0)
     {
@@ -1509,7 +1509,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             }
         }
     }
-    pAttack->m_Extra1.m_nOffensiveTrainingBonus = nOffensiveTrainingBonus;
+    pAttack->m_AttackBreakdown.m_nOffensiveTrainingBonus = nOffensiveTrainingBonus;
     nAttackBonus += nOffensiveTrainingBonus;
     if (g_bEnableCombatDebugging && nOffensiveTrainingBonus != 0)
     {
@@ -1556,7 +1556,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             }
         }
     }
-    pAttack->m_Extra1.m_nDualStrikeBonus = nDualStrikeBonus;
+    pAttack->m_AttackBreakdown.m_nDualStrikeBonus = nDualStrikeBonus;
     nAttackBonus += nDualStrikeBonus;
 
     int nDexterityBonus = 0;
@@ -1577,8 +1577,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     int nAbilityBonus = nDexterityBonus + nStrengthBonus;
     nAttackBonus += nAbilityBonus;
     pCombatRound = pCreature->GetCombatRound();
-    pCombatRound->GetAttack(pCombatRound->m_nCurrentAttack)->m_Extra1.m_nStrengthModifier = nStrengthBonus;
-    pCombatRound->GetAttack(pCombatRound->m_nCurrentAttack)->m_Extra1.m_nDexterityModifier = nDexterityBonus;
+    pCombatRound->GetAttack(pCombatRound->m_nCurrentAttack)->m_AttackBreakdown.m_nStrengthModifier = nStrengthBonus;
+    pCombatRound->GetAttack(pCombatRound->m_nCurrentAttack)->m_AttackBreakdown.m_nDexterityModifier = nDexterityBonus;
     if (g_bEnableCombatDebugging)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1603,7 +1603,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         nWeaponFocusBonus = 1;
     }
     nAttackBonus += nWeaponFocusBonus;
-    pAttack->m_Extra1.m_nWeaponFocusBonus = nWeaponFocusBonus;
+    pAttack->m_AttackBreakdown.m_nWeaponFocusBonus = nWeaponFocusBonus;
     int nLightsaberBonus = 0;
     if (pWeapon != NULL && pWeapon->IsLightsaber())
     {
@@ -1621,7 +1621,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nLightsaberBonus;
-    pAttack->m_Extra1.m_nWeaponFocusBonus += nLightsaberBonus;
+    pAttack->m_AttackBreakdown.m_nWeaponFocusBonus += nLightsaberBonus;
     int nTargetingBonus = 0;
     int nTargetingFeat = 0;
     if (pAttack->m_bRangedAttack)
@@ -1678,8 +1678,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nTargetingBonus;
-    pAttack->m_Extra1.m_nTargetingFeat = nTargetingFeat;
-    pAttack->m_Extra1.m_nTargetingBonus += nTargetingBonus;
+    pAttack->m_AttackBreakdown.m_nTargetingFeat = nTargetingFeat;
+    pAttack->m_AttackBreakdown.m_nTargetingBonus += nTargetingBonus;
     if (g_bEnableCombatDebugging)
     {
         if (nWeaponFocusBonus != 0 || nLightsaberBonus != 0)
@@ -1753,8 +1753,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nCrushPenalty;
-    pAttack->m_Extra1.m_nCrushOppositionSpell += nCrushSpell;
-    pAttack->m_Extra1.m_nCrushOppositionPenalty += nCrushPenalty;
+    pAttack->m_AttackBreakdown.m_nCrushOppositionSpell += nCrushSpell;
+    pAttack->m_AttackBreakdown.m_nCrushOppositionPenalty += nCrushPenalty;
     if (g_bEnableCombatDebugging && nCrushPenalty != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1818,8 +1818,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nInspireBonus;
-    pAttack->m_Extra1.m_nInspireFollowersSpell = nInspireSpell;
-    pAttack->m_Extra1.m_nInspireFollowersBonus += nInspireBonus;
+    pAttack->m_AttackBreakdown.m_nInspireFollowersSpell = nInspireSpell;
+    pAttack->m_AttackBreakdown.m_nInspireFollowersBonus += nInspireBonus;
     if (g_bEnableCombatDebugging && nInspireBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1856,8 +1856,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nFormBonus;
-    pAttack->m_Extra1.m_nForm = nForm;
-    pAttack->m_Extra1.m_nFormBonus += nFormBonus;
+    pAttack->m_AttackBreakdown.m_nForm = nForm;
+    pAttack->m_AttackBreakdown.m_nFormBonus += nFormBonus;
     if (g_bEnableCombatDebugging && nFormBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1883,7 +1883,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0, NULL);
     }
     nAttackBonus += nEffectAttackBonus;
-    pAttack->m_Extra1.m_nEffectAttackBonus = nEffectAttackBonus;
+    pAttack->m_AttackBreakdown.m_nEffectAttackBonus = nEffectAttackBonus;
     if (g_bEnableCombatDebugging && nEffectAttackBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1907,7 +1907,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         }
     }
     nAttackBonus += nCharismaBonus;
-    pAttack->m_Extra1.m_nLeaderCharismaBonus += nCharismaBonus;
+    pAttack->m_AttackBreakdown.m_nLeaderCharismaBonus += nCharismaBonus;
     if (g_bEnableCombatDebugging && nCharismaBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -3882,7 +3882,7 @@ int CSWSCreatureStats::GetKnownSpell(unsigned char nClass,
 // PC 0x005F55C0 GOG 0x005F55A0
 void CSWSCreatureStats::RemoveFeat(unsigned short nFeat)
 {
-    NwscreaturestatsTrace2();
+    TraceRemoveFeat();
     m_lstFeats.Remove(nFeat);
     int nFeatUses = m_lstFeatUses.num;
     if (nFeatUses > 0)
@@ -8158,12 +8158,12 @@ static int IsActivatePowerProperty(CSWSItem* pItem, int nProperty, int nPower, i
     return 0;
 }
 
-static inline void NwscreaturestatsTrace2()
+static inline void TraceRemoveFeat()
 {
-    NwscreaturestatsTrace1();
+    TraceCreatureStats();
 }
 
-static inline void NwscreaturestatsTrace1()
+static inline void TraceCreatureStats()
 {
 }
 

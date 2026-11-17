@@ -2099,7 +2099,7 @@ unsigned char MdlNodeEmitter::IsBouncing() { unsigned char bBouncing = m_Emitter
 inline unsigned char MdlNodeEmitter::IsBouncing() { return (unsigned char)m_EmitterFlags.m_bBouncing; }
 #endif
 inline void PartEmitter::SetLastOrigin(Vector v) { m_vLastOrigin = v; }
-inline void LightningEmitter::SetReserved1F8(Vector v) { m_vTargetDirection = v; }
+inline void LightningEmitter::SetTargetDirection(Vector v) { m_vTargetDirection = v; }
 // PC 0x004C1800 GOG 0x004C1910
 void PartEmitter::AnimateParticles(float fTimeStep)
 {
@@ -2197,7 +2197,7 @@ void PartEmitter::AnimateParticles(float fTimeStep)
                 pLightning->m_vPerpendicular = Vector(-vDirection.m_fY,
                                                    vDirection.m_fZ,
                                                    (-vDirection.GetX()));
-                pLightning->SetReserved1F8(m_pTarget->GetPosition() - vStart);
+                pLightning->SetTargetDirection(m_pTarget->GetPosition() - vStart);
                 pLightning->m_vStart = vStart;
             }
         }

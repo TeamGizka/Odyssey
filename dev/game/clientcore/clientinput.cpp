@@ -49,8 +49,8 @@
 #define TARGET_RANGE 10.0f
 
 
-static inline void ClientInputTrace();
-#define CLIENTINPUT_TRACE() ClientInputTrace()
+static inline void TraceInputEvent();
+#define CLIENTINPUT_TRACE() TraceInputEvent()
 
 int g_nInputUnused1 = 0;
 int g_nInputUnused2 = 0;
@@ -2394,7 +2394,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
     }
 }
 #endif
-static inline void ClientInputTrace()
+static inline void TraceInputEvent()
 {
 }
 

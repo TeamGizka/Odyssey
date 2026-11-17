@@ -125,9 +125,9 @@ struct CSWSCombatAttackFlags
     unsigned char m_nDebilitatedModifier;
 };
 
-struct CSWSCombatAttackExtra1
+struct CSWSCombatAttackBreakdown
 {
-    CSWSCombatAttackExtra1()
+    CSWSCombatAttackBreakdown()
     {
         Clear();
     }
@@ -167,12 +167,12 @@ struct CSWSCombatAttackExtra1
     unsigned char m_nFormBonus;
 };
 
-struct CSWSCombatAttackExtra3
+struct CSWSCombatDamageBreakdown
 {
 
     enum { DAMAGE_ABSORPTION_ACTIVE = 2 };
 
-    CSWSCombatAttackExtra3()
+    CSWSCombatDamageBreakdown()
     {
         m_nBaseDamage = 0;
         m_nDamageBonus = 0;
@@ -211,9 +211,9 @@ struct CSWSCombatAttackExtra3
     short m_nUnknownDamage[15];
 };
 
-struct CSWSCombatAttackExtra4
+struct CSWSCombatEffectBreakdown
 {
-    CSWSCombatAttackExtra4()
+    CSWSCombatEffectBreakdown()
     {
         m_oidUnknown0 = OBJECT_INVALID;
         m_nSavingThrowType = 0;
@@ -245,9 +245,9 @@ struct CSWSCombatAttackExtra4
     int m_bEffectApplied;
 };
 
-struct CSWSCombatAttackExtra5
+struct CSWSCombatDeflectBreakdown
 {
-    CSWSCombatAttackExtra5()
+    CSWSCombatDeflectBreakdown()
     {
         Clear();
     }
@@ -312,12 +312,12 @@ public:
     int m_nDischargeHand;
     short m_nDamage[15];
     short m_nUnknown4E;
-    CSWSCombatAttackExtra1 m_Extra1;
-    CSWSCombatSubAttackThreat m_Extra2;
+    CSWSCombatAttackBreakdown m_AttackBreakdown;
+    CSWSCombatSubAttackThreat m_ThreatBreakdown;
     CSWSCombatAttackFlags m_Flags;
     unsigned char m_nUnknown8D;
-    CSWSCombatAttackExtra3 m_DamageBreakdown;
-    CSWSCombatAttackExtra4 m_Extra4;
+    CSWSCombatDamageBreakdown m_DamageBreakdown;
+    CSWSCombatEffectBreakdown m_EffectBreakdown;
 };
 
 class CResGFF;
@@ -410,14 +410,14 @@ public:
 
     int m_bUseAttackResult;
     int m_nForcedAttackResult;
-    CSWSCombatAttackExtra1 m_Extra1;
-    CSWSCombatSubAttackThreat m_Extra2;
+    CSWSCombatAttackBreakdown m_AttackBreakdown;
+    CSWSCombatSubAttackThreat m_ThreatBreakdown;
     CSWSCombatAttackFlags m_Flags;
     unsigned char m_nUnknownFD;
-    CSWSCombatAttackExtra3 m_DamageBreakdown;
-    CSWSCombatAttackExtra4 m_Extra4;
+    CSWSCombatDamageBreakdown m_DamageBreakdown;
+    CSWSCombatEffectBreakdown m_EffectBreakdown;
 
-    CSWSCombatAttackExtra5 m_Extra5;
+    CSWSCombatDeflectBreakdown m_DeflectBreakdown;
 };
 
 class CSWSCombatRound

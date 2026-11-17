@@ -7,7 +7,7 @@
 #include "exotlktable.h"
 #include "clientexoappinternal.h"
 
-static inline void NwitemTrace();
+static inline void TraceBaseItemLookup();
 
 // PC 0x005FEEB0 GOG 0x005FEE90
 CSWBaseItem::CSWBaseItem()
@@ -314,10 +314,10 @@ CSWBaseItemArray::~CSWBaseItemArray()
 // PC 0x00600760 GOG 0x00600740
 CSWBaseItem* CSWItem::GetBaseItem()
 {
-    NwitemTrace();
+    TraceBaseItemLookup();
     return g_pRules->m_pBaseItems->GetBaseItem(m_nBaseItem);
 }
 
-static inline void NwitemTrace()
+static inline void TraceBaseItemLookup()
 {
 }

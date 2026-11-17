@@ -1503,7 +1503,7 @@ void CServerAIMaster::AdjustTargetAndWitnessReputations(
 {
 }
 
-int AIMasterIsCreatureDeadTemp(CSWSCreature* pCreature)
+int IsCreatureDeadTemp(CSWSCreature* pCreature)
 {
     return pCreature->GetDeadTemp();
 }

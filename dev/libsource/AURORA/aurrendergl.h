@@ -830,12 +830,12 @@ class GLRender
     friend void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive);
 public:
 
-    static void SetFogModef(Aurora::AuroraEnableEnums nMode, float fValue)
+    static void SetFogf(Aurora::AuroraEnableEnums nMode, float fValue)
     {
         glFogf(enableTranslationTable[nMode], fValue);
     }
 
-    static void SetFogModev(Aurora::AuroraEnableEnums nMode, Vector& vValue)
+    static void SetFogfv(Aurora::AuroraEnableEnums nMode, Vector& vValue)
     {
         glFogfv(enableTranslationTable[nMode], &vValue.m_fX);
     }
@@ -1388,7 +1388,7 @@ inline void GLRender::SetTextureCoordGenerationState(
 #define GLRender_SetClearColor glClearColor
 #define GLRender_Rotate glRotatef
 
-#define GLRender_SetFogModef(nMode, fValue) glFogf(enableTranslationTable[nMode], fValue)
+#define GLRender_SetFogf(nMode, fValue) glFogf(enableTranslationTable[nMode], fValue)
 
 #define GLRender_SetColor4f glColor4f
 #define GLRender_SetAlphaFunc(nFunc, fReference) glAlphaFunc(cmpTranslationTable[nFunc], fReference)
@@ -1411,7 +1411,7 @@ inline void GLRender::SetTextureCoordGenerationState(
 #define GLRender_EnableLight(nLight) glEnable(GL_LIGHT0 + (nLight))
 #define GLRender_DisableLight(nLight) glDisable(GL_LIGHT0 + (nLight))
 #define GLRender_SetFogMode(nFogMode) glFogi(GL_FOG_MODE, fogModeTranslationTable[nFogMode])
-#define GLRender_SetFogModev(nMode, vValue) glFogfv(enableTranslationTable[nMode], &(vValue).m_fX)
+#define GLRender_SetFogfv(nMode, vValue) glFogfv(enableTranslationTable[nMode], &(vValue).m_fX)
 #define GLRender_SetDepthFunc(nFunc) glDepthFunc(cmpTranslationTable[nFunc])
 #define GLRender_SetColorv glColor4fv
 

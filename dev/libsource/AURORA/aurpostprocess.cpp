@@ -40,7 +40,7 @@ void MdlNodeAnimMesh::InternalPostProcess()
 {
 }
 
-void AurPostProcessArrayListDefiners(MdlNode* pNode)
+void ClearNodeControllers(MdlNode* pNode)
 {
     pNode->m_lstControllers.SetSize(0);
     List<unsigned int> lstIndices;

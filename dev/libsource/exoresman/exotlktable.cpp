@@ -566,9 +566,9 @@ int CTlkTable::GetLanguageVersion()
     }
 }
 
-long ExoResFileInfo(const char* szFileName);
+long ExoLogFileInfo(const char* szFileName);
 
 long ExoLogResFileInfo(const CExoString& sFileName)
 {
-    return ExoResFileInfo(sFileName.CStr());
+    return ExoLogFileInfo(sFileName.CStr());
 }

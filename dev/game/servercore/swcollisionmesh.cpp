@@ -634,33 +634,33 @@ int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
     fclose(pFile);
     return 1;
 }
-static inline float Dot1(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+static inline float DotProduct(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
 {
     return vFirst * vSecond;
 }
-static inline float Dot2(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+static inline float DotProduct2(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
 {
-    return Dot1(vFirst, vSecond, vExtra0);
+    return DotProduct(vFirst, vSecond, vExtra0);
 }
-static inline float Dot3(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+static inline float DotProduct3(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
 {
-    return Dot2(vFirst, vSecond, vExtra0);
+    return DotProduct2(vFirst, vSecond, vExtra0);
 }
-static inline float Dot4(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+static inline float DotProduct4(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
 {
-    return Dot3(vFirst, vSecond, vExtra0);
+    return DotProduct3(vFirst, vSecond, vExtra0);
 }
-static inline float Dot5(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+static inline float DotProduct5(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
 {
-    return Dot4(vFirst, vSecond, vExtra0);
+    return DotProduct4(vFirst, vSecond, vExtra0);
 }
-static inline float Dot6(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+static inline float DotProduct6(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
 {
-    return Dot5(vFirst, vSecond, vExtra0);
+    return DotProduct5(vFirst, vSecond, vExtra0);
 }
-static inline float Dot7(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+static inline float FacingDot(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
 {
-    return Dot6(vFirst, vSecond, vExtra0);
+    return DotProduct6(vFirst, vSecond, vExtra0);
 }
 static inline void MeshDebugLine(const Vector& vA, const Vector& vB, int nColor)
 {
@@ -1196,7 +1196,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
                                    normalize(cross(zaxis, vThird - vFirst)));
         Vector vCorrection = vDirection * (fDistance - fRadius);
         Vector vFaceNormal = m_pFaceNormals[nHitFace];
-        if (Dot7(zaxis, vFaceNormal, zaxis) <= 0.0f && Dot7(vNormal, vFaceNormal, vNormal) < 0.0f)
+        if (FacingDot(zaxis, vFaceNormal, zaxis) <= 0.0f && FacingDot(vNormal, vFaceNormal, vNormal) < 0.0f)
             vNormal = -vNormal;
         pHitInfo->SetHitInfo(CWalkHitInfo::FAILURE_BLOCKED, LocalToWorld(vLocalStart + vCorrection),
             NormalLocalToWorld(vNormal), LocalToWorld(vClosestHit), LocalToWorld(vClosestHit),

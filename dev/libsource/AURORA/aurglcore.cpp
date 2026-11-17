@@ -5742,13 +5742,13 @@ void RequestPoolManagerSys::DeletePool(unsigned int nPool)
     m_ppPools[nPool] = 0;
     m_pPoolSize[nPool] = 0;
 }
-static inline void AurGLCoreTrace();
+static inline void TraceEnableCombiners();
 // PC 0x00435A30 GOG 0x00435B80
 void GLRender::EnableCombiners(int nShader, CAurTexture* pTexture0,
                                CAurTexture* pTexture1, CAurTexture* pTexture2,
                                CAurTexture* pTexture3)
 {
-    AurGLCoreTrace();
+    TraceEnableCombiners();
     switch (nShader)
     {
         case MODEL_SHADER_DISABLE:
@@ -10962,7 +10962,7 @@ void GLRender::EnableCombiners(int nShader, CAurTexture* pTexture0,
     glEnable(GL_REGISTER_COMBINERS_NV);
 }
 
-static inline void AurGLCoreTrace()
+static inline void TraceEnableCombiners()
 {
 }
 // PC 0x00446BA0 GOG 0x00446CF0

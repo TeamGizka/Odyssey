@@ -4114,7 +4114,7 @@ void CSWSObject::AddAction(
     TestActionList();
 }
 
-int NwsobjectRemoveFromDialog(CSWSObject* pObject, unsigned long oidObject)
+int RemoveFromObjectDialog(CSWSObject* pObject, unsigned long oidObject)
 {
     return pObject->RemoveObjectFromDialog(oidObject);
 }

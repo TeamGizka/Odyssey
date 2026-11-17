@@ -24,21 +24,21 @@ int g_bPazaakShowNPCSideDeck = 0;
 
 #define PAZAAK_REFRESH_DISABLED 0
 
-static inline void SwguipazaakTrace3();
-static inline void SwguipazaakTrace2();
-static inline void SwguipazaakTrace1();
+static inline void TracePazaakStateChange();
+static inline void TracePazaakUiUpdate();
+static inline void TracePazaak();
 
-static inline void SwguipazaakTrace3()
+static inline void TracePazaakStateChange()
 {
-    SwguipazaakTrace2();
+    TracePazaakUiUpdate();
 }
 
-static inline void SwguipazaakTrace2()
+static inline void TracePazaakUiUpdate()
 {
-    SwguipazaakTrace1();
+    TracePazaak();
 }
 
-static inline void SwguipazaakTrace1()
+static inline void TracePazaak()
 {
 }
 
@@ -1114,7 +1114,7 @@ CSWGuiPazaakCard::~CSWGuiPazaakCard()  // PC 0x006D47A0 GOG 0x006D4570
 CSWGuiTutorial::CSWGuiTutorial(CSWGuiManager* pManager)  // PC 0x006D5310 GOG 0x006D45E0
     : CSWGuiMessageBox(pManager), m_lHelp(0)
 {
-    SwguipazaakTrace3();
+    TracePazaakStateChange();
     m_nHelpIndex = 0;
 #ifndef _XBOX
     m_pPlacedAbove = NULL;
@@ -1176,7 +1176,7 @@ void CSWGuiTutorial::HandleInputEvent(int nEvent, int nState)
 #ifndef _XBOX
 void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)  // PC 0x006D4950 GOG 0x006D4840
 {
-    SwguipazaakTrace2();
+    TracePazaakUiUpdate();
     if (nState != 0)
     {
         switch (nEvent)
@@ -1240,7 +1240,7 @@ void CSWGuiTutorial::ShowHelp(unsigned long nHelpStrRef,
                               unsigned long nTitleStrRef,
                               unsigned long nButtonStrRef)
 {
-    SwguipazaakTrace3();
+    TracePazaakStateChange();
     m_lHelp.m_nCount = 0;
     m_nHelpIndex = 0;
 #ifndef _XBOX
@@ -1516,7 +1516,7 @@ CSWGuiPazaakStart::~CSWGuiPazaakStart()
 #ifndef _XBOX
 void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x006D4C50 GOG 0x006D4B40
 {
-    SwguipazaakTrace2();
+    TracePazaakUiUpdate();
     m_btnAtext.SetEnabled(m_bSideDeckFull);
     if (!m_bSideDeckFull)
     {
@@ -1537,7 +1537,7 @@ void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x006D4C50 GOG 0x006D4B40
 // PC 0x006D4CE0 GOG 0x006D4BD0
 void CSWGuiPazaakStart::UpdateHelpText(int nCardType)
 {
-    SwguipazaakTrace2();
+    TracePazaakUiUpdate();
     unsigned long nStrRef = 0xFFFFFFFF;
     if (nCardType != -1)
     {
@@ -1699,7 +1699,7 @@ void CSWGuiPazaakStart::OnPanelAdded()
 #ifndef _XBOX
 int CSWGuiPazaakStart::AddChosenCard(int nAvail, int nSlot)  // PC 0x006D6190 GOG 0x006D6540
 {
-    SwguipazaakTrace3();
+    TracePazaakStateChange();
     if (m_anAvailCount[nAvail] < 1)
     {
         return 0;
@@ -1753,7 +1753,7 @@ int CSWGuiPazaakStart::AddChosenCard(int nAvail, int nSlot)  // PC 0x006D6190 GO
 #endif
 int CSWGuiPazaakStart::RemoveChosenCard(int nSlot)  // PC 0x006D6390 GOG 0x006D6740
 {
-    SwguipazaakTrace3();
+    TracePazaakStateChange();
     int nCard = m_aChosen[nSlot].m_nType;
     if (nCard < 0)
     {

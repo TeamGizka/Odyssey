@@ -630,7 +630,7 @@ public:
 
     Vector m_vTargetDirection;
 
-    void SetReserved1F8(Vector v);
+    void SetTargetDirection(Vector v);
     Vector m_vStart;
     List<Vector> m_lstControlPoints;
     List<Vector> m_lstPreviousPoints;
