@@ -1448,7 +1448,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         CExoString sAttacker;
         CExoString sResult;
         CExoString sUnknownAttacker;
-        CExoString sOpposedRoll;
+        CExoString sThreatRoll;
         unsigned long oidAttacker = ReadOBJECTIDClient();
         unsigned long oidTarget = ReadOBJECTIDClient();
         if (MessageReadOverflow(1))
@@ -1456,18 +1456,18 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         int nModifier = ReadCHAR(8);
         unsigned char nRoll = ReadBYTE(5);
         unsigned char nResult = ReadBYTE(4);
-        unsigned char nAttackType = ReadBYTE(3);
-        int bFlag0 = ReadBOOL();
-        int bFlag1 = ReadBOOL();
-        int bFlag2 = ReadBOOL();
-        int bFlag3 = ReadBOOL();
-        int bOpposedRoll = ReadBOOL();
+        unsigned char nAttackMode = ReadBYTE(3);
+        int bOffHand = ReadBOOL();
+        int bSneakAttack = ReadBOOL();
+        int bAttackOfOpportunity = ReadBOOL();
+        int bCoupDeGrace = ReadBOOL();
+        int bCriticalThreat = ReadBOOL();
         if (MessageReadOverflow(1))
             return 0;
-        unsigned long nOpposedRoll;
-        if (bOpposedRoll == 1)
-            nOpposedRoll = (unsigned char)ReadBYTE(5);
-        unsigned char nSpecialResult = (nResult == 17 || nResult == 16) ? ReadBYTE(7) : 0;
+        unsigned long nThreatRoll;
+        if (bCriticalThreat == 1)
+            nThreatRoll = (unsigned char)ReadBYTE(5);
+        unsigned char nConcealment = (nResult == 17 || nResult == 16) ? ReadBYTE(7) : 0;
         if (MessageReadOverflow(1))
             return 0;
         int nTotal = nModifier + nRoll;
@@ -1478,16 +1478,16 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             sSign = "-";
             nModifier = -nModifier;
         }
-        if (bOpposedRoll == 1)
+        if (bCriticalThreat == 1)
         {
-            unsigned long nOpposedTotal;
+            unsigned long nThreatTotal;
             if (sSign == "-")
-                nOpposedTotal = nOpposedRoll - nModifier;
+                nThreatTotal = nThreatRoll - nModifier;
             else
-                nOpposedTotal = nOpposedRoll + nModifier;
-            g_pTlkTable->SetCustomToken(0, CExoString(nOpposedRoll));
-            sOpposedRoll = g_pSWTlkTable->Fetch(1417, NULL, 0, 0);
-            sOpposedRoll.Format("%s %s %d = %d", sOpposedRoll.CStr(), sSign.CStr(), nModifier, nOpposedTotal);
+                nThreatTotal = nThreatRoll + nModifier;
+            g_pTlkTable->SetCustomToken(0, CExoString(nThreatRoll));
+            sThreatRoll = g_pSWTlkTable->Fetch(1417, NULL, 0, 0);
+            sThreatRoll.Format("%s %s %d = %d", sThreatRoll.CStr(), sSign.CStr(), nModifier, nThreatTotal);
         }
         if (nResult == 1)
             sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_HIT);
@@ -1501,12 +1501,12 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1416);
         else if (nResult == 17)
         {
-            g_pTlkTable->SetCustomToken(0, nSpecialResult);
+            g_pTlkTable->SetCustomToken(0, nConcealment);
             sResult = g_pSWTlkTable->Fetch(1418, NULL, 0, 0);
         }
         else if (nResult == 16)
         {
-            g_pTlkTable->SetCustomToken(0, nSpecialResult);
+            g_pTlkTable->SetCustomToken(0, nConcealment);
             sResult = g_pSWTlkTable->Fetch(1419, NULL, 0, 0);
         }
         if (g_pAppManager->GetClientExoApp()->GetObjectName(oidTarget, sObjectName))
@@ -1537,39 +1537,39 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         g_pTlkTable->SetCustomToken(4, sSign);
         g_pTlkTable->SetCustomToken(5, CExoString(nModifier));
         g_pTlkTable->SetCustomToken(6, CExoString(nTotal));
-        if (bOpposedRoll == 1)
-            g_pTlkTable->SetCustomToken(7, sOpposedRoll);
+        if (bCriticalThreat == 1)
+            g_pTlkTable->SetCustomToken(7, sThreatRoll);
         else
             g_pTlkTable->SetCustomToken(7, "");
         sMessage = g_pSWTlkTable->Fetch(1404, NULL, 0, 0);
-        if (bFlag3 == 1)
+        if (bCoupDeGrace == 1)
             sMessage = g_pAppManager->GetClientExoApp()->GetGUIString(0) + " : " + sMessage;
-        if (bFlag1 == 1)
+        if (bSneakAttack == 1)
             sMessage = g_pAppManager->GetClientExoApp()->GetGUIString(1391) + " : " + sMessage;
-        if (nAttackType != 0)
+        if (nAttackMode != 0)
         {
-            CExoString sAttackType;
-            if (nAttackType == 2)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(178);
-            else if (nAttackType == 3)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(167);
-            else if (nAttackType == 5)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(160);
-            else if (nAttackType == 6)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(180);
-            sMessage = sAttackType + CExoString(" : ") + sMessage;
+            CExoString sAttackMode;
+            if (nAttackMode == 2)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(178);
+            else if (nAttackMode == 3)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(167);
+            else if (nAttackMode == 5)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(160);
+            else if (nAttackMode == 6)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(180);
+            sMessage = sAttackMode + CExoString(" : ") + sMessage;
         }
-        if (bFlag2 == 1)
+        if (bAttackOfOpportunity == 1)
             sMessage = g_pAppManager->GetClientExoApp()->GetGUIString(0) + " : " + sMessage;
-        if (bFlag0 == 1)
+        if (bOffHand == 1)
             sMessage = g_pAppManager->GetClientExoApp()->GetGUIString(0) + " : " + sMessage;
-        int bExtraString = ReadBOOL();
+        int bAttackDebugText = ReadBOOL();
         if (MessageReadOverflow(1))
             return 0;
-        if (bExtraString != 0)
+        if (bAttackDebugText != 0)
         {
-            CExoString sExtra;
-            sExtra = ReadCExoString(32);
+            CExoString sAttackDebugText;
+            sAttackDebugText = ReadCExoString(32);
             if (MessageReadOverflow(1))
                 return 0;
         }
@@ -1583,23 +1583,23 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         CExoString sFeat;
         CExoString sResult;
         CExoString sUnknownAttacker;
-        CExoString sOpposedRoll;
+        CExoString sThreatRoll;
         unsigned long oidAttacker = ReadOBJECTIDClient();
         unsigned long oidTarget = ReadOBJECTIDClient();
         int nModifier = ReadCHAR(8);
         unsigned char nRoll = ReadBYTE(5);
         unsigned char nResult = ReadBYTE(4);
         unsigned short nFeat = ReadWORD(16);
-        unsigned char nAttackType = ReadBYTE(3);
-        int bFlag0 = ReadBOOL();
-        int bFlag1 = ReadBOOL();
-        int bOpposedRoll = ReadBOOL();
+        unsigned char nAttackMode = ReadBYTE(3);
+        int bOffHand = ReadBOOL();
+        int bSneakAttack = ReadBOOL();
+        int bCriticalThreat = ReadBOOL();
         if (MessageReadOverflow(1))
             return 0;
-        unsigned long nOpposedRoll;
-        if (bOpposedRoll == 1)
-            nOpposedRoll = (unsigned char)ReadBYTE(5);
-        unsigned char nSpecialResult = (nResult == 17 || nResult == 16) ? ReadBYTE(7) : 0;
+        unsigned long nThreatRoll;
+        if (bCriticalThreat == 1)
+            nThreatRoll = (unsigned char)ReadBYTE(5);
+        unsigned char nConcealment = (nResult == 17 || nResult == 16) ? ReadBYTE(7) : 0;
         if (MessageReadOverflow(1))
             return 0;
         int nTotal = nModifier + nRoll;
@@ -1610,12 +1610,12 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             sSign = "-";
             nModifier = -nModifier;
         }
-        if (bOpposedRoll == 1)
+        if (bCriticalThreat == 1)
         {
-            unsigned long nOpposedTotal = nOpposedRoll + nModifier;
-            g_pTlkTable->SetCustomToken(0, CExoString(nOpposedRoll));
-            sOpposedRoll = g_pSWTlkTable->Fetch(1417, NULL, 0, 0);
-            sOpposedRoll.Format("%s %s %d = %d", sOpposedRoll.CStr(), sSign.CStr(), nModifier, nOpposedTotal);
+            unsigned long nThreatTotal = nThreatRoll + nModifier;
+            g_pTlkTable->SetCustomToken(0, CExoString(nThreatRoll));
+            sThreatRoll = g_pSWTlkTable->Fetch(1417, NULL, 0, 0);
+            sThreatRoll.Format("%s %s %d = %d", sThreatRoll.CStr(), sSign.CStr(), nModifier, nThreatTotal);
         }
         if (nFeat != 0)
         {
@@ -1640,12 +1640,12 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1414);
         else if (nResult == 17)
         {
-            g_pTlkTable->SetCustomToken(0, nSpecialResult);
+            g_pTlkTable->SetCustomToken(0, nConcealment);
             sResult = g_pSWTlkTable->Fetch(1418, NULL, 0, 0);
         }
         else if (nResult == 16)
         {
-            g_pTlkTable->SetCustomToken(0, nSpecialResult);
+            g_pTlkTable->SetCustomToken(0, nConcealment);
             sResult = g_pSWTlkTable->Fetch(1419, NULL, 0, 0);
         }
         if (g_pAppManager->GetClientExoApp()->GetObjectName(oidTarget, sObjectName))
@@ -1677,35 +1677,35 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         g_pTlkTable->SetCustomToken(5, sSign);
         g_pTlkTable->SetCustomToken(6, CExoString(nModifier));
         g_pTlkTable->SetCustomToken(7, CExoString(nTotal));
-        if (bOpposedRoll == 1)
-            g_pTlkTable->SetCustomToken(8, sOpposedRoll);
+        if (bCriticalThreat == 1)
+            g_pTlkTable->SetCustomToken(8, sThreatRoll);
         else
             g_pTlkTable->SetCustomToken(8, "");
         sMessage = g_pSWTlkTable->Fetch(1405, NULL, 0, 0);
-        if (bFlag1 != 0)
+        if (bSneakAttack != 0)
             sMessage = g_pAppManager->GetClientExoApp()->GetGUIString(1391) + " : " + sMessage;
-        if (nAttackType != 0 && nAttackType != 1)
+        if (nAttackMode != 0 && nAttackMode != 1)
         {
-            CExoString sAttackType;
-            if (nAttackType == 2)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(178);
-            else if (nAttackType == 3)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(167);
-            else if (nAttackType == 5)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(160);
-            else if (nAttackType == 6)
-                sAttackType = g_pAppManager->GetClientExoApp()->GetGUIString(180);
-            sMessage = sAttackType + CExoString(" : ") + sMessage;
+            CExoString sAttackMode;
+            if (nAttackMode == 2)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(178);
+            else if (nAttackMode == 3)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(167);
+            else if (nAttackMode == 5)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(160);
+            else if (nAttackMode == 6)
+                sAttackMode = g_pAppManager->GetClientExoApp()->GetGUIString(180);
+            sMessage = sAttackMode + CExoString(" : ") + sMessage;
         }
-        if (bFlag0 == 1)
+        if (bOffHand == 1)
             sMessage = g_pAppManager->GetClientExoApp()->GetGUIString(0) + " : " + sMessage;
-        int bExtraString = ReadBOOL();
+        int bAttackDebugText = ReadBOOL();
         if (MessageReadOverflow(1))
             return 0;
-        if (bExtraString != 0)
+        if (bAttackDebugText != 0)
         {
-            CExoString sExtra;
-            sExtra = ReadCExoString(32);
+            CExoString sAttackDebugText;
+            sAttackDebugText = ReadCExoString(32);
             if (MessageReadOverflow(1))
                 return 0;
         }
@@ -2183,11 +2183,11 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         {
         case CSWSCreature::FEEDBACK_SKILL_COOLDOWN:
         {
-            int nValue0 = ReadINT(32);
+            int nSeconds = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetInteger(0, nSeconds);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
@@ -2229,23 +2229,23 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         case CSWSCreature::FEEDBACK_UNKNOWN_202:
         case CSWSCreature::FEEDBACK_HORRIFIED_IMMUNITY:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
+            unsigned long oidObject = ReadOBJECTIDClient();
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
+            pMessage->SetObjectID(0, oidObject);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_OBJECT_COUNT:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nCount = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nCount);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
@@ -2264,257 +2264,257 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         case CSWSCreature::FEEDBACK_DAMAGE_IMMUNITY:
         {
             STR_RES cImmunityString;
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nDamage = ReadINT(32);
+            int nDamageFlags = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nDamage);
+            pMessage->SetInteger(1, nDamageFlags);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_RESISTED:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nAbsorbed = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nAbsorbed);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_RESISTANCE_REMAINING:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nAbsorbed = ReadINT(32);
+            int nRemaining = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nAbsorbed);
+            pMessage->SetInteger(1, nRemaining);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_REDUCTION:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nAbsorbed = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nAbsorbed);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_REDUCTION_REMAINING:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nAbsorbed = ReadINT(32);
+            int nRemaining = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nAbsorbed);
+            pMessage->SetInteger(1, nRemaining);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_SPELL_IMMUNITY:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nSpellId = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nSpellId);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_OBJECT_COUNTER:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nCount = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nCount);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_OBJECT_COUNTER_REMAINING:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nCount = ReadINT(32);
+            int nRemaining = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nCount);
+            pMessage->SetInteger(1, nRemaining);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_ATTRIBUTE_REDUCED:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
-            float fValue0 = ReadFLOAT(1.0f, 32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nAbility = ReadINT(32);
+            int nAmount = ReadINT(32);
+            float fDuration = ReadFLOAT(1.0f, 32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
-            pMessage->SetFloat(0, fValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nAbility);
+            pMessage->SetInteger(1, nAmount);
+            pMessage->SetFloat(0, fDuration);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_FLOATY_DATA:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nStrRefToDisplay = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nStrRefToDisplay);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_FLOATY_STRING:
         {
-            CExoString sValue0;
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            sValue0 = ReadCExoString(32);
+            CExoString sStringToDisplay;
+            unsigned long oidObject = ReadOBJECTIDClient();
+            sStringToDisplay = ReadCExoString(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetString(0, sValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetString(0, sStringToDisplay);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_CUSTOM_STRING:
         {
-            CExoString sValue0;
-            sValue0 = ReadCExoString(32);
+            CExoString szMessage;
+            szMessage = ReadCExoString(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetString(0, sValue0);
+            pMessage->SetString(0, szMessage);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_EXPERIENCE_POINTS_RECEIVED:
         {
-            int nValue0 = ReadINT(32);
+            int nExperience = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetInteger(0, nExperience);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_SCRIPT_REPORT:
         {
-            CExoString sValue0;
-            CExoString sValue1;
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            sValue0 = ReadCExoString(32);
-            sValue1 = ReadCExoString(32);
-            int nValue0 = ReadINT(32);
+            CExoString sReport;
+            CExoString sTag;
+            unsigned long oidObject = ReadOBJECTIDClient();
+            sReport = ReadCExoString(32);
+            sTag = ReadCExoString(32);
+            int nReason = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetString(0, sValue0);
-            pMessage->SetString(1, sValue1);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetString(0, sReport);
+            pMessage->SetString(1, sTag);
+            pMessage->SetInteger(0, nReason);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_ACTION_LIST_OVERFLOW:
         case CSWSCreature::FEEDBACK_ACTION_LIST_ERASED:
         {
-            CExoString sValue1;
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            sValue1 = ReadCExoString(32);
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
+            CExoString sTag;
+            unsigned long oidObject = ReadOBJECTIDClient();
+            sTag = ReadCExoString(32);
+            int nCount = ReadINT(32);
+            int nLimit = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetString(1, sValue1);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetString(1, sTag);
+            pMessage->SetInteger(0, nCount);
+            pMessage->SetInteger(1, nLimit);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_EFFECT_LIST_OVERFLOW:
         case CSWSCreature::FEEDBACK_EFFECT_LIST_ERASED:
         {
-            CExoString sValue1;
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            sValue1 = ReadCExoString(32);
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
+            CExoString sTag;
+            unsigned long oidObject = ReadOBJECTIDClient();
+            sTag = ReadCExoString(32);
+            int nCount = ReadINT(32);
+            int nLimit = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetString(1, sValue1);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetString(1, sTag);
+            pMessage->SetInteger(0, nCount);
+            pMessage->SetInteger(1, nLimit);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_AI_UPDATE_TIME_OVERFLOW:
         {
-            CExoString sValue1;
-            CExoString sValue2;
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            sValue1 = ReadCExoString(32);
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
-            sValue2 = ReadCExoString(32);
-            int nValue2 = ReadINT(32);
-            int nValue3 = ReadINT(32);
+            CExoString sTag;
+            CExoString sScripts;
+            unsigned long oidObject = ReadOBJECTIDClient();
+            sTag = ReadCExoString(32);
+            int nCount = ReadINT(32);
+            int nLimit = ReadINT(32);
+            sScripts = ReadCExoString(32);
+            int nAction = ReadINT(32);
+            int nFlags = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetString(1, sValue1);
-            pMessage->SetString(2, sValue2);
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
-            pMessage->SetInteger(2, nValue2);
-            pMessage->SetInteger(3, nValue3);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetString(1, sTag);
+            pMessage->SetString(2, sScripts);
+            pMessage->SetInteger(0, nCount);
+            pMessage->SetInteger(1, nLimit);
+            pMessage->SetInteger(2, nAction);
+            pMessage->SetInteger(3, nFlags);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_ALIGNMENT_SHIFT:
         {
-            int nValue0 = ReadINT(32);
-            int nValue1 = ReadINT(32);
+            int nAlignment = ReadINT(32);
+            int nShift = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetInteger(0, nValue0);
-            pMessage->SetInteger(1, nValue1);
+            pMessage->SetInteger(0, nAlignment);
+            pMessage->SetInteger(1, nShift);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
@@ -2523,11 +2523,11 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         case CSWSCreature::FEEDBACK_COMPONENTS_ADDED:
         case CSWSCreature::FEEDBACK_CHEMICALS_ADDED:
         {
-            int nValue0 = ReadINT(32);
+            int nAmount = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetInteger(0, nAmount);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
@@ -2575,54 +2575,54 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         }
         case CSWSCreature::FEEDBACK_HEALED:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nHeal = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nHeal);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_FORCE_POINTS_REGAINED:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
-            int nValue0 = ReadINT(32);
+            unsigned long oidObject = ReadOBJECTIDClient();
+            int nForcePoints = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetObjectID(0, oidObject);
+            pMessage->SetInteger(0, nForcePoints);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_EXPERIENCE_POINTS_GAINED:
         case CSWSCreature::FEEDBACK_EXPERIENCE_POINTS_LOST:
         {
-            int nValue0 = ReadINT(32);
+            int nExperience = ReadINT(32);
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetInteger(0, nExperience);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_OBJECT_LOCKED:
         {
-            unsigned long oidObject0 = ReadOBJECTIDClient();
+            unsigned long oidObject = ReadOBJECTIDClient();
             if (MessageReadOverflow(1))
                 return 0;
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetObjectID(0, oidObject0);
+            pMessage->SetObjectID(0, oidObject);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
         case CSWSCreature::FEEDBACK_FORCE_POWER_NAME:
         {
-            int nValue0 = ReadINT(32);
+            int nSpellId = ReadINT(32);
             CSWCCMessageData* pMessage = new CSWCCMessageData;
-            pMessage->SetInteger(0, nValue0);
+            pMessage->SetInteger(0, nSpellId);
             g_pAppManager->GetClientExoApp()->AddFeedbackMessage(nFeedback, pMessage, "");
             break;
         }
