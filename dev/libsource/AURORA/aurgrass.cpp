@@ -520,7 +520,7 @@ inline List<CAurTriangleListElem>::List(List<CAurTriangleListElem>& other)
 {
     if (AURGRASS_DEBUG)
     {
-        printf("List<CAurTriangleListElem>::List() texture %p\n", SafePointer<CAurTexture>().m_pObject);
+        AurPrintf("List<CAurTriangleListElem>::List() texture %p\n", SafePointer<CAurTexture>().m_pObject);
     }
     m_nCount = 0;
     m_nAllocated = 0;

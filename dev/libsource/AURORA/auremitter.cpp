@@ -374,7 +374,7 @@ void Particle::randomDirection(int nWidth, int nHeight)
             Vector vAxis = cross(vCameraDirection, m_qOrientation.ydir());
             if (EMITTER_DEADSPACE_DEBUG)
             {
-                printf("Particle::randomDirection() dead space %f %f\n", qNewOrientation.m_fW,
+                AurPrintf("Particle::randomDirection() dead space %f %f\n", qNewOrientation.m_fW,
                        qNewOrientation.m_fZ);
             }
             if (fFacing < 0.0f)

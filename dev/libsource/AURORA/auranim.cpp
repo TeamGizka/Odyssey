@@ -1222,7 +1222,7 @@ void Gob::PlayOutOfOrderAnimation(char* sName, float* pfWeights,
     m_lOutOfOrderAnimations.Insert(pRun, 0);
     if (AURANIM_DEBUG)
     {
-        printf("Gob::PlayOutOfOrderAnimation() character %d\n", IsCharacter());
+        AurPrintf("Gob::PlayOutOfOrderAnimation() character %d\n", IsCharacter());
     }
 }
 // PC 0x004B6130 GOG 0x004B6240
@@ -1500,7 +1500,7 @@ int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
 {
     if (AURANIM_DEBUG)
     {
-        printf("Gob::PlayAnimation() character %d\n", IsCharacter());
+        AurPrintf("Gob::PlayAnimation() character %d\n", IsCharacter());
     }
     if (sName == 0 || *sName == 0 || stricmp("NULL", sName) == 0)
     {

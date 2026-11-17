@@ -1087,7 +1087,7 @@ void ArturoTextureController::Init()
 {
     if (AURTEXCONTROL_DEBUG)
     {
-        printf("ArturoTextureController::Init() channel %p\n", Height2Channel(NULL, NULL));
+        AurPrintf("ArturoTextureController::Init() channel %p\n", Height2Channel(NULL, NULL));
     }
     int nImageWidth = m_pTexture->GetWidth();
     int nImageHeight = m_pTexture->GetHeight();
@@ -1252,7 +1252,7 @@ void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
 {
     if (AURTEXCONTROL_DEBUG)
     {
-        printf("DirtyTextureController::Init() channel %p\n", Height2Channel(NULL, NULL));
+        AurPrintf("DirtyTextureController::Init() channel %p\n", Height2Channel(NULL, NULL));
     }
     int nBPP = m_pTexture->GetBPP();
     m_nDirtyFrame = 0;

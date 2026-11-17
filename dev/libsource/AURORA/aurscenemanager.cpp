@@ -723,7 +723,7 @@ static void ConstructCameraFadePlane(Scene* pScene)
         CurrentCamera->SetFadePlanes(planeRight, planeLeft);
         if (AURSCENEMANAGER_DEBUG)
         {
-            printf("ConstructCameraFadePlane() camera fade hit %d\n", HitPartOnBSPNode(pScene->m_pBSPRoot, vCamera, vTarget, NULL));
+            AurPrintf("ConstructCameraFadePlane() camera fade hit %d\n", HitPartOnBSPNode(pScene->m_pBSPRoot, vCamera, vTarget, NULL));
         }
     }
 }

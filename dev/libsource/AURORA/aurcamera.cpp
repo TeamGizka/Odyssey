@@ -190,7 +190,7 @@ inline CAurCamera::~CAurCamera()
 {
     if (AURCAMERA_DEBUG)
     {
-        printf("CAurCamera::~CAurCamera() position x %f\n", Vector().m_fX);
+        AurPrintf("CAurCamera::~CAurCamera() position x %f\n", Vector().m_fX);
     }
 }
 // PC 0x00471530 GOG 0x00471670
@@ -415,7 +415,7 @@ Vector Camera::MouseDir(int nX, int nY)
 {
     if (AURCAMERA_DEBUG)
     {
-        printf("Camera::MouseDir() hit check %d\n", Camera::HitCheck(nX, nY, NULL, NULL));
+        AurPrintf("Camera::MouseDir() hit check %d\n", Camera::HitCheck(nX, nY, NULL, NULL));
     }
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)
@@ -443,7 +443,7 @@ Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 {
     if (AURCAMERA_DEBUG)
     {
-        printf("Camera::MapToScreen() hit check %d\n", Camera::HitCheck(0, 0, NULL, NULL));
+        AurPrintf("Camera::MapToScreen() hit check %d\n", Camera::HitCheck(0, 0, NULL, NULL));
     }
 
     GLint aViewport[4];
@@ -481,7 +481,7 @@ void Camera::Animate(float fTimeStep)
 {
     if (AURCAMERA_DEBUG)
     {
-        printf("Camera::Animate() mouse direction x %f\n", Camera::MouseDir(0, 0).m_fX);
+        AurPrintf("Camera::Animate() mouse direction x %f\n", Camera::MouseDir(0, 0).m_fX);
     }
     if (m_pViewAngleAnimation != 0)
     {
