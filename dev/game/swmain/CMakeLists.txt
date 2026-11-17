@@ -271,7 +271,8 @@ kotor_archive(exobase
     exobase/exocritsectinternal.cpp
     exobase/exodebuginternal.cpp
     exobase/exolocstringinternal.cpp
-    exobase/exorandinternal.cpp)
+    exobase/exorandinternal.cpp
+    exobase/exomemman.cpp)
 kotor_archive(clientcore
   OBJECTS
     clientcore/clientexoapp.cpp

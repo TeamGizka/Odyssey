@@ -19,7 +19,8 @@ set(sources
   exolocstringinternal.cpp
   exorandinternal.cpp
   exocritsectinternal.cpp
-  exotimersinternal.cpp)
+  exotimersinternal.cpp
+  exomemman.cpp)
 if(KOTOR_PLATFORM STREQUAL "xbox")
   # Not built for Xbox yet
   list(REMOVE_ITEM sources
