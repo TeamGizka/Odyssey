@@ -30,6 +30,7 @@ public:
     void FadeAndStop(unsigned long nFadeTime);
     void ChangeVolume(int nVolume);
     void ChangePosition(Vector vPosition);
+    CExoArrayList<unsigned long> GetPeopleInSoundRange();
     int Load(CResGFF* pRes, CResStruct* pStruct);
     int LoadFromTemplate(const CResRef& resTemplate);
     void ChangePitchVariation(float fVariation);

@@ -52,6 +52,26 @@ int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
     }
     return (int)pNode;
 }
+
+// Dead code: not in the PC executable
+void CSWSExpressionList::AddNodeToHead(CSWSExpressionNode* pNode)
+{
+    if (m_pHead != NULL || m_pTail != NULL)
+    {
+        if (m_pCurrent == m_pHead)
+        {
+            m_pCurrent = pNode;
+        }
+        pNode->SetNext(m_pHead);
+        m_pHead = pNode;
+    }
+    else
+    {
+        m_pHead = pNode;
+        m_pTail = pNode;
+        m_pCurrent = pNode;
+    }
+}
 // PC 0x005E4680 GOG 0x005E46B0
 CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 {

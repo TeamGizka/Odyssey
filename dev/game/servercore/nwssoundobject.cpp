@@ -344,6 +344,13 @@ void CSWSSoundObject::ChangePosition(Vector vPosition)
         }
     }
 }
+
+// Dead code: not in the PC executable
+CExoArrayList<unsigned long> CSWSSoundObject::GetPeopleInSoundRange()
+{
+    CExoArrayList<unsigned long> lstPeople;
+    return lstPeople;
+}
 // PC 0x00570580 GOG 0x005706B0
 int CSWSSoundObject::Load(CResGFF* pRes, CResStruct* pStruct)
 {

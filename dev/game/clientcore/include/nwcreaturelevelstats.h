@@ -8,6 +8,7 @@ class CSWLevelStats
 public:
     CSWLevelStats();
     ~CSWLevelStats();
+    void ClearFeats();
 
     unsigned char GetSkillRankChange(unsigned short nSkill);
     void SetSkillRankChange(unsigned short nSkill, char nChange);

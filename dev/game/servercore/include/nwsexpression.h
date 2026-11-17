@@ -48,6 +48,7 @@ public:
 
     void DeleteAlternate(CSWSExpressionNode* pNode);
     int AddNode(CSWSExpressionNode* pNode);
+    void AddNodeToHead(CSWSExpressionNode* pNode);
     void DeleteList();
 
     CSWSExpressionNode* GetHead() { return m_pHead; }
