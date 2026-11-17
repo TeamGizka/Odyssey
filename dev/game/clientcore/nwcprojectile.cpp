@@ -2007,3 +2007,36 @@ void CSWCProjectile::AIUpdate()
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
 }
+
+// Dead code: not in the PC executable
+void CSWCProjectile::MoveProjectileToFinalVelocity()
+{
+    Vector vDirection;
+    Vector vPosition;
+    vDirection = m_vDesiredPosition - m_vPosition;
+    float fTime = m_nDesiredPositionTime / 1000.0f;
+    m_vVelocity = (2.0f / fTime) * vDirection - m_vAcceleration;
+    vPosition = m_vPosition + (m_nTimeDelta / 1000.0f) * m_vVelocity;
+
+    Vector vMovement = m_vPosition - vPosition;
+    if (vMovement * vMovement > vDirection * vDirection)
+    {
+        vPosition = m_vDesiredPosition;
+    }
+
+    if (m_nOrientationType == PROJECTILE_ORIENTATION_TARGET)
+    {
+        vDirection = m_pCurrentBehavior->m_vTargetPosition - vPosition;
+    }
+    else if (m_nOrientationType == PROJECTILE_ORIENTATION_MOVEMENT)
+    {
+        vDirection = vPosition - m_vPosition;
+    }
+
+    if (m_nOrientationType != PROJECTILE_ORIENTATION_NONE &&
+        vDirection * vDirection > PROJECTILE_ORIENTATION_MIN_DIRECTION_SQUARED)
+    {
+        SetOrientation(normalize(vDirection));
+    }
+    SetPosition(vPosition);
+}

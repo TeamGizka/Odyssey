@@ -9,6 +9,32 @@ CSWAnimBase::CSWAnimBase()
 CSWAnimBase::~CSWAnimBase()
 {
 }
+
+// Dead code: not in the PC executable
+int CSWAnimBase::Get(int nValue, float* pfValue)
+{
+    switch (nValue)
+    {
+        case 0:
+            *pfValue = m_afValues[0];
+            return 1;
+
+        case 1:
+            *pfValue = m_afValues[1];
+            return 1;
+
+        case 2:
+            *pfValue = m_afValues[2];
+            return 1;
+
+        case 3:
+            *pfValue = m_afValues[3];
+            return 1;
+
+        default:
+            return 0;
+    }
+}
 // PC 0x006F3620 GOG 0x006F3210
 int CSWAnimBase::Set(int nValue, float fValue)
 {

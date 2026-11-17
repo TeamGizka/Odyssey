@@ -604,6 +604,37 @@ CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
     }
     return NULL;
 }
+
+// Dead code: not in the PC executable
+void CSWCArea::RemoveMapPin(unsigned long nReference)
+{
+    int nCount = m_lstMapPins.num;
+    for (int i = 0; i < nCount; i++)
+    {
+        CSWCMapPin* pMapPin = m_lstMapPins[i];
+        if (pMapPin->m_nReference == nReference &&
+            pMapPin->m_nType == CSWCMapPin::PIN_TYPE_REFERENCE_NUMBER)
+        {
+            m_lstMapPins.DelIndex(i);
+            delete pMapPin;
+        }
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWCArea::AddCAurObjectToHitCheckIgnoreList(CAurObject* pObject)
+{
+    CExoLinkedListNode* pPosition = m_lstHitCheckIgnoreObjects.GetHeadPos();
+    CAurObject* pCurrent = m_lstHitCheckIgnoreObjects.GetAtPos(pPosition);
+    while (pCurrent != pObject && pPosition != NULL)
+    {
+        pCurrent = m_lstHitCheckIgnoreObjects.GetNext(pPosition);
+    }
+    if (pCurrent == NULL)
+    {
+        m_lstHitCheckIgnoreObjects.AddTail(pObject);
+    }
+}
 // PC 0x00651B70 GOG 0x00651A20
 void CSWCArea::UpdateSoundObjectsTimeOfDay()
 {

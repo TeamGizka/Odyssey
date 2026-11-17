@@ -102,6 +102,15 @@ float CSWPlayerControlCamRelative::GetAcceleration()
     }
     return SWPLAYERCONTROL_DEFAULT_ACCELERATION;
 }
+
+// Dead code: not in the PC executable
+void CSWPlayerControlCamRelative::SetAcceleration(float fAcceleration)
+{
+    if (GetPlayer() != NULL)
+    {
+        GetPlayer()->m_pAppearance->m_fDriveAcceleration = fAcceleration;
+    }
+}
 // PC 0x006CEB90 GOG 0x006CE890
 void CSWPlayerControlCamRelative::Init()
 {
@@ -154,6 +163,12 @@ float CSWPlayerControlCamRelative::GetMaxSpeed()
         return pCreature->m_pAppearance->m_fDriveMaxSpeed;
     }
     return 6.0f;
+}
+
+// Dead code: not in the PC executable
+void CSWPlayerControlCamRelative::SetTurnVelocity(float fVelocity)
+{
+    m_integrator.SetVelocity(fVelocity);
 }
 // PC 0x006CEDB0 GOG 0x006CEAB0
 void CSWPlayerControlCamRelative::ResetDriveAcceleration()

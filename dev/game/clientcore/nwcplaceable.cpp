@@ -261,6 +261,11 @@ void CSWCPlaceable::BashPlaceable(unsigned long oidUser,
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWCPlaceable::ToggleLockState()
+{
+}
 // PC 0x006D9CE0 GOG 0x006D99A0
 int CSWCPlaceable::LoadLight()
 {
@@ -448,6 +453,16 @@ int CSWCPlaceable::ApplyShadowBlob()
         HideShadowBlob();
     }
     return bResult;
+}
+
+// Dead code: not in the PC executable
+void CSWCPlaceable::ShowFeedbackBubbleText()
+{
+}
+
+// Dead code: not in the PC executable
+void CSWCPlaceable::SetMineIcon(unsigned char nIcon)
+{
 }
 // PC 0x0069CF50 GOG 0x0069CD30
 void CSWCPlaceable::UnloadModel(unsigned char nModel)

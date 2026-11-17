@@ -339,3 +339,12 @@ int CClientMsgSysAdmin::HandleServerToSysAdminMessage(unsigned char* pData,
     }
     return bResult;
 }
+
+// Dead code: not in the PC executable
+int CClientMsgSysAdmin::SendSysAdminToServerBootPlayer(unsigned long nPlayerId)
+{
+    CExoString sMessage;
+    sMessage.Format("%s.%s. %08i", CMessageServerAdmin_Control,
+                    CMessageServerAdmin_Control_Boot, nPlayerId);
+    return SendSysAdminToServerMessage(sMessage);
+}

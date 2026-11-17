@@ -821,6 +821,34 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
         AddFeatSet(aFeats[i], nNextFeat, nAltFeat);
     }
 }
+
+// Dead code: not in the PC executable
+unsigned char CSWGuiSkillFlowChart::GetSkillStatus(unsigned long nSkill)
+{
+    for (int i = 0; i < m_cFlows.num; i++)
+    {
+        CSWGuiSkillFlow* pFlow = static_cast<CSWGuiSkillFlow*>(m_cFlows[i]);
+        int nIndex = pFlow->GetSkillIDIndex(nSkill);
+        if (nIndex != -1)
+        {
+            return pFlow->m_aSkills[nIndex].m_nStatus;
+        }
+    }
+    return 0xFF;
+}
+
+// Dead code: not in the PC executable
+int CSWGuiSkillFlow::GetSkillIDIndex(unsigned long nSkill)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        if (m_aSkills[i].m_nSkill == nSkill)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
 // PC 0x0073B4E0 GOG 0x0073B050
 int CSWGuiSkillFlowChart::SetSkillStatusAll(unsigned char nStatus)
 {

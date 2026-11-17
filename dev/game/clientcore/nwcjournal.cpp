@@ -126,6 +126,22 @@ int CSWCSortedJournalArrayList::SortItemsByPlanet(int nFirst, int nSecond)
     }
     return SortItemsByDate(nFirst, nSecond);
 }
+
+// Dead code: not in the PC executable
+void CSWCSortedJournalArrayList::UpdateEntry(int nIndex, const SJournalEntry& entry)
+{
+    m_lstEntries[nIndex].m_lsName = entry.m_lsName;
+    m_lstEntries[nIndex].m_lsText = entry.m_lsText;
+    m_lstEntries[nIndex].m_nDate = entry.m_nDate;
+    m_lstEntries[nIndex].m_nTime = entry.m_nTime;
+    m_lstEntries[nIndex].m_nState = entry.m_nState;
+    m_lstEntries[nIndex].m_nPriority = entry.m_nPriority;
+    m_lstEntries[nIndex].m_nPicture = entry.m_nPicture;
+    m_lstEntries[nIndex].m_bCompleted = entry.m_bCompleted;
+    m_lstEntries[nIndex].m_nPlotIndex = entry.m_nPlotIndex;
+    m_lstEntries[nIndex].m_nPlanetID = entry.m_nPlanetID;
+    m_lstEntries[nIndex].m_nXP = entry.m_nXP;
+}
 // PC 0x006CB7C0 GOG 0x006CB4C0
 void CSWCJournal::Remove(const CExoString& sTag)
 {
@@ -387,6 +403,28 @@ void CSWCJournal::SetDoneSortBy(int nSortBy)
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWCJournal::SetJournalPageOpen()
+{
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+
+    if (pMessage != NULL)
+    {
+        pMessage->SendPlayerToServerJournalMessage_QuestScreenOpen();
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWCJournal::SetJournalPageClosed()
+{
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+
+    if (pMessage != NULL)
+    {
+        pMessage->SendPlayerToServerJournalMessage_QuestScreenClosed();
+    }
+}
 // PC 0x006CC2F0 GOG 0x006CBFF0
 void CSWCJournal::JournalUpdated(int bFromServer, int bActive,
                                  const CExoString& sMessage)
@@ -419,6 +457,21 @@ void CSWCJournal::JournalUpdated(int bFromServer, int bActive,
         }
         g_bOverrideJournalSortType = 1;
     }
+}
+
+// Dead code: not in the PC executable
+void CSWCJournal::CheckForUpdates()
+{
+    if (g_pAppManager->m_pClientExoApp->GetLoadBarState() != 0)
+    {
+        return;
+    }
+    for (int i = 0; i < m_lstPendingUpdates.num; i++)
+    {
+        JournalUpdated(1, m_lstPendingUpdates[i].m_bActive,
+                       m_lstPendingUpdates[i].m_sTag);
+    }
+    m_lstPendingUpdates.SetSize(0);
 }
 // PC 0x006CC470 GOG 0x006CC170
 CSWCWorldJournal::CSWCWorldJournal() : m_lstEntries(0), m_lstOrder(0)
@@ -489,6 +542,33 @@ void CSWCWorldJournal::DeleteAllEntries()
     m_lstEntries.SetSize(0);
     m_lstOrder.SetSize(0);
     m_bChanged = 1;
+}
+
+// Dead code: not in the PC executable
+void CSWCWorldJournal::SetSortBy(int nSortBy)
+{
+    if (nSortBy == 0 || nSortBy == 1)
+    {
+        m_nSortBy = nSortBy;
+        SortList();
+        m_bChanged = 1;
+    }
+}
+
+// Dead code: not in the PC executable
+SJournalEntry* CSWCWorldJournal::GetEntryAt(int nIndex)
+{
+    if (nIndex >= 0 && nIndex < m_lstOrder.num)
+    {
+        return (SJournalEntry*)&m_lstEntries[m_lstOrder[nIndex]];
+    }
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CSWCWorldJournal::GetNumEntries()
+{
+    return m_lstEntries.num;
 }
 
 // Dead code: not in the PC executable

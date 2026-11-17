@@ -2302,6 +2302,18 @@ int CGuiInGame::GetMessageBufferSize()
 {
     return m_MessageBufferSize;
 }
+
+// Dead code: not in the PC executable
+void CGuiInGame::HandleDialogClose(int bClose)
+{
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->RemovePanel(m_pDialog);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->RemovePanel(m_pComputerScreen);
+}
+
+// Dead code: not in the PC executable
+void CGuiInGame::HandleInventoryClose(int bClose)
+{
+}
 // PC 0x0067F5A0 GOG 0x0067F380
 int CGuiInGame::LoadStuntModelsForDialog()
 {
@@ -2474,6 +2486,11 @@ void CGuiInGame::ShowBarkBubble(unsigned long oidObject,
         m_pBarkBubble->SetBark(oidObject, sText, cSound, nFlags);
         m_pGuiManager->AddPanel(m_pBarkBubble, 0, 1);
     }
+}
+
+// Dead code: not in the PC executable
+void CGuiInGame::CreateDeathMenuGUI()
+{
 }
 // PC 0x0067FAA0 GOG 0x0067F880
 void CGuiInGame::ShowGalaxyMapGui(int nPlanet)

@@ -1206,6 +1206,14 @@ void CSWGuiTextParams::SetText(const CExoString& sText)
         m_pText->WrapString();
     }
 }
+
+// Dead code: not in the PC executable
+void CSWGuiTextParams::SetLocString(CExoLocString& lsText, int nStrRef)
+{
+    CExoString sText;
+    lsText.GetString(nStrRef, &sText, 0);
+    SetText(sText);
+}
 // PC 0x004156A0 GOG 0x00415650
 void CSWGuiTextParams::SetStrRef(unsigned long nStrRef)
 {

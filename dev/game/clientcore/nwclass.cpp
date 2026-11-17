@@ -685,6 +685,12 @@ int CSWClass::IsJedi(int nClass)
         || nClass == CCLASS_JEDIWATCHMAN || nClass == CCLASS_JEDIWEAPONMASTER
         || nClass == CCLASS_JEDIMASTER;
 }
+
+// Dead code: not in the PC executable
+int CSWClass::IsDroid(int nRace)
+{
+    return nRace == CCLASS_COMBATDROID || nRace == CCLASS_EXPERTDROID;
+}
 // PC 0x0060E880 GOG 0x0060E860
 void CSWClass::LoadSpellsTable()
 {

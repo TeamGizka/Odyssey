@@ -139,6 +139,135 @@ int CSWCMessage::SendPlayerToServerMessage(unsigned char nMajor,
     }
     return nResult;
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerChat_Party(const CExoString& sMessage)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sMessage.GetLength() + 4, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sMessage, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(9, 6, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerChat_Shout(const CExoString& sMessage)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sMessage.GetLength() + 4, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sMessage, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(9, 2, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerChat_Talk(const CExoString& sMessage)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sMessage.GetLength() + 4, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sMessage, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(9, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerChat_Tell(unsigned long nPlayerId, const CExoString& sMessage)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sMessage.GetLength() + 12, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(0);
+    WriteDWORD(nPlayerId, 32);
+    WriteCExoString(sMessage, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(9, 4, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerChat_TellName(const CExoString& sName,
+                                                 const CExoString& sMessage)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sName.GetLength() + sMessage.GetLength() + 12, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(1);
+    WriteCExoString(sName, 32);
+    WriteCExoString(sMessage, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(9, 4, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerChat_Whisper(const CExoString& sMessage)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sMessage.GetLength() + 4, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sMessage, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(9, 3, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_MoveToArea(const CExoString& sArea,
+                                                    const Vector& vPosition)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(64, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sArea, 32);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_PlayerPathfindRule(unsigned char nRule)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(64, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nRule, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 25, pBuffer, nSize);
+}
 // PC 0x006CCB60 GOG 0x006CC860
 int CSWCMessage::SendPlayerToServerModule_ModuleLoaded()
 {
@@ -187,10 +316,72 @@ int CSWCMessage::SendPlayerToServerModule_LoadGame(unsigned long nSlot,
     }
     return SendPlayerToServerMessage(3, 5, pBuffer, nSize);
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerModule_RunModule()
+{
+    return SendPlayerToServerMessage(3, 7, NULL, 0);
+}
 // PC 0x006CCCB0 GOG 0x006CC9B0
 int CSWCMessage::SendPlayerToServerStatus_RequestStatus()
 {
     return SendPlayerToServerMessage(1, 0, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerUpdate_AppearancePartVariation(unsigned long oidObject,
+                                                                  unsigned char nPart,
+                                                                  unsigned char nVariation)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(3, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('V', 8);
+    WriteOBJECTIDClient(oidObject);
+    WriteBYTE(nPart, 8);
+    WriteBYTE(nVariation, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerUpdate_AppearanceHeadVariation(unsigned long oidObject,
+                                                                  unsigned char nHeadVariation)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(2, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('H', 8);
+    WriteOBJECTIDClient(oidObject);
+    WriteBYTE(nHeadVariation, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerUpdate_AppearanceGender(unsigned long oidObject,
+                                                           unsigned char nGender)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(2, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('G', 8);
+    WriteOBJECTIDClient(oidObject);
+    WriteBYTE(nGender, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
 }
 // PC 0x006CCD00 GOG 0x006CCA00
 int CSWCMessage::SendPlayerToServerGuiContainer_Close(
@@ -207,6 +398,76 @@ int CSWCMessage::SendPlayerToServerGuiContainer_Close(
         return 0;
     }
     return SendPlayerToServerMessage(0x19, 2, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_AssociateCommand(unsigned long oidObject, int nCommand)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    WriteINT(nCommand, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 27, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerSpellMemorize(unsigned char nA, unsigned long oidObject,
+                                                 unsigned char nB, unsigned char nC,
+                                                 unsigned char nD)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nA, 8);
+    WriteDWORD(oidObject, 32);
+    WriteBYTE(nB, 8);
+    WriteBYTE(nC, 8);
+    WriteBYTE(nD, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 16, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInventory_LearnScroll(unsigned long oidObject)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 20;
+
+    CreateWriteMessage(20, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(12, 13, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerSpellUnMemorize(unsigned char nA, unsigned char nB,
+                                                   unsigned char nC)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 3;
+
+    CreateWriteMessage(3, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nA, 8);
+    WriteBYTE(nB, 8);
+    WriteBYTE(nC, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 17, pBuffer, nSize);
 }
 // PC 0x006CCD70 GOG 0x006CCA70
 int CSWCMessage::SendPlayerToServerInput_CastSpell(
@@ -255,6 +516,65 @@ int CSWCMessage::SendPlayerToServerInput_CastSpell(
     }
     return SendPlayerToServerMessage(6, 0x12, pBuffer, nSize);
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_CastSpellLikeAbility(unsigned long oidObject,
+                                                              unsigned char nA,
+                                                              const Vector& vPosition,
+                                                              unsigned long oidTarget)
+{
+    float fLength;
+    unsigned char nFlags = 0;
+    unsigned long nSize = 4;
+    unsigned char* pBuffer;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    if (oidTarget != OBJECT_INVALID)
+    {
+        nFlags = 1;
+    }
+    fLength = vPosition.m_fX * vPosition.m_fX + vPosition.m_fY * vPosition.m_fY +
+              vPosition.m_fZ * vPosition.m_fZ;
+    if (fLength >= 0.00001f)
+    {
+        nFlags += 2;
+    }
+    WriteDWORD(oidObject, 32);
+    WriteBYTE(nA, 8);
+    WriteBYTE(nFlags, 8);
+    if (oidTarget != OBJECT_INVALID)
+    {
+        WriteOBJECTIDClient(oidTarget);
+    }
+    if (fLength >= 0.00001f)
+    {
+        WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+        WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+        WriteFLOAT(vPosition.m_fZ + 0.3f, 1.0f, 32);
+    }
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 35, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_CancelAction(unsigned short nGroupId,
+                                                      unsigned short nActionId)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteWORD(nGroupId, 16);
+    WriteWORD(nActionId, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 20, pBuffer, nSize);
+}
 // PC 0x006CCED0 GOG 0x006CCBD0
 int CSWCMessage::SendPlayerToServerInput_TogglePauseRequest()
 {
@@ -265,6 +585,111 @@ int CSWCMessage::SendPlayerToServerInput_TogglePauseRequest()
         pServerExoApp->TogglePauseState(2);
     }
     return 1;
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_SetPauseRequest(int bPause)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(bPause);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 25, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_ExportRequest()
+{
+    return SendPlayerToServerMessage(6, 31, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerStore_Close()
+{
+    return SendPlayerToServerMessage(7, 5, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_MergeItem(unsigned long oidObject, unsigned long oidTarget)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    WriteOBJECTIDClient(oidTarget);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 22, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_SplitItem(unsigned long oidItem, int nCount)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 6;
+
+    CreateWriteMessage(6, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidItem);
+    WriteWORD(nCount, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 23, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_CancelDisguise(unsigned long oidObject)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 30, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerGold_TransferGold(unsigned long oidTarget,
+                                                     const Vector& vPosition, int nAmount)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    if (oidTarget == OBJECT_INVALID)
+    {
+        nSize = 22;
+    }
+    else
+    {
+        nSize = 10;
+    }
+    CreateWriteMessage(nSize, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidTarget);
+    WriteINT(nAmount, 32);
+    if (oidTarget == OBJECT_INVALID)
+    {
+        WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+        WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+        WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    }
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(8, 1, pBuffer, nSize);
 }
 // PC 0x006CCEF0 GOG 0x006CCBF0
 int CSWCMessage::SendPlayerToServerJournalMessage_QuestScreenOpen()
@@ -282,6 +707,241 @@ int CSWCMessage::SendPlayerToServerJournalMessage_QuestScreenOpen()
             CNetLayer::PLAYERID_SERVER, pMessage, 3, 0);
     delete[] pMessage;
     return nResult;
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerJournalMessage_QuestScreenClosed()
+{
+    unsigned char* pMessage = new unsigned char[3];
+    if (pMessage == 0)
+    {
+        return 0;
+    }
+    pMessage[0] = 112;
+    pMessage[1] = 28;
+    pMessage[2] = 11;
+    int nResult =
+        g_pAppManager->m_pClientExoApp->GetNetLayer()->SendMessageToPlayer(
+            CNetLayer::PLAYERID_SERVER, pMessage, 3, 0);
+    delete[] pMessage;
+    return nResult;
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerJournalMessage_RequestAdd(const CExoString& sString,
+                                                             const CExoString& sStringB)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = sString.GetLength() + sStringB.GetLength() + 4;
+
+    CreateWriteMessage(nSize, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sString, 32);
+    WriteCExoString(sStringB, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(28, 13, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerJournalMessage_RequestDelete(int nIndex, int bStrRef)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteINT(nIndex, 32);
+    WriteBOOL(bStrRef);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(28, 14, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerGuiQuickbar_SetButton_Item(unsigned char nA,
+                                                              unsigned long oidObject, int nB,
+                                                              unsigned long oidTarget)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(10, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nA, 8);
+    WriteBYTE(1, 8);
+    WriteOBJECTIDClient(oidObject);
+    WriteINT(nB, 32);
+    if (oidTarget == CGameObjectArray::INVALIDOBJID)
+    {
+        WriteBOOL(0);
+    }
+    else
+    {
+        WriteBOOL(1);
+        WriteOBJECTIDClient(oidTarget);
+    }
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(30, 2, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerGuiQuickbar_SetButton_Spell(unsigned char nA, unsigned char nB,
+                                                               unsigned long oidObject,
+                                                               unsigned char nC, unsigned char nD)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nA, 8);
+    WriteBYTE(2, 8);
+    WriteBYTE(nB, 8);
+    WriteDWORD(oidObject, 32);
+    WriteBYTE(nD, 8);
+    WriteBYTE(nC, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(30, 2, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerGuiQuickbar_SetButton_SpellLikeAbility(unsigned char nA,
+                                                                          unsigned long oidObject,
+                                                                          unsigned char nB)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(7, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nA, 8);
+    WriteBYTE(44, 8);
+    WriteDWORD(oidObject, 32);
+    WriteBYTE(nB, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(30, 2, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheatLevelUp()
+{
+    return SendPlayerToServerMessage(15, 18, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerMapPinAdded(const Vector& vPosition, const CExoString& sString)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sString.GetLength() + 12, RECIPIENT_UNSPECIFIED, 1);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    WriteCExoString(sString, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(32, 2, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerMapPinRemoved(int nMapPin)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteINT(nMapPin, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(32, 3, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerMapPinChanged(const Vector& vPosition, const CExoString& sNote,
+                                                 int nMapPin)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sNote.GetLength() + 16, RECIPIENT_UNSPECIFIED, 1);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    WriteCExoString(sNote, 32);
+    WriteINT(nMapPin, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(32, 5, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_GetObjectDebugInfo(unsigned long oidObject)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 21, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerGuiPlayerDeath_Respawn()
+{
+    return SendPlayerToServerMessage(37, 1, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCharacterDownloadGimme()
+{
+    return SendPlayerToServerMessage(43, 1, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerShutDownServer(int bSave)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(bSave);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(47, 0, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerPlayModuleCharacterList_Start()
+{
+    return SendPlayerToServerMessage(49, 1, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerPlayModuleCharacterList_Stop()
+{
+    return SendPlayerToServerMessage(49, 2, NULL, 0);
 }
 // PC 0x006CCF40 GOG 0x006CCC40
 int CSWCMessage::SendPlayerToServerInput_GiveItem(unsigned long oidItem,
@@ -322,9 +982,55 @@ int CSWCMessage::SendPlayerToServerCheat_ShowServerMem()
 {
     return SendPlayerToServerMessage(15, 17, NULL, 0);
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_Kill(unsigned long oidTarget, unsigned long oidKiller)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidTarget);
+    WriteOBJECTIDClient(oidKiller);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 7, pBuffer, nSize);
+}
 int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006CD0A0 GOG 0x006CCDA0
 {
     return SendPlayerToServerMessage(15, 4, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_ToggleCombatDebugging(int bEnable)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(bEnable);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 9, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_ToggleMovementSpeedDebugging(int bEnable)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(bEnable);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 22, pBuffer, nSize);
 }
 // PC 0x006CD0F0 GOG 0x006CCDF0
 int CSWCMessage::SendPlayerToServerGuiInventory_Status(int nStatus)
@@ -339,6 +1045,37 @@ int CSWCMessage::SendPlayerToServerGuiInventory_Status(int nStatus)
         return 0;
     }
     return SendPlayerToServerMessage(13, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerGuiCharacterSheet_Status(char nPanel, unsigned long oidCreature)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 5;
+
+    CreateWriteMessage(5, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR(nPanel, 8);
+    WriteOBJECTIDClient(oidCreature);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(21, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_AlwaysRun(int bAlwaysRun)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(bAlwaysRun);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 26, pBuffer, nSize);
 }
 // PC 0x006CD160 GOG 0x006CCE60
 int CSWCMessage::SendPlayerToServerInput_Attack(unsigned long oidTarget,
@@ -355,6 +1092,24 @@ int CSWCMessage::SendPlayerToServerInput_Attack(unsigned long oidTarget,
         return 0;
     }
     return SendPlayerToServerMessage(6, 2, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_UseFeat(unsigned short nFeat, unsigned short nAction,
+                                                 unsigned long oidTarget)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 18;
+
+    CreateWriteMessage(18, RECIPIENT_UNSPECIFIED, 1);
+    WriteWORD(nFeat, 16);
+    WriteWORD(nAction, 16);
+    WriteOBJECTIDClient(oidTarget);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 6, pBuffer, nSize);
 }
 // PC 0x006CD1E0 GOG 0x006CCEE0
 int CSWCMessage::SendPlayerToServerInput_UseSkill(unsigned char nSkill,
@@ -443,6 +1198,56 @@ int CSWCMessage::SendPlayerToServerInput_SwitchWeapons(unsigned long oidCreature
     }
     return SendPlayerToServerMessage(6, 38, pBuffer, nSize);
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_Stance(char nStance, unsigned long oidObject)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 5;
+
+    CreateWriteMessage(5, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR(nStance, 8);
+    WriteOBJECTIDClient(oidObject);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 39, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_ToggleMode(unsigned char nMode, unsigned long oidTarget)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 1;
+
+    CreateWriteMessage(1, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nMode, 8);
+    if (nMode == 5)
+    {
+        WriteOBJECTIDClient(oidTarget);
+    }
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 10, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_Examine(unsigned long oidObject)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 5, pBuffer, nSize);
+}
 // PC 0x006CD450 GOG 0x006CD150
 int CSWCMessage::SendPlayerToServerInput_UseObject(unsigned long oidObject)
 {
@@ -524,6 +1329,21 @@ int CSWCMessage::SendPlayerToServerInput_UnlockObject(unsigned long oidObject,
     }
     return SendPlayerToServerMessage(6, 12, pBuffer, nSize);
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_LockObject(unsigned long oidObject)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 14, pBuffer, nSize);
+}
 // PC 0x006CD590 GOG 0x006CD290
 int CSWCMessage::SendPlayerToServerInput_DoorSaber(unsigned long oidDoor)
 {
@@ -537,6 +1357,49 @@ int CSWCMessage::SendPlayerToServerInput_DoorSaber(unsigned long oidDoor)
         return 0;
     }
     return SendPlayerToServerMessage(6, 37, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_PlayAnimation(unsigned long oidObject,
+                                                       const Vector& vPosition,
+                                                       unsigned short nAnimation)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 18;
+
+    CreateWriteMessage(18, RECIPIENT_UNSPECIFIED, 1);
+    WriteWORD(nAnimation, 16);
+    WriteOBJECTIDClient(oidObject);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 4, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_DriveControl(const Vector& vPosition,
+                                                      unsigned short nDirection,
+                                                      unsigned char nDriveMode,
+                                                      unsigned char nFlags)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 11;
+
+    CreateWriteMessage(11, RECIPIENT_UNSPECIFIED, 1);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteWORD(nDirection, 12);
+    WriteBYTE(nDriveMode, 8);
+    WriteBYTE(nFlags, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 29, pBuffer, nSize);
 }
 // PC 0x006CD5F0 GOG 0x006CD2F0
 int CSWCMessage::SendPlayerToServerInput_AbortDriveControl()
@@ -554,6 +1417,55 @@ int CSWCMessage::SendPlayerToServerInput_AbortDriveControl()
             CNetLayer::PLAYERID_SERVER, pMessage, 3, 0);
     delete[] pMessage;
     return nResult;
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_CancelGuiTimingEvent()
+{
+    return SendPlayerToServerMessage(6, 34, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_WalkToWayPoint(unsigned long oidArea, float fPositionX,
+                                                        float fPositionY, float fPositionZ,
+                                                        unsigned char nMovementRate, int bRun,
+                                                        int bUsePath, unsigned char nClientMoving,
+                                                        unsigned long oidTarget)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 18;
+
+    CreateWriteMessage(18, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidArea);
+    WriteFLOAT(fPositionX, 1.0f, 32);
+    WriteFLOAT(fPositionY, 1.0f, 32);
+    WriteFLOAT(fPositionZ, 1.0f, 32);
+    WriteBYTE(nMovementRate, 8);
+    WriteBOOL(bRun);
+    WriteBOOL(bUsePath);
+    WriteBYTE(nClientMoving, 8);
+    WriteOBJECTIDClient(oidTarget);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_TurnOnSpot(const Vector& vPosition)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 28, pBuffer, nSize);
 }
 // PC 0x006CD640 GOG 0x006CD340
 int CSWCMessage::SendPlayerToServerInput_Dialog(unsigned long oidObject)
@@ -575,6 +1487,37 @@ int CSWCMessage::SendPlayerToServerInput_Dialog(unsigned long oidObject)
     }
     return 1;
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_Rest()
+{
+    return SendPlayerToServerMessage(6, 13, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInput_StopDragMode()
+{
+    return SendPlayerToServerMessage(6, 15, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInventory_Drop(unsigned long oidItem, float fPositionX,
+                                                  float fPositionY, float fPositionZ)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 16;
+
+    CreateWriteMessage(16, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidItem);
+    WriteFLOAT(fPositionX, 1.0f, 32);
+    WriteFLOAT(fPositionY, 1.0f, 32);
+    WriteFLOAT(fPositionZ, 1.0f, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(12, 3, pBuffer, nSize);
+}
 // PC 0x006CD6D0 GOG 0x006CD3D0
 int CSWCMessage::SendPlayerToServerInventory_Equip(unsigned long oidItem,
                                                    unsigned long nSlot)
@@ -590,6 +1533,48 @@ int CSWCMessage::SendPlayerToServerInventory_Equip(unsigned long oidItem,
         return 0;
     }
     return SendPlayerToServerMessage(12, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInventory_EquipToggle(unsigned long oidObject,
+                                                         unsigned long oidTarget)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    if (oidTarget == CGameObjectArray::INVALIDOBJID)
+    {
+        WriteBOOL(0);
+    }
+    else
+    {
+        WriteBOOL(1);
+        WriteOBJECTIDClient(oidTarget);
+    }
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(12, 11, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInventory_Pickup(unsigned long oidObject,
+                                                    unsigned long oidTarget)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    WriteOBJECTIDClient(oidTarget);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(12, 5, pBuffer, nSize);
 }
 extern int g_bDemoMode;
 
@@ -616,10 +1601,72 @@ int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     }
     return SendPlayerToServerMessage(2, 0x13, pBuffer, nSize);
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerLogin_LoginServerCharacter(const CResRef& cResRef, int nA,
+                                                              int nB)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(16, RECIPIENT_UNSPECIFIED, 1);
+    WriteCResRef(cResRef, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    if (nA != 0)
+    {
+        return SendPlayerToServerMessage(2, 14, pBuffer, nSize);
+    }
+    if (nB != 0)
+    {
+        return SendPlayerToServerMessage(2, 17, pBuffer, nSize);
+    }
+    return SendPlayerToServerMessage(2, 2, pBuffer, nSize);
+}
 // PC 0x006CD7D0 GOG 0x006CD4D0
 int CSWCMessage::SendPlayerToServerLogin_LoginIFOCharacter()
 {
     return SendPlayerToServerMessage(2, 15, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerLogin_CharacterResponse(int bSuccess)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(1, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(bSuccess);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(2, 11, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServer_RequestServerCharacterList()
+{
+    return SendPlayerToServerMessage(17, 1, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServer_RequestCharacterListUpdate(unsigned char nResponse,
+                                                               const CResRef& cResRef)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(17, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nResponse, 8);
+    WriteCResRef(cResRef, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(17, 3, pBuffer, nSize);
 }
 // PC 0x006CD820 GOG 0x006CD520
 int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
@@ -827,6 +1874,21 @@ int CSWCMessage::SendPlayerToServerInventory_Unequip(unsigned long oidItem, unsi
 }
 #endif
 
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerInventory_Use(unsigned long oidObject)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(12, 12, pBuffer, nSize);
+}
+
 #ifdef _XBOX
 
 #include "aurconsole.h"
@@ -889,6 +1951,36 @@ int CSWCMessage::SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarge
     }
     return SendPlayerToServerMessage(15, 10, pBuffer, nSize);
 }
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_PonyRide()
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(1, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(1);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 12, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_RainOfCows()
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(1, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(1);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 13, pBuffer, nSize);
+}
 #ifdef _XBOX
 
 int CSWCMessage::SendPlayerToServerCheat_DebugMode(int bDebugMode)
@@ -943,6 +2035,103 @@ char* DebugMode(char* szArgs)
 }
 ConsoleFunc ConFDebugMode("DebugMode", DebugMode);
 #endif
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_ToggleFloatyEffects()
+{
+    return SendPlayerToServerMessage(15, 15, NULL, 0);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_SummonNasty(unsigned long oidArea, unsigned char nCount,
+                                                     const CResRef& cResRef)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(21, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidArea);
+    WriteBYTE(nCount, 8);
+    WriteCResRef(cResRef, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 14, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_CastSpell(unsigned long nSpellId, const Vector& vTarget,
+                                                   unsigned long oidTarget)
+{
+    float fLength;
+    unsigned char nFlags = 0;
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(20, RECIPIENT_UNSPECIFIED, 1);
+    if (oidTarget != OBJECT_INVALID)
+    {
+        nFlags = 1;
+    }
+    fLength = vTarget.m_fX * vTarget.m_fX + vTarget.m_fY * vTarget.m_fY +
+              vTarget.m_fZ * vTarget.m_fZ;
+    if (fLength >= 0.00001f)
+    {
+        nFlags += 2;
+    }
+    WriteDWORD(nSpellId, 32);
+    WriteBYTE(nFlags, 8);
+    if (oidTarget != OBJECT_INVALID)
+    {
+        WriteOBJECTIDClient(oidTarget);
+    }
+    if (fLength >= 0.00001f)
+    {
+        WriteFLOAT(vTarget.m_fX, 1.0f, 32);
+        WriteFLOAT(vTarget.m_fY, 1.0f, 32);
+        WriteFLOAT(vTarget.m_fZ, 1.0f, 32);
+    }
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 3, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_RunScript(const CExoString& sScript)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sScript.GetLength() + 4, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sScript, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 8, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerDialog_Reply(unsigned long oidObject, unsigned long nReplyIndex,
+                                                unsigned char bEscape, unsigned long nEntryId)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(9, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidObject);
+    WriteDWORD(nReplyIndex, 32);
+    WriteBYTE(bEscape, 8);
+    WriteDWORD(nEntryId, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(20, 3, pBuffer, nSize);
+}
 
 // Dead code: not in the PC executable
 char* visualeffect(char* szArgs)
@@ -1379,3 +2568,77 @@ ConsoleFunc ConFdisplaystrref("displaystrref", displaystrref);
 ConsoleFunc ConFaddpartymember("addpartymember", addpartymember);
 ConsoleFunc ConFgiveforcepowers("giveforcepowers", giveforcepowers);
 #endif
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerUpdate_AppearancePhenoType(unsigned long oidObject,
+                                                              unsigned char nPhenoType)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(2, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('T', 8);
+    WriteOBJECTIDClient(oidObject);
+    WriteBYTE(nPhenoType, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerUpdate_AppearancePLTColor(unsigned long oidObject,
+                                                             unsigned char nLayer,
+                                                             unsigned char nColor)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(3, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('L', 8);
+    WriteOBJECTIDClient(oidObject);
+    WriteBYTE(nLayer, 8);
+    WriteBYTE(nColor, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerQuickChat(unsigned short nQuickChat)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(6, RECIPIENT_UNSPECIFIED, 1);
+    WriteWORD(nQuickChat, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(22, 0, pBuffer, nSize);
+}
+
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCreature_Add(unsigned long oidObject, const Vector& vPosition,
+                                                const CExoString& sString)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sString.GetLength() + 17, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('C', 8);
+    WriteOBJECTIDClient(oidObject);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    WriteCExoString(sString, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}

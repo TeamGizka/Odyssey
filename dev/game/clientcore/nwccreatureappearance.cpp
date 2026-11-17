@@ -311,6 +311,11 @@ int CSWCCreatureAppearance::GetArmourClass()
 {
     return 0;
 }
+
+// Dead code: not in the PC executable
+void CSWCCreatureAppearance::GetPartVariations(unsigned char* pVariations, unsigned char nPart)
+{
+}
 // PC 0x006F1BF0 GOG 0x006F17E0
 int CSWCCreatureAppearance::CreateHeadAppearance(CCAppearanceInfo* pAppearance)
 {

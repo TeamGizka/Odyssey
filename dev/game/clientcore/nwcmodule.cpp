@@ -129,6 +129,16 @@ void CSWCameraOnAStick::SetPosition(Vector vPosition)
 void CSWCModule::UnloadModule()
 {
 }
+
+// Dead code: not in the PC executable
+int CSWCModule::CanUpdate()
+{
+    if (m_pInfo != NULL && m_pModuleCamera != NULL)
+    {
+        return 1;
+    }
+    return 0;
+}
 // PC 0x00696470 GOG 0x00696220
 int CSWCModule::LoadModule()
 {
@@ -710,6 +720,42 @@ void CSWCModule::SetTimeOfDayState(unsigned char nState, unsigned long nTime)
     nHours = m_nTimeOfDayHour;
     m_fTimeOfDay = nTime * 0.001f;
     m_fTimeOfDayHours = nHours * 60.0f;
+}
+
+// Dead code: not in the PC executable
+void CSWCModule::UpdateCameraModeNormal()
+{
+    CAurBehavior* pBehavior;
+    CAurBehaviorCameraFollow* pFollow;
+    float fNear;
+    float fFar;
+
+    if (m_bCameraModeChanged != 0)
+    {
+        pBehavior = m_pModuleCamera->GetBehavior(-1);
+        if (pBehavior != 0)
+        {
+            pFollow = pBehavior->AsBehaviorCameraFollow();
+            if (pFollow != NULL)
+            {
+                pFollow->m_fMinDistance = 5.0f;
+                pFollow->m_fMaxDistance = 20.0f;
+                pFollow->m_fMinPitch = 1.0f;
+                pFollow->m_fMaxPitch = 50.0f;
+                g_fMinDist = 5.0f;
+                g_fMaxDist = 20.0f;
+                g_fMinPitch = 1.0f;
+                g_fMaxPitch = 50.0f;
+                m_vCameraOffset = Vector(0.0f, 0.0f, 1.0f);
+                pFollow->m_vOffset = m_vCameraOffset;
+                m_pModuleCamera->GetClipDist(fNear, fFar);
+                m_pModuleCamera->SetClipDist(fNear, 45.0f);
+                pFollow->m_fDistance = 20.0f;
+                pFollow->m_fPitch = 50.0f;
+                m_bCameraModeChanged = 0;
+            }
+        }
+    }
 }
 // PC 0x00697520 GOG 0x006972D0
 void CSWCModule::UpdateCameraModeChaseCam()

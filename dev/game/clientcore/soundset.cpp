@@ -58,6 +58,20 @@ CResRef CSoundSetList::GetSoundSet(unsigned short nSoundSet)
 
     return m_pResRefs[nSoundSet];
 }
+
+// Dead code: not in the PC executable
+CExoString CSoundSetList::GetName(unsigned short nSoundSet)
+{
+    if (nSoundSet >= m_nCount)
+    {
+        CExoString sName;
+        return sName;
+    }
+
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_pStrRefs[nSoundSet], strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
 // PC 0x006CE2D0 GOG 0x006CDFD0
 CSoundSet::CSoundSet(const CResRef& cResRef)
 {
@@ -123,4 +137,16 @@ CSoundSetList::CSoundSetList()
             delete pSoundSetType;
         }
     }
+}
+
+// Dead code: not in the PC executable
+int CSoundSet::Demand()
+{
+    return m_pRes->Demand() != NULL;
+}
+
+// Dead code: not in the PC executable
+int CSoundSet::Release()
+{
+    return m_pRes->Release() != 0;
 }

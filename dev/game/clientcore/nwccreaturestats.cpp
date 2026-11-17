@@ -119,6 +119,20 @@ char CSWCCreatureStats::CalcStatModifier(unsigned char nScore)
 {
     return (int)floor(nScore * 0.5) - 5;
 }
+
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats::GetCasterLevel(unsigned char nClass)
+{
+    if (nClass >= 2)
+    {
+        return 0;
+    }
+    if (g_pRules->m_pClasses[GetClass(nClass)].m_bSpellCaster)
+    {
+        return GetClassLevel(nClass);
+    }
+    return 0;
+}
 // PC 0x006FB630 GOG 0x006FB220
 CExoString CSWCCreatureStats::GetRaceString()
 {
@@ -287,6 +301,27 @@ void CSWCCreatureStats::SetCombatInformation(CCombatInformation* pInfo)
         m_bOwnsCombatInformation = 1;
     }
     m_pCombatInformation = pInfo;
+}
+
+// Dead code: not in the PC executable
+int CSWCCreatureStats::GetNumOnHandAttacks()
+{
+    if (m_pCombatInformation != NULL)
+    {
+        return m_pCombatInformation->GetNumAttacks();
+    }
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CSWCCreatureStats::GetNumOffHandAttacks()
+{
+    if (m_pCombatInformation != NULL &&
+        m_pCombatInformation->GetOffHandWeaponEquipped() == 1)
+    {
+        return 1;
+    }
+    return 0;
 }
 // PC 0x006FB8F0 GOG 0x006FB4E0
 int CSWCCreatureStats::CalculateNumAttacks()
@@ -988,6 +1023,23 @@ void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat,
     pUse->m_nFeat = nFeat;
     pUse->m_nUses = nUses;
     m_lstFeatUses.Add(pUse);
+}
+
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats::GetFeatRemainingUses(unsigned short nFeat)
+{
+    for (int i = 0; i < m_lstFeatUses.num; i++)
+    {
+        if (m_lstFeatUses.element[i]->m_nFeat == nFeat)
+        {
+            return m_lstFeatUses.element[i]->m_nUses;
+        }
+    }
+    if (m_lstFeats.Contains(nFeat) || m_lstBonusFeats.Contains(nFeat))
+    {
+        return CSWFeat::MAX_FEAT_USES;
+    }
+    return 0;
 }
 // PC 0x006FD7A0 GOG 0x006FD390
 void CSWCCreatureStats::ClearKnownSpells()

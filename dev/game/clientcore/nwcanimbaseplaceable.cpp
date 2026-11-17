@@ -231,3 +231,12 @@ unsigned short CSWCAnimBasePlaceable::ServerToClientAnimation(unsigned short nAn
     }
     return nAnimation;
 }
+
+// Dead code: not in the PC executable
+void CSWCAnimBasePlaceable::EnableAlwaysRender()
+{
+    if (m_pModel != 0)
+    {
+        m_pModel->EnableAlwaysRender();
+    }
+}

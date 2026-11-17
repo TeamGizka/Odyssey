@@ -5788,6 +5788,71 @@ void CSWCCreature::PerformGiveItem(unsigned long oidItem,
                                                    nStack);
     }
 }
+
+// Dead code: not in the PC executable
+void CSWCCreature::PerformEquipItem(unsigned long oidItem, unsigned long nSlot)
+{
+    if (m_bDisguised != 0)
+    {
+        g_pAppManager->m_pClientExoApp->AddFeedbackMessage(23, NULL, "");
+        return;
+    }
+    CSWCItem* pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(oidItem);
+    if (pItem != NULL)
+    {
+        CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+        if (pMessage != NULL)
+        {
+            pItem->m_bAttached = 1;
+            if (pItem->m_pArea != NULL)
+            {
+                pItem->m_nAttachSlot = nSlot;
+            }
+            if (pItem->m_nAttachSlot == INVENTORY_SLOT_INVALID)
+            {
+                pMessage->SendPlayerToServerInventory_Equip(oidItem, nSlot);
+            }
+            else
+            {
+                pMessage->SendPlayerToServerInventory_Pickup(oidItem,
+                                                             CGameObjectArray::INVALIDOBJID);
+            }
+        }
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWCCreature::PerformPickupItem(unsigned long oidItem)
+{
+    CSWCItem* pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(oidItem);
+    if (pItem != NULL)
+    {
+        pItem->m_bAttached = 1;
+        CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+        if (pMessage != NULL)
+        {
+            pMessage->SendPlayerToServerInventory_Pickup(oidItem,
+                                                         CGameObjectArray::INVALIDOBJID);
+        }
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWCCreature::PerformDropItem(unsigned long oidItem)
+{
+    Vector vPosition = m_vPosition;
+    CSWCItem* pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(oidItem);
+    if (pItem != NULL)
+    {
+        pItem->m_bAttached = 1;
+        CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+        if (pMessage != NULL)
+        {
+            pMessage->SendPlayerToServerInventory_Drop(oidItem, vPosition.m_fX,
+                                                       vPosition.m_fY, vPosition.m_fZ);
+        }
+    }
+}
 // PC 0x0065B230 GOG 0x0065B0E0
 void CSWCCreature::PerformAttack(unsigned long oidTarget)
 {
@@ -5796,6 +5861,28 @@ void CSWCCreature::PerformAttack(unsigned long oidTarget)
     if (pMessage != NULL)
     {
         pMessage->SendPlayerToServerInput_Attack(oidTarget, 0);
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWCCreature::PerformDialog(unsigned long oidTarget)
+{
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+
+    if (pMessage != NULL)
+    {
+        pMessage->SendPlayerToServerInput_Dialog(oidTarget);
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWCCreature::PerformExamine(unsigned long oidTarget)
+{
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+
+    if (pMessage != NULL)
+    {
+        pMessage->SendPlayerToServerInput_Examine(oidTarget);
     }
 }
 // PC 0x0065B260 GOG 0x0065B110

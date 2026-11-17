@@ -510,6 +510,29 @@ void CSWMGObstacle::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
     CSWMiniGameObject::LoadScripts(pGFF, pStruct, structScripts);
 }
 
+// Dead code: not in the PC executable
+void CSWTrackFollower::OnHitWorld(int bScript)
+{
+    int nModels;
+    int i;
+    if (bScript == 0)
+    {
+        CResRef resScript = GetScriptName(12);
+        if (resScript.IsValid())
+        {
+            CExoString sScript;
+            resScript.CopyToString(sScript);
+            g_pVirtualMachine->RunScript(&sScript, m_nObjectId, 1);
+            return;
+        }
+    }
+    nModels = m_lstModels.num;
+    for (i = 0; i < nModels; i++)
+    {
+        m_lstModels.element[i].m_pModel->SetBehavior(0);
+    }
+}
+
 int bDoAcceleration = 1;
 float fSpeed = 100.0f;
 float fLastSpeedSet = 100.0f;

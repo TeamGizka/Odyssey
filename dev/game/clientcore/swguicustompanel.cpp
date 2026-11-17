@@ -274,6 +274,16 @@ void CSWGuiCustomPanel::ClearAbilities()
 }
 
 // Dead code: not in the PC executable
+void CSWGuiCustomPanel::ClearFeats()
+{
+    CSWGuiMainCharGen* pMainCharGen = (CSWGuiMainCharGen*)m_pParentPanel;
+    if (pMainCharGen != NULL)
+    {
+        pMainCharGen->ClearFeats();
+    }
+}
+
+// Dead code: not in the PC executable
 void CSWGuiCustomPanel::PlayGame()
 {
     ((CSWGuiMainCharGen*)m_pParentPanel)->BeginPlayGame();

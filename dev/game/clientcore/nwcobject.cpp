@@ -1287,6 +1287,11 @@ void CSWCObject::SetDesiredFadeState(unsigned char nState, int bFade,
 void CSWCObject::SetPopUpBubbleText(const CExoString&, int, float, float)
 {
 }
+
+// Dead code: not in the PC executable
+void CSWCObject::ShowPopUpBubble(const Vector& vPosition)
+{
+}
 // PC 0x00693D60 GOG 0x00693AD0
 void CSWCObject::SetPortrait(const CResRef& cPortrait)
 {

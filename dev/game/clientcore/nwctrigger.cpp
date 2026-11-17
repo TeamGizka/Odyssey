@@ -190,6 +190,11 @@ void CSWCTrigger::SetCursor(unsigned char nTrigger)
         m_nCursor = (short)nCursor;
     }
 }
+
+// Dead code: not in the PC executable
+void CSWCTrigger::SetMineIcon(unsigned char nIcon)
+{
+}
 // PC 0x006EAA20 GOG 0x006EA890
 void CSWCTrigger::UpdatePosition()
 {
@@ -531,6 +536,68 @@ void CSWCTrigger::SpecialDisplayTrigger(int bDisplay)
                                      0.0f, false);
     float fFade = m_fHighlightFade;
     AurPartTriggerSetHighlight(m_pPartTrigger, true, fFade, true);
+}
+
+// Dead code: not in the PC executable
+int CSWCTrigger::InTrigger(const Vector& vPoint)
+{
+    int nIntersections = 0;
+    int nPoints = m_nNumVertices;
+    for (int i = 0; i < nPoints; i++)
+    {
+        int nNextPoint = i != nPoints - 1 ? i + 1 : 0;
+        Vector* pNextPoint = &m_pvVertices[nNextPoint];
+        Vector* pPoint = &m_pvVertices[i];
+
+        if (pNextPoint->m_fX != pPoint->m_fX)
+        {
+            float fPointY = pPoint->m_fY;
+            float fX = vPoint.m_fX;
+            float fDeltaY = pNextPoint->m_fY - fPointY;
+            float fDeltaX = pNextPoint->m_fX - pPoint->m_fX;
+            float fY = fPointY -
+                (pPoint->m_fX - vPoint.m_fX) * (fDeltaY / fDeltaX);
+            if (fY > vPoint.m_fY)
+            {
+                if (pNextPoint->m_fY > pPoint->m_fY)
+                {
+                    if (fY >= pPoint->m_fY && fY < pNextPoint->m_fY)
+                    {
+                        nIntersections++;
+                    }
+                }
+                else if (pPoint->m_fY > pNextPoint->m_fY)
+                {
+                    if (fY > pNextPoint->m_fY && fY <= pPoint->m_fY)
+                    {
+                        nIntersections++;
+                    }
+                }
+                else
+                {
+                    if (pNextPoint->m_fX > pPoint->m_fX)
+                    {
+                        if (fX >= pPoint->m_fX && fX < pNextPoint->m_fX)
+                        {
+                            nIntersections++;
+                        }
+                    }
+                    else if (pPoint->m_fX > pNextPoint->m_fX &&
+                             fX > pNextPoint->m_fX && fX <= pPoint->m_fX)
+                    {
+                        nIntersections++;
+                    }
+                }
+            }
+        }
+        if (pNextPoint->m_fX == vPoint.m_fX &&
+            (pNextPoint->m_fY > vPoint.m_fY ||
+             pPoint->m_fY >= vPoint.m_fY))
+        {
+            nIntersections++;
+        }
+    }
+    return nIntersections % 2 == 1;
 }
 // PC 0x006EB570 GOG 0x006EB230
 void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,

@@ -85,6 +85,11 @@ CSWCDoor::CSWCDoor()
 void CSWCDoor::HilightDoor(int)
 {
 }
+
+// Dead code: not in the PC executable
+void CSWCDoor::SetMineIcon(unsigned char nIcon)
+{
+}
 // PC 0x006DB630 GOG 0x006DB250
 void CSWCDoor::SetIsAreaTransition(int bAreaTransition)
 {
@@ -158,6 +163,11 @@ void CSWCDoor::ToggleDoorState(unsigned long oidDoor, CSWCCreature* pCreature)
     {
         pMessage->SendPlayerToServerInput_ChangeDoorState(m_nId, DOOR_ANIMATION_CLOSED);
     }
+}
+
+// Dead code: not in the PC executable
+void CSWCDoor::ToggleLockState()
+{
 }
 // PC 0x006DB7A0 GOG 0x0069CD00
 void CSWCDoor::UnloadModel()

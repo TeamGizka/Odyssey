@@ -31,6 +31,21 @@ inline int CSWCJournal::GetDoneSortBy()
 {
     return m_lstDone.m_nSortBy;
 }
+
+// Dead code: not in the PC executable
+int CSWGuiInGameJournal::GetPreviousSortType()
+{
+    int nSortType = g_nJournalSortType - 1;
+    if (nSortType == CSWCSortedJournalArrayList::SORT_BY_PRIORITY)
+    {
+        nSortType = CSWCSortedJournalArrayList::SORT_BY_NAME;
+    }
+    if (nSortType < CSWCSortedJournalArrayList::SORT_BY_DATE)
+    {
+        nSortType = CSWCSortedJournalArrayList::SORT_BY_PLANET;
+    }
+    return nSortType;
+}
 // PC 0x0069B560 GOG 0x0069B310
 inline void CSWCJournal::ClearActiveHasChanged()
 {
@@ -274,6 +289,21 @@ void CSWGuiInGameJournal::OnFilterPressed(CSWGuiControl* pControl)
     }
     (pJournal->*pfnSetSortBy)(g_nJournalSortType);
     UpdateFilterLabelHighlights();
+}
+
+// Dead code: not in the PC executable
+int CSWGuiInGameJournal::GetNextSortType()
+{
+    int nSortType = g_nJournalSortType + 1;
+    if (nSortType == CSWCSortedJournalArrayList::SORT_BY_PRIORITY)
+    {
+        nSortType = CSWCSortedJournalArrayList::SORT_BY_PLANET;
+    }
+    if (nSortType > CSWCSortedJournalArrayList::SORT_BY_PLANET)
+    {
+        nSortType = CSWCSortedJournalArrayList::SORT_BY_DATE;
+    }
+    return nSortType;
 }
 #endif
 
