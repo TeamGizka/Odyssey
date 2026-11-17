@@ -8,6 +8,7 @@
 #include "clientoptions.h"
 #include <string.h>
 #include "twodimarray.h"
+#include "swmain.h"
 
 
 int g_bDrawSafeRegion = 0;
@@ -54,8 +55,6 @@ void AurGUIStopLayer();
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
                         const Vector& vColor, bool bScissor, float fAlpha);
 void AurGUICloseViewport();
-extern int g_nScreenWidth;
-extern int g_nScreenHeight;
 
 // PC 0x0040A0D0 GOG 0x0040A0A0
 int CSWGuiExtent::Load(CResGFF* pGFF, CResStruct& cStruct)
