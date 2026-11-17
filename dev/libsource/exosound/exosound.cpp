@@ -1006,7 +1006,7 @@ void CExoSound::GetPriorityGroupDistance(int nGroup, float* pfMinDistance,
         float fMusicVolume = GetMusicVolume();
     }
     CExoSoundInternal* pInternal;
-    CExoSoundPriorityGroup* pPriorityGroup;
+    CPriorityGroup* pPriorityGroup;
 
     pInternal = m_pInternal;
     if (pInternal != NULL)

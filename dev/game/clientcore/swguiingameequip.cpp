@@ -1104,7 +1104,7 @@ void CSWGuiInGameEquip::OnChangeCharacter(CSWGuiControl* pControl)
 #endif
 
 #ifndef _XBOX
-int CSWGuiInGameEquip::GetSlotItemIdIndex(int nSlot)  // PC 0x00713C80 GOG 0x00713970
+int CSWGuiInGameEquip::MapGlobalSlotToGuiSlot(int nSlot)  // PC 0x00713C80 GOG 0x00713970
 {
     switch (nSlot)
     {
@@ -3230,7 +3230,7 @@ void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
                 {
                     if (m_oidDescribed == 0)
                     {
-                        m_oidDescribed = m_aoidEquippedItems[GetSlotItemIdIndex(m_nSelectedSlot)];
+                        m_oidDescribed = m_aoidEquippedItems[MapGlobalSlotToGuiSlot(m_nSelectedSlot)];
                         if (m_pDescribedCopy != 0)
                         {
                             delete m_pDescribedCopy;
@@ -3418,7 +3418,7 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
                 if (m_oidDescribed != 0)
                 {
                     unsigned long oidEquipped =
-                        m_aoidEquippedItems[GetSlotItemIdIndex(m_nSelectedSlot)];
+                        m_aoidEquippedItems[MapGlobalSlotToGuiSlot(m_nSelectedSlot)];
                     if (m_oidDescribed != oidEquipped)
                     {
                         if (m_oidDescribed != OBJECT_INVALID)

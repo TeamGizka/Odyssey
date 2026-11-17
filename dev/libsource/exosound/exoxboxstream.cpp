@@ -217,9 +217,9 @@ CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
     m_nFadeStartTime = 0;
     m_b3D = 0;
     m_pSoundInternal = pSoundInternal;
-    m_nPriorityGroup = CExoSoundPriorityGroup::MUSIC_GROUP;
+    m_nPriorityGroup = CPriorityGroup::MUSIC_GROUP;
     unsigned char nPriorityVolume =
-        pSoundInternal->m_pPriorityGroups[CExoSoundPriorityGroup::MUSIC_GROUP].m_nVolume;
+        pSoundInternal->m_pPriorityGroups[CPriorityGroup::MUSIC_GROUP].m_nVolume;
     m_pFileObject = NULL;
     m_pStream = NULL;
     m_pBuffer = NULL;
@@ -261,7 +261,7 @@ int CExoXboxStream::CreateStream(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)
         cStreamDesc.dwFlags |= DSSTREAMCAPS_CTRL3D;
     }
     else if (m_nPriorityGroup == 8 || m_nPriorityGroup == 9 || m_nPriorityGroup == 1 ||
-             m_nPriorityGroup == CExoSoundPriorityGroup::MUSIC_GROUP || m_nPriorityGroup == 4)
+             m_nPriorityGroup == CPriorityGroup::MUSIC_GROUP || m_nPriorityGroup == 4)
     {
 
         cStreamDesc.lpMixBins = &cMixBins;
@@ -573,7 +573,7 @@ void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fSc
 
 void CExoXboxStream::SetPriorityGroup(unsigned char nPriorityGroup)
 {
-    CExoSoundPriorityGroup* pGroup = &m_pSoundInternal->m_pPriorityGroups[nPriorityGroup];
+    CPriorityGroup* pGroup = &m_pSoundInternal->m_pPriorityGroups[nPriorityGroup];
     if (pGroup != NULL)
     {
         m_nPriorityGroup = nPriorityGroup;

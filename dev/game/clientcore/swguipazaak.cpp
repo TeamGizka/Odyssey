@@ -729,7 +729,7 @@ void CSWGuiPazaakStart::HandleQuitDialog(CSWGuiControl* pControl)  // PC 0x006D3
     }
 }
 // PC 0x006D3A60 GOG 0x006D3830
-int CSWGuiPazaakStart::IsAvailCardActive()
+int CSWGuiPazaakStart::IsLeftSideActive()
 {
     int nIndex = m_pActiveControl->m_nID;
     if (nIndex >= 0 && nIndex < AvailCardCount)
@@ -739,7 +739,7 @@ int CSWGuiPazaakStart::IsAvailCardActive()
     return 0;
 }
 // PC 0x006D3A90 GOG 0x006D3860
-int CSWGuiPazaakStart::ClearSideDeck()
+int CSWGuiPazaakStart::IsRightSideActive()
 {
     int nIndex = m_pActiveControl->m_nID;
     if (nIndex >= 0 && nIndex < 10)
@@ -2587,7 +2587,7 @@ void CSWGuiPazaakStart::HandleMoveCard(CSWGuiControl* pControl)  // PC 0x006D6D0
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         CSWGuiControl* pActive = m_pActiveControl;
         int nChanged;
-        if (ClearSideDeck() != 0)
+        if (IsRightSideActive() != 0)
         {
             nChanged = 0;
             if (&m_cChosen[nIndex] == pActive)
@@ -2598,7 +2598,7 @@ void CSWGuiPazaakStart::HandleMoveCard(CSWGuiControl* pControl)  // PC 0x006D6D0
         else
         {
             nChanged = 0;
-            if (IsAvailCardActive() != 0 && &m_cAvail[nIndex] == pActive)
+            if (IsLeftSideActive() != 0 && &m_cAvail[nIndex] == pActive)
             {
                 nChanged = AddChosenCard(nIndex, -1);
             }
@@ -3033,7 +3033,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006D77
         int nCode = nEvent;
         if (nEvent == 186)
         {
-            if (ClearSideDeck() != 0)
+            if (IsRightSideActive() != 0)
             {
                 nCode = 53;
             }
@@ -3064,11 +3064,11 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006D77
             HandleMoveCard(m_pActiveControl);
             break;
         case 53:
-            if (ClearSideDeck() != 0)
+            if (IsRightSideActive() != 0)
             {
                 m_pChosenCards = m_pActiveControl;
             }
-            if (IsAvailCardActive() != 0)
+            if (IsLeftSideActive() != 0)
             {
                 break;
             }
@@ -3076,11 +3076,11 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006D77
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
             break;
         case 54:
-            if (IsAvailCardActive() != 0)
+            if (IsLeftSideActive() != 0)
             {
                 m_pAvailCards = m_pActiveControl;
             }
-            if (ClearSideDeck() != 0)
+            if (IsRightSideActive() != 0)
             {
                 break;
             }

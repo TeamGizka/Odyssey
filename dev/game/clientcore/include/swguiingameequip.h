@@ -181,7 +181,7 @@ public:
     CSWSItem* CopyItem(unsigned long);
     int ItemExists(unsigned long);
 
-    int GetSlotItemIdIndex(int nSlot);
+    int MapGlobalSlotToGuiSlot(int nSlot);
     void SetCharacter(CSWCCreature*);
     void ShutdownCleanup();
     void UpdateSlotLocks();

@@ -433,7 +433,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInte
     m_bLooping = 0;
     m_nUnknown34 = 0;
     m_nVolume = MAX_VOLUME;
-    m_nPriorityGroup = CExoSoundPriorityGroup::MUSIC_GROUP;
+    m_nPriorityGroup = CPriorityGroup::MUSIC_GROUP;
     m_pStream = NULL;
     m_pStream = new CExoXboxStream(pSoundInternal);
     m_nSourceId = m_pStream->m_nSourceId;
@@ -645,7 +645,7 @@ void CExoStreamingSoundSourceInternal::DoObstructionWork()
 void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)
 {
     CExoSoundInternal* pSoundInternal = m_pSoundInternal;
-    CExoSoundPriorityGroup* pGroup = &pSoundInternal->m_pPriorityGroups[nPriorityGroup];
+    CPriorityGroup* pGroup = &pSoundInternal->m_pPriorityGroups[nPriorityGroup];
     CExoXboxStream* pStream = m_pStream;
     int bPlaying = pStream->m_bPlaying;
 

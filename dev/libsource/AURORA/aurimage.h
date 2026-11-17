@@ -48,7 +48,7 @@ unsigned char* ImageSkipS3TCLevels(int nWidth, int nHeight, int nBPP, unsigned c
 #endif
 
 void ImageFlipY(unsigned char* pImage, int nWidth, int nHeight, int nBPP);
-void ImageDup(unsigned char* pImage, int nWidth, int nHeight, int nBPP);
+void ImageFlipRB(unsigned char* pImage, int nWidth, int nHeight, int nBPP);
 unsigned char* ImageDup(unsigned char* pImage, int nWidth, int nHeight, int nBPP,
                         int bCompressed);
 unsigned char* ImageScale(unsigned char* pImage, int nSrcWidth, int nSrcHeight,

@@ -184,8 +184,8 @@ public:
 
     void HandleWagerExit(int nWager);
     void HandleQuitDialog(CSWGuiControl* pControl);
-    int IsAvailCardActive();
-    int ClearSideDeck();
+    int IsLeftSideActive();
+    int IsRightSideActive();
     void ShowDisabledButtons();
     void OnAvailCardEntered(CSWGuiControl* pControl); void OnChosenCardEntered(CSWGuiControl* pControl);
 #ifndef _XBOX

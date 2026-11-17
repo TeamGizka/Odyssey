@@ -26,7 +26,7 @@ void ImageFlipY(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
     delete[] pBuffer;
 }
 // PC 0x004737B0 GOG 0x00473940
-void ImageDup(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
+void ImageFlipRB(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
 {
     int nSize;
     unsigned char* pPixel;
@@ -409,7 +409,7 @@ unsigned char* ImageReadTGA(char* sFileName, int* pnWidth, int* pnHeight,
         ImageReadTGAHeader(pFile, pnWidth, pnHeight, pnBPP);
         pImage = ImageReadTGAImage(pFile, *pnWidth, *pnHeight, *pnBPP);
         fclose(pFile);
-        ImageDup(pImage, *pnWidth, *pnHeight, *pnBPP);
+        ImageFlipRB(pImage, *pnWidth, *pnHeight, *pnBPP);
         return pImage;
 #else
         sprintf(sPath, "%s", sFileName);
@@ -424,7 +424,7 @@ unsigned char* ImageReadTGA(char* sFileName, int* pnWidth, int* pnHeight,
             ImageReadTGAHeader(pFile, pnWidth, pnHeight, pnBPP);
             pImage = ImageReadTGAImage(pFile, *pnWidth, *pnHeight, *pnBPP);
             fclose(pFile);
-            ImageDup(pImage, *pnWidth, *pnHeight, *pnBPP);
+            ImageFlipRB(pImage, *pnWidth, *pnHeight, *pnBPP);
             return pImage;
         }
 #endif
@@ -868,7 +868,7 @@ void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
 
     pBuffer = ImageDup(pImage, nWidth, nHeight, nBPP, 0);
     ImageFlipY(pBuffer, nWidth, nHeight, nBPP);
-    ImageDup(pBuffer, nWidth, nHeight, nBPP);
+    ImageFlipRB(pBuffer, nWidth, nHeight, nBPP);
     nSize = nWidth * nHeight * nBPP;
 #else
     nSize = nWidth * nHeight * nBPP;
@@ -878,7 +878,7 @@ void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
     {
         ImageFlipY(pBuffer, nWidth, nHeight, nBPP);
     }
-    ImageDup(pBuffer, nWidth, nHeight, nBPP);
+    ImageFlipRB(pBuffer, nWidth, nHeight, nBPP);
 #endif
     fwrite(pBuffer, 1, nSize, pFile);
     operator delete(pBuffer);

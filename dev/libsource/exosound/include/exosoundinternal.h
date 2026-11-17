@@ -37,16 +37,16 @@ class Vector;
 #define EXOSOUND_RECENT_SOUND_DISTANCE 0.5f
 
 
-class CExoSoundPriorityGroup
+class CPriorityGroup
 {
 public:
 
     static const int MUSIC_GROUP = 2;
 
-    CExoSoundPriorityGroup();
+    CPriorityGroup();
 
     // PC 0x004015A0 GOG 0x004015A0
-    ~CExoSoundPriorityGroup() {}
+    ~CPriorityGroup() {}
 
 
 
@@ -208,7 +208,7 @@ public:
 
     CExoLinkedList<C2DVoice> m_lstReleasing2DVoices;
     CExoLinkedList<C3DVoice> m_lstReleasing3DVoices;
-    CExoSoundPriorityGroup* m_pPriorityGroups;
+    CPriorityGroup* m_pPriorityGroups;
     unsigned long m_nMuteStartTime;
     int m_nMuteFadeTime;
     int m_nNextSourceId;
@@ -273,7 +273,7 @@ public:
     CExoLinkedList<CExoStreamingSoundSourceInternal> m_lstStreaming;
 
     CExoLinkedList<CExoSoundSourceInternal> m_lstPendingDeletion;
-    CExoSoundPriorityGroup* m_pPriorityGroups;
+    CPriorityGroup* m_pPriorityGroups;
     unsigned long m_nMuteStartTime;
     int m_nMuteFadeTime;
     int m_nNextSourceId;
@@ -350,7 +350,7 @@ public:
     int GetSoundMode();
     int GetLostFocusPaused();
     unsigned char GetNumPriorityGroups() { return m_nPriorityGroups; }
-    CExoSoundPriorityGroup* GetPriorityGroup(unsigned char nGroup);
+    CPriorityGroup* GetPriorityGroup(unsigned char nGroup);
     float GetMusicVolume(int bTemporary);
     float GetSoundEffectVolume(int bTemporary);
     float GetDialogVolume(int bTemporary);
@@ -470,7 +470,7 @@ public:
     virtual ~CExoSoundSourceInternal();
     int IsPaused();
     int Demand();
-    int ReleaseDemand();
+    int Release();
     void DoObstructionWork();
     CExoSoundSourceInternal(CExoSoundInternal*);
     int GetWithinRangeOfListener();

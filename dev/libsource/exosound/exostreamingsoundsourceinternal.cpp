@@ -64,8 +64,8 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     m_bReverbEnabled = 1;
     m_bReverbChanged = 1;
     m_fVolume = -1.0f;
-    m_nPriorityGroup = CExoSoundPriorityGroup::MUSIC_GROUP;
-    CExoSoundPriorityGroup* pPriorityGroup =
+    m_nPriorityGroup = CPriorityGroup::MUSIC_GROUP;
+    CPriorityGroup* pPriorityGroup =
         m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
     if (pPriorityGroup != NULL)
     {
@@ -657,7 +657,7 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
         m_nPausePosition = 0;
         AIL_stream_ms_position(m_hStream, &nDuration, NULL);
         unsigned char nGroup = m_nPriorityGroup;
-        CExoSoundPriorityGroup* pGroup =
+        CPriorityGroup* pGroup =
             m_pSoundInternal->GetPriorityGroup(nGroup);
         if (pGroup != NULL && pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
         {
@@ -697,7 +697,7 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
 {
     float fMaxDistance;
     float fMinDistance;
-    CExoSoundPriorityGroup* pGroup =
+    CPriorityGroup* pGroup =
         m_pSoundInternal->GetPriorityGroup(nGroup);
 
     if (pGroup != NULL)

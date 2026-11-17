@@ -3562,7 +3562,7 @@ void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)
     doframebuffer = 1;
     D3DLOCKED_RECT lockedRect;
     pSurface->LockRect(&lockedRect, NULL, D3DLOCK_READONLY | D3DLOCK_TILED);
-    ImageDup((unsigned char*)lockedRect.pBits, nOutWidth, nOutHeight, 4);
+    ImageFlipRB((unsigned char*)lockedRect.pBits, nOutWidth, nOutHeight, 4);
     ImageWriteTGA(sBuffer, nOutWidth, nOutHeight, 4, (unsigned char*)lockedRect.pBits);
     pSurface->Release();
     g_pD3DDevice->SetRenderTarget(pBackBuffer, pDepthStencil);
