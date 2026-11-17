@@ -25,6 +25,12 @@ if(NOT KOTOR_PLATFORM IN_LIST KOTOR_PLATFORMS)
 endif()
 include(cmake/platform/${KOTOR_PLATFORM}.cmake)
 
+# How the functions of swkotor2.exe are laid out (README.md, "Build"):
+#   KOTOR_LINK_ORDER   the linker places them in the order listed in cmake/order/swkotor2.txt (/ORDER)
+#   KOTOR_KEEPER_FILL  the generated filler block decides which copy of identical functions is kept (scripts/keeperfill)
+option(KOTOR_LINK_ORDER "Link the functions of swkotor2.exe in the order of cmake/order/swkotor2.txt" ON)
+option(KOTOR_KEEPER_FILL "Compile the generated filler block into swmain" OFF)
+
 include(cmake/KotorTargets.cmake)
 include(cmake/PrecompiledHeaders.cmake)
 

@@ -1,19 +1,25 @@
-# Keeper-election dead filler (debt keeper-election-dead-filler). appmanager.cpp includes keeperfill_appmanager.inc in
-# front of its first function: dead functions (never referenced, discarded by /OPT:REF) that steer the ICF keeper
-# elections of LINK 7.00 (.text and .text$x) until every folded group keeps the original's member. The text is about
-# 86 MB, so it is generated at configure time from scripts/keeperfill/levers.json and ignored by git.
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-execute_process(
-  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/keeperfill/generate.py" "${CMAKE_CURRENT_SOURCE_DIR}"
-  RESULT_VARIABLE keeperfill_result
-  OUTPUT_VARIABLE keeperfill_output
-  ERROR_VARIABLE keeperfill_error)
-if(NOT keeperfill_result EQUAL 0)
-  message(FATAL_ERROR "swmain: keeper-election filler generation failed (${keeperfill_result}): ${keeperfill_output} ${keeperfill_error}")
+# appmanager.cpp includes keeperfill_appmanager.inc in front of its first function. With KOTOR_KEEPER_FILL it holds
+# the filler block that scripts/keeperfill/generate.py writes from levers.json: about 19,000 functions that nothing
+# references and the linker discards. Their only effect is that every group of identical functions the linker folds
+# keeps the same copy as the original. Otherwise the file is empty. It is written into the build tree.
+set(keeperfill_dir "${CMAKE_CURRENT_BINARY_DIR}/keeperfill")
+if(KOTOR_KEEPER_FILL)
+  execute_process(
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/keeperfill/generate.py" "${keeperfill_dir}"
+    RESULT_VARIABLE keeperfill_result
+    OUTPUT_VARIABLE keeperfill_output
+    ERROR_VARIABLE keeperfill_error)
+  if(NOT keeperfill_result EQUAL 0)
+    message(FATAL_ERROR "swmain: filler block generation failed (${keeperfill_result}): ${keeperfill_output} ${keeperfill_error}")
+  endif()
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/scripts/keeperfill/generate.py"
+    "${CMAKE_SOURCE_DIR}/scripts/keeperfill/levers.json")
+else()
+  file(CONFIGURE OUTPUT "${keeperfill_dir}/keeperfill_appmanager.inc" CONTENT "")
 endif()
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-  "${CMAKE_SOURCE_DIR}/scripts/keeperfill/generate.py"
-  "${CMAKE_SOURCE_DIR}/scripts/keeperfill/levers.json")
+# Earlier builds wrote the file next to appmanager.cpp, where it would be found first.
+file(REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/keeperfill_appmanager.inc")
 
 # swmain: the game executable, swkotor2.exe (default.exe on Xbox).
 set(sources
@@ -25,6 +31,8 @@ if(KOTOR_PLATFORM STREQUAL "xbox")
     main.cpp)
 endif()
 kotor_executable(swmain ${sources})
+target_include_directories(swmain PRIVATE "${keeperfill_dir}")
+set_property(SOURCE appmanager.cpp APPEND PROPERTY OBJECT_DEPENDS "${keeperfill_dir}/keeperfill_appmanager.inc")
 
 target_compile_options(swmain PRIVATE /YX)
 
@@ -42,6 +50,17 @@ endif()
 
 set_target_properties(swmain PROPERTIES OUTPUT_NAME swkotor2)
 target_link_options(swmain PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swkotor2.map")
+if(KOTOR_LINK_ORDER)
+  # The functions in the order of the original executable (cmake/order/order_file.py): before the link, the names in
+  # anonymous namespaces get the numbers of this build.
+  set(order_file "${CMAKE_SOURCE_DIR}/cmake/order/swkotor2.txt")
+  add_custom_command(TARGET swmain PRE_LINK
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/order/order_file.py" resolve "${order_file}"
+            "${CMAKE_CURRENT_BINARY_DIR}/swkotor2.order" "${CMAKE_CURRENT_BINARY_DIR}"
+    VERBATIM)
+  target_link_options(swmain PRIVATE "/ORDER:@${CMAKE_CURRENT_BINARY_DIR}/swkotor2.order")
+  set_property(TARGET swmain APPEND PROPERTY LINK_DEPENDS "${order_file}" "${CMAKE_SOURCE_DIR}/cmake/order/order_file.py")
+endif()
 enable_language(RC)
 target_sources(swmain PRIVATE swmain.rc)
 
