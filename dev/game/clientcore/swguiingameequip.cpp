@@ -1238,7 +1238,7 @@ void CSWGuiInGameEquip::SetDescription(const CExoString& sDescription)  // PC 0x
     m_lbDesc.SetSelectedControl(&m_cDescriptionText, 0);
 }
 // PC 0x00716320 GOG 0x00716010
-int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int bFlag1, int bFlag2)
+int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int nSlot, int bClearActions)
 {
     CSWCCreature* pPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
     CSWSCreature* pCreature = pPlayer != 0 ? pPlayer->GetServerCreature() : 0;
@@ -1251,7 +1251,7 @@ int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int bFlag1, int bFlag2)
             if (pItem->CompareItem(pOther) != 0)
             {
                 unsigned long oidItem = pOther->m_nId;
-                return EquipItem(oidItem, bFlag1, bFlag2);
+                return EquipItem(oidItem, nSlot, bClearActions);
             }
         }
     }

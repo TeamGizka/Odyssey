@@ -2950,7 +2950,7 @@ void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bFromScri
     }
 }
 // PC 0x00680570 GOG 0x00680350
-void CGuiInGame::StartGlobalFade(int nFade, float fA, float fB,
+void CGuiInGame::StartGlobalFade(int nFade, float fFadeStart, float fFadeLength,
                                  const Vector& vColor)
 {
     if (m_pDemoScreen != 0 && m_pDemoScreen->m_bShowing != 0)
@@ -2960,7 +2960,7 @@ void CGuiInGame::StartGlobalFade(int nFade, float fA, float fB,
         if (!m_pGuiManager->PanelExists(m_pGlobalFade))
             m_pGuiManager->AddPanel(m_pGlobalFade, SWGUI_PANEL_MODE_OVERLAY, 1);
         m_pGlobalFade->SetVisible(1);
-        m_pGlobalFade->SetFade(nFade, fA, fB, vColor);
+        m_pGlobalFade->SetFade(nFade, fFadeStart, fFadeLength, vColor);
     }
 }
 // PC 0x006805E0 GOG 0x006803C0
@@ -3835,11 +3835,11 @@ void CGuiInGame::SetShotFromScript(int nCamera, int nVideoEffect)
     }
 }
 // PC 0x006818A0 GOG 0x00681680
-void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int bFlag)
+void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int nFlags)
 {
     if (m_pMainInterface != 0)
     {
-        m_pMainInterface->SetTarget(oidTarget, bFlag);
+        m_pMainInterface->SetTarget(oidTarget, nFlags);
     }
 }
 
@@ -7361,7 +7361,7 @@ int CGuiInGame::HandleDialogReplies(
     unsigned long* pnCameraAngle, int* pnCameraId, float* pfCameraHeight,
     float* pfTargetHeight, unsigned long* pnWaitFlags, unsigned short* pnCameraAnimation,
     float* pfFieldOfView, int* pnVideoEffect, unsigned char* pnFadeType,
-    Vector* pvValue12, float* pfFadeDelay, float* pfFadeLength,
+    Vector* pvFadeColor, float* pfFadeDelay, float* pfFadeLength,
     unsigned long nEntries, unsigned long nReplies,
     unsigned long nReplyContext, unsigned long* pnAnimations,
     unsigned long** ppnAnimationIDs, unsigned short** ppnAnimationFlags,
@@ -7394,7 +7394,7 @@ int CGuiInGame::HandleDialogReplies(
                          pnCameraAngle[nReply], pnCameraId[nReply], pfCameraHeight[nReply],
                          pfTargetHeight[nReply], pnWaitFlags[nReply], pnCameraAnimation[nReply],
                          pfFieldOfView[nReply], pnVideoEffect[nReply], pnFadeType[nReply],
-                         pvValue12[nReply], pfFadeDelay[nReply], pfFadeLength[nReply],
+                         pvFadeColor[nReply], pfFadeDelay[nReply], pfFadeLength[nReply],
                          pnAnimations[nReply], ppnAnimationIDs[nReply],
                          ppnAnimationFlags[nReply]);
         }

@@ -83,7 +83,7 @@ public:
     void AddGameCard(CPazaakCard cCard);
     void ChooseSidedeck(CPazaakCard* pCards);
     int UsedTieBreaker();
-    void FlipPositiveNegative(int nValue1, int nValue2);
+    void FlipPositiveNegative(int nLowValue, int nHighValue);
     int GetNumCardsPlayed();
 
     CPazaakCard m_aSideDeck[4];

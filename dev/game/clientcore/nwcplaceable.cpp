@@ -666,7 +666,7 @@ void CSWCPlaceable::AIUpdate()
     m_nLastUpdateTime = nTime;
 }
 // PC 0x006DAAB0 GOG 0x006DA6A0
-int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
+int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nFlags, int nParam)
 {
     if (GetServerObject() != NULL)
     {
@@ -682,7 +682,7 @@ int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
         UnloadLight();
     }
 
-    return CSWCObject::SetAnimation(nAnimation, nA, nB);
+    return CSWCObject::SetAnimation(nAnimation, nFlags, nParam);
 }
 #ifndef _XBOX
 static inline int GetActionCount(const CExoArrayList<CSWGuiInterfaceAction>& lstActions)

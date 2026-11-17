@@ -1356,22 +1356,22 @@ public:
     int ComputeGameObjectUpdateForYourself(CSWSPlayer* pPlayer, CSWSObject* pObject, CGameObjectArray* pGameObjectArray, unsigned long oidObject);
     int ComputeLastUpdate_GuiMemorizedSpells(CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pPlayerLastUpdateObject);
     int ComputeLastUpdate_GuiNumberMemorizedSpells(CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pPlayerLastUpdateObject);
-    int ComputeRepositoryUpdateRequired(CSWSPlayer* pPlayer, CExoLinkedListNode* pLinkedListNode, CExoLinkedListNode* pLinkedListNode2);
+    int ComputeRepositoryUpdateRequired(CSWSPlayer* pPlayer, CExoLinkedListNode* pRepositoryNode, CExoLinkedListNode* pLastUpdateNode);
     int HandlePlayerToServerGroupInputWalkToWaypoint(CSWSPlayer* pPlayer, CSWSCreature* pCreature, unsigned long oidArea, float fPositionX, float fPositionY, float fPositionZ, unsigned char nMovementRate, int bRun, int bUsePath, unsigned long oidTarget);
     int HandlePlayerToServerServerChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor);
     int ParseGetBool(unsigned char* pString, unsigned long nLength, int& bValue);
-    int SendPlayerToServerGuiInventory_Status(CSWSPlayer* pPlayer, int nA);
+    int SendPlayerToServerGuiInventory_Status(CSWSPlayer* pPlayer, int nStatus);
     int SendServerToPlayerCheatPonyRide(unsigned long oidObject, unsigned long oidTarget);
     int SendServerToPlayerCheatRainOfCows(unsigned long oidObject, unsigned long oidTarget);
     int SendServerToPlayerCombatRoundStarted(CSWSPlayer* pPlayer);
     int SendServerToPlayerDialogClose(unsigned long oidObject);
-    int SendServerToPlayerDialogEntry(unsigned long oidObject, unsigned long oidTarget, unsigned long oidSource, unsigned long oidOther, unsigned long oidObject2, unsigned char nA, CExoLocString& sLocString, unsigned long oidObject3, unsigned long* pnA, unsigned short* pnB, unsigned long oidObject4, int nB, float fA, float fB, unsigned long oidObject5, unsigned short nC, float fC, unsigned char nD, Vector vPosition, float fD, float fE);
-    int SendServerToPlayerDialogModels(unsigned long oidObject, unsigned long oidTarget, unsigned long* pnA, CResRef* cResRef, const CResRef& cResRefB);
-    int SendServerToPlayerDialogReplies(unsigned long oidObject, unsigned long oidTarget, unsigned char nA, CExoLocString* sLocString, unsigned long* pnA, unsigned long* pnB, unsigned long* pnC, int* pnA2, float* pfA, float* pfB, unsigned long* pnA3, unsigned short* pnA4, float* pfC, unsigned char* pnA5, Vector* pvPosition, float* pfA2, float* pfA3, unsigned long oidSource, unsigned long oidOther, unsigned long oidObject2, unsigned long* pnA6, unsigned long** pnA7, unsigned short** pnA8, int nB);
-    int SendServerToPlayerDialogReplyChosen(unsigned long oidObject, unsigned long oidTarget, unsigned long oidSource, CExoLocString& sLocString, unsigned long oidOther, unsigned char nA, int nB);
+    int SendServerToPlayerDialogEntry(unsigned long nPlayerId, unsigned long oidTarget, unsigned long oidSpeaker, unsigned long oidListener, unsigned long oidCamera, unsigned char nGender, CExoLocString& sText, unsigned long nAnimations, unsigned long* pAnimationObjects, unsigned short* pAnimations, unsigned long nCameraAngle, int nCameraId, float fCameraHeight, float fTargetHeight, unsigned long oidCameraTarget, unsigned short nCameraAnimation, float fFieldOfView, unsigned char nFadeType, Vector vFadeColor, float fFadeDelay, float fFadeLength);
+    int SendServerToPlayerDialogModels(unsigned long oidPlayer, unsigned long nModels, unsigned long* pObjectIds, CResRef* pModels, const CResRef& cCameraModel);
+    int SendServerToPlayerDialogReplies(unsigned long oidPlayer, unsigned long oidSpeaker, unsigned char nComputerType, CExoLocString* psText, unsigned long* pnReplyIndex, unsigned long* poidListener, unsigned long* pnCameraAngle, int* pnCameraId, float* pfCameraHeight, float* pfTargetHeight, unsigned long* pnWaitFlags, unsigned short* pnCameraAnimation, float* pfFieldOfView, unsigned char* pnFadeType, Vector* pvFadeColor, float* pfFadeDelay, float* pfFadeLength, unsigned long nEntries, unsigned long nReplies, unsigned long nReplyContext, unsigned long* pnAnimations, unsigned long** ppnAnimationIDs, unsigned short** ppnAnimationFlags, int bEndOfDialog);
+    int SendServerToPlayerDialogReplyChosen(unsigned long oidSpeaker, unsigned long nReply, unsigned long nReplyCount, CExoLocString& sText, unsigned long nSound, unsigned char nFlags, int bSelected);
     int SendServerToPlayerInventory_ConfirmDrop(unsigned long oidObject, unsigned long oidTarget);
     int SendServerToPlayerInventory_Equip(unsigned long nPlayerId, unsigned long oidObject, unsigned long nInventorySlot, int bInstant);
-    int SendServerToPlayerJournalSetQuestPicture(CSWSPlayer* pPlayer, const CExoString& sString, int nA);
+    int SendServerToPlayerJournalSetQuestPicture(CSWSPlayer* pPlayer, const CExoString& sTag, int nPicture);
     int SendServerToPlayerLogin_Fail(unsigned long oidObject, unsigned long oidTarget);
     int SendServerToPlayerModule_EndGame(unsigned long oidObject, const CExoString& sString);
     int SendServerToPlayerParty_Invite(unsigned long oidObject, unsigned long oidTarget);
@@ -1403,7 +1403,7 @@ public:
         CREATURE_UPDATE_PORTRAIT = 0x00020,
         CREATURE_UPDATE_COMBAT_STATE = 0x00040,
         CREATURE_UPDATE_SPEED = 0x00100,
-        CREATURE_UPDATE_UNUSED_200 = 0x00200,
+        CREATURE_UPDATE_COARSE_POSITION = 0x00200,
         CREATURE_UPDATE_HIT_POINTS = 0x00400,
         CREATURE_UPDATE_STATS_BYTE = 0x00800,
         CREATURE_UPDATE_CLASSES = 0x01000,
@@ -1412,7 +1412,7 @@ public:
         CREATURE_UPDATE_PERCEPTION = 0x08000,
         CREATURE_UPDATE_NAMES = 0x10000,
         CREATURE_UPDATE_STATES = 0x20000,
-        CREATURE_UPDATE_UNUSED_OBJECT = 0x40000,
+        CREATURE_UPDATE_AREA = 0x40000,
         CREATURE_UPDATE_FORCE_POINTS = 0x80000
     };
 
@@ -1719,16 +1719,16 @@ public:
     int HandleInventoryFindSourceAndUnghost(CSWCItem* pItem);
     int HandleInventoryUnghostSourceItem(CSWCItem* pItem);
     int HandleSaveLoadErrorPanelExit(int nA);
-    int HandleServerToPlayerCharacterList(unsigned char nA);
+    int HandleServerToPlayerCharacterList(unsigned char nMinor);
     int HandleServerToPlayerDebugInfo_Area(unsigned long oidObject);
-    int HandleServerToPlayerDialog(unsigned char nA);
+    int HandleServerToPlayerDialog(unsigned char nMinor);
     int HandleServerToPlayerExamineGui_CreatureData();
     int HandleServerToPlayerExamineGui_DoorData();
     int HandleServerToPlayerExamineGui_ItemData();
     int HandleServerToPlayerExamineGui_MineData();
     int HandleServerToPlayerExamineGui_PlaceableData();
-    int HandleServerToPlayerPlayModuleCharacterList(unsigned char nA);
-    int HandleServerToPlayerQuickChat(unsigned char nA);
+    int HandleServerToPlayerPlayModuleCharacterList(unsigned char nMinor);
+    int HandleServerToPlayerQuickChat(unsigned char nMinor);
     int SendPlayerToServerCharacterDownloadGimme();
     int SendPlayerToServerCheatLevelUp();
     int SendPlayerToServerCheat_PonyRide();
@@ -1736,64 +1736,64 @@ public:
     int SendPlayerToServerCheat_ShowServerMem();
     int SendPlayerToServerCheat_ToggleFloatyEffects();
     int SendPlayerToServerCreature_Add(unsigned long oidObject, const Vector& vPosition, const CExoString& sString);
-    int SendPlayerToServerDialog_Reply(unsigned long oidObject, unsigned long oidTarget, unsigned char nA, unsigned long oidSource);
-    int SendPlayerToServerGold_TransferGold(unsigned long oidObject, const Vector& vPosition, int nA);
-    int SendPlayerToServerGuiCharacterSheet_Status(char nA, unsigned long oidObject);
+    int SendPlayerToServerDialog_Reply(unsigned long oidObject, unsigned long nReplyIndex, unsigned char bEscape, unsigned long nEntryId);
+    int SendPlayerToServerGold_TransferGold(unsigned long oidTarget, const Vector& vPosition, int nAmount);
+    int SendPlayerToServerGuiCharacterSheet_Status(char nPanel, unsigned long oidCreature);
     int SendPlayerToServerGuiPlayerDeath_Respawn();
     int SendPlayerToServerGuiQuickbar_SetButton_Item(unsigned char nA, unsigned long oidObject, int nB, unsigned long oidTarget);
     int SendPlayerToServerGuiQuickbar_SetButton_Spell(unsigned char nA, unsigned char nB, unsigned long oidObject, unsigned char nC, unsigned char nD);
     int SendPlayerToServerGuiQuickbar_SetButton_SpellLikeAbility(unsigned char nA, unsigned long oidObject, unsigned char nB);
-    int SendPlayerToServerInput_AlwaysRun(int nA);
-    int SendPlayerToServerInput_AssociateCommand(unsigned long oidObject, int nA);
-    int SendPlayerToServerInput_CancelAction(unsigned short nA, unsigned short nB);
+    int SendPlayerToServerInput_AlwaysRun(int bAlwaysRun);
+    int SendPlayerToServerInput_AssociateCommand(unsigned long oidObject, int nCommand);
+    int SendPlayerToServerInput_CancelAction(unsigned short nGroupId, unsigned short nActionId);
     int SendPlayerToServerInput_CancelDisguise(unsigned long oidObject);
     int SendPlayerToServerInput_CancelGuiTimingEvent();
     int SendPlayerToServerInput_CastSpellLikeAbility(unsigned long oidObject, unsigned char nA, const Vector& vPosition, unsigned long oidTarget);
-    int SendPlayerToServerInput_DriveControl(const Vector& vPosition, unsigned short nA, unsigned char nB, unsigned char nC);
+    int SendPlayerToServerInput_DriveControl(const Vector& vPosition, unsigned short nDirection, unsigned char nDriveMode, unsigned char nFlags);
     int SendPlayerToServerInput_Examine(unsigned long oidObject);
     int SendPlayerToServerInput_ExportRequest();
     int SendPlayerToServerInput_GetObjectDebugInfo(unsigned long oidObject);
     int SendPlayerToServerInput_LockObject(unsigned long oidObject);
     int SendPlayerToServerInput_MergeItem(unsigned long oidObject, unsigned long oidTarget);
-    int SendPlayerToServerInput_PlayAnimation(unsigned long oidObject, const Vector& vPosition, unsigned short nA);
+    int SendPlayerToServerInput_PlayAnimation(unsigned long oidObject, const Vector& vPosition, unsigned short nAnimation);
     int SendPlayerToServerInput_Rest();
-    int SendPlayerToServerInput_SetPauseRequest(int nA);
-    int SendPlayerToServerInput_SplitItem(unsigned long oidObject, int nA);
-    int SendPlayerToServerInput_Stance(char nA, unsigned long oidObject);
+    int SendPlayerToServerInput_SetPauseRequest(int bPause);
+    int SendPlayerToServerInput_SplitItem(unsigned long oidItem, int nCount);
+    int SendPlayerToServerInput_Stance(char nStance, unsigned long oidObject);
     int SendPlayerToServerInput_StopDragMode();
-    int SendPlayerToServerInput_ToggleMode(unsigned char nA, unsigned long oidObject);
+    int SendPlayerToServerInput_ToggleMode(unsigned char nMode, unsigned long oidTarget);
     int SendPlayerToServerInput_TurnOnSpot(const Vector& vPosition);
-    int SendPlayerToServerInput_UseFeat(unsigned short nA, unsigned short nB, unsigned long oidObject);
-    int SendPlayerToServerInput_WalkToWayPoint(unsigned long oidObject, float fA, float fB, float fC, unsigned char nA, int nB, int nC, unsigned char nD, unsigned long oidTarget);
-    int SendPlayerToServerInventory_Drop(unsigned long oidObject, float fA, float fB, float fC);
+    int SendPlayerToServerInput_UseFeat(unsigned short nFeat, unsigned short nAction, unsigned long oidTarget);
+    int SendPlayerToServerInput_WalkToWayPoint(unsigned long oidArea, float fPositionX, float fPositionY, float fPositionZ, unsigned char nMovementRate, int bRun, int bUsePath, unsigned char nClientMoving, unsigned long oidTarget);
+    int SendPlayerToServerInventory_Drop(unsigned long oidItem, float fPositionX, float fPositionY, float fPositionZ);
     int SendPlayerToServerInventory_EquipToggle(unsigned long oidObject, unsigned long oidTarget);
     int SendPlayerToServerInventory_LearnScroll(unsigned long oidObject);
     int SendPlayerToServerInventory_Pickup(unsigned long oidObject, unsigned long oidTarget);
     int SendPlayerToServerInventory_Use(unsigned long oidObject);
     int SendPlayerToServerJournalMessage_QuestScreenClosed();
     int SendPlayerToServerJournalMessage_RequestAdd(const CExoString& sString, const CExoString& sStringB);
-    int SendPlayerToServerJournalMessage_RequestDelete(int nA, int nB);
-    int SendPlayerToServerLogin_CharacterResponse(int nA);
+    int SendPlayerToServerJournalMessage_RequestDelete(int nIndex, int bStrRef);
+    int SendPlayerToServerLogin_CharacterResponse(int bSuccess);
     int SendPlayerToServerLogin_LoginServerCharacter(const CResRef& cResRef, int nA, int nB);
     int SendPlayerToServerMapPinAdded(const Vector& vPosition, const CExoString& sString);
-    int SendPlayerToServerMapPinChanged(const Vector& vPosition, const CExoString& sString, int nA);
-    int SendPlayerToServerMapPinRemoved(int nA);
+    int SendPlayerToServerMapPinChanged(const Vector& vPosition, const CExoString& sNote, int nMapPin);
+    int SendPlayerToServerMapPinRemoved(int nMapPin);
     int SendPlayerToServerModule_RunModule();
     int SendPlayerToServerPlayModuleCharacterList_Start();
     int SendPlayerToServerPlayModuleCharacterList_Stop();
-    int SendPlayerToServerQuickChat(unsigned short nA);
-    int SendPlayerToServerShutDownServer(int nA);
+    int SendPlayerToServerQuickChat(unsigned short nQuickChat);
+    int SendPlayerToServerShutDownServer(int bSave);
     int SendPlayerToServerSpellMemorize(unsigned char nA, unsigned long oidObject, unsigned char nB, unsigned char nC, unsigned char nD);
     int SendPlayerToServerSpellUnMemorize(unsigned char nA, unsigned char nB, unsigned char nC);
     int SendPlayerToServerStore_Close();
     int SendPlayerToServerStore_RequestBuy(unsigned long oidObject, unsigned char nA, unsigned char nB);
     int SendPlayerToServerStore_RequestSell(unsigned long oidObject);
-    int SendPlayerToServerUpdate_AppearanceGender(unsigned long oidObject, unsigned char nA);
-    int SendPlayerToServerUpdate_AppearanceHeadVariation(unsigned long oidObject, unsigned char nA);
-    int SendPlayerToServerUpdate_AppearancePLTColor(unsigned long oidObject, unsigned char nA, unsigned char nB);
-    int SendPlayerToServerUpdate_AppearancePartVariation(unsigned long oidObject, unsigned char nA, unsigned char nB);
-    int SendPlayerToServerUpdate_AppearancePhenoType(unsigned long oidObject, unsigned char nA);
-    int SendPlayerToServer_RequestCharacterListUpdate(unsigned char nA, const CResRef& cResRef);
+    int SendPlayerToServerUpdate_AppearanceGender(unsigned long oidObject, unsigned char nGender);
+    int SendPlayerToServerUpdate_AppearanceHeadVariation(unsigned long oidObject, unsigned char nHeadVariation);
+    int SendPlayerToServerUpdate_AppearancePLTColor(unsigned long oidObject, unsigned char nLayer, unsigned char nColor);
+    int SendPlayerToServerUpdate_AppearancePartVariation(unsigned long oidObject, unsigned char nPart, unsigned char nVariation);
+    int SendPlayerToServerUpdate_AppearancePhenoType(unsigned long oidObject, unsigned char nPhenoType);
+    int SendPlayerToServer_RequestCharacterListUpdate(unsigned char nResponse, const CResRef& cResRef);
     int SendPlayerToServer_RequestServerCharacterList();
     void UpdateModels(CGuiInGame* pGuiInGame);
     void UpdatePlayerDialog(CGuiInGame* pGuiInGame);

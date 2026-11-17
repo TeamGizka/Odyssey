@@ -272,10 +272,10 @@ public:
         INPUT_EVENT_COMBAT_PAUSE = 241, INPUT_EVENT_FLOURISH = 242,
         INPUT_EVENT_CLEAR_ACTION = 245,
 
-        INPUT_EVENT_RESERVED_246 = 246, INPUT_EVENT_RESERVED_247 = 247,
+        INPUT_EVENT_ACTION_MENU_LEFT = 246, INPUT_EVENT_ACTION_MENU_RIGHT = 247,
         INPUT_EVENT_QUEUE_ACTION = 250,
         INPUT_EVENT_CLEAR_ACTION_ALTERNATE = 251,
-        INPUT_EVENT_RESERVED_252 = 252,
+        INPUT_EVENT_ACTION_MENU_SHOW_MENU = 252,
         INPUT_EVENT_PAUSE_ALTERNATE = 253, INPUT_EVENT_QUICK_LOAD = 263,
         INPUT_EVENT_STEALTH = 264, INPUT_EVENT_SWAP_WEAPONS = 265
     };
@@ -595,7 +595,7 @@ public:
     unsigned char GetActivePauseState();
     void QueryExitProgram();
     void OnExit();
-    void SetInputActive(int nA, int nB);
+    void SetInputActive(int bActive, int bClearEvents);
     void TurnOffKeyboardModal();
     int IsPlayerCreature(CSWCCreature* pCreature);
     void ShowLoadScreen(int bFade, int bPlayMusic, int bSaving);
@@ -615,9 +615,9 @@ public:
     CSWMiniGameObjectArray* GetMGOArray();
     int PlayLoadModuleMovies();
 #ifdef _XBOX
-    int PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC);
+    int PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips, int bNoMusic);
 #else
-    int PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC,
+    int PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips, int bNoMusic,
                   int nSoundModeFlags);
 #endif
     void StallServerCode();
@@ -657,7 +657,7 @@ public:
     void StopSoundPlayingInDialog();
     int IsSoundPlayingInDialog();
     int GetPausedByCombat();
-    void SetPausedByCombat(int nA, unsigned char nB, int nC);
+    void SetPausedByCombat(int bPaused, unsigned char nPauseType, int bForce);
     void ChangeCharacter(int nCharacter, int bPlaySound);
     int SetGameOver(int bGameOver);
     void SetGameSpeed(float fSpeed);
@@ -671,13 +671,13 @@ public:
     void SetCaptureEventPlayBack(const CExoString& sFileName);
     void ReadPlayBackInputEvents();
     void HurryDeathSequence();
-    int GetCanSendDialog(unsigned long nA, unsigned long nB,
+    int GetCanSendDialog(unsigned long oidSpeaker, unsigned long oidListener,
                          CSWSDialog* pDialog);
     void SetDialogSent(int bSent);
     void SetDialogModelsSent(int bSent);
-    int GetClientRangedAnimation(unsigned long nA, int nB, int nC, int nD);
-    int GetClientMeleeAnimation(unsigned long nA, unsigned long nB,
-                                unsigned short nC, int nD, int nE, int nF);
+    int GetClientRangedAnimation(unsigned long oidAttacker, int nAttackType, int bOverride, int nOverrideAnimation);
+    int GetClientMeleeAnimation(unsigned long oidAttacker, unsigned long oidTarget,
+                                unsigned short nAnimation, int nAttack, int bOverride, int nOverrideAnimation);
     void SetLoadScreenByModuleName(const CExoString& sModule);
 #ifdef _XBOX
 
@@ -701,10 +701,10 @@ public:
                         unsigned long oidOpponent);
     void EndPazaakGame(int nResult, int nWager, int bPlayAgain,
                       unsigned long oidOpponent);
-    int GetPazaakResults(int* pnA, int* pnB);
+    int GetPazaakResults(int* pnResult, int* pnWager);
     void SetFutureLeader(unsigned long oidObject);
     int CrownFutureLeader();
-    void SetEndGamePending(int bPending, float fDelay, int nC);
+    void SetEndGamePending(int bPending, float fDelay, int bShowDeathMessage);
     int PlayRumblePattern(int nPattern);
     int StopRumblePattern(int nPattern);
     void UpdateRumble(float fDeltaTime);
@@ -728,7 +728,7 @@ public:
     };
     void AddFloatyText(unsigned long oidObject, unsigned char nType, int nValue);
     CExoString GetGUIString(unsigned long nStrRef);
-    void SetAutoPaused(int bAuto, unsigned char nB);
+    void SetAutoPaused(int bAuto, unsigned char nPauseType);
     int GetAutoPaused();
     void SetLoadScreenHint(unsigned long nHint);
     unsigned long GetLoadScreenHint();
@@ -743,10 +743,10 @@ public:
     int SaveOptions();
     int LoadOptions(int bSetAntiAliasing);
     void DoQuickSave();
-    int ChangeCharacterToNextLivingPartyMember(int nA, int nB,
-                                               unsigned char nC);
+    int ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound,
+                                               unsigned char nPartyMembers);
 #ifdef _XBOX
-    int ChangeCharacterToNextLivingPartyMember(int nA, int nB);
+    int ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound);
 #endif
     void HideMovieFadePanel();
     void PauseAllSoundsForMovieLostFocus();
@@ -799,7 +799,7 @@ public:
     int GetCharacterChangeInProgress();
     void SetCharacterChangeInProgress(int bInProgress);
     void FadeAndStopStreamingSoundSource(CExoStreamingSoundSource* pSource,
-                                         unsigned long nB);
+                                         unsigned long nFadeTime);
     void StartCreditSequence(const Vector& vColor, const CExoString& sMusic);
     void StopCreditSequence();
     void PlayCharacterSelectSound(CSWCCreature* pCreature);

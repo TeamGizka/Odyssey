@@ -3888,13 +3888,13 @@ void CSWCCreature::ClearVisibilityList()
     }
 }
 // PC 0x00661710 GOG 0x00661520
-void CSWCCreature::HideEquippedItems(const CResRef& cResRef,
-                                     const CResRef& cResRef2)
+void CSWCCreature::HideEquippedItems(const CResRef& cResRight,
+                                     const CResRef& cResLeft)
 {
     if (m_pAnimBase != NULL)
     {
         ComputeWeaponOverlays(0, 0);
-        m_pAnimBase->HideWieldedItems(cResRef, cResRef2);
+        m_pAnimBase->HideWieldedItems(cResRight, cResLeft);
         m_bEquippedItemsHidden = 1;
     }
 }
@@ -5947,10 +5947,10 @@ void Swing(const CExoString& sSound, CSWCCombatAttackData* pAttackData,
     }
 }
 // PC 0x0065B490 GOG 0x0065B340
-int CSWCCreature::SetEngagedState(int a1)
+int CSWCCreature::SetEngagedState(int nState)
 {
-    this->m_nEngagedState = a1;
-    return a1;
+    this->m_nEngagedState = nState;
+    return nState;
 }
 // PC 0x0065B4A0 GOG 0x0065B350
 void CSWCCreature::SetQuededAnimationCallback()

@@ -148,10 +148,10 @@ int CSWCAnimBaseHeadWield::Wield(unsigned long nObject,
     return CSWCAnimBaseWield::Wield(nObject, sSlot, nModel, fScale);
 }
 // PC 0x006F3AA0 GOG 0x006F3680
-void CSWCAnimBaseHeadWield::HideWieldedItems(const CResRef& sLeft,
-                                            const CResRef& sRight)
+void CSWCAnimBaseHeadWield::HideWieldedItems(const CResRef& sRight,
+                                            const CResRef& sLeft)
 {
-    return CSWCAnimBaseWield::HideWieldedItems(sLeft, sRight);
+    return CSWCAnimBaseWield::HideWieldedItems(sRight, sLeft);
 }
 // PC 0x006F3AB0 GOG 0x006F3690
 void CSWCAnimBaseHeadWield::ShowWieldedItems()

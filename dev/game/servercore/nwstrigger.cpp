@@ -808,7 +808,7 @@ int CSWSTrigger::LoadTrigger(CResGFF* pRes, CResStruct* pStruct)
 
     unsigned short nPortraitId =
         pRes->ReadFieldWORD(pStruct, "PortraitId", bSuccess,
-                           PORTRAIT_ID_RESERVED_FFFF);
+                           PORTRAIT_ID_CUSTOM);
     if (nPortraitId >= PORTRAIT_ID_FIRST_RESERVED)
     {
         CResRef cPortrait("");

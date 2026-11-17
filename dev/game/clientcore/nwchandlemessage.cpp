@@ -4774,7 +4774,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             if (pCreature != NULL)
             {
                 CSWCCreatureStats::CheckCustomPortrait(&cPortrait,
-                    nPortrait == PORTRAIT_ID_RESERVED_FFFE);
+                    nPortrait == PORTRAIT_ID_CUSTOM_FEMALE);
                 pCreature->SetPortrait(cPortrait);
             }
         }
@@ -5280,13 +5280,13 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
                 pCreature->SetRunLooksAwful(0);
         }
     }
-    if (nUpdateMask & CREATURE_UPDATE_UNUSED_OBJECT)
+    if (nUpdateMask & CREATURE_UPDATE_AREA)
     {
         ReadOBJECTIDClient();
         if (MessageReadOverflow(1))
             return 0;
     }
-    if (nUpdateMask & CREATURE_UPDATE_UNUSED_200)
+    if (nUpdateMask & CREATURE_UPDATE_COARSE_POSITION)
     {
         ReadINT(10);
         ReadINT(10);
@@ -6005,7 +6005,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
     int bLockable = ReadBOOL();
     int bNoVisibleModel = ReadBOOL();
     int bLocked = ReadBOOL();
-    int n108 = ReadBOOL();
+    int bNotBlastable = ReadBOOL();
     int bAreaTransition = ReadBOOL();
     sTransitionDestination = ReadCExoLocStringClient(CResRef(), NULL);
     if (MessageReadOverflow(1))
@@ -6076,7 +6076,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
     pDoor->m_bLockable = bLockable;
     pDoor->m_bNoVisibleModel = bNoVisibleModel;
     pDoor->m_bLocked = bLocked;
-    pDoor->m_bNotBlastable = n108;
+    pDoor->m_bNotBlastable = bNotBlastable;
     pDoor->SetIsAreaTransition(bAreaTransition);
     pDoor->m_nAppearanceType = nAppearanceType;
     pDoor->m_nGenericType = nGenericType;
@@ -8205,7 +8205,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileSpell()
                     pProjectile->SetAnimation(CSWCProjectile::PROJECTILE_ANIMATION_TRAVEL);
                     pProjectile->SetDesiredPosition(vEnd);
                     unsigned char nItemTargeting = pSpell->m_nItemTargeting;
-                    if (nItemTargeting == CSWSpell::ITEM_TARGETING_UNKNOWN_3)
+                    if (nItemTargeting == CSWSpell::ITEM_TARGETING_HOMING)
                     {
                         pProjectile->SetDesiredTargetObject(oidTarget, "");
                     }
@@ -8884,7 +8884,7 @@ int CSWCMessage::HandleServerToPlayerPlayerList(unsigned char nMinor)
             if (nPortraitId >= PORTRAIT_ID_FIRST_RESERVED)
             {
                 CSWCCreatureStats::CheckCustomPortrait(&cPortrait,
-                    nPortraitId == PORTRAIT_ID_RESERVED_FFFE);
+                    nPortraitId == PORTRAIT_ID_CUSTOM_FEMALE);
                 pPlayer->SetPrimaryPCPortraitResRef(cPortrait);
             }
         }

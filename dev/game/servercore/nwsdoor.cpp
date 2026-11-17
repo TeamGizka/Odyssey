@@ -599,7 +599,7 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
     SetTag(pRes->ReadFieldCExoString(pStruct, "Tag", bSuccess, m_sTag));
     SetDialogResref(pRes->ReadFieldCResRef(pStruct, "Conversation", bSuccess, ""));
     unsigned short nPortraitId = pRes->ReadFieldWORD(pStruct, "PortraitId", bSuccess,
-                                                    PORTRAIT_ID_RESERVED_FFFF);
+                                                    PORTRAIT_ID_CUSTOM);
     if (nPortraitId >= PORTRAIT_ID_FIRST_RESERVED)
     {
         CResRef cPortrait;

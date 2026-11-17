@@ -853,7 +853,7 @@ void CSWGuiMainInterface::SetActionDescription(const CExoString& sDescription)  
 }
 #endif
 // PC 0x006DDDD0 GOG 0x006DD490
-int CSWGuiMainInterface::SetTarget(unsigned long nTargetId, int nUnknown)
+int CSWGuiMainInterface::SetTarget(unsigned long nTargetId, int nFlags)
 {
     if (m_nTargetId != nTargetId)
     {

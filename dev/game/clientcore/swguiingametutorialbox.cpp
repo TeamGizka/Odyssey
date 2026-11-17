@@ -343,12 +343,12 @@ int CSWGuiTutorialBox::SetNextMessage()
     {
         int bFound;
         sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
-        int nStrRef2;
+        int nNextStrRef;
         p2DArrays = g_pRules->Get2DArrays();
         EXOXBOXASSERT(p2DArrays->m_pTutorial);
         pTutorial = p2DArrays->m_pTutorial;
         if (pTutorial->GetINTEntry(
-                m_nTutorialReason, sColumn, &nStrRef2) != 0)
+                m_nTutorialReason, sColumn, &nNextStrRef) != 0)
         {
             SetOkButtonMessage(38623);
         }

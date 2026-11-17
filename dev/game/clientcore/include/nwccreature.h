@@ -514,7 +514,7 @@ public:
     int InCreatureCombat(CSWCObject* pTarget);
     int UpdateMeleeAttackData(unsigned short nAnimation, int nAttackType, int bInCombat,
                               int nWieldClass);
-    int UpdateRangedAttackData(int nA, int nWieldClass);
+    int UpdateRangedAttackData(int nAttackType, int nWieldClass);
     int UpdateAttackData(unsigned short* pAnimation, CSWCCombatAttackData* pAttackData);
     unsigned short ResolveReactionAnimation(unsigned short nAnimation, unsigned short nReaction,
                                  int nWieldClass);
@@ -545,7 +545,7 @@ public:
     void PerformCombatFeat(unsigned short nFeat, CSWCCreature* pTarget);
     void PerformUseHostileItem(unsigned long nItem, CSWCCreature* pTarget);
     void PartyMenuUseHostileItem(unsigned long nItem, CSWCCreature* pTarget);
-    void ActionMenuAttack(unsigned long nA, CSWCCreature* pInstigator);
+    void ActionMenuAttack(unsigned long nAction, CSWCCreature* pInstigator);
     void ActionInitiateDialog(unsigned long nAction, CSWCCreature* pInstigator);
     void ForceMenuAction(unsigned long nAction, CSWCCreature* pTarget);
     void ForceMenuHostileAction(unsigned long nAction, CSWCCreature* pTarget);
@@ -562,13 +562,13 @@ public:
     void PerformAttack(unsigned long oidTarget);
     void PerformSkill(unsigned char nSkill, unsigned char nUseType,
                       unsigned long oidTarget);
-    void PerformCastSpell(unsigned long nSpell, unsigned long nTarget,
-                          const Vector& vTargetPos, unsigned char nA,
-                          unsigned char nB, unsigned char nC, int nD);
+    void PerformCastSpell(unsigned long nSpell, unsigned long oidTarget,
+                          const Vector& vTarget, unsigned char nMultiClass,
+                          unsigned char nDomainLevel, unsigned char nMetaMagic, int bCheat);
     void ComputeZValue(CSWCArea* pArea, Vector* pPosition, float fCurrentZ,
                        Vector* pNormal);
-    void PerformUseItem(unsigned long nItem, int nA, unsigned long nB,
-                        const Vector& vPosition);
+    void PerformUseItem(unsigned long oidItem, int nPropertyIndex, unsigned long oidTarget,
+                        const Vector& vTarget);
 
     virtual void ClientServerSyncHandler_Orientation(const Vector& vOrientation);
     virtual void ClientServerSyncHandler_Animation(int nAnimation,
@@ -663,7 +663,7 @@ public:
     void PlayDrawAnimation(unsigned short nValue);
     int ComputeWeaponOverlays(int bCheckAnimations, int bUnused);
     void ClearVisibilityList();
-    void HideEquippedItems(CResRef const& cResRef, CResRef const& cResRef2);
+    void HideEquippedItems(CResRef const& cResRight, CResRef const& cResLeft);
     void ForceAppearanceUpdate();
     void CreateNewSpellLikeAbilityList();
     void DeleteSpellLikeAbilityList();

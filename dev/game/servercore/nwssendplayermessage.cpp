@@ -6804,8 +6804,8 @@ int CSWSMessage::SendServerToPlayerPlayModuleCharacterListResponse(
 
         unsigned short nPortraitId = pCreature->GetPortraitId();
         WriteWORD(nPortraitId, 16);
-        if (nPortraitId == PORTRAIT_ID_RESERVED_FFFF ||
-            nPortraitId == PORTRAIT_ID_RESERVED_FFFE)
+        if (nPortraitId == PORTRAIT_ID_CUSTOM ||
+            nPortraitId == PORTRAIT_ID_CUSTOM_FEMALE)
         {
             WriteCResRef(pCreature->GetPortrait(), 16);
         }
@@ -7378,7 +7378,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
     {
         unsigned short nPortrait = pObject->GetPortraitId();
         WriteWORD(nPortrait, 16);
-        if (nPortrait >= PORTRAIT_ID_RESERVED_FFFE)
+        if (nPortrait >= PORTRAIT_ID_CUSTOM_FEMALE)
             WriteCResRef(pObject->GetPortrait(), 16);
     }
     unsigned short nAnimation;
@@ -8074,7 +8074,7 @@ int CSWSMessage::SendServerToPlayerCharList(CSWSPlayer* pPlayer)
                     pCharacter->m_cCharacter = sCharacter;
                     pCharacter->m_bCharacterExists = NWPlayerCharacterList_st::CHARACTER_LIST_PLAYER_VAULT;
                     pCharacter->m_nPortraitId = pGFF->ReadFieldWORD(
-                        &cCharacterStruct, "PortraitId", bSuccess, PORTRAIT_ID_RESERVED_FFFF);
+                        &cCharacterStruct, "PortraitId", bSuccess, PORTRAIT_ID_CUSTOM);
                     pCharacter->m_cPortrait = pGFF->ReadFieldCResRef(
                         &cCharacterStruct, "Portrait", bSuccess, "");
                     if (pGFF->GetList(&cClassList, &cCharacterStruct, "ClassList"))
@@ -8121,7 +8121,7 @@ int CSWSMessage::SendServerToPlayerCharList(CSWSPlayer* pPlayer)
                 pCharacter->m_cCharacter = sCharacter;
                 pCharacter->m_bCharacterExists = NWPlayerCharacterList_st::CHARACTER_LIST_SERVER_VAULT;
                 pCharacter->m_nPortraitId = pGFF->ReadFieldWORD(
-                    &cCharacterStruct, "PortraitId", bSuccess, PORTRAIT_ID_RESERVED_FFFF);
+                    &cCharacterStruct, "PortraitId", bSuccess, PORTRAIT_ID_CUSTOM);
                 pCharacter->m_cPortrait = pGFF->ReadFieldCResRef(
                     &cCharacterStruct, "Portrait", bSuccess, "");
                 if (pGFF->GetList(&cClassList, &cCharacterStruct, "ClassList"))

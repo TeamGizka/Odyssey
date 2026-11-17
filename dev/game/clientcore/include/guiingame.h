@@ -274,8 +274,8 @@ public:
     int ShowTutorialWindow(unsigned char nReason, unsigned long oidInstigator,
                            unsigned long oidTarget, unsigned long nActionParam);
     int SetTutorialReason(unsigned char nReason);
-    void SetMainInterfaceTarget(unsigned long oidTarget, int bFlag);
-    void StartGlobalFade(int nFade, float fA, float fB, const Vector& vColor);
+    void SetMainInterfaceTarget(unsigned long oidTarget, int nFlags);
+    void StartGlobalFade(int nFade, float fFadeStart, float fFadeLength, const Vector& vColor);
     void ShowBarkBubble(unsigned long oidObject, const CExoString& sText,
                         const CResRef& cSound, int nFlags);
     void RePopulateMainInterface();
@@ -351,7 +351,7 @@ public:
         unsigned long* pnCameraAngle, int* pnCameraId, float* pfCameraHeight,
         float* pfTargetHeight, unsigned long* pnWaitFlags, unsigned short* pnCameraAnimation,
         float* pfFieldOfView, int* pnVideoEffect, unsigned char* pnFadeType,
-        Vector* pvValue12, float* pfFadeDelay, float* pfFadeLength,
+        Vector* pvFadeColor, float* pfFadeDelay, float* pfFadeLength,
         unsigned long nEntries, unsigned long nReplies,
         unsigned long nReplyContext, unsigned long* pnAnimations,
         unsigned long** ppnAnimationIDs, unsigned short** ppnAnimationFlags,

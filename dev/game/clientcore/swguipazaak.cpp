@@ -63,10 +63,10 @@ inline void CSWGuiPazaakGame::CancelHandAction()
 
 inline CSWPazaak* CSWGuiPazaakGame::GetPazaak() { return m_pPazaak; }
 
-static inline int PazaakCardsDiffer(CPazaakCard cA, CPazaakCard cB)
+static inline int PazaakCardsDiffer(CPazaakCard cShown, CPazaakCard cCard)
 {
-    return cA.m_nType != cB.m_nType || cA.m_bFlipped != cB.m_bFlipped ||
-           cA.m_nValue != cB.m_nValue;
+    return cShown.m_nType != cCard.m_nType || cShown.m_bFlipped != cCard.m_bFlipped ||
+           cShown.m_nValue != cCard.m_nValue;
 }
 
 static inline int PazaakCardValue(const CPazaakCard& cCard)

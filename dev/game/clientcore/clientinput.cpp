@@ -951,11 +951,11 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
             PerformRButtonUpAction();
         break;
     case INPUT_EVENT_MOUSE_MIDDLE:
-    case INPUT_EVENT_RESERVED_246:
-    case INPUT_EVENT_RESERVED_247:
+    case INPUT_EVENT_ACTION_MENU_LEFT:
+    case INPUT_EVENT_ACTION_MENU_RIGHT:
     case GUIEVENT_ACTION_MENU_UP:
     case GUIEVENT_ACTION_MENU_DOWN:
-    case INPUT_EVENT_RESERVED_252:
+    case INPUT_EVENT_ACTION_MENU_SHOW_MENU:
 
         if (nValue != 0)
         {

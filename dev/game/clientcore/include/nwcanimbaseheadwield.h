@@ -48,7 +48,7 @@ public:
     virtual void UnloadModel();
     virtual int Wield(unsigned long nObject, const CExoString& sSlot,
                       unsigned char nModel, float fScale);
-    virtual void HideWieldedItems(const CResRef& sLeft, const CResRef& sRight);
+    virtual void HideWieldedItems(const CResRef& sRight, const CResRef& sLeft);
     virtual void ShowWieldedItems();
     virtual void SetWieldLimited(int bLimited);
     virtual int SetEnvMap(int nType, int nFlags, const CResRef& sMap);

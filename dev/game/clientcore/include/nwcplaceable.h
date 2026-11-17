@@ -45,7 +45,7 @@ public:
                           unsigned char nFlags);
     virtual void UnloadModel();
     virtual void UnloadModel(unsigned char nModel);
-    virtual int SetAnimation(unsigned short nAnimation, int nA, int nB);
+    virtual int SetAnimation(unsigned short nAnimation, int nFlags, int nParam);
     virtual int ApplyShadowBlob();
     virtual int IsHostile();
     virtual unsigned char GetReticlePoint(Vector& vPoint);

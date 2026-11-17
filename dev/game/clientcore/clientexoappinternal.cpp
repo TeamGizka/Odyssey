@@ -258,7 +258,7 @@ void CSWCPlayer::SetPrimaryPCPortraitId(unsigned short nPortraitId)
     CExoString sPrefix;
     CExoString sBaseResRef;
 
-    if (nPortraitId != PORTRAIT_ID_RESERVED_FFFF)
+    if (nPortraitId != PORTRAIT_ID_CUSTOM)
     {
         sPrefix = "po_";
         {
@@ -2501,25 +2501,25 @@ void CClientExoAppInternal::QueryExitProgram()  // PC 0x006423C0 GOG 0x00642270
 }
 #endif
 // PC 0x00642580 GOG 0x00642430
-void CClientExoAppInternal::SetInputActive(int nA, int nB)
+void CClientExoAppInternal::SetInputActive(int bActive, int bClearEvents)
 {
     if (g_pExoInput != NULL)
     {
-        g_pExoInput->SetActive(nA);
+        g_pExoInput->SetActive(bActive);
     }
 
-    if (nA == 0)
+    if (bActive == 0)
     {
         TurnOffKeyboardModal();
     }
 
-    if (nB != 0)
+    if (bClearEvents != 0)
     {
         g_pExoInput->ClearEvents();
     }
 
 #ifndef _XBOX
-    if (nA != 0)
+    if (bActive != 0)
     {
         ShowMouse(0);
     }
@@ -5960,8 +5960,8 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
 }
 
 #else
-int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB,  // PC 0x0064ED10 GOG 0x0064EBC0
-                                     int nC, int nSoundModeFlags)
+int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips,  // PC 0x0064ED10 GOG 0x0064EBC0
+                                     int bNoMusic, int nSoundModeFlags)
 {
     if (m_bMovieDisabled != 0)
     {
@@ -5973,7 +5973,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB, 
         return 0;
     }
 
-    return PlayMoviesInExoArrayList(m_aMoveToModuleMovies, nA, 1, 0, NULL,
+    return PlayMoviesInExoArrayList(m_aMoveToModuleMovies, nResult, 1, 0, NULL,
                                     nSoundModeFlags);
 }
 
@@ -7277,13 +7277,13 @@ int CClientExoAppInternal::GetClientMeleeAnimation(
     return nResult;
 }
 // PC 0x0063E8C0 GOG 0x0063E730
-int CClientExoAppInternal::GetClientRangedAnimation(unsigned long nA, int nB,
-                                                    int nC, int nD)
+int CClientExoAppInternal::GetClientRangedAnimation(unsigned long oidAttacker, int nAttackType,
+                                                    int bOverride, int nOverrideAnimation)
 {
     unsigned long oidObject;
-    if (nA != OBJECT_INVALID)
+    if (oidAttacker != OBJECT_INVALID)
     {
-        oidObject = nA | 0x80000000;
+        oidObject = oidAttacker | 0x80000000;
     }
     else
     {
@@ -7308,15 +7308,15 @@ int CClientExoAppInternal::GetClientRangedAnimation(unsigned long nA, int nB,
     int nResult = 0;
     if (pCreature != NULL)
     {
-        if (nC != 0)
+        if (bOverride != 0)
         {
-            nResult = nD;
-            pCreature->m_nAttackAnimationOverride = nD;
+            nResult = nOverrideAnimation;
+            pCreature->m_nAttackAnimationOverride = nOverrideAnimation;
         }
         else
         {
             CSWCAnimBase* pAnimBase = pCreature->GetAnimationBase();
-            return pCreature->UpdateRangedAttackData(nB,
+            return pCreature->UpdateRangedAttackData(nAttackType,
                                                      pAnimBase->m_nWieldClass);
         }
     }

@@ -413,8 +413,8 @@ void CSWCDoor::MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreat
 void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
                                      CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
-    int n108 = m_bNotBlastable;
-    if (n108)
+    int bNotBlastable = m_bNotBlastable;
+    if (bNotBlastable)
     {
         return;
     }

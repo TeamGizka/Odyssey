@@ -6,8 +6,8 @@ class CResRef;
 
 const unsigned short PORTRAIT_ID_FIRST_RESERVED = 0xFFFE;
 
-const unsigned short PORTRAIT_ID_RESERVED_FFFF = 0xFFFF;
-const unsigned short PORTRAIT_ID_RESERVED_FFFE = 0xFFFE;
+const unsigned short PORTRAIT_ID_CUSTOM = 0xFFFF;
+const unsigned short PORTRAIT_ID_CUSTOM_FEMALE = 0xFFFE;
 
 const unsigned short PORTRAIT_ID_DEFAULT_DOOR = 0x022E;
 

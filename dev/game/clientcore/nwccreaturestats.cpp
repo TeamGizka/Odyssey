@@ -85,7 +85,7 @@ CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
     m_pCombatInformation = new CCombatInformation;
     m_pCreature = pCreature;
     m_bOwnsCombatInformation = 0;
-    m_nPortraitId = PORTRAIT_ID_RESERVED_FFFF;
+    m_nPortraitId = PORTRAIT_ID_CUSTOM;
     m_nMaxForcePoints = 0;
     m_nForcePointsBase = 0;
     m_nCurrentForcePoints = 0;

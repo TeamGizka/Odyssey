@@ -140,26 +140,26 @@ int CSWPazaak::CanUsePlayerSidedeckCard(int nIndex)
 // PC 0x00754DA0 GOG 0x00754BB0
 int CSWPazaak::FindPotentialFlipTotal(CPazaakPlayer& cPlayer, int nCard)
 {
-    int nValue1 = 0;
-    int nValue2 = 0;
+    int nLowValue = 0;
+    int nHighValue = 0;
     CPazaakCard cCard = cPlayer.m_aSideDeck[nCard];
     int i;
 
     if (cCard.m_nType == CPazaakCard::CARD_TYPE_FLIP_2_4)
     {
-        nValue1 = 2;
-        nValue2 = 4;
+        nLowValue = 2;
+        nHighValue = 4;
     }
     else if (cCard.m_nType == CPazaakCard::CARD_TYPE_FLIP_3_6)
     {
-        nValue1 = 3;
-        nValue2 = 6;
+        nLowValue = 3;
+        nHighValue = 6;
     }
     CPazaakCard aBoard[9];
     for (i = 0; i < 9; i++)
     {
         cCard = cPlayer.m_aBoard[i];
-        if (cCard.GetCardValue() == nValue1 || cCard.GetCardValue() == nValue2)
+        if (cCard.GetCardValue() == nLowValue || cCard.GetCardValue() == nHighValue)
         {
             cCard.m_nValue = -cCard.GetCardValue();
         }
@@ -294,7 +294,7 @@ int CPazaakPlayer::UsedTieBreaker()
     return 0;
 }
 // PC 0x00755340 GOG 0x00755150
-void CPazaakPlayer::FlipPositiveNegative(int nValue1, int nValue2)
+void CPazaakPlayer::FlipPositiveNegative(int nLowValue, int nHighValue)
 {
     for (int i = 0; i < 9; i++)
     {
@@ -302,8 +302,8 @@ void CPazaakPlayer::FlipPositiveNegative(int nValue1, int nValue2)
         {
             break;
         }
-        if (m_aBoard[i].GetCardValue() == nValue1 ||
-            m_aBoard[i].GetCardValue() == nValue2)
+        if (m_aBoard[i].GetCardValue() == nLowValue ||
+            m_aBoard[i].GetCardValue() == nHighValue)
         {
             if (m_aBoard[i].IsFlippable())
             {

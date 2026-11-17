@@ -7,7 +7,7 @@ extern const char* g_aszServerOptionText[];
 
 struct SServerOption
 {
-    enum { OPTION_UNUSED = 0, OPTION_BOOLEAN = 1, OPTION_INTEGER = 2 };
+    enum { OPTION_UNDEFINED = 0, OPTION_BOOLEAN = 1, OPTION_INTEGER = 2 };
 
     SServerOption() {}
     SServerOption(const char* szCategory, const char* szName, int* pValue, int nValueType)
