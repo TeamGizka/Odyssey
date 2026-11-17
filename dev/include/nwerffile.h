@@ -34,6 +34,7 @@ public:
 
     int Read(CExoFile& file);
     int Write(CExoFile& file);
+    CExoString GetText();
     int SetText(CExoString& sText);
 
     unsigned long m_nLanguageId;
@@ -53,6 +54,7 @@ public:
     }
 
     ~CERFKey();
+    int Reset();
 
     int Read(CExoFile& file);
     int Write(CExoFile& file);
@@ -76,6 +78,7 @@ public:
     }
 
     ~CERFRes();
+    int Reset();
 
     int Read(CExoFile& file);
     int CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer);
@@ -93,6 +96,11 @@ public:
     ~CERFFile();
 
     void SetVersion(char* sVersion);
+    int AddResource(CExoString& sFileName);
+    int AddResource(char* sResRef, unsigned short nResType, CRes* pRes);
+    int RemoveResource(CExoString& sResRef, unsigned short nResType);
+    int RemoveResource(CERFRes* pRes);
+    int AddString(CERFString* pString);
 #ifdef _XBOX
     int Read(const CExoString& sFileName, void* pSignature = NULL);
 #else
@@ -101,6 +109,10 @@ public:
     int Create(CExoString& sFileName);
     int WriteHeader();
     int Finish();
+    int Write(CExoString& sFileName);
+    void RecalculateOffsets();
+    int ReadModuleDescription(const CExoString& sFileName, unsigned short nLanguage,
+                              unsigned long* pnStrRef, CExoString* psDescription);
 #ifdef _XBOX
     int ReadHeaderVariance(const CExoString& sFileName,
                            void* pSignature = NULL);
