@@ -67,10 +67,8 @@ public:
     void JumpToPoint(CSWSArea* pArea, const Vector& vPosition);
 
     unsigned short m_nObjectIterator;
-    char m_aUnmapped22A[2];
     int m_nAreaEffectId;
     unsigned char m_nShape;
-    char m_aUnmapped231[3];
     unsigned long m_EffectSpellId;
     float m_fRadius;
     float m_fWidth;
@@ -88,7 +86,6 @@ public:
     unsigned long m_nLastHeartbeatTime;
     unsigned long m_nDuration;
     unsigned char m_nDurationType;
-    char m_aUnmapped28D[3];
 
 public:
 

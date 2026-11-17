@@ -87,7 +87,7 @@ int CSWSStore::GetItemInInventory(unsigned long oidItem)
 CSWSStore::~CSWSStore()
 {
     delete m_pItemRepository;
-    m_n240 = OBJECT_INVALID;
+    m_oidCustomer = OBJECT_INVALID;
     GetArea();
     g_pAppManager->m_pServerExoApp->GetServerAIMaster()->RemoveObject(this);
 
@@ -233,7 +233,7 @@ int CSWSStore::RemoveItemFromInventory(CSWSItem* pItem)
 // Dead code: not in the PC executable
 void CSWSStore::RemoveCustomer(CSWSPlayer* pPlayer)
 {
-    m_n240 = OBJECT_INVALID;
+    m_oidCustomer = OBJECT_INVALID;
 }
 // PC 0x005711E0 GOG 0x00571310
 int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)

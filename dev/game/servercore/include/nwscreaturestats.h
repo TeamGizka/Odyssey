@@ -42,7 +42,6 @@ public:
     unsigned long m_nSpell;
     unsigned long m_nReady;
     unsigned char m_nLevel;
-    unsigned char m_aUnmapped09[3];
 };
 
 class CFeatUseListEntry;
@@ -64,7 +63,6 @@ public:
     unsigned char m_nNegativeLevels;
 
     unsigned char m_nClassState[3];
-    char gap_21[3];
     int m_nClassData;
     ~CSWSCreatureStats_ClassInfo();
     CSWSCreatureStats_ClassInfo();
@@ -491,7 +489,7 @@ public:
     int CheckForCategoryMatch(int nPowerSuitability, int nFilter);
     int CheckPowerSuitability(int nTalent, CSWSpell* pSpell,
                               int nPowerSuitability, int nSelection,
-                              int nUnknown2, int nUnknown3, int nUnknown4,
+                              int nMultiClass, int nSpellIndex, int nClassIndex,
                               int nInvalidTalent);
     int CanChooseSpell(unsigned long nSpell, unsigned char nMultiClass,
                        CExoArrayList<unsigned long>* pSpellList, int bNextLevel);
@@ -509,7 +507,6 @@ public:
     CExoLocString m_lsDescription;
     int m_nAge;
     unsigned char m_nGender;
-    unsigned char m_aUnmapped65[3];
     unsigned long m_nExperience;
     int m_bIsPC;
 
@@ -518,16 +515,14 @@ public:
     int m_nFactionId;
 
     int m_nOriginalFactionId;
-    unsigned char m_aUnmapped80[0x4];
+    int m_nPreviousFactionId;
     float m_fBlindSpot;
     float m_fChallengeRating;
     float GetChallengeRating() const { return m_fChallengeRating; }
     unsigned char m_nStartingPackage;
     unsigned char m_nClassCount;
-    unsigned char m_aUnmapped8A[2];
     CSWSCreatureStats_ClassInfo m_aClassInfo[MAX_CLASSES];
     unsigned short m_nRace;
-    unsigned char m_aUnmappedDE[2];
     CExoString m_sSubrace;
     unsigned char m_nSubraceIndex;
     unsigned char m_nStrengthBase;
@@ -558,16 +553,14 @@ public:
 
     unsigned char m_nBaseAttackBonus;
     char m_nEnemyAttackBonus;
-    unsigned char m_aUnmapped104[4];
+    int m_nAttackModifier;
 
     int m_nDamageRoll;
     int m_nCriticalHitRoll;
     int m_nCriticalHitMultiplier;
     unsigned char m_nAttacksPerRound;
-    unsigned char m_aUnmapped115[3];
     CCombatInformation* m_pCombatInformation;
     char m_nFuryDamageBonus;
-    unsigned char m_aUnmapped121A[3];
     int m_nFuryVideoEffect;
     unsigned char m_nArcaneSpellFailure;
 
@@ -619,7 +612,6 @@ public:
     unsigned short m_nMovementSpeedDecreaseEffectIndex;
     unsigned short m_nSkillPoints;
     unsigned short GetSkillPoints() { return m_nSkillPoints; }
-    unsigned char m_aUnmapped166[2];
     unsigned char* m_pSkillRanks;
 
     char m_nArmorCheckPenalty;
@@ -641,7 +633,7 @@ public:
         m_nGoodEvilAlignment = nValue;
     }
     short m_nBaseCNPCAlignment;
-    unsigned char m_aUnmapped180[2];
+    short m_nLawfulChaoticAlignment;
     unsigned char m_nSkinColor;
     unsigned char m_nHairColor;
     unsigned char m_nTattoo1Color;
@@ -651,11 +643,9 @@ public:
     unsigned char m_nAppearanceHead;
 
     unsigned char m_nDuplicatingHead;
-    unsigned char m_aUnmapped18B[1];
     int m_bUseBackupHead;
     unsigned char m_nTail;
     unsigned char m_nWings;
-    unsigned char m_aUnmapped192[2];
     int m_nMovementRate;
     int GetMovementRate() { return m_nMovementRate; }
     float m_fRunRate;
@@ -663,11 +653,10 @@ public:
     char m_nFortSaveBonus;
     char m_nWillSaveBonus;
     char m_nReflexSaveBonus;
-    unsigned char m_aUnmapped1A3[1];
     CExoString m_sDeity;
     float m_fHPAccumulator;
     float m_fFPAccumulator;
-    unsigned char m_aUnmapped1B4[4];
+    float m_fRegenerationTimer;
 };
 
 #endif

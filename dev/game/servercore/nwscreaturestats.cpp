@@ -2416,7 +2416,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     else
         nBonus = GetDamageBonus(NULL, bOffHand, bRecordDamage);
     pAttack->m_DamageBreakdown.m_nDamageBonus = nBonus;
-    pAttack->m_DamageBreakdown.m_nUnusedDamageFeedback = 0;
+    pAttack->m_DamageBreakdown.m_nSpecialAttackDamage = 0;
     if (bCritical)
     {
         int nStrength = 0;
@@ -4343,7 +4343,7 @@ char CSWSCreatureStats::GetReflexSavingThrow(int bBaseOnly)
 // PC 0x005F6600 GOG 0x005F65E0
 int CSWSCreatureStats::CheckPowerSuitability(
     int nTalent, CSWSpell* pSpell, int nPowerSuitability, int nSelection,
-    int nUnknown2, int nUnknown3, int nUnknown4, int nInvalidTalent)
+    int nMultiClass, int nSpellIndex, int nClassIndex, int nInvalidTalent)
 {
     if (nTalent == nInvalidTalent)
     {

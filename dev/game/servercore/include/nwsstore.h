@@ -59,7 +59,7 @@ public:
     CItemRepository* m_pItemRepository;
     CExoLocString m_lsName;
     unsigned long m_oidEventCaller;
-    int m_n240;
+    int m_oidCustomer;
     int m_nMarkDown;
     int m_nMarkUp;
 

@@ -279,7 +279,6 @@ public:
     unsigned long m_oidItemUnacquirer;
     unsigned long m_oidRestingPlayer;
     unsigned char m_bRestCancelled;
-    char m_aUnmapped169[3];
     unsigned long m_oidDeadPlayer;
     unsigned long m_oidDyingPlayer;
     unsigned long m_oidRespawningPlayer;
@@ -289,7 +288,7 @@ public:
     unsigned long m_oidActivatedTarget2;
     Vector m_vActivatedLocation;
     unsigned long m_oidLevelingPlayer;
-    unsigned long m_n198;
+    unsigned long m_oidItemEquippedBy;
     unsigned long m_oidEquippedItem;
     unsigned char m_nMinutesPerHour;
     unsigned char m_nDawnHour;
@@ -299,14 +298,12 @@ public:
     unsigned char m_nStartDay;
     unsigned char m_nStartHour;
     unsigned char m_nXPScale;
-    char m_aUnmapped1A7[1];
     unsigned long m_nYear;
     unsigned long m_nMonth;
     unsigned long m_nDay;
     unsigned long m_nTime;
     unsigned long m_nTime2;
     unsigned char m_nTimeDawnDusk;
-    char m_aUnmapped1BD[3];
     unsigned long m_nLastUpdateDay;
     unsigned long m_nLastUpdateTime;
 
@@ -323,8 +320,7 @@ public:
     CExoString m_sSaveName;
 
     int m_nResourceCount;
-    unsigned char m_n210;
-    char m_aUnmapped211[3];
+    unsigned char m_nPlayerPathfindRule;
     int m_n214;
 
     CSWSAreaMap* GetAreaMap() { return m_pAreaMap; }

@@ -2992,7 +2992,7 @@ void CSWSMessage::DeleteLastUpdateObjectsInOtherAreas(CSWSPlayer* pPlayer)
         if (pPlayerObject != NULL &&
             pLastUpdateObject->m_oidObject == pPlayerObject->m_nId)
         {
-            pLastUpdateObject->m_nUnknown24 = 0;
+            pLastUpdateObject->m_bUpdated = 0;
             pPlayer->m_pActiveObjectsLastUpdate->GetNext(pNode);
             continue;
         }
@@ -3123,7 +3123,7 @@ void CSWSMessage::DeleteLastUpdateObjectsForObject(CSWSPlayer* pPlayer,
             delete pLastUpdateObject;
             return;
         }
-        pLastUpdateObject->m_nUnknown24 = 0;
+        pLastUpdateObject->m_bUpdated = 0;
         pPlayer->m_pActiveObjectsLastUpdate->GetNext(pNode);
     }
 }
@@ -6883,7 +6883,7 @@ CLastUpdateObject* CSWSMessage::CreateNewLastUpdateObject(CSWSPlayer* pPlayer,
 {
     CLastUpdateObject* pLastUpdateObject = new CLastUpdateObject;
 
-    pLastUpdateObject->m_nUnknown24 = 1;
+    pLastUpdateObject->m_bUpdated = 1;
     pLastUpdateObject->m_oidObject = pObject->m_nId;
     if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
     {
@@ -7293,7 +7293,7 @@ int CSWSMessage::WriteGameObjUpdate_PartyAIState(CSWSPlayer* pPlayer)
             }
 
             CSWSCreature* pCreature = pGameObject->AsSWSCreature();
-            if (pCreature->m_nUnknown39C == 1)
+            if (pCreature->m_bExcludeFromPartyUpdate == 1)
             {
                 continue;
             }
@@ -8302,7 +8302,7 @@ void CSWSMessage::TestObjectUpdateDifferences(CSWSPlayer* pPlayer,
             pPlayer->m_pActiveObjectsLastUpdate->GetAtPos(pPosition);
         if ((*ppLastUpdateObject)->m_oidObject == pObject->m_nId)
         {
-            (*ppLastUpdateObject)->m_nUnknown24 = 1;
+            (*ppLastUpdateObject)->m_bUpdated = 1;
             *pnUpdateMask = ComputeUpdateRequired(pPlayer, pObject,
                 *ppLastUpdateObject, pObject->GetId() == pPlayerObject->GetId());
             *pnAppearanceMask = ComputeAppearanceUpdateRequired(pObject,

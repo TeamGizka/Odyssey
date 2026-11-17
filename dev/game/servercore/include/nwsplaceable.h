@@ -156,7 +156,7 @@ public:
     CExoLocString m_lsDescription;
     int m_nFaction;
     CResRef m_cConversation;
-    int m_n250;
+    int m_bInterruptable;
     int m_bGroundPile;
     unsigned char m_nHardness;
     char m_aUnmapped259[0x3];

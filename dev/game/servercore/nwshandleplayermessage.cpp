@@ -342,7 +342,7 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
         CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
         unsigned char nValue = ReadBYTE(8);
         if (!MessageReadOverflow(1) && pModule != NULL)
-            pModule->m_n210 = nValue;
+            pModule->m_nPlayerPathfindRule = nValue;
         return 0;
     }
     if (nMinor == 32)
@@ -2712,7 +2712,7 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
         ReadBOOL();
         if (!MessageReadOverflow(1))
         {
-            pPlayer->m_n60 = 1;
+            pPlayer->m_bAlwaysRun = 1;
         }
         return 0;
     case 28:

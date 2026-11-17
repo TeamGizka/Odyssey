@@ -559,7 +559,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_cAppearanceInfo.m_nAppearanceHead = 0xFF;
     m_oidLockOrientationToObject = CGameObjectArray::INVALIDOBJID;
     m_nLastSpellProjectileTime = 0;
-    m_nUnknown228 = 0;
+    m_nPathRetryCount = 0;
     m_nInventoryIndex = 0;
     m_nInventoryContainerIndex = 0;
     m_oidInventoryContainer = CGameObjectArray::INVALIDOBJID;
@@ -574,8 +574,8 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_bDebilitated = 0;
     m_nLastMineCheckDay = 0;
     m_nLastMineCheckTime = 0;
-    m_nUnknown368 = 0;
-    m_nUnknown36C = 0;
+    m_nLastDetectCheckDay = 0;
+    m_nLastDetectCheckTime = 0;
     m_nDisarmable = 1;
     m_nDetectMode = 0;
     m_nStealthMode = 0;
@@ -586,13 +586,13 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_bCombatStateHeld = 0;
     m_nActionQueueUpdateDay = 0;
     m_nActionQueueUpdateTime = 0;
-    m_c519 = 0;
+    m_bSilentMovePending = 0;
     m_bResolveInitiative = 1;
     m_oidDisappearTarget = OBJECT_INVALID;
     m_vDisappearPosition = Vector();
     m_bWorkRemainingCompleteSent = 1;
     m_bCreationScriptFired = 0;
-    m_nUnknown9F8 = 0;
+    m_nAITargetPriority = 0;
     m_nAIState = 0;
     m_nCurrentAction = ACTION_TYPE_INVALID;
     m_oidAITarget = OBJECT_INVALID;
@@ -642,7 +642,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_bUnlockObjectAnimationPlayed = 0;
     m_bDropAnimationPlayed = 0;
     m_bPickupAnimationPlayed = 0;
-    m_nUnknown990 = 0;
+    m_bUseObjectAnimationPlayed = 0;
     m_bDoorSaberAnimationPlayed = 0;
     m_nLastStealthRollDay = 0;
     m_nLastStealthRollTime = 0;
@@ -654,10 +654,10 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
         m_anSkillCooldowns[nSkill] = 0;
     m_nExcitedStateTimer = 0;
     m_nMovementSpeedDebugTimer = 0;
-    m_nUnknown994 = 0;
-    m_nUnknown998 = 0;
-    m_nUnknown99C = 0;
-    m_nUnknown9A0 = 0;
+    m_nRestStartDay = 0;
+    m_nRestStartTime = 0;
+    m_nRestHitPointsGained = 0;
+    m_nRestForcePointsGained = 0;
     m_oidAttackTarget = OBJECT_INVALID;
     m_oidAttemptedMovementTarget = OBJECT_INVALID;
     m_oidAttemptedAttackTarget = OBJECT_INVALID;
@@ -673,7 +673,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_nLastForcePowerUsed = -1;
     m_nLastSpecialAttack = 0;
     m_nLastCombatFeatUsed = 0;
-    m_nUnknown560 = 0;
+    m_nLastAttackType = 0;
     m_bLastForcePowerSuccessful = -1;
     m_oidHealTarget = OBJECT_INVALID;
     m_bLimitMovementSpeed = 0;
@@ -690,9 +690,9 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_pInvitationsOffered = NULL;
     m_pInvitationsIgnored = NULL;
     m_nAreaWaitState = 0;
-    m_nUnknown948 = -1;
-    m_nUnknown94C = 0xFF;
-    m_nUnknown94D = 0;
+    m_nQueuedAnimation = -1;
+    m_nQueuedAnimationSlot = 0xFF;
+    m_bQueuedAnimationLooping = 0;
     m_bEncounterCountRemoved = 0;
     m_nCasterLevelOverride = -1;
     m_bCasterLevelOverride = 0;
@@ -709,13 +709,13 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_bRestorePlotOnDownload = 0;
     m_bPMIsDisguised = 0;
     m_nPMAppearance = 0;
-    m_nUnknown39C = 0;
+    m_bExcludeFromPartyUpdate = 0;
     m_bUpdateCombatInformation = 0;
     m_nCharacterSheetDisplayCount = 0;
     m_nBodyBag = 0;
     m_bUnlockObjectFacingSet = 0;
-    m_nUnknownA78 = 0;
-    m_nUnknownA7C = 0;
+    m_nLastAttackedDay = 0;
+    m_nLastAttackedTime = 0;
     m_pFollowInfo = NULL;
     m_nAnimationState = -1;
     m_nNextAttacker = 0;
@@ -737,7 +737,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_nStealthModeValue = 0;
     m_nItemUseState = 0;
     m_bDisableInjuredAnim = 0;
-    m_n11F0 = 0;
+    m_nPathBlockedCount = 0;
     m_nBonusForcePoints = 0;
     m_nTotalDefenseStartDay = 0;
     m_nTotalDefenseStartTime = 0;
@@ -1063,7 +1063,7 @@ int CSWSCreature::ReplaceUnequipItemActions(CSWSItem* pItem,
 int CSWSCreature::AddUnequipActions(CSWSItem* pItem,
                                      unsigned long oidRepository,
                                      int bFront, int bInstant, int nFlags,
-                                     int nArg6, int bMerge)
+                                     int bInstantSwitch, int bMerge)
 {
     unsigned long oidItem = pItem->GetId();
     CSWSPlayer* pPlayer =
@@ -1095,16 +1095,16 @@ int CSWSCreature::AddUnequipActions(CSWSItem* pItem,
             return 1;
         }
         int nActionFlags = nFlags;
-        int nActionArg6 = nArg6;
-        int nActionArg7 = bMerge;
+        int nActionInstantSwitch = bInstantSwitch;
+        int nActionMerge = bMerge;
         if (bFront)
         {
             AddActionToFront(ACTION_UNEQUIP_ITEM, ACTION_GROUP_NEW,
                              ACTION_PARAM_OBJECT, &oidItem,
                              ACTION_PARAM_OBJECT, &oidRepository,
                              ACTION_PARAM_INTEGER, &nActionFlags,
-                             ACTION_PARAM_INTEGER, &nActionArg6,
-                             ACTION_PARAM_INTEGER, &nActionArg7,
+                             ACTION_PARAM_INTEGER, &nActionInstantSwitch,
+                             ACTION_PARAM_INTEGER, &nActionMerge,
                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                              0, 0);
         }
@@ -1114,8 +1114,8 @@ int CSWSCreature::AddUnequipActions(CSWSItem* pItem,
                       ACTION_PARAM_OBJECT, &oidItem,
                       ACTION_PARAM_OBJECT, &oidRepository,
                       ACTION_PARAM_INTEGER, &nActionFlags,
-                      ACTION_PARAM_INTEGER, &nActionArg6,
-                      ACTION_PARAM_INTEGER, &nActionArg7,
+                      ACTION_PARAM_INTEGER, &nActionInstantSwitch,
+                      ACTION_PARAM_INTEGER, &nActionMerge,
                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                       0, 0);
         }
@@ -6602,7 +6602,7 @@ static inline int GetRoundStarted(CSWSCombatRound* pCombatRound)
 }
 // PC 0x00513E90 GOG 0x00513EF0
 void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
-                                  int nArg3)
+                                  int bCombatStateHeld)
 {
     int nFaction = GetFaction()->m_nIndex;
     if (nFaction == STANDARD_FACTION_NEUTRAL)
@@ -6619,7 +6619,7 @@ void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
     }
 
     m_bCombatState = bCombatState;
-    m_bCombatStateHeld = nArg3;
+    m_bCombatStateHeld = bCombatStateHeld;
     if (bCombatState)
     {
         m_nCombatStateTimer = 8000;
@@ -8455,10 +8455,10 @@ void CSWSCreature::Rest(int bFlag)
             }
             else
             {
-                m_nUnknown994 = 0;
-                m_nUnknown998 = 0;
-                m_nUnknown99C = 0;
-                m_nUnknown9A0 = 0;
+                m_nRestStartDay = 0;
+                m_nRestStartTime = 0;
+                m_nRestHitPointsGained = 0;
+                m_nRestForcePointsGained = 0;
                 ClearActivities(ACTIVITY_GROUP_BASIC);
                 SetActivity(ACTIVITY_REST, TRUE, 0);
                 ActionManager(ACTION_MANAGER_REST);
@@ -10698,7 +10698,7 @@ int CSWSCreature::GetTurnResistanceHD()
 // PC 0x00517CF0 GOG 0x00517D50
 int CSWSCreature::GetUseRange(unsigned long oidObject, Vector& vPosition,
                              float& fRange, int bIgnorePreciseUse,
-                             int nArg5)
+                             int bDoorSaberRange)
 {
     CGameObject* pObject =
         g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
@@ -10761,7 +10761,7 @@ int CSWSCreature::GetUseRange(unsigned long oidObject, Vector& vPosition,
                 float fTargetRange = GetPathfindInformation()->m_fTargetUseRange;
                 fRange += fTargetRange;
             }
-            else if (bDoorSaber || nArg5)
+            else if (bDoorSaber || bDoorSaberRange)
             {
                 fRange = 1.0f;
             }
@@ -11853,7 +11853,7 @@ int CSWSCreature::RunEquip(unsigned long oidItem, unsigned long nSlot, int bInst
 // PC 0x00525000 GOG 0x00525060
 int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
                             int bMerge, CSWSItem** ppItem, int bInstant,
-                            int bUnknown3)
+                            int bInstantSwitch)
 {
     CSWSPlayer* pPlayer;
     if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
@@ -11934,7 +11934,7 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
             if (pPlayer != NULL && pMessage != NULL)
             {
                 pMessage->SendServerToPlayerInventory_Unequip(
-                    pPlayer->m_nPlayerId, oidItem, bInstant, bUnknown3);
+                    pPlayer->m_nPlayerId, oidItem, bInstant, bInstantSwitch);
                 return TRUE;
             }
         }
@@ -11967,9 +11967,9 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
             if (pPlayer != NULL && pMessage != NULL)
             {
                 pMessage->SendServerToPlayerInventory_Unequip(
-                    pPlayer->m_nPlayerId, pLeftHand->m_nId, bInstant, bUnknown3);
+                    pPlayer->m_nPlayerId, pLeftHand->m_nId, bInstant, bInstantSwitch);
                 pMessage->SendServerToPlayerInventory_Unequip(
-                    pPlayer->m_nPlayerId, pItem->m_nId, bInstant, bUnknown3);
+                    pPlayer->m_nPlayerId, pItem->m_nId, bInstant, bInstantSwitch);
                 return TRUE;
             }
         }

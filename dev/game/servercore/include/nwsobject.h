@@ -881,24 +881,22 @@ public:
     int m_nDialogReplyEntry;
     int m_nDialogPending;
     unsigned long m_oidDialogOwner;
-    int m_n58;
+    int m_nReadyAnimation;
 
 
     int m_nWaitFlags;
-    int m_n60;
-    int m_n64;
+    int m_nCameraAngle;
+    int m_nCameraId;
     unsigned long m_nCameraTimeStamp;
-    char m_aUnmapped6C[0x4];
+    unsigned long m_nCameraVideoEffect;
     int m_nCameraAnimState;
-    int m_n74;
+    int m_bNewDialog;
     int m_nAILevel;
     unsigned char m_nSavedAILevel;
-    char m_aUnmapped7D[0x3];
-    char m_aUnmapped7C[0x4];
+    unsigned long m_nAIUpdateTime;
     unsigned short m_nCurrentAction;
-    char m_aUnmapped82[0x2];
     unsigned long m_oidCurrentActionTarget;
-    int m_n88;
+    int m_nCurrentActionState;
     unsigned long m_oidArea;
     Vector m_vPosition;
     Vector m_vOrientation;
@@ -953,7 +951,6 @@ public:
     int* m_pLastDamageAmounts;
     unsigned short m_nAttackType;
     unsigned char m_nAttackMode;
-    char m_aUnmapped16F[0x1];
     unsigned long m_oidLastWeaponUsed;
     unsigned long m_oidInventoryDisturbItem;
     int m_nInventoryDisturbType;
@@ -972,7 +969,6 @@ public:
     unsigned long m_oidSpellTargetObject;
     int m_nLastSpellId;
     char m_nLastSpellLevel;
-    char m_aUnmapped1C5[0x3];
     unsigned long m_nLastSpellProjectileTime;
 
 
@@ -982,7 +978,6 @@ public:
 
 
     unsigned char m_nLastSpellCastMetaType;
-    char m_aUnmapped1D6[0x2];
     int m_oidLastSpellCaster;
     int m_nLastSpellCastAtMeId;
     int m_bLastSpellCastAtMeHarmful;
@@ -991,7 +986,6 @@ public:
     CSWSObjectActionNode* m_pCurrentActionNode;
 
     unsigned short m_nEffectIterator;
-    char m_aUnmapped1EA[0x2];
     int m_bApplyingInnateEffect;
 
     int m_bOpenDoorStarted;
@@ -1004,7 +998,7 @@ public:
     int m_bDeleteNoFade;
     int m_bKeepCorpse;
     unsigned long m_nFadeOutTime;
-    char m_aUnmapped210[0x4];
+    unsigned long m_nFadeOutStartTime;
     int m_bDialogEnded;
     int m_bPartyInteract;
 
@@ -1013,7 +1007,6 @@ public:
     int m_bHologram;
     unsigned char m_nMultiplierSet;
     unsigned char m_nPCLevelAtSpawn;
-    char m_aUnmapped252[0x2];
     int m_bWillNotRender;
     int m_bConfused;
     int m_bDialogSoundStopped;
@@ -1227,8 +1220,6 @@ public:
     unsigned char m_bHeard : 1;
     unsigned char m_nSanctuary : 2;
     unsigned char m_bInvisible : 1;
-    unsigned char m_nUnusedFlags : 3;
-    unsigned char m_aPadding[3];
 };
 
 class CSWSInvitationDetails
@@ -1402,7 +1393,7 @@ public:
         COMBAT_STATE_EQUIPMENT = 2
     };
     void SetCombatState(int bCombatState, unsigned char bFeedback,
-                        int nArg3 = 0);
+                        int bCombatStateHeld = 0);
     void ClearHostileActionsVersus(CSWSCreature* pCreature);
     int AddDisappearActions(int bRemoveFromArea);
     int AddAppearActions();
@@ -1655,7 +1646,7 @@ public:
         ACTIVITY_ACTION_COUNTERSPELL = 4
     };
     int GetUseRange(unsigned long oidObject, Vector& vPosition,
-                    float& fRange, int bFlag, int nArg5 = 0);
+                    float& fRange, int bFlag, int bDoorSaberRange = 0);
     int GetIsInUseRange(unsigned long oidObject, float fRange, int bFlag,
                         int bDoorSaber = 0);
     int AddCounterSpellActions(unsigned long oidTarget);
@@ -1862,7 +1853,7 @@ public:
     int RunEquip(unsigned long oidItem, unsigned long nInventorySlot, int nFlags);
     int RunUnequip(unsigned long oidItem, unsigned long oidTarget,
                    int bMerge, CSWSItem** ppItem, int bInstant,
-                   int bUnknown3 = 0);
+                   int bInstantSwitch = 0);
     int RemoveItem(CSWSItem* pItem, int bMerge, int bDisplayFeedback,
                    CSWSItem** ppItem);
     unsigned char CanEquipMiscellaneous(CSWSItem* pItem, unsigned long* pnSlot,
@@ -1930,7 +1921,7 @@ public:
     int m_nMoveToPointCalls;
     int m_nMoveToPointElapsed;
 #endif
-    unsigned short m_nUnknown228;
+    unsigned short m_nPathRetryCount;
     unsigned char m_bIgnoreCrePath;
     int m_nJoiningXP;
 
@@ -1980,8 +1971,8 @@ public:
     unsigned long m_nVisibilityInterval;
     unsigned long m_nLastVisibilityDay;
     unsigned long m_nLastVisibilityTime;
-    int m_nUnknown368;
-    int m_nUnknown36C;
+    int m_nLastDetectCheckDay;
+    int m_nLastDetectCheckTime;
     unsigned long m_oidLastMineDetected;
     unsigned long m_nLastMineCheckDay;
     unsigned long m_nLastMineCheckTime;
@@ -1998,7 +1989,7 @@ public:
     unsigned long m_nMovementSpeedDebugTimer;
 
 
-    int m_nUnknown39C;
+    int m_bExcludeFromPartyUpdate;
     unsigned long m_nActionQueueUpdateDay;
     unsigned long m_nActionQueueUpdateTime;
     CSWActionNode m_aActionQueue[10];
@@ -2016,7 +2007,6 @@ public:
         AMBIENT_STATE_13 = 13, AMBIENT_STATE_14 = 14,
         AMBIENT_STATE_15 = 15, AMBIENT_STATE_16 = 16, AMBIENT_STATE_17 = 17
     };
-    char m_aUnmapped4C5[3];
 
     CExoString m_sModelType;
     unsigned char m_nDetectMode;
@@ -2031,8 +2021,7 @@ public:
 
     unsigned long m_oidCounterSpellTarget;
     unsigned char m_nSilentMove;
-    unsigned char m_c519;
-    char m_aUnmapped51A[2];
+    unsigned char m_bSilentMovePending;
     int m_bResolveInitiative;
     int m_bCombatState;
 
@@ -2081,7 +2070,7 @@ public:
     int m_nLastCombatFeatUsed;
     int m_nAttackResult;
     int m_nLastAttackResult;
-    int m_nUnknown560;
+    int m_nLastAttackType;
     int m_bLastForcePowerSuccessful;
     int m_oidHealTarget;
 
@@ -2104,12 +2093,10 @@ public:
     int m_bHasAssuredDeflection;
 
     unsigned short m_nGuardStanceFeat;
-    char m_aUnmapped8E2[0x8E4 - 0x8E2];
     int m_bTaunted;
     int m_bLimitMovementSpeed;
     unsigned char m_nVisionFlags;
     unsigned char m_bDebilitated;
-    char m_aUnmapped8EE[0x8F0 - 0x8EE];
     unsigned long m_nEffectSpellId;
 
 
@@ -2136,10 +2123,9 @@ public:
     CExoArrayList<CSWSInvitationDetails>* m_pInvitationsOffered;
     CExoArrayList<CSWSInvitationDetails>* m_pInvitationsIgnored;
     unsigned long m_oidLockOrientationToObject;
-    int m_nUnknown948;
-    unsigned char m_nUnknown94C;
-    unsigned char m_nUnknown94D;
-    char m_aUnmapped94E[2];
+    int m_nQueuedAnimation;
+    unsigned char m_nQueuedAnimationSlot;
+    unsigned char m_bQueuedAnimationLooping;
 
     CExoArrayList<unsigned long> m_lstCreatureRequests;
     unsigned long m_oidSpellCasterItem;
@@ -2160,11 +2146,11 @@ public:
     int m_bLockActionStarted;
     int m_bDropAnimationPlayed;
     int m_bPickupAnimationPlayed;
-    int m_nUnknown990;
-    int m_nUnknown994;
-    int m_nUnknown998;
-    int m_nUnknown99C;
-    int m_nUnknown9A0;
+    int m_bUseObjectAnimationPlayed;
+    int m_nRestStartDay;
+    int m_nRestStartTime;
+    int m_nRestHitPointsGained;
+    int m_nRestForcePointsGained;
     int m_bUnlockObjectFacingSet;
     int m_bDoorSaberAnimationPlayed;
     int m_nTotalDefenseStartDay;
@@ -2183,7 +2169,6 @@ public:
     unsigned short GetSoundSetFile() { return m_nSoundSetFile; }
 
     unsigned char m_nBodyBag;
-    char m_aUnmapped9DB[1];
 
 
     int m_bRestorePlotOnDownload;
@@ -2200,7 +2185,6 @@ public:
     int m_nComponent;
     int m_nChemical;
     unsigned char m_nCurrentStance;
-    char m_aUnmapped110D[0x3];
     int m_nCurrentForm;
 
 
@@ -2223,10 +2207,8 @@ public:
     enum { AI_STATE_ALL_FLAGS = 0xFFFF };
     unsigned short m_nAIStateFlags;
     unsigned char m_nAIState;
-    char m_aUnmapped9F3[1];
     unsigned long m_oidAITarget;
-    unsigned char m_nUnknown9F8;
-    char m_aUnmapped9F9[3];
+    unsigned char m_nAITargetPriority;
 
 
     unsigned long m_nActivity;
@@ -2238,12 +2220,11 @@ public:
 
     float m_fClientPathTime;
     char m_nSpecialWalkAnimation;
-    char m_aUnmappedA11[0xA14 - 0xA11];
 
     int m_bUpdateMovingOrientation;
 
     int m_bJumped;
-    char m_aUnmappedA1C[0xA20 - 0xA1C];
+    int m_nJumpTimer;
 
     CExoArrayList<unsigned long>* m_pCreatureList;
     unsigned long m_oidSpawnedBy;
@@ -2277,11 +2258,10 @@ public:
     int GetEncumbranceState() { return m_nEncumbranceState; }
     int m_bPMIsDisguised;
     unsigned short m_nPMAppearance;
-    char m_aUnmappedA4E[2];
     CSWSCreatureAppearanceInfo m_cAppearanceInfo;
     CSWSCreatureStats* m_pStats;
-    int m_nUnknownA78;
-    int m_nUnknownA7C;
+    int m_nLastAttackedDay;
+    int m_nLastAttackedTime;
     CExoArrayList<unsigned long>* m_pAttackerList;
     int m_nNextAttacker;
     int m_bInParty;
@@ -2327,7 +2307,7 @@ public:
     unsigned char GetItemUseState() { return m_nItemUseState; }
 
     int m_bDisableInjuredAnim;
-    int m_n11F0;
+    int m_nPathBlockedCount;
     int m_nBonusForcePoints;
     int m_nAssignedPup;
     int m_bIsPuppet;
@@ -2683,7 +2663,7 @@ public:
     int ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot,
                                int bInstant, int nEquipFlags);
     int AddUnequipActions(CSWSItem* pItem, unsigned long oidRepository, int bFront,
-                          int bInstant, int nFlags, int nArg6 = 0,
+                          int bInstant, int nFlags, int bInstantSwitch = 0,
                           int bMerge = 0);
     void AddGold(int nGold, int bFeedback);
     void AddComponent(int nComponent, int bFeedback);

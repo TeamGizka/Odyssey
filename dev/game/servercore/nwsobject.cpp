@@ -684,9 +684,9 @@ int CSWSObject::StartDialog(unsigned long oidTarget,
         m_nDialogStartTime = 0;
         m_nDialogState = 0;
         m_nDialogPending = 0;
-        m_n74 = 1;
-        m_n60 = 0;
-        m_n64 = 0;
+        m_bNewDialog = 1;
+        m_nCameraAngle = 0;
+        m_nCameraId = 0;
         m_nCameraAnimState = 0;
         m_nCameraTimeStamp = 0;
 
@@ -959,7 +959,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_nActionStartDay = 0;
     m_nActionStartTime = 0;
     m_fMovementRate = 1.0f;
-    m_n88 = 0;
+    m_nCurrentActionState = 0;
 
     CServerExoApp* pServerApp = g_pAppManager->m_pServerExoApp;
     if (oidObject == OBJECT_INVALID)
@@ -974,7 +974,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_oidDialogOwner = CGameObjectArray::INVALIDOBJID;
     m_oidArea = CGameObjectArray::INVALIDOBJID;
     m_nDialogPending = 0;
-    m_n58 = ANIMATION_COMBAT_READY;
+    m_nReadyAnimation = ANIMATION_COMBAT_READY;
     m_nWaitFlags = 0;
     m_bCommandable = 1;
     m_bListening = 0;
@@ -1033,13 +1033,13 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_bDeleteNoFade = 0;
     m_bKeepCorpse = 0;
     m_nFadeOutTime = 0;
-    m_n74 = 0;
+    m_bNewDialog = 0;
     m_bDialogEnded = 0;
     m_nDialogStartDay = 0;
     m_nDialogStartTime = 0;
     m_nCameraAnimState = 0;
-    m_n60 = 0;
-    m_n64 = 0;
+    m_nCameraAngle = 0;
+    m_nCameraId = 0;
     m_bPartyInteract = 0;
     m_bDialogFaceSpeaker = 1;
     m_bHologram = 0;

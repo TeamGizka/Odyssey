@@ -110,7 +110,6 @@ public:
     char m_nAppearanceType;
     unsigned char m_nGenericType;
     CResRef m_crConversation;
-    char gap_2B2[2];
     float m_fBearing;
     int m_nFactionId;
     unsigned char m_nFortSave;
@@ -120,19 +119,15 @@ public:
     unsigned char m_nCloseLockDC;
     char m_nSecretDoorDC;
     unsigned char m_nHardness;
-    char gap_2C3[1];
     int m_bLocked;
     int m_bLockable;
     unsigned char m_nOpenLockDiff;
     char m_nOpenLockDiffMod;
-    char m_aUnmapped30E[0x2];
     int m_nOwnerDemolitionsSkill;
     unsigned char m_bUseTweakColor;
-    char m_aUnmapped315[0x3];
     unsigned long m_nTweakColor;
     char m_nOpenState;
     char m_nTargetOpenState;
-    char gap_2CE[2];
     CExoString m_sKeyName;
     int m_bKeyRequired;
 
@@ -141,13 +136,11 @@ public:
 
     unsigned char m_nDisarmDC;
     unsigned char m_nTrapDetectDC;
-    char gap_2EE[2];
 
     int m_bAutoRemoveKey;
 
     int m_bTrapFlagged;
     unsigned char m_nTrapType;
-    char gap_2F9[3];
     int m_bTrapDisarmable;
     int m_bTrapDetectable;
     int m_bTrapOneShot;
@@ -169,7 +162,6 @@ public:
     Vector m_avOutline[4];
     int m_nOutlineVertices;
     char m_IsLinked;
-    char gap_385[2];
     CExoString m_sLinkedTo;
     CExoString m_sLinkedToModule;
     unsigned long m_oidLinkedObject;

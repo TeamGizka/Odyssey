@@ -4999,12 +4999,12 @@ int CSWSCreature::AIActionUnequipItem(CSWSObjectActionNode* pAction)
     oidItem = (unsigned long)pAction->m_apParam[0];
     oidTarget = (unsigned long)pAction->m_apParam[1];
     bInstant = (int)pAction->m_apParam[2];
-    int nArg6 = (int)pAction->m_apParam[3];
+    int bInstantSwitch = (int)pAction->m_apParam[3];
     int bMerge = (int)pAction->m_apParam[4];
 
     if (!GetDead() && !GetIsPCDying() && !GetDeadTemp())
     {
-        if (RunUnequip(oidItem, oidTarget, bMerge, NULL, bInstant, nArg6) == 1)
+        if (RunUnequip(oidItem, oidTarget, bMerge, NULL, bInstant, bInstantSwitch) == 1)
         {
             return CSWSObject::ACTION_COMPLETE;
         }
@@ -7714,7 +7714,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
     {
         GetPathfindInformation()->ResetAtEndOfPath();
         m_nAnimationState = 1;
-        m_n11F0 = 0;
+        m_nPathBlockedCount = 0;
         if (m_lstActions.GetHeadPos() != NULL)
         {
             CSWSObjectActionNode* pAction = m_lstActions.RemoveHead();

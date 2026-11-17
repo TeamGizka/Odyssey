@@ -95,20 +95,17 @@ public:
     int m_nLevel;
     unsigned long m_nExperience;
     unsigned short m_nGuiSkills;
-    char m_nUnknown16[2];
 
     CExoArrayList<unsigned short> m_lstFeats;
     CExoArrayList<unsigned short> m_lstBonusFeats;
     CExoArrayList<CFeatUseListEntry*> m_lstFeatUses;
     unsigned short m_nPlayerState;
-    char m_nUnknown3E[2];
     CSWActionNode m_aActions[10];
     CExoArrayList<CSWVisibilityNode*> m_lstVisibility;
     CExoArrayList<unsigned long> m_aKnownSpells[2];
     CExoArrayList<unsigned long> m_aSpellsRemoved[2];
     CExoArrayList<unsigned long> m_aSpellsAdded[2];
     unsigned char m_nKnownSpellUsesLeft[2];
-    char m_nUnknown1AE[2];
 
     CExoArrayList<CSWSStats_SpellLikeAbility>* m_pExtraSpells;
 };
@@ -150,11 +147,9 @@ public:
     unsigned char m_nAppearancePart8;
     unsigned long m_nAppearanceState;
     unsigned char m_nAppearanceVariant;
-    char m_nUnknown21[3];
-    int m_nUnknown24;
+    int m_bUpdated;
 
     unsigned char m_nObjectType;
-    char m_nUnknown29;
     unsigned short m_nSoundSetFile;
     unsigned long m_oidObject;
     Vector m_vPosition;
@@ -167,14 +162,11 @@ public:
 
     unsigned char m_nClientSidePathType;
 
-    char m_nUnknown61;
     unsigned short m_nAIStateFlags;
     unsigned char m_nAIState;
-    char m_nUnknown65;
     unsigned short m_nActivity;
     int m_bCombatState;
     unsigned char m_nStealthMode;
-    char m_nUnknown6D[3];
     unsigned long m_oidAITarget;
     unsigned long m_oidLockOrientationToObject;
     unsigned long m_oidAttackTarget;
@@ -182,7 +174,6 @@ public:
 
     unsigned short m_nPortraitId;
     unsigned short GetPortraitId() { return m_nPortraitId; }
-    char m_nUnknown8E[2];
     CExoLocString m_lsName;
     CExoLocString m_lsDescription;
     float m_fWalkRate;
@@ -190,13 +181,13 @@ public:
     CExoArrayList<CLoopingVisualEffect*> m_lstLoopingVisualEffects;
     unsigned char m_nAssociateState;
     unsigned char m_nDamageLevel;
-    char m_nUnknownB6[4];
+    short m_nPreviousHitPoints;
+    short m_nPreviousMaxHitPoints;
 
     short m_nCurrentHitPoints;
     short m_nBaseMaxHitPoints;
     short m_nTemporaryHitPoints;
     short m_nMaxHitPoints;
-    char m_nUnknownC2[2];
     int m_bAIStateFlag0040;
     int m_bPartyLeader;
     int m_bSingletonParty;
@@ -210,18 +201,16 @@ public:
     int GetLocked() { return m_bLocked; }
     int m_bPlotObject;
     unsigned char m_nAIStateReputation;
-    char m_nUnknownF5[3];
     int m_bSeen;
     int m_bHeard;
     int m_bInvisible;
     unsigned short m_nRace;
-    char m_nUnknown106[2];
     CExoString m_sTag;
     unsigned char m_nSubraceIndex;
     unsigned char m_nGender;
     unsigned char m_nClass[2];
     unsigned char m_nClassLevel[2];
-    char m_nUnknown116[2];
+    unsigned char m_nClassCount;
     short m_nGoodEvilAlignment;
     short m_nBaseCNPCAlignment;
     int m_nForm;
@@ -258,24 +247,19 @@ class CLastUpdatePartyObject
 public:
     CResRef m_cPortrait;
     unsigned short m_nPortraitId;
-    char m_nUnknown12[2];
     int m_bUpdated;
     unsigned long m_oidObject;
     unsigned short m_nAIStateFlags;
     unsigned char m_nAIState;
-    char m_nUnknown1F;
     unsigned short m_nActivity;
-    char m_nUnknown22[2];
     unsigned long m_oidAITarget;
     unsigned short m_nCurrentHitPoints;
     unsigned short m_nBaseMaxHitPoints;
     unsigned short m_nTemporaryHitPoints;
     unsigned short m_nMaxHitPoints;
     unsigned char m_nAIStateReputation;
-    char m_nUnknown31[3];
     int m_bCombatState;
     unsigned char m_nStealthMode;
-    char m_nUnknown39[3];
     unsigned long m_oidArea;
     Vector m_vPosition;
     int m_nAreaWaitState;

@@ -74,7 +74,7 @@ CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveG
     m_oidActivatedTarget = OBJECT_INVALID;
     m_oidActivatedTarget2 = OBJECT_INVALID;
     m_oidLevelingPlayer = OBJECT_INVALID;
-    m_n198 = OBJECT_INVALID;
+    m_oidItemEquippedBy = OBJECT_INVALID;
     m_oidEquippedItem = OBJECT_INVALID;
     m_oidDyingPlayer = CGameObjectArray::INVALIDOBJID;
     m_oidRespawningPlayer = CGameObjectArray::INVALIDOBJID;
@@ -83,7 +83,7 @@ CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveG
     m_sSaveName = "";
     m_bIsSaveGame = 0;
     AddModuleResources(m_sModuleName);
-    m_n210 = 2;
+    m_nPlayerPathfindRule = 2;
     m_nMinutesPerHour = 5;
     m_nDawnHour = 0;
     m_nDuskHour = 0;

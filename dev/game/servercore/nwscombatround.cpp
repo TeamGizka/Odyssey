@@ -148,7 +148,7 @@ void CSWSCombatAttackData::AddRangedSubAttack(int nAttackNumber, unsigned char n
 // PC 0x0052B1B0 GOG 0x0052B290
 CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
 {
-    m_nUnknown0 = 0;
+    m_nRoundCount = 0;
     m_bRoundStarted = 0;
     m_bSpellCastRound = 0;
     m_nSpellCastRound = 0;
@@ -187,7 +187,7 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_pCurrentAction = NULL;
     m_nCurrentRoundActionType = 0;
     m_oidRoundTarget = OBJECT_INVALID;
-    m_nUnknown9D4 = 0;
+    m_nCurrentActionTimer = 0;
     m_nCurrentActionType = 0;
     m_nAttackGroup = 255;
     memset(m_Attacks, 0, sizeof(m_Attacks));
@@ -222,7 +222,7 @@ CSWSCombatAttackData::~CSWSCombatAttackData()
 // PC 0x0052B480 GOG 0x0052B560
 void CSWSCombatRound::StartCombatRound(unsigned long oidTarget, int bEngaged,
                                        int bMaster, unsigned short nFeat,
-                                       int nArg5)
+                                       int bUseAttackResult)
 {
     m_bEngaged = bEngaged;
     m_bMaster = bMaster;
@@ -261,7 +261,7 @@ void CSWSCombatRound::StartCombatRound(unsigned long oidTarget, int bEngaged,
     m_oidRoundPausedBy = OBJECT_INVALID;
     m_bSpellCastRound = 0;
     m_nSpellCastRound = 0;
-    m_bUseAttackResult = nArg5;
+    m_bUseAttackResult = bUseAttackResult;
     m_nRoundLength = 3000;
 
     ClearAllAttacks();
@@ -808,18 +808,18 @@ void CSWSCombatRoundAction::ClearData()
     m_bFake = 0;
     m_nProjectilePath = 0;
     m_nEquipFlags = 0;
-    m_nUnknown58 = 0;
+    m_nEquipSlot = 0;
     m_nSpecialAttack = 0;
     m_nSpellLikeClass = 0;
     m_oidSpellItem = OBJECT_INVALID;
     m_nItemProperty = 0;
     m_nItemOption = 0;
-    m_nUnknown70 = 0;
-    m_nUnknown72 = 0;
+    m_nFeatId = 0;
+    m_nFeatSubType = 0;
     m_bCutsceneAttack = 0;
-    m_nCutsceneArg1 = 0;
-    m_nCutsceneArg2 = 4;
-    m_nCutsceneArg3 = 0;
+    m_nCutsceneAnimation = 0;
+    m_nCutsceneAttackResult = 4;
+    m_nCutsceneDamage = 0;
     m_nAttackFlags = 0;
 }
 // PC 0x00527090 GOG 0x005270F0
@@ -1006,7 +1006,7 @@ void CSWSCombatAttackData::ClearAttackData()
     m_nConcealment = 0;
     m_nAttackType = 0;
     m_nAttackMode = 0;
-    m_nUnknown66 = UNKNOWN66_UNSET;
+    m_nSpecialAttackId = SPECIAL_ATTACK_ID_UNSET;
     m_vRangedTarget = Vector(0.0f, 0.0f, 0.0f);
     m_nWeaponAttackType = 0;
     m_bSneakAttack = 0;
@@ -1029,12 +1029,12 @@ void CSWSCombatAttackData::ClearAttackData()
     m_lstSubAttacks.num = 0;
     m_bUseAttackResult = 0;
     m_nForcedAttackResult = 0;
-    m_AttackBreakdown.m_nUnknown0 = 0;
+    m_AttackBreakdown.m_nAttackTotal = 0;
     m_AttackBreakdown.m_nAttackRoll = 0;
     m_AttackBreakdown.m_nAttackModifier = 0;
     m_AttackBreakdown.m_nStrengthModifier = 0;
     m_AttackBreakdown.m_nDexterityModifier = 0;
-    m_AttackBreakdown.m_nUnknown5 = 0;
+    m_AttackBreakdown.m_nWeaponEnhancementBonus = 0;
     m_AttackBreakdown.m_nSpecialAttackBonus = 0;
     m_AttackBreakdown.m_nBaseAttackBonus = 0;
     m_AttackBreakdown.m_nOffHand = 0;
@@ -1064,7 +1064,7 @@ void CSWSCombatAttackData::ClearAttackData()
     m_ThreatBreakdown.m_bThreat = 0;
     m_ThreatBreakdown.m_nCriticalRoll = 0;
     m_ThreatBreakdown.m_bCriticalConfirmed = 0;
-    m_ThreatBreakdown.m_nUnknown10 = 0;
+    m_ThreatBreakdown.m_nCriticalThreatBonus = 0;
     m_ThreatBreakdown.m_nCriticalMultiplier = 0;
     m_Flags.m_nArmorClass = 0;
     m_Flags.m_nArmorModifier = 0;
@@ -1077,7 +1077,7 @@ void CSWSCombatAttackData::ClearAttackData()
     m_Flags.m_nDebilitatedModifier = 0;
     m_DamageBreakdown.m_nBaseDamage = 0;
     m_DamageBreakdown.m_nDamageBonus = 0;
-    m_DamageBreakdown.m_nUnusedDamageFeedback = 0;
+    m_DamageBreakdown.m_nSpecialAttackDamage = 0;
     m_DamageBreakdown.m_nSneakAttackDamage = 0;
     m_DamageBreakdown.m_nStrengthDamage = 0;
     m_DamageBreakdown.m_nWeaponSpecializationDamage = 0;
@@ -1087,13 +1087,13 @@ void CSWSCombatAttackData::ClearAttackData()
     m_DamageBreakdown.m_nToughnessDamage = 0;
     m_DamageBreakdown.m_nEnduranceDamage = 0;
     m_DamageBreakdown.m_nEffectDamageBonus = 0;
-    m_DamageBreakdown.m_nUnknownC = 0x102;
+    m_DamageBreakdown.m_nDamageTypeFlags = 0x102;
     m_DamageBreakdown.m_nEffectDamage = 0;
     for (int nDamage = 0; nDamage < 15; nDamage++)
     {
-        m_DamageBreakdown.m_nUnknownDamage[nDamage] = -1;
+        m_DamageBreakdown.m_nResistedDamage[nDamage] = -1;
     }
-    m_EffectBreakdown.m_oidUnknown0 = OBJECT_INVALID;
+    m_EffectBreakdown.m_oidEffectSource = OBJECT_INVALID;
     m_EffectBreakdown.m_nSavingThrowType = 0;
     m_EffectBreakdown.m_nState = 0;
     m_EffectBreakdown.m_nSaveVersusType = 0;
@@ -1482,10 +1482,10 @@ void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget,
     pAction->m_oidTarget = oidTarget;
     pAction->m_nAnimation = 10009;
     pAction->m_nAnimationTime = (g_nCombatStretch + 3000) / 2;
-    pAction->m_nCutsceneArg1 = nAnimation;
+    pAction->m_nCutsceneAnimation = nAnimation;
     pAction->m_bCutsceneAttack = 1;
-    pAction->m_nCutsceneArg2 = nAttackResult;
-    pAction->m_nCutsceneArg3 = nDamage;
+    pAction->m_nCutsceneAttackResult = nAttackResult;
+    pAction->m_nCutsceneDamage = nDamage;
     AddAction(pAction, -1);
 
     if (m_pBaseCreature->m_oidAttemptedAttackTarget == OBJECT_INVALID)
@@ -2258,7 +2258,7 @@ void CSWSCombatRound::SetCurrentAction(unsigned char nAction)
     m_nCurrentActionType = nAction;
 }
 // PC 0x00529810 GOG 0x00529890
-void CSWSCombatRound::DEBUGDumpCombatRoundToScreen(int nArg1,
+void CSWSCombatRound::DEBUGDumpCombatRoundToScreen(int nDebugLevel,
                                                    const CExoString& sMessage)
 {
     sMessage.CStr();
@@ -2534,7 +2534,7 @@ unsigned short CSWSCombatRound::GetSpecialAttackID(int nAttack)
             {
                 if (nCount == nAttack)
                 {
-                    return GetAttack(nIndex)->m_nUnknown66;
+                    return GetAttack(nIndex)->m_nSpecialAttackId;
                 }
                 nCount++;
             }
@@ -2564,12 +2564,12 @@ int CSWSCombatRound::GetActualBonusEffectAttacks()
 // PC 0x005281D0 GOG 0x00528230
 void CSWSCombatSubAttackAttack::Clear()
 {
-    m_nUnknown0 = 0;
+    m_nAttackTotal = 0;
     m_nAttackRoll = 0;
     m_nAttackModifier = 0;
     m_nStrengthModifier = 0;
     m_nDexterityModifier = 0;
-    m_nUnknown5 = 0;
+    m_nWeaponEnhancementBonus = 0;
     m_nSpecialAttackBonus = 0;
     m_nBaseAttackBonus = 0;
     m_nOffHand = 0;
@@ -2603,7 +2603,7 @@ void CSWSCombatSubAttackThreat::Clear()
     m_bThreat = 0;
     m_nCriticalRoll = 0;
     m_bCriticalConfirmed = 0;
-    m_nUnknown10 = 0;
+    m_nCriticalThreatBonus = 0;
     m_nCriticalMultiplier = 0;
 }
 
@@ -2626,7 +2626,7 @@ void CSWSCombatSubAttackDamage::Clear()
 {
     m_nBaseDamage = 0;
     m_nDamageBonus = 0;
-    m_nUnusedDamageFeedback = 0;
+    m_nSpecialAttackDamage = 0;
     m_nSneakAttackDamage = 0;
     m_nStrengthDamage = 0;
     m_nWeaponSpecializationDamage = 0;
@@ -2636,18 +2636,18 @@ void CSWSCombatSubAttackDamage::Clear()
     m_nToughnessDamage = 0;
     m_nEnduranceDamage = 0;
     m_nEffectDamageBonus = 0;
-    m_nUnknownC = 0x102;
+    m_nDamageTypeFlags = 0x102;
     m_nEffectDamage = 0;
     for (int i = 0; i < 15; i++)
     {
-        m_nUnknownDamage[i] = -1;
+        m_nResistedDamage[i] = -1;
     }
 }
 
 // Dead code: not in the PC executable
 void CSWSCombatSubAttackEffect::Clear()
 {
-    m_oidUnknown0 = OBJECT_INVALID;
+    m_oidEffectSource = OBJECT_INVALID;
     m_nSavingThrowType = 0;
     m_nState = 0;
     m_nSaveVersusType = 0;
@@ -2702,7 +2702,7 @@ void CSWSCombatAttackData::Copy(CSWSCombatAttackData* pAttackData)
     m_nConcealment = pAttackData->m_nConcealment;
     m_nAttackType = pAttackData->m_nAttackType;
     m_nAttackMode = pAttackData->m_nAttackMode;
-    m_nUnknown66 = pAttackData->m_nUnknown66;
+    m_nSpecialAttackId = pAttackData->m_nSpecialAttackId;
     m_vRangedTarget = pAttackData->m_vRangedTarget;
     m_nWeaponAttackType = pAttackData->m_nWeaponAttackType;
     m_bSneakAttack = pAttackData->m_bSneakAttack;

@@ -497,7 +497,7 @@ public:
     CPathfindInformation* m_pPathfindInformation;
     CPathfindInformation* m_pAreaPathfindInformation;
     CSWSAreaGridTransEntry* m_pGridTransTable;
-    char m_aUnmapped1B8[0x14];
+    int m_anGridSearchState[5];
     int m_bGridSearchAborted;
     int m_nGridSearchNodes;
     unsigned long m_oidEnteringObject;
@@ -534,7 +534,7 @@ public:
     int* m_pPathConnections;
 
     int m_bPathPointDFSAborted;
-    char m_aUnmapped24C[0x4];
+    int m_nPathPointDFSDepth;
     CSWSAreaPathPointTransEntry* m_pPathPointTransTable;
     int m_nPathPointDFSExpansions;
     int m_nPathPointPathCapacity;
@@ -561,7 +561,6 @@ public:
     int m_bTransitionPending;
     char m_nNextTransitionPendingId;
     unsigned char m_nCurrentTransitionPendingId;
-    char m_aUnmapped2CA[0x2];
     unsigned long m_nDirtyARGB[3];
     int m_nDirtySize[3];
     int m_nDirtyFormula[3];

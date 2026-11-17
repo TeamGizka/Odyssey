@@ -281,7 +281,7 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
         pMessage->SetInteger(CSWCCMessageData::THREAT_DETAIL, pAttack->m_ThreatBreakdown.m_bThreat);
         pMessage->SetInteger(CSWCCMessageData::THREAT_TOTAL, (char)pAttack->m_AttackBreakdown.m_nAttackModifier + pAttack->m_ThreatBreakdown.m_nCriticalRoll);
         pMessage->SetInteger(CSWCCMessageData::THREAT_DEFENSE, (char)pAttack->m_Flags.m_nArmorClass);
-        pMessage->SetInteger(CSWCCMessageData::THREAT_DETAIL1, pAttack->m_ThreatBreakdown.m_nUnknown10);
+        pMessage->SetInteger(CSWCCMessageData::THREAT_DETAIL1, pAttack->m_ThreatBreakdown.m_nCriticalThreatBonus);
         pMessage->SetInteger(CSWCCMessageData::THREAT_MODIFIER, pAttack->m_ThreatBreakdown.m_bCriticalConfirmed);
         BroadcastThreatBreakdown(oidTarget, pMessage);
         delete pMessage;
@@ -309,7 +309,7 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
         pMessage->SetInteger(nIndex++, (char)pAttack->m_DamageBreakdown.m_nStrengthDamage);
         pMessage->SetInteger(nIndex++, pAttack->m_nAttackType);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nDamageBonus);
-        pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nUnusedDamageFeedback);
+        pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nSpecialAttackDamage);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nSneakAttackDamage);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nWeaponSpecializationDamage);
         pMessage->SetInteger(nIndex++, (char)pAttack->m_ThreatBreakdown.m_nCriticalMultiplier);
@@ -319,7 +319,7 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nToughnessDamage);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nEnduranceDamage);
         pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nEffectDamageBonus);
-        pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nUnknownC);
+        pMessage->SetInteger(nIndex++, pAttack->m_DamageBreakdown.m_nDamageTypeFlags);
         pMessage->SetInteger(nIndex++, (char)pAttack->m_DamageBreakdown.m_nEffectDamage);
         BroadcastDamageBreakdown(oidTarget, pMessage);
         delete pMessage;
@@ -3147,8 +3147,8 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
             {
                 AddAttackActions(oidTarget, 0, 0, 0, 0, 1, 1, nActionType,
                     nAnimation, nAnimationTime, nAttacks, 1,
-                    pAction->m_nCutsceneArg1, pAction->m_nCutsceneArg2,
-                    pAction->m_nCutsceneArg3);
+                    pAction->m_nCutsceneAnimation, pAction->m_nCutsceneAttackResult,
+                    pAction->m_nCutsceneDamage);
             }
             else
             {

@@ -60,19 +60,19 @@ public:
     int m_bFake;
     unsigned char m_nProjectilePath;
     int m_nEquipFlags;
-    int m_nUnknown58;
+    int m_nEquipSlot;
     int m_nSpecialAttack;
     unsigned char m_nSpellLikeClass;
 
     unsigned long m_oidSpellItem;
     int m_nItemProperty;
     int m_nItemOption;
-    unsigned short m_nUnknown70;
-    unsigned short m_nUnknown72;
+    unsigned short m_nFeatId;
+    unsigned short m_nFeatSubType;
     int m_bCutsceneAttack;
-    int m_nCutsceneArg1;
-    int m_nCutsceneArg2;
-    int m_nCutsceneArg3;
+    int m_nCutsceneAnimation;
+    int m_nCutsceneAttackResult;
+    int m_nCutsceneDamage;
     int m_nAttackFlags;
 };
 
@@ -85,7 +85,7 @@ public:
         m_bThreat = 0;
         m_nCriticalRoll = 0;
         m_bCriticalConfirmed = 0;
-        m_nUnknown10 = 0;
+        m_nCriticalThreatBonus = 0;
         m_nCriticalMultiplier = 0;
     }
 
@@ -95,7 +95,7 @@ public:
     int m_bThreat;
     unsigned char m_nCriticalRoll;
     int m_bCriticalConfirmed;
-    unsigned char m_nUnknown10;
+    unsigned char m_nCriticalThreatBonus;
     unsigned char m_nCriticalMultiplier;
 };
 
@@ -135,12 +135,12 @@ struct CSWSCombatSubAttackAttack
 
     void Clear();
 
-    unsigned char m_nUnknown0;
+    unsigned char m_nAttackTotal;
     unsigned char m_nAttackRoll;
     unsigned char m_nAttackModifier;
     unsigned char m_nStrengthModifier;
     unsigned char m_nDexterityModifier;
-    unsigned char m_nUnknown5;
+    unsigned char m_nWeaponEnhancementBonus;
     unsigned char m_nSpecialAttackBonus;
     unsigned char m_nBaseAttackBonus;
     int m_nOffHand;
@@ -177,7 +177,7 @@ struct CSWSCombatSubAttackDamage
     {
         m_nBaseDamage = 0;
         m_nDamageBonus = 0;
-        m_nUnusedDamageFeedback = 0;
+        m_nSpecialAttackDamage = 0;
         m_nSneakAttackDamage = 0;
         m_nStrengthDamage = 0;
         m_nWeaponSpecializationDamage = 0;
@@ -187,18 +187,18 @@ struct CSWSCombatSubAttackDamage
         m_nToughnessDamage = 0;
         m_nEnduranceDamage = 0;
         m_nEffectDamageBonus = 0;
-        m_nUnknownC = 0x102;
+        m_nDamageTypeFlags = 0x102;
         m_nEffectDamage = 0;
         for (int i = 0; i < 15; i++)
         {
-            m_nUnknownDamage[i] = -1;
+            m_nResistedDamage[i] = -1;
         }
     }
     void Clear();
 
     unsigned char m_nBaseDamage;
     unsigned char m_nDamageBonus;
-    unsigned char m_nUnusedDamageFeedback;
+    unsigned char m_nSpecialAttackDamage;
     unsigned char m_nSneakAttackDamage;
     char m_nStrengthDamage;
     unsigned char m_nWeaponSpecializationDamage;
@@ -208,16 +208,16 @@ struct CSWSCombatSubAttackDamage
     unsigned char m_nToughnessDamage;
     unsigned char m_nEnduranceDamage;
     unsigned char m_nEffectDamageBonus;
-    int m_nUnknownC;
+    int m_nDamageTypeFlags;
     unsigned char m_nEffectDamage;
-    short m_nUnknownDamage[15];
+    short m_nResistedDamage[15];
 };
 
 struct CSWSCombatSubAttackEffect
 {
     CSWSCombatSubAttackEffect()
     {
-        m_oidUnknown0 = OBJECT_INVALID;
+        m_oidEffectSource = OBJECT_INVALID;
         m_nSavingThrowType = 0;
         m_nState = 0;
         m_nSaveVersusType = 0;
@@ -232,7 +232,7 @@ struct CSWSCombatSubAttackEffect
     }
     void Clear();
 
-    unsigned long m_oidUnknown0;
+    unsigned long m_oidEffectSource;
 
     unsigned char m_nSavingThrowType;
 
@@ -311,7 +311,7 @@ class CSWSCombatAttackData
 {
 public:
 
-    enum { ATTACK_GROUP_INVALID = 255, UNKNOWN66_UNSET = 255 };
+    enum { ATTACK_GROUP_INVALID = 255, SPECIAL_ATTACK_ID_UNSET = 255 };
 
     enum { BASE_DAMAGE_INDEX = 14, DAMAGE_COUNT = 15 };
 
@@ -387,7 +387,7 @@ public:
     int m_nUnknown60;
     unsigned short m_nAttackType;
 
-    unsigned short m_nUnknown66;
+    unsigned short m_nSpecialAttackId;
     Vector m_vRangedTarget;
     unsigned long m_oidAmmoItem;
     CExoString m_sAttackDebugText;
@@ -519,7 +519,7 @@ public:
                           int nEquipFlags);
     void AddCombatStepAction(unsigned long nTime, unsigned long oidTarget);
     int GetWeaponAttackType();
-    void DEBUGDumpCombatRoundToScreen(int nArg1, const CExoString& sMessage);
+    void DEBUGDumpCombatRoundToScreen(int nDebugLevel, const CExoString& sMessage);
     void UpdateAttackTargetForAllActions(unsigned long oidTarget);
     int SaveCombatRound(CResGFF* pRes, CResStruct* pStruct);
     int LoadCombatRound(CResGFF* pRes, CResStruct* pStruct);
@@ -534,7 +534,7 @@ public:
     void AddReaction(int nReactionDelay, int nAnimationTime, int nPosition);
     CSWSItem* GetCurrentAttackWeapon(int nAttack);
     void StartCombatRound(unsigned long oidTarget, int bEngaged, int bMaster,
-                          unsigned short nFeat, int nArg5);
+                          unsigned short nFeat, int bUseAttackResult);
 
     int GetTimer() { return m_nTimer; }
     int GetRoundLength() { return m_nRoundLength; }
@@ -544,7 +544,7 @@ public:
     void IncrementNumActionsTaken(int nActions) { m_nNumActionsTaken += nActions; }
     unsigned long GetMasterID() { return m_oidMaster; }
 
-    int m_nUnknown0;
+    int m_nRoundCount;
     CSWSCombatAttackData m_Attacks[7];
     CExoArrayList<unsigned short> m_lstSpecialAttacks;
     CExoArrayList<unsigned short> m_lstSpecialAttackIds;
@@ -590,10 +590,9 @@ public:
 
     CSWSCombatRoundAction* m_pCurrentAction;
     unsigned char m_nCurrentRoundActionType;
-    char m_aUnmappedB1D[0x3];
     unsigned long m_oidRoundTarget;
     unsigned char m_nCurrentActionType;
-    int m_nUnknown9D4;
+    int m_nCurrentActionTimer;
 };
 
 #endif

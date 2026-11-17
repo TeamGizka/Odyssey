@@ -79,14 +79,14 @@ class CSWSPlayerContainerGUI
 public:
     CSWSPlayerContainerGUI()
     {
-        m_n04 = 0;
+        m_bOpen = 0;
         m_oidContainer = CGameObjectArray::INVALIDOBJID;
     }
 
     void SetOpen(CSWSPlayer* pPlayer, unsigned long oidContainer, int bOpen);
 
     unsigned long m_oidContainer;
-    int m_n04;
+    int m_bOpen;
 };
 
 #define CHARACTER_TYPE_LOCAL 1
@@ -153,7 +153,6 @@ public:
 
     int m_bFloatyEffects;
     char m_nAreaLoadState;
-    char m_aAreaLoadStateAlignment[3];
     unsigned long m_oidNWSObject;
 
 #ifdef _XBOX
@@ -172,10 +171,10 @@ public:
     CSWSPlayerInventoryGUI* m_pInventoryGUI;
     CSWSPlayerContainerGUI* m_pContainerGUI;
     CSWSPlayerLastUpdateObject* m_pLastUpdateObject;
-    int m_n60;
+    int m_bAlwaysRun;
     char m_nCharacterType;
     CResRef m_cServerCharacter;
-    char m_aUnmapped75[7];
+    int m_nServerCharacterState;
     int m_bModuleLoaded;
     int m_nPlayerIndex;
 
@@ -221,7 +220,6 @@ public:
     };
     unsigned long m_oidCreature;
     char m_nUpdateType;
-    char m_aUpdateTypeAlignment[3];
     CSWCreatureStatsUpdate* m_pStatsUpdate;
     int m_nUpdateRequired;
     CSWSPlayerCharSheetGUI()  // PC 0x0059D5F0 GOG 0x0059D660

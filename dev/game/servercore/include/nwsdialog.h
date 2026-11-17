@@ -124,7 +124,6 @@ public:
     int m_nAnimationCount;
     CSWSDialogAnimation* m_pAnimations;
     unsigned char m_nFadeType;
-    char m_aUnmapped69[3];
     Vector m_vFadeColor;
     float m_fFadeLength;
     float m_fFadeDelay;
@@ -293,7 +292,6 @@ public:
     int m_nCurrentEntry;
     int m_nSelectedReply;
     char m_nCurrentPlayerGender;
-    char m_aUnmapped79[0x3];
     unsigned long m_oidCurrentPlayer;
     unsigned long m_oidDialogOwner;
     CSWSDialogSpeaker* m_pSpeakers;

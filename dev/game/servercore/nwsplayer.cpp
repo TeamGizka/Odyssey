@@ -88,7 +88,7 @@ void CSWSPlayerContainerGUI::SetOpen(CSWSPlayer* pPlayer, unsigned long oidConta
         pPlayer->m_pInventoryGUI->m_pLastUpdateObject->ClearContainer();
     }
     m_oidContainer = oidContainer;
-    m_n04 = bOpen;
+    m_bOpen = bOpen;
 }
 // PC 0x0059D780 GOG 0x0059D7F0
 int CSWSPlayer::GetIsAllowedToSave()
@@ -932,7 +932,7 @@ CSWSPlayer::CSWSPlayer(unsigned long nPlayerId)
     m_bIsAllowedToSave = 1;
     m_bModuleCharacterLoaded = 0;
     m_nModulePlayerIndex = -1;
-    m_n60 = 1;
+    m_bAlwaysRun = 1;
     m_nCharacterType = 0;
     m_cServerCharacter = "";
     m_bModuleLoaded = 0;

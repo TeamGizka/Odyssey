@@ -132,7 +132,7 @@ public:
                        float fB, float fC, CWalkHitInfo* pHitInfo);
 
     int m_nType;
-    int m_nField08;
+    int m_nMeshType;
     CResRef m_cResRef;
     CRes* m_pRes;
     Vector m_vWorldPosition;
