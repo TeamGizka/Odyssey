@@ -826,7 +826,7 @@ void CExoStreamingSoundSource::SetStreamingMusicForMovie(
 {
     if (EXOSOUND_DEBUG)
     {
-        unsigned char nVolume = GetVolume();
+        printf("CExoStreamingSoundSource::SetStreamingMusicForMovie() volume %d\n", GetVolume());
     }
     CExoStreamingSoundSourceInternal* pInternal = m_pInternal;
     if (pInternal != NULL)
@@ -1010,7 +1010,7 @@ void CExoSound::GetPriorityGroupDistance(int nGroup, float* pfMinDistance,
 {
     if (EXOSOUND_DEBUG)
     {
-        float fMusicVolume = GetMusicVolume();
+        printf("CExoSound::GetPriorityGroupDistance() music volume %f\n", GetMusicVolume());
     }
     CExoSoundInternal* pInternal;
     CPriorityGroup* pPriorityGroup;

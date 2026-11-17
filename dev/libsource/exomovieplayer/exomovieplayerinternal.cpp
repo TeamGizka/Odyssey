@@ -485,7 +485,7 @@ void CExoMoviePlayerInternal::ShowFadePanel()
     m_critSect.EnterCriticalSection();
     if (EXOMOVIEPLAYERINTERNAL_DEBUG)
     {
-        CExoString& sMovie = m_lstMovies[0];
+        printf("CExoMoviePlayerInternal::ShowFadePanel() movie %s\n", m_lstMovies[0].CStr());
     }
     if (m_pFadePanel == NULL)
     {
@@ -503,7 +503,7 @@ void CExoMoviePlayerInternal::HideFadePanel()
     m_critSect.EnterCriticalSection();
     if (EXOMOVIEPLAYERINTERNAL_DEBUG)
     {
-        CExoString& sMovie = m_lstMovies[0];
+        printf("CExoMoviePlayerInternal::HideFadePanel() movie %s\n", m_lstMovies[0].CStr());
     }
     if (m_pFadePanel != NULL)
     {

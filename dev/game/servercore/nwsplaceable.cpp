@@ -711,7 +711,7 @@ void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
             int bHasItems = nItemCount > 0;
             if (NWSPLACEABLE_DEBUG)
             {
-                unsigned long oidFirstItem = m_pcItemRepository->m_lstItems[0];
+                printf("CSWSPlaceable::OpenInventory() first item %lu\n", m_pcItemRepository->m_lstItems[0]);
             }
             unsigned long oidObject = m_nId;
             g_pAppManager->GetServerExoApp()->GetSWSMessage()
@@ -751,7 +751,7 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
                     CSWSItem* pItem = m_pcItemRepository->ItemListGetItem(nItemCount - 1);
                     if (NWSPLACEABLE_DEBUG)
                     {
-                        unsigned long oidItem = m_pcItemRepository->m_lstItems[nItemCount - 1];
+                        printf("CSWSPlaceable::CloseInventory() item %lu\n", m_pcItemRepository->m_lstItems[nItemCount - 1]);
                     }
                     m_pcItemRepository->RemoveItem(pItem);
                     if (pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_DATAPAD)
@@ -1267,7 +1267,7 @@ int CSWSPlaceable::GetItemCount(int bDropableOnly)
             CSWSItem* pItem = pRepository->ItemListGetItem(i);
             if (NWSPLACEABLE_DEBUG)
             {
-                unsigned long oidItem = pRepository->m_lstItems[i];
+                printf("CSWSPlaceable::GetItemCount() item %lu\n", pRepository->m_lstItems[i]);
             }
             if (pItem != NULL &&
                 (bDropableOnly == 0 || pItem->m_bDropable != 0))

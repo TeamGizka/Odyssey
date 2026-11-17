@@ -481,7 +481,7 @@ void Camera::Animate(float fTimeStep)
 {
     if (AURCAMERA_DEBUG)
     {
-        Vector vDirection = Camera::MouseDir(0, 0);
+        printf("Camera::Animate() mouse direction x %f\n", Camera::MouseDir(0, 0).m_fX);
     }
     if (m_pViewAngleAnimation != 0)
     {

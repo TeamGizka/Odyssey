@@ -1770,7 +1770,7 @@ void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
 {
     if (AURMODEL_DEBUG)
     {
-        Gob* pGob = FindGob(NULL);
+        printf("Gob::SetUpImposters() gob %p\n", FindGob(NULL));
     }
     m_nImposterType = nImposterType;
 #ifdef _XBOX

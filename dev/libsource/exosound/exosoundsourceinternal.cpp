@@ -411,7 +411,7 @@ int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070 GOG 0x00627010
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bInRange = GetWithinRangeOfListener();
+        printf("CExoSoundSourceInternal::IsPlaying() in range %d\n", GetWithinRangeOfListener());
     }
     if (m_pSound->m_bInitialized != 0)
     {
@@ -432,7 +432,7 @@ void CExoSoundSourceInternal::SetLooping(int bLooping)
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bPlaying = IsPlaying();
+        printf("CExoSoundSourceInternal::SetLooping() playing %d\n", IsPlaying());
     }
     if (m_nListType == LIST_NONE)
     {
@@ -615,7 +615,7 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150 GOG 
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bPlaying = IsPlaying();
+        printf("CExoSoundSourceInternal::ShutDownSource() playing %d\n", IsPlaying());
     }
     if (m_nListType == 1)
     {
@@ -697,7 +697,7 @@ void CExoSoundSourceInternal::Set3D(int b3D)
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bPlaying = IsPlaying();
+        printf("CExoSoundSourceInternal::Set3D() playing %d\n", IsPlaying());
     }
     if (m_nListType != 1 && m_p3DVoice == 0 && m_p2DVoice == 0)
     {
@@ -781,7 +781,7 @@ void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x006
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bPlaying = IsPlaying();
+        printf("CExoSoundSourceInternal::SetOneShotDelay() playing %d\n", IsPlaying());
     }
     if (m_pSound->m_bInitialized != 0)
     {
@@ -796,7 +796,7 @@ void CExoSoundSourceInternal::StoreRestartSoundPosition()  // PC 0x00627340 GOG 
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bPlaying = IsPlaying();
+        printf("CExoSoundSourceInternal::StoreRestartSoundPosition() playing %d\n", IsPlaying());
     }
     if (m_pSound->m_bInitialized != 0)
     {
@@ -1302,7 +1302,7 @@ void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bPlaying = IsPlaying();
+        printf("CExoSoundSourceInternal::CalculatePitchVarianceFrequency() playing %d\n", IsPlaying());
     }
     if (rand() % 2 != 0)
     {
@@ -1335,7 +1335,7 @@ void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // PC 0x0062741
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
-        int bPlaying = IsPlaying();
+        printf("CExoSoundSourceInternal::CalculateFixedVarianceFrequency() playing %d\n", IsPlaying());
     }
     double dVariance = m_fFixedVariance;
     m_nFixedRate = (unsigned long)(dVariance * (float)m_nSampleRate);

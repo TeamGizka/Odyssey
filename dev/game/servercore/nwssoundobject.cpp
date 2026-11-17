@@ -163,7 +163,7 @@ void CSWSSoundObject::Play()
 {
     if (NWSSOUNDOBJECT_DEBUG)
     {
-        CSWCSoundObject* pClientSound = GetClientSoundObject();
+        printf("CSWSSoundObject::Play() client sound %p\n", GetClientSoundObject());
     }
     CSWSMessage* pMessage;
     CExoLinkedList<CSWSClient>* pPlayerList;
@@ -202,7 +202,7 @@ void CSWSSoundObject::Stop()
 {
     if (NWSSOUNDOBJECT_DEBUG)
     {
-        CSWCSoundObject* pClientSound = GetClientSoundObject();
+        printf("CSWSSoundObject::Stop() client sound %p\n", GetClientSoundObject());
     }
     CSWSMessage* pMessage;
     CExoLinkedList<CSWSClient>* pPlayerList;
@@ -305,7 +305,7 @@ void CSWSSoundObject::ChangePosition(Vector vPosition)
 {
     if (NWSSOUNDOBJECT_DEBUG)
     {
-        CSWCSoundObject* pClientSound = GetClientSoundObject();
+        printf("CSWSSoundObject::ChangePosition() client sound %p\n", GetClientSoundObject());
     }
     CSWSMessage* pMessage;
     CExoLinkedList<CSWSClient>* pPlayerList;

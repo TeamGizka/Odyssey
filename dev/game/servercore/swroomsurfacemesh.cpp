@@ -1085,7 +1085,7 @@ void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
 {
     if (SWROOMSURFACEMESH_DEBUG)
     {
-        int nMaterial = GetSurfaceMaterial(vPosition);
+        EXOLOG("CSWRoomSurfaceMesh::TransformToWorld() material %d\n", GetSurfaceMaterial(vPosition));
     }
     if (m_bBinary == 0)
     {

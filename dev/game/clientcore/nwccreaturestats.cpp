@@ -974,7 +974,7 @@ void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        HasFeat(0);
+        printf("CSWCCreatureStats::SetFeatRemainingUses() has feat 0 %d\n", HasFeat(0));
     }
     for (int i = 0; i < m_lstFeatUses.num; i++)
     {
@@ -1012,7 +1012,7 @@ unsigned long CSWCCreatureStats::GetKnownSpell(unsigned char nClass,
 {
     if (NWCCREATURESTATS_DEBUG)
     {
-        HasFeat(0);
+        printf("CSWCCreatureStats::GetKnownSpell() has feat 0 %d\n", HasFeat(0));
     }
     if (nClass >= 2)
     {

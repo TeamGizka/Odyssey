@@ -12,7 +12,7 @@ CSWRoom::~CSWRoom()
 {
     if (SWROOM_DEBUG)
     {
-        GetNoWalkMesh();
+        printf("CSWRoom::~CSWRoom() no walk mesh %d\n", GetNoWalkMesh());
     }
 }
 // PC 0x0055B570 GOG 0x0055B6B0

@@ -20808,7 +20808,7 @@ int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
 {
     if (NWVMACHINECOMMANDS_DEBUG)
     {
-        CExoLinkedListNode* pPosition = g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos();
+        EXOLOG("CSWVirtualMachineCommands::ExecuteCommandBarkString() player list head %p\n", g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos());
     }
 
     unsigned long oidCreature;
@@ -20969,7 +20969,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack(int nCommand, int nAr
 {
     if (NWVMACHINECOMMANDS_DEBUG)
     {
-        CExoLinkedListNode* pPosition = g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos();
+        EXOLOG("CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack() player list head %p\n", g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos());
     }
 
     int nResult = CSWCCMessageData::TOUCH_ATTACK_MISS;
@@ -21482,7 +21482,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemInInventory(int nCommand,
 {
     if (NWVMACHINECOMMANDS_DEBUG)
     {
-        CExoLinkedListNode* pPosition = g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos();
+        EXOLOG("CSWVirtualMachineCommands::ExecuteCommandGetItemInInventory() player list head %p\n", g_pAppManager->m_pServerExoApp->GetPlayerList()->GetHeadPos());
     }
 
     unsigned short nItemIndex;

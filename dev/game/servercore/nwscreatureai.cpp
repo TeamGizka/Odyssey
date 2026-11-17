@@ -5778,7 +5778,7 @@ int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
 {
     if (NWSCREATUREAI_DEBUG)
     {
-        int bSkill = CheckUseMagicDeviceSkill(pItem, 0);
+        EXOLOG("CSWSCreature::CheckItemClassRestrictions() skill %d\n", CheckUseMagicDeviceSkill(pItem, 0));
     }
     if (!pItem->GetPropertyByTypeExists(
             CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_CLASS, 0))

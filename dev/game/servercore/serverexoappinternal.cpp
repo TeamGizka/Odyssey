@@ -3815,7 +3815,7 @@ void CServerExoAppInternal::TempDeathUpdate()
 {
     if (SERVEREXOAPPINTERNAL_DEBUG)
     {
-        CSWSPlayer* pPlayer = GetClientObjectByObjectId(OBJECT_INVALID);
+        EXOLOG("CServerExoAppInternal::TempDeathUpdate() player %p\n", GetClientObjectByObjectId(OBJECT_INVALID));
     }
     if (g_pAppManager->GetClientExoApp()->GetGameOver() ||
         g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
