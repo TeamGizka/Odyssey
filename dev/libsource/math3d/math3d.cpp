@@ -8,6 +8,20 @@ unsigned int topMask[5] = {0xffff0000, 0xff00ff00, 0xf0f0f0f0, 0xcccccccc,
 Vector xaxis(1.0f, 0.0f, 0.0f);
 Vector yaxis(0.0f, 1.0f, 0.0f);
 Vector zaxis(0.0f, 0.0f, 1.0f);
+
+// Dead code: not in the PC executable
+float clampf(float fValue)
+{
+    if (fValue < 0.0f)
+    {
+        return 0.0f;
+    }
+    if (fValue > 1.0f)
+    {
+        return 1.0f;
+    }
+    return fValue;
+}
 // PC 0x004D6960 GOG 0x004D6AA0
 float DegToRad(float fDegrees)
 {

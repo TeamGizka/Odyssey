@@ -12,6 +12,7 @@ set(sources
   exolinkedlistinternal.cpp
   exolocstring.cpp
   exorand.cpp
+  exoencrypt.cpp
   exoiniinternal.cpp
   exofileinternal.cpp
   exodebuginternal.cpp

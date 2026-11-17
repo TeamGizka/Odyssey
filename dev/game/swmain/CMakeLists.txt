@@ -264,6 +264,7 @@ kotor_archive(exobase
     exobase/exolinkedlistinternal.cpp
     exobase/exolocstring.cpp
     exobase/exorand.cpp
+    exobase/exoencrypt.cpp
     exobase/exoiniinternal.cpp
     exobase/exofileinternal.cpp
     exobase/exotimersinternal.cpp
@@ -374,6 +375,7 @@ kotor_archive(clientcore2
     clientcore/swguiingamegameplay.cpp
     clientcore/swguiingameautopause.cpp
     clientcore/swguilevelupchargen.cpp
+    clientcore/SWGuiScriptSelect.cpp
     clientcore/nwcanimbaseprojectile.cpp
     clientcore/swguimainchargen.cpp
     clientcore/swguiinOPTKeyMapping.cpp

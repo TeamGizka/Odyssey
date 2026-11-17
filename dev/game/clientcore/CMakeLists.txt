@@ -104,6 +104,7 @@ set(sources
   swguiingamegameplay.cpp
   swguiingameautopause.cpp
   swguilevelupchargen.cpp
+  SWGuiScriptSelect.cpp
   swguimainchargen.cpp
   swguiinOPTKeyMapping.cpp
   swguileveluppanel.cpp
