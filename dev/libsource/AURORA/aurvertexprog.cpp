@@ -149,13 +149,13 @@ int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0 GOG 0x004CED30
 // PC 0x004CEC50 GOG 0x004CED90
 void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 {
-    static char* sLastProgram;
-    static bool bLastEnableLights;
+    static char* lastProg;
+    static bool wasLit;
 
 #ifdef _XBOX
-    if (sLastProgram == m_sProgram &&
+    if (lastProg == m_sProgram &&
         !LightManager::cm_bLightManagerUpdated &&
-        bLastEnableLights == bEnableLights)
+        wasLit == bEnableLights)
     {
         GLRender::BindVertexProgram(m_nGLProgram);
         return;
@@ -163,17 +163,17 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 #else
     unsigned int nProgram;
 
-    if (m_nGLProgram != 0 && sLastProgram == m_sProgram &&
+    if (m_nGLProgram != 0 && lastProg == m_sProgram &&
         !LightManager::cm_bLightManagerUpdated &&
-        bLastEnableLights == bEnableLights && AurNonRadeon8500Validate())
+        wasLit == bEnableLights && AurNonRadeon8500Validate())
     {
         BindVertexProgram(m_nGLProgram);
         return;
     }
 #endif
 
-    sLastProgram = m_sProgram;
-    bLastEnableLights = bEnableLights;
+    lastProg = m_sProgram;
+    wasLit = bEnableLights;
     LightManager::cm_bLightManagerUpdated = 0;
 
     if (pPart && bEnableLights)

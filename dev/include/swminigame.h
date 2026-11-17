@@ -780,8 +780,8 @@ public:
     void SetGunModel(const CResRef& sGun);
     int ClearGuns();
 
-    CResRef m_resBank;
-    CResRef m_resGun;
+    CResRef m_resBulletModel;
+    CResRef m_resGunModel;
     CResRef m_resFireSound;
     CExoArrayList<CAurObject*> m_lstGuns;
     CSWMGBullet m_bullet;

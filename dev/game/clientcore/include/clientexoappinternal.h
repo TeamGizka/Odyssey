@@ -321,7 +321,7 @@ public:
         SPauseFlagBits m_Bits;
     };
 
-    struct SUnknown11C
+    struct SAnalogInput
     {
         int m_nLeftX;
         int m_nLeftY;
@@ -898,7 +898,7 @@ public:
     float m_fRightX;
     float m_fRightY;
 #else
-    SUnknown11C m_AnalogInput;
+    SAnalogInput m_AnalogInput;
 #endif
     CExoMoviePlayer* m_pMoviePlayer;
     unsigned char m_aMoviePlayerState[0xC];

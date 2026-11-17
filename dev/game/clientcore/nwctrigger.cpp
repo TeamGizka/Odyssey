@@ -269,7 +269,7 @@ unsigned char CSWCTrigger::GetCenter(Vector& vCenter)
     return nResult;
 }
 // PC 0x006EADC0 GOG 0x006EA420
-int CSWCTrigger::GetMineStrength(int nTrapType)
+int CSWCTrigger::GetMineStrengthLevel(int nTrapType)
 {
     if (nTrapType == TRAP_FLASH_STUN_MINOR ||
         nTrapType == TRAP_FRAGMENTATION_MINE_MINOR ||
@@ -657,7 +657,7 @@ void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
         break;
     case TARGET_ACTION_MENU_MINES:
         {
-            int nStrength = GetMineStrength(GetServerTrigger()->m_nTrapType);
+            int nStrength = GetMineStrengthLevel(GetServerTrigger()->m_nTrapType);
             int bAdded = 0;
             if (nStrength >= MINE_STRENGTH_MINOR && nStrength <= MINE_STRENGTH_STRONG &&
                 pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_DROID_DESTROY))

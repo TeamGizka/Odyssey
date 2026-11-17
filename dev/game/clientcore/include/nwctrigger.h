@@ -95,7 +95,7 @@ public:
         MINE_STRENGTH_DEADLY = 3,
         MINE_STRENGTH_DEVASTATING = 4
     };
-    int GetMineStrength(int nTrapType);
+    int GetMineStrengthLevel(int nTrapType);
     void GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
                             CExoArrayList<CSWGuiInterfaceAction>& lstActions);
     CSWSTrigger* GetServerTrigger();
@@ -109,7 +109,6 @@ public:
     void SpecialDisplayTrigger(int bDisplay);
     void UpdateAreaTransitionDisplay();
     void CheckWindingOrder();
-    int GetMineStrengthLevel(int nLevel);
     int InTrigger(const Vector& vPoint);
     void ReverseOrder();
     void SetMineIcon(unsigned char nIcon);
