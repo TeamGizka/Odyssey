@@ -70,6 +70,12 @@ public:
     int m_bDisplayInactive;
 };
 
+class CSWSDialogLinkReply : public CSWSDialogLinkEntry
+{
+public:
+    CSWSDialogLinkReply();
+};
+
 class CSWSDialogBase
 {
 public:

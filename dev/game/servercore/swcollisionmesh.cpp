@@ -576,6 +576,20 @@ int CSWCollisionMesh::GetMeshOutline(Vector& vFirst, Vector& vSecond,
     vFourth = LocalToWorld(vFourth);
     return bFirst;
 }
+
+// Dead code: not in the PC executable
+void CSWCollisionMesh::GetTriangleVertices(int nTriangle, int* pnFirst,
+                                           int* pnSecond, int* pnThird)
+{
+    if (nTriangle < m_nFaceCount)
+    {
+        int nVertexOffset = nTriangle * 3;
+
+        *pnFirst = m_pFaces[nVertexOffset];
+        *pnSecond = m_pFaces[nVertexOffset + 1];
+        *pnThird = m_pFaces[nVertexOffset + 2];
+    }
+}
 // PC 0x005580A0 GOG 0x00557F50
 void CSWCollisionMesh::GetVertex(int nVertex, float* pfX, float* pfY,
                                  float* pfZ)

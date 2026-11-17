@@ -579,6 +579,7 @@ public:
     int GetLoadBarState();
     void EndLoadBar();
     void HandleLoadBarExit(int bExit);
+    void RenderTilePathNodes(int bRender);
     void RestartMoviesIfNecessary();
     void StartMenuMusic(int bCultTheme, int nVolume, int nPriorityGroup);
 

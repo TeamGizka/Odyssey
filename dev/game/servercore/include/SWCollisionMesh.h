@@ -120,6 +120,8 @@ public:
     int GetMeshBoundingBox(Vector& vMin, Vector& vMax);
     int GetMeshOutline(Vector& vFirst, Vector& vSecond, Vector& vThird,
                        Vector& vFourth);
+    void GetTriangleVertices(int nTriangle, int* pnFirst, int* pnSecond,
+                             int* pnThird);
     void GetVertex(int nVertex, float* pfX, float* pfY, float* pfZ);
     void GetVertex(int nVertex, Vector* pvVertex);
     void GetFaceVertex(int nIndex, int nCorner, Vector& vVertex);

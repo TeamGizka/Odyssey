@@ -3119,3 +3119,9 @@ static inline C2DA* GetAlienVOTable()
 {
     return g_pRules->Get2DArrays()->m_pAlienVO;
 }
+
+// Dead code: not in the PC executable
+inline CSWSDialogLinkReply::CSWSDialogLinkReply()
+{
+    m_bDisplayInactive = 0;
+}
