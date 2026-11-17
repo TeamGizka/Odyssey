@@ -4349,7 +4349,7 @@ int CSWSCreatureStats::CheckPowerSuitability(
     if (m_pCreature->GetArea() != NULL)
     {
         int nCategory = pSpell->m_nCategory;
-        if (CheckPowerSuitability(nCategory, nPowerSuitability) == 0)
+        if (CheckForCategoryMatch(nCategory, nPowerSuitability) == 0)
         {
             return 0;
         }
@@ -4540,7 +4540,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomPowerFromItem(
                                 if (pSpell != NULL)
                                 {
                                     nSlot = pSpell->m_nCategory;
-                                    if (CheckPowerSuitability(nSlot, nFilter) == 1)
+                                    if (CheckForCategoryMatch(nSlot, nFilter) == 1)
                                     {
                                         if (nSelection == TALENT_SELECTION_RANDOM)
                                         {
@@ -4609,7 +4609,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomFeat(
         if (pFeat != NULL)
         {
             int nCategory = pFeat->m_nCategory;
-            if (CheckPowerSuitability(nCategory, nFilter))
+            if (CheckForCategoryMatch(nCategory, nFilter))
             {
                 if (CheckInclusionMatch(CScriptTalent::TALENT_TYPE_FEAT, nFeat, nExclusion) &&
                     nExcludedFeat != nFeat &&
@@ -7983,7 +7983,7 @@ void CSWSCreatureStats::AddClass(unsigned char nClass, unsigned char nLevel)
     }
 }
 // PC 0x005EE4C0 GOG 0x005EE4A0
-int CSWSCreatureStats::CheckPowerSuitability(int nPowerSuitability, int nFilter)
+int CSWSCreatureStats::CheckForCategoryMatch(int nPowerSuitability, int nFilter)
 {
     int bSuitable = 1;
     int nMaskedFilter = nFilter & 0xF000;

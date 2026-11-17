@@ -2562,7 +2562,7 @@ int CSWSCombatRound::GetActualBonusEffectAttacks()
     return m_nEffectAttacks;
 }
 // PC 0x005281D0 GOG 0x00528230
-void CSWSCombatAttackBreakdown::Clear()
+void CSWSCombatSubAttackAttack::Clear()
 {
     m_nUnknown0 = 0;
     m_nAttackRoll = 0;
@@ -2608,7 +2608,7 @@ void CSWSCombatSubAttackThreat::Clear()
 }
 
 // Dead code: not in the PC executable
-void CSWSCombatAttackFlags::Clear()
+void CSWSCombatSubAttackDefense::Clear()
 {
     m_nArmorClass = 0;
     m_nArmorModifier = 0;
@@ -2622,7 +2622,7 @@ void CSWSCombatAttackFlags::Clear()
 }
 
 // Dead code: not in the PC executable
-void CSWSCombatDamageBreakdown::Clear()
+void CSWSCombatSubAttackDamage::Clear()
 {
     m_nBaseDamage = 0;
     m_nDamageBonus = 0;
@@ -2645,7 +2645,7 @@ void CSWSCombatDamageBreakdown::Clear()
 }
 
 // Dead code: not in the PC executable
-void CSWSCombatEffectBreakdown::Clear()
+void CSWSCombatSubAttackEffect::Clear()
 {
     m_oidUnknown0 = OBJECT_INVALID;
     m_nSavingThrowType = 0;
@@ -2662,7 +2662,7 @@ void CSWSCombatEffectBreakdown::Clear()
 }
 
 // Dead code: not in the PC executable
-void CSWSCombatDeflectBreakdown::Clear()
+void CSWSCombatSubAttackDeflect::Clear()
 {
     m_nDeflectRoll = 0;
     m_nAttackTotal = 0;

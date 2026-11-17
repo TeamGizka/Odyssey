@@ -478,7 +478,7 @@ public:
                                          int& nTalentType, int& nTalent,
                                          unsigned char& nClass, int nClassIndex,
                                          int nExclusion, int nExcludedPower);
-    int CheckPowerSuitability(int nPowerSuitability, int nFilter);
+    int CheckForCategoryMatch(int nPowerSuitability, int nFilter);
     int CheckPowerSuitability(int nTalent, CSWSpell* pSpell,
                               int nPowerSuitability, int nSelection,
                               int nUnknown2, int nUnknown3, int nUnknown4,

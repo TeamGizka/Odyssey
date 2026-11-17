@@ -99,9 +99,9 @@ public:
     unsigned char m_nCriticalMultiplier;
 };
 
-struct CSWSCombatAttackFlags
+struct CSWSCombatSubAttackDefense
 {
-    CSWSCombatAttackFlags()
+    CSWSCombatSubAttackDefense()
     {
         m_nArmorClass = 0;
         m_nArmorModifier = 0;
@@ -126,9 +126,9 @@ struct CSWSCombatAttackFlags
     unsigned char m_nDebilitatedModifier;
 };
 
-struct CSWSCombatAttackBreakdown
+struct CSWSCombatSubAttackAttack
 {
-    CSWSCombatAttackBreakdown()
+    CSWSCombatSubAttackAttack()
     {
         Clear();
     }
@@ -168,12 +168,12 @@ struct CSWSCombatAttackBreakdown
     unsigned char m_nFormBonus;
 };
 
-struct CSWSCombatDamageBreakdown
+struct CSWSCombatSubAttackDamage
 {
 
     enum { DAMAGE_ABSORPTION_ACTIVE = 2 };
 
-    CSWSCombatDamageBreakdown()
+    CSWSCombatSubAttackDamage()
     {
         m_nBaseDamage = 0;
         m_nDamageBonus = 0;
@@ -213,9 +213,9 @@ struct CSWSCombatDamageBreakdown
     short m_nUnknownDamage[15];
 };
 
-struct CSWSCombatEffectBreakdown
+struct CSWSCombatSubAttackEffect
 {
-    CSWSCombatEffectBreakdown()
+    CSWSCombatSubAttackEffect()
     {
         m_oidUnknown0 = OBJECT_INVALID;
         m_nSavingThrowType = 0;
@@ -248,9 +248,9 @@ struct CSWSCombatEffectBreakdown
     int m_bEffectApplied;
 };
 
-struct CSWSCombatDeflectBreakdown
+struct CSWSCombatSubAttackDeflect
 {
-    CSWSCombatDeflectBreakdown()
+    CSWSCombatSubAttackDeflect()
     {
         Clear();
     }
@@ -296,12 +296,12 @@ public:
     int m_nDischargeHand;
     short m_nDamage[15];
     short m_nUnknown4E;
-    CSWSCombatAttackBreakdown m_AttackBreakdown;
+    CSWSCombatSubAttackAttack m_AttackBreakdown;
     CSWSCombatSubAttackThreat m_ThreatBreakdown;
-    CSWSCombatAttackFlags m_Flags;
+    CSWSCombatSubAttackDefense m_Flags;
     unsigned char m_nUnknown8D;
-    CSWSCombatDamageBreakdown m_DamageBreakdown;
-    CSWSCombatEffectBreakdown m_EffectBreakdown;
+    CSWSCombatSubAttackDamage m_DamageBreakdown;
+    CSWSCombatSubAttackEffect m_EffectBreakdown;
 };
 
 class CResGFF;
@@ -400,14 +400,14 @@ public:
 
     int m_bUseAttackResult;
     int m_nForcedAttackResult;
-    CSWSCombatAttackBreakdown m_AttackBreakdown;
+    CSWSCombatSubAttackAttack m_AttackBreakdown;
     CSWSCombatSubAttackThreat m_ThreatBreakdown;
-    CSWSCombatAttackFlags m_Flags;
+    CSWSCombatSubAttackDefense m_Flags;
     unsigned char m_nUnknownFD;
-    CSWSCombatDamageBreakdown m_DamageBreakdown;
-    CSWSCombatEffectBreakdown m_EffectBreakdown;
+    CSWSCombatSubAttackDamage m_DamageBreakdown;
+    CSWSCombatSubAttackEffect m_EffectBreakdown;
 
-    CSWSCombatDeflectBreakdown m_DeflectBreakdown;
+    CSWSCombatSubAttackDeflect m_DeflectBreakdown;
 };
 
 class CSWSCombatRound
