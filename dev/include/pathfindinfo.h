@@ -76,14 +76,14 @@ public:
         m_vPathPointEndpointStart = vStart;
         m_vPathPointEndpointEnd = vEnd;
     }
-    void SetPathPointStartPath(int nCount, float* pfPoints)  // PC 0x004FBF80 GOG 0x004F4060
+    void SetPathNodeStartPath(int nCount, float* pfPoints)  // PC 0x004FBF80 GOG 0x004F4060
     {
         m_nPathPointStartCount = nCount;
         if (m_pfPathPointStartPoints != 0)
             delete m_pfPathPointStartPoints;
         m_pfPathPointStartPoints = pfPoints;
     }
-    void SetPathPointEndPath(int nCount, float* pfPoints)  // PC 0x004FBFC0 GOG 0x004F40A0
+    void SetPathNodeEndPath(int nCount, float* pfPoints)  // PC 0x004FBFC0 GOG 0x004F40A0
     {
         m_nPathPointEndCount = nCount;
         if (m_pfPathPointEndPoints != 0)
@@ -91,7 +91,7 @@ public:
         m_pfPathPointEndPoints = pfPoints;
     }
     // PC 0x004FC000 GOG 0x004F40E0
-    void SetSmoothFirstPoints(float* pfPoints)
+    void SetSmoothingFirstWayPoints(float* pfPoints)
     {
         if (m_pfSmoothFirstPoints == 0 && pfPoints != 0)
         {
@@ -108,7 +108,7 @@ public:
             m_pfSmoothFirstPoints = pfPoints;
         }
     }
-    void SetSmoothSecondPoints(float* pfPoints)  // PC 0x004FC050 GOG 0x004F4130
+    void SetSmoothingSecondWayPoints(float* pfPoints)  // PC 0x004FC050 GOG 0x004F4130
     {
         if (m_pfSmoothSecondPoints == 0 && pfPoints != 0)
         {
@@ -125,7 +125,7 @@ public:
             m_pfSmoothSecondPoints = pfPoints;
         }
     }
-    void SetSmoothFinalPoints(float* pfPoints)  // PC 0x004FC0A0 GOG 0x004F4180
+    void SetSmoothingThirdWayPoints(float* pfPoints)  // PC 0x004FC0A0 GOG 0x004F4180
     {
         if (m_pfSmoothFinalPoints == 0 && pfPoints != 0)
         {

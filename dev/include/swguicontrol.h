@@ -672,7 +672,7 @@ public:
     static void UpdateArrowPulsing(float fElapsed);
     void SetScrollBarExtent(int nWidth, int bUpdate);
     void SetScrollBarOnLeft(int bLeft);
-    int GetScrollRange();
+    int GetNumSegments();
     int IsOversized();
     void OrganizeUnequal();
     void OrganizeOversized();

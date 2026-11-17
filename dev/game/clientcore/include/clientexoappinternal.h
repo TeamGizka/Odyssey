@@ -750,7 +750,7 @@ public:
 #endif
     void HideMovieFadePanel();
     void PauseAllSoundsForMovieLostFocus();
-    void ResumeAllStreamingMusicForMovie();
+    void ResumeStreamMusicForMovie();
     void SetAttackMashTutorialTimer(unsigned long nTimer);
     int GetAttackMashTutorialTimer();
     int GetLoadingSaveGame();
@@ -1132,7 +1132,7 @@ public:
     unsigned long m_oidPrimaryPC;
     unsigned long GetPrimaryPC() { return m_oidPrimaryPC; }
     CExoString m_sPrimaryPCName;
-    void SetPrimaryPCPortrait(CResRef cPortrait);
+    void SetPrimaryPCPortraitResRef(CResRef cPortrait);
     void SetPrimaryPCPortraitId(unsigned short nPortraitId);
     unsigned long GetPlayerId() { return m_nPlayerId; }
     CSWCPlayer(unsigned long nPlayerId);

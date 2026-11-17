@@ -31,7 +31,7 @@ public:
 
 private:
     static DWORD WINAPI PlayMoviesAsync(LPVOID pParam);
-    void RunMovieLoop(int nWait);
+    void RenderFrame(int nWait);
     void FinishMovie();
 
 public:
@@ -71,19 +71,19 @@ public:
     void ShowFadePanel();
     void HideFadePanel();
 
-    void OnWindowPosChanging(WINDOWPOS* pWindowPos);
-    void OnWindowPosChanged(WINDOWPOS* pWindowPos);
+    void WindowsPosChanging(WINDOWPOS* pWindowPos);
+    void WindowsPosChanged(WINDOWPOS* pWindowPos);
     int GetNumberOfMoviesToPlay();
     int RestartMoviesAsync();
     void PauseMovie();
-    void ResumeMovie();
+    void UnpauseMovie();
 
     void AddMovie(const CExoString& sMovie) { m_lstMovies.Add(sMovie); }
 
 private:
     static DWORD WINAPI PlayMoviesAsync(LPVOID pParam);
 
-    int RunMovieLoop(int nWait);
+    int RenderFrame(int nWait);
     void FinishMovie();
 
 public:

@@ -917,7 +917,7 @@ void CSWGuiUpgradeItemSelect::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_CANCEL:
         case GUIEVENT_CANCEL_ALTERNATE:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            SetModal(0);
+            SetToBeRemoved(0);
             m_pManager->PopModalPanel();
             break;
 
@@ -2582,7 +2582,7 @@ void CSWGuiUpgradeItemSelect::OnPanelAdded()
     }
     else
     {
-        SetModal(0);
+        SetToBeRemoved(0);
     }
 }
 // PC 0x007256B0 GOG 0x007253C0
@@ -3274,7 +3274,7 @@ void CSWGuiCreateItem::CloseCreateItem(CSWGuiControl* pControl)
     {
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     }
-    SetModal(0);
+    SetToBeRemoved(0);
     m_pManager->PopModalPanel();
 }
 // PC 0x007261E0 GOG 0x00725EF0
@@ -3615,7 +3615,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
     }
     if (m_pPresetItem != 0 && m_bExitAfterUpgrade != 0)
     {
-        SetModal(0);
+        SetToBeRemoved(0);
         m_pManager->PopModalPanel();
         g_pAppManager->m_pClientExoApp->GetInGameGui()->HideUpgradeScreen();
         m_pPresetItem = 0;
@@ -3623,7 +3623,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
     }
     else if (m_pPresetItem != 0)
     {
-        SetModal(0);
+        SetToBeRemoved(0);
         m_pManager->PopModalPanel();
         m_pPresetItem = 0;
         m_pSelectionPanel->PopulateItemList();
@@ -4477,7 +4477,7 @@ void CSWGuiUpgrade::OnPanelAdded()
 #ifdef _XBOX
     if (m_pSelectedItem == 0)
     {
-        SetModal(0);
+        SetToBeRemoved(0);
         return;
     }
 
@@ -4506,7 +4506,7 @@ void CSWGuiUpgrade::OnPanelAdded()
             sColumn = "LongMdlVar";
             break;
         default:
-            SetModal(0);
+            SetToBeRemoved(0);
             return;
         }
         for (int i = 0; i < m_pCrystalTable->GetNumRows(); i++)
@@ -4536,7 +4536,7 @@ void CSWGuiUpgrade::OnPanelAdded()
         }
         if (m_apItemEntries[UPGRADE_SLOT_COLOR_CRYSTAL] == 0)
         {
-            SetModal(0);
+            SetToBeRemoved(0);
             return;
         }
 #ifdef _XBOX
@@ -4560,7 +4560,7 @@ void CSWGuiUpgrade::OnPanelAdded()
         pLabels = m_aUpgradeLabels3Ls;
         break;
     default:
-        SetModal(0);
+        SetToBeRemoved(0);
         return;
     }
     ShowItems(0);
@@ -4623,7 +4623,7 @@ void CSWGuiUpgrade::OnPanelAdded()
 #else
     if (m_pSelectedItem == 0)
     {
-        SetModal(0);
+        SetToBeRemoved(0);
         return;
     }
 
@@ -4673,7 +4673,7 @@ void CSWGuiUpgrade::OnPanelAdded()
             sColumn = "LongMdlVar";
             break;
         default:
-            SetModal(0);
+            SetToBeRemoved(0);
             return;
         }
         for (int i = 0; i < m_pCrystalTable->GetNumRows(); i++)
@@ -4697,7 +4697,7 @@ void CSWGuiUpgrade::OnPanelAdded()
         pLabels = m_aUpgradeLabels3;
         break;
     default:
-        SetModal(0);
+        SetToBeRemoved(0);
         return;
     }
     ShowItems(0);

@@ -161,7 +161,7 @@ void CSWGuiBarkBubble::Pause()
         {
             m_pSoundSource->Pause();
         }
-        SetModal(0);
+        SetToBeRemoved(0);
     }
 }
 // PC 0x00712770 GOG 0x00712A10
@@ -193,7 +193,7 @@ void CSWGuiBarkBubble::StopBark(int bStopSound)
         }
     }
     m_fTimeLeft = 0.0f;
-    SetModal(0);
+    SetToBeRemoved(0);
 }
 // PC 0x00712840 GOG 0x00712AE0
 void CSWGuiBarkBubble::Draw(float fElapsed)
@@ -255,7 +255,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
         }
         else
         {
-            SetModal(0);
+            SetToBeRemoved(0);
         }
     }
 #ifdef _XBOX
@@ -275,7 +275,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
         }
         else
         {
-            SetModal(0);
+            SetToBeRemoved(0);
         }
     }
     else
@@ -286,7 +286,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
             delete m_pSoundSource;
             m_pSoundSource = NULL;
         }
-        SetModal(0);
+        SetToBeRemoved(0);
     }
 
     if (g_pAppManager->m_pClientExoApp->GetCombatMode())

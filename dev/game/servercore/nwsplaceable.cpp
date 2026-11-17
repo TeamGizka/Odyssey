@@ -1043,15 +1043,15 @@ unsigned char CSWSPlaceable::GetOpenLockDC()
 Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)
 {
     Vector vActionPoint;
-    if (!m_cSurfaceMesh.GetUsePoint(0).IsZero())
+    if (!m_cSurfaceMesh.GetActionPoint(0).IsZero())
     {
-        Vector vFirstDistance = vPosition - m_cSurfaceMesh.GetUsePoint(0);
-        Vector vSecondDistance = vPosition - m_cSurfaceMesh.GetUsePoint(1);
-        if (m_cSurfaceMesh.GetUsePoint(1).IsZero() ||
+        Vector vFirstDistance = vPosition - m_cSurfaceMesh.GetActionPoint(0);
+        Vector vSecondDistance = vPosition - m_cSurfaceMesh.GetActionPoint(1);
+        if (m_cSurfaceMesh.GetActionPoint(1).IsZero() ||
             vFirstDistance * vFirstDistance < vSecondDistance * vSecondDistance)
-            vActionPoint = m_cSurfaceMesh.GetUsePoint(0);
+            vActionPoint = m_cSurfaceMesh.GetActionPoint(0);
         else
-            vActionPoint = m_cSurfaceMesh.GetUsePoint(1);
+            vActionPoint = m_cSurfaceMesh.GetActionPoint(1);
     }
     else
         vActionPoint = m_vPosition;

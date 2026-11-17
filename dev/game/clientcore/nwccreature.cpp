@@ -289,12 +289,12 @@ void CSWCCreature::DoFootstepRumble(int nFootstepType)
         nFootstepType, 0, m_vPosition);
 }
 // PC 0x00657620 GOG 0x006574D0
-void CSWCCreature::SetMoveOrientation(const Vector& vOrientation)
+void CSWCCreature::SetDesiredWalkOrientation(const Vector& vOrientation)
 {
     m_vMoveOrientation = normalize(vOrientation);
 }
 // PC 0x00657660 GOG 0x00657510
-void CSWCCreature::SetDesiredOrientation(const Vector& vOrientation)
+void CSWCCreature::SetDesiredStationaryOrientation(const Vector& vOrientation)
 {
     m_vDesiredOrientation = normalize(vOrientation);
 }
@@ -1972,7 +1972,7 @@ void CSWCCreature::SetDesiredOrientationForLock()
             if (vDirection * vDirection > SWCCREATURE_LOCK_DIRECTION_EPSILON_SQUARED)
             {
                 vDirection.m_fZ = 0.0f;
-                SetDesiredOrientation(normalize(vDirection));
+                SetDesiredStationaryOrientation(normalize(vDirection));
             }
         }
     }

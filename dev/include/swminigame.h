@@ -769,7 +769,7 @@ public:
     void OnFire();
 
     CSWTrackFollower* GetFollower() { return m_pFollower; }
-    void SetBankModel(const CResRef& sBank);
+    void SetBulletModel(const CResRef& sBank);
     float SetBulletSpeed(float fSpeed);
     float SetBulletLifeSpan(float fLifeSpan);
     int SetBulletTargetType(int nTargetType);

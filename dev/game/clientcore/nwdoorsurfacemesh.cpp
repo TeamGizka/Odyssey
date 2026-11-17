@@ -7,7 +7,7 @@ inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
 {
 }
 // PC 0x006161D0 GOG 0x006161B0
-void CSWPlaceableSurfaceMesh::SetUsePoint(int nIndex, const Vector& vPosition)
+void CSWCollisionMesh::SetActionPoint(int nIndex, const Vector& vPosition)
 {
     m_avUsePoints[nIndex] = WorldToLocal(vPosition);
 }
@@ -16,7 +16,7 @@ const int CSWDoorSurfaceMesh::DOOR_STATE_CLOSED = 0;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN1 = 1;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN2 = 2;
 // PC 0x00616210 GOG 0x006161F0
-void CSWDoorSurfaceMesh::SetOpenPosition(unsigned char nIndex,
+void CSWDoorSurfaceMesh::SetOpenLocation(unsigned char nIndex,
                                          Vector vPosition)
 {
     EXOXBOXASSERT(nIndex <= 1); m_avUsePoints[nIndex] = WorldToLocal(vPosition);
@@ -149,7 +149,7 @@ int CSWDoorSurfaceMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
                 }
                 else
                 {
-                    SetOpenPosition(nUsePoint, Vector(fPositionX, fPositionY,
+                    SetOpenLocation(nUsePoint, Vector(fPositionX, fPositionY,
                                                       fPositionZ));
                 }
             }

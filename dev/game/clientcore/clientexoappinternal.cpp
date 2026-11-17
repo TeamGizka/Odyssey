@@ -218,7 +218,7 @@ inline CExoImeUI::CExoImeUI()
     m_nPreviousKeyboardLayout = 0;
 }
 // PC 0x00639770 GOG 0x00639670
-void CSWCPlayer::SetPrimaryPCPortrait(CResRef cPortrait)
+void CSWCPlayer::SetPrimaryPCPortraitResRef(CResRef cPortrait)
 {
     m_cPrimaryPCPortrait.CResRef::operator=(cPortrait);
 }
@@ -269,7 +269,7 @@ void CSWCPlayer::SetPrimaryPCPortraitId(unsigned short nPortraitId)
         }
         sBaseResRef = sPrefix + sBaseResRef;
 #ifdef _XBOX
-        SetPrimaryPCPortrait(sBaseResRef.CStr());
+        SetPrimaryPCPortraitResRef(sBaseResRef.CStr());
 #else
         {
             CResRef cPortrait((char*)sBaseResRef.CStr());
@@ -2719,12 +2719,12 @@ void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
             if (pPlaceable != NULL)
             {
                 {
-                    Vector vPoint1 = pPlaceable->m_cSurfaceMesh.GetUsePoint(0);
-                    Vector vPoint2 = pPlaceable->m_cSurfaceMesh.GetUsePoint(0);
+                    Vector vPoint1 = pPlaceable->m_cSurfaceMesh.GetActionPoint(0);
+                    Vector vPoint2 = pPlaceable->m_cSurfaceMesh.GetActionPoint(0);
                 }
                 {
-                    Vector vPoint1 = pPlaceable->m_cSurfaceMesh.GetUsePoint(1);
-                    Vector vPoint2 = pPlaceable->m_cSurfaceMesh.GetUsePoint(1);
+                    Vector vPoint1 = pPlaceable->m_cSurfaceMesh.GetActionPoint(1);
+                    Vector vPoint2 = pPlaceable->m_cSurfaceMesh.GetActionPoint(1);
                 }
             }
             CSWSDoor* pDoor = pServer->AsSWSDoor();
@@ -3862,7 +3862,7 @@ void CClientExoAppInternal::DisplayMainMenu(int bScanContent)  // PC 0x00648720 
 
     if (m_pMainMenu != NULL)
     {
-        m_pMainMenu->SetModal(0);
+        m_pMainMenu->SetToBeRemoved(0);
         CSWGuiPanel* pPanel = m_pMainMenu;
         pPanel->m_bDeferredRemoval = 0;
         pPanel->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
@@ -8462,7 +8462,7 @@ void CClientExoAppInternal::PauseAllSoundsForMovieLostFocus()
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_LOSTFOCUS, 0);
 }
 // PC 0x00640460 GOG 0x006402C0
-void CClientExoAppInternal::ResumeAllStreamingMusicForMovie()
+void CClientExoAppInternal::ResumeStreamMusicForMovie()
 {
     g_pExoSound->ResumeAllStreamingMusicForMovie();
 }

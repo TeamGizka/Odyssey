@@ -1177,7 +1177,7 @@ void CSWGuiInGameEquip::UpdateSlotLocks()
 #ifndef _XBOX
 #endif
 // PC 0x00713F10 GOG 0x00713C00
-int CSWGuiInGameEquip::IsSlotLocked(int nSlot)
+int CSWGuiInGameEquip::GetSlotLockedBySLOTID(int nSlot)
 {
     switch (nSlot)
     {
@@ -2168,7 +2168,7 @@ void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
             m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
             return;
         }
-        if (IsSlotLocked(m_nSelectedSlot))
+        if (GetSlotLockedBySLOTID(m_nSelectedSlot))
         {
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
@@ -3200,7 +3200,7 @@ void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
             unsigned char nCanUse = pEntry->m_nCanUse;
             if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND)
             {
-                if (IsSlotLocked(INVENTORY_SLOT_LEFTHAND))
+                if (GetSlotLockedBySLOTID(INVENTORY_SLOT_LEFTHAND))
                 {
                     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
                     CSWSItem* pItem = pServer->GetItemByGameObjectID(

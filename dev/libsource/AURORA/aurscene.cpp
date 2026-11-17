@@ -269,7 +269,7 @@ void AurDisableInterleavedAnimations()
     g_bEnableInterleavedAnimations = 0;
 }
 // PC 0x004638A0 GOG 0x004639B0
-bool Gob::IsDistortionEnabled()
+bool Gob::IsForcePushDistortion()
 {
     if (m_pModel)
         return m_bDistortion || bool(m_pModel->m_Classification.m_bSceneHitDisabled);

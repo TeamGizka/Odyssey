@@ -310,7 +310,7 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
                     if (pServerPlayer->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_MOVE)
                     {
                         pPlayer->SetOrientation(vDirection);
-                        pPlayer->SetMoveOrientation(vDirection);
+                        pPlayer->SetDesiredWalkOrientation(vDirection);
                     }
                     m_vFacing = vDirection;
                 }

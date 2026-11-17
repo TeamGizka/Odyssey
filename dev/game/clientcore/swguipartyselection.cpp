@@ -209,7 +209,7 @@ void CSWGuiPartySelection::OnDone(CSWGuiControl* pControl)
             AcceptParty(0);
             g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pPartySelection = 0;
-            SetModal(1);
+            SetToBeRemoved(1);
         }
         else if (nSelectable > 0)
         {
@@ -614,7 +614,7 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
         GetManager()->PlayGuiSound(CSWGuiManager::GUISOUND_PARTY_ACCEPT);
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
         g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME, 1);
-        SetModal(0);
+        SetToBeRemoved(0);
     }
 }
 // PC 0x0071E9C0 GOG 0x0071E720
@@ -626,7 +626,7 @@ void CSWGuiPartySelection::ConfirmPartySelection(CSWGuiControl*)
         AcceptParty(0);
         g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pPartySelection = 0;
-        SetModal(1);
+        SetToBeRemoved(1);
     }
 }
 

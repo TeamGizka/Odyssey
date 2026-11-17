@@ -735,7 +735,7 @@ public:
     int IsAnimationPlayingInDialog();
     int IsFadingInDialog();
 #ifndef _XBOX
-    void AddItemReceived(const CExoLocString& sName) { m_aItemsReceived.Add(sName); }
+    void AddReceivedItemToList(const CExoLocString& sName) { m_aItemsReceived.Add(sName); }
     void SetKeepStealthInDialog(int bKeep) { m_bKeepStealthInDialog = bKeep; }
 #endif
 };

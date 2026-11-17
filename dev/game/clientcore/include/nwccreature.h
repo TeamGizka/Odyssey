@@ -299,9 +299,9 @@ public:
 
     void UpdateRelativePerception(CSWVisibilityNode* pNode);
 
-    void SetMoveOrientation(const Vector& vOrientation);
+    void SetDesiredWalkOrientation(const Vector& vOrientation);
 
-    void SetDesiredOrientation(const Vector& vOrientation);
+    void SetDesiredStationaryOrientation(const Vector& vOrientation);
     void SetDesiredOrientationForLock();
     void SetLockOrientationToObject(unsigned long oidTarget, int bForce);
     void StripEquippedItems();

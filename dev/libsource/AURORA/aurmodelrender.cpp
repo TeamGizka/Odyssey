@@ -282,7 +282,7 @@ void RenderNV1xEMLM(VertexPrimitiveFlat* pPrimitive);
 void RenderLightMappedNoShaders(VertexPrimitiveFlat* pPrimitive);
 int AurBumpyShinyAvailable();
 
-int IsTriMeshRenderable(PartTriMesh* pPart);
+int IsPartRenderable(PartTriMesh* pPart);
 
 extern int countdisplaycreates;
 
@@ -318,7 +318,7 @@ void PartTriMesh::RotateTexture(float fAngle)
 #ifdef _XBOX
 inline
 #endif
-int IsTriMeshRenderable(PartTriMesh* pPart)
+int IsPartRenderable(PartTriMesh* pPart)
 {
     MdlNodeTriMesh* pNode = (MdlNodeTriMesh*)pPart->m_pNode;
     if (pPart->m_fAlpha <= 0.001f)
@@ -4175,7 +4175,7 @@ void PartTriMesh::Draw(bool bMotionBlurred)
     {
         return;
     }
-    if (IsTriMeshRenderable(this) == 0)
+    if (IsPartRenderable(this) == 0)
     {
         return;
     }
@@ -4277,7 +4277,7 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30 GOG 0x00493B00
     {
         return;
     }
-    if (IsTriMeshRenderable(this) == 0)
+    if (IsPartRenderable(this) == 0)
     {
         return;
     }

@@ -1110,7 +1110,7 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_ACCEPT:
         case GUIEVENT_CANCEL_ALTERNATE:
         case GUIEVENT_EXIT:
-            SetModal(0);
+            SetToBeRemoved(0);
             break;
         }
 
@@ -1745,7 +1745,7 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)
         m_bAllowCancel = 1;
         m_bShowButtons = 1;
         ResetButtonMessage();
-        SetModal(0);
+        SetToBeRemoved(0);
         m_pManager->PopModalPanel();
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         if (m_pCallbackObject != 0 && m_pCallback != 0)
@@ -1783,7 +1783,7 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x00675AC
             m_bAllowCancel = 1;
             m_bShowButtons = 1;
             ResetButtonMessage();
-            SetModal(0);
+            SetToBeRemoved(0);
             m_pManager->PopModalPanel();
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             if (m_pCallbackObject != 0 && m_pCallback != 0)
@@ -2544,7 +2544,7 @@ void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_CANCEL:
         case GUIEVENT_ACCEPT:
         case GUIEVENT_CANCEL_ALTERNATE:
-            SetModal(0);
+            SetToBeRemoved(0);
 #ifdef _XBOX
             g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
 #else

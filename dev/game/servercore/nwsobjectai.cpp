@@ -805,7 +805,7 @@ int CSWSObject::AIActionGiveItem(CSWSObjectActionNode* pNode)
                                                  OBJECT_INVALID, bDisplayFeedback);
             if (bAddToQueue && pTarget->AsSWSCreature()->m_bInParty)
             {
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->AddItemReceived(sName);
+                g_pAppManager->GetClientExoApp()->GetInGameGui()->AddReceivedItemToList(sName);
                 g_pAppManager->GetClientExoApp()->GetInGameGui()
                     ->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
             }

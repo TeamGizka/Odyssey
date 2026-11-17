@@ -221,7 +221,7 @@ inline void CSWPazaak::DrawPlayerCard()
     m_cPlayer.AddGameCard(DrawCard());
 }
 // PC 0x006D2F90 GOG 0x006D2D20
-inline int CSWPazaak::PlayOpponentTurn()
+inline int CSWPazaak::AIPlayNPCTurn()
 {
     m_nAIState = PlayAITurn(m_cOpponent, m_cPlayer, m_nAIState);
     return m_nAIState;
@@ -2762,7 +2762,7 @@ int CSWGuiPazaakGame::DoGameSequence()
     }
     case 7:
     {
-        int nAction = m_pPazaak->PlayOpponentTurn();
+        int nAction = m_pPazaak->AIPlayNPCTurn();
         switch (nAction)
         {
         case 1:

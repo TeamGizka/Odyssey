@@ -337,7 +337,7 @@ public:
     {
         m_bDistortion = 0;
     }
-    bool IsDistortionEnabled();
+    bool IsForcePushDistortion();
     // PC 0x0045DE80 GOG 0x0045DF90
     virtual void SetForcePoints(short nForcePoints)
     {

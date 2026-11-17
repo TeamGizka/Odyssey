@@ -2477,7 +2477,7 @@ int CSWSArea::SmoothSelectionRestartable(int nPoints, float* pfPoints,
     {
         int nResult = SmoothSelectNodesRestartable(nPoints, pfPoints,
             &nFirstCount, &pfFirst, 1, 0, 5.0f);
-        m_pPathfindInformation->SetSmoothFirstPoints(pfFirst);
+        m_pPathfindInformation->SetSmoothingFirstWayPoints(pfFirst);
         m_pPathfindInformation->m_nSmoothFirstCount = nFirstCount;
         if (nResult == 1)
             return 1;
@@ -2489,7 +2489,7 @@ int CSWSArea::SmoothSelectionRestartable(int nPoints, float* pfPoints,
     {
         int nResult = SmoothSelectNodesRestartable(nFirstCount, pfFirst,
             &nSecondCount, &pfSecond, 1, 1, 1.1f);
-        m_pPathfindInformation->SetSmoothSecondPoints(pfSecond);
+        m_pPathfindInformation->SetSmoothingSecondWayPoints(pfSecond);
         m_pPathfindInformation->m_nSmoothSecondCount = nSecondCount;
         if (nResult == 1)
             return 1;
@@ -2503,8 +2503,8 @@ int CSWSArea::SmoothSelectionRestartable(int nPoints, float* pfPoints,
             pnResultCount, ppfResult, 0, 1, 1.1f) == 1)
             return 1;
     }
-    m_pPathfindInformation->SetSmoothFirstPoints(NULL);
-    m_pPathfindInformation->SetSmoothSecondPoints(NULL);
+    m_pPathfindInformation->SetSmoothingFirstWayPoints(NULL);
+    m_pPathfindInformation->SetSmoothingSecondWayPoints(NULL);
     return 0;
 }
 // PC 0x00502670 GOG 0x004FA750
@@ -2622,9 +2622,9 @@ int CSWSArea::SmoothPointsOnPathRestartable()
             m_pPathfindInformation->m_nSmoothIntermediateCount = -1;
             m_pPathfindInformation->m_nSmoothCurrentNode = 0;
             m_pPathfindInformation->m_nSmoothingStep = CPathfindInformation::SMOOTHING_STEP_2;
-            m_pPathfindInformation->SetSmoothFirstPoints(NULL);
-            m_pPathfindInformation->SetSmoothSecondPoints(NULL);
-            m_pPathfindInformation->SetSmoothFinalPoints(NULL);
+            m_pPathfindInformation->SetSmoothingFirstWayPoints(NULL);
+            m_pPathfindInformation->SetSmoothingSecondWayPoints(NULL);
+            m_pPathfindInformation->SetSmoothingThirdWayPoints(NULL);
         }
 
         nPoints = nInputCount;
@@ -2643,7 +2643,7 @@ int CSWSArea::SmoothPointsOnPathRestartable()
             pfSelection = pfSelectionResult;
         }
         m_pPathfindInformation->m_nSmoothFinalCount = nCount;
-        m_pPathfindInformation->SetSmoothFinalPoints(pfSelection);
+        m_pPathfindInformation->SetSmoothingThirdWayPoints(pfSelection);
         if (bRestart == 1)
         {
             return 1;
@@ -2655,7 +2655,7 @@ int CSWSArea::SmoothPointsOnPathRestartable()
             m_pPathfindInformation->m_nWayPointCount = nResultCount;
         }
         m_pPathfindInformation->m_nSmoothFinalCount = 0;
-        m_pPathfindInformation->SetSmoothFinalPoints(NULL);
+        m_pPathfindInformation->SetSmoothingThirdWayPoints(NULL);
         return 0;
     }
 }
@@ -3000,8 +3000,8 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pPathfind->m_fStartY = vEnd.m_fY;
             if (nGridResult == CSWSObject::ACTION_COMPLETE)
             {
-                pPathfind->SetPathPointStartPath(m_pPathfindInformation->m_nWayPointTempCount,
-                                                m_pPathfindInformation->m_pWayPointsTemp);
+                pPathfind->SetPathNodeStartPath(m_pPathfindInformation->m_nWayPointTempCount,
+                                               m_pPathfindInformation->m_pWayPointsTemp);
                 m_pPathfindInformation->m_nWayPointTempCount = 0;
                 m_pPathfindInformation->m_pWayPointsTemp = NULL;
             }
@@ -3013,7 +3013,7 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pfPoints[1] = vStart.m_fY;
             pfPoints[2] = m_pPathPoints[nStartPoint].m_fX;
             pfPoints[3] = m_pPathPoints[nStartPoint].m_fY;
-            pPathfind->SetPathPointStartPath(4, pfPoints);
+            pPathfind->SetPathNodeStartPath(4, pfPoints);
         }
         pPathfind->m_bIgnoreCreatures = 0;
         if (nGridResult == CSWSObject::ACTION_COMPLETE)
@@ -3065,8 +3065,8 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pPathfind->m_fEndY = vStart.m_fY;
             if (nGridResult == CSWSObject::ACTION_COMPLETE)
             {
-                pPathfind->SetPathPointEndPath(m_pPathfindInformation->m_nWayPointTempCount,
-                                              m_pPathfindInformation->m_pWayPointsTemp);
+                pPathfind->SetPathNodeEndPath(m_pPathfindInformation->m_nWayPointTempCount,
+                                             m_pPathfindInformation->m_pWayPointsTemp);
                 m_pPathfindInformation->m_nWayPointTempCount = 0;
                 m_pPathfindInformation->m_pWayPointsTemp = NULL;
             }
@@ -3078,7 +3078,7 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pfPoints[1] = m_pPathPoints[nEndPoint].m_fY;
             pfPoints[2] = vEnd.m_fX;
             pfPoints[3] = vEnd.m_fY;
-            pPathfind->SetPathPointEndPath(4, pfPoints);
+            pPathfind->SetPathNodeEndPath(4, pfPoints);
         }
         pPathfind->m_bIgnoreCreatures = 0;
         if (nGridResult == CSWSObject::ACTION_COMPLETE)

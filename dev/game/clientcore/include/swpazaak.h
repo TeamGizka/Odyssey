@@ -82,7 +82,7 @@ public:
     int GetTotal();
     void AddGameCard(CPazaakCard cCard);
     void ChooseSidedeck(CPazaakCard* pCards);
-    int HasTiebreaker();
+    int UsedTieBreaker();
     void FlipPositiveNegative(int nValue1, int nValue2);
     int GetNumCardsPlayed();
 
@@ -138,7 +138,7 @@ public:
     EAIState PlayAITurn(CPazaakPlayer& cSelf, CPazaakPlayer& cOpponent,
                         EAIState eState);
 
-    int PlayOpponentTurn();
+    int AIPlayNPCTurn();
 
     int m_nWager;
     unsigned long m_oidOpponent;

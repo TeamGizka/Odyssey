@@ -62,7 +62,7 @@ void CExoMoviePlayerInternal::FinishMovie()
     m_critSect.LeaveCriticalSection();
 }
 
-void CExoMoviePlayerInternal::RunMovieLoop(int nWait)
+void CExoMoviePlayerInternal::RenderFrame(int nWait)
 {
     RECT rect;
     DSMIXBINS mixBins;
@@ -166,7 +166,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
             CExoString* pMovie = &self->m_lstMovies[i];
             if (*pMovie != "" && self->StartMovie(*pMovie))
             {
-                self->RunMovieLoop(1);
+                self->RenderFrame(1);
                 Sleep(5);
                 if (self->m_bCancelMovie)
                 {

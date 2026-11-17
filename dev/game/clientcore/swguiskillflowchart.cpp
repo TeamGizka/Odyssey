@@ -984,7 +984,7 @@ void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
         case 45:
         case 46:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            SetModal(0);
+            SetToBeRemoved(0);
             m_pManager->PopModalPanel();
             if (m_pCallbackObject != NULL && m_pCallback != NULL)
             {

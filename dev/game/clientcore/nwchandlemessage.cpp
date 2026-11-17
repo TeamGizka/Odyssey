@@ -3932,8 +3932,8 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Add()
             Vector vPosition(fX, fY, fZ);
             pCreature->SetPosition(vPosition);
             pCreature->SetOrientation(vOrientation);
-            pCreature->SetMoveOrientation(vOrientation);
-            pCreature->SetDesiredOrientation(vOrientation);
+            pCreature->SetDesiredWalkOrientation(vOrientation);
+            pCreature->SetDesiredStationaryOrientation(vOrientation);
             pCreature->m_vDesiredPosition = vPosition;
             pClientExoApp = g_pAppManager->m_pClientExoApp;
             if (pClientExoApp->GetGameObjectArray()->AddExternalObject(
@@ -4902,10 +4902,10 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     {
         if (bOrientation)
         {
-            pCreature->SetDesiredOrientation(vOrientation);
+            pCreature->SetDesiredStationaryOrientation(vOrientation);
             if (pCreature->m_bCustomSpeed &&
                 pCreature->GetObjectId() != g_pAppManager->GetClientExoApp()->GetPlayerCreatureId())
-                pCreature->SetMoveOrientation(vOrientation);
+                pCreature->SetDesiredWalkOrientation(vOrientation);
             pCreature->SetLockOrientationToObject(oidLockTarget, 0);
         }
         nOldAnimation = pCreature->GetCurrentAnimation();
@@ -8885,7 +8885,7 @@ int CSWCMessage::HandleServerToPlayerPlayerList(unsigned char nMinor)
             {
                 CSWCCreatureStats::CheckCustomPortrait(&cPortrait,
                     nPortraitId == PORTRAIT_ID_RESERVED_FFFE);
-                pPlayer->SetPrimaryPCPortrait(cPortrait);
+                pPlayer->SetPrimaryPCPortraitResRef(cPortrait);
             }
         }
         if (bNewPlayer == 1)

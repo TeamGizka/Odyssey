@@ -31,7 +31,7 @@ void CSWGuiKeyMapButton::onControlExit(CSWGuiControl* pControl)
 }
 
 // PC 0x0075DEE0 GOG 0x0075DE90
-void CSWGuiInGameOptKeyMappings::SetCaptureKeyboardKeys(int bCapture)
+void CSWGuiInGameOptKeyMappings::SetCaptureKeyboardMode(int bCapture)
 {
     m_bCapturing = bCapture;
     g_pExoInput->SetCaptureKeyboardKeys(bCapture);
@@ -102,15 +102,15 @@ void CSWGuiInGameOptKeyMappings::Update(float fElapsed)
                 switch (m_pCaptureButton->UpdateEvent(nKey))
                 {
                 case CSWGuiKeyMapButton::KEY_GOOD:
-                    SetCaptureKeyboardKeys(0);
+                    SetCaptureKeyboardMode(0);
                     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
                     SetCaptureEvent(0);
                     break;
                 case CSWGuiKeyMapButton::KEY_ALREADYUSED:
-                    SetCaptureKeyboardKeys(1);
+                    SetCaptureKeyboardMode(1);
                     break;
                 case CSWGuiKeyMapButton::KEY_INVALID:
-                    SetCaptureKeyboardKeys(1);
+                    SetCaptureKeyboardMode(1);
                     break;
                 }
             }
@@ -739,7 +739,7 @@ void CSWGuiInGameOptKeyMappings::SetCaptureEvent(CSWGuiKeyMapButton* pButton)
             m_pCaptureButton->SetEditing(0);
         }
         m_lstEvents.SetSelectOnLeftClick(0);
-        SetCaptureKeyboardKeys(0);
+        SetCaptureKeyboardMode(0);
     }
 
     if (pButton != 0)
@@ -747,7 +747,7 @@ void CSWGuiInGameOptKeyMappings::SetCaptureEvent(CSWGuiKeyMapButton* pButton)
         m_pCaptureButton = pButton;
         pButton->SetEditing(1);
         m_lstEvents.SetSelectOnLeftClick(1);
-        SetCaptureKeyboardKeys(1);
+        SetCaptureKeyboardMode(1);
     }
 }
 // PC 0x0075EF60 GOG 0x0075E130

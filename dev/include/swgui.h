@@ -190,9 +190,9 @@ public:
 #endif
     void AddControl(CSWGuiControl* pControl);
     CSWGuiControl* GetControl(int nIndex);
-    void SetModal(int bModal)  // PC 0x00639690 GOG 0x00639590
+    void SetToBeRemoved(int bToBeRemoved)  // PC 0x00639690 GOG 0x00639590
     {
-        m_bDeferredRemoval = bModal;
+        m_bDeferredRemoval = bToBeRemoved;
         if (m_nExitState != EXITSTATE_DELETE)
         {
             m_nExitState = EXITSTATE_REMOVE;

@@ -23,7 +23,7 @@ public:
 
     void SetDoorType(int nType);
 
-    void SetOpenPosition(unsigned char nIndex, Vector vPosition);
+    void SetOpenLocation(unsigned char nIndex, Vector vPosition);
 
     int m_nDoorType;
     char m_szDoorState[8];

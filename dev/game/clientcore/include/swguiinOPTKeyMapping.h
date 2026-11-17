@@ -95,7 +95,7 @@ public:
                     unsigned long nFilterFlags);
     virtual void Update(float fElapsed);
 
-    void SetCaptureKeyboardKeys(int bCapture);
+    void SetCaptureKeyboardMode(int bCapture);
 
     CExoArrayList<CSWGuiKeyMapButton*> m_aOptions;
     CSWGuiLabel m_lblTitle;

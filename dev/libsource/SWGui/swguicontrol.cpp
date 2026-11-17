@@ -746,8 +746,8 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041C830 G
             }
             else if (IsOversized())
             {
-                bChanged = m_nScrollPosition != GetScrollRange();
-                m_nScrollPosition = min(GetScrollRange(), m_nScrollPosition + 1);
+                bChanged = m_nScrollPosition != GetNumSegments();
+                m_nScrollPosition = min(GetNumSegments(), m_nScrollPosition + 1);
                 OrganizeOversized();
             }
             else if (m_nSelectedItem < m_lItems.num - 1)
@@ -769,7 +769,7 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041C830 G
         case GUIEVENT_SCROLLBAR_DOWN:
             if (IsOversized())
             {
-                m_nScrollPosition = min(GetScrollRange(), m_nScrollPosition + 1);
+                m_nScrollPosition = min(GetNumSegments(), m_nScrollPosition + 1);
                 OrganizeOversized();
             }
             else if (m_nTopVisibleItem < m_cScrollBar.GetMaxValue() - 1 &&
@@ -785,7 +785,7 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041C830 G
             if (IsOversized())
             {
                 m_nScrollPosition += (int)m_fScrollStep;
-                m_nScrollPosition = min(GetScrollRange(), m_nScrollPosition);
+                m_nScrollPosition = min(GetNumSegments(), m_nScrollPosition);
                 OrganizeOversized();
             }
             else if (m_nTopVisibleItem < m_cScrollBar.GetMaxValue() - 1 &&
@@ -1215,7 +1215,7 @@ inline int CSWGuiListBox::IsOversized()
 {
     if (SWGUICONTROL_DEBUG)
     {
-        int nRange = GetScrollRange();
+        int nRange = GetNumSegments();
     }
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
@@ -1650,7 +1650,7 @@ inline void CSWGuiControl::SetActive(int bActive)
     m_bActive = bActive;
 }
 // PC 0x00417A60 GOG 0x00417A90
-int CSWGuiListBox::GetScrollRange()
+int CSWGuiListBox::GetNumSegments()
 {
     int nRange;
     if (m_cItemExtent.m_nHeight != 0)
@@ -2577,15 +2577,15 @@ int CSWGuiListBox::HandleMouseCapturedMovement(int nX, int nY)
 
             if (IsOversized())
             {
-                nRange = GetScrollRange() - 1;
+                nRange = GetNumSegments() - 1;
                 m_nScrollPosition = (short)(nRange * ((float)nDeltaY / nTravel) +
                                           m_nDragStartPosition + 0.5f);
                 m_nScrollPosition = m_nScrollPosition < 1 ? 1 : m_nScrollPosition;
-                m_nScrollPosition = GetScrollRange() < m_nScrollPosition ?
-                                    GetScrollRange() : m_nScrollPosition;
+                m_nScrollPosition = GetNumSegments() < m_nScrollPosition ?
+                                    GetNumSegments() : m_nScrollPosition;
                 OrganizeOversized();
                 AurPrintf("pos %d/%d, dY %d (%d-%d)", m_nScrollPosition,
-                          GetScrollRange(), nDeltaY, nMouseY, m_nDragStartY);
+                          GetNumSegments(), nDeltaY, nMouseY, m_nDragStartY);
             }
             else
             {
@@ -3810,8 +3810,8 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)
             }
             else if (IsOversized())
             {
-                bChanged = m_nScrollPosition != GetScrollRange();
-                m_nScrollPosition = min(GetScrollRange(), m_nScrollPosition + 1);
+                bChanged = m_nScrollPosition != GetNumSegments();
+                m_nScrollPosition = min(GetNumSegments(), m_nScrollPosition + 1);
                 OrganizeOversized();
             }
             else if (m_nSelectedItem < m_lItems.num - 1)

@@ -282,8 +282,8 @@ void messagepump()  // PC 0x00401510 GOG 0x00401510
 }
 #endif
 // PC 0x00401590 GOG 0x00401590
-LRESULT CALLBACK CinematicBackdropWndProc(HWND hWnd, UINT nMsg, WPARAM wParam,
-                                          LPARAM lParam)
+LRESULT CALLBACK BlackScreenWinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
+                                              LPARAM lParam)
 {
     return 0;
 }
@@ -648,7 +648,7 @@ DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A50 GOG 0x00401A50
         WNDCLASSA wndClass;
 
         wndClass.style = 0;
-        wndClass.lpfnWndProc = CinematicBackdropWndProc;
+        wndClass.lpfnWndProc = BlackScreenWinMessageHandler;
         wndClass.cbClsExtra = 0;
         wndClass.cbWndExtra = 0;
         wndClass.hInstance = g_hInst;

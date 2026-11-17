@@ -23039,7 +23039,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnObject(int nCommand,
                     if (pTarget->AsSWSCreature()->m_bInParty != 0 && bHideMessage == 0)
                     {
                         g_pAppManager->GetClientExoApp()->GetInGameGui()
-                            ->AddItemReceived(sName);
+                            ->AddReceivedItemToList(sName);
                         g_pAppManager->GetClientExoApp()->GetInGameGui()
                             ->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
                     }
@@ -23154,7 +23154,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetItemStackSize(int nCommand,
                 if (pCreature != NULL && pCreature->m_bInParty != 0)
                 {
                     pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_RECEIVED, pMessageData);
-                    g_pAppManager->GetClientExoApp()->GetInGameGui()->AddItemReceived(pItem->m_sLocalizedName);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->AddReceivedItemToList(pItem->m_sLocalizedName);
                     g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
                 }
             }

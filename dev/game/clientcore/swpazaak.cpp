@@ -282,7 +282,7 @@ void CSWPazaak::LoadInitialSideDeck(int nSideDeck, CPazaakCard* pCards)
     c2DA.Unload2DArray();
 }
 // PC 0x00755320 GOG 0x00755130
-int CPazaakPlayer::HasTiebreaker()
+int CPazaakPlayer::UsedTieBreaker()
 {
     for (int i = 0; i < 9; i++)
     {
@@ -426,8 +426,8 @@ int CSWPazaak::DetermineWinner()
         {
             return 2;
         }
-        int bPlayerTiebreaker = m_cPlayer.HasTiebreaker();
-        int bOpponentTiebreaker = m_cOpponent.HasTiebreaker();
+        int bPlayerTiebreaker = m_cPlayer.UsedTieBreaker();
+        int bOpponentTiebreaker = m_cOpponent.UsedTieBreaker();
         if (bPlayerTiebreaker && !bOpponentTiebreaker)
         {
             return 1;

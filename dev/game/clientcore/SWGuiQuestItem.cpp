@@ -27,7 +27,7 @@ void CSWGuiQuestItem::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_CANCEL_ALTERNATE:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             m_pManager->PopModalPanel();
-            SetModal(0);
+            SetToBeRemoved(0);
             break;
         case GUIEVENT_SCROLL_UP:
             m_lbxDescription.HandleInputEvent(GUIEVENT_UP, 1);

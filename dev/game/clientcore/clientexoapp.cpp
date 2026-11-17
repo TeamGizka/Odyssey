@@ -1311,9 +1311,9 @@ void CClientExoApp::PauseAllSoundsForMovieLostFocus()
     m_pcExoAppInternal->PauseAllSoundsForMovieLostFocus();
 }
 // PC 0x00639510 GOG 0x00639410
-void CClientExoApp::ResumeAllStreamingMusicForMovie()
+void CClientExoApp::ResumeStreamMusicForMovie()
 {
-    m_pcExoAppInternal->ResumeAllStreamingMusicForMovie();
+    m_pcExoAppInternal->ResumeStreamMusicForMovie();
 }
 #endif
 

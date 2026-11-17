@@ -125,14 +125,14 @@ void CSWGuiScriptSelect::HandleInputEvent(int nEvent, int nState)
 #endif
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             m_pManager->PopModalPanel();
-            SetModal(0);
+            SetToBeRemoved(0);
             break;
         }
         case GUIEVENT_CANCEL:
         case GUIEVENT_CANCEL_ALTERNATE:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             m_pManager->PopModalPanel();
-            SetModal(0);
+            SetToBeRemoved(0);
             break;
         }
     }

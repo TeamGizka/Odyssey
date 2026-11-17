@@ -116,8 +116,8 @@ int CSWPlaceableSurfaceMesh::LoadMeshText(unsigned char* pData,
             }
             else if (nUsePoint >= 1 && nUsePoint <= 2)
             {
-                SetUsePoint(nUsePoint - 1,
-                            Vector(fPositionX, fPositionY, fPositionZ));
+                SetActionPoint(nUsePoint - 1,
+                               Vector(fPositionX, fPositionY, fPositionZ));
                 nUsePoint = 0;
             }
             else

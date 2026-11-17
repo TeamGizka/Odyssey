@@ -69,7 +69,7 @@ LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
         }
         else
         {
-            g_pAppManager->GetClientExoApp()->ResumeAllStreamingMusicForMovie();
+            g_pAppManager->GetClientExoApp()->ResumeStreamMusicForMovie();
         }
         break;
     case WM_KEYDOWN:
@@ -113,11 +113,11 @@ LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
             g_pMoviePlayer->CancelMovie(0, 0);
         return 0;
     case WM_MOVIE_WINDOWPOS_CHANGING:
-        g_pMoviePlayer->OnWindowPosChanging((WINDOWPOS*)lParam);
+        g_pMoviePlayer->WindowsPosChanging((WINDOWPOS*)lParam);
         delete (WINDOWPOS*)lParam;
         return 0;
     case WM_MOVIE_WINDOWPOS_CHANGED:
-        g_pMoviePlayer->OnWindowPosChanged((WINDOWPOS*)lParam);
+        g_pMoviePlayer->WindowsPosChanged((WINDOWPOS*)lParam);
         delete (WINDOWPOS*)lParam;
         return 0;
     }
@@ -387,7 +387,7 @@ int CExoMoviePlayerInternal::CancelMovie(int nResult, int bForce)
     return nResult;
 }
 // PC 0x004056E0 GOG 0x004056E0
-int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
+int CExoMoviePlayerInternal::RenderFrame(int nWait)
 {
     MSG msg;
     BINKSUMMARY summary;
@@ -396,7 +396,7 @@ int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
     {
         if (m_bPaused != 0)
         {
-            ResumeMovie();
+            UnpauseMovie();
         }
         while (m_hBink->Frames != m_hBink->FrameNum)
         {
@@ -491,7 +491,7 @@ void CExoMoviePlayerInternal::HideFadePanel()
     m_critSect.LeaveCriticalSection();
 }
 // PC 0x00404D20 GOG 0x00404D20
-void CExoMoviePlayerInternal::OnWindowPosChanging(WINDOWPOS* pWindowPos)
+void CExoMoviePlayerInternal::WindowsPosChanging(WINDOWPOS* pWindowPos)
 {
     if (m_hBinkBuffer != NULL)
     {
@@ -503,7 +503,7 @@ void CExoMoviePlayerInternal::OnWindowPosChanging(WINDOWPOS* pWindowPos)
     }
 }
 // PC 0x00404D60 GOG 0x00404D60
-void CExoMoviePlayerInternal::OnWindowPosChanged(WINDOWPOS*)
+void CExoMoviePlayerInternal::WindowsPosChanged(WINDOWPOS*)
 {
     if (m_hBinkBuffer != NULL)
         BinkBufferSetOffset(m_hBinkBuffer, m_nVideoOffsetX, m_nVideoOffsetY);
@@ -532,7 +532,7 @@ void CExoMoviePlayerInternal::PauseMovie()
     }
 }
 // PC 0x00404E40 GOG 0x00404E40
-void CExoMoviePlayerInternal::ResumeMovie()
+void CExoMoviePlayerInternal::UnpauseMovie()
 {
     if (m_hBink != NULL && m_bPaused == 1)
     {
@@ -599,7 +599,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
                 }
                 if (self->StartMovie(*pMovie) == 1)
                 {
-                    self->RunMovieLoop(1);
+                    self->RenderFrame(1);
                     Sleep(5);
                     if (self->m_bDeactivated == 0)
                         self->m_lstMovies[i] = "";

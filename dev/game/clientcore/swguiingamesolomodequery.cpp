@@ -39,7 +39,7 @@ void CSWGuiInGameSoloModeQuery::Draw(float fElapsed)
         (pServerCreature != 0 &&
          (pServerCreature->GetDead() != 0 || pServerCreature->GetDeadTemp() != 0)))
     {
-        SetModal(0);
+        SetToBeRemoved(0);
     }
 
     return CSWGuiPanel::Draw(fElapsed);

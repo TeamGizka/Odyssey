@@ -3554,7 +3554,7 @@ void PartEmitter::RenderFunc()
     MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
     if (pNode->IsPointToPoint() && m_pTarget == 0)
     {
-        if (m_pAurObject != 0 && m_pAurObject->IsDistortionEnabled())
+        if (m_pAurObject != 0 && m_pAurObject->IsForcePushDistortion())
         {
             GLRender_SetColorMask(1, 1, 1, 1);
 #ifdef _XBOX

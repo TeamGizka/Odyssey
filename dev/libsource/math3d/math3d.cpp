@@ -164,8 +164,8 @@ int BoxInside(const Vector& vPoint, const Vector& vMinimum, const Vector& vMaxim
            vPoint.m_fZ >= vMinimum.m_fZ && vPoint.m_fZ <= vMaximum.m_fZ;
 }
 // PC 0x004D6E10 GOG 0x004D6F50
-void BoxOutCode(const Vector& vPoint, const Vector& vMinimum,
-                const Vector& vMaximum, unsigned char& nOutCode)
+void SetOpCode(const Vector& vPoint, const Vector& vMinimum,
+               const Vector& vMaximum, unsigned char& nOutCode)
 {
     nOutCode = 0;
     if (vPoint.m_fX < vMinimum.m_fX)
@@ -186,12 +186,12 @@ int BoxIntersect(Vector const& vStart, Vector const& vEnd,
                  Vector const& vMinimum, Vector const& vMaximum, Vector* vHit)
 {
     unsigned char nCode1;
-    BoxOutCode(vStart, vMinimum, vMaximum, nCode1);
+    SetOpCode(vStart, vMinimum, vMaximum, nCode1);
     if (nCode1 == 0)
         return -1;
 
     unsigned char nCode2;
-    BoxOutCode(vEnd, vMinimum, vMaximum, nCode2);
+    SetOpCode(vEnd, vMinimum, vMaximum, nCode2);
     if ((nCode2 & nCode1) != 0)
         return 0;
 
@@ -289,12 +289,12 @@ int BoxIntersect(Vector const& vStart, Vector const& vEnd,
                  Vector const& vMinimum, Vector const& vMaximum)
 {
     unsigned char nCode1;
-    BoxOutCode(vStart, vMinimum, vMaximum, nCode1);
+    SetOpCode(vStart, vMinimum, vMaximum, nCode1);
     if (nCode1 == 0)
         return -1;
 
     unsigned char nCode2;
-    BoxOutCode(vEnd, vMinimum, vMaximum, nCode2);
+    SetOpCode(vEnd, vMinimum, vMaximum, nCode2);
     if ((nCode2 & nCode1) != 0)
         return 0;
 

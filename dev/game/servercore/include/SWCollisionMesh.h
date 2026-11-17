@@ -110,10 +110,11 @@ public:
     float ZWorldToZLocal(float fZ);
     Vector LocalToWorld(const Vector& vPosition);
 
-    Vector GetUsePoint(int nUsePoint)
+    Vector GetActionPoint(int nUsePoint)
     {
         return LocalToWorld(m_avUsePoints[nUsePoint]);
     }
+    void SetActionPoint(int nIndex, const Vector& vPosition);
     Vector NormalLocalToWorld(const Vector& vPosition);
     Vector NormalWorldToLocal(const Vector& vPosition);
     void ComputeMeshNormals();
@@ -160,7 +161,6 @@ public:
     virtual int LoadMeshText(unsigned char*, unsigned long);
     CSWPlaceableSurfaceMesh();
     ~CSWPlaceableSurfaceMesh();
-    void SetUsePoint(int nIndex, const Vector& vPosition);
 };
 
 #endif

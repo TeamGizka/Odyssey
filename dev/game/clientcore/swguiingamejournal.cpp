@@ -712,7 +712,7 @@ void CSWGuiInGameJournal::OnPanelRemoved()
 #ifndef _XBOX
     if (m_pManager->PanelExists(m_pMessagesPanel))
     {
-        m_pMessagesPanel->SetModal(0);
+        m_pMessagesPanel->SetToBeRemoved(0);
     }
 #endif
     MarkNewQuestsObserved();

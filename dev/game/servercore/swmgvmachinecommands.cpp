@@ -15,7 +15,7 @@ int CSWTrackFollower::GetIsInvulnerable()
     return m_fInvincibilityRemaining > 0.0f;
 }
 // PC 0x006176D0 GOG 0x00617780
-void CSWMGGunBank::SetBankModel(const CResRef& sBank)
+void CSWMGGunBank::SetBulletModel(const CResRef& sBank)
 {
     m_resBank = sBank;
 }
@@ -941,7 +941,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankStringInfo(
             case 632:
             {
                 CResRef resBank(sModel);
-                pGunBank->SetBankModel(resBank);
+                pGunBank->SetBulletModel(resBank);
                 break;
             }
             case 633:

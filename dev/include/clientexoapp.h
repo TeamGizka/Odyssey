@@ -510,7 +510,7 @@ public:
     int AddMovieToMovieQueue(const CExoString& sMovie, int nFlags);
     int PlayMovieQueue(int nFlags);
     void PauseAllSoundsForMovieLostFocus();
-    void ResumeAllStreamingMusicForMovie();
+    void ResumeStreamMusicForMovie();
     int GetSoundPausedByCombat();
     void SetSoundPausedByCombat(int nPaused);
     void ClearMainMenuPointer();

@@ -184,7 +184,7 @@ public:
     void SetCharacter(CSWCCreature*);
     void ShutdownCleanup();
     void UpdateSlotLocks();
-    int IsSlotLocked(int nSlot);
+    int GetSlotLockedBySLOTID(int nSlot);
     void OnPrevNPCClicked(CSWGuiControl*);
     void OnNextNPCClicked(CSWGuiControl*);
     void ShowDescription(int bShow);

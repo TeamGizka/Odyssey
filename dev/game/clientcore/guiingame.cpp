@@ -2459,7 +2459,7 @@ void CGuiInGame::SetSWGuiStatus(int nStatus, int bActive)
             if (bActive != 0)
             {
                 if (m_pGuiManager->PanelExists(m_pPausePanel) != 0)
-                    m_pPausePanel->SetModal(0);
+                    m_pPausePanel->SetToBeRemoved(0);
             }
         }
     }
@@ -3228,7 +3228,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)
                 else
                 {
                     if (m_pPausePanel != 0 && m_pGuiManager->PanelExists(m_pPausePanel) != 0)
-                        m_pPausePanel->SetModal(0);
+                        m_pPausePanel->SetToBeRemoved(0);
                 }
                 break;
             }
@@ -3236,7 +3236,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)
         else
         {
             if (m_pPausePanel != 0 && m_pGuiManager->PanelExists(m_pPausePanel) != 0)
-                m_pPausePanel->SetModal(0);
+                m_pPausePanel->SetToBeRemoved(0);
         }
         m_bPaused = bPaused;
     }
@@ -3275,7 +3275,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x00680700
                 else
                 {
                     if (m_pPausePanel != 0 && m_pGuiManager->PanelExists(m_pPausePanel) != 0)
-                        m_pPausePanel->SetModal(0);
+                        m_pPausePanel->SetToBeRemoved(0);
                 }
                 break;
             }
@@ -3284,7 +3284,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x00680700
         else
         {
             if (m_pPausePanel != 0 && m_pGuiManager->PanelExists(m_pPausePanel) != 0)
-                m_pPausePanel->SetModal(0);
+                m_pPausePanel->SetToBeRemoved(0);
             m_nPauseState = 0;
         }
         m_bPaused = bPaused;
@@ -3528,7 +3528,7 @@ void CGuiInGame::HideSoloMode()
         if (!m_bPaused)
             g_pAppManager->m_pClientExoApp->GetSWCMessage()->SendPlayerToServerInput_TogglePauseRequest();
         m_pGuiManager->PopModalPanel();
-        m_pSoloModeQuery->SetModal(0);
+        m_pSoloModeQuery->SetToBeRemoved(0);
 #ifdef _XBOX
         g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
 #else
@@ -5377,7 +5377,7 @@ int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x00683F10 GOG 0x00683CF0
                     ->SendPlayerToServerInput_TogglePauseRequest();
             }
             if (bHidePause != 0 && m_pGuiManager->PanelExists(m_pPausePanel))
-                m_pPausePanel->SetModal(0);
+                m_pPausePanel->SetToBeRemoved(0);
 
             m_pBarkBubble->Resume();
 
@@ -6236,14 +6236,14 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                 {
                     if (pServerObject != 0 && pServerObject->AsSWSCreature() != 0)
                         pServerObject->AsSWSCreature()->SetOrientation(vOrientation);
-                    pSecond->AsSWCCreature()->SetDesiredOrientation(vOrientation);
+                    pSecond->AsSWCCreature()->SetDesiredStationaryOrientation(vOrientation);
                     pSecond->AsSWCCreature()->SetOrientation(vOrientation);
                 }
                 else
                 {
                     if (pServerObject != 0 && pServerObject->AsSWSCreature() != 0)
                         pServerObject->AsSWSCreature()->SetOrientation(vDirection);
-                    pSecond->AsSWCCreature()->SetDesiredOrientation(vDirection);
+                    pSecond->AsSWCCreature()->SetDesiredStationaryOrientation(vDirection);
                     pSecond->AsSWCCreature()->SetOrientation(vDirection);
                 }
             }
@@ -6288,14 +6288,14 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                 {
                     if (pServerObject != 0 && pServerObject->AsSWSCreature() != 0)
                         pServerObject->AsSWSCreature()->SetOrientation(vOrientation);
-                    pFirst->AsSWCCreature()->SetDesiredOrientation(vOrientation);
+                    pFirst->AsSWCCreature()->SetDesiredStationaryOrientation(vOrientation);
                     pFirst->AsSWCCreature()->SetOrientation(vOrientation);
                 }
                 else
                 {
                     if (pServerObject != 0 && pServerObject->AsSWSCreature() != 0)
                         pServerObject->AsSWSCreature()->SetOrientation(-vDirection);
-                    pFirst->AsSWCCreature()->SetDesiredOrientation(-vDirection);
+                    pFirst->AsSWCCreature()->SetDesiredStationaryOrientation(-vDirection);
                     pFirst->AsSWCCreature()->SetOrientation(-vDirection);
                 }
             }
@@ -6464,7 +6464,7 @@ int CGuiInGame::CloseDialog()
             }
             else
             {
-                m_pDialog->SetModal(1);
+                m_pDialog->SetToBeRemoved(1);
                 m_pComputerDialog = 0;
             }
         }
