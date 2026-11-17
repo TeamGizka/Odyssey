@@ -10,6 +10,9 @@
 #include "swmain.h"
 #include "worldtimer.h"
 #include "resgff.h"
+#include "math3d.h"
+#include "nwseffect.h"
+#include "twodimarray.h"
 // PC 0x004F4460 GOG 0x00503C50
 CSWSpell* CSWRules::GetSpell(int nSpell)
 {
@@ -17,11 +20,9 @@ CSWSpell* CSWRules::GetSpell(int nSpell)
 }
 #include "twodimarrays.h"
 
-#include "math3d.h"
 #include "pathfindinfo.h"
 #include "serverexoapp.h"
 #include "nwsexpression.h"
-#include "nwseffect.h"
 #include "nwscombatround.h"
 #include "guiingame.h"
 #include "nwcmodule.h"
@@ -40,7 +41,6 @@ CSWSpell* CSWRules::GetSpell(int nSpell)
 #include "exotlktable.h"
 #include "nwitem.h"
 #include "nwscript.h"
-#include "twodimarray.h"
 #include "swparty.h"
 #include "clientexoappinternal.h"
 #include "nwclass.h"

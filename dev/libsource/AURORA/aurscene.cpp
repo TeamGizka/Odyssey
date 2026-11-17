@@ -8,6 +8,8 @@
 #include <aurpointer.h>
 #include "aurtexman.h"
 #include "aurpointer.h"
+#include <string.h>
+#include "aurlist.h"
 
 #ifndef _XBOX
 // Dead code: not in the PC executable
@@ -216,7 +218,6 @@ char Scene::IsAnimating()
 #include "aurtrigger.h"
 #include "aurscenemanager.h"
 #include "aurconsole.h"
-#include <string.h>
 #include <math.h>
 #include "aurprimitive.h"
 #include "aurlightmanager.h"
@@ -3541,9 +3542,6 @@ void CHitInfo::ClearOutput()
     m_nOutputType = -1;
 }
 
-#include "aurlist.h"
-
-#include <stdlib.h>
 
 Vector Scene::m_vLastCameraPosition;
 Quaternion Scene::m_qLastCameraOrientation;

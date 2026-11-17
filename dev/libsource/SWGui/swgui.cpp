@@ -7,6 +7,7 @@
 #include "clientexoapp.h"
 #include "clientoptions.h"
 #include <string.h>
+#include "twodimarray.h"
 
 
 int g_bDrawSafeRegion = 0;
@@ -118,7 +119,6 @@ CExoString CSWGuiPanel::GetFullScreenBG()
 #include "nwccreature.h"
 #include "nwcanimbase.h"
 
-#include "twodimarray.h"
 #include "clientexoappinternal.h"
 #include "aurora.h"
 #include "aurcamera.h"
