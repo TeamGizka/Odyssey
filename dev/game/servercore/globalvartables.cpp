@@ -782,6 +782,17 @@ int CSWGlobalVariableTable::ReadTable(const CExoString& sFileName)
     delete pRes;
     return 1;
 }
+
+// Dead code: not in the PC executable
+void CSWGlobalVariableTable::GetPerformanceInfo(int& nIdentifiers, int& nCollisions,
+                                                int& nAverageCollisionSteps,
+                                                int& nMaximumCollisionSteps)
+{
+    nIdentifiers = m_nBooleanCount + m_nNumberCount + m_nLocationCount;
+    nCollisions = m_nCollisions;
+    nMaximumCollisionSteps = m_nMaximumCollisionSteps;
+    nAverageCollisionSteps = m_nCollisionSteps / nIdentifiers;
+}
 // PC 0x005AC600 GOG 0x005AC670
 void CSWGlobalVariableTable::Save(const CExoString& sDirectory)
 {

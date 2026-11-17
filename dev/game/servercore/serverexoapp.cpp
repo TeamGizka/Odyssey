@@ -69,6 +69,12 @@ CExoString CServerExoApp::GetMoveToModuleString()
 {
     return m_pcExoAppInternal->m_sMoveToModule;
 }
+
+// Dead code: not in the PC executable
+int CServerExoApp::GetExportAllCharactersPending()
+{
+    return m_pcExoAppInternal->m_bExportAllCharactersPending;
+}
 // PC 0x004DBED0 GOG 0x004DC5B0
 void CServerExoApp::SetExportAllCharactersPending(int bPending)
 {
@@ -304,6 +310,12 @@ void CServerExoApp::PlayerListChange(unsigned long nPlayerId, int bAdded,
 {
     m_pcExoAppInternal->PlayerListChange(nPlayerId, bAdded, bGuaranteed);
 }
+
+// Dead code: not in the PC executable
+void CServerExoApp::DumpServerOptionsToLog()
+{
+    m_pcExoAppInternal->DumpServerOptionsToLog();
+}
 // PC 0x004DC1C0 GOG 0x004DC140
 int CServerExoApp::ContinueMessageProcessing()
 {
@@ -510,6 +522,19 @@ CSWGlobalVariableTable* CServerExoApp::GetGlobalVariableTable()
 }
 
 // Dead code: not in the PC executable
+int CServerExoApp::DebugValidatePath_Point(CSWSArea* pArea, const Vector& vPoint)
+{
+    return m_pcExoAppInternal->DebugValidatePath_Point(pArea, vPoint);
+}
+
+// Dead code: not in the PC executable
+int CServerExoApp::DebugValidatePath_Segment(CSWSArea* pArea, CPathfindInformation* pPathfind,
+                                             const Vector& vStart, const Vector& vEnd)
+{
+    return m_pcExoAppInternal->DebugValidatePath_Segment(pArea, pPathfind, vStart, vEnd);
+}
+
+// Dead code: not in the PC executable
 void CServerExoApp::SetCreatureFollowing(unsigned long oidCreature,
                                          unsigned long oidTarget, int bRun,
                                          const Vector& vDestination)
@@ -660,6 +685,12 @@ int CServerExoApp::IsActionsPending(unsigned long oidObject)
 {
     return m_pcExoAppInternal->IsActionsPending(oidObject);
 }
+
+// Dead code: not in the PC executable
+class CSWSRoom* CServerExoApp::GetRoom(const CResRef& cAreaResRef, const Vector& vPosition)
+{
+    return m_pcExoAppInternal->GetModule()->GetArea()->GetRoom(vPosition, NULL);
+}
 // PC 0x004DC5C0 GOG 0x004DC3A0
 int CServerExoApp::GetRoomIndex(const CResRef& cAreaResRef,
                                 const Vector& vPosition, int nFlags)
@@ -717,6 +748,12 @@ void CServerExoApp::SetIgnoreConversationStartRange(int bIgnore)
 int CServerExoApp::GetIgnoreConversationStartRange()
 {
     return m_pcExoAppInternal->m_bIgnoreConversationStartRange;
+}
+
+// Dead code: not in the PC executable
+void CServerExoApp::RunDeathSequence()
+{
+    m_pcExoAppInternal->RunDeathSequence();
 }
 #ifndef _XBOX
 int CServerExoApp::TestSafeLocation(unsigned long oidObject,  // PC 0x004DC6A0 GOG 0x004DC400
@@ -818,10 +855,29 @@ void CServerExoApp::GetMoveToWorldTime(
     m_pcExoAppInternal->GetMoveToWorldTime(
         nCalendarDay, nHour, nMinute, nSecond, nMillisecond, nYear, nMonth);
 }
+
+// Dead code: not in the PC executable
+unsigned long CServerExoApp::GetAutoSaveTimer()
+{
+    return m_pcExoAppInternal->m_nAutoSaveElapsedTime;
+}
+
+// Dead code: not in the PC executable
+void CServerExoApp::SetAutoSaveTimer(unsigned long nTimer, int bReset)
+{
+    m_pcExoAppInternal->m_nAutoSaveElapsedTime = nTimer;
+    m_pcExoAppInternal->m_bAutoSaveTimerExpired = bReset;
+}
 // PC 0x004DC7C0 GOG 0x004DC490
 int CServerExoApp::GetModulePreviouslyVisited(const CExoString& sModule)
 {
     return m_pcExoAppInternal->GetModulePreviouslyVisited(sModule);
+}
+
+// Dead code: not in the PC executable
+int CServerExoApp::HasEnoughDiskSpaceForSaveGame()
+{
+    return m_pcExoAppInternal->HasEnoughDiskSpaceForSaveGame();
 }
 // PC 0x004DC7D0 GOG 0x004DC4A0
 int CServerExoApp::ExecuteLoadModule(const CExoString& sModule)

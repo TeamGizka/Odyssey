@@ -8810,6 +8810,12 @@ void CSWSCreature::SetChemical(int nChemical)
 
     m_nChemical = nChemical;
 }
+
+// Dead code: not in the PC executable
+void CSWSCreature::PayToIdentifyItem(unsigned long oidItem)
+{
+    CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
+}
 // PC 0x0050E8E0 GOG 0x0050E940
 int CSWSCreature::DecrementSpellReadyCount(unsigned long nSpell,
                                            unsigned char nClass,
@@ -12749,6 +12755,27 @@ int CSWSCreature::GetForceItemMask()
         }
     }
     return nMask;
+}
+
+// Dead code: not in the PC executable
+int CSWSCreature::GetHasPlotItemUseableOnObject()
+{
+    CItemRepository* pRepository = GetItemRepository(1);
+    for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
+    {
+        CSWItemProperty* pProperty;
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != NULL && pItem->m_bPlotObject &&
+            pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))
+        {
+            CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(pProperty->m_nSubtype);
+            if (pSpell != NULL && pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PLACEABLE)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 // PC 0x005103B0 GOG 0x00510410
 CSWCCreature* CSWSCreature::GetClientCreature()

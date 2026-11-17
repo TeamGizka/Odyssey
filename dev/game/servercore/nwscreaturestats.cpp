@@ -363,6 +363,17 @@ int CSWSCreatureStats::GetMeleeDamageBonus(int bOffHand)
     }
     return nDamageBonus;
 }
+
+// Dead code: not in the PC executable
+unsigned char CSWSCreatureStats::GetTotalArcaneSpellFailure()
+{
+    int nFailure = m_nArcaneSpellFailure + m_nBaseArmorArcaneSpellFailure + m_nBaseShieldArcaneSpellFailure;
+    if (nFailure > 100)
+    {
+        nFailure = 100;
+    }
+    return nFailure;
+}
 // PC 0x005F0CA0 GOG 0x005F0C80
 int CSWSCreatureStats::GetRangedAttackBonus(int bOffHand, int bIncludeBase,
                                             int bTouchAttack)
@@ -1044,6 +1055,12 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
         pAttack->m_Flags.m_nDebilitatedModifier = -SW_DEBILITATED_AC_PENALTY;
     }
     return nAC;
+}
+
+// Dead code: not in the PC executable
+char CSWSCreatureStats::GetTotalACNaturalMod()
+{
+    return m_nACNaturalBonus - m_nACNaturalPenalty + GetACNaturalBase();
 }
 // PC 0x005F8F90 GOG 0x005F8F70
 void CSWSCreatureStats::UpdateCombatInformation()
@@ -5655,6 +5672,12 @@ CExoString& CSWSCreatureStats::GetTag()
 {
     return m_pCreature->GetTag();
 }
+
+// Dead code: not in the PC executable
+void CSWSCreatureStats::SetDialog(const CResRef& cDialog)
+{
+    m_cConversation = cDialog;
+}
 // PC 0x005FD2A0 GOG 0x005FD280
 void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
 {
@@ -7965,6 +7988,45 @@ int CSWSCreatureStats::AdjustFPAccumulatorBy(float fAdjustment)
                                                 : ceil(m_fFPAccumulator));
     m_fFPAccumulator -= (short)nAdjustment;
     return nAdjustment;
+}
+
+// Dead code: not in the PC executable
+int CSWSCreatureStats::HasForcePowerRequirments(unsigned long nSpell)
+{
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    if (pSpell == NULL)
+    {
+        return 0;
+    }
+    CExoString sPrerequisites = pSpell->m_sPrerequisites;
+    if (m_bIsPC && pSpell->m_nUserType != CSWSpell::USERTYPE_MONSTERPOWER)
+    {
+        return 0;
+    }
+    unsigned long nPrereq;
+    for (int i = 0; (nPrereq = pSpell->m_aMasterSpells[i]) != CSWSpell::SPELL_INVALID; ++i)
+    {
+        if (!HasSpell(0, nPrereq, 1))
+        {
+            return 0;
+        }
+    }
+    for (int i = 0; (nPrereq = pSpell->m_aPrerequisites[i]) != CSWSpell::SPELL_INVALID; ++i)
+    {
+        if (!HasSpell(0, nPrereq, 1))
+        {
+            return 0;
+        }
+    }
+    for (int nClass = 0; nClass < m_nClassCount; nClass++)
+    {
+        unsigned char nSpellLevel = pSpell->GetSpellLevel(GetClass(nClass));
+        if (nSpellLevel != CSWSpell::SPELL_LEVEL_INVALID && nSpellLevel > GetClassLevel(nClass, 0))
+        {
+            return 0;
+        }
+    }
+    return 1;
 }
 // PC 0x005EE460 GOG 0x005EE440
 void CSWSCreatureStats::AddClass(unsigned char nClass, unsigned char nLevel)

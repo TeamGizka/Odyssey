@@ -409,6 +409,26 @@ void CSWCollisionMesh::SetVertexCount(int nCount)
     m_nVertexCount = nCount;
     m_pVertices = new Vector[nCount];
 }
+
+// Dead code: not in the PC executable
+float CSWCollisionMesh::ZLocalToZWorld(float fZ)
+{
+    if (m_nType != 0)
+    {
+        return fZ;
+    }
+    return fZ + m_vPosition.m_fZ + m_vWorldPosition.m_fZ;
+}
+
+// Dead code: not in the PC executable
+Vector CSWCollisionMesh::NormalWorldToLocal(const Vector& vPosition)
+{
+    if (m_nType != 0)
+    {
+        return vPosition;
+    }
+    return -m_qOrientation * vPosition;
+}
 // PC 0x005577B0 GOG 0x00557540
 Vector CSWCollisionMesh::WorldToLocal(const Vector& vPosition)
 {
@@ -1370,4 +1390,10 @@ int CSWCollisionMesh::RenderMesh(int nFlag, unsigned long nColor,
         }
     }
     return nFaceCount;
+}
+
+// Dead code: not in the PC executable
+void CSWCollisionMesh::SetMesh(const CResRef& cResRef)
+{
+    m_cResRef = cResRef;
 }

@@ -2705,6 +2705,12 @@ int CSWSObject::SendDialogEntry(unsigned long nEntry)
     }
     return 1;
 }
+
+// Dead code: not in the PC executable
+void CSWSObject::SendDialogModels(unsigned long oidPlayer)
+{
+    m_pDialog->SendDialogModels(this, oidPlayer);
+}
 // PC 0x004F70F0 GOG 0x005068E0
 int CSWSObject::SendDialogReplies()
 {
@@ -3830,10 +3836,22 @@ void CSWSObject::SetLastHostileActor(unsigned long oidActor, int bForce)
         }
     }
 }
+
+// Dead code: not in the PC executable
+int CSWSObject::AnimationPause(unsigned short nAnimation)
+{
+    return nAnimation == 10000 || nAnimation == 10092;
+}
 // PC 0x004F5DB0 GOG 0x005055A0
 int CSWSObject::AnimationWalking(unsigned short nAnimation)
 {
     return nAnimation == 10002 || nAnimation == 10093 || nAnimation == 10133;
+}
+
+// Dead code: not in the PC executable
+int CSWSObject::AnimationRunning(unsigned short nAnimation)
+{
+    return nAnimation == 10004 || nAnimation == 10094;
 }
 // PC 0x004F5DE0 GOG 0x005055D0
 void CSWSObject::SetDirtyFlag(unsigned long nFlag)

@@ -4327,6 +4327,178 @@ int CSWSMessage::SendServerToPlayerGameObjUpdate_ObjControl(
     }
     return SendServerToPlayerMessage(nPlayerId, 5, 2, pMessage, nMessageSize);
 }
+
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerDialogEntry(unsigned long nPlayerId, unsigned long oidTarget,
+                                               unsigned long oidSpeaker, unsigned long oidListener,
+                                               unsigned long oidCamera, unsigned char nGender,
+                                               CExoLocString& sText, unsigned long nAnimations,
+                                               unsigned long* pAnimationObjects,
+                                               unsigned short* pAnimations,
+                                               unsigned long nCameraAngle, int nCameraId,
+                                               float fCameraHeight, float fTargetHeight,
+                                               unsigned long oidCameraTarget,
+                                               unsigned short nCameraAnimation, float fFieldOfView,
+                                               unsigned char nFadeType, Vector vFadeColor,
+                                               float fFadeDelay, float fFadeLength)
+{
+    unsigned long nMessageSize;
+    unsigned char* pMessage = NULL;
+    unsigned long i;
+
+    nMessageSize = nAnimations * 6 + 47;
+    if (nFadeType != 0)
+    {
+        nMessageSize += 20;
+    }
+    CreateWriteMessage(nMessageSize, nPlayerId, 1);
+    WriteOBJECTIDServer(oidTarget);
+    WriteOBJECTIDServer(oidSpeaker);
+    WriteOBJECTIDServer(oidListener);
+    WriteOBJECTIDServer(oidCamera);
+    WriteCExoLocStringServer(sText, nGender);
+    WriteDWORD(nAnimations, 32);
+    for (i = 0; i < nAnimations; i++)
+    {
+        WriteOBJECTIDServer(pAnimationObjects[i]);
+        WriteWORD(pAnimations[i], 16);
+    }
+    WriteDWORD(nCameraAngle, 32);
+    WriteINT(nCameraId, 32);
+    WriteFLOAT(fCameraHeight, 1.0f, 32);
+    WriteFLOAT(fTargetHeight, 1.0f, 32);
+    WriteDWORD(oidCameraTarget, 32);
+    WriteWORD(nCameraAnimation, 16);
+    WriteFLOAT(fFieldOfView, 1.0f, 32);
+    WriteBYTE(nFadeType, 8);
+    if (nFadeType != 0)
+    {
+        WriteFLOAT(vFadeColor.m_fX, 1.0f, 32);
+        WriteFLOAT(vFadeColor.m_fY, 1.0f, 32);
+        WriteFLOAT(vFadeColor.m_fZ, 1.0f, 32);
+        WriteFLOAT(fFadeDelay, 1.0f, 32);
+        WriteFLOAT(fFadeLength, 1.0f, 32);
+    }
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_DIALOG, 1, pMessage, nMessageSize);
+}
+
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerDialogReplies(unsigned long oidPlayer, unsigned long oidSpeaker,
+                                                 unsigned char nComputerType, CExoLocString* psText,
+                                                 unsigned long* pnReplyIndex,
+                                                 unsigned long* poidListener,
+                                                 unsigned long* pnCameraAngle, int* pnCameraId,
+                                                 float* pfCameraHeight, float* pfTargetHeight,
+                                                 unsigned long* pnWaitFlags,
+                                                 unsigned short* pnCameraAnimation,
+                                                 float* pfFieldOfView, unsigned char* pnFadeType,
+                                                 Vector* pvFadeColor, float* pfFadeDelay,
+                                                 float* pfFadeLength, unsigned long nEntries,
+                                                 unsigned long nReplies,
+                                                 unsigned long nReplyContext,
+                                                 unsigned long* pnAnimations,
+                                                 unsigned long** ppnAnimationIDs,
+                                                 unsigned short** ppnAnimationFlags,
+                                                 int bEndOfDialog)
+{
+    unsigned long nMessageSize;
+    unsigned char* pMessage = NULL;
+    unsigned long i;
+
+    nMessageSize = 12;
+    for (i = 0; i < nEntries + nReplies; i++)
+    {
+        nMessageSize += pnAnimations[i] * 6 + 59;
+    }
+    CreateWriteMessage(nMessageSize, oidPlayer, 1);
+    WriteDWORD(nReplyContext, 32);
+    WriteBYTE(bEndOfDialog != 0, 8);
+    WriteOBJECTIDServer(oidSpeaker);
+    WriteDWORD(nEntries, 32);
+    WriteDWORD(nReplies, 32);
+    for (i = 0; i < nEntries + nReplies; i++)
+    {
+        WriteCExoLocStringServer(psText[i], nComputerType);
+        WriteDWORD(pnReplyIndex[i], 32);
+        WriteOBJECTIDServer(poidListener[i]);
+        WriteDWORD(pnCameraAngle[i], 32);
+        WriteINT(pnCameraId[i], 32);
+        WriteFLOAT(pfCameraHeight[i], 1.0f, 32);
+        WriteFLOAT(pfTargetHeight[i], 1.0f, 32);
+        WriteDWORD(pnWaitFlags[i], 32);
+        WriteWORD(pnCameraAnimation[i], 16);
+        WriteFLOAT(pfFieldOfView[i], 1.0f, 32);
+        WriteBYTE(pnFadeType[i], 8);
+        WriteFLOAT(pvFadeColor[i].m_fX, 1.0f, 32);
+        WriteFLOAT(pvFadeColor[i].m_fY, 1.0f, 32);
+        WriteFLOAT(pvFadeColor[i].m_fZ, 1.0f, 32);
+        WriteFLOAT(pfFadeDelay[i], 1.0f, 32);
+        WriteFLOAT(pfFadeLength[i], 1.0f, 32);
+        WriteDWORD(pnAnimations[i], 32);
+        for (int j = 0; j < (int)pnAnimations[i]; j++)
+        {
+            WriteOBJECTIDServer(ppnAnimationIDs[i][j]);
+            WriteWORD(ppnAnimationFlags[i][j], 16);
+        }
+    }
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    return SendServerToPlayerMessage(oidPlayer, MESSAGE_DIALOG, 2, pMessage, nMessageSize);
+}
+
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerDialogReplyChosen(unsigned long oidSpeaker, unsigned long nReply,
+                                                     unsigned long nReplyCount,
+                                                     CExoLocString& sText, unsigned long nSound,
+                                                     unsigned char nFlags, int bSelected)
+{
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    nMessageSize = 17;
+    CreateWriteMessage(17, oidSpeaker, 1);
+    WriteBYTE(bSelected != 0, 8);
+    WriteDWORD(nReply, 32);
+    WriteDWORD(nReplyCount, 32);
+    WriteOBJECTIDServer(nSound);
+    WriteCExoLocStringServer(sText, nFlags);
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    return SendServerToPlayerMessage(oidSpeaker, MESSAGE_DIALOG, 4, pMessage, nMessageSize);
+}
+
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerDialogModels(unsigned long oidPlayer, unsigned long nModels,
+                                                unsigned long* pObjectIds, CResRef* pModels,
+                                                const CResRef& cCameraModel)
+{
+    unsigned long nMessageSize;
+    unsigned char* pMessage = NULL;
+    unsigned long i;
+
+    nMessageSize = nModels * 20 + 20;
+    CreateWriteMessage(nMessageSize, oidPlayer, 1);
+    WriteDWORD(nModels, 32);
+    for (i = 0; i < nModels; i++)
+    {
+        WriteOBJECTIDServer(pObjectIds[i]);
+        WriteCResRef(pModels[i], 16);
+    }
+    WriteCResRef(cCameraModel, 16);
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    return SendServerToPlayerMessage(oidPlayer, MESSAGE_DIALOG, 6, pMessage, nMessageSize);
+}
 // PC 0x00594380 GOG 0x005943F0
 void CSWSMessage::WriteGameObjUpdate_CharacterSheet(CSWSPlayer* pPlayer,
                                                   unsigned long nUpdateMask)
@@ -4569,6 +4741,24 @@ int CSWSMessage::SendServerToPlayerInventory_EquipCancel(
     SendServerToPlayerMessage(nPlayerId, MESSAGE_INVENTORY, 2, pMessage, nMessageSize);
     g_pAppManager->m_pServerExoApp->GetClientObjectByPlayerId(nPlayerId, 0);
     return 1;
+}
+
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerInventory_ConfirmDrop(unsigned long oidObject,
+                                                         unsigned long oidTarget)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDServer(oidTarget);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(oidObject, MESSAGE_INVENTORY, 15, pMessage, nMessageSize);
 }
 // PC 0x00594B40 GOG 0x00594BB0
 int CSWSMessage::SendServerToPlayerInventory_Pickup(unsigned long nPlayerId,
@@ -6009,6 +6199,24 @@ int CSWSMessage::SendServerToPlayerGuiContainerObject_Open(
     nPlayerId = pPlayer->m_nPlayerId;
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_GUI_CONTAINER, 1, pMessage, nMessageSize);
 }
+
+// Dead code: not in the PC executable
+int CSWSMessage::SendPlayerToServerGuiInventory_Status(CSWSPlayer* pPlayer, int nStatus)
+{
+    unsigned long nPlayerId;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    nMessageSize = 1;
+    CreateWriteMessage(1, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(nStatus == 1, 8);
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    nPlayerId = pPlayer->m_nPlayerId;
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_GUI_INVENTORY, 1, pMessage, nMessageSize);
+}
 // PC 0x0058ED50 GOG 0x0058EDD0
 int CSWSMessage::SendServerPlayerItemUpdate_DestroyItem(CSWSPlayer* pPlayer,
                                                         unsigned long oidItem)
@@ -6075,6 +6283,26 @@ int CSWSMessage::SendServerToPlayerJournalRemoveQuest(
     }
     nPlayerId = pPlayer->m_nPlayerId;
     return SendServerToPlayerMessage(nPlayerId, MESSAGE_JOURNAL, 7, pMessage, nMessageSize);
+}
+
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerJournalSetQuestPicture(CSWSPlayer* pPlayer,
+                                                          const CExoString& sTag, int nPicture)
+{
+    unsigned long nPlayerId;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    nMessageSize = sTag.GetLength() + 4;
+    CreateWriteMessage(nMessageSize, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sTag, 32);
+    WriteINT(nPicture, 32);
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    nPlayerId = pPlayer->m_nPlayerId;
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_JOURNAL, 8, pMessage, nMessageSize);
 }
 // PC 0x0058EF50 GOG 0x0058EFD0
 int CSWSMessage::SendServerToPlayerJournalAddWorld(
