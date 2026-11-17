@@ -18,6 +18,7 @@
 #include "nwrules.h"
 #include "nwcanimbase.h"
 #include "nwccreature.h"
+#include "nwmessage.h"
 
 #define NWSCOMBATROUND_DEBUG 0
 
@@ -79,6 +80,17 @@ void CSWSCombatAttackData::ResolveAttackToMeleeSubAttack(
 
     m_lstSubAttacks.Add(subAttack);
 }
+
+// Dead code: not in the PC executable
+void CSWSCombatAttackData::AddMeleeSubAttack(unsigned long nAnimationTime)
+{
+    CSWSCombatSubAttack subAttack;
+
+    subAttack.m_nAnimationTime = nAnimationTime;
+    subAttack.m_bRangedAttack = 0;
+
+    m_lstSubAttacks.Add(subAttack);
+}
 // PC 0x0052B060 GOG 0x0052B140
 void CSWSCombatAttackData::ResolveAttackToRangedSubAttack(
     int nAttackNumber, unsigned long nAnimationTime, int bAttack, int bHit,
@@ -109,6 +121,27 @@ void CSWSCombatAttackData::ResolveAttackToRangedSubAttack(
     subAttack.m_Flags = m_Flags;
     subAttack.m_DamageBreakdown = m_DamageBreakdown;
     subAttack.m_EffectBreakdown = m_EffectBreakdown;
+
+    m_lstSubAttacks.Add(subAttack);
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatAttackData::AddRangedSubAttack(int nAttackNumber, unsigned char nAttackResult,
+                                              unsigned long nAnimationTime, int bHit,
+                                              Vector vRangedTarget,
+                                              unsigned long nReactionDelay,
+                                              int nDischargeHand)
+{
+    CSWSCombatSubAttack subAttack;
+
+    subAttack.m_nAttackNumber = nAttackNumber;
+    subAttack.m_nAttackResult = nAttackResult;
+    subAttack.m_nAnimationTime = nAnimationTime;
+    subAttack.m_bHit = bHit;
+    subAttack.m_vRangedTarget = vRangedTarget;
+    subAttack.m_nReactionDelay = nReactionDelay;
+    subAttack.m_nDischargeHand = nDischargeHand;
+    subAttack.m_bRangedAttack = 1;
 
     m_lstSubAttacks.Add(subAttack);
 }
@@ -547,6 +580,19 @@ void CSWSCombatRound::ClearAllSpecialAttacks()
     }
 
     m_lstSpecialAttacks.SetSize(0);
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::AddReaction(int nReactionDelay, int nAnimationTime, int nPosition)
+{
+    if (m_bRoundStarted != 0)
+    {
+        CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+        pAction->m_nActionType = CSWSCombatRoundAction::ACTION_PAUSE;
+        pAction->m_nActionTimer = m_nTimer + nReactionDelay;
+        pAction->m_nAnimationTime = nAnimationTime;
+        AddAction(pAction, nPosition);
+    }
 }
 // PC 0x0052A520 GOG 0x0052A600
 CSWSItem* CSWSCombatRound::GetCurrentAttackWeapon(int nAttackType)
@@ -1069,6 +1115,15 @@ void CSWSCombatAttackData::RemoveTopSubAttack()
         m_lstSubAttacks.DelIndex(0);
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSCombatAttackData::ClearSubAttacks()
+{
+    while (m_lstSubAttacks.num > 0)
+    {
+        RemoveTopSubAttack();
+    }
+}
 // PC 0x00528690 GOG 0x00528710
 CSWSCombatSubAttack::CSWSCombatSubAttack()
 {
@@ -1132,6 +1187,22 @@ void CSWSCombatRound::DecrementRoundLength(int nAmount, int bClamp)
         m_nRoundLength -= nAmount;
     }
 }
+
+// Dead code: not in the PC executable
+int CSWSCombatRound::CheckActionLength(unsigned long oidAction, int nLength)
+{
+    if (m_bRoundPaused == 1 && m_oidRoundPausedBy != oidAction)
+    {
+        return 0;
+    }
+
+    if (m_bRoundStarted != 1)
+    {
+        return 1;
+    }
+
+    return (m_nRoundLength - m_nTimer - m_nOverlapAmount + 1000) >= nLength;
+}
 // PC 0x00528900 GOG 0x00528980
 int CSWSCombatRound::GetActionPending()
 {
@@ -1140,6 +1211,25 @@ int CSWSCombatRound::GetActionPending()
            m_nTimer >=
                m_pScheduledActions->GetAtPos(m_pScheduledActions->GetHeadPos())
                    ->m_nActionTimer;
+}
+
+// Dead code: not in the PC executable
+int CSWSCombatRound::GetAttackActionPending()
+{
+    if (m_pScheduledActions != NULL)
+    {
+        CExoLinkedListNode* pPos = m_pScheduledActions->GetHeadPos();
+        if (pPos != NULL)
+        {
+            CSWSCombatRoundAction* pAction = m_pScheduledActions->GetAtPos(pPos);
+            if (m_nTimer >= pAction->m_nActionTimer &&
+                pAction->m_nActionType == CSWSCombatRoundAction::ACTION_ATTACK)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 // PC 0x00528940 GOG 0x005289C0
 int CSWSCombatRound::GetSpellActionPending()
@@ -1310,6 +1400,76 @@ void CSWSCombatRound::ClearAllAttacks()
     for (int i = 0; i < 5; i++)
     {
         GetAttack(i)->ClearAttackData();
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::SetDeflectArrow(int bDeflectArrow)
+{
+    m_bDeflectArrow = bDeflectArrow;
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::SignalCombatRoundStarted()
+{
+    CSWSPlayer* pPlayer =
+        g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(m_pBaseCreature->m_nId);
+    if (pPlayer != NULL)
+    {
+        g_pAppManager->m_pServerExoApp->GetSWSMessage()->SendServerToPlayerCombatRoundStarted(pPlayer);
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::StartCombatRoundCast(int nSpellId, int nRound, unsigned long oidTarget,
+                                           int bEngaged, int bMaster)
+{
+    if (m_bRoundStarted == 0)
+    {
+        m_bRoundStarted = 1;
+        m_bSpellCastRound = 1;
+        m_nSpellCastRound = nRound;
+        m_nTimer = 0;
+        m_nRoundLength = 3000;
+        m_bEngaged = bEngaged;
+        m_bMaster = bMaster;
+
+        if (m_bMaster != 0)
+        {
+            m_oidMaster = m_pBaseCreature->m_nId;
+            if (oidTarget != OBJECT_INVALID && m_bEngaged != 0)
+            {
+                m_oidMasterTarget = oidTarget;
+                CSWSCreature* pTarget =
+                    g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
+                        oidTarget);
+                pTarget->m_pcCombatRound->m_oidMaster = m_oidMaster;
+                pTarget->m_pcCombatRound->m_oidMasterTarget = m_oidMasterTarget;
+                pTarget->m_pcCombatRound->m_nTimer = 0;
+            }
+        }
+        else
+        {
+            m_oidMaster = oidTarget;
+        }
+
+        m_bRoundPaused = 0;
+        m_oidRoundPausedBy = OBJECT_INVALID;
+        m_nPauseTimer = 0;
+        m_pBaseCreature->m_nCombatMode = 4;
+        m_pBaseCreature->m_nCombatSpellId = nSpellId;
+        AddSpellAction();
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::AddSpellAction()
+{
+    if (m_bRoundStarted != 0)
+    {
+        CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+        pAction->m_nActionType = 2;
+        AddAction(pAction, ACTION_POSITION_BY_TIME);
     }
 }
 // PC 0x00528C30 GOG 0x00528CB0
@@ -1507,6 +1667,139 @@ void CSWSCombatRound::RemoveSpellAction()
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::AddParryAttack(unsigned long oidTarget)
+{
+    CExoLinkedListNode* pPos = m_pScheduledActions->GetHeadPos();
+    int nActionTimer;
+    if (m_pScheduledActions != NULL)
+    {
+        if (!m_pScheduledActions->IsEmpty())
+        {
+            nActionTimer = m_pScheduledActions->GetHead()->m_nActionTimer - 1;
+        }
+        else
+        {
+            nActionTimer = 0;
+        }
+    }
+
+    int nAnimationTime = 750 * (unsigned char)GetTotalAttacks() + 500;
+    if (nAnimationTime > 3000)
+    {
+        nAnimationTime = 3000;
+    }
+    nAnimationTime = (int)(nAnimationTime / (((unsigned char)GetTotalAttacks() - 3) * 0.5f + 3.0f));
+    DecrementRoundLength(nAnimationTime, 1);
+
+    CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+    pAction->m_nActionTimer = nActionTimer;
+    pAction->m_nAnimation = ATTACK_ANIMATION_DEFAULT;
+    pAction->m_nAnimationTime = nAnimationTime;
+    pAction->m_nNumAttacks = 1;
+    pAction->m_oidTarget = oidTarget;
+    pAction->m_bRetargettable = 0;
+    pAction->m_nActionType = CSWSCombatRoundAction::ACTION_ATTACK;
+
+    if (pPos != NULL)
+    {
+        m_pScheduledActions->AddBefore(pAction, pPos);
+    }
+    else
+    {
+        m_pScheduledActions->AddTail(pAction);
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::AddParryIndex()
+{
+    if (m_bRoundStarted != 0)
+    {
+        CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+        pAction->m_nActionType = 8;
+        AddAction(pAction, ACTION_POSITION_BY_TIME);
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::AddCleaveAttack(unsigned long oidTarget)
+{
+    CExoLinkedListNode* pPos = m_pScheduledActions->GetHeadPos();
+    int nActionTimer;
+    if (m_pScheduledActions != NULL)
+    {
+        nActionTimer = 0;
+    }
+
+    int nAnimationTime = 750 * (unsigned char)GetTotalAttacks() + 500;
+    if (nAnimationTime > 3000)
+    {
+        nAnimationTime = 3000;
+    }
+    nAnimationTime = (int)(nAnimationTime / (((unsigned char)GetTotalAttacks() - 3) * 0.5f + 3.0f));
+    DecrementRoundLength(nAnimationTime, 1);
+
+    CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+    pAction->m_nActionTimer = nActionTimer;
+    pAction->m_nAnimation = ATTACK_ANIMATION_DEFAULT;
+    pAction->m_nAnimationTime = nAnimationTime;
+    pAction->m_nNumAttacks = 1;
+    pAction->m_oidTarget = oidTarget;
+    pAction->m_nActionType = CSWSCombatRoundAction::ACTION_ATTACK;
+
+    if (pPos != NULL)
+    {
+        m_pScheduledActions->AddBefore(pAction, pPos);
+    }
+    else
+    {
+        m_pScheduledActions->AddTail(pAction);
+    }
+    m_nAdditAttacks++;
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::AddAttackOfOpportunity(unsigned long oidTarget)
+{
+    if (m_bRoundStarted != 0)
+    {
+        CExoLinkedListNode* pPos = m_pScheduledActions->GetHeadPos();
+        int nActionTimer;
+        if (m_pScheduledActions != NULL)
+        {
+            nActionTimer = 0;
+        }
+
+        int nAnimationTime = 750 * (unsigned char)GetTotalAttacks() + 500;
+        if (nAnimationTime > 3000)
+        {
+            nAnimationTime = 3000;
+        }
+        nAnimationTime = (int)(nAnimationTime / (((unsigned char)GetTotalAttacks() - 3) * 0.5f + 3.0f));
+        DecrementRoundLength(nAnimationTime, 1);
+
+        CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+        pAction->m_nActionTimer = nActionTimer;
+        pAction->m_nAnimation = ATTACK_ANIMATION_DEFAULT;
+        pAction->m_nAnimationTime = nAnimationTime;
+        pAction->m_nNumAttacks = 1;
+        pAction->m_oidTarget = oidTarget;
+        pAction->m_bRetargettable = 0;
+        pAction->m_nActionType = CSWSCombatRoundAction::ACTION_ATTACK;
+
+        if (pPos != NULL)
+        {
+            m_pScheduledActions->AddBefore(pAction, pPos);
+        }
+        else
+        {
+            m_pScheduledActions->AddTail(pAction);
+        }
+    }
+    m_nAdditAttacks++;
+}
 // PC 0x00529160 GOG 0x005291E0
 void CSWSCombatRound::AddEquipAction(unsigned long oidItem, unsigned long nSlot,
                                      int nEquipFlags, int nAttackFlags)
@@ -1563,6 +1856,18 @@ void CSWSCombatRound::AddUnequipAction(unsigned long oidItem,
             m_pScheduledActions->AddTail(pAction);
         }
     }
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::AddCombatStepAction(unsigned long nTime, unsigned long oidTarget)
+{
+    CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+    pAction->m_nActionType = 4;
+    pAction->m_oidTarget = oidTarget;
+    pAction->m_nActionTimer = nTime;
+    pAction->m_nAnimationTime = 500;
+    AddAction(pAction, ACTION_POSITION_BY_TIME);
+    DecrementRoundLength(500, 0);
 }
 // PC 0x005292D0 GOG 0x00529350
 int CSWSCombatRound::GetWeaponAttackType()
@@ -1899,6 +2204,16 @@ int CSWSCombatRound::GetOffHandAttack()
 {
     return m_bOffHandAttack;
 }
+
+// Dead code: not in the PC executable
+int CSWSCombatRound::GetExtraAttack()
+{
+    if (m_nAdditAttacks != 0 || GetFunctionalBonusEffectAttacks() != 0)
+    {
+        return (m_nCurrentAttack + 1) > m_nOnHandAttacks;
+    }
+    return 0;
+}
 // PC 0x00527CD0 GOG 0x00527D30
 int CSWSCombatRound::CalculateOffHandAttacks()
 {
@@ -1969,6 +2284,12 @@ CSWSCombatAttackData* CSWSCombatRound::GetAttack(int nAttack)
 
     EXOXBOXASSERT(nAttack <= 5);
     return &m_Attacks[nAttack];
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatRound::SetCurrentAttack(unsigned char nCurrentAttack)
+{
+    m_nCurrentAttack = nCurrentAttack;
 }
 // PC 0x00527DD0 GOG 0x00527E30
 int CSWSCombatRound::ResolveChoreographedState(unsigned long oidTarget)
@@ -2131,6 +2452,30 @@ int CSWSCombatRound::ResolveMasterState(unsigned long oidTarget, int& bMaster)
 
     return bResult;
 }
+
+// Dead code: not in the PC executable
+unsigned short CSWSCombatRound::GetSpecialAttack(int nAttack)
+{
+    int nCount = 0;
+    for (int nIndex = m_nCurrentAttack; nIndex < (unsigned char)GetTotalAttacks(); nIndex++)
+    {
+        if (nCount == nAttack)
+        {
+            return GetAttack(nIndex)->m_nAttackType;
+        }
+        nCount++;
+    }
+
+    for (int nSpecial = 0; nSpecial < m_lstSpecialAttacks.num; nSpecial++)
+    {
+        if (nCount == nAttack)
+        {
+            return m_lstSpecialAttacks[nSpecial];
+        }
+        nCount++;
+    }
+    return 0;
+}
 // PC 0x00528110 GOG 0x00528170
 int CSWSCombatRound::HasCreatureWeapons()
 {
@@ -2140,10 +2485,71 @@ int CSWSCombatRound::HasCreatureWeapons()
             m_pBaseCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON2) != NULL ||
             m_pBaseCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON3) != NULL);
 }
+
+// Dead code: not in the PC executable
+int CSWSCombatRound::GetCombatStepRequired(unsigned long oidTarget)
+{
+    CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
+    if (pObject == NULL || pObject->AsSWSObject() == NULL ||
+        pObject->AsSWSObject()->GetDead() != 0 ||
+        pObject->AsSWSObject()->GetIsPCDying() != 0 ||
+        !(m_pBaseCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_MOVE))
+    {
+        return 0;
+    }
+
+    CSWSObject* pTarget = pObject->AsSWSObject();
+    CSWSItem* pItem = m_pBaseCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+    if (pItem != NULL &&
+        g_pRules->m_pBaseItems->GetBaseItem(pItem->GetBaseItemType())->m_nRangedWeapon != 0)
+    {
+        return 0;
+    }
+
+    float fRange = m_pBaseCreature->DesiredAttackRange(oidTarget, 0);
+    Vector vDifference = m_pBaseCreature->m_vPosition - pTarget->m_vPosition;
+    float fDistanceSquared = vDifference * vDifference;
+    if ((fRange - 0.25f) * (fRange - 0.25f) > fDistanceSquared ||
+        fDistanceSquared > (fRange + 0.25f) * (fRange + 0.25f))
+    {
+        return 1;
+    }
+    return 0;
+}
 // PC 0x005281A0 GOG 0x00528200
 int CSWSCombatRound::GetTotalAttacks()
 {
     return m_nOnHandAttacks + m_nOffHandAttacks;
+}
+
+// Dead code: not in the PC executable
+unsigned short CSWSCombatRound::GetSpecialAttackID(int nAttack)
+{
+    int nCount = 0;
+    if (nAttack < (unsigned char)GetTotalAttacks())
+    {
+        for (int nIndex = m_nCurrentAttack; nIndex < (unsigned char)GetTotalAttacks(); nIndex++)
+        {
+            if (GetAttack(nIndex)->m_nAttackType != 0)
+            {
+                if (nCount == nAttack)
+                {
+                    return GetAttack(nIndex)->m_nUnknown66;
+                }
+                nCount++;
+            }
+        }
+    }
+
+    for (int nSpecial = 0; nSpecial < m_lstSpecialAttackIds.num; nSpecial++)
+    {
+        if (nCount == nAttack)
+        {
+            return m_lstSpecialAttackIds[nSpecial];
+        }
+        nCount++;
+    }
+    return 0xFFFF;
 }
 // PC 0x005281B0 GOG 0x00528210
 void CSWSCombatRound::SetBonusEffectAttacks(int nAttacks)
@@ -2199,6 +2605,94 @@ void CSWSCombatSubAttackThreat::Clear()
     m_bCriticalConfirmed = 0;
     m_nUnknown10 = 0;
     m_nCriticalMultiplier = 0;
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatAttackFlags::Clear()
+{
+    m_nArmorClass = 0;
+    m_nArmorModifier = 0;
+    m_nDexterityModifier = 0;
+    m_nBaseDexterityModifier = 0;
+    m_nClassArmorModifier = 0;
+    m_nNaturalArmorModifier = 0;
+    m_nDodgeDeflectionModifier = 0;
+    m_nFeatArmorModifier = 0;
+    m_nDebilitatedModifier = 0;
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatDamageBreakdown::Clear()
+{
+    m_nBaseDamage = 0;
+    m_nDamageBonus = 0;
+    m_nUnusedDamageFeedback = 0;
+    m_nSneakAttackDamage = 0;
+    m_nStrengthDamage = 0;
+    m_nWeaponSpecializationDamage = 0;
+    m_nToughnessReduction = 0;
+    m_nEnduranceReduction = 0;
+    m_nResistedDamageType = 0;
+    m_nToughnessDamage = 0;
+    m_nEnduranceDamage = 0;
+    m_nEffectDamageBonus = 0;
+    m_nUnknownC = 0x102;
+    m_nEffectDamage = 0;
+    for (int i = 0; i < 15; i++)
+    {
+        m_nUnknownDamage[i] = -1;
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatEffectBreakdown::Clear()
+{
+    m_oidUnknown0 = OBJECT_INVALID;
+    m_nSavingThrowType = 0;
+    m_nState = 0;
+    m_nSaveVersusType = 0;
+    m_nSavingThrowRoll = 0;
+    m_nSavingThrowEffectBonus = 0;
+    m_nSavingThrowBonus = 0;
+    m_nSavingThrowTotal = 0;
+    m_nSavingThrowDC = 0;
+    m_nSavingThrowResult = 0xFF;
+    m_bStateImmune = 0;
+    m_bEffectApplied = 0;
+}
+
+// Dead code: not in the PC executable
+void CSWSCombatAttackData::Copy(CSWSCombatAttackData* pAttackData)
+{
+    m_nAttackGroup = pAttackData->m_nAttackGroup;
+    m_nAnimationLength = pAttackData->m_nAnimationLength;
+    m_nMissedBy = pAttackData->m_nMissedBy;
+    for (int i = 0; i < DAMAGE_COUNT; i++)
+    {
+        m_nDamage[i] = pAttackData->m_nDamage[i];
+    }
+    m_nAttackResult = pAttackData->m_nAttackResult;
+    m_nUnknown60 = pAttackData->m_nUnknown60;
+    m_oidReactObject = pAttackData->m_oidReactObject;
+    m_nReactionDelay = pAttackData->m_nReactionDelay;
+    m_nReactionAnimation = pAttackData->m_nReactionAnimation;
+    m_nReactionAnimationLength = pAttackData->m_nReactionAnimationLength;
+    m_nConcealment = pAttackData->m_nConcealment;
+    m_nAttackType = pAttackData->m_nAttackType;
+    m_nAttackMode = pAttackData->m_nAttackMode;
+    m_nUnknown66 = pAttackData->m_nUnknown66;
+    m_vRangedTarget = pAttackData->m_vRangedTarget;
+    m_nWeaponAttackType = pAttackData->m_nWeaponAttackType;
+    m_bSneakAttack = pAttackData->m_bSneakAttack;
+    m_bRangedAttack = pAttackData->m_bRangedAttack;
+    m_bKillingBlow = pAttackData->m_bKillingBlow;
+    m_bCoupDeGrace = pAttackData->m_bCoupDeGrace;
+    m_bCriticalThreat = pAttackData->m_bCriticalThreat;
+    m_nUnknown54 = pAttackData->m_nUnknown54;
+    m_bAttackDeflected = pAttackData->m_bAttackDeflected;
+    m_oidAmmoItem = pAttackData->m_oidAmmoItem;
+    m_bUseAttackResult = pAttackData->m_bUseAttackResult;
+    m_nForcedAttackResult = pAttackData->m_nForcedAttackResult;
 }
 
 #ifndef _XBOX

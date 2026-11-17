@@ -113,6 +113,7 @@ struct CSWSCombatAttackFlags
         m_nFeatArmorModifier = 0;
         m_nDebilitatedModifier = 0;
     }
+    void Clear();
 
     unsigned char m_nArmorClass;
     unsigned char m_nArmorModifier;
@@ -193,6 +194,7 @@ struct CSWSCombatDamageBreakdown
             m_nUnknownDamage[i] = -1;
         }
     }
+    void Clear();
 
     unsigned char m_nBaseDamage;
     unsigned char m_nDamageBonus;
@@ -228,6 +230,7 @@ struct CSWSCombatEffectBreakdown
         m_bStateImmune = 0;
         m_bEffectApplied = 0;
     }
+    void Clear();
 
     unsigned long m_oidUnknown0;
 
@@ -351,6 +354,7 @@ public:
 
     CSWSCombatAttackData();
     ~CSWSCombatAttackData();
+    void Copy(CSWSCombatAttackData* pAttackData);
 
     int GetDamage(unsigned short nDamageFlags);
     void SetBaseDamage(int nDamage);
@@ -365,14 +369,19 @@ public:
     void ResolveSubAttackToAttack(const CSWSCombatSubAttack& subAttack);
     void ClearAttackData();
     void RemoveTopSubAttack();
+    void ClearSubAttacks();
     CSWSCombatSubAttack GetTopSubAttack();
     void ResolveTopSubAttackToAttack();
     int IsSubAttackReady(int nTime);
     void ResolveAttackToMeleeSubAttack(int nAttackNumber,
                                        unsigned long nAnimationTime);
+    void AddMeleeSubAttack(unsigned long nAnimationTime);
     void ResolveAttackToRangedSubAttack(int nAttackNumber,
                                         unsigned long nAnimationTime, int bAttack,
                                         int bHit, int nDischargeHand);
+    void AddRangedSubAttack(int nAttackNumber, unsigned char nAttackResult,
+                            unsigned long nAnimationTime, int bHit, Vector vRangedTarget,
+                            unsigned long nReactionDelay, int nDischargeHand);
 
     unsigned char m_nAttackGroup;
     int m_bAttacked;
@@ -450,10 +459,12 @@ public:
     void SetSpellCastRound(int nSpellId, int nRound);
     void SetRoundPaused(int bPaused, unsigned long oidPauser);
     void SetPauseTimer(int nTime, int bInfinite);
+    int CheckActionLength(unsigned long oidAction, int nLength);
     int CheckActionLengthAtTime(unsigned long oidAction, int nLength,
                                 int nTime);
     void SetOffHandAttack(int bOffHand);
     int GetOffHandAttack();
+    int GetExtraAttack();
 
     int GetOffHandTaken() { return m_nOffHandTaken; }
     int CalculateOnHandAttacks(unsigned short nFeat);
@@ -470,11 +481,15 @@ public:
     void SetCurrentCombatRoundAction(CSWSCombatRoundAction* pAction);
     CSWSCombatAttackData* GetAttack(int nAttack);
     unsigned char GetCurrentAttack() { return m_nCurrentAttack; }
+    void SetCurrentAttack(unsigned char nCurrentAttack);
     int ResolveChoreographedState(unsigned long oidTarget);
     int ResolveEngagedState(unsigned long oidTarget);
     int ResolveMasterState(unsigned long oidTarget, int& bMaster);
+    unsigned short GetSpecialAttack(int nAttack);
     int HasCreatureWeapons();
+    int GetCombatStepRequired(unsigned long oidTarget);
     int GetTotalAttacks();
+    unsigned short GetSpecialAttackID(int nAttack);
     void SetBonusEffectAttacks(int nAttacks);
     int GetActualBonusEffectAttacks();
     int GetFunctionalBonusEffectAttacks()
@@ -483,12 +498,18 @@ public:
     }
     void DecrementRoundLength(int nAmount, int bClamp);
     int GetActionPending();
+    int GetAttackActionPending();
     int GetSpellActionPending();
     CSWSCombatRoundAction* GetAction();
     void AddAction(CSWSCombatRoundAction* pAction, int nPosition);
     void RemoveAllActions();
     int RemoveLastAction();
     void ClearAllAttacks();
+    void SetDeflectArrow(int bDeflectArrow);
+    void SignalCombatRoundStarted();
+    void StartCombatRoundCast(int nSpellId, int nRound, unsigned long oidTarget,
+                              int bEngaged, int bMaster);
+    void AddSpellAction();
     void AddCutsceneAttackAction(unsigned long oidTarget, int nAnimation, int nAttackResult,
                                  int nDamage);
     void AddAttackAction(unsigned long oidTarget, unsigned short nSpecialAttack,
@@ -507,10 +528,15 @@ public:
     void AddCutsceneMoveActions(unsigned long oidTarget, Vector vTarget,
                                 int bRun);
     void RemoveSpellAction();
+    void AddParryAttack(unsigned long oidTarget);
+    void AddParryIndex();
+    void AddCleaveAttack(unsigned long oidTarget);
+    void AddAttackOfOpportunity(unsigned long oidTarget);
     void AddEquipAction(unsigned long oidItem, unsigned long nSlot, int nEquipFlags,
                         int nAttackFlags);
     void AddUnequipAction(unsigned long oidItem, unsigned long nSlot,
                           int nEquipFlags);
+    void AddCombatStepAction(unsigned long nTime, unsigned long oidTarget);
     int GetWeaponAttackType();
     void DEBUGDumpCombatRoundToScreen(int nArg1, const CExoString& sMessage);
     void UpdateAttackTargetForAllActions(unsigned long oidTarget);
@@ -524,6 +550,7 @@ public:
     unsigned short GetNewAttackID();
     void InsertSpecialAttack(unsigned short nAttack, int nIndex);
     void ClearAllSpecialAttacks();
+    void AddReaction(int nReactionDelay, int nAnimationTime, int nPosition);
     CSWSItem* GetCurrentAttackWeapon(int nAttack);
     void StartCombatRound(unsigned long oidTarget, int bEngaged, int bMaster,
                           unsigned short nFeat, int nArg5);
