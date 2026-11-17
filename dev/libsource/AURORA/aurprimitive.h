@@ -86,7 +86,7 @@ public:
     int m_bStatic;
 
     char m_bRebuild;
-    VertexPrimitive(Part* pPart);
+    VertexPrimitive(PartTriMesh* pPart);
 
     virtual ~VertexPrimitive();
 

@@ -2509,34 +2509,10 @@ void AurTextureSetLayered(CAurTexture* pTexture, char* sExtra, int* pTXI,
 }
 
 // Dead code: not in the PC executable
-void AurTextureRefreshLowEndEnvMapped()
-{
-    for (int i = 0; i < CAurTextureBasic::m_StaticTextureList.m_nCount; i++)
-    {
-        CAurTextureBasic* pTexture = CAurTextureBasic::m_StaticTextureList[i];
-        if (pTexture->m_bEnvMapped)
-        {
-            pTexture->Reset();
-            RefreshTextures.Add(pTexture);
-        }
-    }
-    for (int j = 0; j < CAurTextureBasic::m_DynamicTextureList.m_nCount; j++)
-    {
-        CAurTextureBasic* pTexture = CAurTextureBasic::m_DynamicTextureList[j];
-        if (pTexture->m_bEnvMapped)
-        {
-            pTexture->Reset();
-            RefreshTextures.Add(pTexture);
-        }
-    }
-}
-
-// Dead code: not in the PC executable
 void AurTextureEnableLowEndEnvMapping(Vector vColor)
 {
     CAurTextureBasic::m_vLowEndEnvMapColor = vColor;
     CAurTextureBasic::m_bLowEndEnvMapEnabled = true;
-#ifdef _XBOX
     int i;
     for (i = 0; i < CAurTextureBasic::m_StaticTextureList.m_nCount; i++)
     {
@@ -2554,16 +2530,12 @@ void AurTextureEnableLowEndEnvMapping(Vector vColor)
             RefreshTextures.Add(CAurTextureBasic::m_DynamicTextureList[i]);
         }
     }
-#else
-    AurTextureRefreshLowEndEnvMapped();
-#endif
 }
 
 // Dead code: not in the PC executable
 void AurTextureDisableLowEndEnvMapping()
 {
     CAurTextureBasic::m_bLowEndEnvMapEnabled = false;
-#ifdef _XBOX
     int i;
     for (i = 0; i < CAurTextureBasic::m_StaticTextureList.m_nCount; i++)
     {
@@ -2581,9 +2553,6 @@ void AurTextureDisableLowEndEnvMapping()
             RefreshTextures.Add(CAurTextureBasic::m_DynamicTextureList[i]);
         }
     }
-#else
-    AurTextureRefreshLowEndEnvMapped();
-#endif
 }
 
 // Dead code: not in the PC executable

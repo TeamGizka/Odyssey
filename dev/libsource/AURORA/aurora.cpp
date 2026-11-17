@@ -566,7 +566,7 @@ void AurReleaseFrameTexture()
 Scene* FindScene(char* sName);
 
 // Dead code: not in the PC executable
-int NodeHasTileData(BSPNode* pNode, void* pData)
+static int NodeHasTileData(BSPNode* pNode, void* pData)
 {
     return pNode->m_pData->m_pTileData != 0;
 }

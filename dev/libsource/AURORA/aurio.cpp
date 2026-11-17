@@ -790,7 +790,7 @@ static const int WRITE_PATH_LENGTH = 256;
 
 #ifndef _XBOX
 // Dead code: not in the PC executable
-bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
+bool IODispatcher::Write(MaxTree* pTree, char* sFileName)
 {
     char sPath[WRITE_PATH_LENGTH];
 
@@ -1584,7 +1584,7 @@ Output::~Output()
 }
 }
 
-bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
+bool IODispatcher::Write(MaxTree* pTree, char* sFileName)
 {
     Output output;
 

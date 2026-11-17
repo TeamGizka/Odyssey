@@ -24,8 +24,7 @@ inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
 int g_bRenderClipWalkable = 0;
 
 float checkaabbtime;
-// Dead code: not in the PC executable
-__int64 QueryTimerFrequency()
+inline __int64 QueryTimerFrequency()
 {
     LARGE_INTEGER nFrequency;
     QueryPerformanceFrequency(&nFrequency);

@@ -1732,7 +1732,7 @@ public:
     static IODispatcher* GetRef();
     MaxTree* ReadSync(char* sFileName);
     MaxTree* ReadSync(FILE* pModelFile, FILE* pVertexFile);
-    bool WriteSync(MaxTree* pTree, char* sFileName);
+    bool Write(MaxTree* pTree, char* sFileName);
 
     List<int> m_lDispatchEntries;
 };

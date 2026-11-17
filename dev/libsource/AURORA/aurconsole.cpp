@@ -912,7 +912,7 @@ char* converttobinary(char* sArguments)
             Model* pModel = FindModel(GetToken(&sName));
             if (pModel != NULL)
             {
-                IODispatcher::GetRef()->WriteSync(pModel, NULL);
+                IODispatcher::GetRef()->Write(pModel, NULL);
             }
             SetCurrentDirectory(sCurrentDirectory);
         } while (FindNextFile(hFind, &cFindData));
@@ -1256,7 +1256,7 @@ char* outputmodel(char* sArguments)
 
     IODispatcher* pDispatcher = IODispatcher::GetRef();
 
-    if (!pDispatcher->WriteSync(pModel, NULL))
+    if (!pDispatcher->Write(pModel, NULL))
     {
         return "FAILURE";
     }

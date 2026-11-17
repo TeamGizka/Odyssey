@@ -194,12 +194,7 @@ void Particle::randomPosition(int nWidth, int nHeight)
     m_vPosition = vOffsetX + pEmitter->m_vOrigin + vOffsetY;
 }
 
-#ifdef _XBOX
 inline float PartEmitter::GetRadius()
-#else
-// Dead code: not in the PC executable
-float PartEmitter::GetRadius()
-#endif
 {
     return m_fRadius;
 }
