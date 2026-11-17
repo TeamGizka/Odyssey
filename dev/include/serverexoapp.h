@@ -165,9 +165,13 @@ public:
 #else
     int TestSafeLocation(unsigned long oidObject, const Vector& vPosition); int ComputeSafeLocation(const Vector& vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(const Vector& vPosition); int DebugValidatePath(unsigned long oidCreature, int bTempWayPoints);
 #endif
-    int GetSurfaceMaterial(const CResRef& cAreaResRef, Vector vPosition,
-                           int nRoomIndex);
+    int MoveCreatureToPosition(unsigned long oidCreature, const Vector& vPosition, unsigned long oidArea);
+    int DebugValidatePosition(unsigned long oidCreature, unsigned long oidArea, const Vector& vPosition);
     void ClearLastModuleFound();
+    int DebugValidatePath_Point(CSWSArea* pArea, const Vector& vPoint);
+    int GetCreatureMovedByPowerOrFeat(unsigned long oidCreature, Vector& vPosition);
+    int GetExportAllCharactersPending();
+    int HasEnoughDiskSpaceForSaveGame();
     void ClearAreaCache();
     int ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,
                               Vector& vResult);

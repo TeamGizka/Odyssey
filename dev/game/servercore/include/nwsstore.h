@@ -48,6 +48,7 @@ public:
     int AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bLoading);
     void RemoveFromArea();
     int SellItem(CSWSItem* pItem, CSWSCreature* pCreature);
+    void AddCustomer(class CSWSPlayer* pPlayer);
     void RemoveCustomer(class CSWSPlayer* pPlayer);
     int AddItemToInventory(CSWSItem** ppItem, int bAppend = 0);
     int RemoveItemFromInventory(CSWSItem* pItem);
@@ -68,7 +69,6 @@ public:
 
     unsigned short m_nInventoryIndex;
     unsigned char m_nBuySellFlag;
-    char m_aUnmapped257[1];
 
 public:
 

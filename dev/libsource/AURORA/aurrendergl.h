@@ -895,6 +895,9 @@ public:
 #endif
     static void RenderShadowArray(int nVertices, int nEdges, int nPool);
     static void InitExtensions();
+    static void RenderGammaCorrection();
+    static void RemoveAllDrawableSquares();
+    static void GetClearColor(float* pfColor);
     static int InitializeAntiAliasing();
     static void Shutdown(int bReleaseRenderer);
     static void DrawFromVerts(int nMode, List<Vector>& lstVertices);
@@ -1715,8 +1718,6 @@ public:
 
     void Enable(Part* pPart, bool bEnableLights);
 
-    void ShutDown();
-    void Load(char* sProgram, unsigned int* pnProgram);
 
 #ifndef _XBOX
     unsigned char m_aUnmapped0[4];

@@ -29,7 +29,6 @@ public:
     int HandleImeNotify(HWND hWnd, unsigned int nMsg, long nParam);
 
     void TurnImeOff(HWND hWnd);
-    void TurnImeOn(HWND hWnd);
     CExoString GetImeModeDescription(HWND hWnd);
 
 #if defined(_WIN32) && !defined(_XBOX)

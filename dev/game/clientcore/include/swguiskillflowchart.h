@@ -154,7 +154,6 @@ public:
 
     int GetSelected();
     void SetSelectedSkill(unsigned long nSkill);
-    void Add(unsigned long nSkill, unsigned char nState);
     void AddPowerSet(unsigned long nPower1, unsigned long nPower2,
                      unsigned long nPower3, int bSecret);
     void AddFeatSet(unsigned long nFeat1, unsigned long nFeat2,

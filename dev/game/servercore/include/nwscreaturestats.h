@@ -405,8 +405,11 @@ public:
     void AutoLevelup(int bFeedback);
 
     unsigned long GetExperience() { return m_nExperience; }
-    int GetAlignment();
+    char GetTotalACNaturalMod();
     char GetDEXMod(int bWithEffects);
+    int HasForcePowerRequirments(unsigned long nSpell);
+    void SetDialog(const CResRef& cDialog);
+    unsigned char GetTotalArcaneSpellFailure();
 
     char GetPrimaryMod(unsigned char nMultiClass);
     char GetFortSavingThrow(int bBaseOnly);

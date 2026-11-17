@@ -93,6 +93,7 @@ public:
     void SetBaseFont(const CResRef& cFont);
     void SetFont(const CResRef& cFont);
     void SetFontRename();
+    void SetLocString(CExoLocString& lsText, int nStrRef);
     void SetTextObject(CSWGuiText* pText);
 
     CExoString m_sText;
@@ -231,7 +232,6 @@ public:
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct,
                       const CExoString& sName);
 
-    int GetHeight();
     int GetFontHeight();
 
     void WrapString();
@@ -247,7 +247,6 @@ public:
     void Initialize(const CSWGuiExtent& cExtent, const CSWGuiTextParams& cParams,
                    float fScale);
 #endif
-    void SetText(const CExoString& sText);
 
     CAurGUIStringInternal* m_pString;
     CSWGuiTextParams m_cParams;
@@ -285,7 +284,6 @@ public:
                       const CExoString& sName);
 
     CSWGuiExtent GetInnerExtent();
-    int SetPulsingAlpha(int bPulsing, int nLow, int nHigh);
     void Initialize(const CSWGuiExtent& cExtent,
                    const CSWGuiBorderParams& cParams);
     void FillTile(int nHeight, int nWidth, int nX, int nY,

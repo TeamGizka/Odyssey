@@ -415,7 +415,7 @@ public:
     unsigned long GetAttackingWeapon(int nAttackType);
     void SetAppearance(CSWCCreatureAppearance* pAppearance, unsigned char nMode,
                        int bUpdate);
-    const Quaternion& GetOrientation();
+    void UpdateLookAt();
     virtual unsigned char GetReticlePoint(Vector& vPoint);
     void RotateCreatureToOrientation(const Vector& vOrientation);
 

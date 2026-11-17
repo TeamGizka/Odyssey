@@ -1782,8 +1782,8 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
         switch (nState)
         {
         case STATE_STUN:
-        case STATE_VARIANT_18:
-        case STATE_VARIANT_19:
+        case STATE_MIND_TRICK_18:
+        case STATE_MIND_TRICK_19:
             pAIStateEffect = new CGameEffect(pEffect);
             pAIStateEffect->m_nType = EFFECT_SET_AI_STATE;
             pAIStateEffect->SetInteger(0, SETSTATE_AI_NO_MOVEMENT);
@@ -5874,7 +5874,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                     return 1;
                 }
             }
-            else if (nState == STATE_VARIANT_18)
+            else if (nState == STATE_MIND_TRICK_18)
             {
                 if (bIgnoreImmunity == 0 &&
                     pStats->GetEffectImmunity(

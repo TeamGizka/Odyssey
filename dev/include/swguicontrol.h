@@ -163,7 +163,7 @@ public:
     virtual void Draw(float fElapsed)
     {
     }
-    virtual void HandleInputEvent(int nEvent, int nState); void SetVisible(int bVisible); virtual void SetActive(int bActive);
+    virtual void HandleInputEvent(int nEvent, int nState); virtual void SetActive(int bActive);
 #ifdef _XBOX
     virtual int HitCheckMouse(int nX, int nY);
 #else
@@ -251,10 +251,6 @@ public:
               const CExoString& sName);
     void Load(CSWGuiObject* pParent, CResGFF* pGFF, CResList& lControls,
               const CExoString& sName);
-    void Initialize(CSWGuiExtent* pExtent, CSWGuiControl* pParent,
-                    float fScale);
-    void Initialize(const CSWGuiExtent& cExtent, CSWGuiControl* pParent,
-                    float fScale);
     CSWGuiControl* GetSelectableParent();
     void AddChildControl(CSWGuiControl* pChild);
     int GetIsChild(CSWGuiControl* pControl);
@@ -394,7 +390,6 @@ public:
 #endif
 #endif
     using CSWGuiObject::SetExtent;
-    using CSWGuiControl::Initialize;
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
@@ -437,7 +432,6 @@ class CSWGuiButton : public CSWGuiNavigable
 {
 public:
     using CSWGuiObject::SetExtent;
-    using CSWGuiControl::Initialize;
 
 #ifndef _XBOX
 #ifndef SWGUICONTROL_SOURCE
@@ -574,7 +568,6 @@ public:
 #endif
 #endif
     using CSWGuiObject::SetExtent;
-    using CSWGuiControl::Initialize;
     using CSWGuiControl::Load;
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
@@ -808,7 +801,6 @@ public:
     }
 #endif
     using CSWGuiObject::SetExtent;
-    using CSWGuiControl::Initialize;
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     SWGUI_PCVIRTUAL int HandleMouseCapturedMovement(int nX, int nY);
     SWGUI_PCVIRTUAL void HandleLMouseDown();
@@ -853,7 +845,6 @@ public:
     }
 #endif
     using CSWGuiObject::SetExtent;
-    using CSWGuiControl::Initialize;
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);

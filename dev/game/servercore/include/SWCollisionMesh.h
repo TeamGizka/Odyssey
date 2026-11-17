@@ -127,8 +127,8 @@ public:
     void GetVertex(int nVertex, Vector* pvVertex);
     void GetFaceVertex(int nIndex, int nCorner, Vector& vVertex);
     int RenderMesh(int nFlag, unsigned long nColor, unsigned long nMask);
-    int NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd, float fMinHeight,
-                             float fMaxHeight, float fRadius, CWalkHitInfo* pHitInfo);
+    int ConvertRooms(const CResRef& cResRef, const CExoString& sName);
+    float ZLocalToZWorld(float fZ); void SetMesh(const CResRef& cResRef);
     int NoNonWalkPolys(const Vector& vStart, const Vector& vEnd, float fMinHeight,
                        float fMaxHeight, float fRadius, CWalkHitInfo* pHitInfo);
 

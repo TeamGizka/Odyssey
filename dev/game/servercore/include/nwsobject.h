@@ -656,7 +656,8 @@ public:
     unsigned long GetAreaId() { return m_oidArea; }
     void SetArea(CSWSArea* pArea);
     void SetDialogDelay(float fDelay);
-    CSWSpell* GetLastSpell();
+    void SendDialogModels(unsigned long oidPlayer);
+    int IsCameraAnimationPlayingInDialog();
     void CalculateLastSpellProjectileTime(unsigned char nProjectileType);
     Vector CalculateSpellRangedMissTarget(unsigned long oidSource,
                                            unsigned long oidTarget);
@@ -1271,6 +1272,8 @@ struct CSWSCreatureAppearanceInfo
 class CSWSCreature : public CSWSObject
 {
 public:
+    void PayToIdentifyItem(unsigned long oidItem);
+    int GetHasPlotItemUseableOnObject();
 
     static const float MOVE_AWAY_RADIUS;
     static const int XP_CALCULATIONS_HENCHMEN_ALLOWED;
