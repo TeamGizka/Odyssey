@@ -99,7 +99,7 @@ public:
     char m_bFog;
     TileData* m_pTileData;
     float m_fAlpha;
-    int m_nReserved88;
+    int m_nFadeState;
 
     int m_nPartID;
 

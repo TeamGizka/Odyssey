@@ -2876,7 +2876,7 @@ static char cShadowVolumeVP[] =
     "sub r7, r4, r7;\n"
     "add oPos, r3, r7;\n";
 
-void Scene::RenderShadows(int nReserved1, int nReserved2,
+void Scene::RenderShadows(int bStaticShadows, int bDynamicShadows,
                           int bRenderGobs, int bClearStencil)
 {
     if (systemmemoryshadows)
@@ -2955,7 +2955,7 @@ void Scene::RenderShadows(int nReserved1, int nReserved2,
 }
 #else
 // PC 0x00465AF0 GOG 0x00465C00
-void Scene::RenderShadows(int nReserved1, int nReserved2,
+void Scene::RenderShadows(int bStaticShadows, int bDynamicShadows,
                           int bRenderGobs, int bClearStencil)
 {
     int nStencilBits = AurGetAvailableStencilBits();

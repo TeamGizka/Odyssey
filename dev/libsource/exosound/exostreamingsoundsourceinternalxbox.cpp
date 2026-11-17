@@ -398,7 +398,7 @@ void CExoXboxStreamManager::Initialize()
     m_nDeletedTail = 0;
     m_fVolumeScale = 1.0f;
     m_fLastVolumeScale = 1.0f;
-    m_fUnknown1C = 1.0f;
+    m_fTargetVolumeScale = 1.0f;
 }
 
 CExoXboxStreamManager::CExoXboxStreamManager(CExoSoundInternal* pSoundInternal)
@@ -426,12 +426,12 @@ int CExoStreamingSoundSourceInternal::GetHasStartedStreaming()
     return 0;
 }
 
-CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int n4)
+CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int bReservedStream)
 {
     m_pSoundInternal = pSoundInternal;
     m_b3D = 0;
     m_bLooping = 0;
-    m_nUnknown34 = 0;
+    m_bReservedStream = 0;
     m_nVolume = MAX_VOLUME;
     m_nPriorityGroup = CPriorityGroup::MUSIC_GROUP;
     m_pStream = NULL;

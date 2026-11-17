@@ -192,7 +192,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
         NULL, 0x8000,
         (LPTHREAD_START_ROUTINE)CExoMoviePlayerInternal::PlayMoviesAsync, this,
         0, (LPDWORD)&m_dwWorkerThreadId);
-    m_nUnknown3C = 0;
+    m_nCurrentMovie = 0;
     m_bCancelMovie = 0;
     m_pFadePanel = NULL;
     m_nFinishTime = -1;

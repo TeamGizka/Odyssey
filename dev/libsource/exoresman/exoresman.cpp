@@ -15,7 +15,7 @@
 
 char CResRef::RETURN_BUFFERS[4][17];
 
-int g_nResRefUnused = 0;
+FILE* g_fpNRL = NULL;
 int CResRef::s_nCurBufferIndex = 0;
 
 // PC 0x00405F70 GOG 0x00405F40

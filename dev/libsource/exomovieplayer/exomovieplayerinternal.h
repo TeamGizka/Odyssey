@@ -47,7 +47,7 @@ public:
     XMVVIDEO_DESC m_VideoDesc;
     CExoString m_sCurrentMovie;
     int m_bMoviePlaying;
-    int m_nUnknown3C;
+    int m_nCurrentMovie;
     HANDLE m_hWorkerThread;
     unsigned long m_dwWorkerThreadId;
     CExoCriticalSection m_critSect;
@@ -63,10 +63,10 @@ public:
 
     int ShutDown();
     void OnDeactivation(int bToggleFullScreen);
-    int CancelMovie(int nA, int nB);
+    int CancelMovie(int nResult, int bForce);
     int IsMoviePlaying();
     int StartMovie(const CExoString& sMovie);
-    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nA,
+    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nMode,
                     const CExoArrayList<int>* lstSkippable);
     void ShowFadePanel();
     void HideFadePanel();
@@ -97,7 +97,7 @@ public:
     int m_bShuttingDown;
     CExoString m_sCurrentMovie;
     int m_bMoviePlaying;
-    int m_nUnknown34;
+    int m_nCurrentMovie;
     HANDLE m_hWorkerThread;
     unsigned long m_dwWorkerThreadId;
     CExoCriticalSection m_critSect;
@@ -106,11 +106,11 @@ public:
     HBINKBUFFER m_hBinkBuffer;
     HWND m_hMovieWnd;
     char m_aUnmapped54[12];
-    int m_nUnknown60;
+    int m_nCurrentFrame;
     int m_bPaused;
     CExoString m_sMovieFileName;
-    int m_nUnknown70;
-    char m_aUnmapped74[16];
+    int m_nFrameRate;
+    RECT m_rcMovie;
     int m_nVideoOffsetX;
     int m_nVideoOffsetY;
     int m_nPlaybackMode;

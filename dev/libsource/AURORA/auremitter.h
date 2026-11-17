@@ -183,8 +183,8 @@ class PartProjection : public Part
 public:
     static int m_nNextProjectionID;
 
-    int m_nReserved4C;
-    int m_nReserved50;
+    PartTriMesh* m_pTriMesh;
+    PartLight* m_pLight;
     Vector m_vMinimum;
     Vector m_vMaximum;
 };
@@ -422,7 +422,7 @@ public:
     float m_fRotation;
     float m_fSpeed;
     Vector m_vVelocity;
-    char m_abReserved28[4];
+    float m_fSize;
     Quaternion m_qOrientation;
     int m_nFrame;
     float m_fFrameStartAge;
@@ -558,7 +558,7 @@ public:
     float m_fTangentSpread;
     float m_fTangentLength;
     int m_nRenderMode;
-    char m_abReserved118[4];
+    int m_nUpdateMode;
 
     Vector m_vColorMid;
     Vector m_vXAxis;

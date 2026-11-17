@@ -106,7 +106,7 @@ CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)
     m_fFixedVariance = 0.0f;
     int nSourceId = pSound->m_nNextSourceId++;
     m_nSourceId = nSourceId;
-    m_nUnknown20 = 0;
+    m_bStreaming = 0;
     m_nDataSize = 0;
     m_pData = 0;
     ZeroMemory(&m_wfxFormat, sizeof(m_wfxFormat));
@@ -125,8 +125,8 @@ CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // 
     m_bPlayWhenFree = 0;
     m_p3DVoice = 0;
     m_p2DVoice = 0;
-    m_n44 = 0;
-    m_n40 = 0;
+    m_n3DVoiceIndex = 0;
+    m_n2DVoiceIndex = 0;
     m_fMaxVolumeDist = 10.0f;
     m_fMinVolumeDist = 20.0f;
     m_nRestartPosition = 0;

@@ -376,53 +376,53 @@ void Input::InputBinary::ResetAnim(MdlNodeAnimMesh* pNode,
                                    unsigned char* pModelData,
                                    unsigned char* pVertexData)
 {
-    if (pNode->m_lAnimationVectors1.m_nCount != 0)
+    if (pNode->m_lAnimVerts.m_nCount != 0)
     {
-        pNode->m_lAnimationVectors1.m_pList =
+        pNode->m_lAnimVerts.m_pList =
             (Vector*)(pModelData +
-                      (unsigned int)pNode->m_lAnimationVectors1.m_pList);
+                      (unsigned int)pNode->m_lAnimVerts.m_pList);
     }
     else
     {
-        pNode->m_lAnimationVectors1.m_pList = 0;
+        pNode->m_lAnimVerts.m_pList = 0;
     }
-    if (pNode->m_lAnimationVectors2.m_nCount != 0)
+    if (pNode->m_lAnimTVerts.m_nCount != 0)
     {
-        pNode->m_lAnimationVectors2.m_pList =
+        pNode->m_lAnimTVerts.m_pList =
             (Vector*)(pModelData +
-                      (unsigned int)pNode->m_lAnimationVectors2.m_pList);
+                      (unsigned int)pNode->m_lAnimTVerts.m_pList);
     }
     else
     {
-        pNode->m_lAnimationVectors2.m_pList = 0;
+        pNode->m_lAnimTVerts.m_pList = 0;
     }
-    if (pNode->m_lAnimationVectors3.m_nCount != 0)
+    if (pNode->m_lAnimNormals.m_nCount != 0)
     {
-        pNode->m_lAnimationVectors3.m_pList =
+        pNode->m_lAnimNormals.m_pList =
             (Vector*)(pModelData +
-                      (unsigned int)pNode->m_lAnimationVectors3.m_pList);
+                      (unsigned int)pNode->m_lAnimNormals.m_pList);
     }
     else
     {
-        pNode->m_lAnimationVectors3.m_pList = 0;
+        pNode->m_lAnimNormals.m_pList = 0;
     }
-    if (pNode->m_nAnimationDataCount1 != 0)
+    if (pNode->m_nAnimVertFrames != 0)
     {
-        pNode->m_pAnimationData1 =
-            pModelData + (unsigned int)pNode->m_pAnimationData1;
-    }
-    else
-    {
-        pNode->m_pAnimationData1 = 0;
-    }
-    if (pNode->m_nAnimationDataCount2 != 0)
-    {
-        pNode->m_pAnimationData2 =
-            pModelData + (unsigned int)pNode->m_pAnimationData2;
+        pNode->m_pAnimVertData =
+            pModelData + (unsigned int)pNode->m_pAnimVertData;
     }
     else
     {
-        pNode->m_pAnimationData2 = 0;
+        pNode->m_pAnimVertData = 0;
+    }
+    if (pNode->m_nAnimTVertFrames != 0)
+    {
+        pNode->m_pAnimTVertData =
+            pModelData + (unsigned int)pNode->m_pAnimTVertData;
+    }
+    else
+    {
+        pNode->m_pAnimTVertData = 0;
     }
     pNode->m_pfnGenVertices = MdlNodeAnimMeshGenVertices;
     pNode->m_pfnRemoveTemporaryArrays = MdlNodeAnimMeshRemoveTemporaryArrays;
@@ -1548,15 +1548,15 @@ class Output
 public:
     Output() : m_lstAllocations(0)
     {
-        m_nUnknown0c = 0;
-        m_nUnknown10 = 0;
+        m_nModelDataSize = 0;
+        m_nVertexDataSize = 0;
     }
     ~Output();
     bool Write(MaxTree* pTree, char* sFileName);
 
     List<char*> m_lstAllocations;
-    int m_nUnknown0c;
-    int m_nUnknown10;
+    int m_nModelDataSize;
+    int m_nVertexDataSize;
 };
 
 char sOutputPath[WRITE_PATH_LENGTH];

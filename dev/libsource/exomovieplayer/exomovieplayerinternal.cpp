@@ -186,7 +186,7 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
     SetWindowPos(m_hMovieWnd, HWND_TOPMOST, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
                  SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOCOPYBITS);
 
-    m_nUnknown60 = 0;
+    m_nCurrentFrame = 0;
     if (m_bPaused == 0)
     {
         m_hBink = NULL;
@@ -289,7 +289,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
         NULL, 0x8000,
         (LPTHREAD_START_ROUTINE)CExoMoviePlayerInternal::PlayMoviesAsync, this,
         0, (LPDWORD)&m_dwWorkerThreadId);
-    m_nUnknown34 = 0;
+    m_nCurrentMovie = 0;
     m_bCancelMovie = 0;
     m_nCancelResult = 0;
     m_bDeactivated = 0;
@@ -298,7 +298,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     m_pFadePanel = NULL;
     m_hBinkBuffer = NULL;
     m_hBink = NULL;
-    m_nUnknown70 = 0;
+    m_nFrameRate = 0;
     m_hMovieWnd = NULL;
     m_bPaused = 0;
 }
@@ -363,28 +363,28 @@ void CExoMoviePlayerInternal::OnDeactivation(int bToggleFullScreen)
         m_bToggleFullScreen = bToggleFullScreen;
 }
 // PC 0x00404CB0 GOG 0x00404CB0
-int CExoMoviePlayerInternal::CancelMovie(int nA, int nB)
+int CExoMoviePlayerInternal::CancelMovie(int nResult, int bForce)
 {
-    if (nB == 0)
+    if (bForce == 0)
     {
         if (m_bMoviePlaying == 1)
         {
             if (m_bSkippable == 0)
             {
-                m_nCancelResult = nA;
-                return nA;
+                m_nCancelResult = nResult;
+                return nResult;
             }
         }
         else
         {
-            m_nCancelResult = nA;
+            m_nCancelResult = nResult;
             return 1;
         }
     }
 
     m_bCancelMovie = 1;
-    m_nCancelResult = nA;
-    return nA;
+    m_nCancelResult = nResult;
+    return nResult;
 }
 // PC 0x004056E0 GOG 0x004056E0
 int CExoMoviePlayerInternal::RunMovieLoop(int nWait)

@@ -446,10 +446,10 @@ CExoInputInternal::CExoInputInternal(HINSTANCE hInstance, HWND hWnd)  // PC 0x00
     m_nOutputEvents = 0;
     m_bKeyboardMode = 0;
     m_bCaptureKeyboardKeys = 0;
-    m_nUnknown388 = 0;
-    m_nUnknown38C = 0;
-    m_nUnknown390 = 0;
-    m_nUnknown394 = 0;
+    m_nMouseMinX = 0;
+    m_nMouseMinY = 0;
+    m_nMouseMaxX = 0;
+    m_nMouseMaxY = 0;
 
     m_aControlMap[CExoInput::JOYSTICK_BUTTON0] = DIJOFS_BUTTON(0);
     m_aControlMap[CExoInput::JOYSTICK_BUTTON1] = DIJOFS_BUTTON(1);
@@ -618,7 +618,7 @@ CExoInputInternal::CExoInputInternal(HINSTANCE hInstance, HWND hWnd)  // PC 0x00
             m_nMouseY = -1;
             m_bMouseWarped = 0;
             m_nCursor = -1;
-            m_nUnknown39C = 0;
+            m_bCursorCentered = 0;
             m_nLastSetMouseDownState = 0;
         }
     }
@@ -1199,7 +1199,7 @@ void CExoInputInternal::RefreshMouseCursor(int bMouseDown)
     {
         nCursor = 1;
     }
-    SetMouseCursor(nCursor, m_nUnknown39C, bMouseDown);
+    SetMouseCursor(nCursor, m_bCursorCentered, bMouseDown);
 }
 // PC 0x0062C310 GOG 0x0062C200
 int CExoInputInternal::SetMouseCursor(int nCursor, int bCentered, int bMouseDown)

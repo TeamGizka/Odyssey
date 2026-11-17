@@ -242,7 +242,7 @@ extern "C"
     PROC glUnusedExtension62;
 }
 
-int g_nGLExtUnused1 = 0;
+int hasRequiredBumpMapExts = 0;
 
 int existingextensions = 0;
 
@@ -284,10 +284,10 @@ int useatifragmentshaders = 1;
 int renderlevel = 2;
 int g_nUnlockATISoftShadowsForHotFix = 0;
 
-int g_nGLExtUnused2 = 0;
+int g_nUnlockATIFrameBufferForHotFix = 0;
 
 unsigned int lookup = 0;
-int g_nGLExtUnused3 = 0;
+int lookupsize = 0;
 
 int AurATIFrameBufferModificationsAvailable();
 int AurATIFragmentShaderAvailable();

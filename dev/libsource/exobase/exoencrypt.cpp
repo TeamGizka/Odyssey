@@ -85,7 +85,7 @@ void CExoEncrypt::MD5Init()
     m_anState[2] = 0x98BADCFE;
     m_anState[3] = 0x10325476;
     memset(m_anInput, 0, sizeof(m_anInput));
-    memset(m_anUnknown58, 0, sizeof(m_anUnknown58));
+    memset(m_anBuffer, 0, sizeof(m_anBuffer));
     memset(m_anDigest, 0, sizeof(m_anDigest));
 }
 

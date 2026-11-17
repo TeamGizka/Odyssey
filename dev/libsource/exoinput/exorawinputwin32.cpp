@@ -6,8 +6,8 @@
 
 static int nCurrentJoystick = 0;
 
-int g_nRawJoystickUnused1;
-int g_nRawJoystickUnused2;
+int nJoysticksFound;
+int nJoystickAxisRange;
 // PC 0x00600DB0 GOG 0x00600DC0
 CExoDeviceBuffer::CExoDeviceBuffer()
 {

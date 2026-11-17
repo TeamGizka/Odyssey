@@ -224,12 +224,12 @@ public:
     int m_nMouseX;
     int m_nMouseY;
     int m_bMouseWarped;
-    int m_nUnknown388;
-    int m_nUnknown38C;
-    int m_nUnknown390;
-    int m_nUnknown394;
+    int m_nMouseMinX;
+    int m_nMouseMinY;
+    int m_nMouseMaxX;
+    int m_nMouseMaxY;
     int m_nCursor;
-    int m_nUnknown39C;
+    int m_bCursorCentered;
     float m_fMouseDeltaX;
     float m_fMouseDeltaY;
     int m_bCaptureKeyboardKeys;

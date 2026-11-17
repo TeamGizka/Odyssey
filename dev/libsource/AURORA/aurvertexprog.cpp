@@ -12,8 +12,8 @@
 
 int currentframe;
 
-int nVertexProgUnused1;
-int nVertexProgUnused2;
+int nLastVertexProgram;
+int nLastVertexProgramFrame;
 List<VertexProgram*> VertexProgramManager::cm_listExistentVertexPrograms;
 #ifndef _XBOX
 

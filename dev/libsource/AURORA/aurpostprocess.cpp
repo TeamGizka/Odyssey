@@ -806,9 +806,9 @@ void MdlNodeSkin::InternalPostProcess()
 void MdlNodeAnimMesh::InternalGenVertices()
 {
 
-    m_nAnimationDataCount1 = m_lAnimationVectors1.m_nCount /
+    m_nAnimVertFrames = m_lAnimVerts.m_nCount /
                             m_pPostProcess->m_lPositions.m_nCount;
-    m_nAnimationDataCount2 = m_lAnimationVectors2.m_nCount /
+    m_nAnimTVertFrames = m_lAnimTVerts.m_nCount /
                             m_pPostProcess->m_lTextureCoordinates0.m_nCount;
 
     int nFace;
@@ -826,16 +826,16 @@ void MdlNodeAnimMesh::InternalGenVertices()
             int nTexCoord = m_pPostProcess->m_lTextureCoordinates0.m_nCount != 0
                 ? m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner] : 0;
             int nNormal = m_pPostProcess->m_lFaces[nFace].m_pFaceRemap[nCorner];
-            for (nSample = 0; nSample < m_nAnimationDataCount1; nSample++)
+            for (nSample = 0; nSample < m_nAnimVertFrames; nSample++)
             {
-                lPositions.Add(m_lAnimationVectors1[nPosition + nSample *
+                lPositions.Add(m_lAnimVerts[nPosition + nSample *
                     m_pPostProcess->m_lPositions.m_nCount]);
-                lNormals.Add(m_lAnimationVectors3[nNormal + nSample *
+                lNormals.Add(m_lAnimNormals[nNormal + nSample *
                     m_pPostProcess->m_lNormals.m_nCount]);
             }
-            for (nSample = 0; nSample < m_nAnimationDataCount2; nSample++)
+            for (nSample = 0; nSample < m_nAnimTVertFrames; nSample++)
             {
-                lTexCoords.Add(m_lAnimationVectors2[nTexCoord + nSample *
+                lTexCoords.Add(m_lAnimTVerts[nTexCoord + nSample *
                     m_pPostProcess->m_lTextureCoordinates0.m_nCount]);
             }
 
@@ -1133,9 +1133,9 @@ void MdlNodeAnimMesh::InternalRemoveTemporaryArrays()
     }
 
     m_pPostProcess->m_lstVertices.SetSize(0);
-    m_lAnimationVectors1.SetSize(0);
-    m_lAnimationVectors2.SetSize(0);
-    m_lAnimationVectors3.SetSize(0);
+    m_lAnimVerts.SetSize(0);
+    m_lAnimTVerts.SetSize(0);
+    m_lAnimNormals.SetSize(0);
 
     MdlNodeTriMesh::InternalRemoveTemporaryArrays();
 }

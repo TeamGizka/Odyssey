@@ -17,7 +17,7 @@ public:
     unsigned long m_anCount[2];
     unsigned long m_anState[4];
     unsigned char m_anInput[64];
-    unsigned char m_anUnknown58[64];
+    unsigned char m_anBuffer[64];
     unsigned char m_anDigest[16];
 };
 

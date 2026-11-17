@@ -2240,11 +2240,11 @@ void MdlNodeAnimMesh::InternalParseField(char* sField)
         }
         if (stricmp("animverts", firstword(sField)) == 0)
         {
-            Parse<Vector>(sField + 9, m_lAnimationVectors1);
+            Parse<Vector>(sField + 9, m_lAnimVerts);
         }
         if (stricmp("animtverts", firstword(sField)) == 0)
         {
-            Parse<Vector>(sField + 10, m_lAnimationVectors2);
+            Parse<Vector>(sField + 10, m_lAnimTVerts);
         }
     }
 

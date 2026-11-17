@@ -1393,7 +1393,7 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
     else
         nFrame = 0;
 
-    if (nFrame >= 0 && nFrame < m_nAnimationDataCount1 - 1)
+    if (nFrame >= 0 && nFrame < m_nAnimVertFrames - 1)
     {
         float fAlpha = fPreviousTime / m_fSamplePeriod - nFrame;
         VertexPrimitiveAnim* pPrimitive = pAnimMesh->m_pVertexPrimitive->AsVertexPrimitiveAnim();
@@ -1406,13 +1406,13 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
             vOld.m_fX = pVertices[i].m_fX;
             vOld.m_fY = pVertices[i].m_fY;
             vOld.m_fZ = pVertices[i].m_fZ;
-            int nIndex = (i * m_nAnimationDataCount1 + nFrame) * 3;
-            vFirst.m_fX = ((float*)m_pAnimationData1)[nIndex];
-            vFirst.m_fY = ((float*)m_pAnimationData1)[nIndex + 1];
-            vFirst.m_fZ = ((float*)m_pAnimationData1)[nIndex + 2];
-            vSecond.m_fX = ((float*)m_pAnimationData1)[nIndex + 3];
-            vSecond.m_fY = ((float*)m_pAnimationData1)[nIndex + 4];
-            vSecond.m_fZ = ((float*)m_pAnimationData1)[nIndex + 5];
+            int nIndex = (i * m_nAnimVertFrames + nFrame) * 3;
+            vFirst.m_fX = ((float*)m_pAnimVertData)[nIndex];
+            vFirst.m_fY = ((float*)m_pAnimVertData)[nIndex + 1];
+            vFirst.m_fZ = ((float*)m_pAnimVertData)[nIndex + 2];
+            vSecond.m_fX = ((float*)m_pAnimVertData)[nIndex + 3];
+            vSecond.m_fY = ((float*)m_pAnimVertData)[nIndex + 4];
+            vSecond.m_fZ = ((float*)m_pAnimVertData)[nIndex + 5];
             vNew = Interpolate(vFirst, vSecond, fAlpha);
             vOld = Interpolate(vOld, vNew, fBlend);
             pVertices[i].m_fX = vOld.m_fX;
@@ -1421,7 +1421,7 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
         }
         GLRender::UnlockPool(pPrimitive->m_nVertexPool);
     }
-    else if (m_nAnimationDataCount1 != 0)
+    else if (m_nAnimVertFrames != 0)
     {
         VertexPrimitiveAnim* pPrimitive = pAnimMesh->m_pVertexPrimitive->AsVertexPrimitiveAnim();
         unsigned long nPool = pPrimitive->m_nVertexPool;
@@ -1429,17 +1429,17 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
                                                       RequestPoolManager::POOL_LOCK_WRITE);
         if (nFrame < 0)
             nFrame = 0;
-        if (nFrame > m_nAnimationDataCount1 - 1)
-            nFrame = m_nAnimationDataCount1 - 1;
+        if (nFrame > m_nAnimVertFrames - 1)
+            nFrame = m_nAnimVertFrames - 1;
         Vector vNew;
         for (int i = 0; i < m_nVertexCount; i++)
         {
-            float* pData = (float*)m_pAnimationData1;
+            float* pData = (float*)m_pAnimVertData;
             Vector vOld;
             vOld.m_fX = pVertices[i].m_fX;
             vOld.m_fY = pVertices[i].m_fY;
             vOld.m_fZ = pVertices[i].m_fZ;
-            int nIndex = (i * m_nAnimationDataCount1 + nFrame) * 3;
+            int nIndex = (i * m_nAnimVertFrames + nFrame) * 3;
             vNew.m_fX = pData[nIndex];
             vNew.m_fY = pData[nIndex + 1];
             vNew.m_fZ = pData[nIndex + 2];
@@ -1451,41 +1451,41 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
         GLRender::UnlockPool(pPrimitive->m_nVertexPool);
     }
 
-    if (m_nAnimationDataCount2 != 0)
+    if (m_nAnimTVertFrames != 0)
     {
         VertexPrimitiveAnim* pPrimitive = pAnimMesh->m_pVertexPrimitive->AsVertexPrimitiveAnim();
         float* pTexCoords = (float*)GLRender::LockPool(pPrimitive->m_nTexCoordPool, 0, 0,
                                                     RequestPoolManager::POOL_LOCK_WRITE);
-        if (nFrame >= 0 && nFrame < m_nAnimationDataCount2 - 1)
+        if (nFrame >= 0 && nFrame < m_nAnimTVertFrames - 1)
         {
             float fAlpha = fPreviousTime / m_fSamplePeriod - nFrame;
             Vector vFirst, vSecond;
             for (int i = 0; i < m_nVertexCount; i++)
             {
                 Vector vOld(pTexCoords[i * 2], pTexCoords[i * 2 + 1], 0.0f);
-                int nIndex = (i << 1) * m_nAnimationDataCount2 + (nFrame << 1);
-                vFirst.m_fX = ((float*)m_pAnimationData2)[nIndex];
-                vFirst.m_fY = ((float*)m_pAnimationData2)[nIndex + 1];
-                vSecond.m_fX = ((float*)m_pAnimationData2)[nIndex + 2];
-                vSecond.m_fY = ((float*)m_pAnimationData2)[nIndex + 3];
+                int nIndex = (i << 1) * m_nAnimTVertFrames + (nFrame << 1);
+                vFirst.m_fX = ((float*)m_pAnimTVertData)[nIndex];
+                vFirst.m_fY = ((float*)m_pAnimTVertData)[nIndex + 1];
+                vSecond.m_fX = ((float*)m_pAnimTVertData)[nIndex + 2];
+                vSecond.m_fY = ((float*)m_pAnimTVertData)[nIndex + 3];
                 Vector vNew = Interpolate(vFirst, vSecond, fAlpha);
                 vOld = Interpolate(vOld, vNew, fBlend);
                 pTexCoords[i * 2] = vOld.m_fX;
                 pTexCoords[i * 2 + 1] = vOld.m_fY;
             }
         }
-        else if (m_nAnimationDataCount2 != 0)
+        else if (m_nAnimTVertFrames != 0)
         {
             int nTexFrame = nFrame > 0 ? nFrame : 0;
-            if (nTexFrame >= m_nAnimationDataCount2 - 1)
-                nTexFrame = m_nAnimationDataCount2 - 1;
+            if (nTexFrame >= m_nAnimTVertFrames - 1)
+                nTexFrame = m_nAnimTVertFrames - 1;
             Vector vNew;
             for (int i = 0; i < m_nVertexCount; i++)
             {
                 Vector vOld(pTexCoords[i * 2], pTexCoords[i * 2 + 1], 0.0f);
-                int nIndex = (i << 1) * m_nAnimationDataCount2 + (nTexFrame << 1);
-                vNew.m_fX = ((float*)m_pAnimationData2)[nIndex];
-                vNew.m_fY = ((float*)m_pAnimationData2)[nIndex + 1];
+                int nIndex = (i << 1) * m_nAnimTVertFrames + (nTexFrame << 1);
+                vNew.m_fX = ((float*)m_pAnimTVertData)[nIndex];
+                vNew.m_fY = ((float*)m_pAnimTVertData)[nIndex + 1];
                 vOld = Interpolate(vOld, vNew, fBlend);
                 pTexCoords[i * 2] = vOld.m_fX;
                 pTexCoords[i * 2 + 1] = vOld.m_fY;

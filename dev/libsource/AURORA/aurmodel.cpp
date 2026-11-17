@@ -1243,8 +1243,8 @@ MdlNodeAnimMesh::~MdlNodeAnimMesh()
         DestructorDispatch();
     m_nNodeType = 0;
     DestructorDispatch();
-    delete[] m_pAnimationData1;
-    delete[] m_pAnimationData2;
+    delete[] m_pAnimVertData;
+    delete[] m_pAnimTVertData;
 }
 // PC 0x0045D140 GOG 0x0045D280
 MdlNodeSkin::~MdlNodeSkin()
@@ -3852,11 +3852,11 @@ Gob::Gob(char* sName)
     m_fPersonalSpaceRadius = 0.0f;
     m_fPersonalSpaceRadius2 = 0.0f;
     m_bSingleTexture = 0;
-    m_bUnused = 0;
+    m_bSingleMaterial = 0;
     m_bHasGeometry = 0;
     m_bDistortion = 0;
     m_pSingleTexture = 0;
-    m_nUnused1 = 0;
+    m_nSingleTextureID = 0;
     m_bRenderBumpedOut = 0;
     m_bHasTransparency = 0;
     m_bIgnoreHitCheck = false;
@@ -3887,7 +3887,7 @@ Gob::Gob(char* sName)
     m_pLightContainer = new CAurObjectLightContainer;
     m_nVisiblePixels = 1;
     m_bSkipHierarchyAnimation = 0;
-    m_n1FC = 0;
+    m_bSkipAnimation = 0;
     gobs.Insert(this, FindGobIdx(m_sName));
 }
 // PC 0x0045F850 GOG 0x0045F960
@@ -4200,9 +4200,9 @@ MdlNodeTriMesh::MdlNodeTriMesh(char* sName)
     m_nTexCoord2Offset = -1;
     m_nTexCoord3Offset = -1;
     m_TangentBases = -1;
-    m_nUnusedVertexOffset1 = -1;
-    m_nUnusedVertexOffset2 = -1;
-    m_nUnusedVertexOffset3 = -1;
+    m_TangentBases1 = -1;
+    m_TangentBases2 = -1;
+    m_TangentBases3 = -1;
     m_fSurfaceArea = 0.0f;
 #ifdef _XBOX
     m_fXboxUnmapped190 = 0.0f;
@@ -4321,17 +4321,17 @@ Model::Model(char* sName) : MaxTree(sName)
 // PC 0x0045F110 GOG 0x0045F220
 MdlNodeAnimMesh::MdlNodeAnimMesh(char* sName)
     : MdlNodeTriMesh(sName),
-      m_lAnimationVectors1(0),
-      m_lAnimationVectors2(0),
-      m_lAnimationVectors3(0)
+      m_lAnimVerts(0),
+      m_lAnimTVerts(0),
+      m_lAnimNormals(0)
 {
     m_fSamplePeriod = 0.0f;
     m_sTexture0[0] = 0;
     m_sTexture1[0] = 0;
-    m_nAnimationDataCount1 = 0;
-    m_nAnimationDataCount2 = 0;
-    m_pAnimationData1 = 0;
-    m_pAnimationData2 = 0;
+    m_nAnimVertFrames = 0;
+    m_nAnimTVertFrames = 0;
+    m_pAnimVertData = 0;
+    m_pAnimTVertData = 0;
     m_pfnGenVertices = MdlNodeAnimMeshGenVertices;
     m_pfnRemoveTemporaryArrays = MdlNodeAnimMeshRemoveTemporaryArrays;
     m_nNodeType = MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH;

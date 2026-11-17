@@ -9,7 +9,7 @@
 
 int nPlotPathAroundCreatureCount = 0;
 
-int nPathfindInfoUnused = 0;
+int nPlotPathAroundCreatureFailCount = 0;
 float fPlotAroundCreatureAditionalSpace = 0.2f;
 
 int bRenderHexTest;
