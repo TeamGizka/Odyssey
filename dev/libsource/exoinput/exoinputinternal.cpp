@@ -66,8 +66,8 @@ CExoInputEventDescDetailed::CExoInputEventDescDetailed()
 }
 // PC 0x0062C000 GOG 0x0062BEF0
 CExoInputEventDescDetailed::CExoInputEventDescDetailed(
-    const CExoInputEventDesc& desc)
-    : CExoInputEventDesc(desc)
+    CExoInputEventDesc* pDesc)
+    : CExoInputEventDesc(pDesc)
 {
     m_fScale = 1.0f;
     m_fExponent = 1.0f;
@@ -947,7 +947,7 @@ int CExoInputInternal::ScaleEvent(unsigned long nEvent, float fScale,
     case 5:
     {
         CExoInputEventDescDetailed* pScaled =
-            new CExoInputEventDescDetailed(*pDesc);
+            new CExoInputEventDescDetailed(pDesc);
         pScaled->m_fScale = fScale;
         pScaled->m_fExponent = fExponent;
         pScaled->m_bScaled = 1;

@@ -23,15 +23,15 @@ public:
         m_nCoolDown = 0;
     }
 
-    CExoInputEventDesc(const CExoInputEventDesc& desc)
+    CExoInputEventDesc(CExoInputEventDesc* pDesc)
     {
-        m_nValue = desc.m_nValue;
-        m_nEvent = desc.m_nEvent;
-        m_nType = desc.m_nType;
-        m_nClass = desc.m_nClass;
-        m_nControl = desc.m_nControl;
-        m_nInputClassCount = desc.m_nInputClassCount;
-        m_nCoolDown = desc.m_nCoolDown;
+        m_nValue = pDesc->m_nValue;
+        m_nEvent = pDesc->m_nEvent;
+        m_nType = pDesc->m_nType;
+        m_nClass = pDesc->m_nClass;
+        m_nControl = pDesc->m_nControl;
+        m_nInputClassCount = pDesc->m_nInputClassCount;
+        m_nCoolDown = pDesc->m_nCoolDown;
     }
     // PC 0x004065A0 GOG 0x00406570
     virtual int IsDetailed()
@@ -57,7 +57,7 @@ class CExoInputEventDescDetailed : public CExoInputEventDesc
 {
 public:
     CExoInputEventDescDetailed();
-    CExoInputEventDescDetailed(const CExoInputEventDesc& desc);
+    CExoInputEventDescDetailed(CExoInputEventDesc* pDesc);
     // PC 0x0065D0F0 GOG 0x0065CF00
     virtual int IsDetailed()
     {
