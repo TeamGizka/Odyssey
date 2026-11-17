@@ -1016,6 +1016,39 @@ int CSWGuiManager::IsOnTop(CSWGuiPanel* pPanel)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
+void CSWGuiManager::DrawPCBG(float fElapsed)
+{
+    AurGUIStartLayer();
+
+    if (AurGUISetupViewport(0, 0, m_nWidth, m_nHeight, Vector(), false, 1.0f) !=
+        0)
+    {
+        if (m_pPCBackground == NULL)
+        {
+            m_pPCBackground = new CSWGuiLabel();
+            CResRef cBackground(m_sBackground);
+
+            m_pPCBackground->Initialize(
+                CSWGuiExtent(0, 0, m_nWidth, m_nHeight), CSWGuiTextParams(),
+                CSWGuiBorderParams(CResRef(), CResRef(), cBackground,
+                                   0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0), 1.0f);
+        }
+        {
+            CResRef cFill(m_sBackground);
+
+            m_pPCBackground->m_cBorder.m_cParams.SetFillImage(cFill, 0);
+            CSWGuiBorderParams& cParams = m_pPCBackground->m_cBorder.m_cParams;
+            cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
+        }
+        m_pPCBackground->Draw(fElapsed);
+        AurGUICloseViewport();
+    }
+    AurGUIStopLayer();
+}
+#endif
+
+#ifndef _XBOX
 int CSWGuiManager::ActivateSoftwareMouse()  // PC 0x0040B260 GOG 0x0040B230
 {
     m_pMouseScene = new CSWGuiScene();

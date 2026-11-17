@@ -19035,6 +19035,12 @@ ConsoleFunc ConVbDisableScriptLogging("bDisableScriptLogging", &bDisableScriptLo
 ConsoleFunc ConFrunscript("runscript", runscript);
 ConsoleFunc ConVbShipBuild("bShipBuild", &bShipBuild);
 #endif
+
+// Dead code: not in the PC executable
+int CSWVirtualMachineCommands::ExecuteCommandSetDislike(int, int)
+{
+    return 0;
+}
 int CSWVirtualMachineCommands::ExecuteCommandGetDifficultyMultiplier(  // PC 0x005CB2A0 GOG 0x005CB310
     int nCommand, int nArgs)
 {

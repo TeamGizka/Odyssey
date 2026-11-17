@@ -29,6 +29,12 @@ unsigned long CResMDL::GetMDLSize()
 {
     return m_nMDLSize;
 }
+
+// Dead code: not in the PC executable
+int CResMDL::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x0077FE60 GOG 0x0062B5A0
 int CResMDL::OnResourceServiced()
 {

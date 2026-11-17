@@ -56,6 +56,12 @@ void CSWGuiTargetActionMenu::ResetFont()
     m_cHealthBackground.ReSetFont();
 #endif
 }
+
+// Dead code: not in the PC executable
+void CSWGuiCharButton::SetCharPointer(CSWGuiMainInterfaceChar* pCharacter)
+{
+    m_pCharacter = pCharacter;
+}
 #endif
 
 #ifdef _XBOX
@@ -1695,6 +1701,18 @@ void CSWGuiFloatyText::CreateEntry(unsigned long oidObject,
             }
         }
     }
+}
+
+// Dead code: not in the PC executable
+int CSWGuiFloatyText::IncrementPosition()
+{
+    if (++m_bActive <= SWGUI_FLOATY_TEXT_MAX_LINES)
+    {
+        m_cExtent.m_nTop -= m_cExtent.m_nHeight;
+        SetExtent(m_cExtent);
+        return 1;
+    }
+    return 0;
 }
 // PC 0x006DF5F0 GOG 0x006E1700
 void CSWGuiMainInterface::OnSwapWeaponsPressed(CSWGuiControl* pControl)

@@ -469,6 +469,16 @@ float CClientOptions::GetCameraKeyboardDPS()
     }
     return m_fKeyboardCameraDPS;
 }
+
+// Dead code: not in the PC executable
+void CClientOptions::SetCameraKeyboardDPS(float fDPS)
+{
+    if (KeyboardCameraRotationSpeed != -1.0f)
+    {
+        KeyboardCameraRotationSpeed = fDPS;
+    }
+    m_fKeyboardCameraDPS = fDPS;
+}
 // PC 0x0066D390 GOG 0x0066D130
 float CClientOptions::GetCameraKeyboardAcceleration()
 {
@@ -478,6 +488,16 @@ float CClientOptions::GetCameraKeyboardAcceleration()
     }
     return m_fKeyboardCameraAcceleration;
 }
+
+// Dead code: not in the PC executable
+void CClientOptions::SetCameraKeyboardAcceleration(float fAcceleration)
+{
+    if (KeyboardCameraRotationAccl != -1.0f)
+    {
+        KeyboardCameraRotationAccl = fAcceleration;
+    }
+    m_fKeyboardCameraAcceleration = fAcceleration;
+}
 // PC 0x0066D3C0 GOG 0x0066D160
 float CClientOptions::GetCameraKeyboardDeceleration()
 {
@@ -486,6 +506,16 @@ float CClientOptions::GetCameraKeyboardDeceleration()
         return KeyboardCameraRotationDecel;
     }
     return m_fKeyboardCameraDeceleration;
+}
+
+// Dead code: not in the PC executable
+void CClientOptions::SetCameraKeyboardDeceleration(float fDeceleration)
+{
+    if (KeyboardCameraRotationDecel != -1.0f)
+    {
+        KeyboardCameraRotationDecel = fDeceleration;
+    }
+    m_fKeyboardCameraDeceleration = fDeceleration;
 }
 // PC 0x0066D3F0 GOG 0x0066D190
 void CClientOptions::SetEnableHardwareMouseCursor(int bEnabled)
@@ -624,6 +654,16 @@ void CClientOptions::SetVSync(unsigned long nVSync)
         AurSetVSyncState(0);
     }
 }
+
+// Dead code: not in the PC executable
+void CClientOptions::SetToolTipTimeDelay(float fDelay)
+{
+    m_fGuiScale = fDelay;
+    if (g_pGuiMan != 0)
+    {
+        g_pGuiMan->m_fToolTipDelay = fDelay;
+    }
+}
 #endif
 
 // Dead code: not in the PC executable
@@ -671,6 +711,12 @@ void CClientOptions::SetDefaultMouseOptions()
     m_bReverseMouseButtons = 0;
     m_nMouseSensitivity = 44;
 }
+
+// Dead code: not in the PC executable
+void CClientOptions::SetDefaultScreenShotOptions()
+{
+    m_bEnableScreenShot = 0;
+}
 // PC 0x0066D720 GOG 0x0066D4C0
 void CClientOptions::SetDefaultKeyboardCamera()
 {
@@ -689,6 +735,20 @@ void CClientOptions::SetDefaultKeyboardCamera()
         KeyboardCameraRotationDecel = 2000.0f;
     }
     m_fKeyboardCameraDeceleration = 2000.0f;
+}
+
+// Dead code: not in the PC executable
+void CClientOptions::SetDefaultGamma()
+{
+    m_nBrightness = 57;
+    m_fGammaMin = 0.23f;
+    m_fGammaMax = 2.0f;
+}
+
+// Dead code: not in the PC executable
+void CClientOptions::SetDefaultMouseSen()
+{
+    m_nMouseSensitivity = 44;
 }
 // PC 0x0066D7A0 GOG 0x0066D540
 void CClientOptions::SetDefaultOptions()

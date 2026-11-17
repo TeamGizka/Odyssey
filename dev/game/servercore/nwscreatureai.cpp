@@ -6447,6 +6447,64 @@ int CSWSCreature::GetNumInvited()
     }
     return 0;
 }
+
+// Dead code: not in the PC executable
+int CSWSCreature::GetStandardFactionReputation(int nStandardFaction)
+{
+    int nReputation = -1;
+
+    if (m_pStats->m_bIsPC != 0)
+    {
+        if (nStandardFaction >= 0 && m_pCreatureList != NULL &&
+            nStandardFaction < m_pCreatureList->num)
+        {
+            nReputation = (*m_pCreatureList)[nStandardFaction - 1];
+        }
+    }
+    else
+    {
+        CServerExoAppInternal* pInternal =
+            g_pAppManager->m_pServerExoApp->m_pcExoAppInternal;
+        if (pInternal != NULL)
+        {
+            nReputation = pInternal->m_pFactionManager->GetNPCFactionReputation(
+                nStandardFaction, m_pStats->m_nFactionId);
+        }
+    }
+    return nReputation;
+}
+
+// Dead code: not in the PC executable
+void CSWSCreature::SetStandardFactionReputation(int nStandardFaction, int nReputation)
+{
+    if (nReputation < 0)
+    {
+        nReputation = 0;
+    }
+    else if (nReputation > 100)
+    {
+        nReputation = 100;
+    }
+
+    if (m_pStats->m_bIsPC != 0)
+    {
+        if (nStandardFaction >= 0 && m_pCreatureList != NULL &&
+            nStandardFaction < m_pCreatureList->num)
+        {
+            (*m_pCreatureList)[nStandardFaction - 1] = nReputation;
+        }
+    }
+    else
+    {
+        CServerExoAppInternal* pInternal =
+            g_pAppManager->m_pServerExoApp->m_pcExoAppInternal;
+        if (pInternal != NULL)
+        {
+            pInternal->m_pFactionManager->SetNPCFactionReputation(
+                m_pStats->m_nFactionId, nStandardFaction, nReputation);
+        }
+    }
+}
 // PC 0x0054DDD0 GOG 0x0054DEF0
 int CSWSCreature::HasAction(unsigned long nAction)
 {

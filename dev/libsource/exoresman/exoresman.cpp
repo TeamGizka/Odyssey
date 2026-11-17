@@ -427,6 +427,12 @@ int CExoResMan::UpdateEncapsulatedResourceFile(const CExoString& sFileName)
 }
 
 // Dead code: not in the PC executable
+int CExoResMan::UpdateResourceImageFile(const CExoString& sFileName)
+{
+    return UpdateKeyTable(sFileName, TABLE_RESOURCE_IMAGE);
+}
+
+// Dead code: not in the PC executable
 int CExoResMan::UpdateFixedKeyTableFile(const CExoString& sFileName)
 {
     return UpdateKeyTable(sFileName, TABLE_KEY);
@@ -1219,6 +1225,13 @@ int CRes::Release()
 {
     return g_pExoResMan->Release(this);
 }
+
+// Dead code: not in the PC executable
+void CRes::SetID(unsigned long nResId)
+{
+    g_pExoResMan->Dump(this, 1);
+    m_nResId = nResId;
+}
 // PC 0x00409EA0 GOG 0x00409E70
 void AsyncRimLoadThreadProc(void* pParameter)
 {
@@ -1324,6 +1337,33 @@ int CExoResMan::ValidateSignedResource(const CExoString& sFileName,
                                        unsigned long nSize,
                                        unsigned long nFlags)
 {
+    return 1;
+}
+
+// Dead code: not in the PC executable
+int CExoResMan::SetTotalResourceMemory(int nMemory)
+{
+    if (nMemory > (int)m_nTotalPhysicalMemory)
+    {
+        return 0;
+    }
+
+    if (m_nMemoryLimit > nMemory)
+    {
+        if (m_nMemoryLimit - nMemory > m_nAvailableMemory)
+        {
+            return 0;
+        }
+
+        m_nAvailableMemory -= m_nMemoryLimit - nMemory;
+    }
+    else
+    {
+        m_nAvailableMemory += nMemory - m_nMemoryLimit;
+    }
+
+    m_nMemoryLimit = nMemory;
+
     return 1;
 }
 
@@ -2394,6 +2434,18 @@ void* CRes::GetData()
 int CRes::GetDemands()
 {
     return m_nDemandCount;
+}
+
+// Dead code: not in the PC executable
+int CRes::GetRequests()
+{
+    return m_nRequestCount;
+}
+
+// Dead code: not in the PC executable
+unsigned long CRes::GetID()
+{
+    return m_nResId;
 }
 // PC 0x004065D0 GOG 0x004065A0
 void CRes::GetResRef(CResRef& cResRef, unsigned short& nType)

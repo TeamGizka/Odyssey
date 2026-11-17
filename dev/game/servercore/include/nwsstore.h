@@ -48,7 +48,9 @@ public:
     int AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bLoading);
     void RemoveFromArea();
     int SellItem(CSWSItem* pItem, CSWSCreature* pCreature);
+    void RemoveCustomer(class CSWSPlayer* pPlayer);
     int AddItemToInventory(CSWSItem** ppItem, int bAppend = 0);
+    int RemoveItemFromInventory(CSWSItem* pItem);
     int LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate);
     int AcquireItem(CSWSItem* pItem, int bAppend = 0);
     int LoadFromTemplate(const CResRef& cResRef, int bFromTemplate);

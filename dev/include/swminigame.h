@@ -228,6 +228,7 @@ public:
     Vector GetAcceleration(CSWMGPhysicsState& state, const Vector& vTarget);
     void GetClipDist(float* pfNear, float* pfFar);
     void SetClipDist(float fNear, float fFar);
+    void SetViewAngle(float fViewAngle);
     Vector BumpPlane(const Quaternion& qOrientation);
     int GetAttachType();
     void AxisAcceleration(const Vector& vAxis, float fScale);
@@ -255,6 +256,11 @@ public:
                              unsigned char bCameraRotate);
     int SetMouseAxisX(int nAxis);
     int SetMouseAxisY(int nAxis);
+    int SetBumpPlane(int nPlane);
+    int SetPlane(int& nPlane, int nValue);
+    int SetDOF(int nDOF);
+    void SetMovementPerSecond(float fMovementPerSecond);
+    int SetType(int nType);
     void SetCurPos(Vector vPosition);
     CSWMiniEnemy* AddEnemy(CExoArrayList<CResRef>& lstModels,
                            CExoArrayList<unsigned char>& lstRotating,
@@ -552,6 +558,8 @@ public:
     float SetInvincibility(float fTime);
     int GetIsInvulnerable();
     int SetMaxHitPoints(int nHitPoints);
+    CExoSoundSource* GetSound(int nSound);
+    CResRef GetSoundName(int nSound);
     int GetSoundVolume(int nSound);
     void SetSoundFrequency(int nSound, int nFrequency);
     int GetSoundFrequencyIsRandom(int nSound);
@@ -581,6 +589,7 @@ public:
     void OnDamage(int bScript);
     int DoObstacleHitCheck(CSWMGObstacle* pObstacle);
     void OnDeath(int bScript);
+    void Die();
     void RemoveGunBank(CSWMGGunBank* pGunBank);
     void Go();
     int AttachGuns(CAurObject* pObject);

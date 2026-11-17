@@ -433,6 +433,46 @@ float CSWCCreatureStats::GetMinSpellRange(const CExoString& sRange)
     }
     return fRange;
 }
+
+// Dead code: not in the PC executable
+float CSWCCreatureStats_ClassInfo::GetMinSpellRange(const CExoString& sRange)
+{
+    float fRange;
+    if (sRange == "T" || sRange == "P")
+    {
+        fRange = g_pRules->m_afSecondaryRange[CSWRules::RANGE_TOUCH];
+    }
+    else if (sRange == "S")
+    {
+        fRange = g_pRules->m_afSecondaryRange[CSWRules::RANGE_SHORT];
+    }
+    else if (sRange == "M")
+    {
+        fRange = g_pRules->m_afSecondaryRange[CSWRules::RANGE_MEDIUM];
+    }
+    else if (sRange == "L")
+    {
+        fRange = g_pRules->m_afSecondaryRange[CSWRules::RANGE_LONG];
+    }
+    else if (sRange == "W")
+    {
+        fRange = g_pRules->m_afSecondaryRange[CSWRules::RANGE_WEAPON];
+    }
+    return fRange;
+}
+
+// Dead code: not in the PC executable
+int CSWCCreatureStats_ClassInfo::HasSpell(unsigned char nLevel, unsigned long nSpell)
+{
+    for (int i = 0; i < (unsigned short)m_lstKnownSpells[nLevel].num; i++)
+    {
+        if (m_lstKnownSpells[nLevel].element[i] == nSpell)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
 // PC 0x006FBD40 GOG 0x006FB930
 CResRef CSWCCreatureStats::GetPortrait(int bAlternate)
 {
@@ -994,6 +1034,16 @@ inline unsigned long CSWCCreatureStats_ClassInfo::GetKnownSpell(unsigned char nL
     }
     return m_lstKnownSpells[nLevel][nIndex];
 }
+
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats_ClassInfo::GetSpellsPerDayLeft(unsigned char nLevel)
+{
+    if (nLevel >= SPELL_LEVEL_COUNT)
+    {
+        return 0;
+    }
+    return m_aSpellsPerDayLeft[nLevel];
+}
 // PC 0x006FD870 GOG 0x006FD460
 int CSWCCreatureStats::GetCanUseSkill(unsigned short nSkill)
 {
@@ -1030,6 +1080,20 @@ int CSWCCreatureStats::GetCanUseSkill(unsigned short nSkill)
 CSWCCreatureStats_ClassInfo::~CSWCCreatureStats_ClassInfo()
 {
     ClearKnownSpells();
+}
+
+// Dead code: not in the PC executable
+unsigned long CSWCCreatureStats::GetAlignmentStringRef(int nAlignment)
+{
+    switch (GetSimpleAlignmentGoodEvil())
+    {
+    case CSWSCreatureStats::ALIGNMENT_GOOD:
+        return 0;
+    case CSWSCreatureStats::ALIGNMENT_EVIL:
+        return 0;
+    default:
+        return 0;
+    }
 }
 // PC 0x006FC760 GOG 0x006FC350
 CExoString CSWCCreatureStats::GetAlignmentString(int nAlignment)
@@ -2461,6 +2525,12 @@ unsigned char CSWCCreatureStats::CalculateUnarmedDamageDie()
         CTwoDimArrays::COL2DA_APPEARANCETABLE_SIZECATEGORY, &nSizeCategory);
     return 0;
 }
+
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats::CalculateCriticalHitRange()
+{
+    return 1;
+}
 // PC 0x006FF5F0 GOG 0x006FF1E0
 unsigned char CSWCLevelUpStats::AddDefaultPackageFeats(
     int nClass, CExoArrayList<unsigned short>* pList, int bNormal, int bBonus)
@@ -2734,6 +2804,12 @@ void CSWCCreatureStats::GetMenuInfo(
 
 // Dead code: not in the PC executable
 int CSWCCreatureStats::CalculateAttackModifier()
+{
+    return GetSTRMod();
+}
+
+// Dead code: not in the PC executable
+int CSWCCreatureStats::CalculateDamageModifier()
 {
     return GetSTRMod();
 }

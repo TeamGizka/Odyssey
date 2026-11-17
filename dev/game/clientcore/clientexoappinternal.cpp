@@ -1091,6 +1091,14 @@ unsigned long CClientExoAppInternal::GetNearestVideoMode(unsigned long nWidth, u
     }
     return nNearestMode;
 }
+
+// Dead code: not in the PC executable
+unsigned long CClientExoAppInternal::GetVideoMode(unsigned long nWidth, unsigned long nHeight,
+                                                  unsigned char nBitsPerPixel,
+                                                  unsigned long nRefreshRate)
+{
+    return CAuroraInterface::GetExactVideoMode(nWidth, nHeight, nBitsPerPixel, nRefreshRate);
+}
 #endif
 
 #ifdef _XBOX
@@ -1977,6 +1985,11 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0 G
     return 0;
 }
 #endif
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::DoDownloadedResourceDirectories(DoDLResDirParam nParam, int bFlag)
+{
+}
 // PC 0x00645160 GOG 0x00645010
 void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList)
 {
@@ -6882,6 +6895,11 @@ void CClientExoAppInternal::InitializeMoviePlayer()
     m_pMoviePlayer->Initialize(NULL);
 #endif
 }
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::UpdateMoviePlayer()
+{
+}
 // PC 0x0063DFE0 GOG 0x0063DEE0
 void CClientExoAppInternal::BarkString(unsigned long oidObject,
                                       const CExoString& sText,
@@ -7861,6 +7879,12 @@ void CClientExoAppInternal::AddDownloadedResources()  // PC 0x0063F6B0 GOG 0x006
         }
     }
 }
+
+// Dead code: not in the PC executable
+int CClientExoAppInternal::AttachPatchFiles(int bAttach)
+{
+    return 1;
+}
 #endif
 // PC 0x0063F9A0 GOG 0x0063F800
 void CClientExoAppInternal::PlayerFlourishWeapons()
@@ -8119,6 +8143,11 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
         return 0;
     }
     return 0;
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::DisplayOptionsLoadError()
+{
 }
 // PC 0x00643630 GOG 0x006434E0
 void CClientExoAppInternal::UpdateLoadingScreenHint()

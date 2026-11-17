@@ -46,6 +46,19 @@ CSWGuiSkillFlow::CSWGuiSkillFlow()
     }
 }
 
+// Dead code: not in the PC executable
+void CSWGuiSkillFlow::Clear()
+{
+    int i;
+
+    for (i = 0; i < 3; i++)
+    {
+        m_aSkills[i].m_bSelected = 0;
+        m_aSkills[i].m_nSkill = -1;
+        m_aSkills[i].m_nStatus = 0;
+    }
+}
+
 // PC 0x0073AC90 GOG 0x0073ABC0
 void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
 {

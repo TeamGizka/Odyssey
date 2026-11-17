@@ -8,6 +8,12 @@ CResSSF::CResSSF()
 CResSSF::~CResSSF()
 {
 }
+
+// Dead code: not in the PC executable
+int CResSSF::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x00749990 GOG 0x007497E0
 int CResSSF::OnResourceFreed()
 {

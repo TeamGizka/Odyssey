@@ -792,6 +792,11 @@ void CSWSCreature::ResolveOnHitVisuals(CSWSObject* pTarget)
         pAttack->m_lstEffects.Add(pEffect);
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSCreature::ResolveElementalDamage(CSWSObject* pTarget)
+{
+}
 enum
 {
     FEAT_LOW_HEALTH_SAVE_BONUS = 199,
@@ -4617,6 +4622,81 @@ void CSWSCreature::DoCombatStep(unsigned char nStep, int nTime,
     m_pcCombatRound->SetRoundPaused(0, OBJECT_INVALID);
     m_pcCombatRound->SetPauseTimer(0, 0);
     SetAnimation(CREATURE_ANIMATION_PAUSE_READY);
+}
+
+// Dead code: not in the PC executable
+int CSWSCreature::GetFlatFooted()
+{
+    if (m_bDebilitated == CSWSEffectListHandler::STATE_STUN ||
+        m_bDebilitated == CSWSEffectListHandler::STATE_MIND_TRICK_18 ||
+        m_bDebilitated == CSWSEffectListHandler::STATE_MIND_TRICK_19)
+    {
+        return 1;
+    }
+    if (!(m_nAIStateFlags & AI_STATE_CAN_MOVE) ||
+        !(m_nAIStateFlags & AI_STATE_CAN_USE_HANDS))
+    {
+        return 1;
+    }
+    if (GetBlind())
+    {
+        return 1;
+    }
+    switch (m_nAIState)
+    {
+    case 0:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
+    case 20:
+    case 21:
+    case 22:
+    case 23:
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+    case 28:
+    case 29:
+    case 30:
+    case 31:
+        return 1;
+    }
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CSWSCreature::GetFlanked(CSWSCreature* pTarget)
+{
+    if (pTarget == NULL)
+    {
+        return 0;
+    }
+    if (pTarget->m_oidAttackTarget == m_nId ||
+        pTarget->m_oidAttemptedAttackTarget == m_nId ||
+        pTarget->m_oidAttemptedSpellTarget == m_nId ||
+        pTarget->m_oidAttemptedSpellTarget == m_oidArea ||
+        pTarget->m_oidAttemptedSpellTarget == pTarget->m_nId ||
+        pTarget->m_oidSpellTarget == m_nId ||
+        pTarget->m_oidSpellTarget == m_oidArea ||
+        pTarget->m_oidSpellTarget == pTarget->m_nId)
+    {
+        return 0;
+    }
+    if (pTarget->m_oidAttackTarget == OBJECT_INVALID &&
+        pTarget->m_oidAttemptedAttackTarget == OBJECT_INVALID &&
+        pTarget->m_oidAttemptedSpellTarget == OBJECT_INVALID &&
+        pTarget->m_oidSpellTarget == OBJECT_INVALID)
+    {
+        return 0;
+    }
+    return 1;
 }
 
 inline int CSWSCreature::CalculateProjectileTimeToTarget(const Vector& vTarget,

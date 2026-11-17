@@ -1515,6 +1515,8 @@ public:
 
 
     void DoCombatStep(unsigned char nStep, int nTime, unsigned long oidTarget);
+    int GetFlatFooted();
+    int GetFlanked(CSWSCreature* pTarget);
 
 
     enum CombatStep
@@ -1611,6 +1613,7 @@ public:
     int UseItem(unsigned long oidItem, unsigned char nItemProperty,
                  unsigned char nItemOption, unsigned long oidTarget,
                  const Vector& vTarget, unsigned long oidArea, int bItemOption);
+    void RestoreItemProperties();
 
 
     int AddItemCastSpellActions(unsigned long oidItem, int nItemProperty,
@@ -1624,6 +1627,7 @@ public:
 
 
     enum { ITEM_PROPERTY_INVALID = -1 };
+    int AddPickPocketActions(unsigned long oidTarget);
     int AddPickUpItemActions(unsigned long oidItem, unsigned long oidRepository,
                              unsigned char nPanel);
     int TransferGold(unsigned long oidTarget, const Vector& vPosition,
@@ -1741,6 +1745,7 @@ public:
 
     void SignalRangedDamage(unsigned long oidTarget);
     void ResolveOnHitVisuals(CSWSObject* pTarget);
+    void ResolveElementalDamage(CSWSObject* pTarget);
 
     void ResolveOnHitEffect(CSWSObject* pTarget, int bOffHand, int bCritical);
 
@@ -1822,6 +1827,8 @@ public:
                                 unsigned long oidKilledCreature);
     unsigned long GetNearestEnemy(float fRange, unsigned long oidRelativeTo,
                                   unsigned long oidExclude);
+    int AddAnimalEmpathyAction(unsigned long oidTarget);
+    int AddTauntActions(unsigned long oidTarget);
 
     unsigned long GetAttemptedAttackTarget() { return m_oidAttemptedAttackTarget; }
     void SetAttemptedAttackTarget(unsigned long oidTarget);
@@ -1892,6 +1899,7 @@ public:
     void AddToInvitationsIgnored(unsigned long oidCreature);
     short GetMaxHitPoints(int bBaseOnly);
     short GetMaxForcePoints();
+    void SetBroadcastedAOOTo(int bBroadcastedAOO);
     int GetUseMonkAbilities();
     int IsSpellCastingAnimation(unsigned short nAnimation);
     int UpdateSubareasOnJumpPosition(const Vector& vPosition,
@@ -2681,17 +2689,20 @@ public:
     void AddComponent(int nComponent, int bFeedback);
     void AddChemical(int nChemical, int bFeedback);
     void RemoveGold(int nGold, int bFeedback);
+    void CancelGoldTransfer(unsigned long oidGold);
 
 
     void UpdateAppearanceForEquippedItems();
     int RequestBuy(unsigned long oidItem, unsigned long oidStore);
     int RequestSell(unsigned long oidItem, unsigned long oidStore);
     void CutWaypointPath();
+    void SetInTransit(int bInTransit);
     int AddCutsceneAttackActions(unsigned long oidTarget, int nAnimation, int nAttackResult,
                                  int nDamage);
     int AddCutsceneMoveActions(unsigned long oidTarget, const Vector& vTarget,
                                int bRun);
     void CancelCombat(int bNotify);
+    int GetTurnResistanceHD();
     int AddAttackActions(unsigned long oidTarget, unsigned short nSpecialAttack, int nAttackFlags,
                          int bNewAttackTarget, int bClearActions, int bAddToFront, int bQueueAction, int nActionType,
                          int nAnimation, int nAnimationTime, int nAttacks, int bUseAttackResult,
@@ -2699,6 +2710,8 @@ public:
     int AddStanceActions(int nStance, unsigned long oidTarget, int nAttackFlags,
                          int bClearActions, int bAddToFront, int bQueueAction);
     void AdjustReputation(int nFaction, int nAdjustment);
+    int GetStandardFactionReputation(int nStandardFaction);
+    void SetStandardFactionReputation(int nStandardFaction, int nReputation);
     void SetFormation(unsigned long oidLeader, int nFormation, int nPosition);
     int GetUserActionsPending();
 
@@ -2751,6 +2764,8 @@ public:
     enum { REST_CANCEL_ACTION = 20 };
     void CancelRest(unsigned short nFeedback);
     void Rest(int bFlag);
+    void RemoveSleepEffects();
+    void RemoveBadEffects();
     void OnEndDialog(CSWSObject* pObject);
     void SetPreDialogPosition(Vector vPosition);
     void SetPreDialogOrientation(Vector vOrientation);
@@ -2844,6 +2859,7 @@ public:
     }
     int UnequipItem(CSWSItem* pItem);
     int ToggleMode(unsigned char nMode);
+    int ComputeTotalWeightCarried();
 
     enum ModeToggle
     {

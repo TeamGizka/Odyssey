@@ -21,6 +21,12 @@ unsigned long CResTXI::GetTXISize()
 {
     return m_nTXISize;
 }
+
+// Dead code: not in the PC executable
+int CResTXI::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x007845C0 GOG 0x00784460
 int CResTXI::OnResourceFreed()
 {

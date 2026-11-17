@@ -21,6 +21,12 @@ unsigned long CResMDX::GetMDXSize()
 {
     return m_nMDXSize;
 }
+
+// Dead code: not in the PC executable
+int CResMDX::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x007845C0 GOG 0x00784460
 int CResMDX::OnResourceFreed()
 {

@@ -12,6 +12,17 @@ CRes4PC::CRes4PC()
 CRes4PC::~CRes4PC()
 {
 }
+
+// Dead code: not in the PC executable
+int CRes4PC::Copy4PCData(unsigned char* p4PCData)
+{
+    if (m_bServiced == 0)
+    {
+        return 0;
+    }
+    memcpy(p4PCData, m_pData, m_nReserved);
+    return 1;
+}
 // PC 0x00404CF0 GOG 0x00404CF0
 unsigned char* CRes4PC::Get4PCDataPtr()
 {
@@ -29,6 +40,24 @@ int CRes4PC::Get4PCAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC, in
     *pfC = ((float*)m_pHeader)[2];
     *pnD = m_pHeader[3];
     return 1;
+}
+
+// Dead code: not in the PC executable
+unsigned long* CRes4PC::Get4PCHeaderPtr()
+{
+    return m_pHeader;
+}
+
+// Dead code: not in the PC executable
+int CRes4PC::Get4PCSize()
+{
+    return m_nReserved;
+}
+
+// Dead code: not in the PC executable
+int CRes4PC::IsLoaded()
+{
+    return m_bServiced;
 }
 // PC 0x00784760 GOG 0x00784610
 int CRes4PC::OnResourceFreed()

@@ -238,6 +238,17 @@ void CExoDebugInternal::WriteToVOTestFile(const CExoString& text)
         FlushVOTestFile();
     }
 }
+
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteResourceToScreen(const CExoString& text,
+                                              int nColumn, int nRow,
+                                              float fDuration)
+{
+    if (g_bDisplayServicedResources)
+    {
+        text.CStr();
+    }
+}
 // PC 0x00637A50 GOG 0x00637950
 void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
 {

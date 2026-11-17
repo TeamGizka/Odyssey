@@ -21,6 +21,12 @@ unsigned long CResVIS::GetVISSize()
 {
     return m_nVISSize;
 }
+
+// Dead code: not in the PC executable
+int CResVIS::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x007845C0 GOG 0x00784460
 int CResVIS::OnResourceFreed()
 {

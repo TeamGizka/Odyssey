@@ -223,6 +223,18 @@ int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
     }
     return 0;
 }
+
+// Dead code: not in the PC executable
+int CSWSStore::RemoveItemFromInventory(CSWSItem* pItem)
+{
+    return m_pItemRepository->RemoveItem(pItem);
+}
+
+// Dead code: not in the PC executable
+void CSWSStore::RemoveCustomer(CSWSPlayer* pPlayer)
+{
+    m_n240 = OBJECT_INVALID;
+}
 // PC 0x005711E0 GOG 0x00571310
 int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
 {

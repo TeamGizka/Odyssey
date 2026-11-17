@@ -165,6 +165,26 @@ void CSWTrackFollower::SetScriptName(int nScript, const CResRef& resRef)
     }
     m_aScripts[nScript] = resRef;
 }
+
+// Dead code: not in the PC executable
+CExoSoundSource* CSWTrackFollower::GetSound(int nSound)
+{
+    if (nSound < 0 || nSound >= NUM_SOUND_SOURCES)
+    {
+        return 0;
+    }
+    return m_apSoundSources[nSound];
+}
+
+// Dead code: not in the PC executable
+CResRef CSWTrackFollower::GetSoundName(int nSound)
+{
+    if (nSound < SOUND_DEATH || nSound >= SOUND_COUNT)
+    {
+        return CResRef();
+    }
+    return m_aOtherSoundNames[nSound - SOUND_DEATH];
+}
 // PC 0x006C1C10 GOG 0x006C19F0
 int CSWTrackFollower::GetSoundVolume(int nSound)
 {
@@ -950,6 +970,16 @@ void CSWTrackFollower::OnDeath(int bScript)
         }
     }
     GetMiniGame()->RemoveEnemy((CSWMiniEnemy*)this);
+}
+
+// Dead code: not in the PC executable
+void CSWTrackFollower::Die()
+{
+    if (!m_bDying)
+    {
+        m_bDying = 1;
+        OnDeath(0);
+    }
 }
 // PC 0x006C3140 GOG 0x006C2F70
 int CSWTrackFollower::AttachGuns(CAurObject* pObject)

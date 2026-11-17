@@ -169,6 +169,24 @@ int CClientExoAppInternal::PerformRButtonUpAction()
     return 0;
 #endif
 }
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::PerformMButtonDownAction()
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::PerformMButtonUpAction()
+{
+}
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::PerformZMouseMoveAction(int nZ)
+{
+#ifndef _XBOX
+    g_pGuiMan->HandleZMouse(nZ);
+#endif
+}
 // PC 0x0066FE30 GOG 0x0066FBD0
 void CClientExoAppInternal::SetMouseCursor(int nCursor, int bCentered, int bMouseDown)
 {

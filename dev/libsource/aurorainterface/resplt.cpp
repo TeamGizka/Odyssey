@@ -15,6 +15,17 @@ CResPLT::CResPLT()
 CResPLT::~CResPLT()
 {
 }
+
+// Dead code: not in the PC executable
+int CResPLT::CopyPLTData(unsigned char* pPLTData)
+{
+    if (m_bServiced == 0)
+    {
+        return 0;
+    }
+    memcpy(pPLTData, m_pPLTData, m_nPLTSize);
+    return 1;
+}
 // PC 0x007843C0 GOG 0x00784190
 int CResPLT::GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long* pnC)
 {
@@ -131,4 +142,28 @@ int CResPLT::ReadRLEPLT()
 unsigned char* CResPLT::GetPLTDataPtr()
 {
     return m_pPLTData;
+}
+
+// Dead code: not in the PC executable
+unsigned long* CResPLT::GetPLTHeaderPtr()
+{
+    return m_pPLTHeader;
+}
+
+// Dead code: not in the PC executable
+unsigned long CResPLT::GetPLTSize()
+{
+    return m_nPLTSize;
+}
+
+// Dead code: not in the PC executable
+int CResPLT::IsCompressed()
+{
+    return m_bCompressed;
+}
+
+// Dead code: not in the PC executable
+int CResPLT::IsLoaded()
+{
+    return m_bServiced;
 }

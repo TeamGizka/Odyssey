@@ -78,6 +78,14 @@ int CExoBase::WcsToMbs(char* sDest, const wchar_t* sSource,
 {
     return m_pInternal->WcsToMbs(sDest, sSource, nLength);
 }
+
+#ifndef _XBOX
+// Dead code: not in the PC executable
+int CExoBase::CheckForCD()
+{
+    return m_pInternal->CheckForCD();
+}
+#endif
 // PC 0x00631FD0 GOG 0x00631EC0
 CExoBase::~CExoBase()
 {

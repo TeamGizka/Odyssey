@@ -31,10 +31,13 @@ public:
 
     CSWRace();
     ~CSWRace();
+    CExoString GetDescriptionText();
+    CExoString GetDefaultBiographyText();
 
     CExoString GetNameText();
     CExoString GetConverNameText();
     CExoString GetConverNameLowerText();
+    CExoString GetNamePluralText();
     void LoadFeatsTable(const CExoString& sTable);
     int IsFirstLevelGrantedFeat(unsigned short nFeat);
 

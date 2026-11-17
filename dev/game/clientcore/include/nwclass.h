@@ -109,8 +109,10 @@ struct CSWClass
     char GetArmorBonus(int nLevel);
     static int IsJedi(int nClass);
     unsigned long GetNameStrRef();
+    CExoString GetDescriptionText();
     CExoString GetNameText();
     CExoString GetNameLowerText();
+    CExoString GetNamePluralText();
     unsigned char GetAttackBonus(unsigned char nLevel);
     unsigned char GetFortSaveBonus(unsigned char nLevel);
     unsigned char GetRefSaveBonus(unsigned char nLevel);

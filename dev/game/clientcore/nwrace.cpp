@@ -49,6 +49,22 @@ CSWRace::~CSWRace()
         m_pFirstLevelGrantedFeats = 0;
     }
 }
+
+// Dead code: not in the PC executable
+CExoString CSWRace::GetDescriptionText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nDescriptionStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+
+// Dead code: not in the PC executable
+CExoString CSWRace::GetDefaultBiographyText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nBiographyStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
 // PC 0x00614DA0 GOG 0x00614D80
 CExoString CSWRace::GetNameText()
 {
@@ -69,6 +85,14 @@ CExoString CSWRace::GetConverNameLowerText()
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nConverNameLowerStrRef, strRes,
                        CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+
+// Dead code: not in the PC executable
+CExoString CSWRace::GetNamePluralText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nNamePluralStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
 // PC 0x00614F80 GOG 0x00614F60

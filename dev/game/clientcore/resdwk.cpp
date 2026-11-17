@@ -27,6 +27,12 @@ unsigned long CResDWK::GetDWKSize()
 }
 
 // Dead code: not in the PC executable
+int CResDWK::IsLoaded()
+{
+    return m_bServiced;
+}
+
+// Dead code: not in the PC executable
 int CResDWK::OnResourceFreed()
 {
     m_bServiced = 0;

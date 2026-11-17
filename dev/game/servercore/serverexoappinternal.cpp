@@ -1443,6 +1443,26 @@ void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CServerExoAppInternal::UpdateClientsForObject(unsigned long oidObject)
+{
+    unsigned __int64 nTime;
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+
+    nTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        if (pPlayer->GetLastUpdateObject(oidObject) != NULL)
+        {
+            m_pSWSMessage->SendServerToPlayerGameObjUpdate(pPlayer, oidObject);
+        }
+        m_pPlayerList->GetNext(pNode);
+    }
+}
 // Dead code: not in the PC executable
 int CServerExoAppInternal::ValidatePlayerLogin(void* pPlayerData)
 {
@@ -1497,6 +1517,21 @@ CSWSCreature* CServerExoAppInternal::GetCreatureByGameObjectID(
         pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
     {
         return ((CSWSObject*)pObject)->AsSWSCreature();
+    }
+    return NULL;
+}
+
+// Dead code: not in the PC executable
+CSWSModule* CServerExoAppInternal::GetModuleByGameObjectID(unsigned long oidObject)
+{
+    CGameObject* pObject = NULL;
+
+    if (m_pObjectArray->GetGameObject(oidObject, &pObject) ==
+            CGameObjectArray::SUCCESS &&
+        pObject != NULL &&
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_MODULE)
+    {
+        return pObject->AsSWSModule();
     }
     return NULL;
 }
@@ -2338,6 +2373,38 @@ int CServerExoAppInternal::HasEnoughDiskSpaceForSaveGame()
 // PC 0x004065A0 GOG 0x00406570
 int CServerExoAppInternal::GetModuleLanguage()
 {
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CServerExoAppInternal::AddPendingAuthorization(unsigned long nPlayerId)
+{
+    unsigned long nIndex;
+
+    for (nIndex = 0; nIndex < 16; nIndex++)
+    {
+        if (m_pServerOptions[nIndex] == CNetLayer::PLAYERID_INVALIDID)
+        {
+            m_pServerOptions[nIndex] = nPlayerId;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CServerExoAppInternal::RemovePendingAuthorization(unsigned long nPlayerId)
+{
+    unsigned long nIndex;
+
+    for (nIndex = 0; nIndex < 16; nIndex++)
+    {
+        if (m_pServerOptions[nIndex] == nPlayerId)
+        {
+            m_pServerOptions[nIndex] = CNetLayer::PLAYERID_INVALIDID;
+            return 1;
+        }
+    }
     return 0;
 }
 // PC 0x004015A0 GOG 0x004015A0
@@ -3648,6 +3715,18 @@ int CServerExoAppInternal::ResolvePlayerByFirstName(const CExoString& sFirstName
     }
     return CGameObjectArray::INVALIDOBJID;
 }
+
+// Dead code: not in the PC executable
+unsigned long CServerExoAppInternal::GetPlayerIDByGameObjectID(unsigned long oidObject)
+{
+    CSWSPlayer* pPlayer = GetClientObjectByObjectId(oidObject);
+
+    if (pPlayer == NULL)
+    {
+        return CNetLayer::PLAYERID_INVALIDID;
+    }
+    return pPlayer->m_nPlayerId;
+}
 // PC 0x004EEEE0 GOG 0x004ED2C0
 int CServerExoAppInternal::UpdateShutdownTimer(unsigned __int64 nTime)
 {
@@ -4172,6 +4251,11 @@ inline void CServerExoAppInternal::SetEstimatedSaveSize(
 #endif
 }
 
+// Dead code: not in the PC executable
+void CServerExoAppInternal::UpdateWindowTitle()
+{
+}
+
 inline void CServerExoAppInternal::SendExitingStartNewModuleMessage(
     int bSuccess)
 {
@@ -4561,6 +4645,26 @@ void CServerExoAppInternal::StopServices()
     {
         delete m_pFactionManager;
         m_pFactionManager = NULL;
+    }
+}
+
+// Dead code: not in the PC executable
+void CServerExoAppInternal::MarkUpdateClientsForObject(unsigned long oidObject)
+{
+    unsigned __int64 nTime;
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+
+    nTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        if (pPlayer->GetLastUpdateObject(oidObject) != NULL)
+        {
+            UpdateClientGameObjectsForPlayer(pPlayer, 1, nTime);
+        }
+        m_pPlayerList->GetNext(pNode);
     }
 }
 // PC 0x004F0E30 GOG 0x004F0970

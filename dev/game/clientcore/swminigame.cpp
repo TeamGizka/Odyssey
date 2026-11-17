@@ -94,6 +94,16 @@ void CSWMiniGame::SetClipDist(float fNear, float fFar)
         m_pCam->SetClipDist(m_fNearClip, m_fFarClip);
     }
 }
+
+// Dead code: not in the PC executable
+void CSWMiniGame::SetViewAngle(float fViewAngle)
+{
+    m_fViewAngle = fViewAngle;
+    if (m_pCam != NULL)
+    {
+        m_pCam->SetViewAngle(fViewAngle);
+    }
+}
 // PC 0x006C5770 GOG 0x006C5480
 Vector CSWMiniGame::BumpPlane(const Quaternion& qOrientation)
 {
@@ -637,6 +647,48 @@ int CSWMiniGame::SetMouseAxisY(int nAxis)
         m_nMouseAxisY = nAxis;
     }
     return m_nMouseAxisY;
+}
+
+// Dead code: not in the PC executable
+int CSWMiniGame::SetBumpPlane(int nPlane)
+{
+    return SetPlane(m_nBumpPlane, nPlane);
+}
+
+// Dead code: not in the PC executable
+int CSWMiniGame::SetPlane(int& nPlane, int nValue)
+{
+    if (nValue >= 0 && nValue <= 3)
+    {
+        nPlane = nValue;
+    }
+    return nPlane;
+}
+
+// Dead code: not in the PC executable
+int CSWMiniGame::SetDOF(int nDOF)
+{
+    if ((nDOF & ~DOF_VALID_MASK) == 0)
+    {
+        m_nDOF = nDOF;
+    }
+    return m_nDOF;
+}
+
+// Dead code: not in the PC executable
+void CSWMiniGame::SetMovementPerSecond(float fMovementPerSecond)
+{
+    m_fAxisScale = fMovementPerSecond;
+}
+
+// Dead code: not in the PC executable
+int CSWMiniGame::SetType(int nType)
+{
+    if (nType == ATTACH_PLAYER_MODEL || nType == ATTACH_CAMERA_HOOK)
+    {
+        m_nAttachType = nType;
+    }
+    return m_nAttachType;
 }
 // PC 0x006C68A0 GOG 0x006C65B0
 void CSWMiniGame::SetCurPos(Vector vPosition)

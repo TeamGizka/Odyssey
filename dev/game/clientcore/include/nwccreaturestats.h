@@ -39,8 +39,11 @@ public:
 
     int GetNumberKnownSpells(unsigned char nLevel) { return m_lstKnownSpells[nLevel].num; }
     unsigned long GetKnownSpell(unsigned char nLevel, unsigned char nIndex);
+    unsigned char GetSpellsPerDayLeft(unsigned char nLevel);
     void AddKnownSpell(unsigned char nLevel, unsigned long nSpell);
     void RemoveKnownSpell(unsigned char nLevel, unsigned long nSpell);
+    float GetMinSpellRange(const CExoString& sRange);
+    int HasSpell(unsigned char nLevel, unsigned long nSpell);
 
     CExoArrayList<unsigned long> m_lstKnownSpells[SPELL_LEVEL_COUNT];
     CExoArrayList<unsigned long> m_lstAdditionalSpells[1];
@@ -173,6 +176,7 @@ public:
     short GetMaxHitPoints();
     int CalculateNumAttacks();
     int CalculateAttackModifier();
+    int CalculateDamageModifier();
 
     void SetGender(unsigned char nGender) { m_nGender = nGender; }
     void SetGoodEvilAlignment(short nAlignment)
@@ -236,6 +240,7 @@ public:
     int GetCombatModeDamageModifier(CSWCCreature* pCreature);
 
     enum { STRREF_ATTACK_BONUS_VERSUS = 0 };
+    unsigned long GetAlignmentStringRef(int nAlignment);
     CExoString GetAlignmentString(int nAlignment);
     CResRef GetPortrait(int bAlternate);
     void GetMenuInfo(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
@@ -265,6 +270,7 @@ public:
     void InitializeCombatInformation();
     unsigned char CalculateUnarmedDamageDice();
     unsigned char CalculateUnarmedDamageDie();
+    unsigned char CalculateCriticalHitRange();
     void SetCombatInformation(CCombatInformation* pInfo);
     void SetFeatRemainingUses(unsigned short nFeat, unsigned char nUses);
 

@@ -100,6 +100,7 @@ public:
     static const int MISSING_LIVE_CONTENT_TOKEN = 0;
     void PromptForSaveName(CSWGuiControl* pControl);
     void HandleSaveButton(CSWGuiControl* pControl);
+    void SaveNamePanelClose(int bSave, CExoString sSaveName);
 
     static const unsigned long STRREF_CONFIRM_OVERWRITE = 1591;
     static const unsigned long STRREF_SAVE_SPACE_REQUIRED = 48754;

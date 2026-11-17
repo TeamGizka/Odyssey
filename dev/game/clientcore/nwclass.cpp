@@ -523,6 +523,14 @@ int CSWClass::IsSkillUseable(unsigned short nSkill)
     }
     return 0;
 }
+
+// Dead code: not in the PC executable
+CExoString CSWClass::GetDescriptionText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nDescriptionStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
 // PC 0x0060E400 GOG 0x0060E3E0
 CExoString CSWClass::GetNameText()
 {
@@ -535,6 +543,14 @@ CExoString CSWClass::GetNameLowerText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameLowerStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+
+// Dead code: not in the PC executable
+CExoString CSWClass::GetNamePluralText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nNamePluralStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
 // PC 0x0060E540 GOG 0x0060E520

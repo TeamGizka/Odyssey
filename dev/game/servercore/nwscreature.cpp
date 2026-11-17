@@ -6786,6 +6786,12 @@ int CSWSCreature::ToggleMode(unsigned char nMode)
     }
     return 1;
 }
+
+// Dead code: not in the PC executable
+int CSWSCreature::ComputeTotalWeightCarried()
+{
+    return m_nEquippedWeight + GetItemRepository(TRUE)->CalculateContentsWeight();
+}
 // PC 0x00521A00 GOG 0x00521A60
 void CSWSCreature::UpdateAttributesOnEffect(CGameEffect* pEffect)
 {
@@ -7613,6 +7619,31 @@ int CSWSCreature::UseItem(unsigned long oidItem, unsigned char nItemProperty,
     }
     return nResult;
 }
+
+// Dead code: not in the PC executable
+void CSWSCreature::RestoreItemProperties()
+{
+    for (int nSlot = 0; nSlot < CSWInventory::TOTAL_SLOT_COUNT; nSlot++)
+    {
+        CSWSItem* pItem = m_pInventory->GetItemInSlot(1 << nSlot);
+        if (pItem != NULL)
+        {
+            pItem->RestoreUsedActiveProperties(0);
+            pItem->UpdateUsedActiveProperties();
+        }
+    }
+
+    CItemRepository* pRepository = GetItemRepository(TRUE);
+    while (pRepository->GetNumItems() != 0)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(0);
+        if (pItem != NULL)
+        {
+            pItem->RestoreUsedActiveProperties(0);
+            pItem->UpdateUsedActiveProperties();
+        }
+    }
+}
 // PC 0x0051E270 GOG 0x0051E2D0
 void CSWSCreature::GetNearestObjects(float fHostileRange, float fRange,
                                      CExoArrayList<unsigned long>& aForward,
@@ -8018,6 +8049,18 @@ unsigned long CSWSCreature::GetNearestEnemy(float fRange, unsigned long oidExclu
         }
     }
     return oidNearest;
+}
+
+// Dead code: not in the PC executable
+int CSWSCreature::AddAnimalEmpathyAction(unsigned long oidTarget)
+{
+    return 0;
+}
+
+// Dead code: not in the PC executable
+int CSWSCreature::AddTauntActions(unsigned long oidTarget)
+{
+    return 0;
 }
 // PC 0x00514D50 GOG 0x00514DB0
 int CSWSCreature::AddCounterSpellActions(unsigned long oidTarget)
@@ -8438,6 +8481,48 @@ void CSWSCreature::Rest(int bFlag)
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CSWSCreature::RemoveSleepEffects()
+{
+    for (int nEffect = 0;
+         nEffect < m_lstEffects.num &&
+         m_lstEffects[nEffect]->m_nType <= CSWSEffectListHandler::EFFECT_SETSTATE;
+         nEffect++)
+    {
+        CGameEffect* pEffect = m_lstEffects[nEffect];
+        if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_SETSTATE &&
+            pEffect->GetInteger(0) == CSWSEffectListHandler::STATE_SLEEP)
+        {
+            RemoveEffectById(pEffect->m_nID);
+        }
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCreature::RemoveBadEffects()
+{
+    int nEffect = 0;
+    while (nEffect < m_lstEffects.num &&
+           m_lstEffects[nEffect]->m_nType <= CSWSEffectListHandler::EFFECT_WOUNDING)
+    {
+        CGameEffect* pEffect = m_lstEffects[nEffect];
+        if ((pEffect->m_nSubType & CGameEffect::DURATION_MASK) ==
+                CGameEffect::DURATION_TYPE_TEMPORARY ||
+            ((pEffect->m_nSubType & CGameEffect::DURATION_MASK) ==
+                 CGameEffect::DURATION_TYPE_PERMANENT &&
+             ((pEffect->m_nSubType & CGameEffect::SUBTYPE_MASK) == SUBTYPE_EXTRAORDINARY ||
+              (pEffect->m_nSubType & CGameEffect::SUBTYPE_MASK) == SUBTYPE_MAGICAL)))
+        {
+            RemoveEffectById(pEffect->m_nID);
+            nEffect = 0;
+        }
+        else
+        {
+            nEffect++;
+        }
+    }
+}
 // PC 0x0051F050 GOG 0x0051F0B0
 short CSWSCreature::GetMaxForcePoints()
 {
@@ -8501,6 +8586,16 @@ short CSWSCreature::GetMaxForcePoints()
             return max(nCreatureLevel, nForcePoints);
         }
         return 0;
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCreature::SetBroadcastedAOOTo(int bBroadcastedAOO)
+{
+    m_bTimedAnimation = bBroadcastedAOO;
+    if (bBroadcastedAOO == 1)
+    {
+        m_nTimedAnimationRemaining = 1500;
     }
 }
 // PC 0x0051F370 GOG 0x0051F3D0
@@ -8592,6 +8687,22 @@ void CSWSCreature::RemoveGold(int nGold, int bFeedback)
         CSWCCMessageData* pMessageData = new CSWCCMessageData;
         pMessageData->SetInteger(0, nGoldRemoved);
         SendFeedbackMessage(FEEDBACK_GOLD_REMOVED, pMessageData);
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSCreature::CancelGoldTransfer(unsigned long oidGold)
+{
+    CGameObject* pObject;
+    if (g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(
+            oidGold, &pObject) == CGameObjectArray::SUCCESS)
+    {
+        CSWSItem* pItem = pObject->AsSWSItem();
+        if (pItem != NULL &&
+            pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CREDITS)
+        {
+            GetItemRepository(TRUE)->AddItem(&pItem, 1, 0, 1);
+        }
     }
 }
 // PC 0x0050E7C0 GOG 0x0050E820
@@ -8798,6 +8909,23 @@ void CSWSCreature::CutWaypointPath()
          m_pPathfindInformation->m_nCurrentWayPoint) >> 1;
     m_pPathfindInformation->m_vWayPointOrigin = m_vPosition;
     m_pPathfindInformation->m_vWayPointDirection = m_vOrientation;
+}
+
+// Dead code: not in the PC executable
+void CSWSCreature::SetInTransit(int bInTransit)
+{
+    if (m_bRestorePlotOnDownload != bInTransit)
+    {
+        m_bRestorePlotOnDownload = bInTransit;
+        if (bInTransit)
+        {
+            SendFeedbackMessage(FEEDBACK_UNKNOWN_074, NULL);
+        }
+        else
+        {
+            SendFeedbackMessage(FEEDBACK_UNKNOWN_075, NULL);
+        }
+    }
 }
 // PC 0x0050EB20 GOG 0x0050EB80
 int CSWSCreature::Disguise(int nAppearance, CGameEffect* pEffect,
@@ -10561,6 +10689,12 @@ void CSWSCreature::CancelCombat(int bNotify)
         pClientCreature->SetCombatMode(0);
     }
 }
+
+// Dead code: not in the PC executable
+int CSWSCreature::GetTurnResistanceHD()
+{
+    return 0;
+}
 // PC 0x00517CF0 GOG 0x00517D50
 int CSWSCreature::GetUseRange(unsigned long oidObject, Vector& vPosition,
                              float& fRange, int bIgnorePreciseUse,
@@ -11844,6 +11978,12 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
         pMessage->SendServerToPlayerInventory_UnequipCancel(
             pPlayer->m_nPlayerId, oidItem);
     return FALSE;
+}
+
+// Dead code: not in the PC executable
+int CSWSCreature::AddPickPocketActions(unsigned long oidTarget)
+{
+    return 0;
 }
 // PC 0x005265E0 GOG 0x00526640
 void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)

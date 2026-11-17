@@ -20,6 +20,12 @@ unsigned long CResNCS::GetNCSSize()
 {
     return m_nNCSSize;
 }
+
+// Dead code: not in the PC executable
+int CResNCS::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x007845C0 GOG 0x00784460
 int CResNCS::OnResourceFreed()
 {

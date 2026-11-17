@@ -402,6 +402,9 @@ public:
     int GetPosInModalStack(CSWGuiPanel* pPanel);
     int GetPosInPanelList(CSWGuiPanel* pPanel);
     void DetermineNeedToDraw();
+#ifndef _XBOX
+    void DrawPCBG(float fElapsed);
+#endif
     int HandleKeyPress(int nKey);
 #ifndef _XBOX
     CSWGuiControl* UpdateMouseOverControl();

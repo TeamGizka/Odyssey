@@ -55,6 +55,7 @@ public:
         STRREF_LEVEL = 32154,
         STRREF_XP_NEEDED = 109865
     };
+    void SetCharPointer(CSWGuiMainInterfaceChar* pCharacter);
     void UpdateToolTipText();
     SWGUI_PCVIRTUAL int DisplayToolTip();
     virtual void Draw(float);
@@ -81,6 +82,7 @@ public:
     short m_nScreenX;
     short m_nScreenY;
     void CreateEntry(unsigned long, CExoString const&, Vector const&, float);
+    int IncrementPosition();
     virtual void Update(float);
 
     static CSWGuiMainInterface* m_pMainInterface;

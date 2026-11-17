@@ -17,6 +17,17 @@ CResTGA::CResTGA()
 CResTGA::~CResTGA()
 {
 }
+
+// Dead code: not in the PC executable
+int CResTGA::CopyTGAData(unsigned char* pTGAData)
+{
+    if (m_bServiced == 0)
+    {
+        return 0;
+    }
+    memcpy(pTGAData, m_pTGAData, m_nDataSize);
+    return 1;
+}
 // PC 0x00786290 GOG 0x00786060
 int CResTGA::GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnDepth)
 {
@@ -273,13 +284,83 @@ int CResTGA::ReadUnmappedRLETGA()
     m_bDataOwned = 1;
     return 1;
 }
+
+// Dead code: not in the PC executable
+unsigned char* CResTGA::GetTGAColorMapPtr()
+{
+    return m_pColorMap;
+}
 // PC 0x00786840 GOG 0x00786610
 unsigned char* CResTGA::GetTGADataPtr()
 {
     return m_pTGAData;
 }
+
+// Dead code: not in the PC executable
+TGAHeader* CResTGA::GetTGAHeaderPtr()
+{
+    return m_pHeader;
+}
 // PC 0x00786860 GOG 0x00786630
 unsigned long CResTGA::GetTGASize()
 {
     return m_nDataSize;
+}
+
+// Dead code: not in the PC executable
+int CResTGA::IsColorMapped()
+{
+    return m_bColorMapped;
+}
+
+// Dead code: not in the PC executable
+int CResTGA::IsCompressed()
+{
+    return m_bRLE;
+}
+
+// Dead code: not in the PC executable
+int CResTGA::IsLoaded()
+{
+    return m_bServiced;
+}
+
+// Dead code: not in the PC executable
+int CResTGA::Write(const CExoString& sFileName)
+{
+    CExoFile file(sFileName, RESTYPE_TGA, "wb");
+    if (m_nDataSize == 0)
+    {
+        return 0;
+    }
+    if (!file.FileOpened())
+    {
+        return 0;
+    }
+
+    unsigned char* pData = new unsigned char[m_nDataSize];
+    if (m_bServiced != 0)
+    {
+        memcpy(pData, m_pTGAData, m_nDataSize);
+    }
+#ifndef _XBOX
+    if (m_pHeader->nImageType != TGA_IMAGE_GRAYSCALE)
+    {
+        unsigned int nBytes = m_pHeader->nBitsPerPixel >> 3;
+        unsigned long nPixels = m_pHeader->nWidth * m_pHeader->nHeight;
+        unsigned char* pPixel = pData + m_pHeader->nIDLength + 18 + m_pHeader->nColorMapLength * (m_pHeader->nColorMapDepth >> 3);
+        while (nPixels > 0)
+        {
+            unsigned char nTemp = pPixel[0];
+            pPixel[0] = pPixel[2];
+            pPixel[2] = nTemp;
+            pPixel += nBytes;
+            nPixels--;
+        }
+    }
+#endif
+    file.Write(m_pHeader, 18, 1);
+    file.Write(pData, m_nDataSize, 1);
+    delete[] pData;
+    return 1;
 }

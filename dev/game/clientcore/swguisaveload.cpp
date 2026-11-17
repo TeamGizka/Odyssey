@@ -887,11 +887,6 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,
     return 1;
 }
 
-// Dead code: not in the PC executable
-void CSWGuiSaveLoad::DisplayLoadError(unsigned long nStrRef)
-{
-}
-
 #define XBOX_MARK_SAVE_CORRUPT(sPath)                                                                   \
     CExoFile cCorruptFile(sPath + "\\" + "CORRUPT", 0, "wb+");                                       \
     cCorruptFile.Write("CORRUPT");                                                                    \
@@ -2684,6 +2679,20 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x0070A
         g_pAppManager->m_pClientExoApp->GetLoadStep(0));
     delete pERF;
     return 1;
+}
+
+// Dead code: not in the PC executable
+void CSWGuiSaveLoad::DisplayLoadError(unsigned long nStrRef)
+{
+}
+
+// Dead code: not in the PC executable
+void CSWGuiSaveLoad::SaveNamePanelClose(int bSave, CExoString sSaveName)
+{
+    if (bSave == 1)
+    {
+        WriteGame(sSaveName);
+    }
 }
 #endif
 // PC 0x0070A5A0 GOG 0x0070A2E0

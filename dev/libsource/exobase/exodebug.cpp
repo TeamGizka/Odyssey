@@ -146,6 +146,16 @@ void CExoDebug::WriteToVOTestFile(const CExoString& text)
 }
 
 // Dead code: not in the PC executable
+void CExoDebug::WriteResourceToScreen(const CExoString& text, int nColumn,
+                                      int nRow, float fDuration)
+{
+    if (m_pInternal)
+    {
+        m_pInternal->WriteResourceToScreen(text, nColumn, nRow, fDuration);
+    }
+}
+
+// Dead code: not in the PC executable
 void CExoDebug::Assert(int line, char* file, const char* message)
 {
     CExoString sAssert;

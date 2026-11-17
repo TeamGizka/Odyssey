@@ -64,8 +64,11 @@ public:
     float GetGammaSetting();
     float GetMouseSenSetting();
     float GetCameraKeyboardDPS();
+    void SetCameraKeyboardDPS(float fDPS);
     float GetCameraKeyboardAcceleration();
+    void SetCameraKeyboardAcceleration(float fAcceleration);
     float GetCameraKeyboardDeceleration();
+    void SetCameraKeyboardDeceleration(float fDeceleration);
     void SetEnableHardwareMouseCursor(int bEnabled);
     void SetShadows(unsigned long nShadows);
     void SetSoftShadows(unsigned long nSoftShadows);
@@ -75,11 +78,15 @@ public:
     void SetFrameBuffer(unsigned long nFrameBuffer);
     void SetAnisotropy(unsigned long nAnisotropy);
     void SetVSync(unsigned long nVSync);
+    void SetToolTipTimeDelay(float fDelay);
     void SetUseSmallFonts(int bSmallFonts);
     void SetDefaultFeedbackOptions();
     int SetDefaultGraphicsOptions();
     void SetDefaultMouseOptions();
+    void SetDefaultScreenShotOptions();
     void SetDefaultKeyboardCamera();
+    void SetDefaultGamma();
+    void SetDefaultMouseSen();
     void SetDefaultOptions();
 #ifdef _XBOX
 

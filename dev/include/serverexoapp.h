@@ -70,6 +70,7 @@ public:
 
     void Initialize();
     void Uninitialize();
+    void SetForceUpdate();
     void StartServices(int nServices);
     void StopServices();
     void TogglePauseState(unsigned char nPauseType);
@@ -87,6 +88,7 @@ public:
     int LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess);
     CSWSItem* GetItemByGameObjectID(unsigned long oidObject);
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oidObject);
+    CSWSModule* GetModuleByGameObjectID(unsigned long oidObject);
     CSWSArea* GetAreaByGameObjectID(unsigned long oidObject);
     CSWSTrigger* GetTriggerByGameObjectID(unsigned long oidObject);
     CSWSPlaceable* GetPlaceableByGameObjectID(unsigned long oidObject);
@@ -97,6 +99,7 @@ public:
     CSWSWaypoint* GetWaypointByGameObjectID(unsigned long oidObject);
     CSWSEncounter* GetEncounterByGameObjectID(unsigned long oidObject);
     CSWSSoundObject* GetSoundObjectByGameObjectID(unsigned long oidObject);
+    unsigned long GetPlayerIDByGameObjectID(unsigned long oidObject);
     int GetPlayerLanguage(unsigned long nPlayerId);
     int GetModuleLanguage();
     CWorldTimer* GetActiveTimer(unsigned long nTimer);
@@ -123,8 +126,10 @@ public:
     CSWSPlayer* GetClientObjectByObjectId(unsigned long oidObject);
     CSWSPlayer* GetClientObjectByPlayerId(unsigned long nPlayerId,
                                           unsigned char nGroup);
+    int ValidatePlayerLogin(void* pPlayerData);
     void InitiateModuleForPlayer(void* pData);
     void MovePlayerToArea(void* pData);
+    int GetIsControlledByPlayer(unsigned long oidObject);
     int GetFactionOfObject(unsigned long oidObject, int* pnFaction);
     void SkipPastDialog(unsigned long oidObject);
     int GetPauseState(unsigned char nPauseType);
@@ -135,6 +140,7 @@ public:
     int ResolvePlayerByFirstName(const CExoString& sFirstName);
     int GetDifficultyOption(int nOption);
     void AddCharListRequest(unsigned long nPlayerId);
+    int IsOnExclusionList(unsigned long oidObject);
     int GetFirstPCObject();
     int GetNextPCObject();
     unsigned long ClientToServerObjectId(unsigned long oidClient);

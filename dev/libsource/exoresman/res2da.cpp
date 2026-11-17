@@ -12,6 +12,12 @@ CRes2DA::CRes2DA()
 CRes2DA::~CRes2DA()
 {
 }
+
+// Dead code: not in the PC executable
+unsigned long* CRes2DA::Get2DAHeaderPtr()
+{
+    return m_p2DAHeader;
+}
 // PC 0x00404CF0 GOG 0x00404CF0
 void* CRes2DA::Get2DADataPtr()
 {
@@ -21,6 +27,12 @@ void* CRes2DA::Get2DADataPtr()
 unsigned long CRes2DA::Get2DASize()
 {
     return m_n2DASize;
+}
+
+// Dead code: not in the PC executable
+int CRes2DA::IsLoaded()
+{
+    return m_bServiced;
 }
 // PC 0x0041FF60 GOG 0x0041FF70
 int CRes2DA::OnResourceFreed()

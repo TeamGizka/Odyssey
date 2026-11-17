@@ -149,6 +149,12 @@ CSWSCreature* CServerExoApp::GetCreatureByGameObjectID(unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetCreatureByGameObjectID(oidObject);
 }
+
+// Dead code: not in the PC executable
+CSWSModule* CServerExoApp::GetModuleByGameObjectID(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->GetModuleByGameObjectID(oidObject);
+}
 // PC 0x004DC010 GOG 0x004DC040
 CSWSArea* CServerExoApp::GetAreaByGameObjectID(unsigned long oidObject)
 {
@@ -197,6 +203,12 @@ CSWSSoundObject* CServerExoApp::GetSoundObjectByGameObjectID(
     unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetSoundObjectByGameObjectID(oidObject);
+}
+
+// Dead code: not in the PC executable
+unsigned long CServerExoApp::GetPlayerIDByGameObjectID(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->GetPlayerIDByGameObjectID(oidObject);
 }
 // PC 0x004DC0A0 GOG 0x004DC0D0
 int CServerExoApp::GetPlayerLanguage(unsigned long nPlayerId)
@@ -352,6 +364,12 @@ void CServerExoApp::OnVideoChange()
 {
     m_pcExoAppInternal->OnVideoChange();
 }
+
+// Dead code: not in the PC executable
+void CServerExoApp::SetForceUpdate()
+{
+    m_pcExoAppInternal->m_bForceUpdate = 1;
+}
 // PC 0x004DC230 GOG 0x004DC730
 CConnectionLib* CServerExoApp::GetConnectionLib()
 {
@@ -378,6 +396,12 @@ CSWSPlayer* CServerExoApp::GetClientObjectByPlayerId(unsigned long nPlayerId,
 {
     return m_pcExoAppInternal->GetClientObjectByPlayerId(nPlayerId, nGroup);
 }
+
+// Dead code: not in the PC executable
+int CServerExoApp::ValidatePlayerLogin(void* pPlayerData)
+{
+    return m_pcExoAppInternal->ValidatePlayerLogin(pPlayerData);
+}
 // PC 0x004DC280 GOG 0x004DC1F0
 void CServerExoApp::InitiateModuleForPlayer(void* pData)
 {
@@ -387,6 +411,12 @@ void CServerExoApp::InitiateModuleForPlayer(void* pData)
 void CServerExoApp::MovePlayerToArea(void* pData)
 {
     m_pcExoAppInternal->MovePlayerToArea(pData);
+}
+
+// Dead code: not in the PC executable
+int CServerExoApp::GetIsControlledByPlayer(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->GetClientObjectByObjectId(oidObject) != NULL;
 }
 // PC 0x004DC2A0 GOG 0x004DC210
 int CServerExoApp::GetFactionOfObject(unsigned long oidObject, int* pnFaction)
@@ -455,6 +485,12 @@ int CServerExoApp::GetDifficultyOption(int nOption)
 void CServerExoApp::AddCharListRequest(unsigned long nPlayerId)
 {
     m_pcExoAppInternal->AddCharListRequest(nPlayerId);
+}
+
+// Dead code: not in the PC executable
+int CServerExoApp::IsOnExclusionList(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->IsOnExclusionList(oidObject);
 }
 // PC 0x004DC360 GOG 0x004DC2D0
 int CServerExoApp::GetFirstPCObject()

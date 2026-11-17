@@ -368,6 +368,9 @@ public:
 #endif
     void PerformRButtonDownAction();
     int PerformRButtonUpAction();
+    void PerformMButtonDownAction();
+    void PerformMButtonUpAction();
+    void PerformZMouseMoveAction(int nZ);
     void SetMouseCursor(int nCursor, int bCentered, int bMouseDown);
     void RestoreMousePositionTo(int nX, int nY);
     void HideMouse(int nFlags);
@@ -507,12 +510,14 @@ public:
                               unsigned long* pnRefreshRate);
     unsigned long GetNearestVideoMode(unsigned long nWidth, unsigned long nHeight,
                                       unsigned char nBitsPerPixel, unsigned long nRefreshRate);
+    unsigned long GetVideoMode(unsigned long nWidth, unsigned long nHeight, unsigned char nBitsPerPixel, unsigned long nRefreshRate);
     void ReadAndSetVideoMode(int bStartup, int bFullScreen);
     void UpdateCamera(float fDeltaTime);
 
     enum { CAMERA_TURN_INPUT = 0x11C, CAMERA_SCROLL_PIXELS = 40,
            CAMERA_EDGE_MIN_PIXELS = 2, CAPTURE_EVENTS_RECORD = 1 };
     void AddDownloadedResources();
+    int AttachPatchFiles(int bAttach);
 #ifndef _XBOX
     int StartServices(int nServices, const CExoString& sModule,
                       const CExoString& sLoadMusic, const CExoString& sLoadScreen,
@@ -522,6 +527,8 @@ public:
 #endif
     void SetEventDescriptions();
     void StopServices();
+    enum DoDLResDirParam { DLRESDIR_ADD = 0, DLRESDIR_REMOVE = 1 };
+    void DoDownloadedResourceDirectories(DoDLResDirParam nParam, int bFlag);
 
     enum InputContext
     {
@@ -603,6 +610,7 @@ public:
     void StopMovie();
     int IsOnExclusionList(unsigned long oidObject);
     void InitializeMoviePlayer();
+    void UpdateMoviePlayer();
     void ShutDownMoviePlayer();
     void UnloadSuperModelSet();
     int IsMoviePlaying();
@@ -658,6 +666,7 @@ public:
     int SetLoadMusic(const CExoString& sMusic);
 #endif
     void SetLoadBarProgress(int nProgress, int bUpdateHint);
+    void DisplayOptionsLoadError();
     void UpdateLoadingScreenHint();
     void SetLoadFromIFO(int bValue);
     int GetLoadFromIFO();

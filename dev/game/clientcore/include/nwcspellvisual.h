@@ -22,6 +22,7 @@ public:
                           CResRef cVocalization, CSWCCreature* pCreature);
     int LoadCastVisual(CResRef cHeadVisual, CResRef cHandVisual,
                        CResRef cGroundVisual, CSWCCreature* pCreature);
+    void SetConjureDone(CAurObject* pObject);
 
     Gob* m_pHeadConjureVisual;
     Gob* m_pHandConjureVisual;

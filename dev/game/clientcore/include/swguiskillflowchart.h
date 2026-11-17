@@ -102,6 +102,7 @@ public:
     static const int SKILL_ICON_SIZE = 40;
 
     CSWGuiSkillFlow();
+    void Clear();
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     SWGUI_PCVIRTUAL CSWGuiSkillFlow* AsSkillFlow()  // PC 0x00698BD0 GOG 0x00698980

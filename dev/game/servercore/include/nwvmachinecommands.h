@@ -1586,6 +1586,7 @@ public:
     int ExecuteCommandExploreAreaForPlayer(int nCommand, int nArgs);
     int ExecuteCommandGetLastAssociateCommand(int nCommand, int nArgs);
     int ExecuteCommandSetAssociateListenPatterns(int nCommand, int nArgs);
+    int ExecuteCommandSetDislike(int nCommand, int nArgs);
 };
 
 #endif

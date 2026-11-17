@@ -158,6 +158,7 @@ public:
     CGameObjectArray* GetObjectArray() { return m_pObjectArray; }
     CSWSItem* GetItemByGameObjectID(unsigned long oidObject);
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oidObject);
+    CSWSModule* GetModuleByGameObjectID(unsigned long oidObject);
     CSWSArea* GetAreaByGameObjectID(unsigned long oidObject);
     CSWSTrigger* GetTriggerByGameObjectID(unsigned long oidObject);
     CSWSPlaceable* GetPlaceableByGameObjectID(unsigned long oidObject);
@@ -170,6 +171,8 @@ public:
     CSWSSoundObject* GetSoundObjectByGameObjectID(unsigned long oidObject);
     int GetPlayerLanguage(unsigned long nPlayerId);
     int GetModuleLanguage();
+    int AddPendingAuthorization(unsigned long nPlayerId);
+    int RemovePendingAuthorization(unsigned long nPlayerId);
     CWorldTimer* GetActiveTimer(unsigned long nTimer);
     int HandleMessage(unsigned long nPlayerId, unsigned char* pMessage,
                       unsigned long nSize, int bGuaranteed);
@@ -178,6 +181,7 @@ public:
                                 const CExoString& sDestination,
                                 unsigned short nFlags);
     void Uninitialize();
+    void UpdateWindowTitle();
     int MainLoop();
     void TempDeathUpdate();
     void PlayerListChange(unsigned long nPlayerId, int bAdded, int bGuaranteed);
@@ -213,8 +217,10 @@ public:
     int ValidateCreateServerCharacter(CSWSPlayer* pPlayer, void* pData, unsigned long nSize);
     int StoreCurrentModule();
     void UpdateClientGameObjects(int bFlag);
+    void MarkUpdateClientsForObject(unsigned long oidObject);
     void UpdateClientGameObjectsForPlayer(CSWSPlayer* pPlayer, int bFlag,
                                           unsigned __int64 nTime);
+    void UpdateClientsForObject(unsigned long oidObject);
     int SendCharacterQuery(CSWSPlayer* pPlayer);
     CSWSPlayer* GetClientObjectByObjectId(unsigned long oidObject);
     CSWSPlayer* GetClientObjectByPlayerId(unsigned long nPlayerId,
@@ -241,6 +247,7 @@ public:
     int IsOnActiveExclusionList(unsigned long oidObject);
     int IsOnExclusionList(unsigned long oidObject);
     int ResolvePlayerByFirstName(const CExoString& sFirstName);
+    unsigned long GetPlayerIDByGameObjectID(unsigned long oidObject);
     int GetDifficultyOption(int nOption);
     void AddCharListRequest(unsigned long nPlayerId);
     int GetFirstPCObject();

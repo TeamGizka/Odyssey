@@ -64,6 +64,12 @@ unsigned char* CResTPC::GetTPCDataPtr()
 {
     return m_pData;
 }
+
+// Dead code: not in the PC executable
+TPCHeader* CResTPC::GetTPCHeaderPtr()
+{
+    return m_pHeader;
+}
 // PC 0x00786840 GOG 0x00786610
 unsigned char* CResTPC::GetTPCTXIPtr()
 {
@@ -85,6 +91,18 @@ int CResTPC::GetTPCSize()
 int CResTPC::GetTPCTXISize()
 {
     return m_nRemainingSize;
+}
+
+// Dead code: not in the PC executable
+int CResTPC::IsCompressed()
+{
+    return m_bCompressed;
+}
+
+// Dead code: not in the PC executable
+int CResTPC::IsLoaded()
+{
+    return m_bServiced;
 }
 // PC 0x00786870 GOG 0x00786640
 int CResTPC::OnResourceFreed()

@@ -403,6 +403,7 @@ public:
     void WriteToSoundLogFile(const CExoString& text);
     void WriteToResourceTrackingFile(const CExoString& text);
     void WriteToVOTestFile(const CExoString& text);
+    void WriteResourceToScreen(const CExoString& text, int nColumn, int nRow, float fDuration);
 #ifdef _DEBUG
 
     void Log(const char* format, ...);
@@ -886,6 +887,7 @@ public:
                                   const CExoString& sCommandLine,
                                   int bQuit);
     int WcsToMbs(char* sDest, const wchar_t* sSource, unsigned long nLength);
+    int CheckForCD();
 
     CExoIni* m_pExoIni;
     CExoTimers* m_pExoTimers;
@@ -980,6 +982,7 @@ public:
     void WriteToSoundLogFile(const CExoString& text);
     void WriteToResourceTrackingFile(const CExoString& text);
     void WriteToVOTestFile(const CExoString& text);
+    void WriteResourceToScreen(const CExoString& text, int nColumn, int nRow, float fDuration);
     void GetCurrentTimestamp(CExoString& timestamp);
     void WriteToScriptLogFile(const CExoString& text);
 
