@@ -31,20 +31,18 @@ void FreeAppObjectTables(CAppManager* pManager)
     pTables = pManager->m_pObjectTableManager;
     for (nTable = 0; nTable < pTables->m_nTables; nTable++)
     {
-        CObjectTable* pTable = pTables->m_apTables[nTable];
+        CObjectLookupTable* pTable = pTables->m_apTables[nTable];
         if (pTable)
         {
-            delete [] pTable->m_pTable;
             delete pTable;
         }
     }
     pTables = pManager->m_pServerObjectTableManager;
     for (nTable = 0; nTable < pTables->m_nTables; nTable++)
     {
-        CObjectTable* pTable = pTables->m_apTables[nTable];
+        CObjectLookupTable* pTable = pTables->m_apTables[nTable];
         if (pTable)
         {
-            delete [] pTable->m_pTable;
             delete pTable;
         }
     }
@@ -208,6 +206,15 @@ CAppManager::~CAppManager()
     {
         delete m_pLargeTempBuffer;
         m_pLargeTempBuffer = NULL;
+    }
+}
+
+// Dead code: not in the PC executable
+void CAppManager::ShowServerMem()
+{
+    if (m_pClientExoApp)
+    {
+        m_pClientExoApp->ShowServerMem();
     }
 }
 // PC 0x00401380 GOG 0x00401380

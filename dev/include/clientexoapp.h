@@ -147,6 +147,7 @@ public:
     virtual int ContinueMessageProcessing();
     virtual CNetLayer* GetNetLayer();
     virtual void ShutDownToMainMenu();
+    void ShowServerMem();
     virtual CConnectionLib* GetConnectionLib();
     virtual CExoLocString* GetModuleDescription();
     virtual int GetApplicationId();

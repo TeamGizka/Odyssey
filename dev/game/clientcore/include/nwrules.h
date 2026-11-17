@@ -12,6 +12,7 @@ class CSWClass;
 class CSWRace;
 class CSWSkill;
 class CSWBaseItemArray;
+class CSWBaseItem;
 class CSWSpell;
 class CSWSpellArray;
 class CTwoDimArrays;
@@ -240,6 +241,7 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 
     CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItems; }
+    CSWBaseItem* GetBaseItem(unsigned long nBaseItem);
 
     void LoadClassInfo();
     void LoadRaceInfo();

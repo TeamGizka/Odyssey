@@ -107,6 +107,7 @@ public:
     void DestroyFloat(const CExoString& sName);
     void DestroyString(const CExoString& sName);
     void DestroyObject(const CExoString& sName);
+    void DestroyLocation(const CExoString& sName);
 
     void LoadVarTable(CResGFF* pRes, CResStruct* pStruct);
     void SaveVarTable(CResGFF* pRes, CResStruct* pStruct);

@@ -418,6 +418,16 @@ Vector CSWCollisionMesh::WorldToLocal(const Vector& vPosition)
     }
     return -m_qOrientation * (vPosition - m_vWorldPosition) - m_vPosition;
 }
+
+// Dead code: not in the PC executable
+float CSWCollisionMesh::ZWorldToZLocal(float fZ)
+{
+    if (m_nType != 0)
+    {
+        return fZ;
+    }
+    return fZ - m_vWorldPosition.m_fZ - m_vPosition.m_fZ;
+}
 // PC 0x00557980 GOG 0x00557710
 Vector CSWCollisionMesh::LocalToWorld(const Vector& vPosition)
 {

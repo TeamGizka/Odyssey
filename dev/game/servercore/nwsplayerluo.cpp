@@ -87,6 +87,24 @@ CSWSPlayerLUOInventoryItem* CSWSPlayerLUOInventory::ItemListGetUpdateItem(
     }
     return pItem;
 }
+
+// Dead code: not in the PC executable
+void CSWSPlayerLUOInventory::ItemListSetStart(CExoLinkedListNode*& pNode,
+                                              unsigned char nList)
+{
+    if (nList == 0)
+    {
+        pNode = m_lstContainer.GetHeadPos();
+    }
+    else if (nList == 1)
+    {
+        pNode = m_lstRepository.GetHeadPos();
+    }
+    else if (nList == 2)
+    {
+        pNode = m_lstOverflow.GetHeadPos();
+    }
+}
 // PC 0x006156B0 GOG 0x00615690
 void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
                                             unsigned char nList)
@@ -102,6 +120,24 @@ void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
     else if (nList == 2)
     {
         pNode = m_lstOverflow.GetTailPos();
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWSPlayerLUOInventory::ItemListGetNext(CExoLinkedListNode*& pNode,
+                                             unsigned char nList)
+{
+    if (nList == 0)
+    {
+        m_lstContainer.GetNext(pNode);
+    }
+    else if (nList == 1)
+    {
+        m_lstRepository.GetNext(pNode);
+    }
+    else if (nList == 2)
+    {
+        m_lstOverflow.GetNext(pNode);
     }
 }
 // PC 0x00615700 GOG 0x006156E0
@@ -120,6 +156,24 @@ void CSWSPlayerLUOInventory::ItemListGetPrev(CExoLinkedListNode*& pNode,
     {
         m_lstOverflow.GetPrev(pNode);
     }
+}
+
+// Dead code: not in the PC executable
+int CSWSPlayerLUOInventory::ItemListGetNumber(unsigned char nList)
+{
+    if (nList == 0)
+    {
+        return m_lstContainer.Count();
+    }
+    else if (nList == 1)
+    {
+        return m_lstRepository.Count();
+    }
+    else if (nList == 2)
+    {
+        return m_lstOverflow.Count();
+    }
+    return 0;
 }
 // PC 0x00615750 GOG 0x00615730
 void CSWSPlayerLUOInventory::ItemListRemove(CExoLinkedListNode* pNode,

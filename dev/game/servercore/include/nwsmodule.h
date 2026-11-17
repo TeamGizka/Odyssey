@@ -243,6 +243,7 @@ public:
                            int bIsSaveGame);
     void RemoveObjectFromLimbo(unsigned long oidObject);
     int IsObjectInLimbo(unsigned long oidObject);
+    void CleanUpLimboList();
     unsigned long GetWaypoint(const CExoString& sTag);
 
     CExoLinkedList<NWModuleExpansion_st> m_lstModuleExpansion;

@@ -107,6 +107,7 @@ public:
     void SetTriangleCount(int nCount);
     void SetVertexCount(int nCount);
     Vector WorldToLocal(const Vector& vPosition);
+    float ZWorldToZLocal(float fZ);
     Vector LocalToWorld(const Vector& vPosition);
 
     Vector GetUsePoint(int nUsePoint)

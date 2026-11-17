@@ -317,6 +317,11 @@ int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x006CD010 GOG 0x006
     return SendPlayerToServerMessage(15, 2, NULL, 0);
 }
 #endif
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_ShowServerMem()
+{
+    return SendPlayerToServerMessage(15, 17, NULL, 0);
+}
 int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006CD0A0 GOG 0x006CCDA0
 {
     return SendPlayerToServerMessage(15, 4, NULL, 0);

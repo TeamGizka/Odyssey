@@ -19,6 +19,7 @@ public:
 
     CObjectTableManager* GetObjectTableManager(unsigned long nTable);
     void DoSaveGameScreenShot(const CExoString& sName);
+    void ShowServerMem();
     void AllocLargeTempBuffer();
     void FreeLargeTempBuffer();
     void DestroyServer();
@@ -54,10 +55,25 @@ extern "C" CAppManager* g_pAppManager;
 
 
 
-class CObjectTable
+#define OBJECT_LOOKUP_TABLE_SIZE 16
+
+class CObjectLookupTable
 {
 public:
-    char* m_pTable;
+    CObjectLookupTable();
+    ~CObjectLookupTable();
+
+    unsigned long AddID(unsigned long nID);
+    unsigned long GetIDFromIndex(unsigned long nIndex);
+    unsigned long GetIndexFromID(unsigned long nID);
+    void Touch(unsigned long nIndex);
+    void GetUpdate(void* pData, unsigned long* pSize);
+    void Update(void* pData, unsigned long nSize);
+
+    unsigned long* m_pTable;
+    unsigned long m_nFirst;
+    unsigned long m_nNext;
+    unsigned long m_nReserved;
 };
 
 class CObjectTableManager
@@ -66,10 +82,15 @@ public:
     CObjectTableManager();
     ~CObjectTableManager();
 
+    BOOL CreateNewPlayer(unsigned long nPlayerId);
     void ClearAll();
     BOOL RemovePlayer(unsigned long nPlayerId);
+    BOOL Touch(unsigned long nIndex, unsigned long nPlayerId);
+    BOOL AddID(unsigned long nID, unsigned long* pIndex, unsigned long nPlayerId);
+    unsigned long GetIDFromIndex(unsigned long nIndex, unsigned long nPlayerId);
+    unsigned long GetIndexFromID(unsigned long nID, unsigned long nPlayerId);
 
-    CObjectTable* m_apTables[96];
+    CObjectLookupTable* m_apTables[96];
     unsigned long m_nTables;
 };
 

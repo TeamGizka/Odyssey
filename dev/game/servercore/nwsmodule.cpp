@@ -1861,6 +1861,25 @@ int CSWSModule::IsObjectInLimbo(unsigned long oidObject)
     }
     return 0;
 }
+
+// Dead code: not in the PC executable
+void CSWSModule::CleanUpLimboList()
+{
+    CGameObject* pObject;
+
+    for (int nIndex = m_lLimbo.num - 1; nIndex >= 0; nIndex--)
+    {
+        if (g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(
+                m_lLimbo[nIndex], &pObject) == CGameObjectArray::SUCCESS)
+        {
+            CSWSObject* pSWSObject = pObject->AsSWSObject();
+            if (pSWSObject != NULL && pSWSObject->GetArea() != NULL)
+            {
+                m_lLimbo.DelIndex(nIndex);
+            }
+        }
+    }
+}
 // PC 0x00508DA0 GOG 0x00500E50
 void CSWSModule::AddWorldJournalEntry(int nIndex, const CExoString& sText,
                                      const CExoString& sTag,

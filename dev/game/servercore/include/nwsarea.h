@@ -455,6 +455,7 @@ public:
     enum { TRANSITION_FADE_DELAY = 500 };
     int RemoveObjectFromArea(unsigned long oidObject);
     int LoadGIT(int bLoadingGame);
+    void SaveArea(CERFFile* pERFFile, const CExoString& sName);
     void SaveGIT(CERFFile* pERFFile, const CExoString& sName,
                 CExoArrayList<unsigned long>& lstPlayers);
     int AddObjectToArea(unsigned long oidObject, int bLoadingGame);

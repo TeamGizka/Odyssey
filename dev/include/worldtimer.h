@@ -78,6 +78,9 @@ public:
     void PauseWorldTimer();
     void UnpauseWorldTimer();
     unsigned long GetWorldTimeCalendarDay();
+    CExoString GetWorldTimeCalendarDayString();
+    unsigned long GetWorldTimeTimeOfDay();
+    CExoString GetWorldTimeTimeOfDayString();
     CExoString TranslateWorldTimeToString(unsigned long nCalendarDay,
                                           unsigned long nTimeOfDay,
                                           CExoString& sDayLabel,

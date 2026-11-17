@@ -554,6 +554,7 @@ public:
         INPUT_PAIRED_ACTION_FIRST = 280, INPUT_PAIRED_ACTION_LAST = 286
     };
     void ShutDownToMainMenu();
+    void ShowServerMem();
     void ShutDownLoadGameLoadBar();
     void SetApplicationIdsMatch(int bMatch);
     CSWParty* GetSWParty();

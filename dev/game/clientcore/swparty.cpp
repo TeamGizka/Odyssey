@@ -795,6 +795,51 @@ int CSWParty::IsPartyInCombat()
 
     return 0;
 }
+
+// Dead code: not in the PC executable
+int CSWParty::IsPartyTogether()
+{
+    CSWSCreature* pLeader;
+    CSWSCreature* pMember;
+    int nIndex;
+
+    pLeader = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+        g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
+            g_pAppManager->m_pClientExoApp->GetPlayerCreatureId()));
+    if (pLeader == NULL)
+    {
+        return 0;
+    }
+
+    pLeader->GetArea();
+    Vector vLeaderPosition = pLeader->m_vPosition;
+
+    nIndex = 0;
+    if (m_nCharacters > 0)
+    {
+        CSWPartyMemberData* pMemberData = m_aPartyMemberData;
+        for (; nIndex < m_nCharacters; ++nIndex, ++pMemberData)
+        {
+            EXOXBOXASSERT(nIndex >= 0 && nIndex < 3);
+            pMember = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
+                    pMemberData->m_oidCreature));
+            if (pMember == NULL)
+            {
+                continue;
+            }
+
+            Vector vMemberPosition = pMember->m_vPosition;
+            Vector vDelta = vLeaderPosition - vMemberPosition;
+            if (vDelta * vDelta > SWPARTY_TOGETHER_DISTANCE_SQUARED)
+            {
+                return 0;
+            }
+        }
+    }
+
+    return 1;
+}
 // PC 0x0068AEA0 GOG 0x0068AC10
 CSWCCreature* CSWParty::GetPlayerCharacter()
 {

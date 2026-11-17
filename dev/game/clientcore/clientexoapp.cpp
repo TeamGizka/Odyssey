@@ -474,6 +474,11 @@ void CClientExoApp::ShutDownToMainMenu()
 {
     m_pcExoAppInternal->ShutDownToMainMenu();
 }
+// Dead code: not in the PC executable
+void CClientExoApp::ShowServerMem()
+{
+    m_pcExoAppInternal->ShowServerMem();
+}
 // PC 0x00638AF0 GOG 0x006389E0
 void CClientExoApp::SetApplicationIdsMatch(int bMatch)
 {

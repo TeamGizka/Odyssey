@@ -29,6 +29,7 @@ class CNetLayerPlayerInfo
 {
 public:
     CNetLayerPlayerInfo();
+    void Initialize();
 
     static const unsigned long MAX_BUFFER_LENGTH;
 

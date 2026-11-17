@@ -2813,3 +2813,9 @@ int CSWCCreatureStats::CalculateDamageModifier()
 {
     return GetSTRMod();
 }
+
+// Dead code: not in the PC executable
+CSWBaseItem* CSWRules::GetBaseItem(unsigned long nBaseItem)
+{
+    return m_pBaseItems->GetBaseItem(nBaseItem);
+}

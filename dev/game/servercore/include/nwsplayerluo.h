@@ -45,8 +45,11 @@ public:
     void ClearStore();
     CSWSPlayerLUOInventoryItem* ItemListGetUpdateItem(CExoLinkedListNode* pNode,
                                                       unsigned char nList);
+    void ItemListSetStart(CExoLinkedListNode*& pNode, unsigned char nList);
     void ItemListSetEnd(CExoLinkedListNode*& pNode, unsigned char nList);
+    void ItemListGetNext(CExoLinkedListNode*& pNode, unsigned char nList);
     void ItemListGetPrev(CExoLinkedListNode*& pNode, unsigned char nList);
+    int ItemListGetNumber(unsigned char nList);
     void ItemListRemove(CExoLinkedListNode* pNode, unsigned char nList);
     void ItemListAddHead(unsigned long oidItem, unsigned char nList,
                          unsigned long nStackSize, unsigned long nCost);

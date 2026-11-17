@@ -2276,6 +2276,11 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
     }
     return 1;
 }
+
+// Dead code: not in the PC executable
+void CSWSArea::SaveArea(CERFFile* pERFFile, const CExoString& sName)
+{
+}
 // PC 0x004E6F70 GOG 0x004E7040
 void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
                        CExoArrayList<unsigned long>& lstPlayers)

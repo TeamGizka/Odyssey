@@ -170,6 +170,7 @@ public:
     int PartyHasRace(unsigned short nRace);
     int IsPartyHealthy();
     int IsPartyInCombat();
+    int IsPartyTogether();
     void SetLeader(int nIndex);
     void RecaulateFollowPoint();
     Vector GetWorldFormationPosition(const Vector& vPosition,

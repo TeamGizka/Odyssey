@@ -3986,6 +3986,15 @@ void CClientExoAppInternal::ShutDownToMainMenu()
         }
     }
 }
+
+// Dead code: not in the PC executable
+void CClientExoAppInternal::ShowServerMem()
+{
+    if (m_pSWCMessage != NULL)
+    {
+        m_pSWCMessage->SendPlayerToServerCheat_ShowServerMem();
+    }
+}
 // PC 0x006489E0 GOG 0x00648890
 void CClientExoAppInternal::AddObjectModelDirectlyToIgnoreList(
     unsigned long oidObject, List<CAurObject*>* pIgnoreList)

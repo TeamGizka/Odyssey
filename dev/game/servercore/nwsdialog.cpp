@@ -2261,6 +2261,21 @@ int CSWSDialog::SendDialogEntryNode(
     if (pDependant != NULL) delete[] pDependant;
     return 1;
 }
+
+// Dead code: not in the PC executable
+int CSWSDialog::AssignPseudoRandomCameraAngle()
+{
+    int nCameraAngle = m_nPseudoRandomCameraAngles[m_nPseudoRandomCameraAngle];
+    if (m_bPseudoRandomCameraDirection)
+        m_nPseudoRandomCameraAngle += m_nPseudoRandomCameraStep;
+    else
+        m_nPseudoRandomCameraAngle -= m_nPseudoRandomCameraStep;
+    if (m_nPseudoRandomCameraAngle >= PSEUDO_RANDOM_CAMERA_COUNT)
+        m_nPseudoRandomCameraAngle = 0;
+    if (m_nPseudoRandomCameraAngle < 0)
+        m_nPseudoRandomCameraAngle = PSEUDO_RANDOM_CAMERA_COUNT - 1;
+    return nCameraAngle;
+}
 // PC 0x005EB8E0 GOG 0x005EB910
 int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
 {

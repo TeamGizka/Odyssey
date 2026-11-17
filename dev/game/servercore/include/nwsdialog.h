@@ -241,6 +241,7 @@ public:
     void RunScript(CSWSObject* pObject, const CResRef& cScript);
     void InitializePsuedoRandomCameraAngles(CResGFF* pResGFF);
     void InitializePseudoRandomAlienVOVariation(CResGFF* pResGFF);
+    int AssignPseudoRandomCameraAngle();
     int SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer);
     int SendDialogEntryNode(unsigned long nPlayerId, unsigned long oidTarget,
                             unsigned long oidSpeaker, unsigned long oidListener,

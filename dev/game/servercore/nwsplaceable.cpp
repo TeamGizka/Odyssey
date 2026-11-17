@@ -1805,6 +1805,28 @@ void CSWSPlaceable::DoDamage(int nDamage)
     }
 }
 
+// Dead code: not in the PC executable
+void CSWSPlaceable::DropItemsIntoArea()
+{
+    Vector vPosition;
+
+    if (m_bHasInventory != 0 && m_pcItemRepository != NULL)
+    {
+        vPosition = *GetPosition();
+        for (unsigned int i = 0; i < m_pcItemRepository->m_lstItems.num; i++)
+        {
+            CSWSItem* pItem = m_pcItemRepository->ItemListGetItem(i);
+            if (m_pcItemRepository->GetItemInRepository(pItem, 0) == 1)
+            {
+                m_pcItemRepository->RemoveItem(pItem);
+                pItem->SetPossessor(OBJECT_INVALID, 1, 1, OBJECT_INVALID);
+            }
+            pItem->AddToArea(GetArea(), vPosition.m_fX, vPosition.m_fY,
+                             vPosition.m_fZ, 1);
+        }
+    }
+}
+
 #ifdef _XBOX
 
 void CSWSPlaceable::SetLightIsOn(int bLightIsOn)

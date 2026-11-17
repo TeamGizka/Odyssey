@@ -200,6 +200,7 @@ public:
     void UpdateMonkVisuals();
 
     void HandleConjuringCreature();
+    void HandleSwitchWeapon();
     // PC 0x00698BD0 GOG 0x00698980
     virtual CSWCCreature* AsSWCCreature()
     {
@@ -488,6 +489,7 @@ public:
                        CSWCCombatAttackData* pAttackData, int nSoundType);
     int LoadRollingFootstepSound();
     void PlayRollingFootstepSound(int bRunning);
+    void StopRollingFootstepSound();
     void UpdateRollingFootstepSound();
     int ShowLightSaberContactVisual(CSWCCombatAttackData* pAttackData);
 
@@ -665,6 +667,7 @@ public:
     void CreateNewSpellLikeAbilityList();
     void DeleteSpellLikeAbilityList();
     void SetCombatState(int nValue);
+    void SetDisableLookAt(int bDisable);
 
     enum { COMBAT_STATE_ACTIVE = 1 };
 

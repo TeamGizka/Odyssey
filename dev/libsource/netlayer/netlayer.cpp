@@ -311,6 +311,16 @@ CNetLayerPlayerInfo::CNetLayerPlayerInfo()
     m_bGameMaster = 0;
     m_bAuthorized = 0;
 }
+
+// Dead code: not in the PC executable
+void CNetLayerPlayerInfo::Initialize()
+{
+    m_nPlayerId = 0;
+    m_sPlayerName = "";
+    m_bPlayer = 0;
+    m_bGameMaster = 0;
+    m_bAuthorized = 0;
+}
 // PC 0x00621370 GOG 0x00621340
 CNetLayer::~CNetLayer()
 {

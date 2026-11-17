@@ -2177,6 +2177,11 @@ void CSWCCreature::HandleConjuringCreature()
     m_pSpellCastVisual->UpdateTimer(m_nTimeDelta);
     m_bConjuringCreature = bConjuring;
 }
+
+// Dead code: not in the PC executable
+void CSWCCreature::HandleSwitchWeapon()
+{
+}
 // PC 0x006580D0 GOG 0x00657F80
 void CSWCCreature::MoveCreatureToPosition(const Vector& vPosition)
 {
@@ -3938,6 +3943,18 @@ void CSWCCreature::SetCombatState(int nState)
         }
     }
     if (nState != 0)
+    {
+        LookAt(OBJECT_INVALID, 0.0f);
+        m_bCombatReady = 1;
+    }
+    else
+        m_bCombatReady = 0;
+}
+
+// Dead code: not in the PC executable
+void CSWCCreature::SetDisableLookAt(int bDisable)
+{
+    if (bDisable != 0)
     {
         LookAt(OBJECT_INVALID, 0.0f);
         m_bCombatReady = 1;
@@ -7630,6 +7647,17 @@ void CSWCCreature::PlayRollingFootstepSound(int bRunning)
             m_bRollingFootstepPlaying = 1;
             m_bRollingFootstepRunning = bRunning;
         }
+    }
+}
+
+// Dead code: not in the PC executable
+void CSWCCreature::StopRollingFootstepSound()
+{
+    if (m_pRollingFootstepSound != NULL && m_bRollingFootstepPlaying != 0)
+    {
+        m_pRollingFootstepSound->Stop();
+        m_bRollingFootstepPlaying = 0;
+        m_bRollingFootstepRunning = 0;
     }
 }
 // PC 0x0065CC80 GOG 0x0065CA90

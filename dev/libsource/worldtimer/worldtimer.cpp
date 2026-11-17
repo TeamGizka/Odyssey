@@ -309,6 +309,41 @@ unsigned long CWorldTimer::GetWorldTimeCalendarDay()
 }
 
 // Dead code: not in the PC executable
+CExoString CWorldTimer::GetWorldTimeCalendarDayString()
+{
+    CExoString sDate;
+    unsigned long nYear;
+    unsigned long nMonth;
+    unsigned long nDay;
+    ConvertFromCalendarDay(GetWorldTimeCalendarDay(), &nYear, &nMonth, &nDay);
+    sDate.Format("%02d/%02d/%04d", nDay, nMonth, nYear);
+    return sDate;
+}
+
+// Dead code: not in the PC executable
+unsigned long CWorldTimer::GetWorldTimeTimeOfDay()
+{
+    unsigned long nCalendarDay;
+    unsigned long nTimeOfDay;
+    GetWorldTime(&nCalendarDay, &nTimeOfDay);
+    return nTimeOfDay;
+}
+
+// Dead code: not in the PC executable
+CExoString CWorldTimer::GetWorldTimeTimeOfDayString()
+{
+    CExoString sTime;
+    unsigned long nHour;
+    unsigned long nMinute;
+    unsigned long nSecond;
+    unsigned long nMillisecond;
+    ConvertFromTimeOfDay(GetWorldTimeTimeOfDay(), &nHour, &nMinute, &nSecond,
+                         &nMillisecond);
+    sTime.Format("%02d:%02d:%02d.%03d", nHour, nMinute, nSecond, nMillisecond);
+    return sTime;
+}
+
+// Dead code: not in the PC executable
 CExoString CWorldTimer::TranslateWorldTimeToString(unsigned long nCalendarDay,
                                                    unsigned long nTimeOfDay,
                                                    CExoString& sDayLabel,

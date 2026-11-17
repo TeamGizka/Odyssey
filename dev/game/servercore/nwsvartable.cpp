@@ -295,6 +295,12 @@ void CSWSScriptVarTable::DestroyObject(const CExoString& sName)
 {
     DeleteIndex(sName, SCRIPTVAR_TYPE_OBJECT);
 }
+
+// Dead code: not in the PC executable
+void CSWSScriptVarTable::DestroyLocation(const CExoString& sName)
+{
+    DeleteIndex(sName, SCRIPTVAR_TYPE_LOCATION);
+}
 // PC 0x005A0590 GOG 0x005A0600
 void CSWSScriptVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 {

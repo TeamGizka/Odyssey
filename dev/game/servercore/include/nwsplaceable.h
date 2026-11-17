@@ -149,6 +149,7 @@ public:
     void ClosePlaceableForAllPlayers();
     int LoadFromTemplate(const CResRef& cResRef, int bLoadState);
     int AcquireItemsFromObject(unsigned long oidSource, int bDropableOnly);
+    void DropItemsIntoArea();
 
     CExoLocString m_lsLocName;
     unsigned long m_nAppearance;
