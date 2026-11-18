@@ -622,24 +622,6 @@ void RingDistortTextureController::Control()
 
             for (j = 0; j < nWidth; j++)
             {
-#ifdef _XBOX
-                float fX = ((float)j + 1.0f) * fScale - 0.5f;
-                float fDistance = sqrt(fX * fX + (fY - 0.5f) * (fY - 0.5f));
-                float fRed = cosineLUT(fDistance * frequency1 + m_fAngle * frequency2) * amplitude + 0.5f;
-                float fGreen = cosineLUT(fDistance * frequency1 + m_fAngle * frequency2) * amplitude + 0.5f;
-                int nRed;
-                int nGreen;
-
-                fRed = max(0.0f, min(255.0f, fRed * 255.0f));
-                fGreen = max(0.0f, min(255.0f, fGreen * 255.0f));
-                roundToInt(nRed, fRed);
-                roundToInt(nGreen, fGreen);
-                m_pRingImage[nPixel] = 255;
-                m_pRingImage[nPixel + 1] = (unsigned char)nGreen;
-                m_pRingImage[nPixel + 2] = (unsigned char)nRed;
-                m_pRingImage[nPixel + 3] = 255;
-                nPixel += 4;
-#else
                 float fX = ((float)j + 1.0f) * fScale;
                 float fDistance =
                     (fX - 0.5f) * (fX - 0.5f) + (fY - 0.5f) * (fY - 0.5f);
@@ -661,7 +643,6 @@ void RingDistortTextureController::Control()
                 m_pRingImage[nPixel] = (unsigned char)fRed;
                 m_pRingImage[nPixel + 3] = 255;
                 nPixel += 4;
-#endif
             }
         }
         m_pTexture->glImage(true, m_pRingImage);

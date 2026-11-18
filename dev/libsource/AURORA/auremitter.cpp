@@ -1707,11 +1707,7 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
             vRandom.m_fZ = -(nRandom % (int)(m_fTargetSize * 50.0f)) / 100.0f;
         vTarget += vRandom;
     }
-#ifdef _XBOX
-    unsigned char bBouncing = pNode->IsBouncing();
-#else
     bool bBouncing = pNode->m_EmitterFlags.m_bBouncing != 0;
-#endif
     for (int i = 0; i < m_lstActive.m_nCount; i++)
     {
         Particle* pParticle = m_lstActive.m_pList[i];
@@ -1805,11 +1801,7 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
     Vector vNext;
     Vector vDelta;
     Vector vAcceleration;
-#ifdef _XBOX
-    unsigned char bInheriting = pNode->IsInheriting();
-#else
     unsigned char bInheriting = (unsigned char)pNode->m_EmitterFlags.m_bInheriting;
-#endif
     vTarget = m_pTarget->GetPosition();
     if (m_fTargetSize != 0.0f)
     {

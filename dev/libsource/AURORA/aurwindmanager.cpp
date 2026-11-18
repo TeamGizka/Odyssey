@@ -230,11 +230,7 @@ Vector WindManager::pointSourceWindVector(Vector vPosition)
             }
         }
 
-#ifdef _XBOX
-        if (((vOffset.m_fZ < 0.0f) ? -vOffset.m_fZ : vOffset.m_fZ) > fDistance)
-#else
         if (fabs(vOffset.m_fZ) > fDistance)
-#endif
         {
             if (vOffset.m_fZ < 0.0f)
             {

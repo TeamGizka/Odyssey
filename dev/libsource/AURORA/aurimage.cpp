@@ -903,13 +903,6 @@ void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
 
     pFile = fopen(sFileName, "wb");
     fwrite(&header, 0x12, 1, pFile);
-#ifdef _XBOX
-
-    pBuffer = ImageDup(pImage, nWidth, nHeight, nBPP, 0);
-    ImageFlipY(pBuffer, nWidth, nHeight, nBPP);
-    ImageFlipRB(pBuffer, nWidth, nHeight, nBPP);
-    nSize = nWidth * nHeight * nBPP;
-#else
     nSize = nWidth * nHeight * nBPP;
     pBuffer = (unsigned char*)operator new(nSize);
     memcpy(pBuffer, pImage, nSize);
@@ -918,7 +911,6 @@ void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
         ImageFlipY(pBuffer, nWidth, nHeight, nBPP);
     }
     ImageFlipRB(pBuffer, nWidth, nHeight, nBPP);
-#endif
     fwrite(pBuffer, 1, nSize, pFile);
     operator delete(pBuffer);
     fclose(pFile);

@@ -1705,11 +1705,6 @@ MdlNode* ParseNode(char* sField, MaxTree* pTree)
         pNode = new MdlNode(sName);
 
     pNode->m_pModel = pTree;
-#ifdef _XBOX
-    for (char* sLine = skipspace(AurResGetNextLine()); sLine != 0; sLine = skipspace(AurResGetNextLine()))
-    {
-        if (strncmp(sLine, "endnode", 7) == 0) break; pNode->ParseFieldDispatch(sLine); }
-#else
     bool bEndNode = false; while (!bEndNode) {
         char* sLine = AurResGetNextLine(); if (sLine == 0) bEndNode = true; else {
             while (*sLine == ' ' || *sLine == '\t')
@@ -1720,7 +1715,6 @@ MdlNode* ParseNode(char* sField, MaxTree* pTree)
                 pNode->ParseFieldDispatch(sLine);
         }
     }
-#endif
 
     if (pTree->AsAnimation())
     {

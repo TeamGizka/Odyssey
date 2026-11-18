@@ -1234,9 +1234,6 @@ void Scene::DoHighlightTriggers(bool bHighlight)
 
         for (int i = 0; i < lstTriggers.m_nCount; ++i)
         {
-#ifdef _XBOX
-            ClearStencilBuffer();
-#else
             int nAvailableBits = AurGetAvailableStencilBits();
             if (nAvailableBits)
             {
@@ -1245,7 +1242,6 @@ void Scene::DoHighlightTriggers(bool bHighlight)
             }
             GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
             GLRender_Clear(4);
-#endif
             GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
             GLRender_Enable(ENABLE_STENCIL_TEST);
             GLRender_SetDepthMask(GL_FALSE);
@@ -2090,18 +2086,11 @@ void Scene::DoGobShadowsForThisLight(PartLight& light)
         }
 
         Gob* pGob = gobbucket.m_pList[i];
-#ifdef _XBOX
-
-        if (!pGob->m_bCastShadows || !pGob->m_bHasGeometry ||
-            !pGob->m_pModel->m_Classification.m_bCharacter)
-            continue;
-#else
 
         if (!pGob->m_bCastShadows || !pGob->m_bHasGeometry ||
             !(bool(pGob->m_pModel->m_Classification.m_bCharacter) ||
               bool(pGob->m_pModel->m_Classification.m_bAlternateShadowCaster)))
             continue;
-#endif
 
         Vector vPosition = pGob->m_vPosition;
         Vector vDelta = vPosition - vFocus;
@@ -2154,14 +2143,8 @@ void Scene::RenderStencilShadowsForThisLight(PartLight& light, float fAlpha,
     }
     else
     {
-#ifdef _XBOX
-        float fRadiusSquared = fRadius * fRadius;
-        fRadius = (float)fabs(light.m_vWorldPosition.m_fZ - m_vSceneFocus.m_fZ);
-        fRadius = fRadiusSquared - fRadius * fRadius;
-#else
         float fHeight = (float)fabs(light.m_vWorldPosition.m_fZ - m_vSceneFocus.m_fZ);
         fRadius = fRadius * fRadius - fHeight * fHeight;
-#endif
         if (fRadius < 0.0f)
             fRadius = 0.0f;
         fRadius = (float)sqrt(fRadius);
@@ -2382,10 +2365,7 @@ void Scene::DoFog()
     }
     else
     {
-#ifndef _XBOX
-
         m_bFog = 1;
-#endif
         GLRender_Enable(ENABLE_FOG);
         SetFogMode(
             m_nFogMode == FOG_MODE_LINEAR ? FOG_MODE_LINEAR :
@@ -2784,13 +2764,10 @@ void Scene::RenderSinglePass()
 #else
     SetShadowStencilBuffer();
 #endif
-#ifdef _XBOX
-    if (enableshadows)
-        RenderShadows(0, 1, 1, 0);
-    Sleep(1);
-#else
     if (m_pCurrentRoom && enableshadows)
         RenderShadows(0, 1, 1, 0);
+#ifdef _XBOX
+    Sleep(1);
 #endif
     if (enablerenderdynamic)
     {
@@ -3402,16 +3379,6 @@ Scene::Scene(char* sName)
 
     m_bIgnoreVisibilityGraph = 1;
     m_fHighlightTime = 0.0f;
-#ifdef _XBOX
-
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "ambient", &m_vAmbient)
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "fog", &m_bFog)
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "fogcolor", &m_vFogColor)
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "fogstart", &m_fFogNear)
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "fogend", &m_fFogFar)
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "fogmode", &m_nFogMode)
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "fogdensity", &m_fFogDensity)
-#endif
     Scenes.Add(this);
 
     m_pBSPRoot = 0;
@@ -3441,11 +3408,6 @@ Scene::~Scene()
     while (m_lstObjects.m_nCount > 0)
         m_lstObjects[m_lstObjects.m_nCount - 1]->SetScene(0);
     m_SceneRoot.SetScene(0);
-#ifdef _XBOX
-    strcpy(g_sObjectFuncName, m_sName);
-    strcat(g_sObjectFuncName, ".");
-    DeleteFuncWithPrefix(g_sObjectFuncName);
-#endif
     Scenes.Remove(this);
 
     delete m_pLightManager;
@@ -3833,9 +3795,7 @@ extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 // PC 0x0046CCF0 GOG 0x0046CE50 Xbox 0x002CC440
 void Scene::RenderLensFlares()
 {
-#ifndef _XBOX
     if (renderlensflares)
-#endif
     {
         List<PartLight*> lights(*m_pLightManager->GetLensFlareLights());
 #ifdef _XBOX

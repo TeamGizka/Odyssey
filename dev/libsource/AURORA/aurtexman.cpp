@@ -1301,12 +1301,6 @@ unsigned char* CAurTextureBasic::LoadImagePLT()
     {
         strcpy(m_sFileName, m_sName);
     }
-#ifdef _XBOX
-
-    unsigned char* pImage = AurGetLayeredImageWrapper(m_sFileName, &m_nWidth, &m_nHeight, &m_nBPP);
-    m_pImage = pImage;
-    m_nTextureFormat = Aurora::TEXTURE_FORMAT_RGBA;
-#else
     int nReserved;
     unsigned char* pImage =
         AurGetLayeredRaster(m_sFileName, &m_nWidth, &m_nHeight, &nReserved);
@@ -1322,7 +1316,6 @@ unsigned char* CAurTextureBasic::LoadImagePLT()
         m_nTextureFormat = Aurora::TEXTURE_FORMAT_RGBA;
         m_pImage = pImage;
     }
-#endif
     if (AurReleaseRaster != NULL && pImage != NULL)
     {
         m_bRasterAllocated = 1;
@@ -2366,18 +2359,6 @@ void CAurTexture::Bind()
 void CAurTextureBasic::AddToOrderedLists()
 {
     int i = 0;
-#ifdef _XBOX
-    int nCount = m_OrderedTextureList.m_nCount;
-    CAurTextureBasic** ppList = m_OrderedTextureList.m_pList;
-    while (i < nCount && m_nOrder > ppList[i]->m_nOrder)
-    {
-        i++;
-    }
-    while (i < nCount && ppList[i]->m_nOrder == m_nOrder)
-    {
-        i++;
-    }
-#else
     if (m_OrderedTextureList.m_nCount > 0)
     {
         while (i < m_OrderedTextureList.m_nCount &&
@@ -2391,7 +2372,6 @@ void CAurTextureBasic::AddToOrderedLists()
             i++;
         }
     }
-#endif
     m_OrderedTextureList.Insert(this, i);
 #ifdef _XBOX
 

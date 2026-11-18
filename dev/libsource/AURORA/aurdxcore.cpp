@@ -4650,6 +4650,12 @@ char* AllocateShadowMemory(int nSize);
 
 extern unsigned int lookup;
 
+static inline void EnableTextureCoordStage(unsigned long nStage)
+{
+    GLRender::SetActiveTexture(nStage);
+    GLRender::EnableClientState(CLIENT_STATE_TEXTURE_COORD);
+}
+
 void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 0x002A31E0
                                CAurTexture* pTexture1, CAurTexture* pTexture2,
                                CAurTexture* pTexture3)
@@ -4718,8 +4724,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
         case 17:
             envmapon = 1;
             tex1on = 1;
-            SetActiveTexture(1);
-            EnableClientState(0);
+            EnableTextureCoordStage(1);
             pTexture1->Bind();
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
@@ -4729,8 +4734,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
         case 18:
             envmapon = 1;
             tex1on = 1;
-            SetActiveTexture(1);
-            EnableClientState(0);
+            EnableTextureCoordStage(1);
             pTexture1->Bind();
             g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ENVIRONMENT]);
             return;

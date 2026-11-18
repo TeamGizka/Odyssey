@@ -1910,9 +1910,7 @@ void ManageSceneBSP(Scene* pScene)
                 }
                 else
                 {
-#ifndef _XBOX
                     pGob->m_bVisible = true;
-#endif
                 }
             }
             else

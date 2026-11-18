@@ -1456,12 +1456,10 @@ void RenderFlat(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DADC0
 
 void RenderLightMapped(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DAEA0
 {
-#ifndef _XBOX
     if (enablerenderlightmapped == 0)
     {
         return;
     }
-#endif
 
     if (currentscene == 0)
     {
@@ -2149,12 +2147,6 @@ void RenderEMLM(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DBBE0
         pEnvMap = (CAurTexture*)pPart->m_pMaterial->m_pEnvMap.m_pObject;
     }
 
-#ifdef _XBOX
-    if (enableonepassenvmap == 0)
-    {
-        return;
-    }
-#endif
     GLRender_Disable(ENABLE_ALPHA_TEST);
     GLRender::ActivateTextureStage(1);
     GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);

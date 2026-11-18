@@ -218,17 +218,6 @@ Camera::Camera(char* sName)
 #endif
     m_fFarClip = 100.0f;
     m_fViewPlaneScale = 1.0f;
-#ifdef _XBOX
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "viewangle", &m_fViewAngle);
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "viewsize", &m_fViewPlaneScale);
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "clipnear", &m_fNearClip);
-    AUR_OBJECT_CONSOLE_VAR(m_sName, "clipfar", &m_fFarClip);
-    m_nViewPortHeight = 0;
-    m_nViewPortWidth = 0;
-    m_nViewPortY = 0;
-    m_nViewPortX = 0;
-    m_lstViewVolume.SetSize(6);
-#else
     m_pViewAngleAnimation = 0;
     m_nViewPortHeight = 0;
     m_nViewPortWidth = 0;
@@ -238,7 +227,6 @@ Camera::Camera(char* sName)
     List<Plane>& lstViewVolume = m_lstViewVolume;
     lstViewVolume.allocate(6);
     lstViewVolume.m_nCount = 6;
-#endif
 }
 // PC 0x00471560 GOG 0x004716C0
 Camera::~Camera()

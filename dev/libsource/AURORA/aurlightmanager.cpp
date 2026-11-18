@@ -340,16 +340,10 @@ void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
                 vDiffuse.m_fX, vDiffuse.m_fY, vDiffuse.m_fZ, 1.0f);
             GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
             nParameter--;
-#ifdef _XBOX
-            float fRadius = (*pLights)[i]->m_fRadius;
-            GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f,
-                AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
-#else
             float fRadius = pLight->m_fRadius;
             float fAttenuation = AUR_LIGHT_ATTENUATION_SCALE /
                 (fRadius * fRadius + fRadius * fRadius);
             GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f, fAttenuation, 1.0f);
-#endif
 
             nParameter--;
         }

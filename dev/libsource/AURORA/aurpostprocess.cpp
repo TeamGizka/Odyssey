@@ -606,17 +606,6 @@ void MdlNodeTriMesh::ProcessVerts()  // Xbox 0x002ADCB0
             Vector vNormal;
             for (int nOtherFace = 0; nOtherFace < m_pPostProcess->m_lFaces.m_nCount; nOtherFace++)
             {
-#ifdef _XBOX
-                MdlNodeTriMesh_PostProcess* pPostProcess = m_pPostProcess;
-                MaxFace_PostProcess& otherFace = pPostProcess->m_lFaces[nOtherFace];
-                int nOtherCorner = FindFaceCorner(otherFace, nPosition);
-                if (nOtherCorner >= 0 &&
-                    (nOtherFace == nFace || (nSmoothingGroup & otherFace.m_nFaces) != 0))
-                {
-                    Vector vFirst = pPostProcess->m_lPositions[otherFace.m_pFaces[0]];
-                    Vector vSecond = pPostProcess->m_lPositions[otherFace.m_pFaces[1]];
-                    Vector vThird = pPostProcess->m_lPositions[otherFace.m_pFaces[2]];
-#else
                 int nOtherCorner;
                 for (nOtherCorner = 3; nOtherCorner--;)
                 {
@@ -629,7 +618,6 @@ void MdlNodeTriMesh::ProcessVerts()  // Xbox 0x002ADCB0
                     Vector vFirst = m_pPostProcess->m_lPositions[m_pPostProcess->m_lFaces[nOtherFace].m_pFaces[0]];
                     Vector vSecond = m_pPostProcess->m_lPositions[m_pPostProcess->m_lFaces[nOtherFace].m_pFaces[1]];
                     Vector vThird = m_pPostProcess->m_lPositions[m_pPostProcess->m_lFaces[nOtherFace].m_pFaces[2]];
-#endif
                     vNormal = vNormal + cross(vSecond - vFirst, vThird - vSecond);
                     if (nFace > nOtherFace && m_pPostProcess->m_lFaces[nOtherFace].m_nFaces == nSmoothingGroup)
                     {
@@ -1366,23 +1354,17 @@ void MdlNodeTriMesh::InternalPostProcess()
             }
             Material* pMaterial = new Material;
             pMaterial->InitializeTextures(m_sTexture0, 0, 0, 0);
-#ifdef _XBOX
-            if (pMaterial->HasBumpMap())
-            {
-                bCalculateTangents = 1;
-                m_nVertexArrayFlags |= VERTEX_ARRAY_TANGENT_BASIS;
-                nStride += 3 * sizeof(unsigned long);
-                m_TangentBases = nVertexSize;
-            }
-#else
             if (pMaterial->HasBumpMap() && !pMaterial->HasNormalMap())
             {
                 bCalculateTangents = 1;
                 m_nVertexArrayFlags |= VERTEX_ARRAY_TANGENT_BASIS;
+#ifdef _XBOX
+                nStride += 3 * sizeof(unsigned long);
+#else
                 nStride += 3 * sizeof(Vector);
+#endif
                 m_TangentBases = nVertexSize;
             }
-#endif
             m_nVertexStride = nStride;
             int nAlignment = m_pModel->AsModel()->m_nVertexDataSize & 0x0f;
             unsigned int nPoolSize = m_pModel->AsModel()->m_nVertexDataSize +

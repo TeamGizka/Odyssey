@@ -296,9 +296,6 @@ int Model::AddRef(Model* pModel)
     return m_nReferenceCount;
 }
 
-#ifdef _XBOX
-static char sFuncPrefix[64];
-#endif
 // PC 0x0045E490 GOG 0x0045E5A0 Xbox 0x002C0B00
 void Model::InternalDestructor()
 {
@@ -321,16 +318,8 @@ void Model::InternalDestructor()
         m_lAnimations[i]->m_pfnDestructor(m_lAnimations[i]);
     }
 
-#ifdef _XBOX
-
-    strcpy(sFuncPrefix, m_sName);
-    strcat(sFuncPrefix, ".");
-    DeleteFuncWithPrefix(sFuncPrefix);
-    MaxTree::InternalDestructor();
-#else
     if (m_pRootNode)
         m_pRootNode->DestructorDispatch();
-#endif
 }
 
 // Dead code: not in the PC executable
@@ -1229,12 +1218,8 @@ Part* FindPart(Part* pPart, char* sName)
 
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
     {
-#ifdef _XBOX
-        Part* pFound = FindPart(pPart->m_lstChildren[i], sName);
-#else
         Part* pChild = pPart->m_lstChildren[i];
         Part* pFound = FindPart(pChild, sName);
-#endif
         if (pFound)
             return pFound;
     }
@@ -2152,9 +2137,6 @@ int PartTriMesh::HitCheckGeom(const Vector& vStart, Vector& vEnd,
         pInfo->m_vOutputVector = vEnd;
         *pHit = vEnd;
     }
-#ifdef _XBOX
-    GLRender::UnlockPool(pMesh->m_pModel->AsModel()->m_nVertexPool);
-#endif
     return nHit;
 }
 // PC 0x00454680 GOG 0x004547C0 Xbox 0x002B6EC0
@@ -2479,26 +2461,6 @@ void PartTriMesh::GetMinimumSphere(Vector& vPosition, float& fRadius)
     MdlNodeTriMesh* pNode = m_pNode->AsMdlNodeTriMesh();
     float fMeshRadius = pNode->m_fSphereRadius;
     Vector vMeshCenter = pNode->m_vSphereCenter;
-#ifdef _XBOX
-
-    float fLargeRadius = fRadius > fMeshRadius ? fRadius : fMeshRadius;
-    float fSmallRadius = fRadius > fMeshRadius ? fMeshRadius : fRadius;
-    Vector& vLargeCenter = fRadius > fMeshRadius ? vPosition : vMeshCenter;
-    float fDistance;
-    if ((fDistance = magnitude(vMeshCenter - vPosition)) + fSmallRadius <= fLargeRadius ||
-        fDistance == 0.0f)
-    {
-        fRadius = fLargeRadius;
-        vPosition = vLargeCenter;
-    }
-    else
-    {
-        float fFraction = ((-1.0f / fDistance) * fRadius + fMeshRadius / fDistance + 1.0f) * 0.5f;
-        fRadius = (fMeshRadius / fDistance + 1.0f - fFraction) * fDistance;
-        vPosition = vPosition + (vMeshCenter - vPosition) * fFraction;
-    }
-    return;
-#else
     float fSmallRadius;
     float fLargeRadius;
     if (fMeshRadius < fRadius)
@@ -2524,7 +2486,6 @@ void PartTriMesh::GetMinimumSphere(Vector& vPosition, float& fRadius)
         fRadius = fDistance + fRadius - fOffset;
         vPosition = (vMeshCenter - vPosition) * (fOffset / fDistance) + vPosition;
     }
-#endif
 }
 // PC 0x00456F50 GOG 0x00457090 Xbox 0x002B9F90
 int PartSetCanDownSample(Part* pPart, char bCanDownSample)
@@ -3956,11 +3917,6 @@ Gob::~Gob()
         delete m_pLightContainer;
         m_pLightContainer = 0;
     }
-#ifdef _XBOX
-    strcpy(sFuncPrefix, m_sName);
-    strcat(sFuncPrefix, ".");
-    DeleteFuncWithPrefix(sFuncPrefix);
-#endif
 }
 // PC 0x0045E020 GOG 0x0045E130 Xbox 0x002C05F0
 int Gob::Append(char* sModel, char* sPart)

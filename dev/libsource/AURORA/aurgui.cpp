@@ -1013,13 +1013,8 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 15] = fX + fWidth;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 16] = 1.0f - fY;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 17] = 0.0f;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 5 + 3] = fHalfU + 1.0f;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 5 + 4] = 1.0f - fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 5 + 3] = 1.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 5 + 4] = 1.0f;
-#endif
         cm_nGUIBufferSizeUsed = cm_nGUIBufferSizeUsed + 20;
     }
     else
