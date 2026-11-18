@@ -1140,7 +1140,7 @@ static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
     }
 }
 #endif
-// PC 0x00483AC0 GOG 0x00483B80
+// PC 0x00483AC0 GOG 0x00483B80 Xbox 0x003042A0
 static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
 {
     if (pNode == 0)

@@ -442,7 +442,7 @@ int CGuiInGame::SetLevelUpMode(int bMode)
     }
     return bMode;
 }
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void CGuiInGame::ClearMapDisplays()
 {
 }
@@ -4644,7 +4644,7 @@ void CGuiInGame::ResetTutorialWindowTracker()
     for (int nTutorialByte = 0; nTutorialByte < sizeof(m_aTutorialWindowsShown); nTutorialByte++)
         m_aTutorialWindowsShown[nTutorialByte] = 0;
 }
-// PC 0x00682D80 GOG 0x00682B60
+// PC 0x00682D80 GOG 0x00682B60 Xbox 0x0005A370
 void CGuiInGame::SetTopMenuOverrideCharacter(int nCharacter)
 {
     if (m_pInGameMenu != NULL)

@@ -7,7 +7,7 @@
 #include "swguiingame.h"
 #include "nwccreature.h"
 #include "swguiportrait.h"
-// PC 0x00768ED0 GOG 0x00768D10
+// PC 0x00768ED0 GOG 0x00768D10 Xbox 0x00143D30
 CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
                                                CSWCCreature* pCreature,
                                                int bLevelUp)
@@ -321,7 +321,7 @@ void CSWGuiAbilitiesCharGen::HandleCancelButton()
         }
     }
 }
-// PC 0x007683B0 GOG 0x00768430
+// PC 0x007683B0 GOG 0x00768430 Xbox 0x00142F90
 void CSWGuiAbilitiesCharGen::OnExitPointsButton(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pLabelParams;
@@ -504,7 +504,7 @@ void CSWGuiAbilitiesCharGen::OnPlusButton()
         }
     }
 }
-// PC 0x0076A960 GOG 0x0076A780
+// PC 0x0076A960 GOG 0x0076A780 Xbox 0x001451B0
 void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -552,7 +552,7 @@ void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x007686D0 GOG 0x007681D0
+// PC 0x007686D0 GOG 0x007681D0 Xbox 0x001432F0
 CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
 {
     m_lbDescription.ClearItems();
@@ -637,7 +637,7 @@ void CSWGuiAbilitiesCharGen::OnAcceptButton()
         CompletePanel();
     }
 }
-// PC 0x00768470 GOG 0x00768460
+// PC 0x00768470 GOG 0x00768460 Xbox 0x00142FC0
 void CSWGuiAbilitiesCharGen::CompletePanel()
 {
     if (m_bLevelUp != 0)

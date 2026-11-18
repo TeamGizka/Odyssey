@@ -906,7 +906,7 @@ CSWGuiInGameInventory::~CSWGuiInGameInventory()
     m_lItems.RemoveAll();
 }
 
-void CSWGuiInGameInventory::Draw(float fElapsed)
+void CSWGuiInGameInventory::Draw(float fElapsed)  // Xbox 0x000FB200
 {
     if (m_bUpdateItems)
     {
@@ -916,7 +916,7 @@ void CSWGuiInGameInventory::Draw(float fElapsed)
     CSWGuiPanel::Draw(fElapsed);
 }
 
-void CSWGuiInGameInventory::OnPanelAdded()
+void CSWGuiInGameInventory::OnPanelAdded()  // Xbox 0x000FB230
 {
     m_lblBlack.SetShown(g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters() > 1);
     m_lblRanalog.SetShown(0);
@@ -925,7 +925,7 @@ void CSWGuiInGameInventory::OnPanelAdded()
                                                        OBJECT_INVALID, 0);
 }
 
-void CSWGuiInGameInventory::OnPanelRemoved()
+void CSWGuiInGameInventory::OnPanelRemoved()  // Xbox 0x000FADB0
 {
     m_lItems.RemoveAll();
     g_pAppManager->m_pServerExoApp->GetPartyTable()
@@ -983,7 +983,7 @@ void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 
-void CSWGuiInGameInventory::SetItemRows(int nTopItem, int nSelectedItem)
+void CSWGuiInGameInventory::SetItemRows(int nTopItem, int nSelectedItem)  // Xbox 0x000F8BD0
 {
     int nRows = m_lItems.num > NUM_ITEM_ROWS ? NUM_ITEM_ROWS : m_lItems.num;
     m_nTopItem = nTopItem;

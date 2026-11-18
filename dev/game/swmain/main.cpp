@@ -703,7 +703,7 @@ DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A50 GOG 0x00401A50
     return 0;
 }
 #endif
-// PC 0x00401BD0 GOG 0x00401BD0
+// PC 0x00401BD0 GOG 0x00401BD0 Xbox 0x00011BE0
 void SetupOpenGL()
 {
 #ifdef _XBOX
@@ -2636,7 +2636,7 @@ int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // Xbox
     return 0;
 }
 
-void ReInitAurora(unsigned long nWidth, unsigned long nHeight,
+void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // Xbox 0x00012150
                   unsigned char nBitsPerPixel, int nFlags)
 {
     if (g_pAurora != NULL)
@@ -2660,7 +2660,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,
     }
 }
 
-int main()
+int main()  // Xbox 0x00012560
 {
     LAUNCH_DATA cLaunchData;
     DWORD bNoLaunchData;

@@ -730,7 +730,7 @@ void CSWCVisualEffectOnObject::ApplyDistortion(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00701950 GOG 0x007015C0 Xbox 0x000D49B0
+// PC 0x00701950 GOG 0x007015C0 Xbox 0x000D1C80
 void CSWCVisualEffectOnObject::RemoveDistortion(unsigned short nVisualEffect)
 {
     CSWCObject* pGameObject;

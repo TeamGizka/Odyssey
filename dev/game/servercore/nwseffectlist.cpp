@@ -494,7 +494,7 @@ int CSWSEffectListHandler::OnApplyAssassinate(CSWSObject* pObject,
     }
     return 1;
 }
-int CSWSEffectListHandler::OnApplyForceBody(CSWSObject* pObject,
+int CSWSEffectListHandler::OnApplyForceBody(CSWSObject* pObject,  // Xbox 0x00124C90
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
 {
@@ -505,7 +505,7 @@ int CSWSEffectListHandler::OnRemoveForceBody(CSWSObject* pObject,  // Xbox 0x002
 {
     return 1;
 }
-int CSWSEffectListHandler::OnApplyFPRegenModifier(CSWSObject* pObject,
+int CSWSEffectListHandler::OnApplyFPRegenModifier(CSWSObject* pObject,  // Xbox 0x00124C90
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
 {
@@ -516,7 +516,7 @@ int CSWSEffectListHandler::OnRemoveFPRegenModifier(CSWSObject* pObject,  // Xbox
 {
     return 1;
 }
-int CSWSEffectListHandler::OnApplyVPRegenModifier(CSWSObject* pObject,
+int CSWSEffectListHandler::OnApplyVPRegenModifier(CSWSObject* pObject,  // Xbox 0x00124C90
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
 {
@@ -527,7 +527,7 @@ int CSWSEffectListHandler::OnRemoveVPRegenModifier(CSWSObject* pObject,  // Xbox
 {
     return 1;
 }
-int CSWSEffectListHandler::OnApplyForceSight(CSWSObject* pObject,
+int CSWSEffectListHandler::OnApplyForceSight(CSWSObject* pObject,  // Xbox 0x00124C90
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
 {

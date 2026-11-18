@@ -54,7 +54,7 @@ void CSWGuiCreateItem::SetCreateTable(CExoString sTable)
 {
     m_sCreateTable = sTable;
 }
-// PC 0x00723C70 GOG 0x00723980
+// PC 0x00723C70 GOG 0x00723980 Xbox 0x0010CD10
 inline int CSWGuiUpgradeItemSelect::GetUpgradeItemEquipped()
 {
     if (m_pUpgradeItem != 0)
@@ -73,7 +73,7 @@ void CSWGuiCreateMedicalItem::OnControlXButton(CSWGuiControl* pControl)
     else
         ShowBuyGUI();
 }
-// PC 0x00728E70 GOG 0x00728B80
+// PC 0x00728E70 GOG 0x00728B80 Xbox 0x0010F510
 void CSWGuiSwoopUpgrade::CancelPanel()
 {
     CSWSItem* pItem;
@@ -108,7 +108,7 @@ void CSWGuiSwoopUpgrade::CancelPanel()
         }
     }
 }
-// PC 0x00733EB0 GOG 0x00733BC0
+// PC 0x00733EB0 GOG 0x00733BC0 Xbox 0x0011BD10
 CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned long oidCharacter)
     : CSWGuiPanel(pManager)
 {
@@ -158,7 +158,7 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned
     m_bDisableItemCreation = 0;
     m_bDisableUpgrade = 0;
 }
-// PC 0x00723C90 GOG 0x007239A0
+// PC 0x00723C90 GOG 0x007239A0 Xbox 0x0010CD30
 unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemId()
 {
     if (m_pUpgradeItem != 0)
@@ -167,7 +167,7 @@ unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemId()
     }
     return OBJECT_INVALID;
 }
-// PC 0x007327F0 GOG 0x00732500
+// PC 0x007327F0 GOG 0x00732500 Xbox 0x0011BC80
 void CSWGuiCreateMedicalItem::InitializeStoreType()
 {
     CServerExoApp* pServer;
@@ -197,7 +197,7 @@ void CSWGuiCreateMedicalItem::InitializeStoreType()
         }
     }
 }
-// PC 0x00723CB0 GOG 0x007239C0
+// PC 0x00723CB0 GOG 0x007239C0 Xbox 0x0010CD50
 unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemProperty()
 {
     if (m_pUpgradeItem != 0)
@@ -206,7 +206,7 @@ unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemProperty()
     }
     return 0;
 }
-// PC 0x00723CD0 GOG 0x007239E0
+// PC 0x00723CD0 GOG 0x007239E0 Xbox 0x0010CD70
 void CSWSItem::ClearUpgradeActive(unsigned char nUpgradeType)
 {
     m_nUpgrades &= ~(UPGRADE_PROPERTY_MASK << nUpgradeType);
@@ -225,7 +225,7 @@ void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00731BF0 GOG 0x00731900
+// PC 0x00731BF0 GOG 0x00731900 Xbox 0x0011ADB0
 void CSWGuiCreateMedicalItem::ShowBuyGUI()
 {
     CSWGuiListBox* pActiveList;
@@ -251,7 +251,7 @@ void CSWGuiCreateMedicalItem::ShowBuyGUI()
     SetActiveControl(pActiveList, 0);
     PopulateStoreItemListBox();
 }
-// PC 0x00728F70 GOG 0x00728C80
+// PC 0x00728F70 GOG 0x00728C80 Xbox 0x00115710
 void CSWGuiUpgradeSelection::GetPlayerItems(CSWSCreature* pCreature,
                                             CExoArrayList<CSWGuiControl*>& aItems,
                                             C2DA* pTable)
@@ -287,13 +287,13 @@ void CSWGuiUpgradeSelection::GetPlayerItems(CSWSCreature* pCreature,
         }
     }
 }
-// PC 0x00723D50 GOG 0x00723A60
+// PC 0x00723D50 GOG 0x00723A60 Xbox 0x0010CDB0
 void CSWGuiUpgradeSelection::OnCreateItem(CSWGuiControl* pControl)
 {
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     m_pManager->AddPanel(m_pCreateItems, CSWGuiManager::PANEL_MODE_MODAL, 1);
 }
-// PC 0x00731CF0 GOG 0x00731A00
+// PC 0x00731CF0 GOG 0x00731A00 Xbox 0x0011AFF0
 CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -362,7 +362,7 @@ void CSWGuiUpgradeSelection::UpdateFilterButtons()
         }
     }
 }
-// PC 0x00723DC0 GOG 0x00723AD0
+// PC 0x00723DC0 GOG 0x00723AD0 Xbox 0x0010F910
 void CSWGuiUpgradeSelection::SetDescription(CExoString sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -387,7 +387,7 @@ void CSWGuiUpgradeSelection::SetDescription(CExoString sDescription)
     pListBox->AddControls(&pControl, 1, 0, 1, 0);
     pListBox->SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x00729120 GOG 0x00728E30
+// PC 0x00729120 GOG 0x00728E30 Xbox 0x00112480
 void CSWGuiUpgradeItemSelect::BuildItemList(CSWSCreature* pCreature,
                                            CExoArrayList<CSWGuiControl*>& aItems,
                                            C2DA* pTable)
@@ -412,7 +412,7 @@ void CSWGuiUpgradeItemSelect::BuildItemList(CSWSCreature* pCreature,
         }
     }
 }
-// PC 0x00723EC0 GOG 0x00723BD0
+// PC 0x00723EC0 GOG 0x00723BD0 Xbox 0x0010CE30
 void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
 {
     if (pControl == &m_btnUpgradeitems)
@@ -438,7 +438,7 @@ void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
         }
     }
 }
-CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60 GOG 0x00730970
+CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60 GOG 0x00730970 Xbox 0x00119B00
     : CSWGuiPanel(pManager)
 {
 
@@ -561,7 +561,7 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60 GOG 0x00
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
 #endif
 }
-// PC 0x007292B0 GOG 0x00728FC0
+// PC 0x007292B0 GOG 0x00728FC0 Xbox 0x00112E70
 void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
 {
     if (!pControl->m_bSelected)
@@ -707,7 +707,7 @@ Exit:
     CloseItems();
 }
 
-// PC 0x00723FD0 GOG 0x00723CE0
+// PC 0x00723FD0 GOG 0x00723CE0 Xbox 0x0010FC50
 void CSWGuiUpgradeItemSelect::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -733,7 +733,7 @@ void CSWGuiUpgradeItemSelect::SetDescription(const CExoString& sDescription)
     m_lblRanalog.SetEnabledFlag(pListBox->IsOversized());
 #endif
 }
-// PC 0x00724090 GOG 0x00723DA0
+// PC 0x00724090 GOG 0x00723DA0 Xbox 0x0010CEF0
 void CSWGuiUpgradeItemSelect::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -757,7 +757,7 @@ void CSWGuiUpgradeItemSelect::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x007297E0 GOG 0x007294F0
+// PC 0x007297E0 GOG 0x007294F0 Xbox 0x00113340
 CSWUpgradeItemEntry* CSWGuiUpgrade::CreateItemEntry(unsigned long oidItem, int nUpgradeIndex,
                                                     int bDisabled)
 {
@@ -787,7 +787,7 @@ CSWUpgradeItemEntry* CSWGuiUpgrade::CreateItemEntry(unsigned long oidItem, int n
     pEntry->m_nUpgradeIndex = nUpgradeIndex;
     return pEntry;
 }
-// PC 0x00729930 GOG 0x00729640
+// PC 0x00729930 GOG 0x00729640 Xbox 0x00110590
 void CSWGuiUpgrade::InsertUpgrade(CSWSItem* pItem, int nSlot)
 {
     if (pItem != 0)
@@ -826,7 +826,7 @@ inline CSWUpgradeItemEntry* CopyItemEntry(CSWUpgradeItemEntry* pEntry)
 {
     return new CSWUpgradeItemEntry(*pEntry);
 }
-// PC 0x00724150 GOG 0x00723E60
+// PC 0x00724150 GOG 0x00723E60 Xbox 0x0010CFB0
 void CSWGuiUpgradeItemSelect::OnUpgradableSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -904,7 +904,7 @@ void CSWGuiUpgradeItemSelect::OnUpgradableSelected(CSWGuiControl* pControl)
         m_pManager->AddPanel(m_pUpgradePanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0 GOG 0x00723FF0
+void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0 GOG 0x00723FF0 Xbox 0x0010D120
 {
 
     if (bShow)
@@ -1085,7 +1085,7 @@ void CSWGuiCreateItem::OnBreakdownFilterPicked(CSWGuiControl* pControl)
         PopulateInventoryItemListBox();
     }
 }
-// PC 0x00724610 GOG 0x00724320
+// PC 0x00724610 GOG 0x00724320 Xbox 0x0010D450
 void CSWGuiUpgrade::OnPanelRemoved()
 {
     CSWSItem* pItem;
@@ -1111,7 +1111,7 @@ void CSWGuiUpgrade::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x00729E50 GOG 0x00729B60
+// PC 0x00729E50 GOG 0x00729B60 Xbox 0x00113880
 void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1185,7 +1185,7 @@ void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00724670 GOG 0x00724380
+// PC 0x00724670 GOG 0x00724380 Xbox 0x00110310
 void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -1214,7 +1214,7 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
     pRanalog->SetEnabledFlag(pListBox->IsOversized());
 #endif
 }
-// PC 0x0072A1B0 GOG 0x00729EC0
+// PC 0x0072A1B0 GOG 0x00729EC0 Xbox 0x00113C10
 void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
 {
     C2DA* pTable;
@@ -1376,7 +1376,7 @@ void CSWGuiCreateItem::SellItem(CSWSItem* pItem)
         }
     }
 }
-// PC 0x00731FC0 GOG 0x00731CD0
+// PC 0x00731FC0 GOG 0x00731CD0 Xbox 0x0011B550
 void CSWGuiCreateItem::SetItemList()
 {
     C2DA* pTable;
@@ -1606,7 +1606,7 @@ CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
     m_nBreakdownFilter = 0;
     UpdateBreakdownFilters();
 }
-// PC 0x00724730 GOG 0x00724440
+// PC 0x00724730 GOG 0x00724440 Xbox 0x0010D4B0
 void CSWGuiUpgrade::Draw(float fElapsed)
 {
     if (g_bDo3DGUIs != 0)
@@ -1629,7 +1629,7 @@ void CSWGuiUpgrade::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x00724870 GOG 0x00724580
+// PC 0x00724870 GOG 0x00724580 Xbox 0x0010D660
 void CSWGuiUpgrade::GetArmorModelAndTextureResRef(
     int nAppearance, int nBodyVariation, int nTextureVar,
     CExoString& sModel, CExoString& sTexture)
@@ -1679,7 +1679,7 @@ void CSWGuiUpgrade::GetArmorModelAndTextureResRef(
         sTexture = "";
     }
 }
-// PC 0x0072ADE0 GOG 0x0072AAF0
+// PC 0x0072ADE0 GOG 0x0072AAF0 Xbox 0x00110D80
 void CSWGuiCreateMedicalItem::PopulateInventoryItemListBox()
 {
     CItemRepository* pRepository;
@@ -1772,7 +1772,7 @@ void CSWGuiCreateMedicalItem::PopulateInventoryItemListBox()
     }
     m_nSelectedEntry = 0;
 }
-// PC 0x0072B1B0 GOG 0x0072AEC0
+// PC 0x0072B1B0 GOG 0x0072AEC0 Xbox 0x00114630
 void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1848,7 +1848,7 @@ void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x0072B4F0 GOG 0x0072B200
+// PC 0x0072B4F0 GOG 0x0072B200 Xbox 0x001149C0
 void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
 {
     CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
@@ -1953,7 +1953,7 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x0072BD10 GOG 0x0072BA20
+// PC 0x0072BD10 GOG 0x0072BA20 Xbox 0x00111240
 void CSWGuiCreateMedicalItem::SellItem(CSWSItem* pItem)
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -1981,7 +1981,7 @@ void CSWGuiCreateMedicalItem::SellItem(CSWSItem* pItem)
         }
     }
 }
-// PC 0x00724A40 GOG 0x00724750
+// PC 0x00724A40 GOG 0x00724750 Xbox 0x0010D820
 void CSWGuiUpgrade::Update3DView()
 {
     if (g_bDo3DGUIs != 0)
@@ -2059,7 +2059,7 @@ void CSWGuiUpgrade::Update3DView()
         }
     }
 }
-// PC 0x00724F20 GOG 0x00724C30
+// PC 0x00724F20 GOG 0x00724C30 Xbox 0x00110420
 void CSWGuiUpgrade::UpdateItems()
 {
     CResRef cIcon;
@@ -2112,7 +2112,7 @@ void CSWGuiUpgrade::UpdateItems()
     }
     SetDescription(m_pSelectedItem->GetPropertyDescription());
 }
-// PC 0x007250B0 GOG 0x00724DC0
+// PC 0x007250B0 GOG 0x00724DC0 Xbox 0x0010DC00
 void CSWGuiUpgrade::OnDisabledSelected(CSWGuiControl* pControl)
 {
     if (pControl != 0 && pControl->m_bSelected)
@@ -2153,7 +2153,7 @@ void CSWGuiCreateMedicalItem::SellItemCallback(CSWGuiControl* pControl)
             SellItem(pItem);
     }
 }
-// PC 0x0072BEE0 GOG 0x0072BBF0
+// PC 0x0072BEE0 GOG 0x0072BBF0 Xbox 0x00111500
 void CSWGuiCreateMedicalItem::ShowSellGUI()
 {
     CSWGuiListBox* pActiveList;
@@ -2183,7 +2183,7 @@ inline CSWGuiSwoopUpgrade* CopySwoopUpgrade(CSWGuiSwoopUpgrade* pPanel)
 {
     return new CSWGuiSwoopUpgrade(*pPanel);
 }
-// PC 0x00725160 GOG 0x00724E70
+// PC 0x00725160 GOG 0x00724E70 Xbox 0x0010DCB0
 void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -2261,7 +2261,7 @@ void CSWGuiCreateItem::OnControlXButton(CSWGuiControl* pControl)
     else
         ShowBuyGUI();
 }
-// PC 0x007254C0 GOG 0x007251D0
+// PC 0x007254C0 GOG 0x007251D0 Xbox 0x0010DF50
 void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
 
@@ -2292,7 +2292,7 @@ void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
                                                    m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x00725640 GOG 0x00725350
+// PC 0x00725640 GOG 0x00725350 Xbox 0x0010C7E0
 void CSWUpgradeItemEntry::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -2309,7 +2309,7 @@ void CSWUpgradeItemEntry::Draw(float fElapsed)
     m_cText.Draw(fElapsed);
     m_cCountText.Draw(fElapsed);
 }
-// PC 0x0072E230 GOG 0x0072DF40
+// PC 0x0072E230 GOG 0x0072DF40 Xbox 0x00119480
 void CSWGuiUpgradeItemSelect::OnPanelAdded()
 {
     if (m_nUpgradeType > 0 && m_nUpgradeType <= CSWGuiUpgrade::ITEMLIST_ARMOR)
@@ -2433,7 +2433,7 @@ void CSWGuiUpgradeItemSelect::OnPanelAdded()
         SetToBeRemoved(0);
     }
 }
-// PC 0x007256B0 GOG 0x007253C0
+// PC 0x007256B0 GOG 0x007253C0 Xbox 0x0010E0D0
 void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                                      CSWGuiBorder& cHilite, int nWidth, int bSlotEntry)
 {
@@ -2478,7 +2478,7 @@ void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
     }
     SetExtent(CSWGuiExtent(0, 0, nWidth, ENTRY_HEIGHT));
 }
-// PC 0x0072C000 GOG 0x0072BD10
+// PC 0x0072C000 GOG 0x0072BD10 Xbox 0x00111E10
 void CSWGuiSwoopUpgrade::OnControlEntered(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -2503,7 +2503,7 @@ void CSWGuiSwoopUpgrade::OnControlEntered(CSWGuiControl* pControl)
             SetDescription("");
     }
 }
-// PC 0x00725940 GOG 0x00725650
+// PC 0x00725940 GOG 0x00725650 Xbox 0x0010E360
 void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
                                   unsigned long nItemId, unsigned long nItemProperty)
 {
@@ -2585,7 +2585,7 @@ void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
     pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
     pParams->SetFillImage(cIcon, 0);
 }
-// PC 0x0072E550 GOG 0x0072E260
+// PC 0x0072E550 GOG 0x0072E260 Xbox 0x00115AF0
 void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2771,7 +2771,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007316A0 GOG 0x007313B0
+// PC 0x007316A0 GOG 0x007313B0 Xbox 0x0011A950
 void CSWGuiCreateItem::PopulateStoreItemListBox()
 {
     CSWSStore* pStore = m_pStore;
@@ -2806,7 +2806,7 @@ void CSWGuiCreateItem::PopulateStoreItemListBox()
     }
     m_nSelectedEntry = 0;
 }
-// PC 0x00725F90 GOG 0x00725CA0
+// PC 0x00725F90 GOG 0x00725CA0 Xbox 0x0010E890
 void CSWGuiCreateItem::PopulateStore()
 {
     CServerExoApp* pServer;
@@ -2822,7 +2822,7 @@ void CSWGuiCreateItem::PopulateStore()
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(nComponents));
     }
 }
-// PC 0x00726010 GOG 0x00725D20
+// PC 0x00726010 GOG 0x00725D20 Xbox 0x0010E8E0
 int CSWGuiCreateItem::CheckBreakdownFilter(CSWSItem* pItem,
                                            CSWSCreature* pCreature, int nSlot)
 {
@@ -2885,7 +2885,7 @@ int CSWGuiCreateItem::CheckBreakdownFilter(CSWSItem* pItem,
         bResult = 0;
     return bResult;
 }
-// PC 0x007333E0 GOG 0x007330F0
+// PC 0x007333E0 GOG 0x007330F0 Xbox 0x0011C540
 void CSWGuiCreateItem::OnPanelAdded()
 {
     if (g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nItemComponent < 0)
@@ -2902,7 +2902,7 @@ void CSWGuiCreateItem::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
     ShowBuyGUI();
 }
-// PC 0x0072C130 GOG 0x0072BE40
+// PC 0x0072C130 GOG 0x0072BE40 Xbox 0x00111F10
 void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
 {
     if (!pControl->m_bSelected)
@@ -2994,7 +2994,7 @@ Exit:
     UpdateItems();
     OnEnterSlot(m_pActiveControl);
 }
-// PC 0x0072C410 GOG 0x0072C120
+// PC 0x0072C410 GOG 0x0072C120 Xbox 0x001121B0
 void CSWGuiSwoopUpgrade::CloseItems(CSWGuiControl* pControl)
 {
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
@@ -3012,7 +3012,7 @@ void CSWGuiSwoopUpgrade::CloseItems(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSwoopUpgradeScreen();
     }
 }
-// PC 0x0072C490 GOG 0x0072C1A0
+// PC 0x0072C490 GOG 0x0072C1A0 Xbox 0x00112220
 CSWUpgradeItemEntry* CSWGuiSwoopUpgrade::CreateItemEntry(unsigned long oidItem, int nUpgradeIndex)
 {
     int nWidth = m_lbItems.m_cItemExtent.m_nWidth -
@@ -3028,7 +3028,7 @@ CSWUpgradeItemEntry* CSWGuiSwoopUpgrade::CreateItemEntry(unsigned long oidItem, 
     pEntry->m_nUpgradeIndex = nUpgradeIndex;
     return pEntry;
 }
-// PC 0x0072EE80 GOG 0x0072EB90
+// PC 0x0072EE80 GOG 0x0072EB90 Xbox 0x0011B400
 void CSWGuiUpgrade::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -3072,7 +3072,7 @@ void CSWGuiUpgrade::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00732470 GOG 0x00732180
+// PC 0x00732470 GOG 0x00732180 Xbox 0x0011B950
 void CSWGuiCreateItem::InitializeStoreType()
 {
     CServerExoApp* pServer;
@@ -3118,7 +3118,7 @@ void CSWGuiCreateItem::OnAcceptPicked(CSWGuiControl* pControl)
             OnControlInvAButton(pSelected);
     }
 }
-// PC 0x00726180 GOG 0x00725E90
+// PC 0x00726180 GOG 0x00725E90 Xbox 0x0010EBB0
 void CSWGuiCreateItem::CloseCreateItem(CSWGuiControl* pControl)
 {
     if (m_pUpgradeSelection != 0 && m_pUpgradeSelection->m_bDisableUpgrade != 0)
@@ -3145,7 +3145,7 @@ void CSWGuiCreateItem::UpdateBreakdownFilters()
                 CGuiInGame::COLOR_UPGRADE_TEXT);
     }
 }
-// PC 0x00732500 GOG 0x00732210
+// PC 0x00732500 GOG 0x00732210 Xbox 0x0011B9E0
 void CSWGuiCreateMedicalItem::SetItemList()
 {
     CItemRepository* pRepository = m_pStore->m_pItemRepository;
@@ -3188,7 +3188,7 @@ void CSWGuiCreateMedicalItem::SetItemList()
     }
     PopulateStoreItemListBox();
 }
-// PC 0x00726220 GOG 0x00725F30
+// PC 0x00726220 GOG 0x00725F30 Xbox 0x0010EC60
 void CSWGuiCreateItem::UpdateCreateFilters()
 {
     for (int i = 0; i < 5; i++)
@@ -3201,14 +3201,14 @@ void CSWGuiCreateItem::UpdateCreateFilters()
                 CGuiInGame::COLOR_UPGRADE_TEXT);
     }
 }
-// PC 0x00726260 GOG 0x00725F70
+// PC 0x00726260 GOG 0x00725F70 Xbox 0x0010C850
 unsigned long CSWGuiCreateItem::GetItemBuyValue(CSWSItem* pItem)
 {
     if (pItem == 0)
         return 0;
     return max(1u, pItem->GetCost() / COMPONENT_VALUE_DIVISOR);
 }
-// PC 0x0072C580 GOG 0x0072C290
+// PC 0x0072C580 GOG 0x0072C290 Xbox 0x00119150
 void CSWGuiUpgradeSelection::PopulateItemList()
 {
     CExoArrayList<CSWGuiControl*> aItems;
@@ -3295,7 +3295,7 @@ void CSWGuiUpgradeSelection::PopulateItemList()
         m_btnUpgradeitems.SetEnabled(0);
     }
 }
-// PC 0x0072C990 GOG 0x0072C6A0
+// PC 0x0072C990 GOG 0x0072C6A0 Xbox 0x00115850
 void CSWGuiUpgradeItemSelect::BuildUpgradeList()
 {
 
@@ -3350,7 +3350,7 @@ CSWGuiCreateItem::~CSWGuiCreateItem()
     delete m_pStore;
     DeleteItemEntries();
 }
-// PC 0x007262B0 GOG 0x00725FC0
+// PC 0x007262B0 GOG 0x00725FC0 Xbox 0x0010EE30
 void CSWGuiCreateMedicalItem::PopulateStore()
 {
     CServerExoApp* pServer;
@@ -3366,7 +3366,7 @@ void CSWGuiCreateMedicalItem::PopulateStore()
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(nChemicals));
     }
 }
-// PC 0x00726330 GOG 0x00726040
+// PC 0x00726330 GOG 0x00726040 Xbox 0x0004B4A0
 void CSWGuiCreateMedicalItem::CloseChemical(CSWGuiControl* pControl)
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->HideChemicalUpgradeScreen();
@@ -3384,14 +3384,14 @@ void CSWGuiCreateMedicalItem::UpdateCreateFilters()
                 CGuiInGame::COLOR_UPGRADE_TEXT);
     }
 }
-// PC 0x00726390 GOG 0x007260A0
+// PC 0x00726390 GOG 0x007260A0 Xbox 0x0010C8A0
 unsigned long CSWGuiCreateMedicalItem::GetItemBuyValue(CSWSItem* pItem)
 {
     if (pItem == 0)
         return 0;
     return max(1u, pItem->GetCost() / CHEMICAL_VALUE_DIVISOR);
 }
-// PC 0x0072CC90 GOG 0x0072C9A0
+// PC 0x0072CC90 GOG 0x0072C9A0 Xbox 0x00119740
 void CSWGuiUpgradeItemSelect::FinishUpgrading()
 {
 
@@ -3504,7 +3504,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
         m_lbItems.SetSelectedControl(m_pUpgradeItem, 0);
     }
 }
-// PC 0x0072D060 GOG 0x0072CD70
+// PC 0x0072D060 GOG 0x0072CD70 Xbox 0x00113440
 void CSWGuiUpgrade::VerifyUpgrade(CSWGuiControl* pControl)
 {
     int nSlot = m_pActiveControl->m_nIndex;
@@ -3538,7 +3538,7 @@ void CSWGuiCreateItem::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 }
 
-// PC 0x007263D0 GOG 0x007260E0
+// PC 0x007263D0 GOG 0x007260E0 Xbox 0x0010C8E0
 void CSWGuiSwoopUpgrade::ShowItems(int bShow)
 {
     if (bShow)
@@ -3610,7 +3610,7 @@ void CSWGuiSwoopUpgrade::ShowItems(int bShow)
     }
     m_lbItems.SetShown(0);
 }
-// PC 0x0072D0D0 GOG 0x0072CDE0
+// PC 0x0072D0D0 GOG 0x0072CDE0 Xbox 0x0011A750
 void CSWGuiUpgrade::OnAssemble(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -3633,7 +3633,7 @@ void CSWGuiUpgrade::OnAssemble(CSWGuiControl* pControl)
         m_pManager->PopModalPanel();
     }
 }
-// PC 0x00726660 GOG 0x00726370
+// PC 0x00726660 GOG 0x00726370 Xbox 0x0010CB70
 void CSWGuiSwoopUpgrade::OnPanelRemoved()
 {
     CSWSItem* pItem;
@@ -3657,7 +3657,7 @@ void CSWGuiSwoopUpgrade::OnPanelRemoved()
     m_aItemsTaken.num = 0; m_aItemsAdded.num = 0;
     CSWGuiPanel::OnPanelRemoved();
 }
-// PC 0x007266C0 GOG 0x007263D0
+// PC 0x007266C0 GOG 0x007263D0 Xbox 0x0010F000
 void CSWGuiSwoopUpgrade::UpdateItems()
 {
     CResRef cIcon;
@@ -3677,7 +3677,7 @@ void CSWGuiSwoopUpgrade::UpdateItems()
         m_aUpgradeLabels3[i].m_cBorder.m_cParams.SetFillImage(cIcon, 0);
     }
 }
-// PC 0x007267A0 GOG 0x007264B0
+// PC 0x007267A0 GOG 0x007264B0 Xbox 0x0010F0C0
 void CSWGuiSwoopUpgrade::OnEnterSlot(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -3744,7 +3744,7 @@ void CSWGuiSwoopUpgrade::OnEnterSlot(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00726C90 GOG 0x007269A0
+// PC 0x00726C90 GOG 0x007269A0 Xbox 0x0010CBE0
 void CSWGuiSwoopUpgrade::OnEnterAssemble(CSWGuiControl* pControl)
 {
     m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
@@ -3755,7 +3755,7 @@ void CSWGuiSwoopUpgrade::OnEnterAssemble(CSWGuiControl* pControl)
     m_cProperty.m_cText.m_cParams.SetText("");
     m_cUpgrades.m_cText.m_cParams.SetText("");
 }
-// PC 0x0072D130 GOG 0x0072CE40
+// PC 0x0072D130 GOG 0x0072CE40 Xbox 0x0011A7A0
 void CSWGuiUpgrade::CancelPanel()
 {
 
@@ -3801,7 +3801,7 @@ void CSWGuiUpgrade::CancelPanel()
     }
     m_pManager->PopModalPanel();
 }
-// PC 0x00726DF0 GOG 0x00726B00
+// PC 0x00726DF0 GOG 0x00726B00 Xbox 0x00115660
 void CSWGuiSwoopUpgrade::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -3851,7 +3851,7 @@ void CSWGuiSwoopUpgrade::OnAssemble(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSwoopUpgradeScreen();
     }
 }
-// PC 0x0072F2B0 GOG 0x0072EFC0
+// PC 0x0072F2B0 GOG 0x0072EFC0 Xbox 0x00117670
 int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
                                       CExoArrayList<CSWGuiControl*>& lControls,
                                       unsigned long oidItem, int bInventory,
@@ -3989,7 +3989,7 @@ CSWGuiUpgradeSelection::~CSWGuiUpgradeSelection()
         m_pItemSelect = 0;
     }
 }
-// PC 0x00727010 GOG 0x00726D20
+// PC 0x00727010 GOG 0x00726D20 Xbox 0x001122F0
 void CSWGuiUpgradeSelection::OnItemEntered(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -4016,7 +4016,7 @@ void CSWGuiUpgradeSelection::OnItemEntered(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00727130 GOG 0x00726E40
+// PC 0x00727130 GOG 0x00726E40 Xbox 0x0010FA30
 CSWGuiUpgradeItemSelect::~CSWGuiUpgradeItemSelect()
 {
     m_lbItems.ClearItems();
@@ -4090,7 +4090,7 @@ void CSWGuiCreateItem::OnControlInvAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00727210 GOG 0x00726F20
+// PC 0x00727210 GOG 0x00726F20 Xbox 0x00112400
 void CSWGuiUpgradeItemSelect::OnControlEntered(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -4116,7 +4116,7 @@ void CSWGuiUpgradeItemSelect::OnControlEntered(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007272F0 GOG 0x00727000
+// PC 0x007272F0 GOG 0x00727000 Xbox 0x0010FD60
 CSWGuiUpgrade::~CSWGuiUpgrade()
 {
     m_lbItems.ClearItems();
@@ -4154,7 +4154,7 @@ unsigned char CSWGuiUpgrade::GetNumUpgrades()
     return nSlots;
 }
 #endif
-// PC 0x00727560 GOG 0x00727270
+// PC 0x00727560 GOG 0x00727270 Xbox 0x001125E0
 void CSWGuiUpgrade::CloseItems()
 {
     CSWGuiControl* pControl;
@@ -4196,7 +4196,7 @@ void CSWGuiCreateItem::ShowBuyGUI()
     SetActiveControl(pActiveList, 0);
     PopulateStoreItemListBox();
 }
-// PC 0x00733480 GOG 0x00733190
+// PC 0x00733480 GOG 0x00733190 Xbox 0x0011C770
 CSWGuiCreateMedicalItem::CSWGuiCreateMedicalItem(CSWGuiManager* pManager,
                                                  unsigned long oidCreature)
     : CSWGuiPanel(pManager)
@@ -4333,7 +4333,7 @@ void CSWGuiCreateItem::DeleteItemEntries()
     }
     lInventoryEntries.num = 0;
 }
-// PC 0x007275A0 GOG 0x007272B0
+// PC 0x007275A0 GOG 0x007272B0 Xbox 0x00112620
 void CSWGuiUpgrade::OnPanelAdded()
 {
     if (m_pSelectedItem == 0)
@@ -4550,7 +4550,7 @@ CSWGuiCreateMedicalItem::~CSWGuiCreateMedicalItem()
     delete m_pStore;
     DeleteItemEntries();
 }
-// PC 0x00727DA0 GOG 0x00727AB0
+// PC 0x00727DA0 GOG 0x00727AB0 Xbox 0x00112D10
 void CSWGuiUpgrade::OnControlEntered(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -4580,7 +4580,7 @@ void CSWGuiUpgrade::OnControlEntered(CSWGuiControl* pControl)
             SetDescription("");
     }
 }
-// PC 0x00727F30 GOG 0x00727C40
+// PC 0x00727F30 GOG 0x00727C40 Xbox 0x001106A0
 CSWUpgradeItemEntry::CSWUpgradeItemEntry()
 {
     m_bShowItemSuffix = 0;
@@ -4615,7 +4615,7 @@ void CSWGuiCreateItem::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x007280D0 GOG 0x00727DE0
+// PC 0x007280D0 GOG 0x00727DE0 Xbox 0x00110AF0
 void CSWGuiCreateItem::BuyItem(CSWSItem* pItem)
 {
     CSWSItem* pNewItem;
@@ -4653,7 +4653,7 @@ void CSWGuiCreateItem::BuyItemCallback(CSWGuiControl* pControl)
             BuyItem(pItem);
     }
 }
-// PC 0x0072D650 GOG 0x0072D360
+// PC 0x0072D650 GOG 0x0072D360 Xbox 0x00114410
 void CSWGuiCreateMedicalItem::OnControlInvAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -4699,7 +4699,7 @@ void CSWGuiCreateMedicalItem::OnControlInvAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00728280 GOG 0x00727F90
+// PC 0x00728280 GOG 0x00727F90 Xbox 0x00110C60
 void CSWGuiCreateItem::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -4731,7 +4731,7 @@ void CSWGuiCreateItem::SetDescription(const CExoString& sDescription)
             pListBox->m_cItemExtent.m_nHeight &&
         pListBox->m_lItems.num > 0 && !pListBox->m_bHideScrollIcon;
 }
-// PC 0x0072FB50 GOG 0x0072F860
+// PC 0x0072FB50 GOG 0x0072F860 Xbox 0x00118050
 void CSWGuiCreateMedicalItem::OnPanelRemoved()
 {
     DeleteItemEntries();
@@ -4744,7 +4744,7 @@ void CSWGuiCreateMedicalItem::OnPanelRemoved()
     }
     CSWGuiPanel::OnPanelRemoved();
 }
-// PC 0x007283A0 GOG 0x007280B0
+// PC 0x007283A0 GOG 0x007280B0 Xbox 0x0011D250
 void CSWGuiCreateMedicalItem::HandleInputEvent(int nEvent, int nState)
 {
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -4772,7 +4772,7 @@ void CSWGuiCreateMedicalItem::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x007284B0 GOG 0x007281C0
+// PC 0x007284B0 GOG 0x007281C0 Xbox 0x001110D0
 void CSWGuiCreateMedicalItem::BuyItem(CSWSItem* pItem)
 {
     CSWSItem* pNewItem;
@@ -4794,7 +4794,7 @@ void CSWGuiCreateMedicalItem::BuyItem(CSWSItem* pItem)
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(m_nChemicals));
     }
 }
-// PC 0x00731A20 GOG 0x00731730
+// PC 0x00731A20 GOG 0x00731730 Xbox 0x0011AC40
 void CSWGuiCreateMedicalItem::PopulateStoreItemListBox()
 {
     CSWSStore* pStore = m_pStore;
@@ -4865,7 +4865,7 @@ void CSWGuiCreateMedicalItem::DeleteItemEntries()
     }
     lInventoryEntries.num = 0;
 }
-// PC 0x00728660 GOG 0x00728370
+// PC 0x00728660 GOG 0x00728370 Xbox 0x001113E0
 void CSWGuiCreateMedicalItem::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -4898,7 +4898,7 @@ void CSWGuiCreateMedicalItem::SetDescription(const CExoString& sDescription)
         m_lbxDescription.m_lItems.num > 0 && !m_lbxDescription.m_bHideScrollIcon;
 }
 
-// PC 0x0072FBA0 GOG 0x0072F8B0
+// PC 0x0072FBA0 GOG 0x0072F8B0 Xbox 0x00118090
 int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
                                       CExoArrayList<CSWGuiControl*>& lControls,
                                       unsigned long oidItem, int bInventory,
@@ -5003,7 +5003,7 @@ int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
     nEntries++;
     return 0;
 }
-// PC 0x00730070 GOG 0x0072FD80
+// PC 0x00730070 GOG 0x0072FD80 Xbox 0x00118500
 CSWGuiSwoopUpgrade::CSWGuiSwoopUpgrade(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -5138,7 +5138,7 @@ const CSWGuiUpgrade::SlotInfo
 };
 
 
-// PC 0x0072D950 GOG 0x0072D660
+// PC 0x0072D950 GOG 0x0072D660 Xbox 0x00114FA0
 void CSWGuiSwoopUpgrade::OnSlotSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -5254,7 +5254,7 @@ void CSWGuiSwoopUpgrade::OnSlotSelected(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00728A40 GOG 0x00728750
+// PC 0x00728A40 GOG 0x00728750 Xbox 0x00111B70
 void CSWGuiSwoopUpgrade::OnPanelAdded()
 {
     m_pSelectedItemCopy = new CSWSItem(OBJECT_INVALID);
@@ -5352,7 +5352,7 @@ void CSWGuiCreateMedicalItem::OnCreateFilterPicked(CSWGuiControl* pControl)
         SetItemList();
     }
 }
-// PC 0x00728D40 GOG 0x00728A50
+// PC 0x00728D40 GOG 0x00728A50 Xbox 0x0010EED0
 void CSWGuiSwoopUpgrade::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -5385,12 +5385,12 @@ void CSWGuiSwoopUpgrade::SetDescription(const CExoString& sDescription)
     pListBox->SetSelectedControl(&m_cDescription, 0);
     pRanalog->SetEnabledFlag(pListBox->IsOversized());
 }
-// PC 0x006D39B0 GOG 0x007203F0
+// PC 0x006D39B0 GOG 0x007203F0 Xbox 0x0010CBD0
 void CSWGuiSwoopUpgrade::Draw(float fElapsed)
 {
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x00733E60 GOG 0x00733B70
+// PC 0x00733E60 GOG 0x00733B70 Xbox 0x0011D200
 void CSWGuiCreateMedicalItem::OnPanelAdded()
 {
     if (g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nItemChemical < 0)

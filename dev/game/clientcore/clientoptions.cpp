@@ -1327,7 +1327,7 @@ void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)  // Xbox 0
     memcpy(pData->m_aMoviesShown, m_aMoviesShown, sizeof(m_aMoviesShown));
 }
 
-void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)
+void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)  // Xbox 0x0005EF30
 {
     m_nDifficulty = pData->m_nDifficultyOption;
     m_bAutoLevelUpNPCs = pData->m_bAutoLevelNPCs;

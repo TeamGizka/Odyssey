@@ -1464,7 +1464,7 @@ int CSWPartyTable::GetPUPID(unsigned long oidObject)
 }
 // PC 0x00579F20 GOG 0x00579FA0 Xbox 0x00177630
 #ifdef _XBOX
-void CSWPartyTable::AddGameInProgress()
+void CSWPartyTable::AddGameInProgress()  // Xbox 0x00177630
 #else
 int CSWPartyTable::AddGameInProgress()
 #endif
@@ -1491,7 +1491,7 @@ void CSWPartyTable::RemoveGameInProgress()
 }
 // PC 0x0057A010 GOG 0x0057A090 Xbox 0x001776C0
 #ifdef _XBOX
-void CSWPartyTable::ClearMembers()
+void CSWPartyTable::ClearMembers()  // Xbox 0x001776C0
 #else
 int CSWPartyTable::ClearMembers()
 #endif
@@ -2025,7 +2025,7 @@ int CSWPartyTable::AddPuppet(int nPUP, unsigned long oidPuppet)
     }
     return 0;
 }
-int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260 GOG 0x0057B2E0
+int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260 GOG 0x0057B2E0 Xbox 0x00178610
 {
 #ifdef _XBOX
     if (nNPC < 0 || nNPC >= MAX_NPCS || pCreature == NULL || m_abNPCAvailable[nNPC] != 0)

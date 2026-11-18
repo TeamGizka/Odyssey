@@ -68,7 +68,7 @@ void AurInitFont()
     initialized = 1;
 }
 
-void AurPrintString(char* szString, int nColumn, int nRow)
+void AurPrintString(char* szString, int nColumn, int nRow)  // Xbox 0x001A2B40
 {
 }
 #else

@@ -642,7 +642,7 @@ CSWCItem* CSWSItem::GetClientItem()
 
     return NULL;
 }
-// PC 0x0055C8A0 GOG 0x0055C9C0
+// PC 0x0055C8A0 GOG 0x0055C9C0 Xbox 0x001ED120
 unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
 {
     EXOXBOXASSERT(pTable);
@@ -3399,7 +3399,7 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
         }
     }
 }
-// PC 0x00567300
+// PC 0x00567300 Xbox 0x001E6B30
 template <> inline void CExoArrayList<CSWSItem*>::Add(CSWSItem* value)
 {
     if (num == array_size)

@@ -872,7 +872,7 @@ int CServerExoAppInternal::StoreCurrentModule()
     return 1;
 }
 
-// PC 0x004ECF10 GOG 0x004EE570
+// PC 0x004ECF10 GOG 0x004EE570 Xbox 0x002593D0
 int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
 {
     CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
@@ -2023,7 +2023,7 @@ int CServerExoAppInternal::CreatureAcquireItem(unsigned long oidObject,
         ->AsSWSCreature()
         ->AcquireItem(&pItem, OBJECT_INVALID, OBJECT_INVALID, 1);
 }
-int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560 GOG 0x004ED650
+int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560 GOG 0x004ED650 Xbox 0x00257490
     unsigned long oidObject, const Vector& vPosition)
 {
     CGameObjectArray* pObjectArray = m_pObjectArray;
@@ -2053,7 +2053,7 @@ int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560 GOG 0x004ED650
     return GetAreaByGameObjectID(oidArea)
         ->TestSafeLocationPoint(vPosition, pPathfind);
 }
-// PC 0x004EB5E0 GOG 0x004ED6D0
+// PC 0x004EB5E0 GOG 0x004ED6D0 Xbox 0x00257510
 int CServerExoAppInternal::ComputeSafeLocation(
     const Vector& vPosition, float fRadius, unsigned long oidObject,
     int nFlags, Vector* pvSafe)
@@ -2107,7 +2107,7 @@ void CServerExoAppInternal::UpdateMapData()  // PC 0x004EB670 GOG 0x004ED760 Xbo
         }
     }
 }
-Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0x004EB740 GOG 0x004ED8D0
+Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0x004EB740 GOG 0x004ED8D0 Xbox 0x00257710
 {
     CSWSModule* pModule;
     CSWSRoom* pRoom;
@@ -4078,7 +4078,7 @@ int CServerExoAppInternal::LoadCharacterStart(
     }
     return 1;
 }
-// PC 0x004EFDF0 GOG 0x004EE8C0
+// PC 0x004EFDF0 GOG 0x004EE8C0 Xbox 0x0025AC30
 inline void CServerExoAppInternal::SetEstimatedSaveSize(
     const CExoString& sModuleName, unsigned short nModuleType)
 {
@@ -4571,7 +4571,7 @@ void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseTy
         pList->GetNext(pNode);
     }
 }
-// PC 0x004F2590 GOG 0x004F20D0
+// PC 0x004F2590 GOG 0x004F20D0 Xbox 0x0025BB00
 int CServerExoAppInternal::LoadModule(const CExoString& sModule,
                                      CSWSPlayer* pPlayer)
 {

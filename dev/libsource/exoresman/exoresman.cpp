@@ -935,7 +935,7 @@ int CExoResMan::NukeDirectory(const CExoString& sPath, int bDeleteFiles,
 {
     return WipeDirectory(sPath, bDeleteFiles, 1, 0, bRecurse);
 }
-void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0
+void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
 {
     CExoCriticalSection* pCriticalSection = &m_csAsync;
     pCriticalSection->EnterCriticalSection();
@@ -2716,7 +2716,7 @@ int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
 int g_bMissingFileDeferred = 0;
 CExoString g_sMissingFileDeferred;
 
-void CExoResMan::ReportMissingFile(const CExoString& sFileName,
+void CExoResMan::ReportMissingFile(const CExoString& sFileName,  // Xbox 0x00152240
                                    unsigned short nType, int bFatal)
 {
     g_bMissingFileDeferred = 0;

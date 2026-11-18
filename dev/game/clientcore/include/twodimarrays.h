@@ -375,7 +375,7 @@ public:
     C2DA* GetDialogAnimations() { return m_pDialogAnimations; }
 
     C2DA* GetAppearance() { return m_pAppearance; }
-    C2DA* GetJournal() { EXOXBOXASSERT(m_pJournal); return m_pJournal; }
+    C2DA* GetJournal() { EXOXBOXASSERT(m_pJournal); return m_pJournal; }  // Xbox 0x000EBE80
 
     C2DA* GetEffectIcon() { EXOXBOXASSERT(m_pEffectIcon); return m_pEffectIcon; }  // Xbox 0x0020F630
     C2DA* GetStateScripts() { EXOXBOXASSERT(m_pStateScripts); return m_pStateScripts; }  // Xbox 0x001808B0

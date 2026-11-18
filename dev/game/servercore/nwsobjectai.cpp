@@ -1308,7 +1308,7 @@ int CSWSObject::AddUseObjectAction(unsigned long oidObject)
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD420 GOG 0x005DD490
+int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD420 GOG 0x005DD490 Xbox 0x00200320
                                   int nQuantity, int bAddToQueue)
 {
     CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);

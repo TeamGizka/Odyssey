@@ -102,7 +102,7 @@ void CExoDebugInternal::FlushResourceTrackingFile()
 }
 
 // Dead code: not in the PC executable
-void CExoDebugInternal::FlushVOTestFile()
+void CExoDebugInternal::FlushVOTestFile()  // Xbox 0x00149DD0
 {
     if (m_bLogFilesOpen)
     {

@@ -8261,7 +8261,7 @@ int CClientExoAppInternal::SaveOptions()  // Xbox 0x00020E40
     return 1;
 }
 
-int CClientExoAppInternal::LoadOptions()
+int CClientExoAppInternal::LoadOptions()  // Xbox 0x00021070
 {
     unsigned char aSignature[OPTIONS_SIGNATURE_SIZE];
     CResStruct cStruct;

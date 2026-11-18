@@ -451,7 +451,7 @@ void CExoResFile::AddAsyncRefCount()
 
     m_nAsyncRefCount++;
 }
-// PC 0x0040DEB0 GOG 0x0040DEA0 Xbox 0x0015E460
+// PC 0x0040DEB0 GOG 0x0040DEA0 Xbox 0x0015DF70
 int CExoResFile::CloseFile()
 {
     if (m_bFileOpened)
@@ -527,7 +527,7 @@ unsigned long CExoResFile::GetResourceSize(unsigned long nId)
 {
     return m_pResourceTable[nId & 0x3FFF].nSize;
 }
-// PC 0x0040DF60 GOG 0x0040DFD0
+// PC 0x0040DF60 GOG 0x0040DFD0 Xbox 0x0015E0A0
 int CExoResFile::Initialize()
 {
     m_sFileName.CStr();
@@ -1463,7 +1463,7 @@ CKeyTableEntry* CExoKeyTable::FindKey(const CResRef& resRef,
 
     return pEntry;
 }
-// PC 0x0040F750 GOG 0x0040F700
+// PC 0x0040F750 GOG 0x0040F700 Xbox 0x0015F5D0
 CExoResFile::CExoResFile()
 {
     if (EXORESFILE_DEBUG)

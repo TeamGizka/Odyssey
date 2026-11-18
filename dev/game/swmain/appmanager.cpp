@@ -163,7 +163,7 @@ void CAppManager::DestroyServer()
 
     SetWindowTitle();
 }
-// PC 0x004012C0 GOG 0x004012C0
+// PC 0x004012C0 GOG 0x004012C0 Xbox 0x00011340
 CAppManager::~CAppManager()
 {
     if (m_pClientExoApp)

@@ -454,7 +454,7 @@ public:
     virtual void SetActive(int bActive);
 #endif
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiLabelHilight* AsLabelHilight()
     {
         return this;

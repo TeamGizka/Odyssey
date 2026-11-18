@@ -304,7 +304,7 @@ CExoSoundInternal::CExoSoundInternal()  // PC 0x00624590 GOG 0x00624510
     m_p3DOneShotStream = NULL;
 }
 #endif
-void CExoSoundInternal::OcclusionRender(unsigned long nFrameTime)  // PC 0x006247A0 GOG 0x00624720
+void CExoSoundInternal::OcclusionRender(unsigned long nFrameTime)  // PC 0x006247A0 GOG 0x00624720 Xbox 0x00163970
 {
     CExoLinkedListNode* pStartPosition = m_pOcclusionPosition;
     int bFirstPass = 1;

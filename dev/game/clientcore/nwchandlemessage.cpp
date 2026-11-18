@@ -8732,7 +8732,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldStrref()
     pJournal->DeleteEntryStrRef(nStrRef);
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006BE840 GOG 0x006BE620
+// PC 0x006BE840 GOG 0x006BE620 Xbox 0x0008A050
 int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
 {
     if (NWCHANDLEMESSAGE_DEBUG)

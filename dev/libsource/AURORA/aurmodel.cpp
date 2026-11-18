@@ -414,7 +414,7 @@ const char* spawn(char* sCommand)
 
 #ifdef _XBOX
 
-bool Gob::IsVisibilityTested()
+bool Gob::IsVisibilityTested()  // Xbox 0x002BB560
 {
     if (IsInCutscene())
     {

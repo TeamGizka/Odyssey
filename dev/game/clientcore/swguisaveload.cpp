@@ -136,7 +136,7 @@ void CSWGuiSaveLoad::OnSaveErrorDone(CSWGuiControl* pControl)
     m_lbSaveGames.SetSelectedControl(nSelected < nLast ? nSelected : nLast, 0);
 }
 
-void CSWGuiSaveLoad::ShowSaveError(unsigned long nStrRef)
+void CSWGuiSaveLoad::ShowSaveError(unsigned long nStrRef)  // Xbox 0x000E6510
 {
     CSWGuiMessageBox* pMessageBox =
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
@@ -1189,7 +1189,7 @@ void CSWGuiSaveLoad::PopulateGameList()  // Xbox 0x000E5000
     m_nMaxSaveGame = nNextSlot;
 }
 
-void KOTOR_LAUNCH_OPTIONS_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
+void KOTOR_LAUNCH_OPTIONS_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)  // Xbox 0x000DF1E0
 {
     int bSuccess;
     CResList lstMoviesShown;
@@ -1568,7 +1568,7 @@ inline void KOTOR_AUTOSAVE_PARAMS::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruc
         m_cStatusSummary.LoadFromGFF(pGFF, cStatusSummary);
     }
 }
-// PC 0x0070CD30 GOG 0x0070CA80
+// PC 0x0070CD30 GOG 0x0070CA80 Xbox 0x000E5BD0
 CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
                              int bExitToMainMenu, int bEndGameMode)
     : CSWGuiPanel(pManager)
@@ -2540,7 +2540,7 @@ void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A0
 #endif
     m_cText.m_cParams.SetText(m_sXboxTitle);
 }
-int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380 GOG 0x0070B0C0
+int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380 GOG 0x0070B0C0 Xbox 0x000E65B0
                                const CExoString& sSaveName,
                                CSWGuiControl* pControl)
 {

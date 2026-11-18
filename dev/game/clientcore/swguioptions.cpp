@@ -1102,7 +1102,7 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
-// PC 0x0074EEF0 GOG 0x0074D580
+// PC 0x0074EEF0 GOG 0x0074D580 Xbox 0x0012D8E0
 void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -2847,7 +2847,7 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGam
     }
 }
 #endif
-// PC 0x00753970 GOG 0x00753700
+// PC 0x00753970 GOG 0x00753700 Xbox 0x0012E390
 CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

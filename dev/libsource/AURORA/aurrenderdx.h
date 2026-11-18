@@ -979,7 +979,7 @@ inline void AurSetVertexProgramParameter4f(unsigned int nIndex, float x, float y
     g_pD3DDevice->SetVertexShaderConstant(nIndex, fParameter, 1);
 }
 
-// Xbox 0x29C2C0
+// Xbox 0x0029C2C0
 inline void AurSetPixelShaderConstant(unsigned int nIndex, const void* pData, unsigned int nCount)
 {
     g_pD3DDevice->SetPixelShaderConstant(nIndex, pData, nCount);
@@ -1223,7 +1223,7 @@ extern float g_fViewPortScaleX;
 extern float g_fViewPortScaleY;
 extern List<D3DVIEWPORT8> g_lstViewPorts;
 
-inline void GLRender::SetViewPort(int nX, int nY, int nWidth, int nHeight)
+inline void GLRender::SetViewPort(int nX, int nY, int nWidth, int nHeight)  // Xbox 0x00307710
 {
     if (g_pD3DDevice)
     {

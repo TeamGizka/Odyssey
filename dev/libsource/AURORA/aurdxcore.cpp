@@ -7111,7 +7111,7 @@ void GLRender::RenderAccumulationBlur(D3DTexture* pFrame, D3DTexture* pAccumulat
     SetTextureStageFlag(3, 0);
 }
 
-void GLRender::FrameBufferModifications(unsigned long nFlags)
+void GLRender::FrameBufferModifications(unsigned long nFlags)  // Xbox 0x002AA070
 {
     static int bAccumulationCreated;
     static D3DTexture* pAccumulationTexture;

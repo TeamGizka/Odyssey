@@ -315,7 +315,7 @@ char* removesquaretorender(char* sArguments)
     return _itoa(nSquare, returnvalue, 10);
 #endif
 }
-// PC 0x00463180 GOG 0x00463290
+// PC 0x00463180 GOG 0x00463290 Xbox 0x002CF750
 void AurInitExtensions()
 {
     GLRender::InitExtensions();

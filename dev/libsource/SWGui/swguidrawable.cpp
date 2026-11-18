@@ -1154,7 +1154,7 @@ CSWGuiTextParams::CSWGuiTextParams()  // PC 0x00416860 GOG 0x00416890
     SetBaseFont("dialogfont16x16");
 }
 #endif
-// PC 0x00416930 GOG 0x00416960
+// PC 0x00416930 GOG 0x00416960 Xbox 0x00339910
 CSWGuiTextParams::CSWGuiTextParams(const CExoString& sText,
                                    const CResRef& cFont,
                                    const Vector& vColor, int nAlignment,
@@ -1563,7 +1563,7 @@ void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)  // Xbox 0x00338B60
     }
 }
 
-CSWGuiTextParams::CSWGuiTextParams(unsigned long nStrRef, const CResRef& cFont, const Vector& vColor,
+CSWGuiTextParams::CSWGuiTextParams(unsigned long nStrRef, const CResRef& cFont, const Vector& vColor,  // Xbox 0x003399C0
                                    int nAlignment, float fAlpha)
 {
     m_pText = NULL;

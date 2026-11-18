@@ -555,10 +555,10 @@ public:
     CSWGuiBorder m_cIcon;
     CSWGuiText m_cCountText;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int, int);
-    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0 GOG 0x006049B0
+    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0 GOG 0x006049B0 Xbox 0x000FFC10
     {
     }
-    virtual void Initialize(const CSWGuiExtent&, const CSWGuiTextParams&,  // PC 0x00693D50 GOG 0x00693AC0
+    virtual void Initialize(const CSWGuiExtent&, const CSWGuiTextParams&,  // PC 0x00693D50 GOG 0x00693AC0 Xbox 0x000FFC00
                             const CSWGuiBorderParams&, const CSWGuiBorderParams&)
     {
     }

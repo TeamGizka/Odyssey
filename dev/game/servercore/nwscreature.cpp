@@ -938,7 +938,7 @@ int CSWSCreature::ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot,
 }
 // PC 0x00511390 GOG 0x005113F0 Xbox 0x001864B0
 #ifdef _XBOX
-int CSWSCreature::AddEquipItemActions(CSWSItem* pItem,
+int CSWSCreature::AddEquipItemActions(CSWSItem* pItem,  // Xbox 0x001864B0
                                      unsigned long nInventorySlot,
                                      int bAddToFront, int bIgnoreCombatRound,
                                      int nEquipFlags, int nAttackFlags,
@@ -12671,7 +12671,7 @@ int CSWSCreature::UpdateSpecialAttacks()
 {
     return 0;
 }
-CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x0050FFD0 GOG 0x00510030
+CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x0050FFD0 GOG 0x00510030 Xbox 0x001852C0
 {
     int nOverride =
         g_pAppManager->GetClientExoApp()->GetInGameGui()->GetTopMenuOverrideCharacter();

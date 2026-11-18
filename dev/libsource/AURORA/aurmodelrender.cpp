@@ -2516,7 +2516,7 @@ void RenderShadowTriMesh(VertexPrimitiveFlat* pPrimitive)
 {
 }
 
-// PC 0x00488E30 GOG 0x00488EE0
+// PC 0x00488E30 GOG 0x00488EE0 Xbox 0x002DC3D0
 void RenderHologramEffect(int nRenderPath, VertexPrimitiveFlat* pPrimitive)
 {
     PartTriMesh* pPart = pPrimitive->m_pPart->AsPartTriMesh();

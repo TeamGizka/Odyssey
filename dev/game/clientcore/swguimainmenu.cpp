@@ -708,7 +708,7 @@ void CSWGuiMainMenu::OnWarpButtonPressed(CSWGuiControl* pControl)
 {
     OnLoadGamePicked();
 }
-// PC 0x006D2650 GOG 0x006D2350
+// PC 0x006D2650 GOG 0x006D2350 Xbox 0x000A0F90
 CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

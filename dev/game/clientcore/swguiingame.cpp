@@ -43,7 +43,7 @@ static inline void SetBorderFillImage(CSWGuiBorderParams& cParams, const CResRef
 #endif
 
 // Dead code: not in the PC executable
-void CSWGuiMessageBox::DisplayDeathMessage()
+void CSWGuiMessageBox::DisplayDeathMessage()  // Xbox 0x0005A310
 {
 #ifndef _XBOX
     if (SWGUIINGAME_DEBUG)
@@ -71,7 +71,7 @@ void CSWGuiInGameMessages::ToggleMessages()
 
 #ifdef _XBOX
 
-CSWGuiControllerLossBox::CSWGuiControllerLossBox(CSWGuiManager* pManager)
+CSWGuiControllerLossBox::CSWGuiControllerLossBox(CSWGuiManager* pManager)  // Xbox 0x0004D140
     : CSWGuiMessageBox(pManager)
 {
 }
@@ -85,7 +85,7 @@ CSWGuiControllerLossBox::CSWGuiControllerLossBox(CSWGuiManager* pManager)
 #include "clientexoappinternal.h"
 void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 
-void CSWGuiMessageBox::OnRestart(CSWGuiControl* pControl)
+void CSWGuiMessageBox::OnRestart(CSWGuiControl* pControl)  // Xbox 0x0004D1A0
 {
     KOTOR_LAUNCH_DATA cParams;
     cParams.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_NONE;
@@ -99,7 +99,7 @@ void CSWGuiMessageBox::OnRestart(CSWGuiControl* pControl)
     ExoXboxLaunch(&cParams, NULL);
 }
 
-void CSWGuiMessageBox::ShowLoadError(unsigned long nStrRef)
+void CSWGuiMessageBox::ShowLoadError(unsigned long nStrRef)  // Xbox 0x0004D260
 {
     SetAllowCancel(0);
     SetMessage(nStrRef);
@@ -140,7 +140,7 @@ void CSWGuiInGameMenu::OnShoulderRight(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->NextSWInGameGui();
     }
 }
-// PC 0x00676AD0 GOG 0x00676870
+// PC 0x00676AD0 GOG 0x00676870 Xbox 0x00049FB0
 void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
 {
     if (nControl >= 0 && nControl < m_lControls.num)
@@ -289,7 +289,7 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     }
 }
 #endif
-// PC 0x00675490 GOG 0x00675230
+// PC 0x00675490 GOG 0x00675230 Xbox 0x0004A040
 void CSWGuiInGameMenu::Update(float fElapsed)
 {
     if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems()->m_nNewItems > 0)
@@ -318,7 +318,7 @@ void CSWGuiInGameMenu::OnEquipButtonPressed(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_EQUIP);
 }
-// PC 0x0067C130 GOG 0x0067BF00
+// PC 0x0067C130 GOG 0x0067BF00 Xbox 0x0004EDC0
 CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
 
     : CSWGuiPanel(pManager)
@@ -432,7 +432,7 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     SetActiveControl(pMessages, 0);
 #endif
 }
-// PC 0x00677240 GOG 0x00676FE0
+// PC 0x00677240 GOG 0x00676FE0 Xbox 0x0004BA10
 CSWGuiInGameMessages::~CSWGuiInGameMessages()
 {
     m_lbDialog.ClearItems();
@@ -444,7 +444,7 @@ CSWGuiInGameMessages::~CSWGuiInGameMessages()
     delete[] m_pMessageLabels;
     delete[] m_pCombatLabels;
 }
-// PC 0x00679F60 GOG 0x00679D30
+// PC 0x00679F60 GOG 0x00679D30 Xbox 0x0004BE40
 void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned long nMessages)
 {
     CExoArrayList<CSWGuiControl*> aControls;
@@ -506,7 +506,7 @@ void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned lo
         pList->SetSelectedControl(nMessages - 1, 0);
     }
 }
-// PC 0x0067A280 GOG 0x0067A050
+// PC 0x0067A280 GOG 0x0067A050 Xbox 0x0004C110
 void CSWGuiInGameMessages::AddDialogMessages(CGuiInGameDialogMessage* pMessages,
                                             unsigned long nMessages)
 {
@@ -557,7 +557,7 @@ void CSWGuiInGameMessages::AddDialogMessages(CGuiInGameDialogMessage* pMessages,
         pList->SetSelectedControl(nMessages - 1, 0);
     }
 }
-// PC 0x0067A630 GOG 0x0067A400
+// PC 0x0067A630 GOG 0x0067A400 Xbox 0x0004C440
 void CSWGuiInGameMessages::AddCombatMessages(CGuiInGameMessage* pMessages, unsigned long nMessages)
 {
     CExoArrayList<CSWGuiControl*> aControls;
@@ -618,7 +618,7 @@ void CSWGuiInGameMessages::AddCombatMessages(CGuiInGameMessage* pMessages, unsig
         pList->SetSelectedControl(nMessages - 1, 0);
     }
 }
-// PC 0x0067A960 GOG 0x0067A730
+// PC 0x0067A960 GOG 0x0067A730 Xbox 0x0004F920
 void CSWGuiInGameMessages::ShowEffects()
 {
     m_lbMessages.m_bEnabled = 0;
@@ -713,7 +713,7 @@ void CSWGuiInGameMessages::ShowEffects()
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_EFFECTS;
 }
-// PC 0x00677430 GOG 0x006771D0
+// PC 0x00677430 GOG 0x006771D0 Xbox 0x0004C720
 CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -826,14 +826,14 @@ void CSWGuiInGameMenu::OnCharButtonPressed(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_CHARACTER);
 }
-// PC 0x00677A20 GOG 0x006777C0
+// PC 0x00677A20 GOG 0x006777C0 Xbox 0x0004D080
 void CSWGuiMessageBox::SetAllowCancel(int bAllowCancel)
 {
     m_bAllowCancel = bAllowCancel;
     m_nOpenSound = bAllowCancel != 0 ? 15 : 2;
     UpdateControls();
 }
-// PC 0x00677A50 GOG 0x006777F0
+// PC 0x00677A50 GOG 0x006777F0 Xbox 0x0004D0B0
 void CSWGuiMessageBox::SetIcon(const CResRef& cIcon)
 {
     if (cIcon.IsValid())
@@ -860,7 +860,7 @@ void CSWGuiInGameMenu::OnAbiButtonPressed(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_ABILITIES);
 }
-// PC 0x0067AD90 GOG 0x0067AB60
+// PC 0x0067AD90 GOG 0x0067AB60 Xbox 0x0004D100
 void CSWGuiMessageBox::SetMessage(CExoString sMessage)
 {
     g_pTlkTable->ParseStr(sMessage);
@@ -888,7 +888,7 @@ void CSWGuiInGameMenu::OnMsgButtonPressed(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_MESSAGES);
 }
-// PC 0x00677AA0 GOG 0x00677840
+// PC 0x00677AA0 GOG 0x00677840 Xbox 0x0004AC60
 void CSWGuiMessageBox::FixMessageLabel()
 {
     CSWGuiExtent cPanel = m_cPanelExtent;
@@ -1128,7 +1128,7 @@ void CSWGuiInGameMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006780A0 GOG 0x00677E40
+// PC 0x006780A0 GOG 0x00677E40 Xbox 0x0004D160
 void CSWGuiControllerLossBox::OnPanelAdded()
 {
     SetAllowCancel(0);
@@ -1138,7 +1138,7 @@ void CSWGuiControllerLossBox::OnPanelAdded()
     m_pCallbackControl = 0;
     CSWGuiMessageBox::OnPanelAdded();
 }
-// PC 0x00675680 GOG 0x00675420
+// PC 0x00675680 GOG 0x00675420 Xbox 0x00050D50
 void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1180,7 +1180,7 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006780E0 GOG 0x00677E80
+// PC 0x006780E0 GOG 0x00677E80 Xbox 0x0004D2A0
 CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1275,7 +1275,7 @@ void CSWGuiStatusSummary::Clear()
     m_cStatusSummary.m_nMaxForcePointsGain = 0;
     m_cStatusSummary.m_nMaxForcePointsLost = 0;
 }
-// PC 0x006758B0 GOG 0x00675650
+// PC 0x006758B0 GOG 0x00675650 Xbox 0x0004A560
 void CSWGuiInGameMessages::ShowDialogMessages()
 {
     m_lbMessages.m_bEnabled = 0;
@@ -1311,7 +1311,7 @@ void CSWGuiInGameMessages::ShowDialogMessages()
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_DIALOG;
 }
-// PC 0x00678800 GOG 0x006785A0
+// PC 0x00678800 GOG 0x006785A0 Xbox 0x0004D8F0
 void CSWGuiStatusSummary::DisplayStatus()
 {
     PlayPendingSounds();
@@ -1383,7 +1383,7 @@ void CSWGuiStatusSummary::DisplayStatus()
     m_cStatusSummary.m_nMaxForcePointsGain = 0;
     m_cStatusSummary.m_nMaxForcePointsLost = 0;
 }
-// PC 0x00675960 GOG 0x00675700
+// PC 0x00675960 GOG 0x00675700 Xbox 0x0004A670
 void CSWGuiInGameMessages::ShowFeedbackMessages()
 {
     CSWGuiListBox* pMessages = &m_lbMessages;
@@ -1418,7 +1418,7 @@ void CSWGuiInGameMessages::ShowFeedbackMessages()
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_FEEDBACK;
 }
-// PC 0x00675A10 GOG 0x006757B0
+// PC 0x00675A10 GOG 0x006757B0 Xbox 0x0004A780
 void CSWGuiInGameMessages::ShowCombatMessages()
 {
     m_lbMessages.m_bEnabled = 0;
@@ -1454,7 +1454,7 @@ void CSWGuiInGameMessages::ShowCombatMessages()
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_COMBAT;
 }
-// PC 0x00678930 GOG 0x006786D0
+// PC 0x00678930 GOG 0x006786D0 Xbox 0x0004DA10
 void CSWGuiStatusSummary::OnPanelAdded()
 {
 
@@ -1800,7 +1800,7 @@ void CSWGuiStatusSummary::OnPanelAdded()
 }
 
 #ifdef _XBOX
-void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)
+void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // Xbox 0x0004A890
 {
     if (nState != 0)
     {
@@ -1884,7 +1884,7 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x00675AC
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x00675BF0 GOG 0x00675990
+// PC 0x00675BF0 GOG 0x00675990 Xbox 0x0004A9E0
 void CSWGuiMessageBox::SetMessageColors(Vector vBorderColor, Vector vTextColor)
 {
     m_pBorder->m_cParams.m_vColor = vBorderColor;
@@ -1900,7 +1900,7 @@ void CSWGuiMessageBox::SetMessageColors(Vector vBorderColor, Vector vTextColor)
 #endif
     m_lblMessage.m_cText.m_cParams.SetColor(vTextColor);
 }
-// PC 0x00675C70 GOG 0x00675A10
+// PC 0x00675C70 GOG 0x00675A10 Xbox 0x0004AA40
 void CSWGuiMessageBox::UpdateControls()
 {
 #ifdef _XBOX
@@ -1921,12 +1921,12 @@ void CSWGuiMessageBox::UpdateControls()
     CSWGuiLabel* pIcon = &m_lblIcon;
     pIcon->m_bEnabled = m_bHasIcon;
 }
-// PC 0x00675CD0 GOG 0x00675A70
+// PC 0x00675CD0 GOG 0x00675A70 Xbox 0x00049D30
 void CSWGuiMessageBox::SetMessage(unsigned long nStrRef)
 {
     SetMessage(g_pTlkTable->GetSimpleString(nStrRef));
 }
-// PC 0x00675D00 GOG 0x00675AA0
+// PC 0x00675D00 GOG 0x00675AA0 Xbox 0x0004AAE0
 void CSWGuiMessageBox::SetOkButtonMessage(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -1943,7 +1943,7 @@ CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
     InitControl(m_lblToolTip, "tooltip", 1);
     StopLoadFromLayout();
 }
-// PC 0x00675D10 GOG 0x00675AB0
+// PC 0x00675D10 GOG 0x00675AB0 Xbox 0x0004AAF0
 void CSWGuiMessageBox::SetCancelButtonMessage(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -1952,7 +1952,7 @@ void CSWGuiMessageBox::SetCancelButtonMessage(unsigned long nStrRef)
     m_btnCancel.m_cText.m_cParams.SetStrRef(nStrRef);
 #endif
 }
-// PC 0x00675D20 GOG 0x00675AC0
+// PC 0x00675D20 GOG 0x00675AC0 Xbox 0x0004AB00
 void CSWGuiMessageBox::HideButtons()
 {
     m_bHideButtons = 1;
@@ -1966,7 +1966,7 @@ void CSWGuiMessageBox::HideButtons()
     m_btnCancel.SetEnabledFlag(0);
 #endif
 }
-// PC 0x00675D40 GOG 0x00675AE0
+// PC 0x00675D40 GOG 0x00675AE0 Xbox 0x0004AB30
 void CSWGuiMessageBox::ResetButtonMessage()
 {
 #ifdef _XBOX
@@ -1987,7 +1987,7 @@ void CSWGuiMessageBox::ResetButtonMessage()
     m_btnCancel.m_cText.m_cParams.SetStrRef(1581);
 #endif
 }
-// PC 0x00675D90 GOG 0x00675B30
+// PC 0x00675D90 GOG 0x00675B30 Xbox 0x0004AB90
 void CSWGuiMessageBox::AddMessageLabel()
 {
     CSWGuiListBox* pList = &m_lbMessage;
@@ -2003,7 +2003,7 @@ void CSWGuiMessageBox::AddMessageLabel()
     pList->AddControls(&pControl, 1, 0, 0, 0);
     pList->SetSelectedControl(&m_lblMessage, 0);
 }
-// PC 0x00675E60 GOG 0x00675C00
+// PC 0x00675E60 GOG 0x00675C00 Xbox 0x00049D60
 void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
                                   CSWGuiHandler pHandler,
                                   CSWGuiControl* pControl)
@@ -2012,7 +2012,7 @@ void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
     m_pCallback = pHandler;
     m_pCallbackControl = pControl;
 }
-// PC 0x00675E80 GOG 0x00675C20
+// PC 0x00675E80 GOG 0x00675C20 Xbox 0x0004B340
 void CSWGuiMessageBox::OnPanelAdded()
 {
     if (m_nStyle != 0)
@@ -2058,7 +2058,7 @@ void CSWGuiMessageBox::OnPanelAdded()
 #endif
 #endif
 }
-// PC 0x00675FC0 GOG 0x00675D60
+// PC 0x00675FC0 GOG 0x00675D60 Xbox 0x0004B3B0
 void CSWGuiMessageBox::OnPanelRemoved()
 {
 #ifndef _XBOX
@@ -2097,7 +2097,7 @@ void CSWGuiMessageBox::OnPanelRemoved()
         m_bPausedGame = 0;
     }
 }
-// PC 0x006760D0 GOG 0x00675E70
+// PC 0x006760D0 GOG 0x00675E70 Xbox 0x0004B4A0
 void CSWGuiControllerLossBox::OnAccept(CSWGuiControl* pControl)
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->EndControllerPauseState();
@@ -2114,14 +2114,14 @@ void CSWGuiMessageBox::OnCancelButtonPressed(CSWGuiControl* pControl)
     HandleInputEvent(503, m_btnCancel.m_bSelected);
 }
 #endif
-// PC 0x00676130 GOG 0x00675ED0
+// PC 0x00676130 GOG 0x00675ED0 Xbox 0x001A2B40
 void CSWGuiStatusSummary::OnPanelRemoved()
 {
 #ifndef _XBOX
     g_pGuiMan->RestoreOldMousePosition();
 #endif
 }
-// PC 0x00676140 GOG 0x00675EE0
+// PC 0x00676140 GOG 0x00675EE0 Xbox 0x0004B4C0
 void CSWGuiStatusSummary::PlayPendingSounds()
 {
     if (m_cStatusSummary.m_bLevelUpSound)
@@ -2166,7 +2166,7 @@ void CSWGuiStatusSummary::PlayPendingSounds()
     }
 }
 
-// PC 0x00676320 GOG 0x006760C0
+// PC 0x00676320 GOG 0x006760C0 Xbox 0x00049D80
 void CSWGuiStatusSummary::AddAlignmentShift(char nShift)
 {
     if (nShift != 0)
@@ -2198,7 +2198,7 @@ void CSWGuiStatusSummary::AddAlignmentShift(char nShift)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x00676390 GOG 0x00676130
+// PC 0x00676390 GOG 0x00676130 Xbox 0x00049DF0
 void CSWGuiStatusSummary::AddCredits(int nCredits)
 {
     if (nCredits != 0)
@@ -2212,37 +2212,37 @@ void CSWGuiStatusSummary::AddCredits(int nCredits)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x006763C0 GOG 0x00676160
+// PC 0x006763C0 GOG 0x00676160 Xbox 0x00049E20
 void CSWGuiStatusSummary::AddInfluenceGained(char nNPC)
 {
     m_cStatusSummary.m_nInfluenceGain |= 1 << nNPC;
     m_cStatusSummary.m_bDisplaySPending = 1;
 }
-// PC 0x006763E0 GOG 0x00676180
+// PC 0x006763E0 GOG 0x00676180 Xbox 0x00049E40
 void CSWGuiStatusSummary::AddInfluenceLost(char nNPC)
 {
     m_cStatusSummary.m_nInfluenceLost |= 1 << nNPC;
     m_cStatusSummary.m_bDisplaySPending = 1;
 }
-// PC 0x00676400 GOG 0x006761A0
+// PC 0x00676400 GOG 0x006761A0 Xbox 0x00049E60
 void CSWGuiStatusSummary::AddMaxFPGained(int nForcePoints)
 {
     m_cStatusSummary.m_nMaxForcePointsGain += nForcePoints;
     m_cStatusSummary.m_bDisplaySPending = 1;
 }
-// PC 0x00676420 GOG 0x006761C0
+// PC 0x00676420 GOG 0x006761C0 Xbox 0x00049E80
 void CSWGuiStatusSummary::AddMaxFPLost(int nForcePoints)
 {
     m_cStatusSummary.m_nMaxForcePointsLost += nForcePoints;
     m_cStatusSummary.m_bDisplaySPending = 1;
 }
-// PC 0x00676440 GOG 0x006761E0
+// PC 0x00676440 GOG 0x006761E0 Xbox 0x00049EA0
 void CSWGuiStatusSummary::HandleAlignmentMovie()
 {
     CExoString sScript("k_align_movie");
     g_pVirtualMachine->RunScript(&sScript, 0, 0);
 }
-// PC 0x006764B0 GOG 0x00676250
+// PC 0x006764B0 GOG 0x00676250 Xbox 0x0004B650
 void CSWGuiStatusSummary::HandleLevelUpDLG()
 {
     CSWSCreature* pCreature = (CSWSCreature*)g_pAppManager->m_pServerExoApp->GetGameObject(
@@ -2325,7 +2325,7 @@ void CSWGuiDeathDisplay::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->SetGuiGameSlow(1);
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x006767D0 GOG 0x00676570
+// PC 0x006767D0 GOG 0x00676570 Xbox 0x0004B760
 void CSWGuiDeathDisplay::OnPanelRemoved()
 {
     g_pAppManager->m_pClientExoApp->SetGuiGameSlow(0);
@@ -2349,7 +2349,7 @@ void CSWGuiDeathDisplay::Draw(float fDeltaTime)
 void CSWGuiDeathDisplay::HandleInputEvent(int nEvent, int nState)
 {
 }
-// PC 0x006768B0 GOG 0x00676650
+// PC 0x006768B0 GOG 0x00676650 Xbox 0x0004B770
 void CSWGuiDeathDisplay::OnQuitPressed(CSWGuiControl* pControl)
 {
     if (m_fFadeTime > 0.0)
@@ -2539,7 +2539,7 @@ void CSWGuiInGameMenu::OnChangeCharacter(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateInventory();
 }
 #endif
-// PC 0x0067C060 GOG 0x0067BE30
+// PC 0x0067C060 GOG 0x0067BE30 Xbox 0x00050BB0
 void CSWGuiInGameMessages::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -2627,7 +2627,7 @@ CSWGuiMainInterfaceChar::~CSWGuiMainInterfaceChar()
 {
 }
 #endif
-// PC 0x0067CA30 GOG 0x0067C800
+// PC 0x0067CA30 GOG 0x0067C800 Xbox 0x00050CA0
 void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)

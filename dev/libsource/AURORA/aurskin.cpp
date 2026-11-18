@@ -54,7 +54,7 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
                            CAurTexture* pTexture2, CAurTexture* pTexture3,
                            bool bKeepBlend);
 
-// PC 0x004A06B0 GOG 0x004A0770
+// PC 0x004A06B0 GOG 0x004A0770 Xbox 0x002CF8E0
 VertexProgram* GetSkinVP(bool bHologram)
 {
     if (!pSkinVP)

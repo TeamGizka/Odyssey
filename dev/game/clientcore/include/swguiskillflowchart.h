@@ -14,11 +14,11 @@ class CSWGuiInGameSkillEntry : public CSWGuiLabelHilight
 public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
-    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x006049D0 GOG 0x006049B0
+    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x006049D0 GOG 0x006049B0 Xbox 0x000FFC10
                                            CSWGuiLabelHilight* pProto)
     {
     }
-    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x00693D50 GOG 0x00693AC0
+    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x00693D50 GOG 0x00693AC0 Xbox 0x000FFC00
                             const CSWGuiTextParams& cText,
                             const CSWGuiBorderParams& cBorder,
                             const CSWGuiBorderParams& cHilite)

@@ -177,7 +177,7 @@ void CSWGuiInGameGalaxyMap::Draw(float fElapsed)
     }
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006ED0B0 GOG 0x006ECCA0
+// PC 0x006ED0B0 GOG 0x006ECCA0 Xbox 0x000ECDD0
 void CSWGuiInGameMap::OnPanelAdded()
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
@@ -469,7 +469,7 @@ CExoString CSWGuiMapHider::GetNextMapNote()
     }
     return sNote;
 }
-// PC 0x006ED690 GOG 0x006ED280
+// PC 0x006ED690 GOG 0x006ED280 Xbox 0x000ED320
 void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -1172,7 +1172,7 @@ void CSWGuiInGameGalaxyMap::OnPanelAdded()
 #endif
 }
 
-// PC 0x006EF780 GOG 0x006EF370
+// PC 0x006EF780 GOG 0x006EF370 Xbox 0x000EEA80
 void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
 {
     CSWGuiPanel::HandleInputEvent(nEvent, nState);

@@ -7200,7 +7200,7 @@ void CSWCCreature::ActionMenuAttack(unsigned long nAction,
     g_pAppManager->GetClientExoApp()->GetSWCMessage()->
         SendPlayerToServerInput_Attack(GetObjectId(), 0);
 }
-// PC 0x00664080 GOG 0x00663E90
+// PC 0x00664080 GOG 0x00663E90 Xbox 0x000431C0
 void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigator)
 {
     CSWSCreature* pServerCreature = GetServerCreature();

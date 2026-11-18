@@ -1094,7 +1094,7 @@ void CSWGuiPazaakGame::HandleForfeitButton(CSWGuiControl* pControl)
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
 #endif
-// PC 0x006D46E0 GOG 0x006D44B0
+// PC 0x006D46E0 GOG 0x006D44B0 Xbox 0x000992B0
 CSWGuiPazaakCard::CSWGuiPazaakCard()
 {
 #ifndef _XBOX
@@ -1903,7 +1903,7 @@ void CSWGuiPazaakStart::ShowDisabledButtons()  // Xbox 0x00095CD0
 }
 #else
 #endif
-// PC 0x006D7950 GOG 0x006D7480
+// PC 0x006D7950 GOG 0x006D7480 Xbox 0x00099F00
 CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
                                    int bTutorial, unsigned long oidOpponent)
     : CSWGuiPanel(pManager),

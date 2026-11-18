@@ -69,7 +69,7 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     }
 }
 
-// PC 0x006D0250 GOG 0x006D02F0
+// PC 0x006D0250 GOG 0x006D02F0 Xbox 0x00094EB0
 void CSWGuiLoadScreen::OnPanelAdded()
 {
     m_lblLogo.m_cBorder.m_cParams.SetFillImage(m_resLogo, 0);
@@ -77,7 +77,7 @@ void CSWGuiLoadScreen::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006D0270 GOG 0x006D0310
+// PC 0x006D0270 GOG 0x006D0310 Xbox 0x00094ED0
 void CSWGuiLoadScreen::OnPanelRemoved()
 {
     CResRef cNoLogo("");

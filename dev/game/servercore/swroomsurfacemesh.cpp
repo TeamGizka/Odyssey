@@ -98,7 +98,7 @@ static __int64 QueryTimer()
 }
 // PC 0x00574D50 GOG 0x005751C0 Xbox 0x001F9960
 #ifdef _XBOX
-void CSWRoomSurfaceMeshHitInfo::ClearOutput()
+void CSWRoomSurfaceMeshHitInfo::ClearOutput()  // Xbox 0x001F9960
 #else
 int CSWRoomSurfaceMeshHitInfo::ClearOutput()
 #endif

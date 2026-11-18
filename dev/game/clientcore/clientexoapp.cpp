@@ -503,7 +503,7 @@ void CClientExoApp::OnVideoChange()
 {
     m_pcExoAppInternal->OnVideoChange();
 }
-// PC 0x00638A60 GOG 0x00638950
+// PC 0x00638A60 GOG 0x00638950 Xbox 0x0001A660
 int CClientExoApp::Uninitialize()
 {
     return m_pcExoAppInternal->Uninitialize();
@@ -1300,7 +1300,7 @@ int CClientExoApp::SaveOptions()
 
 // PC 0x00639230 GOG 0x00639130 Xbox 0x0001AD70
 #ifdef _XBOX
-int CClientExoApp::LoadOptions()
+int CClientExoApp::LoadOptions()  // Xbox 0x0001AD70
 {
     return m_pcExoAppInternal->LoadOptions();
 }

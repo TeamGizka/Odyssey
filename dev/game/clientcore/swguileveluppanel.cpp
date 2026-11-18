@@ -63,7 +63,7 @@ void CSWGuiLevelUpPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0075CFD0 GOG 0x0075D070
+// PC 0x0075CFD0 GOG 0x0075D070 Xbox 0x0013A570
 void CSWGuiLevelUpPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
 {
     CSWGuiAbilitiesCharGen* pPanel;

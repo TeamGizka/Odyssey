@@ -125,7 +125,7 @@ void CSWCameraOnAStick::SetPosition(Vector vPosition)
         m_pCamera->SetPosition(vPosition);
     }
 }
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void CSWCModule::UnloadModule()
 {
 }

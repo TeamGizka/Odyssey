@@ -213,7 +213,7 @@ void CSWGuiInGameCharacter::OnPanelAdded()
 }
 
 #ifdef _XBOX
-void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)
+void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // Xbox 0x000F89F0
 {
     g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
     CClientExoApp* pClient;
@@ -323,7 +323,7 @@ CSWGuiInGameCharacter::~CSWGuiInGameCharacter()
 {
     delete m_pCreature;
 }
-// PC 0x0071BC70 GOG 0x0071CBB0
+// PC 0x0071BC70 GOG 0x0071CBB0 Xbox 0x000F68E0
 void CSWGuiInGameCharacter::SetStats()
 {
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();

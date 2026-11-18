@@ -72,7 +72,7 @@ public:
         strcpy(m_szLoadScreen, sLoadScreen.CStr());
     }
 
-    void SetXboxSavePath(const CExoString& sXboxSavePath)
+    void SetXboxSavePath(const CExoString& sXboxSavePath)  // Xbox 0x000DF810
     {
         EXOXBOXASSERT((unsigned int)sXboxSavePath.GetLength() < sizeof(m_szXboxSavePath));
         strcpy(m_szXboxSavePath, sXboxSavePath.CStr());
@@ -213,7 +213,7 @@ extern int g_bLowDiskMode;
 extern unsigned char g_nBootFlags;
 extern __int64 g_nCurrentSessionStartFILETIME;
 
-inline void KOTOR_LAUNCH_DATA::Clear()
+inline void KOTOR_LAUNCH_DATA::Clear()  // Xbox 0x00011990
 {
     m_nMagic = MAGIC;
     m_bRenderQA = 0;

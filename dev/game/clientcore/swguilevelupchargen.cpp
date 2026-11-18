@@ -344,7 +344,7 @@ void CSWGuiLevelUpCharGen::SetBackPromptEnabled(int bEnabled)
     m_lblB.m_bEnabled = bEnabled;
 }
 #endif
-// PC 0x00757E30 GOG 0x00757BD0
+// PC 0x00757E30 GOG 0x00757BD0 Xbox 0x00135800
 int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
                                            CSWCCreature* pTo)
 {
@@ -525,7 +525,7 @@ void CSWGuiLevelUpCharGen::HandleCancelButton()
     RemoveSubPanels();
     m_pInGameCharacter->AttachModel();
 }
-// PC 0x00758490 GOG 0x00758230
+// PC 0x00758490 GOG 0x00758230 Xbox 0x00135DD0
 CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
                                          unsigned long nCreature,
                                          CSWCCreature* pCreature)

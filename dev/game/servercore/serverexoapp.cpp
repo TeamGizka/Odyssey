@@ -755,12 +755,12 @@ void CServerExoApp::RunDeathSequence()
 {
     m_pcExoAppInternal->RunDeathSequence();
 }
-int CServerExoApp::TestSafeLocation(unsigned long oidObject,  // PC 0x004DC6A0 GOG 0x004DC400
+int CServerExoApp::TestSafeLocation(unsigned long oidObject,  // PC 0x004DC6A0 GOG 0x004DC400 Xbox 0x001719C0
                                     const Vector& vPosition)
 {
     return m_pcExoAppInternal->TestSafeLocation(oidObject, vPosition);
 }
-// PC 0x004DC6B0 GOG 0x004DC410
+// PC 0x004DC6B0 GOG 0x004DC410 Xbox 0x001719D0
 int CServerExoApp::ComputeSafeLocation(const Vector& vPosition, float fRadius,
                                        unsigned long oidObject, int nFlags,
                                        Vector* pvSafe)
@@ -793,7 +793,7 @@ void CServerExoApp::SetDoingStartNewModule(int bDoingStartNewModule)
 {
     m_pcExoAppInternal->m_bDoingStartNewModule = bDoingStartNewModule;
 }
-// PC 0x004DC710 GOG 0x004DC420
+// PC 0x004DC710 GOG 0x004DC420 Xbox 0x001719E0
 Vector CServerExoApp::GetNormalOfPoint(const Vector& vPosition)
 {
     return m_pcExoAppInternal->GetNormalOfPoint(vPosition);
@@ -871,7 +871,7 @@ int CServerExoApp::GetModulePreviouslyVisited(const CExoString& sModule)
 }
 
 // Dead code: not in the PC executable
-int CServerExoApp::HasEnoughDiskSpaceForSaveGame()
+int CServerExoApp::HasEnoughDiskSpaceForSaveGame()  // Xbox 0x00171A60
 {
     return m_pcExoAppInternal->HasEnoughDiskSpaceForSaveGame();
 }

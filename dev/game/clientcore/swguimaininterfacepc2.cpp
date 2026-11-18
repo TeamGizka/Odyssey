@@ -65,7 +65,7 @@ void CSWGuiCharButton::SetCharPointer(CSWGuiMainInterfaceChar* pCharacter)
 #endif
 
 #ifdef _XBOX
-void CSWGuiMainInterfaceAction::StopSlide()
+void CSWGuiMainInterfaceAction::StopSlide()  // Xbox 0x000D6F60
 {
     m_fSlideTimer = 0.0f;
     m_lblIcon.m_cBorder.m_cParams = m_lblIconB.m_cBorder.m_cParams;
@@ -73,7 +73,7 @@ void CSWGuiMainInterfaceAction::StopSlide()
     m_lblIcon.SetEnabledFlag(1);
 }
 
-void CSWGuiMainInterfaceAction::Draw(float fElapsed)
+void CSWGuiMainInterfaceAction::Draw(float fElapsed)  // Xbox 0x000D6FA0
 {
     if (m_fSlideTimer > 0.0f)
     {
@@ -120,7 +120,7 @@ void CSWGuiMainInterface::ShiftControl(CSWGuiControl& cControl, int nOffset)
 }
 
 #ifdef _XBOX
-CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()
+CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()  // Xbox 0x000DC2C0
 {
 }
 #else
@@ -137,7 +137,7 @@ void CSWGuiMainInterfaceStatus::ShiftControl(int nOffset)
 
 
 #ifdef _XBOX
-CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()
+CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // Xbox 0x000DCEC0
 {
     m_nFadeSteps = 0;
     m_fSlideTimer = 0.0f;
@@ -172,7 +172,7 @@ static inline void TraceMainInterface()
 
 #ifdef _XBOX
 
-void CSWGuiMainInterfaceChar::SetDestination(int nPosition, int nCount, CSWGuiManager* pManager)
+void CSWGuiMainInterfaceChar::SetDestination(int nPosition, int nCount, CSWGuiManager* pManager)  // Xbox 0x000D75C0
 {
     switch (nPosition)
     {
@@ -203,7 +203,7 @@ void CSWGuiMainInterfaceChar::SetDestination(int nPosition, int nCount, CSWGuiMa
     }
 }
 
-void CSWGuiMainInterface::StartRotation()
+void CSWGuiMainInterface::StartRotation()  // Xbox 0x000D8ED0
 {
     int nCount = g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters();
     m_bSelectingUseItemTarget = 0;
@@ -217,7 +217,7 @@ void CSWGuiMainInterface::StartRotation()
     }
 }
 
-void CSWGuiCharBar::SetExtent(const CSWGuiExtent& cExtent)
+void CSWGuiCharBar::SetExtent(const CSWGuiExtent& cExtent)  // Xbox 0x00334A20
 {
     CSWGuiExtent cFill = cExtent;
 
@@ -251,7 +251,7 @@ void CSWGuiCharBar::SetExtent(const CSWGuiExtent& cExtent)
     m_cFill.SetExtent(cFill);
 }
 
-void CSWGuiCharBar::Draw(float fElapsed)
+void CSWGuiCharBar::Draw(float fElapsed)  // Xbox 0x00333D60
 {
     m_cBorder.Draw(fElapsed);
     if (AurGUISetupViewport(m_cStartExtent.m_nLeft, m_cStartExtent.m_nTop, m_cStartExtent.m_nWidth, m_cStartExtent.m_nHeight,
@@ -262,7 +262,7 @@ void CSWGuiCharBar::Draw(float fElapsed)
     }
 }
 #endif
-// PC 0x004DD4D0 GOG 0x00431EC0
+// PC 0x004DD4D0 GOG 0x00431EC0 Xbox 0x001308E0
 template <> void CExoArrayList<CSWGuiFloatyText*>::DelIndex(int nIndex)
 {
     num--;
@@ -271,7 +271,7 @@ template <> void CExoArrayList<CSWGuiFloatyText*>::DelIndex(int nIndex)
         element[nIndex] = element[nIndex + 1];
     }
 }
-// PC 0x006DCFD0 GOG 0x006DD3E0
+// PC 0x006DCFD0 GOG 0x006DD3E0 Xbox 0x000F0750
 void CSWGuiButtonToggle::SetToggled(int bToggled)
 {
     m_bToggled = bToggled;
@@ -629,7 +629,7 @@ void CSWGuiMainInterfaceChar::Show(int bShow, unsigned char nState,
     m_cCharButton.SetEnabledFlag(bShow & 1);
 #endif
 }
-// PC 0x006DD830 GOG 0x006DD050
+// PC 0x006DD830 GOG 0x006DD050 Xbox 0x000D7680
 void CSWGuiMainInterfaceChar::Adjust(float fElapsed)
 {
     CSWGuiExtent cExtent;
@@ -671,7 +671,7 @@ void CSWGuiMainInterfaceChar::Adjust(float fElapsed)
     m_cCharButton.SetExtent(cExtent);
 #endif
 }
-// PC 0x006DD9B0 GOG 0x006DD1D0
+// PC 0x006DD9B0 GOG 0x006DD1D0 Xbox 0x000D77C0
 void CSWGuiMainInterfaceChar::DrawStack(float fElapsed, int bLarge, int bBuff)
 {
     CSWGuiExtent cViewport = m_aLabels[LABEL_CHAR].m_cExtent;
@@ -740,7 +740,7 @@ void CSWGuiMainInterfaceChar::DrawStack(float fElapsed, int bLarge, int bBuff)
     }
     AurGUIStopLayer();
 }
-// PC 0x006DDBC0 GOG 0x006DEAA0
+// PC 0x006DDBC0 GOG 0x006DEAA0 Xbox 0x000D79D0
 void CSWGuiMainInterfaceStatus::Initialize(CSWGuiMainInterface* pInterface,
                                            unsigned char nStatusEffect)
 {
@@ -813,7 +813,7 @@ void CSWGuiMainInterfaceStatus::Initialize(CSWGuiMainInterface* pInterface,
     m_cLabel.m_bEnabled = 0;
     m_cLabel.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
 }
-// PC 0x006DDCC0 GOG 0x006DEBA0
+// PC 0x006DDCC0 GOG 0x006DEBA0 Xbox 0x000D7AF0
 void CSWGuiMainInterfaceStatus::Update(float fElapsed)
 {
 #ifdef _XBOX
@@ -886,7 +886,7 @@ int CSWGuiMainInterface::SetTarget(unsigned long nTargetId, int nFlags)
     }
     return nTargetId;
 }
-// PC 0x006DDDF0 GOG 0x006DF090
+// PC 0x006DDDF0 GOG 0x006DF090 Xbox 0x000D7EC0
 void CSWGuiMainInterface::GetActionIcon(
     CSWSCombatRound* pCombatRound, CSWSObjectActionNode* pAction,
     CSWSCombatRoundAction* pCombatAction, int& nActionId,
@@ -1060,7 +1060,7 @@ void CSWGuiMainInterface::GetActionIcon(
         break;
     }
 }
-// PC 0x006DE410 GOG 0x006DD4B0
+// PC 0x006DE410 GOG 0x006DD4B0 Xbox 0x000D84E0
 void CSWGuiMainInterface::ShowActionIcon(int& nIcon, const CResRef& cIcon,
                                          const CResRef& cDefaultIcon,
                                          int bEnabled, int bForce)
@@ -1091,7 +1091,7 @@ void CSWGuiMainInterface::ShowActionIcon(int& nIcon, const CResRef& cIcon,
         pIcon->m_bEnabled = 1;
     }
 }
-// PC 0x006DE4C0 GOG 0x006DF8F0
+// PC 0x006DE4C0 GOG 0x006DF8F0 Xbox 0x000D85A0
 void CSWGuiMainInterface::SetCombatMessage(unsigned long nMessage)
 {
     if (m_fCombatMessageTime != -1.0f)
@@ -1181,7 +1181,7 @@ void CSWGuiMainInterface::UpdateGameMenu()
     }
 }
 #endif
-// PC 0x006DE690 GOG 0x006E01D0
+// PC 0x006DE690 GOG 0x006E01D0 Xbox 0x000D8D60
 void CSWGuiMainInterface::InitializeMap()
 {
     int bMapEnabled = 0;
@@ -1234,7 +1234,7 @@ int CSWGuiMainInterface::StartRotation()  // PC 0x006DE880 GOG 0x006E03C0
     return (int)g_pAppManager->m_pClientExoApp->GetSWParty();
 }
 #endif
-void CSWGuiMainInterface::ShowFlashingStatus(unsigned char nEffect)  // PC 0x006DE890 GOG 0x006E03D0
+void CSWGuiMainInterface::ShowFlashingStatus(unsigned char nEffect)  // PC 0x006DE890 GOG 0x006E03D0 Xbox 0x000D8F50
 {
     switch (nEffect)
     {
@@ -1257,7 +1257,7 @@ void CSWGuiMainInterface::ShowFlashingStatus(unsigned char nEffect)  // PC 0x006
 
     m_aEffects[nEffect].Show(1);
 }
-// PC 0x006DE910 GOG 0x006E04D0
+// PC 0x006DE910 GOG 0x006E04D0 Xbox 0x000D8FE0
 void CSWGuiMainInterface::OnCombatYButton()
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -1668,7 +1668,7 @@ void CSWGuiMainInterface::ResetFont()  // PC 0x006DF3D0 GOG 0x006DD600
 #endif
 }
 #endif
-// PC 0x006DF410 GOG 0x006E1310
+// PC 0x006DF410 GOG 0x006E1310 Xbox 0x000D9020
 void CSWGuiFloatyText::CreateEntry(unsigned long oidObject,
                                    const CExoString& sText,
                                    const Vector& vColor, float fDuration)
@@ -1763,7 +1763,7 @@ CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // PC 0x006DF630 GOG 0x0
 #endif
 
 #ifdef _XBOX
-void CSWGuiMainInterfaceAction::Show(int bActive, int bEmpty, int bArrow)
+void CSWGuiMainInterfaceAction::Show(int bActive, int bEmpty, int bArrow)  // Xbox 0x000D9270
 {
     if (m_fSlideTimer > 0.0f)
     {
@@ -2377,7 +2377,7 @@ void CSWGuiCharButton::Draw(float fElapsed)  // PC 0x006E0A00 GOG 0x006DE8E0
 }
 #endif
 
-void CSWGuiMainInterfaceChar::DrawEffects(float fElapsed, int bLarge)
+void CSWGuiMainInterfaceChar::DrawEffects(float fElapsed, int bLarge)  // Xbox 0x000D95A0
 {
     if (m_aLabels[LABEL_CHAR].m_bEnabled)
     {
@@ -2387,7 +2387,7 @@ void CSWGuiMainInterfaceChar::DrawEffects(float fElapsed, int bLarge)
             DrawStack(fElapsed, bLarge, 0);
     }
 }
-// PC 0x006E0AB0 GOG 0x006DEC20
+// PC 0x006E0AB0 GOG 0x006DEC20 Xbox 0x0004B930
 CSWGuiMainInterfaceStatus::CSWGuiMainInterfaceStatus()
 {
 }
@@ -2404,7 +2404,7 @@ CSWGuiControl* CSWGuiMainInterface::HitCheckMouse(int nX, int nY)  // PC 0x006E0
     return pControl;
 }
 #endif
-// PC 0x006E0AF0 GOG 0x006DEC60
+// PC 0x006E0AF0 GOG 0x006DEC60 Xbox 0x000D95F0
 void CSWGuiMainInterface::Update(float fElapsed)
 {
     for (int nText = m_lFloatyText.num - 1; nText >= 0; --nText)
@@ -2489,7 +2489,7 @@ void CSWGuiMainInterface::Update(float fElapsed)
 }
 
 #ifdef _XBOX
-void CSWGuiMainInterface::UpdateActionDescription(CSWGuiControl* pControl)
+void CSWGuiMainInterface::UpdateActionDescription(CSWGuiControl* pControl)  // Xbox 0x000D9760
 {
     CExoString sDescription;
     float fAlpha = 1.0f;
@@ -2571,7 +2571,7 @@ void CSWGuiMainInterface::UpdateActionDescription()  // PC 0x006E0D90 GOG 0x006D
     m_cActionText.m_cText.m_cParams.m_fAlpha = fAlpha;
 }
 #endif
-// PC 0x006E0F20 GOG 0x006E25E0
+// PC 0x006E0F20 GOG 0x006E25E0 Xbox 0x000DA080
 void CSWGuiMainInterface::UpdateActionQueue()
 {
     CSWSCreature* pCreature = g_pAppManager->GetClientExoApp()->GetSWParty()->
@@ -2646,7 +2646,7 @@ void CSWGuiMainInterface::UpdateActionQueue()
     while (nIcon < ACTION_QUEUE_ICON_COUNT)
         m_aActionIcons[nIcon++].SetEnabledFlag(0);
 }
-// PC 0x006E1220 GOG 0x006DF6B0
+// PC 0x006E1220 GOG 0x006DF6B0 Xbox 0x000DA360
 void CSWGuiMainInterface::ShowActionQueue(int bShow)
 {
     if (bShow == m_cActionDescriptionState.m_bEnabled)
@@ -2713,7 +2713,7 @@ void CSWGuiMainInterface::ShowActionQueue(int bShow)
         }
     }
 }
-// PC 0x006E1460 GOG 0x006DFA30
+// PC 0x006E1460 GOG 0x006DFA30 Xbox 0x000DA5B0
 void CSWGuiMainInterface::UpdatePortraits()
 {
 #ifdef _XBOX
@@ -3168,7 +3168,7 @@ inline CSWGuiFloatyText* NewFloatyText()
 {
     return new CSWGuiFloatyText;
 }
-// PC 0x006E2610 GOG 0x006E0470
+// PC 0x006E2610 GOG 0x006E0470 Xbox 0x000DB900
 void CSWGuiMainInterface::RemoveFloatyText(CSWGuiFloatyText* pFloatyText)
 {
     if (pFloatyText != NULL)
@@ -3549,7 +3549,7 @@ void CSWGuiMainInterface::SelectPrevPersonalAction(int nMenu)
     }
 }
 #endif
-// PC 0x006E2D60 GOG 0x006E14F0
+// PC 0x006E2D60 GOG 0x006E14F0 Xbox 0x000DBDD0
 void CSWGuiFloatyText::Update(float fDeltaTime)
 {
     m_fTimeLeft -= fDeltaTime;
@@ -3665,7 +3665,7 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006
     PositionMenu(pCreature, pTarget);
 }
 #endif
-// PC 0x006E31A0 GOG 0x006E1E10
+// PC 0x006E31A0 GOG 0x006E1E10 Xbox 0x000D7300
 void CSWGuiMainInterfaceChar::Initialize(CSWGuiMainInterface* pMainInterface,
                                         int nCharacter)
 {
@@ -3741,7 +3741,7 @@ void CSWGuiMainInterfaceChar::Initialize(CSWGuiMainInterface* pMainInterface,
 }
 
 #ifdef _XBOX
-void CSWGuiMainInterface::PopulateMenus(int bForce)
+void CSWGuiMainInterface::PopulateMenus(int bForce)  // Xbox 0x000D98C0
 {
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
@@ -3988,7 +3988,7 @@ void CSWGuiMainInterface::PopulateMenus(int bForce)  // PC 0x006E3530 GOG 0x006E
 }
 #endif
 
-// PC 0x006E37E0 GOG 0x006E2450
+// PC 0x006E37E0 GOG 0x006E2450 Xbox 0x000D9F20
 void CSWGuiMainInterface::RevertActionBarStates()
 {
     int nImplantAction = -1;
@@ -4083,7 +4083,7 @@ void CSWGuiMainInterface::RevertActionBarStates()
     PopulateMenus(0);
 }
 #ifdef _XBOX
-CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)
+CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000DD590
     : CSWGuiPanel(pManager)
 {
     CExoString sControl;
@@ -4542,7 +4542,7 @@ void CSWGuiMainInterface::OnActionDownArrowPressed(CSWGuiControl* pControl)  // 
 #endif
 
 #ifdef _XBOX
-void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface,
+void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface,  // Xbox 0x000DC060
                                           int nAction)
 {
     CExoString sControl;
@@ -4715,7 +4715,7 @@ CSWGuiMainInterface::~CSWGuiMainInterface()  // PC 0x006E4270 GOG 0x006E3880
 }
 #endif
 CSWGuiMainInterface* CSWGuiFloatyText::m_pMainInterface;
-// PC 0x006E45C0 GOG 0x006E3BD0
+// PC 0x006E45C0 GOG 0x006E3BD0 Xbox 0x000DC3B0
 void CSWGuiMainInterface::Draw(float fElapsed)
 {
     if (!m_bNeedsDraw)
@@ -4920,7 +4920,7 @@ void CSWGuiTargetActionMenu::Initialize(CSWGuiMainInterface* pMainInterface)  //
 }
 #endif
 
-// PC 0x006E4EB0 GOG 0x006E44C0
+// PC 0x006E4EB0 GOG 0x006E44C0 Xbox 0x000DECF0
 void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
                                         const CExoString& sText,
                                         const Vector& vColor, float fDuration)
@@ -4979,7 +4979,7 @@ enum
     XBOX_STRREF_ATTACK_ALREADY_QUEUED = 42478
 };
 
-void CSWGuiMainInterface::UpdateIndicator(float fElapsed)
+void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // Xbox 0x000DAC90
 {
     CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_nTargetId);
     int bTarget = 0;
@@ -5206,7 +5206,7 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)
     m_pbHealth.SetEnabledFlag(bTarget);
 }
 
-void CSWGuiMainInterface::DrawActionDescription(float fElapsed)
+void CSWGuiMainInterface::DrawActionDescription(float fElapsed)  // Xbox 0x000D8A40
 {
     CSWGuiExtent cExtent = m_cActionText.m_cExtent;
     int nTextHeight = m_cActionText.m_cText.GetIdealHeight();
@@ -5390,7 +5390,7 @@ void CSWGuiMainInterface::OnNonCombatXButton()
     }
 }
 
-void CSWGuiMainInterface::HandleInputEvent(int nEvent, int nState)
+void CSWGuiMainInterface::HandleInputEvent(int nEvent, int nState)  // Xbox 0x000DCFE0
 {
     if (nState != 0)
     {

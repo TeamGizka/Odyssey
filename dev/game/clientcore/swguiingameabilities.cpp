@@ -149,7 +149,7 @@ void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
             CSWGuiLabelHilight::m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x00737850 GOG 0x007375B0
+// PC 0x00737850 GOG 0x007375B0 Xbox 0x000F42A0
 void CSWGuiInGameAbilities::UpdateView()
 {
     CExoArrayList<CSWGuiControl*> lstControls;
@@ -320,7 +320,7 @@ void CSWGuiInGameSkillEntry::Draw(float fElapsed)
     m_cSelection.Draw(fElapsed);
     m_cText.Draw(fElapsed);
 }
-// PC 0x00736920 GOG 0x00736680
+// PC 0x00736920 GOG 0x00736680 Xbox 0x000F33B0
 void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
                                         CSWGuiBorder& cBorder,
                                         CSWGuiBorder& cHilite, int nWidth)

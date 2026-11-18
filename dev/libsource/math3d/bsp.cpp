@@ -56,7 +56,7 @@ BSPNode::~BSPNode()
         delete m_pPositive;
     }
 }
-// PC 0x004DA6F0 GOG 0x004DA830
+// PC 0x004DA6F0 GOG 0x004DA830 Xbox 0x0034C460
 void BSPTraverse(BSPNode* pNode, const Vector& vCenter, float fRadiusSquared,
                  BSPVolumeCallback pCallback)
 {

@@ -103,7 +103,7 @@ void CSWGuiQuickOrCustomPanel::SetDescription(unsigned long nStrRef)
                             pList->m_lItems.num > 0 &&
                             !pList->m_bHideScrollIcon);
 }
-// PC 0x00761C70 GOG 0x007619C0
+// PC 0x00761C70 GOG 0x007619C0 Xbox 0x0013C4D0
 CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
                                                    CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)

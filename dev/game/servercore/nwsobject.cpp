@@ -1575,7 +1575,7 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
     return nDamage - nResistance > 0 ? nDamage - nResistance : 0;
 }
 
-int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // PC 0x004FB4F0 GOG 0x0050ACE0
+int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // PC 0x004FB4F0 GOG 0x0050ACE0 Xbox 0x001A9880
 {
     if (pCaster != NULL && pCaster->AsSWSCreature() != NULL &&
         m_lstEffects.num > 0)
