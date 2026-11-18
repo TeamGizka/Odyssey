@@ -3179,6 +3179,8 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // Xbox 0x00259080
     return 1;
 }
 
+#endif
+#if defined(_XBOX) && defined(_DEBUG)
 #include "nwsparty.h"
 
 
@@ -3295,6 +3297,8 @@ int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
     return bValid;
 }
 
+#endif
+#ifdef _XBOX
 int CServerExoAppInternal::DebugValidatePath_Point(CSWSArea* pArea,
                                                    Vector vPoint)
 {

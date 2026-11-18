@@ -126,8 +126,9 @@ public:
     void OnHideInGameGUI(CSWGuiControl* pControl); void OnEnableToolTips(CSWGuiControl* pControl);
 
 #ifdef _XBOX
-    CSWGuiOptionsCheckbox m_aCheckboxes[7]; CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblSelect;
-    CSWGuiLabel m_lblBack; CSWGuiLabel m_lblTitle; CSWGuiLabel m_lblRAnalog; CSWGuiListBox m_lbDescription; void OnRumble(CSWGuiControl* pControl);
+    CSWGuiOptionsCheckbox m_aCheckboxes[7]; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbDescription;
+    CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblSelect; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblRAnalog;
+    CSWGuiLabel m_alblBar[4]; void OnRumble(CSWGuiControl* pControl);
 #else
     CSWGuiListBox m_lbOptions; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbDescription; CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault;
     CSWGuiLabel m_alblBar[3];
@@ -162,6 +163,7 @@ public:
     CSWGuiLabel m_lblGamma; CSWGuiLabel m_lblMusic; CSWGuiLabel m_lblEffects; CSWGuiLabel m_lblVoice; CSWGuiLabel m_lblMovie;
     CSWGuiLabel m_lblB; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblTitle; CSWGuiLabel m_lblRAnalog;
     CSWGuiListBox m_lbDescription; CSWGuiLabel m_lblY; CSWGuiLabel m_lblDefault;
+    CSWGuiLabel m_alblBar[4];
     void OnMoveGammaSlider(CSWGuiControl* pControl);
 #else
     CSWGuiSlider m_sldMusic; CSWGuiSlider m_sldVoice;
@@ -222,6 +224,7 @@ public:
     int m_bDiscard;
 };
 
+#ifndef _XBOX
 class CSWGuiOptionsMouse : public CSWGuiPanel
 {
 public:
@@ -254,6 +257,7 @@ public:
     CSWGuiOptionsCheckbox m_cbRevButtons;
     CSWGuiLabel m_alblBar[4];
 };
+#endif
 
 class CSWGuiOptionsResolution : public CSWGuiPanel
 {

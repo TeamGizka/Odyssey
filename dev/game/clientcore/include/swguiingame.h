@@ -262,10 +262,20 @@ public:
 class CSWGuiDeathDisplay : public CSWGuiPanel
 {
 public:
+#ifdef _XBOX
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblX;
+    CSWGuiLabel m_lblMessage;
+    CSWGuiLabel m_lblLastSave;
+    CSWGuiLabel m_lblLoadGame;
+    CSWGuiLabel m_lblQuit;
+#else
     CSWGuiLabel m_lblMessage;
     CSWGuiButton m_btnLastSave;
     CSWGuiButton m_btnLoadGame;
     CSWGuiButton m_btnQuit;
+#endif
     float m_fFadeTime;
 
     CSWGuiDeathDisplay(CSWGuiManager* pManager);
@@ -328,6 +338,9 @@ public:
            STRREF_TOTAL_RANK = 41904, STRREF_COST_PER_USE = 41905,
            STRREF_UNKNOWN_FORCE_POWER = 125555,
            STRREF_UNKNOWN_FORCE_POWER_DESC = 125556 };
+#ifdef _XBOX
+    enum { DESCRIPTION_HEIGHT = 170, DESCRIPTION_HEIGHT_FEATS = 226 };
+#endif
     void OnEnterSkill(CSWGuiControl* pControl);
     void OnEnterFeat(unsigned short nFeat);
 #ifndef _XBOX
@@ -347,9 +360,6 @@ public:
 
     CExoArrayList<CSWGuiSkillStruct> m_lstSkills;
     CSWGuiInGameSkillEntry m_aSkillEntries[10];
-#ifdef _XBOX
-    CSWGuiLabel m_lblPortrait;
-#endif
     CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblSkillRank;
     CSWGuiLabel m_lblRankValue;
@@ -358,21 +368,24 @@ public:
     CSWGuiLabel m_lblTotal;
     CSWGuiLabel m_lblTotalValue;
     CSWGuiLabel m_lblName;
+    CSWGuiLabel m_lblInfoBackground;
 #ifdef _XBOX
+    CSWGuiListBox m_lbAbility;
+    CSWGuiListBox m_lbDescription;
+    CSWGuiLabel m_lblSkills;
+    CSWGuiLabel m_lblPowers;
+    CSWGuiLabel m_lblFeats;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblY;
     CSWGuiLabel m_lblWhite;
     CSWGuiLabel m_lblStart;
     CSWGuiLabel m_lblBlack;
-    CSWGuiLabel m_lblSkills;
-    CSWGuiLabel m_lblPowers;
-    CSWGuiLabel m_lblFeats;
-    CSWGuiLabel m_lblNextPage;
     CSWGuiLabel m_lblExit;
     CSWGuiLabel m_lblRAnalog;
-    CSWGuiLabel m_lblInfoBackground;
+    CSWGuiLabel m_lblFilter;
+    CSWGuiLabel m_alblBar[7];
+    CSWGuiLabel m_lblTitle;
 #else
-    CSWGuiLabel m_lblInfoBackground;
     CSWGuiButton m_btnFeats;
     CSWGuiButton m_btnPowers;
     CSWGuiButton m_btnSkills;
@@ -381,10 +394,8 @@ public:
     CSWGuiLabel m_lblAbilities;
     CSWGuiListBox m_lbDescFeats;
     CSWGuiLabel m_lblDescFeatsTitle;
-#endif
     CSWGuiListBox m_lbAbility;
     CSWGuiListBox m_lbDescription;
-#ifndef _XBOX
     CSWGuiButton m_btnExit;
 #endif
     unsigned char m_nSelectedSkill;
@@ -392,6 +403,12 @@ public:
     CSWCCreature* m_pCreature;
     CSWGuiSkillFlowChart m_cPowerChart;
     CSWGuiSkillFlowChart m_cFeatChart;
+#ifdef _XBOX
+    Vector m_vBorderColor;
+    Vector m_vTextColor;
+    Vector m_vTabColor;
+    Vector m_vHiliteColor;
+#endif
 };
 
 #include "swguicontrol.h"

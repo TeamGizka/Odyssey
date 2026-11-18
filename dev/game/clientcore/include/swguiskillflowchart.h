@@ -17,15 +17,23 @@ public:
     virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x006049D0 GOG 0x006049B0 Xbox 0x000FFC10
                                            CSWGuiLabelHilight* pProto)
     {
+        EXOXBOXASSERT(0);
     }
     virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x00693D50 GOG 0x00693AC0 Xbox 0x000FFC00
                             const CSWGuiTextParams& cText,
                             const CSWGuiBorderParams& cBorder,
                             const CSWGuiBorderParams& cHilite)
     {
+        EXOXBOXASSERT(0);
     }
+#ifdef _XBOX
+    virtual void Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
+                            CSWGuiBorder& cHilite, int nSkill,
+                            const Vector& vColor, const Vector& vHiliteColor);
+#else
     virtual void Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                             CSWGuiBorder& cHilite, int nSkill);
+#endif
 
     void SetSkill(unsigned long nSkill, unsigned char nState);
 

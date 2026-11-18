@@ -1010,6 +1010,7 @@ unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage,
     int nGreen = 0;
     int nBlue = 0;
     int nAlpha = 0;
+    int anColor[4];
     for (int y = 0; y < nNewHeight; y++)
     {
         for (int x = 0; x < nNewWidth; x++)
@@ -1024,15 +1025,18 @@ unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage,
                     nAlpha += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4 + 3];
                 }
             }
-            nRed /= nFactor * nFactor;
-            nGreen /= nFactor * nFactor;
-            nBlue /= nFactor * nFactor;
-            nAlpha /= nFactor * nFactor;
-            pDest[(y * nNewWidth + x) * 4] = nRed;
-            pDest[(y * nNewWidth + x) * 4 + 1] = nGreen;
-            pDest[(y * nNewWidth + x) * 4 + 2] = nBlue;
-            pDest[(y * nNewWidth + x) * 4 + 3] = nAlpha;
-            nRed = nGreen = nBlue = nAlpha = 0;
+            anColor[0] = nRed / (nFactor * nFactor);
+            anColor[1] = nGreen / (nFactor * nFactor);
+            anColor[2] = nBlue / (nFactor * nFactor);
+            anColor[3] = nAlpha / (nFactor * nFactor);
+            pDest[(y * nNewWidth + x) * 4] = anColor[0];
+            pDest[(y * nNewWidth + x) * 4 + 1] = anColor[1];
+            pDest[(y * nNewWidth + x) * 4 + 2] = anColor[2];
+            pDest[(y * nNewWidth + x) * 4 + 3] = anColor[3];
+            nRed = 0;
+            nGreen = 0;
+            nBlue = 0;
+            nAlpha = 0;
         }
     }
     return pDest;

@@ -39,14 +39,12 @@ void CSWGuiInGameGameplay::HandleInputEvent(int nEvent, int nState)
                     !pToggle->m_bToggled);
             }
             break;
-#ifndef _XBOX
         case GUIEVENT_SCROLL_UP:
             m_lbxDescription.HandleInputEvent(GUIEVENT_UP, 1);
             break;
         case GUIEVENT_SCROLL_DOWN:
             m_lbxDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
             break;
-#endif
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -140,12 +138,14 @@ void CSWGuiInGameGameplay::OnKeyMap(CSWGuiControl* pControl)
 // PC 0x00759500 GOG 0x00759320
 void CSWGuiInGameGameplay::OnMouse(CSWGuiControl* pControl)
 {
+#ifndef _XBOX
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)
     {
         CSWGuiOptionsMouse* pPanel = new CSWGuiOptionsMouse(GetManager());
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
+#endif
 }
 // PC 0x00759580 GOG 0x007593A0 Xbox 0x00132710
 void CSWGuiInGameGameplay::SetDifficultyText()
@@ -262,7 +262,7 @@ void CSWGuiInGameGameplay::OnExitDiff(CSWGuiControl* pControl)
     pText->SetColor(CGuiInGame::COLOR_NEW_TEXT);
     pText->m_bHilightText = 0;
 #ifdef _XBOX
-    m_lblSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+    m_lblSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
 #endif
 }
 // PC 0x007597E0 GOG 0x00759600
@@ -364,20 +364,26 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
 #ifdef _XBOX
     StartLoadFromLayout("optgameplay_x");
     InitControl(m_btnDifficulty, "BTN_DIFFICULTY", 1);
-    InitControl(m_cbInvertCam, "CB_AUTOCENTER", 1);
     InitControl(m_cbAutoLevelUp, "CB_LEVELUP", 1);
     InitControl(m_cbAutoSave, "CB_AUTOSAVE", 1);
     InitControl(m_cbReverse, "CB_REVERSE", 1);
+    InitControl(m_cbReverseInGame, "CB_REVERSE_INGAME", 1);
     InitControl(m_cbCombatMovement, "CB_DISABLEMOVE", 1);
+    InitControl(m_cbEnableGuiFade, "CB_ENABLEGUIFADE", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbxDescription, "LB_DESC", 1);
+    InitControl(m_cbInvertCam, "CB_AUTOCENTER", 1);
     InitControl(m_lblDiffRight, "LBL_DIFFICULTYRIGHT", 1);
     InitControl(m_lblDiffLeft, "LBL_DIFFICULTYLEFT", 1);
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblSelect, "LBL_SELECT", 1);
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    InitControl(m_lbxDescription, "LB_DESC", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
     m_lbxDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     StopLoadFromLayout();
 
@@ -392,8 +398,8 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
                              (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnterDiff);
     m_btnDifficulty.AddEvent(CSWGuiControl::EVENT_EXIT, this,
                              (PFNGUIEVENT)&CSWGuiInGameGameplay::OnExitDiff);
-    m_lblDiffLeft.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-    m_lblDiffRight.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_lblDiffLeft.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
+    m_lblDiffRight.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
     m_cbAutoLevelUp.AddEvent(GUIEVENT_ACTIVATE, this,
                              (PFNGUIEVENT)&CSWGuiInGameGameplay::OnAutoLevelUp);
     m_cbAutoLevelUp.AddEvent(GUIEVENT_ACCEPT, this,
@@ -418,17 +424,30 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
                          (PFNGUIEVENT)&CSWGuiInGameGameplay::OnReverse);
     m_cbReverse.AddEvent(CSWGuiControl::EVENT_ENTER, this,
                          (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnterSlot);
+    m_cbReverseInGame.AddEvent(GUIEVENT_ACTIVATE, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnReverseIngame);
+    m_cbReverseInGame.AddEvent(GUIEVENT_ACCEPT, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnReverseIngame);
+    m_cbReverseInGame.AddEvent(CSWGuiControl::EVENT_ENTER, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnterSlot);
     m_cbCombatMovement.AddEvent(GUIEVENT_ACTIVATE, this,
                                 (PFNGUIEVENT)&CSWGuiInGameGameplay::OnCombatMovement);
     m_cbCombatMovement.AddEvent(GUIEVENT_ACCEPT, this,
                                 (PFNGUIEVENT)&CSWGuiInGameGameplay::OnCombatMovement);
     m_cbCombatMovement.AddEvent(CSWGuiControl::EVENT_ENTER, this,
                                 (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnterSlot);
+    m_cbEnableGuiFade.AddEvent(GUIEVENT_ACTIVATE, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnableGuiFade);
+    m_cbEnableGuiFade.AddEvent(GUIEVENT_ACCEPT, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnableGuiFade);
+    m_cbEnableGuiFade.AddEvent(CSWGuiControl::EVENT_ENTER, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnterSlot);
 
-    m_cbInvertCam.m_nIndex = 42268;
+    m_cbInvertCam.m_nIndex = STRREF_AUTO_CENTER;
     m_cbAutoLevelUp.m_nIndex = STRREF_AUTO_LEVELUP;
     m_cbAutoSave.m_nIndex = STRREF_AUTO_SAVE;
-    m_cbReverse.m_nIndex = 42453;
+    m_cbReverse.m_nIndex = STRREF_REVERSE_MINIGAME;
+    m_cbReverseInGame.m_nIndex = STRREF_REVERSE_INGAME;
     m_cbCombatMovement.m_nIndex = STRREF_COMBAT_MOVEMENT;
 
     SetActiveControl(&m_btnDifficulty, 0);
@@ -451,10 +470,18 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
         g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bReverseMinigameYAxis;
     CSWGuiButtonToggle* pToggle4 = m_cbReverse.AsButtonToggle();
     pToggle4->m_bToggled = bReverse;
+    unsigned int bReverseIngame =
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bReverseIngame;
+    CSWGuiButtonToggle* pToggleIngame = m_cbReverseInGame.AsButtonToggle();
+    pToggleIngame->m_bToggled = bReverseIngame;
     unsigned int bCombatMovement =
         g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bCombatMovement;
     CSWGuiButtonToggle* pToggle5 = m_cbCombatMovement.AsButtonToggle();
     pToggle5->m_bToggled = bCombatMovement;
+    unsigned int bGuiFade =
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bGuiFade;
+    CSWGuiButtonToggle* pToggleFade = m_cbEnableGuiFade.AsButtonToggle();
+    pToggleFade->m_bToggled = bGuiFade;
 #else
     StartLoadFromLayout("optgameplay_p");
     InitControl(m_btnDifficulty, "BTN_DIFFICULTY", 1);
@@ -561,6 +588,19 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
 
 #ifdef _XBOX
 
+// Xbox 0x001326C0
+void CSWGuiInGameGameplay::OnEnableGuiFade(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bGuiFade =
+            !g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bGuiFade;
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bGuiFade = bGuiFade;
+    }
+}
+
 void CSWGuiInGameGameplay::FlashLabel(CSWGuiLabel* pLabel)  // Xbox 0x00132990
 {
     int nCount = m_aFlashes.num;
@@ -575,7 +615,7 @@ void CSWGuiInGameGameplay::FlashLabel(CSWGuiLabel* pLabel)  // Xbox 0x00132990
     m_aFlashes.SetSize(nCount + 1);
     m_aFlashes.element[nCount].m_pLabel = pLabel;
     m_aFlashes.element[nCount].m_fTime = 0.25f;
-    pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 }
 
 void CSWGuiInGameGameplay::Draw(float fElapsed)  // Xbox 0x00132440
@@ -586,7 +626,7 @@ void CSWGuiInGameGameplay::Draw(float fElapsed)  // Xbox 0x00132440
         if (m_aFlashes.element[i].m_fTime <= 0.0f)
         {
             m_aFlashes.element[i].m_pLabel->m_cBorder.m_cParams.m_vColor =
-                CGuiInGame::COLOR_BLUE;
+                CGuiInGame::COLOR_NEW_TEXT;
             m_aFlashes.DelIndex(i);
         }
     }

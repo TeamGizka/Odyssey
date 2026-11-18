@@ -41,9 +41,7 @@ void CSWSObject::SetSpellTargetPosition(const Vector& vPosition)
 #include "nwccreature.h"
 #include "swparty.h"
 #include "clientexoapp.h"
-#ifndef _XBOX
 #include "serverinfo.h"
-#endif
 #include "guiingame.h"
 #include "swguiabilitieschargen.h"
 #include "pathfindinfo.h"
@@ -10167,11 +10165,11 @@ int CSWSCreature::GetIsInUseRange(unsigned long oidObject, float fRange,
         }
 
         GetUseRange(oidObject, vUsePosition, fUseRange, 0, bDoorSaber);
+        Vector vHit;
         Vector vStart = m_vPosition;
         Vector vEnd = vUsePosition;
         vStart.m_fZ += 1.5f;
         vEnd.m_fZ += 1.5f;
-        Vector vHit;
         unsigned long oidHit;
         if (pObject->AsSWSObject()->GetArea()->ClearLineOfSight(
                 vStart, vEnd, &vHit, &oidHit, GetId(), oidObject, bCheckTransparentDoors, 0))
@@ -13192,6 +13190,7 @@ void CSWSCreature::SetMovementRateFactor(float fMovementRateFactor)  // Xbox 0x0
 }
 
 
+#ifdef _DEBUG
 void CSWSCreature::AddPrerequisiteSpells(unsigned long nSpell)
 {
     const int nNoPrerequisiteSpell = -1;
@@ -13216,6 +13215,7 @@ void CSWSCreature::AddPrerequisiteSpells(unsigned long nSpell)
         GetStats()->AddKnownSpell(GetStats()->m_nClassCount - 1, nSpell);
     }
 }
+#endif
 
 void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActions,  // Xbox 0x00198F70
                                    unsigned char nSpikeType)

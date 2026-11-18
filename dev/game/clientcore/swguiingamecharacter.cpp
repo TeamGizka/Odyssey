@@ -33,17 +33,7 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
 #else
     StartLoadFromLayout("character_p");
 #endif
-#ifdef _XBOX
-    InitControl(m_lblName, "LBL_NAME", 1);
-    InitControl(m_lblClass, "LBL_CLASS", 1);
-    InitControl(m_lblClass1, "LBL_CLASS1", 1);
-    InitControl(m_lblClass2, "LBL_CLASS2", 1);
-    InitControl(m_lblLevel, "LBL_LEVEL", 1);
-    InitControl(m_lblLevel1, "LBL_LEVEL1", 1);
-    InitControl(m_lblLevel2, "LBL_LEVEL2", 1);
-#else
     InitControl(m_lblForceMastery, "LBL_FORCEMASTERY", 1);
-#endif
     InitControl(m_lblFortitude, "LBL_FORTITUDE", 1);
     InitControl(m_lblReflex, "LBL_REFLEX", 1);
     InitControl(m_lblWill, "LBL_WILL", 1);
@@ -79,32 +69,33 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     InitControl(m_lblDexterity, "LBL_DEXTERITY", 1);
     InitControl(m_lblDexMod, "LBL_DEX_MOD", 1);
 #ifdef _XBOX
-    InitControl(m_lblXScripts, "LBL_X_SCRIPTS", 1);
-    InitControl(m_lblX, "LBL_X", 1);
-    InitControl(m_lblALevelUp, "LBL_A_LEVEL_UP", 1);
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblAuto, "LBL_AUTO", 1);
-    InitControl(m_lblY, "LBL_Y", 1);
     InitControl(m_viewCharacter, "LBL_3DCHAR", 1);
     InitControl(m_lblBevel, "LBL_BEVEL", 1);
     InitControl(m_lblBevel2, "LBL_BEVEL2", 1);
     InitControl(m_sldAlign, "SLD_ALIGN", 1);
+    InitControl(m_lblLight, "LBL_LIGHT", 1);
+    InitControl(m_lblDark, "LBL_DARK", 1);
+    InitControl(m_lblALevelUp, "LBL_A_LEVEL_UP", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblAuto, "LBL_AUTO", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
     InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblStart, "LBL_START", 1);
     InitControl(m_lblBlack, "LBL_BLACK", 1);
     InitControl(m_lblChangeChar, "LBL_CHANGECHAR", 1);
-    InitControl(m_lblAdorn, "LBL_ADORN", 1);
-    InitControl(m_lblMore, "LBL_MORE", 1);
-    InitControl(m_lblLight, "LBL_LIGHT", 1);
-    InitControl(m_lblDark, "LBL_DARK", 1);
-    CExoString sName;
-    for (int nGood = 0; nGood < EFFECT_ICON_CAPACITY; ++nGood)
-    {
-        sName.Format("LBL_GOOD%d", nGood + 1);
-        InitControl(m_lblGood[nGood], sName, 1);
-        m_lblGood[nGood].SetShown(0);
-    }
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_alblBar[6], "LBL_BAR7", 1);
+    InitControl(m_lblStatBack, "LBL_STATBACK", 1);
+    InitControl(m_lblStatBorder, "LBL_STATBORD", 1);
+    InitControl(m_lblExpBack, "LBL_EXPBACK", 1);
     StopLoadFromLayout();
+    m_vStatColor = m_lblVitalityStat.m_cText.m_cParams.m_vColor;
     m_lblMore.SetShown(0);
     CAurCamera* pCamera = m_viewCharacter.m_cScene.m_pCamera;
     CAurScene* pScene = m_viewCharacter.m_cScene.m_pScene;
@@ -122,6 +113,7 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     m_pCreature = new CSWCCreature();
     m_pShownCreature = 0;
     m_nShownAlignment = -1;
+    m_lblForceMastery.SetShown(0);
     CSWGuiTextParams* pText = &m_lblALevelUp.m_cText.m_cParams;
     pText->m_bHilightText = 1;
     pText = &m_lblAuto.m_cText.m_cParams;
@@ -212,54 +204,7 @@ void CSWGuiInGameCharacter::OnPanelAdded()
 #endif
 }
 
-#ifdef _XBOX
-void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // Xbox 0x000F89F0
-{
-    g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
-    CClientExoApp* pClient;
-    if (nState != 0)
-    {
-        pClient = g_pAppManager->m_pClientExoApp;
-        switch (nEvent)
-        {
-        case GUIEVENT_ACTIVATE:
-            if (pClient->GetInGameGui()->m_LevelUpMode != 0)
-            {
-                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                ShowLevelUpGUI(0);
-            }
-            break;
-        case EVENT_AUTO_LEVELUP:
-            if (pClient->GetInGameGui()->m_LevelUpMode != 0)
-            {
-                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                StartAutoLevelup();
-            }
-            break;
-        case EVENT_NEXT_CHARACTER:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-            pClient->ChangeCharacterToNextLivingPartyMember(0, 0);
-            break;
-        case GUIEVENT_CANCEL:
-        case GUIEVENT_ACCEPT:
-        case GUIEVENT_CANCEL_ALTERNATE:
-            if (pClient->GetInGameGui()->HideSWInGameGui() != 0)
-            {
-                g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
-            }
-            break;
-        case EVENT_ROTATE_LEFT:
-            RotateCharacter(1);
-            break;
-        case EVENT_ROTATE_RIGHT:
-            RotateCharacter(0);
-            break;
-        }
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-#else
-void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x0071DC70 GOG 0x0071D960
+void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x0071DC70 GOG 0x0071D960 Xbox 0x000F89F0
 {
     g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
     if (nState != 0)
@@ -290,15 +235,23 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
         case EVENT_NEXT_CHARACTER:
         {
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+#ifdef _XBOX
+            pClient->ChangeCharacterToNextLivingPartyMember(0, 0);
+#else
             pClient->ChangeCharacterToNextLivingPartyMember(0, 0, 1);
+#endif
             break;
         }
         case GUIEVENT_CANCEL:
         case GUIEVENT_ACCEPT:
         case GUIEVENT_CANCEL_ALTERNATE:
+#ifdef _XBOX
+            if (pClient->GetInGameGui()->HideSWInGameGui() != 0)
+#else
         case EVENT_EXIT:
             if (pClient->GetInGameGui()->HideSWInGameGui(
                     0) != 0)
+#endif
             {
 #ifdef _XBOX
                 g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
@@ -317,7 +270,6 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-#endif
 // PC 0x0071B8C0 GOG 0x0071AFF0 Xbox 0x000F5DD0
 CSWGuiInGameCharacter::~CSWGuiInGameCharacter()
 {
@@ -339,68 +291,22 @@ void CSWGuiInGameCharacter::SetStats()
     CSWSCreatureStats* pServerStats = pServerCreature->m_pStats;
     unsigned char nClassIndex = pStats->GetNumClasses() - 1;
     unsigned char nClass = pStats->GetClass(nClassIndex);
-#ifdef _XBOX
-    m_lblName.m_cText.m_cParams.SetText(pCreature->GetName());
-    if (pStats->GetNumClasses() == 1)
-    {
-        unsigned char nFirstClass = pStats->GetClass(0);
-        unsigned long nFirstClassNameStrRef = g_pRules->m_pClasses[nFirstClass].m_nNameStrRef;
-        m_lblClass1.m_cText.m_cParams.SetText(
-            g_pAppManager->GetClientExoApp()->GetGUIString(
-                nFirstClassNameStrRef));
-        m_lblClass2.m_cText.m_cParams.SetText("");
-        m_lblLevel1.m_cText.m_cParams.SetText(
-            pStats->GetClassLevel(0));
-        m_lblLevel2.m_cText.m_cParams.SetText("");
-    }
-    else
-    {
-        unsigned char nSecondClass = pStats->GetClass(1);
-        unsigned long nSecondClassNameStrRef = g_pRules->m_pClasses[nSecondClass].m_nNameStrRef;
-        m_lblClass1.m_cText.m_cParams.SetText(
-            g_pAppManager->GetClientExoApp()->GetGUIString(
-                nSecondClassNameStrRef));
-        unsigned char nFirstClass = pStats->GetClass(0);
-        unsigned long nFirstClassNameStrRef = g_pRules->m_pClasses[nFirstClass].m_nNameStrRef;
-        m_lblClass2.m_cText.m_cParams.SetText(
-            g_pAppManager->GetClientExoApp()->GetGUIString(
-                nFirstClassNameStrRef));
-        m_lblLevel1.m_cText.m_cParams.SetText(
-            pStats->GetClassLevel(1));
-        m_lblLevel2.m_cText.m_cParams.SetText(
-            pStats->GetClassLevel(0));
-    }
-#endif
     CExoString sHitPoints;
     sHitPoints.Format("%d/%d", pStats->GetCurrentHitPoints(),
                       pStats->GetMaxHitPoints());
     m_lblVitalityStat.m_cText.m_cParams.SetText(sHitPoints);
     SetLabelBonusPenaltyColour(m_lblVitalityStat, pStats->m_nHitPointBonus);
-#ifdef _XBOX
-    m_lblDefenseStat.m_cText.m_cParams.SetText(
-        pStats->GetArmorClass(0));
-    SetLabelBonusPenaltyColour(
-        m_lblDefenseStat,
-        pCreature->GetServerCreature()->GetTotalACEffectBonus());
-#else
     m_lblDefenseStat.m_cText.m_cParams.SetText(
         pStats->GetArmorClass(1));
     m_lblDefenseStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
     if (CSWClass::IsJedi(nClass) != 0)
     {
-#ifdef _XBOX
-        short nForcePoints = pStats->m_nCurrentForcePoints;
-        short nMaxForcePoints = pStats->m_nMaxForcePoints;
-        nForcePoints += pStats->m_nForcePointBonus;
-#else
         int nForcePoints = pStats->GetForcePoints();
         int nMaxForcePoints = pStats->GetMaxForcePoints();
         if (nMaxForcePoints < 1)
         {
             nForcePoints = 0;
         }
-#endif
         sHitPoints.Format("%d/%d", nForcePoints, nMaxForcePoints);
         m_lblForceStat.m_cText.m_cParams.SetText(sHitPoints);
         m_lblForce.SetEnabledFlag(1);
@@ -492,40 +398,13 @@ void CSWGuiInGameCharacter::SetStats()
     int bCanLevelUp = pServerStats->CanLevelUp();
     m_lblALevelUp.SetEnabledFlag(bCanLevelUp);
     m_lblA.SetEnabledFlag(bCanLevelUp);
+    m_alblBar[6].SetEnabledFlag(bCanLevelUp);
     m_lblAuto.SetEnabledFlag(bCanLevelUp);
     m_lblY.SetEnabledFlag(bCanLevelUp);
 #else
     int bCanLevelUp = pServerStats->CanLevelUp();
     m_btnLevelUp.SetEnabledFlag(bCanLevelUp);
     m_btnAuto.SetEnabledFlag(bCanLevelUp);
-#endif
-#ifdef _XBOX
-    int nIcon = 0;
-    if (pServerCreature->GetEffectIconCount() > 0)
-    {
-        do
-        {
-            if (nIcon >= EFFECT_ICON_CAPACITY)
-            {
-                break;
-            }
-            const CResRef& sIcon =
-                pServerCreature->m_lstEffectIcons[nIcon]->m_sIconResRef;
-            m_lblGood[nIcon].m_cBorder.m_cParams.SetFillImage(sIcon, 0);
-            m_lblGood[nIcon].SetShown(1);
-            ++nIcon;
-        } while (nIcon < pServerCreature->GetEffectIconCount());
-    }
-    m_lblMore.SetEnabledFlag(pServerCreature->GetEffectIconCount() > EFFECT_ICON_CAPACITY);
-    while (nIcon < EFFECT_ICON_CAPACITY)
-    {
-        if (!m_lblGood[nIcon].m_bEnabled)
-        {
-            break;
-        }
-        m_lblGood[nIcon].SetShown(0);
-        ++nIcon;
-    }
 #endif
     if (m_pShownCreature != pCreature ||
         m_nShownAlignment != pServerStats->m_nGoodEvilAlignment)
@@ -552,7 +431,6 @@ void CSWGuiInGameCharacter::SetStats()
         m_pShownCreature = pCreature;
         m_nShownAlignment = pStats->m_nGoodEvilAlignment;
         m_sldAlign.SetCurValue(ALIGNMENT_SLIDER_MAX - m_nShownAlignment);
-#ifndef _XBOX
         unsigned long nMasteryStrRef;
         if (pServerCreature->HasEffect(CSWSEffectListHandler::EFFECT_PUREGOODPOWERS))
         {
@@ -575,7 +453,11 @@ void CSWGuiInGameCharacter::SetStats()
                 break;
             default:
                 m_lblForceMastery.SetEnabledFlag(0);
+#ifdef _XBOX
+                goto MasteryDone;
+#else
                 return;
+#endif
             }
             m_lblForceMastery.SetEnabledFlag(1);
             m_lblForceMastery.m_cText.m_cParams.SetStrRef(nMasteryStrRef);
@@ -601,7 +483,11 @@ void CSWGuiInGameCharacter::SetStats()
                 break;
             default:
                 m_lblForceMastery.SetEnabledFlag(0);
+#ifdef _XBOX
+                goto MasteryDone;
+#else
                 return;
+#endif
             }
             m_lblForceMastery.SetEnabledFlag(1);
             m_lblForceMastery.m_cText.m_cParams.SetStrRef(nMasteryStrRef);
@@ -610,6 +496,9 @@ void CSWGuiInGameCharacter::SetStats()
         {
             m_lblForceMastery.SetEnabledFlag(0);
         }
+#ifdef _XBOX
+MasteryDone:
+        ;
 #endif
     }
 }
@@ -629,15 +518,8 @@ void CSWGuiInGameCharacter::Draw(float fElapsed)
 int CSWGuiInGameCharacter::ShowLevelUpGUI(int bAutomatic)
 {
     int bLevelUpMode = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_LevelUpMode;
-#ifdef _XBOX
-    if (bLevelUpMode == 0)
-    {
-        return 0;
-    }
-#else
     if (bLevelUpMode != 0 &&
         g_pAppManager->m_pClientExoApp->GetCharacterChangeInProgress() == 0)
-#endif
     {
         SetStats();
         CSWGuiLevelUpCharGen* pLevelUp = new CSWGuiLevelUpCharGen(
@@ -649,9 +531,7 @@ int CSWGuiInGameCharacter::ShowLevelUpGUI(int bAutomatic)
         m_pManager->AddPanel(pLevelUp, CSWGuiManager::PANEL_MODE_MODAL, 1);
         return 1;
     }
-#ifndef _XBOX
     return 0;
-#endif
 }
 // PC 0x0071C880 GOG 0x0071D7C0 Xbox 0x000F72F0
 void CSWGuiInGameCharacter::StartAutoLevelup()
@@ -775,7 +655,11 @@ void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
     }
     else
     {
+#ifdef _XBOX
+        lblStat.m_cText.m_cParams.SetColor(m_vStatColor);
+#else
         lblStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
     }
 }
 

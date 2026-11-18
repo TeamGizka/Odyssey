@@ -1656,12 +1656,12 @@ PartLight::PartLight(MdlNode* pNode)
     m_bAmbientOnly = 0;
     m_bFlare = 0;
     m_nLightType = PartLight::LIGHTTYPE_STATIC;
-    m_nPriority = 0;
     m_fRadius = 0.0f;
     m_fDynamicMultiplier = 0.0f;
     m_fPriorityValue = 0.0f;
     m_fLightState = 0.0f;
     m_fFlareFade = 0.0f;
+    m_nPriority = 0;
     m_fShadowFade = 0.0f;
     m_fShadowRadius = -1.0f;
     m_fShadowHeight = 0.0f;
@@ -4295,6 +4295,18 @@ MdlNodeAnimMesh::MdlNodeAnimMesh(char* sName)
       m_lAnimTVerts(0),
       m_lAnimNormals(0)
 {
+#ifdef _XBOX
+    m_sTexture0[0] = 0;
+    m_sTexture1[0] = 0;
+    m_nAnimVertFrames = 0;
+    m_nAnimTVertFrames = 0;
+    m_pAnimVertData = 0;
+    m_pAnimTVertData = 0;
+    m_pfnGenVertices = MdlNodeAnimMeshGenVertices;
+    m_pfnRemoveTemporaryArrays = MdlNodeAnimMeshRemoveTemporaryArrays;
+    m_nNodeType = MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH;
+    m_fSamplePeriod = 0.0f;
+#else
     m_fSamplePeriod = 0.0f;
     m_sTexture0[0] = 0;
     m_sTexture1[0] = 0;
@@ -4305,6 +4317,7 @@ MdlNodeAnimMesh::MdlNodeAnimMesh(char* sName)
     m_pfnGenVertices = MdlNodeAnimMeshGenVertices;
     m_pfnRemoveTemporaryArrays = MdlNodeAnimMeshRemoveTemporaryArrays;
     m_nNodeType = MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH;
+#endif
 }
 // PC 0x0045F1C0 GOG 0x0045F2D0 Xbox 0x002C16E0
 MdlNodeSkin::MdlNodeSkin(char* sName)

@@ -3469,8 +3469,12 @@ void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x00
         Quaternion qOrientation;
         Vector vPosition;
         pPart->GetWorld(vPosition, qOrientation);
+#ifdef _XBOX
+        Vector vEye = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
+#else
         Vector vEye = CurrentCamera->m_vPosition - vPosition;
         vEye = -qOrientation * vEye;
+#endif
         for (int nLight = 0; nLight < lstLights.m_nCount; ++nLight)
         {
             currentscene->m_pLightManager->DisableBumpMapLights();
@@ -3600,9 +3604,15 @@ void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x0
             bumpmapvp->Enable(pPart, true);
             Vector vLight = lstLights[nLight]->m_vWorldPosition;
             vLight = -qOrientation * (vLight - vPosition);
+#ifdef _XBOX
+            Vector vLightColor = cmul((vSpecular * specularintensity) *
+                ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetSpecularBumpIntensity(),
+                lstLights[nLight]->m_vColor);
+#else
             Vector vLightColor = cmul(lstLights[nLight]->m_vColor,
                 (vSpecular * specularintensity) *
                 ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetSpecularBumpIntensity());
+#endif
             GLRender_SetPixelShaderAmbientColor(vLightColor, 1.0f);
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_BUMP_LIGHT_POSITION,
                 vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);

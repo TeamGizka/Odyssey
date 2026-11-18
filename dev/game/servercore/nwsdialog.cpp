@@ -929,7 +929,9 @@ CSWSObject* CSWSDialog::GetSpeaker(CSWSObject* pOwner, const CExoString& sSpeake
     CSWSArea* pSpeakerArea = pSpeaker->GetArea();
     CSWSArea* pOwnerArea = pOwner->GetArea();
     if (pSpeakerArea != pOwnerArea ||
-        (vDistance * vDistance > CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE *
+        (vDistance.m_fX * vDistance.m_fX + vDistance.m_fY * vDistance.m_fY +
+                 vDistance.m_fZ * vDistance.m_fZ >
+             CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE *
                                  CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE &&
          pSpeaker->m_bForceAlwaysUpdate == 0))
     {

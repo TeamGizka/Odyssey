@@ -3775,7 +3775,7 @@ int CSWSArea::NoNonWalkPolysInDoors(
     return 1;
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 {

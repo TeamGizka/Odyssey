@@ -20,7 +20,7 @@ inline void CSWCollisionMesh::GetFaceVertex(int nIndex, int nCorner,
         vVertex = m_pVertices[pFaces[nIndex + nCorner]];
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 #include "nwsarea.h"
 #include "swsroom.h"
 #include "nwdoorsurfacemesh.h"
@@ -337,7 +337,7 @@ int CSWCollisionMesh::LoadMeshBinary(CResBWM* pMesh)
 
 static int WalkTestMaterial = 1;
 static int rendercollisionboxes = 0;
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 ConsoleFunc ConVrendercollisionboxes("rendercollisionboxes", &rendercollisionboxes);
 ConsoleFunc ConVWalkTestMaterial("WalkTestMaterial", &WalkTestMaterial);
 ConsoleFunc ConFConvertDoor("ConvertDoor", ConvertDoor);

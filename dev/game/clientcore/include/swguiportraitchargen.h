@@ -42,15 +42,16 @@ public:
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblSubTitle;
 #ifdef _XBOX
+    CSWGuiLabel m_lblPortrait;
+    CSWGuiLabel m_lblBevel[5];
+    CSWGui3DSceneView m_viewHead;
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblBack;
-    CSWGuiLabel m_lblPortrait;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
-    CSWGuiLabel m_lblBevel[5];
     CSWGuiLabelHilight m_lblhArrR;
     CSWGuiLabelHilight m_lblhArrL;
-    CSWGui3DSceneView m_viewHead;
+    CSWGuiLabel m_alblBar[6];
 #else
     CSWGuiLabel m_lblPortrait;
     CSWGuiLabel m_lblBevel[5];

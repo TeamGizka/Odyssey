@@ -2362,9 +2362,35 @@ void CAurTexture::Bind()
         AurTextureBindTID(0, false, false);
     }
 }
+#ifdef _XBOX
+static inline int SkipLowerOrders(int i, unsigned short nOrder)
+{
+    while (i < CAurTextureBasic::m_OrderedTextureList.m_nCount &&
+           nOrder > CAurTextureBasic::m_OrderedTextureList[i]->m_nOrder)
+    {
+        i++;
+    }
+    return i;
+}
+
+static inline int SkipEqualOrders(int i, unsigned short nOrder)
+{
+    while (i < CAurTextureBasic::m_OrderedTextureList.m_nCount &&
+           CAurTextureBasic::m_OrderedTextureList[i]->m_nOrder == nOrder)
+    {
+        i++;
+    }
+    return i;
+}
+#endif
+
 // PC 0x00422CC0 GOG 0x00422D70 Xbox 0x002982A0
 void CAurTextureBasic::AddToOrderedLists()
 {
+#ifdef _XBOX
+    int i = SkipLowerOrders(0, m_nOrder);
+    i = SkipEqualOrders(i, m_nOrder);
+#else
     int i = 0;
     if (m_OrderedTextureList.m_nCount > 0)
     {
@@ -2379,6 +2405,7 @@ void CAurTextureBasic::AddToOrderedLists()
             i++;
         }
     }
+#endif
     m_OrderedTextureList.Insert(this, i);
 #ifdef _XBOX
 

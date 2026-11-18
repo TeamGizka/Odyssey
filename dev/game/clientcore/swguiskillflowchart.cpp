@@ -929,8 +929,15 @@ CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
     int nWidth = m_lbSkills.GetItemWidth();
     for (int i = 0; i < MAX_SKILL_ENTRIES; i++)
     {
+#ifdef _XBOX
+        m_aSkillEntries[i].Initialize(pProto->m_cText, pProto->m_cBorder,
+                                     pProto->m_cHilite, nWidth,
+                                     Vector(0.05f, 0.35f, 0.27f),
+                                     Vector(0.7f, 0.7f, 0.6f));
+#else
         m_aSkillEntries[i].Initialize(pProto->m_cText, pProto->m_cBorder,
                                      pProto->m_cHilite, nWidth);
+#endif
     }
 #ifndef _XBOX
     m_btnExit.SetFocusable(0);

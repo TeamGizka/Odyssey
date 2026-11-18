@@ -123,12 +123,21 @@ void CSWGuiInGameOptions::HandleInputEvent(int nEvent, int nState)
         case 54:
             g_pAppManager->m_pClientExoApp->SaveOptions();
             break;
+#ifdef _XBOX
+        case GUIEVENT_SCROLL_UP:
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case GUIEVENT_SCROLL_DOWN:
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+#endif
         default:
             break;
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+#ifndef _XBOX
 // PC 0x00735B20 GOG 0x007359C0
 void CSWGuiInGameOptions::OnPanelAdded()
 {
@@ -170,6 +179,7 @@ void CSWGuiInGameOptions::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
+#endif
 // PC 0x00735BB0 GOG 0x00735A30 Xbox 0x000EB400
 void CSWGuiInGameOptions::OnQuit(CSWGuiControl* pControl)
 {
@@ -317,16 +327,22 @@ CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     InitControl(m_aOptions[5], "BTN_GRAPHICSSOUND", 1);
     InitControl(m_aOptions[6], "BTN_QUIT", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblSelect, "LBL_SELECT", 1);
     InitControl(m_lblStart, "LBL_START", 1);
     InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblScrollIcon, "LBL_RANALOG", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
     StopLoadFromLayout();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel);
     m_aOptions[0].AddEvent(39, this,
                            (CSWGuiHandler)&CSWGuiInGameOptions::OnLoadGame);
     m_aOptions[1].AddEvent(39, this,
@@ -341,16 +357,18 @@ CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
                            (CSWGuiHandler)&CSWGuiInGameOptions::OnSound);
     m_aOptions[6].AddEvent(39, this,
                            (CSWGuiHandler)&CSWGuiInGameOptions::OnQuit);
+    m_vBorderColor = m_aOptions[0].m_cBorder.m_cParams.m_vColor;
+    m_vHiliteColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     for (int i = 0; i < 7; i++)
     {
         m_aOptions[i].AddEvent(
             0, this, (CSWGuiHandler)&CSWGuiInGameOptions::OnEnterSlot);
-        m_aOptions[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        m_aOptions[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_aOptions[i].m_cBorder.m_cParams.m_vColor = m_vBorderColor;
+        m_aOptions[i].m_cHilite.m_cParams.m_vColor = m_vHiliteColor;
         m_aOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
     }
     CSWGuiPanel* pPanel = this;
-    pPanel->SetActiveControl(&m_aOptions[0], 0);
+    pPanel->SetActiveControl(&m_aOptions[1], 0);
 #else
     InitControl(m_aOptions[0], "BTN_LOADGAME", 1);
     InitControl(m_aOptions[1], "BTN_SAVEGAME", 1);

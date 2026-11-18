@@ -194,7 +194,11 @@ void CSWSItem::SetPossessor(unsigned long oidPossessor, int bRunScripts,
             CGameObject* pNewObject;
             if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
                     oidNewCreature, &pNewObject) == CGameObjectArray::SUCCESS &&
+#ifdef _XBOX
+                pNewObject != NULL && pNewObject->AsSWSCreature()->m_pStats->m_bIsPC)
+#else
                 pNewObject != NULL && pNewObject->AsSWSCreature()->m_pStats->GetIsPC())
+#endif
             {
                 SetDropable(1);
                 m_bPickpocketable = 1;
@@ -695,9 +699,15 @@ void CSWSItem::AddRangeProperties(CExoString& sString)
     int bRanged = GetBaseItem()->m_nRangedWeapon > 0;
     if (bRanged > 0)
     {
+#ifdef _XBOX
+        float fRange = GetBaseItem()->m_fMaxAttackRange;
+        sRange.Format("%s: %dm\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+            GUI_STRREF_ITEM_RANGE).CStr(), (int)fRange);
+#else
         int nRange = (int)GetBaseItem()->m_fMaxAttackRange;
         sRange.Format("%s: %dm\n", g_pAppManager->GetClientExoApp()->GetGUIString(
             GUI_STRREF_ITEM_RANGE).CStr(), nRange);
+#endif
         sString = sString + sRange + "\n";
     }
 }
@@ -4548,7 +4558,9 @@ void CSWSItem::ReadContainerItemsFromGff(CResGFF* pRes, CResStruct* pStruct)
     int bObjectIdSuccess;
     int bFieldSuccess;
     unsigned long oidItem;
+#ifndef _XBOX
     CSWSItem* pNewItem;
+#endif
     unsigned long i;
 
     if (m_pRepository == NULL)
@@ -4566,6 +4578,20 @@ void CSWSItem::ReadContainerItemsFromGff(CResGFF* pRes, CResStruct* pStruct)
         pRes->GetListElement(&itemStruct, &list, i);
         oidItem = pRes->ReadFieldDWORD(&itemStruct, "ObjectId", bObjectIdSuccess,
                                        OBJECT_INVALID);
+#ifdef _XBOX
+        {
+            CSWSItem* pItem = new CSWSItem(oidItem);
+            if (pItem == NULL)
+            {
+                continue;
+            }
+
+            if (!pItem->LoadItem(pRes, &itemStruct))
+            {
+                delete pItem;
+                continue;
+            }
+#else
         pNewItem = new CSWSItem(oidItem);
         {
             CSWSItem* pItem = pNewItem;
@@ -4579,6 +4605,7 @@ void CSWSItem::ReadContainerItemsFromGff(CResGFF* pRes, CResStruct* pStruct)
                 delete pNewItem;
                 continue;
             }
+#endif
 
             pRes->ReadFieldBYTE(&itemStruct, "Repos_PosX", bFieldSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
             pRes->ReadFieldBYTE(&itemStruct, "Repos_Posy", bFieldSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);

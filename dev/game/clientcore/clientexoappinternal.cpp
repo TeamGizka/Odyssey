@@ -6129,39 +6129,15 @@ void CClientExoAppInternal::AddFloatyText(unsigned long oidObject,
 int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,  // Xbox 0x00024FA0
                                      int bAnyButtonSkips, int bNoMusic, int nSoundModeFlags)
 {
-
     m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = bAnyButtonSkips;
-    int bPlayMusic = 0;
 
-    if (!bNoMusic && sMovie.CompareNoCase("55"))
-    {
-        bPlayMusic = 1;
-        if (m_pEvilEndingHackSound != NULL)
-        {
-            delete m_pEvilEndingHackSound;
-            m_pEvilEndingHackSound = NULL;
-        }
-
-        m_pModule->GetArea()->GetAmbientSound()->StopSounds(1);
-        m_pGuiInGame->LoadAmbientTrackForDialog(CResRef());
-        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
-        m_pEvilEndingHackSound = new CExoStreamingSoundSource;
-        m_pEvilEndingHackSound->SetPriorityGroup(8);
-
-#define XB7_MOVIE_VOLUME max(0.0f, g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMovieVolume * 127.0f)
-        m_pEvilEndingHackSound->SetVolume(
-            (unsigned char)((XB7_MOVIE_VOLUME > 127.0f) ? 127.0f : XB7_MOVIE_VOLUME));
-#undef XB7_MOVIE_VOLUME
-
-        m_pEvilEndingHackSound->Play("evil_end", 11, 1, 1, 1);
-        m_pGuiInGame->SetPlayCreditsMusic(0);
-    }
-
-    if (!AddMoveToModuleMovie(sMovie))
+    if (!sMovie.CompareNoCase("XXX_PLAYMOVIEQUEUE") && !AddMoveToModuleMovie(sMovie))
     {
         return 0;
     }
 
+    g_pExoInput->SetRumble(0, 0.0f, 0.0f, 500);
+    AurReleaseFrameTexture();
     m_pGuiInGame->SetGlobalUnpauseableState(1);
     nResult = 0;
     CExoString sRepeat("F0");
@@ -6179,12 +6155,16 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,  //
 
     do
     {
-        if (!bPlayMusic)
+        if (nSoundModeFlags)
+        {
+            g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL, nSoundModeFlags);
+        }
+        else
         {
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
         }
-        m_pMoviePlayer->PlayMoviesAsync(m_aMoveToModuleMovies, bPlayMusic);
         m_pMoviePlayer->ShowFadePanel();
+        m_pMoviePlayer->PlayMoviesAsync(m_aMoveToModuleMovies, 0);
         nResult = WaitForMovie();
     } while (sRepeat == sCurrent);
 
@@ -6198,10 +6178,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,  //
     }
 
     m_pGuiInGame->SetGlobalUnpauseableState(0);
-    if (!bPlayMusic)
-    {
-        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
-    }
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     m_pClientOptions->SetMovieShown(sMovie, 1);
     m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = 0;
     return 1;
@@ -7187,9 +7164,10 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
     {
         CGameObject* pGameObject = GetGameObject(m_pGuiInGame->m_oidDialogSoundObject);
 
-        if (pGameObject != NULL && pGameObject->AsSWCObject() != NULL &&
-            m_pGuiInGame->m_pDialogSound != NULL)
+        CSWCObject* pObject = pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
+        if (pObject != NULL && m_pGuiInGame->m_pDialogSound != NULL)
         {
+#ifndef _XBOX
             if (g_bVODebugEnabled)
             {
                 char szSound[17];
@@ -7199,12 +7177,14 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
                 EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
                        g_pExoSound->GetSoundMode());
             }
+#endif
 
             bPlaying = m_pGuiInGame->m_pDialogSound->IsPlaying();
         }
     }
     else
     {
+#ifndef _XBOX
         if (g_bVODebugEnabled)
         {
             char szSound[17];
@@ -7215,6 +7195,7 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
             EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
                    g_pExoSound->GetSoundMode());
         }
+#endif
 
         m_pGuiInGame->m_bDialogSoundQueried = 1;
         bPlaying = 1;
@@ -8431,6 +8412,11 @@ void CClientExoAppInternal::UpdateLoadingScreenHint()
         }
     }
 }
+#ifdef _XBOX
+#define GAMEPLAY_HINT_COLUMN "GamePlayHintXBox"
+#else
+#define GAMEPLAY_HINT_COLUMN "GamePlayHint"
+#endif
 // PC 0x0063FC80 GOG 0x0063FAE0 Xbox 0x00021510
 int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
     const CExoString& sModule, unsigned char nHintType)
@@ -8443,12 +8429,17 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
         {
             CExoIni cIni;
             CExoString sValue;
+#ifdef _XBOX
+            unsigned long nUnlocked = g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nUnlockedSongs | (1 << nArea);
+            g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nUnlockedSongs = nUnlocked;
+#else
             cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                               "UnlockedPlanetSongs");
             int nUnlocked = sValue.AsINT();
             nUnlocked |= 1 << nArea;
             cIni.WriteIniEntry(CExoString(nUnlocked), ".\\swkotor2.ini",
                                "Game Options", "UnlockedPlanetSongs");
+#endif
         }
     }
 
@@ -8482,7 +8473,7 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
             delete pHints;
             return 0;
         }
-        if (pHints->GetINTEntry(m_nGamePlayHint, "GamePlayHint", &nHint))
+        if (pHints->GetINTEntry(m_nGamePlayHint, GAMEPLAY_HINT_COLUMN, &nHint))
         {
             nStrRef = nHint;
             ++m_nGamePlayHint;
@@ -8490,7 +8481,7 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
         else
         {
             m_nGamePlayHint = 0;
-            if (pHints->GetINTEntry(m_nGamePlayHint, "GamePlayHint", &nHint))
+            if (pHints->GetINTEntry(m_nGamePlayHint, GAMEPLAY_HINT_COLUMN, &nHint))
             {
                 nStrRef = nHint;
                 ++m_nGamePlayHint;

@@ -69,8 +69,8 @@ public:
     int LaunchMostRecentSave();
     void HandleFilterPress(CSWGuiControl* pControl);
     void PopulateGameLB();
-#ifndef _XBOX
     void SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lControls);
+#ifndef _XBOX
     void SelectValidSaveDirectory();
     void OnSteamCloudSaves(CSWGuiControl* pControl);
     void ShowTooManyCloudSavesDialog();
@@ -81,11 +81,15 @@ public:
     void ShowSaveError(unsigned long nStrRef);
     void OnSaveErrorDone(CSWGuiControl* pControl);
     void OnCorruptGameSelected(CSWGuiControl* pControl);
+    void LaunchDashboard(CSWGuiControl* pControl);
+    void PromptLaunchDashboard(CSWGuiControl* pControl);
     int LoadPCAutoSave();
     void SaveGameToSlot(CSWGuiControl* pControl);
 #endif
 
+#ifndef _XBOX
     void WriteGame(const CExoString& sSaveName);
+#endif
 
     static const unsigned long MAX_SAVE_GAME = 999;
     static const unsigned long STRREF_MAXIMUM_SAVES = 42490;
@@ -102,7 +106,9 @@ public:
 
     static const unsigned long STRREF_MISSING_LIVE_CONTENT = 0;
     static const int MISSING_LIVE_CONTENT_TOKEN = 0;
+#ifndef _XBOX
     void PromptForSaveName(CSWGuiControl* pControl);
+#endif
     void HandleSaveButton(CSWGuiControl* pControl);
     void SaveNamePanelClose(int bSave, CExoString sSaveName);
 
@@ -129,11 +135,13 @@ public:
     static const unsigned long STRREF_LOAD_GAME = 1585;
 };
 
+#ifndef _XBOX
 class CSWGuiSaveGameEditBox : public CSWGuiEditbox
 {
 public:
     virtual void HandleKeyPress(int);
 };
+#endif
 
 #ifndef _XBOX
 #pragma pack(push, 4)
@@ -228,9 +236,7 @@ public:
     CResRef GetPlayerPortrait(int nIndex);
     void LoadData(CExoString const&);
     void SetXboxTitle(CExoString const&);
-#ifndef _XBOX
     CExoString FormatTimeToString();
-#endif
     CSWGuiSaveLoadEntry();
     CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry);
 };
@@ -238,6 +244,7 @@ public:
 #pragma pack(pop)
 #endif
 
+#ifndef _XBOX
 class CSWGuiSaveNamePanel : public CSWGuiPanel
 {
 public:
@@ -267,6 +274,7 @@ public:
         }
     }
 };
+#endif
 
 class KOTOR_AUTOSAVE_PARAMS
 {

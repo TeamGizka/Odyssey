@@ -683,6 +683,7 @@ void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
         lstActions[nAction].m_bEnabled = bEnabled;
     }
 }
+#ifndef _XBOX
 // PC 0x006EB890 GOG 0x006EB550
 void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
                                    CExoArrayList<CSWGuiInterfaceAction>& lstActions)
@@ -752,6 +753,84 @@ void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
         break;
     }
 }
+#else
+void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // Xbox 0x000B87E0
+                                   CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    int nAction = lstActions.num;
+
+    switch (nMenu)
+    {
+    case TARGET_ACTION_MENU_PRIMARY:
+        {
+            int bNoActions = 1;
+            if (pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_DEMOLITIONS) &&
+                GetServerTrigger()->m_bTrapDisarmable)
+            {
+                lstActions.SetSize(nAction + 1);
+
+                lstActions[nAction].m_sName =
+                    g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_RECOVER_MINE);
+                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCTrigger::ActionMenuRecoverMine;
+                lstActions[nAction].m_oidTarget = (unsigned long)this;
+                lstActions[nAction].m_nAction = 1026;
+                lstActions[nAction].m_resIcon = "i_recovermine";
+                nAction++;
+                bNoActions = 0;
+            }
+            if (pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_DEMOLITIONS) &&
+                IsHostile())
+            {
+                lstActions.SetSize(nAction + 1);
+
+                lstActions[nAction].m_sName =
+                    g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_DISABLE_MINE);
+                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCTrigger::ActionMenuDisableMine;
+                lstActions[nAction].m_oidTarget = (unsigned long)this;
+                lstActions[nAction].m_nAction = 1012;
+                lstActions[nAction].m_resIcon = "i_disablemine";
+                nAction++;
+            }
+            if (bNoActions && nAction == 0)
+            {
+                lstActions.SetSize(nAction + 1);
+                lstActions[nAction].m_sName =
+                    g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_NO_ACTION);
+                lstActions[nAction].m_pfnAction = NULL;
+                lstActions[nAction].m_oidTarget = 0;
+                lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_NO_ACTION;
+                lstActions[nAction].m_resIcon = "i_noaction";
+            }
+        }
+        break;
+    case TARGET_ACTION_MENU_SKILLS:
+        if (IsHostile())
+        {
+            int nStrength = GetMineStrengthLevel(GetServerTrigger()->m_nTrapType);
+            int bAdded = 0;
+            if (nStrength >= MINE_STRENGTH_MINOR && nStrength <= MINE_STRENGTH_STRONG &&
+                pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_DROID_DESTROY))
+            {
+                bAdded = 1;
+                GetMineForcePowers(pCreature, CSWSpell::FORCE_POWER_DROID_DESTROY, lstActions);
+            }
+            if (nStrength >= MINE_STRENGTH_MINOR && nStrength <= MINE_STRENGTH_AVERAGE &&
+                !bAdded &&
+                pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_DROID_DISABLE))
+            {
+                bAdded = 1;
+                GetMineForcePowers(pCreature, CSWSpell::FORCE_POWER_DROID_DISABLE, lstActions);
+            }
+            if (nStrength == MINE_STRENGTH_MINOR && !bAdded &&
+                pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_DROID_STUN))
+            {
+                GetMineForcePowers(pCreature, CSWSpell::FORCE_POWER_DROID_STUN, lstActions);
+            }
+        }
+        break;
+    }
+}
+#endif
 // PC 0x006EBB10 GOG 0x006EB7D0 Xbox 0x000B8AF0
 void CSWCTrigger::UpdateAreaTransitionDisplay()
 {

@@ -121,27 +121,34 @@ void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x007
 }
 #endif
 // PC 0x00736790 GOG 0x007364B0 Xbox 0x000F3280
+#ifdef _XBOX
+enum { SKILL_ICON_WIDTH = 33, SKILL_ICON_HEIGHT = 36, SKILL_SELECTION_WIDTH = 18, SKILL_SELECTION_HEIGHT = 21 };
+#else
+enum { SKILL_ICON_WIDTH = 42, SKILL_ICON_HEIGHT = 42, SKILL_SELECTION_WIDTH = 27, SKILL_SELECTION_HEIGHT = 27 };
+#endif
+enum { SKILL_SELECTION_INSET = 7 };
+
 void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
-    if (cExtent.m_nWidth > 42)
+    if (cExtent.m_nWidth > SKILL_ICON_WIDTH)
     {
         m_cExtent = cExtent;
         CSWGuiExtent cIcon;
         cIcon.m_nLeft = m_cExtent.m_nLeft;
         cIcon.m_nTop = m_cExtent.m_nTop;
-        cIcon.m_nWidth = 42;
-        cIcon.m_nHeight = 42;
+        cIcon.m_nWidth = SKILL_ICON_WIDTH;
+        cIcon.m_nHeight = SKILL_ICON_HEIGHT;
         m_cNormal.SetExtent(cIcon);
         m_cHilite.SetExtent(cIcon);
         CSWGuiExtent cSelection;
-        cSelection.m_nLeft = m_cExtent.m_nLeft + 7;
-        cSelection.m_nTop = m_cExtent.m_nTop + 7;
-        cSelection.m_nWidth = 27;
-        cSelection.m_nHeight = 27;
+        cSelection.m_nLeft = m_cExtent.m_nLeft + SKILL_SELECTION_INSET;
+        cSelection.m_nTop = m_cExtent.m_nTop + SKILL_SELECTION_INSET;
+        cSelection.m_nWidth = SKILL_SELECTION_WIDTH;
+        cSelection.m_nHeight = SKILL_SELECTION_HEIGHT;
         m_cSelection.SetExtent(cSelection);
 
-        cIcon.m_nLeft += 42;
-        cIcon.m_nWidth = m_cExtent.m_nWidth - 42;
+        cIcon.m_nLeft += SKILL_ICON_WIDTH;
+        cIcon.m_nWidth = m_cExtent.m_nWidth - SKILL_ICON_WIDTH;
         CSWGuiLabel::m_cBorder.SetExtent(cIcon);
         CSWGuiLabelHilight::m_cHilite.SetExtent(cIcon);
         m_cText.SetExtent(CSWGuiExtent::Intersection(
@@ -150,33 +157,24 @@ void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
     }
 }
 // PC 0x00737850 GOG 0x007375B0 Xbox 0x000F42A0
-void CSWGuiInGameAbilities::UpdateView()
+#ifdef _XBOX
+void CSWGuiInGameAbilities::UpdateView()  // Xbox 0x000F42A0
 {
     CExoArrayList<CSWGuiControl*> lstControls;
+    CSWGuiExtent cExtent;
 
     SetDescription("");
+    m_lblSkills.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblFeats.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblPowers.m_cText.m_cParams.m_bHilightText = 0;
 
     switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
     {
     case 2:
-#ifdef _XBOX
-        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
-        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-#endif
-#ifdef _XBOX
-        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblNextPage.m_cText.m_cParams.SetText(m_lblSkills.m_cText.m_cParams.m_sText);
-#endif
+        m_lblSkills.m_cText.m_cParams.SetColor(m_vTabColor);
+        m_lblFeats.m_cText.m_cParams.SetColor(m_vHiliteColor);
+        m_lblFeats.m_cText.m_cParams.m_bHilightText = 1;
+        m_lblPowers.m_cText.m_cParams.SetColor(m_vTabColor);
         m_lblInfoBackground.SetEnabledFlag(0);
         m_lblSkillRank.SetEnabledFlag(0);
         m_lblRankValue.SetEnabledFlag(0);
@@ -184,10 +182,10 @@ void CSWGuiInGameAbilities::UpdateView()
         m_lblBonusValue.SetEnabledFlag(0);
         m_lblTotal.SetEnabledFlag(0);
         m_lblTotalValue.SetEnabledFlag(0);
-#ifndef _XBOX
-        m_lbDescFeats.SetEnabledFlag(1);
-#endif
-        m_lbDescription.SetEnabledFlag(0);
+        m_alblBar[1].SetEnabledFlag(0);
+        cExtent = m_lbDescription.m_cExtent;
+        cExtent.m_nHeight = DESCRIPTION_HEIGHT_FEATS;
+        m_lbDescription.SetExtent(cExtent);
         m_lbAbility.AddControls(
             *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cFeatChart.m_cFlows),
             0, 0, 0);
@@ -200,24 +198,10 @@ void CSWGuiInGameAbilities::UpdateView()
                                                            OBJECT_INVALID, 0);
         break;
     case 1:
-#ifdef _XBOX
-        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
-        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-#endif
-#ifdef _XBOX
-        m_lblNextPage.m_cText.m_cParams.SetText(m_lblFeats.m_cText.m_cParams.m_sText);
-#endif
+        m_lblSkills.m_cText.m_cParams.SetColor(m_vTabColor);
+        m_lblFeats.m_cText.m_cParams.SetColor(m_vTabColor);
+        m_lblPowers.m_cText.m_cParams.SetColor(m_vHiliteColor);
+        m_lblPowers.m_cText.m_cParams.m_bHilightText = 1;
         m_lblName.m_cText.m_cParams.SetText("");
         m_lblRankValue.m_cText.m_cParams.SetText("");
         m_lblBonusValue.m_cText.m_cParams.SetText("");
@@ -231,9 +215,114 @@ void CSWGuiInGameAbilities::UpdateView()
         m_lblBonusValue.SetEnabledFlag(1);
         m_lblTotal.SetEnabledFlag(1);
         m_lblTotalValue.SetEnabledFlag(1);
-#ifndef _XBOX
+        m_alblBar[1].SetEnabledFlag(1);
+        cExtent = m_lbDescription.m_cExtent;
+        cExtent.m_nHeight = DESCRIPTION_HEIGHT;
+        m_lbDescription.SetExtent(cExtent);
+        m_lbAbility.AddControls(
+            *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cPowerChart.m_cFlows),
+            0, 0, 0);
+        {
+            unsigned char nRow = m_cPowerChart.m_nSelectedRow;
+            m_lbAbility.SetSelectedControl(nRow, 0);
+        }
+        OnEnterPower(m_cPowerChart.GetSelected());
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x26, OBJECT_INVALID,
+                                                           OBJECT_INVALID, 0);
+        break;
+    case 0:
+        m_lblSkills.m_cText.m_cParams.SetColor(m_vHiliteColor);
+        m_lblSkills.m_cText.m_cParams.m_bHilightText = 1;
+        m_lblFeats.m_cText.m_cParams.SetColor(m_vTabColor);
+        m_lblPowers.m_cText.m_cParams.SetColor(m_vTabColor);
+        DisplayPowers();
+        m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_SKILL_RANK);
+        m_lblBonus.m_cText.m_cParams.SetStrRef(STRREF_BONUS);
+        m_lblTotal.m_cText.m_cParams.SetStrRef(STRREF_TOTAL_RANK);
+        m_lblInfoBackground.SetEnabledFlag(1);
+        m_lblSkillRank.SetEnabledFlag(1);
+        m_lblRankValue.SetEnabledFlag(1);
+        m_lblBonus.SetEnabledFlag(1);
+        m_lblBonusValue.SetEnabledFlag(1);
+        m_lblTotal.SetEnabledFlag(1);
+        m_lblTotalValue.SetEnabledFlag(1);
+        m_alblBar[1].SetEnabledFlag(1);
+        cExtent = m_lbDescription.m_cExtent;
+        cExtent.m_nHeight = DESCRIPTION_HEIGHT;
+        m_lbDescription.SetExtent(cExtent);
+        {
+            int nCount = m_lstSkills.num;
+            if (nCount >= 10)
+            {
+                nCount = 10;
+            }
+            for (int i = 0; i < nCount; i++)
+            {
+                m_aSkillEntries[i].SetActive(0);
+                lstControls.Add(&m_aSkillEntries[i]);
+            }
+        }
+        m_lbAbility.AddControls(lstControls, 0, 1, 0);
+        m_lbAbility.SetSelectedControl(m_nSelectedSkill, 0);
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x24, OBJECT_INVALID,
+                                                           OBJECT_INVALID, 0);
+        break;
+    }
+
+    SetActiveControl(NULL, 0);
+    SetActiveControl(&m_lbAbility, 0);
+}
+#else
+void CSWGuiInGameAbilities::UpdateView()  // PC 0x00737850 GOG 0x007375B0
+{
+    CExoArrayList<CSWGuiControl*> lstControls;
+
+    SetDescription("");
+
+    switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
+    {
+    case 2:
+        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+        m_lblInfoBackground.SetEnabledFlag(0);
+        m_lblSkillRank.SetEnabledFlag(0);
+        m_lblRankValue.SetEnabledFlag(0);
+        m_lblBonus.SetEnabledFlag(0);
+        m_lblBonusValue.SetEnabledFlag(0);
+        m_lblTotal.SetEnabledFlag(0);
+        m_lblTotalValue.SetEnabledFlag(0);
+        m_lbDescFeats.SetEnabledFlag(1);
+        m_lbDescription.SetEnabledFlag(0);
+        m_lbAbility.AddControls(
+            *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cFeatChart.m_cFlows),
+            0, 0, 0);
+        {
+            unsigned char nRow = m_cFeatChart.m_nSelectedRow;
+            m_lbAbility.SetSelectedControl(nRow, 0);
+        }
+        OnEnterFeat(m_cFeatChart.GetSelected());
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x25, OBJECT_INVALID,
+                                                           OBJECT_INVALID, 0);
+        break;
+    case 1:
+        m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+        m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+        m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        m_lblName.m_cText.m_cParams.SetText("");
+        m_lblRankValue.m_cText.m_cParams.SetText("");
+        m_lblBonusValue.m_cText.m_cParams.SetText("");
+        m_lblTotalValue.m_cText.m_cParams.SetText("");
+        m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_BASE_COST);
+        m_lblTotal.m_cText.m_cParams.SetStrRef(STRREF_COST_PER_USE);
+        m_lblInfoBackground.SetEnabledFlag(1);
+        m_lblSkillRank.SetEnabledFlag(1);
+        m_lblRankValue.SetEnabledFlag(1);
+        m_lblBonus.SetEnabledFlag(1);
+        m_lblBonusValue.SetEnabledFlag(1);
+        m_lblTotal.SetEnabledFlag(1);
+        m_lblTotalValue.SetEnabledFlag(1);
         m_lbDescFeats.SetEnabledFlag(0);
-#endif
         m_lbDescription.SetEnabledFlag(1);
         m_lbAbility.AddControls(
             *reinterpret_cast<CExoArrayList<CSWGuiControl*>*>(&m_cPowerChart.m_cFlows),
@@ -247,27 +336,9 @@ void CSWGuiInGameAbilities::UpdateView()
                                                            OBJECT_INVALID, 0);
         break;
     case 0:
-#ifdef _XBOX
-        m_lblSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
         m_btnSkills.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-#endif
-#ifdef _XBOX
-        m_lblFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
         m_btnFeats.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        m_lblPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
         m_btnPowers.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-#endif
-#ifdef _XBOX
-        if (DisplayPowers())
-            m_lblNextPage.m_cText.m_cParams.SetText(m_lblPowers.m_cText.m_cParams.m_sText);
-        else
-            m_lblNextPage.m_cText.m_cParams.SetText(m_lblFeats.m_cText.m_cParams.m_sText);
-#endif
         m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_SKILL_RANK);
         m_lblBonus.m_cText.m_cParams.SetStrRef(STRREF_BONUS);
         m_lblTotal.m_cText.m_cParams.SetStrRef(STRREF_TOTAL_RANK);
@@ -278,9 +349,7 @@ void CSWGuiInGameAbilities::UpdateView()
         m_lblBonusValue.SetEnabledFlag(1);
         m_lblTotal.SetEnabledFlag(1);
         m_lblTotalValue.SetEnabledFlag(1);
-#ifndef _XBOX
         m_lbDescFeats.SetEnabledFlag(0);
-#endif
         m_lbDescription.SetEnabledFlag(1);
         {
             int nCount = m_lstSkills.num;
@@ -304,6 +373,7 @@ void CSWGuiInGameAbilities::UpdateView()
     SetActiveControl(NULL, 0);
     SetActiveControl(&m_lbAbility, 0);
 }
+#endif
 // PC 0x007368C0 GOG 0x007365E0 Xbox 0x000F2F90
 void CSWGuiInGameSkillEntry::Draw(float fElapsed)
 {
@@ -321,34 +391,48 @@ void CSWGuiInGameSkillEntry::Draw(float fElapsed)
     m_cText.Draw(fElapsed);
 }
 // PC 0x00736920 GOG 0x00736680 Xbox 0x000F33B0
+#ifdef _XBOX
+void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
+                                        CSWGuiBorder& cBorder,
+                                        CSWGuiBorder& cHilite, int nWidth,
+                                        const Vector& vColor,
+                                        const Vector& vHiliteColor)
+#else
 void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
                                         CSWGuiBorder& cBorder,
                                         CSWGuiBorder& cHilite, int nWidth)
+#endif
 {
     m_cText.m_cParams = cText.m_cParams;
     CSWGuiBorderParams* pParams = &CSWGuiLabel::m_cBorder.m_cParams;
     *pParams = cBorder.m_cParams;
+#ifdef _XBOX
+    pParams->m_vColor = vColor;
+#else
     pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+#endif
     pParams = &CSWGuiLabelHilight::m_cHilite.m_cParams;
     *pParams = cHilite.m_cParams;
+#ifdef _XBOX
+    pParams->m_vColor = vHiliteColor;
+#endif
     pParams->SetPulsingAlpha(1, 1, 0);
     pParams = &m_cNormal.m_cParams;
     {
-#ifndef _XBOX
         CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
         *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#ifdef _XBOX
+        pParams->m_vColor = vColor;
 #else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
-#endif
         pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+#endif
     }
     pParams = &m_cHilite.m_cParams;
     {
-#ifndef _XBOX
         CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
         *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
-#else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#ifdef _XBOX
+        pParams->m_vColor = vHiliteColor;
 #endif
         pParams->SetPulsingAlpha(1, 0, 1);
     }
@@ -357,7 +441,7 @@ void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
 #ifndef _XBOX
         cExtent.m_nHeight = 42;
 #else
-        cExtent.m_nHeight = 56;
+        cExtent.m_nHeight = 36;
 #endif
         SetExtent(cExtent);
     }
@@ -416,39 +500,51 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // Xbox 0
     CExoString sName;
 
     StartLoadFromLayout("abilities_x");
-    InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_lbAbility, "LB_ABILITY", 1);
-    InitControl(m_lblX, "LBL_X", 1);
-    InitControl(m_lblY, "LBL_Y", 1);
-    InitControl(m_lblWhite, "LBL_WHITE", 1);
-    InitControl(m_lblSkills, "LBL_SKILLS", 1);
-    InitControl(m_lblFeats, "LBL_FEATS", 1);
-    InitControl(m_lblPowers, "LBL_POWERS", 1);
     InitControl(m_lblBonus, "LBL_BONUS", 1);
     InitControl(m_lblBonusValue, "LBL_BONUSVAL", 1);
     InitControl(m_lblSkillRank, "LBL_SKILLRANK", 1);
     InitControl(m_lblRankValue, "LBL_RANKVAL", 1);
     InitControl(m_lblTotal, "LBL_TOTAL", 1);
     InitControl(m_lblTotalValue, "LBL_TOTALVAL", 1);
+    InitControl(m_lblName, "LBL_NAME", 1);
+    InitControl(m_lblInfoBackground, "LBL_INFOBG", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
+    InitControl(m_lblSkills, "LBL_SKILLS", 1);
+    InitControl(m_lblFeats, "LBL_FEATS", 1);
+    InitControl(m_lblPowers, "LBL_POWERS", 1);
     InitControl(m_lblStart, "LBL_START", 1);
     InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblBlack, "LBL_BLACK", 1);
-    InitControl(m_lblNextPage, "LBL_NEXTPAGE", 1);
+    InitControl(m_lblWhite, "LBL_WHITE", 1);
     InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    InitControl(m_lblName, "LBL_NAME", 1);
-    InitControl(m_lblInfoBackground, "LBL_INFOBG", 1);
+    InitControl(m_lblFilter, "LBL_FILTER", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_alblBar[6], "LBL_BAR7", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
     StopLoadFromLayout();
 
     CSWGuiLabelHilight* pProto = (CSWGuiLabelHilight*)m_lbAbility.m_pProtoItem;
-    pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    m_vTextColor = pProto->m_cText.m_cParams.m_vColor;
+    m_vBorderColor = pProto->m_cBorder.m_cParams.m_vColor;
+    m_vTabColor = m_lblSkills.m_cText.m_cParams.m_vColor;
+    m_vHiliteColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    pProto->m_cHilite.m_cParams.m_vColor = m_vHiliteColor;
     pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
     int nWidth = m_lbAbility.GetItemWidth();
     for (int i = 0; i < 10; i++)
     {
         m_aSkillEntries[i].Initialize(pProto->m_cText, pProto->m_cBorder,
-                                      pProto->m_cHilite, nWidth);
+                                      pProto->m_cHilite, nWidth,
+                                      m_vBorderColor, m_vHiliteColor);
         m_aSkillEntries[i].AddEvent(
             CSWGuiControl::EVENT_ENTER, this,
             (CSWGuiHandler)&CSWGuiInGameAbilities::OnEnterSkill);
@@ -612,7 +708,11 @@ void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
     else
     {
         sBonus = nBonus;
+#ifdef _XBOX
+        vColor = m_vTextColor;
+#else
         vColor = CGuiInGame::COLOR_NEW_TEXT;
+#endif
     }
 
     m_lblRankValue.m_cText.m_cParams.SetText(nRank);
@@ -647,7 +747,11 @@ void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
     CExoString sBonus;
     CExoString sBonusValue;
     Vector vColor;
+#ifdef _XBOX
+    Vector vNeutral = m_vTextColor;
+#else
     Vector vNeutral = CGuiInGame::COLOR_NEW_TEXT;
+#endif
 
     if (cGoodEvil == 'E')
     {
@@ -867,7 +971,7 @@ void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // Xbox 0x
                 ->ChangeCharacterToNextLivingPartyMember(0, 0);
             SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
             break;
-        case 41:
+        case GUIEVENT_RECOMMEND:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
             switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
             {

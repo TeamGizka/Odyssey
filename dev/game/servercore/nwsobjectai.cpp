@@ -722,7 +722,8 @@ int CSWSObject::AIActionWait(CSWSObjectActionNode* pNode)
     {
         return ACTION_FAILED;
     }
-    float fWaitDuration = *(float*)&pNode->m_apParam[0];
+    float fWaitDuration;
+    memcpy(&fWaitDuration, &pNode->m_apParam[0], sizeof(float));
     unsigned long nCurrentDay;
     unsigned long nCurrentTime;
     unsigned long nElapsedDay;
@@ -1616,8 +1617,10 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
     }
 
     int nAnimation = (int)pNode->m_apParam[0];
-    float fSpeed = *(float*)&pNode->m_apParam[1];
-    float fDuration = *(float*)&pNode->m_apParam[2];
+    float fSpeed;
+    memcpy(&fSpeed, &pNode->m_apParam[1], sizeof(float));
+    float fDuration;
+    memcpy(&fDuration, &pNode->m_apParam[2], sizeof(float));
     int bFirstUpdate = (int)pNode->m_apParam[3];
     int bSoundPlayed = (int)pNode->m_apParam[4];
     unsigned long nSoundDelay = (unsigned long)pNode->m_apParam[5];

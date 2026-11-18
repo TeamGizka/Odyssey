@@ -2977,7 +2977,7 @@ char CSWSCreatureStats::GetBaseFortSavingThrow()
 // PC 0x005F4D50 GOG 0x005F4D30 Xbox 0x001C0F70
 unsigned char CSWSCreatureStats::GetBaseWillSavingThrow()
 {
-    unsigned char nBonus = 0;
+    char nBonus = 0;
     for (int nClassIndex = 0; nClassIndex < m_nClassCount; ++nClassIndex)
     {
         CSWClass* pClass = &g_pRules->m_pClasses[GetClass((unsigned char)nClassIndex)];
@@ -4230,7 +4230,8 @@ void CSWSCreatureStats::LevelDown(CSWLevelStats* pLevelStats)
     unsigned char nNumClasses = GetNumClasses();
     if (GetClassLevel(nClass, 0) < 1)
     {
-        if (nClass == CLASS_TYPE_INVALID || GetNumClasses() != nNumClasses)
+        int bRemoveClass = nClass == CLASS_TYPE_INVALID || GetNumClasses() != nNumClasses;
+        if (bRemoveClass)
         {
             --m_nClassCount;
             SetClass(nClass, 0);
@@ -8012,8 +8013,8 @@ int CSWSCreatureStats::AdjustFPAccumulatorBy(float fAdjustment)
     int nAdjustment;
 
     m_fFPAccumulator += fAdjustment;
-    nAdjustment = (int)(m_fFPAccumulator >= 0.0 ? floor(m_fFPAccumulator)
-                                                : ceil(m_fFPAccumulator));
+    nAdjustment = m_fFPAccumulator >= 0.0 ? (int)floor(m_fFPAccumulator)
+                                          : (int)ceil(m_fFPAccumulator);
     m_fFPAccumulator -= (short)nAdjustment;
     return nAdjustment;
 }

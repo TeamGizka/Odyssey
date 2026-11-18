@@ -35,10 +35,19 @@ public:
         STRREF_DESC_TARGET_CHANGE = 48706
     };
 
-    CSWGuiOptionsCheckbox m_aCheckboxes[6];
 #ifdef _XBOX
-    CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblSelect; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblRAnalog; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbxDetails;
+    enum
+    {
+        STRREF_DESC_HORIZ_MENU = 42448,
+        STRREF_DESC_VERT_MENU = 42449,
+        STRREF_DESC_TRIGGERS = 42480
+    };
+    CSWGuiOptionsCheckbox m_aCheckboxes[7];
+    CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblSelect; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblRAnalog;
+    CSWGuiLabel m_alblBar[4]; CSWGuiListBox m_lbxDetails;
 #else
+    CSWGuiOptionsCheckbox m_aCheckboxes[6];
     CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiLabel m_alblBar[4]; CSWGuiListBox m_lbxDetails;
 #endif
 };

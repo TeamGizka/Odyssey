@@ -85,8 +85,13 @@ int CSWSWaypoint::LoadWaypoint(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 
+#ifdef _XBOX
+    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(
+        m_sTag, GetId());
+#else
     g_pAppManager->m_pServerExoApp->GetModule()->AddObjectToLookupTable(
         m_sTag, m_nId);
+#endif
     return 1;
 }
 // PC 0x0056F770 GOG 0x0056F8A0 Xbox 0x00281370

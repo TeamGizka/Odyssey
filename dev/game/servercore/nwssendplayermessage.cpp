@@ -3740,10 +3740,19 @@ CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
                     pObject->m_nObjectType > CGameObject::OBJECT_TYPE_AREA)
                 {
                     CSWSObject* pServerObject = (CSWSObject*)pObject;
+#ifdef _XBOX
+                    float fX = pServerObject->m_vPosition.m_fX - vPlayerPosition.m_fX;
+                    float fY = pServerObject->m_vPosition.m_fY - vPlayerPosition.m_fY;
+                    int bInclude = 0;
+                    float fDistanceSquared = fX * fX + fY * fY;
+#else
                     float fY = pServerObject->m_vPosition.m_fY - vPlayerPosition.m_fY;
                     float fX = pServerObject->m_vPosition.m_fX - vPlayerPosition.m_fX;
+#endif
+#ifndef _XBOX
                     float fDistanceSquared = fX * fX + fY * fY;
                     int bInclude = 0;
+#endif
                     float fVisibleDistance = DEFAULT_OBJECT_VISIBLE_DISTANCE;
                     if (pPlayerObject->AsSWSCreature() != NULL)
                     {
@@ -4987,10 +4996,17 @@ int CSWSMessage::SendServerToPlayerPlayerList_All(CSWSPlayer* pRecipient)
             {
                 oidCharacter = pCreature->GetId();
             }
+#ifdef _XBOX
+            CExoLocString lsFirstName;
+            CExoLocString lsLastName;
+            CResRef cPortrait;
+            int bCharacter = 0;
+#else
             int bCharacter = 0;
             CExoLocString lsFirstName;
             CExoLocString lsLastName;
             CResRef cPortrait;
+#endif
             pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
                 oidCharacter);
             if (pCreature != NULL)
@@ -5253,10 +5269,17 @@ int CSWSMessage::SendServerToPlayerPlayerList_Add(unsigned long nPlayerId,
     {
         oidCharacter = pCreature->GetId();
     }
+#ifdef _XBOX
+    CExoLocString lsFirstName;
+    CExoLocString lsLastName;
+    CResRef cPortrait;
+    int bCharacter = 0;
+#else
     int bCharacter = 0;
     CExoLocString lsFirstName;
     CExoLocString lsLastName;
     CResRef cPortrait;
+#endif
     pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
         oidCharacter);
     if (pCreature != NULL)
@@ -7987,7 +8010,12 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         if (pCreature->m_bInvitedToParty)
         {
             WriteOBJECTIDServer(pCreature->m_oidInvitedBy);
+#ifdef _XBOX
+            unsigned long oidInviter = pCreature->m_oidInvitedBy;
+            CSWSCreature* pInviter = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidInviter);
+#else
             CSWSCreature* pInviter = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(pCreature->m_oidInvitedBy);
+#endif
             WriteCExoLocStringServer(pInviter->m_pStats->m_lsFirstName, 0);
             WriteCExoLocStringServer(pInviter->m_pStats->m_lsLastName, 0);
         }

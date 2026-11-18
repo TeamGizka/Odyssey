@@ -319,24 +319,28 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
 #endif
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     InitControl(m_lblSubTitle, "SUB_TITLE_LBL", 1);
-#ifdef _XBOX
-    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-#endif
     InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
     InitControl(m_viewHead, "LBL_HEAD", 1);
-#ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-#endif
     InitControl(m_lblBevel[0], "LBL_BEVEL_L", 1);
+#ifndef _XBOX
     InitControl(m_lblBevel[1], "LBL_BEVEL_M", 1);
+#endif
     InitControl(m_lblBevel[2], "LBL_BEVEL_R", 1);
     InitControl(m_lblBevel[3], "LBL_BEVEL_T", 1);
     InitControl(m_lblBevel[4], "LBL_BEVEL_B", 1);
 #ifdef _XBOX
+    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblhArrL, "LBLH_ARRL", 1);
     InitControl(m_lblhArrR, "LBLH_ARRR", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
 #else
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnAccept, "BTN_ACCEPT", 1);
@@ -359,14 +363,18 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
     unsigned char nGender = m_pCreature->GetStats()->m_nGender;
     GetPortraitsList(nGender);
 
+#ifdef _XBOX
+    CSWGuiScene* pHeadScene = &m_viewHead.m_cScene;
+    CAurCamera* pCamera = pHeadScene->m_pCamera;
+    CAurScene* pScene = pHeadScene->m_pScene;
+#else
     CAurScene* pScene = m_viewHead.m_cScene.m_pScene;
     CAurCamera* pCamera = m_viewHead.m_cScene.m_pCamera;
-#ifndef _XBOX
+#endif
     if (pCamera != 0)
     {
         pCamera->SetViewAngle(65.0f);
     }
-#endif
     if (g_bDo3DGUIs != 0)
     {
         CExoString sCameraHook;
@@ -374,7 +382,11 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
                            m_pCreature->GetStats()->m_nGender == 0 ? 'm' : 'f');
         pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
         CAurObject* pLight;
+#ifdef _XBOX
+        pLight = pHeadScene->AddModel("cghead_light", -1);
+#else
         pLight = m_viewHead.m_cScene.AddModel("cghead_light", -1);
+#endif
         if (pLight != 0)
         {
             ((Gob*)pLight)->PlayAnimation("default", 1.0f, 0, 0);

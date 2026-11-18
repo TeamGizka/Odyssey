@@ -958,10 +958,14 @@ CExoString CServerExoApp::GetLastConversation()  // Xbox 0x00171E80
     return m_pcExoAppInternal->GetLastConversation();
 }
 
+#endif
+#if defined(_XBOX) && defined(_DEBUG)
 int CServerExoApp::DebugValidatePath(unsigned long oidCreature, int bTempWayPoints)
 {
     return m_pcExoAppInternal->DebugValidatePath(oidCreature, bTempWayPoints);
 }
+#endif
+#ifdef _XBOX
 
 void CServerExoApp::SetHintTimers(unsigned long nHintTimer1, unsigned long nHintTimer2)  // Xbox 0x00171F60
 {

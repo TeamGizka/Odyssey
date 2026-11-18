@@ -849,6 +849,9 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     InitControl(m_lbMessage, "LB_MESSAGE", 1);
     InitControl(m_lbReplies, "LB_REPLIES", 1);
     CSWGuiListBox& cReplies = m_lbReplies;
+#ifdef _XBOX
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+#endif
     InitControl(m_aInfo[INFO_COMP_SKILL].m_lblName, "LBL_COMP_SKILL", 1);
     InitControl(m_aInfo[INFO_COMP_SKILL].m_lblValue, "LBL_COMP_SKILL_VAL", 1);
     InitControl(m_aInfo[INFO_REP_SKILL].m_lblName, "LBL_REP_SKILL", 1);
@@ -863,10 +866,12 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     InitControl(m_lblBar[3], "LBL_BAR4", 1);
     InitControl(m_lblBar[4], "LBL_BAR5", 1);
     InitControl(m_lblBar[5], "LBL_BAR6", 1);
+#ifndef _XBOX
     InitControl(m_lblBar[6], "LBL_BAR7", 1);
     InitControl(m_lblBar[7], "LBL_BAR8", 1);
     InitControl(m_lblBar[8], "LBL_BAR9", 1);
     InitControl(m_lblBar[9], "LBL_BAR10", 1);
+#endif
     StopLoadFromLayout();
 
     CSWSkill* pSkill = &g_pRules->m_pSkills[CSWRules::SKILL_COMPUTER_USE];

@@ -12,10 +12,8 @@ void CSWGuiFade::SetFade(int bFadeIn, float fFadeStart, float fFadeLength,
                          Vector const& vColor)
 {
     m_vColor = vColor;
-#ifndef _XBOX
     m_cExtent.m_nWidth = m_pManager->m_nWidth;
     m_cExtent.m_nHeight = m_pManager->m_nHeight;
-#endif
     if (bFadeIn != 0)
     {
         SetAlpha(1.0f);
@@ -158,11 +156,3 @@ CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager)
     m_cExtent.m_nHeight = m_pManager->m_nHeight;
     ResetFade();
 }
-
-#ifdef _XBOX
-
-int CSWGuiFade::IsObscuring()
-{
-    return m_fAlpha > 0.001f;
-}
-#endif

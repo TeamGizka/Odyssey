@@ -2508,9 +2508,14 @@ int CSWSObject::DoSpellImmunity(CSWSObject* pCaster)
     int nSpellId = pCaster->m_nLastSpellId;
     if (AsSWSCreature() != NULL && m_lstEffects.num > 0)
     {
+#ifdef _XBOX
+        for (int i = AsSWSCreature()->m_pStats->m_nSpellImmunityEffectIndex;
+             i < m_lstEffects.num; i++)
+#else
         CSWSCreatureStats* pStats = AsSWSCreature()->m_pStats;
         for (int i = pStats->m_nSpellImmunityEffectIndex;
              i < m_lstEffects.num; i++)
+#endif
         {
             CGameEffect* pEffect = m_lstEffects.element[i];
             if (m_lstEffects[i]->m_nType > CSWSEffectListHandler::EFFECT_SPELL_IMMUNITY)

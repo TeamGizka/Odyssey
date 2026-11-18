@@ -264,11 +264,7 @@ public:
     void ShutDown();
     int TutorialReasonWillShowWindow(unsigned char nReason);
 
-#ifdef _XBOX
-    enum { TUTORIAL_WINDOW_COUNT = 42 };
-#else
     enum { TUTORIAL_WINDOW_COUNT = 256 };
-#endif
     int GetTutorialWindowHasBeenShown(unsigned char nReason);
     void SetTutorialWindowHasBeenShown(unsigned char nReason, int bShown);
     int ShowTutorialWindow(unsigned char nReason, unsigned long oidInstigator,

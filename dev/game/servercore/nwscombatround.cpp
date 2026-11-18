@@ -1827,11 +1827,19 @@ void CSWSCombatRound::AddEquipAction(unsigned long oidItem, unsigned long nSlot,
         pAction->m_nInventorySlot = nSlot;
         pAction->m_nEquipFlags = nEquipFlags;
 
+#ifdef _XBOX
+        CExoLinkedListNode* pHead = m_pScheduledActions->GetHeadPos();
+        if (pHead != NULL)
+        {
+            m_pScheduledActions->AddBefore(pAction, pHead);
+        }
+#else
         if (m_pScheduledActions->GetHeadPos() != NULL)
         {
             m_pScheduledActions->AddBefore(pAction,
                                            m_pScheduledActions->GetHeadPos());
         }
+#endif
         else
         {
             m_pScheduledActions->AddTail(pAction);
@@ -1856,11 +1864,19 @@ void CSWSCombatRound::AddUnequipAction(unsigned long oidItem,
         pAction->m_oidTargetRepository = nSlot;
         pAction->m_nEquipFlags = nEquipFlags;
 
+#ifdef _XBOX
+        CExoLinkedListNode* pHead = m_pScheduledActions->GetHeadPos();
+        if (pHead != NULL)
+        {
+            m_pScheduledActions->AddBefore(pAction, pHead);
+        }
+#else
         if (m_pScheduledActions->GetHeadPos() != NULL)
         {
             m_pScheduledActions->AddBefore(pAction,
                                            m_pScheduledActions->GetHeadPos());
         }
+#endif
         else
         {
             m_pScheduledActions->AddTail(pAction);

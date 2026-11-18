@@ -917,7 +917,7 @@ public:
     virtual ~CSWVirtualMachineCommands();
     virtual void InitializeCommands();
 #ifdef _XBOX
-    void InitializeXboxCommands();
+    void InitializeSWMGCommands();
 #endif
     virtual int ExecuteCommand(int, int);
     virtual void RunScriptCallback(CExoString&);
@@ -1585,7 +1585,9 @@ public:
     int ExecuteCommandSWMG_DestroyMiniGameObject(int nCommand, int nArgs);
     int ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs);
     int ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs);
+#ifndef _XBOX
     void InitializeSWMGCommands();
+#endif
     int ExecuteCommandExploreAreaForPlayer(int nCommand, int nArgs);
     int ExecuteCommandGetLastAssociateCommand(int nCommand, int nArgs);
     int ExecuteCommandSetAssociateListenPatterns(int nCommand, int nArgs);

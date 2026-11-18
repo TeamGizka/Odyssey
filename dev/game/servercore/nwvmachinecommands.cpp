@@ -5551,7 +5551,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEquipItem(int nCommand, int nArgs)
     }
     if (nInventorySlot >= 0 && nInventorySlot < 20)
     {
-        nInventorySlot = (int)pow(2.0, nInventorySlot);
+        nInventorySlot = (int)pow(2, nInventorySlot);
         if (m_nCommandContext == 1)
         {
             pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -9373,7 +9373,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemInSlot(int nCommand,
     {
         return ERROR_STACK_POP;
     }
-    nInventorySlot = (int)pow(2.0, nInventorySlot);
+    nInventorySlot = (int)pow(2, nInventorySlot);
     if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
     {
         return ERROR_STACK_POP;
@@ -9428,6 +9428,21 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemPossessedBy(int nCommand,
         if (pGameObject->AsSWSCreature() != NULL)
         {
             CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+#ifdef _XBOX
+            oidItem =
+                pCreature->GetItemRepository(1)->FindItemWithTag(sLowerTag);
+            int bFound = oidItem != OBJECT_INVALID;
+            CSWInventory* pInventory = pCreature->m_pInventory;
+            for (int nSlot = 0; nSlot < CSWInventory::TOTAL_SLOT_COUNT && !bFound; ++nSlot)
+            {
+                CSWSItem* pItem = pInventory->GetItemInSlot(1 << nSlot);
+                if (pItem != NULL && pItem->m_sTag == sLowerTag)
+                {
+                    oidItem = pItem->m_nId;
+                    bFound = 1;
+                }
+            }
+#else
             unsigned long oidFoundItem =
                 pCreature->GetItemRepository(1)->FindItemWithTag(sLowerTag);
             int bFound = oidFoundItem != OBJECT_INVALID;
@@ -9442,6 +9457,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemPossessedBy(int nCommand,
                 }
             }
             oidItem = oidFoundItem;
+#endif
         }
         else if (pGameObject->AsSWSPlaceable() != NULL)
         {
@@ -17591,15 +17607,25 @@ int CSWVirtualMachineCommands::ExecuteCommandSetPartyLeader(int nCommand,
     }
     if (nNPC == NPC_PLAYER)
     {
+#ifdef _XBOX
+        for (int nMember = 0; nMember < pParty->m_nCharacters; ++nMember)
+#else
         int nMember = 0;
         if (pParty->m_nCharacters > 0)
         for (; nMember < pParty->m_nCharacters; ++nMember)
+#endif
         {
             EXOXBOXASSERT(nMember >= 0 && nMember < 3);
+#ifdef _XBOX
+            CSWCCreature* pCreature =
+                g_pAppManager->m_pClientExoApp->GetCreatureByGameObjectID(
+                    pParty->m_aPartyMemberData[nMember].m_oidCreature);
+#else
             unsigned long oidCreature = pParty->m_aPartyMemberData[nMember].m_oidCreature;
             CSWCCreature* pCreature =
                 g_pAppManager->m_pClientExoApp->GetCreatureByGameObjectID(
                     oidCreature);
+#endif
             if (pCreature != NULL && pCreature->GetServerCreature() != NULL)
             {
                 CSWSCreature* pServerCreature = pCreature->GetServerCreature();
@@ -19030,6 +19056,8 @@ int CSWVirtualMachineCommands::ExecuteCommandStartCreditSequence(  // Xbox 0x002
     }
     return 0;
 }
+#endif
+#if defined(_XBOX) && defined(_DEBUG)
 #include <stdio.h>
 #include "aurconsole.h"
 
@@ -20451,11 +20479,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEnableRain(int nCommand, int nArgs)
     {
         return -2001;
     }
-    float fStrength = 100.0f;
-    if (bEnable == 0)
-    {
-        fStrength = 0.0f;
-    }
+    float fStrength = bEnable ? 100.0f : 0.0f;
     if (g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo != NULL)
     {
         g_pAppManager->GetClientExoApp()->GetModule()->GetArea()->SetWeather(1, fStrength);

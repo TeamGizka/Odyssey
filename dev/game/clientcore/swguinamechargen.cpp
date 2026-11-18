@@ -52,10 +52,11 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
         m_aStdButtons[i].AddEvent(GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiNameChargen::HandleDoneButton);
         m_aStdButtons[i].m_nIndex = i;
     }
+    InitControl(m_btnDone, "END_BTN", 1);
+    InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
+    InitControl(m_lblSubTitle, "SUB_TITLE_LBL", 1);
     InitControl(m_btnSpace, "SPACE_BTN", 1);
     InitControl(m_btnBackspace, "BACKSPACE_BTN", 1);
-    InitControl(m_btnDone, "END_BTN", 1);
-    InitControl(m_lblBack, "BACK_LBL", 1);
     InitControl(m_lblAccept, "LBL_ACCEPT", 1);
     InitControl(m_lblRandom, "LBL_RANDOM", 1);
     InitControl(m_lblIntl, "LBL_INTL", 1);
@@ -64,8 +65,7 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
     InitControl(m_lblY, "LBL_Y", 1);
     InitControl(m_lblX, "LBL_X", 1);
     InitControl(m_lblNameBox, "NAME_BOX_LBL", 1);
-    InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
-    InitControl(m_lblSubTitle, "SUB_TITLE_LBL", 1);
+    InitControl(m_lblBack, "BACK_LBL", 1);
     StopLoadFromLayout();
     for (i = 0; i < NUM_KEYS; i++)
     {

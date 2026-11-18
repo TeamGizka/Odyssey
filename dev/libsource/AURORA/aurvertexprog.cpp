@@ -176,17 +176,19 @@ int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0 GOG 0x004CED30
     return cm_listExistentVertexPrograms.m_nCount;
 }
 #else
+static inline void DeleteVertexProgram(unsigned int nProgram, unsigned int* pnProgram)
+{
+    if (GLRender::IsProgramNV(nProgram))
+    {
+        GLRender::DeletePrograms(1, pnProgram);
+    }
+}
+
 // Xbox 0x0032C7C0
 VertexProgram::~VertexProgram()
 {
-    if (GLRender::IsProgramNV(m_nGLProgram[0]))
-    {
-        GLRender::DeletePrograms(1, &m_nGLProgram[0]);
-    }
-    if (GLRender::IsProgramNV(m_nGLProgram[1]))
-    {
-        GLRender::DeletePrograms(1, &m_nGLProgram[1]);
-    }
+    DeleteVertexProgram(m_nGLProgram[0], &m_nGLProgram[0]);
+    DeleteVertexProgram(m_nGLProgram[1], &m_nGLProgram[1]);
 }
 #endif
 // PC 0x004CEC50 GOG 0x004CED90 Xbox 0x0032C810
@@ -211,10 +213,10 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
         }
     }
 
+    lastProg = m_pFunction[bEnableLights];
     wasLit = bEnableLights;
     LightManager::cm_bLightManagerUpdated = 0;
     nLastVertexProgramFrame = currentframe;
-    lastProg = m_pFunction[bEnableLights];
 
     unsigned int* pnProgram = &m_nGLProgram[bEnableLights];
     if (*pnProgram)

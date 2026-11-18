@@ -499,9 +499,12 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
     unsigned long oidItem = (unsigned long)pAction->m_apParam[0];
     int nPropertyIndex = (int)pAction->m_apParam[1];
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[3];
-    float fX = *(float*)&pAction->m_apParam[4];
-    float fY = *(float*)&pAction->m_apParam[5];
-    float fZ = *(float*)&pAction->m_apParam[6];
+    float fX;
+    memcpy(&fX, &pAction->m_apParam[4], sizeof(float));
+    float fY;
+    memcpy(&fY, &pAction->m_apParam[5], sizeof(float));
+    float fZ;
+    memcpy(&fZ, &pAction->m_apParam[6], sizeof(float));
     unsigned long nStartDay, nStartTime;
     if (pAction->m_nNumParams < 9)
     {
@@ -898,9 +901,9 @@ int CSWSCreature::AIActionCheckMoveAwayFromLocation(CSWSObjectActionNode* pActio
 
     Vector vAway;
     CSWSArea* pArea = GetArea();
-    vAway.m_fX = *(float*)&pAction->m_apParam[0];
-    vAway.m_fY = *(float*)&pAction->m_apParam[1];
-    vAway.m_fZ = *(float*)&pAction->m_apParam[2];
+    memcpy(&vAway.m_fX, &pAction->m_apParam[0], sizeof(float));
+    memcpy(&vAway.m_fY, &pAction->m_apParam[1], sizeof(float));
+    memcpy(&vAway.m_fZ, &pAction->m_apParam[2], sizeof(float));
     int bRun = (int)pAction->m_apParam[3];
     int nDistance = (int)pAction->m_apParam[4];
     int bOption = (int)pAction->m_apParam[5];
@@ -1000,10 +1003,11 @@ int CSWSCreature::AIActionCheckMoveToObject(CSWSObjectActionNode* pAction)
     GetUseRange(oidTarget, vPosition, fRange, 0);
     if (pArea == NULL)
     {
-        if (pObject->AsSWSCreature() == NULL)
-            return ACTION_FAILED;
-        pArea = g_pAppManager->GetServerExoApp()->GetModule()->GetArea();
-        vPosition = pObject->AsSWSCreature()->m_vDisappearPosition;
+        if (pObject->AsSWSCreature() != NULL)
+        {
+            pArea = g_pAppManager->GetServerExoApp()->GetModule()->GetArea();
+            vPosition = pObject->AsSWSCreature()->m_vDisappearPosition;
+        }
         if (pArea == NULL)
             return ACTION_FAILED;
     }
@@ -1032,8 +1036,10 @@ int CSWSCreature::AIActionCheckMoveToObjectRadius(CSWSObjectActionNode* pAction)
 
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[0];
     int bRun = (int)pAction->m_apParam[1];
-    float fRange = *(float*)&pAction->m_apParam[2];
-    float fRadius = *(float*)&pAction->m_apParam[3];
+    float fRange;
+    memcpy(&fRange, &pAction->m_apParam[2], sizeof(float));
+    float fRadius;
+    memcpy(&fRadius, &pAction->m_apParam[3], sizeof(float));
     int bCheckRange = (int)pAction->m_apParam[4];
     int bUseRange = 0;
     if (pAction->m_apParam[5] != NULL)
@@ -1087,9 +1093,12 @@ int CSWSCreature::AIActionCheckMoveToPoint(CSWSObjectActionNode* pAction)
         !(m_nAIStateFlags & AI_STATE_CAN_MOVE))
         return ACTION_FAILED;
 
-    float fX = *(float*)&pAction->m_apParam[0];
-    float fY = *(float*)&pAction->m_apParam[1];
-    float fZ = *(float*)&pAction->m_apParam[2];
+    float fX;
+    memcpy(&fX, &pAction->m_apParam[0], sizeof(float));
+    float fY;
+    memcpy(&fY, &pAction->m_apParam[1], sizeof(float));
+    float fZ;
+    memcpy(&fZ, &pAction->m_apParam[2], sizeof(float));
     unsigned long oidArea = (unsigned long)pAction->m_apParam[3];
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[4];
     int bRun = (int)pAction->m_apParam[5];
@@ -1111,8 +1120,8 @@ int CSWSCreature::AIActionCheckMoveToPoint(CSWSObjectActionNode* pAction)
             ACTION_PARAM_FLOAT, &fZ, ACTION_PARAM_OBJECT, &oidArea,
             ACTION_PARAM_OBJECT, &oidTarget, ACTION_PARAM_INTEGER, (void*)bRun,
             0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
-        Vector vPosition(fX, fY, fZ);
         Vector vOrientation;
+        Vector vPosition(fX, fY, fZ);
         AddMoveToPointActionToFront(pAction->m_nGroupId, vPosition,
             oidArea, oidTarget, bRun, 0.0f, 0.0f, 0, 0, 0, 0, 0, 0,
             vOrientation, 0, 0, 0);
@@ -1126,13 +1135,17 @@ int CSWSCreature::AIActionCheckMoveToPointRadius(CSWSObjectActionNode* pAction)
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
         return ACTION_FAILED;
 
-    float fX = *(float*)&pAction->m_apParam[0];
-    float fY = *(float*)&pAction->m_apParam[1];
-    float fZ = *(float*)&pAction->m_apParam[2];
+    float fX;
+    memcpy(&fX, &pAction->m_apParam[0], sizeof(float));
+    float fY;
+    memcpy(&fY, &pAction->m_apParam[1], sizeof(float));
+    float fZ;
+    memcpy(&fZ, &pAction->m_apParam[2], sizeof(float));
     unsigned long oidArea = (unsigned long)pAction->m_apParam[3];
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[4];
     int bRun = (int)pAction->m_apParam[5];
-    float fRange = *(float*)&pAction->m_apParam[6];
+    float fRange;
+    memcpy(&fRange, &pAction->m_apParam[6], sizeof(float));
     int bStopAtUseRange = (int)pAction->m_apParam[7];
     CGameObject* pObject;
     unsigned char nResult = g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
@@ -1152,8 +1165,8 @@ int CSWSCreature::AIActionCheckMoveToPointRadius(CSWSObjectActionNode* pAction)
             ACTION_PARAM_OBJECT, &oidTarget, ACTION_PARAM_INTEGER, &bRun,
             ACTION_PARAM_FLOAT, &fRange, ACTION_PARAM_INTEGER, &bStopAtUseRange,
             0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
-        Vector vPosition(fX, fY, fZ);
         Vector vOrientation;
+        Vector vPosition(fX, fY, fZ);
         AddMoveToPointActionToFront(pAction->m_nGroupId, vPosition,
             oidArea, oidTarget, bRun, fRange, 0.0f, 0, 0, 0, 0, 0, 0,
             vOrientation, 0, 0, bStopAtUseRange);
@@ -1167,14 +1180,18 @@ int CSWSCreature::AIActionCheckMoveToFollowRadius(CSWSObjectActionNode* pAction)
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
         return ACTION_FAILED;
 
-    float fX = *(float*)&pAction->m_apParam[0];
-    float fY = *(float*)&pAction->m_apParam[1];
-    float fZ = *(float*)&pAction->m_apParam[2];
+    float fX;
+    memcpy(&fX, &pAction->m_apParam[0], sizeof(float));
+    float fY;
+    memcpy(&fY, &pAction->m_apParam[1], sizeof(float));
+    float fZ;
+    memcpy(&fZ, &pAction->m_apParam[2], sizeof(float));
     unsigned long oidArea = (unsigned long)pAction->m_apParam[3];
 
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[4];
     int nMovementFlags = (int)pAction->m_apParam[5];
-    float fRadius = *(float*)&pAction->m_apParam[6];
+    float fRadius;
+    memcpy(&fRadius, &pAction->m_apParam[6], sizeof(float));
     CGameObject* pObject;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
             oidArea, &pObject) != CGameObjectArray::SUCCESS)
@@ -1380,7 +1397,8 @@ int CSWSCreature::AIActionCheckMoveAwayFromObject(CSWSObjectActionNode* pAction)
 
     unsigned long oidFleeFrom = (unsigned long)pAction->m_apParam[0];
     int bRun = (int)pAction->m_apParam[1];
-    float fMoveAwayRange = *(float*)&pAction->m_apParam[2];
+    float fMoveAwayRange;
+    memcpy(&fMoveAwayRange, &pAction->m_apParam[2], sizeof(float));
     int nRemainingChecks = (int)pAction->m_apParam[3];
     Vector vFleeFrom;
     CGameObject* pTarget;
@@ -2143,9 +2161,12 @@ int CSWSCreature::AcquireItem(CSWSItem** ppItem, unsigned long oidCaller,
 int CSWSCreature::AIActionRandomWalk(CSWSObjectActionNode* pAction)
 {
     float fWait = NWSCREATURE_RANDOM_WALK_WAIT;
-    float fX = *(float*)&pAction->m_apParam[0];
-    float fY = *(float*)&pAction->m_apParam[1];
-    float fZ = *(float*)&pAction->m_apParam[2];
+    float fX;
+    memcpy(&fX, &pAction->m_apParam[0], sizeof(float));
+    float fY;
+    memcpy(&fY, &pAction->m_apParam[1], sizeof(float));
+    float fZ;
+    memcpy(&fZ, &pAction->m_apParam[2], sizeof(float));
     unsigned long oidArea = (unsigned long)pAction->m_apParam[3];
     CSWSArea* pArea = g_pAppManager->GetServerExoApp()->GetAreaByGameObjectID(oidArea);
     if (pArea == NULL)
@@ -3821,7 +3842,7 @@ int CSWSCreature::AIActionFollowOwner(CSWSObjectActionNode* pNode)
         }
         else
         {
-            fFollowDistance = *(float*)&pNode->m_apParam[0];
+            memcpy(&fFollowDistance, &pNode->m_apParam[0], sizeof(float));
             CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
             if (pPartyTable == NULL)
             {
@@ -7171,7 +7192,8 @@ int CSWSCreature::DriveUpdateLocation(int bRun)
     vTarget.m_fZ = GetArea()->ComputeHeight(vTarget, 0, NULL);
     Vector vDelta = vTarget - m_vPosition;
     Vector vDirection = normalize(vDelta);
-    float fDistance = m_nElapsedTime * fRate / 1000000.0f;
+    float fDistance = m_nElapsedTime * fRate;
+    fDistance /= 1000000.0f;
     if (fDistance * fDistance >= vDelta * vDelta)
     {
         vPosition = vTarget;
@@ -7386,18 +7408,21 @@ int CSWSCreature::AIActionJumpToPoint(CSWSObjectActionNode* pAction)
         float fRadius = JUMP_TO_OBJECT_SEARCH_RADIUS;
         float fOrientationX = m_vOrientation.m_fX;
         float fOrientationY = m_vOrientation.m_fY;
-        float fX = *(float*)&pAction->m_apParam[0];
-        float fY = *(float*)&pAction->m_apParam[1];
-        float fZ = *(float*)&pAction->m_apParam[2];
+        float fX;
+        memcpy(&fX, &pAction->m_apParam[0], sizeof(float));
+        float fY;
+        memcpy(&fY, &pAction->m_apParam[1], sizeof(float));
+        float fZ;
+        memcpy(&fZ, &pAction->m_apParam[2], sizeof(float));
         unsigned long oidArea = (unsigned long)pAction->m_apParam[3];
         if (pAction->m_nNumParams >= 5)
             bUseSafeLocation = (int)pAction->m_apParam[4];
         if (pAction->m_nNumParams >= 6)
-            fRadius = *(float*)&pAction->m_apParam[5];
+            memcpy(&fRadius, &pAction->m_apParam[5], sizeof(float));
         if (pAction->m_nNumParams >= 7)
         {
-            fOrientationX = *(float*)&pAction->m_apParam[6];
-            fOrientationY = *(float*)&pAction->m_apParam[7];
+            memcpy(&fOrientationX, &pAction->m_apParam[6], sizeof(float));
+            memcpy(&fOrientationY, &pAction->m_apParam[7], sizeof(float));
         }
         EXOLOG("\nJumping to Point %f %f %f, Area %x\n", fX, fY, fZ, oidArea);
 
@@ -7809,8 +7834,8 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
     if (GetDead() == TRUE || GetIsPCDying() == TRUE || GetDeadTemp() == TRUE)
         return ACTION_FAILED;
     Vector vRequested;
-    vRequested.m_fX = *(float*)&pAction->m_apParam[0];
-    vRequested.m_fY = *(float*)&pAction->m_apParam[1];
+    memcpy(&vRequested.m_fX, &pAction->m_apParam[0], sizeof(float));
+    memcpy(&vRequested.m_fY, &pAction->m_apParam[1], sizeof(float));
     int nDirection = (int)pAction->m_apParam[2];
     int nDriveMode = (int)pAction->m_apParam[3];
     unsigned long nFlags = (unsigned long)pAction->m_apParam[4];
@@ -8134,7 +8159,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
     float fRange;
     if (pAction->m_nNumParams >= 7)
     {
-        fRange = *(float*)&pAction->m_apParam[6];
+        memcpy(&fRange, &pAction->m_apParam[6], sizeof(float));
         Vector vDelta = vDestination - m_vPosition;
         Vector vHit;
         unsigned long oidHit;
@@ -8152,7 +8177,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
         nMovementRate = 0;
     float fTimeout;
     if (pAction->m_nNumParams >= 9)
-        fTimeout = *(float*)&pAction->m_apParam[8];
+        memcpy(&fTimeout, &pAction->m_apParam[8], sizeof(float));
     else
         fTimeout = 0.0f;
     if (pAction->m_nNumParams >= 10)
@@ -8531,7 +8556,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
     return nResult;
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 #include <stdio.h>
 #include "aurconsole.h"
 

@@ -128,6 +128,9 @@ public:
     void ClearGameBoard();
     int CanUsePlayerSidedeckCard(int nIndex);
     int UsePlayerSidedeckCard(int nIndex);
+#ifdef _XBOX
+    CPazaakCard GetPlayerSidedeckCard(int nIndex);
+#endif
     int DetermineWinner();
     int FindPotentialSidecardTotal(CPazaakPlayer& cPlayer, int* pnCard,
                                    int bLowest);

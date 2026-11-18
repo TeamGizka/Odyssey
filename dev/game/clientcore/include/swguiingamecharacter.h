@@ -163,17 +163,7 @@ public:
     void OnChangeCharacter(CSWGuiControl* pControl);
     void UpdatePortraits();
 
-#ifdef _XBOX
-    CSWGuiLabel m_lblName;
-    CSWGuiLabel m_lblClass;
-    CSWGuiLabel m_lblClass1;
-    CSWGuiLabel m_lblClass2;
-    CSWGuiLabel m_lblLevel;
-    CSWGuiLabel m_lblLevel1;
-    CSWGuiLabel m_lblLevel2;
-#else
     CSWGuiLabel m_lblForceMastery;
-#endif
     CSWGuiLabel m_lblFortitude;
     CSWGuiLabel m_lblReflex;
     CSWGuiLabel m_lblWill;
@@ -208,26 +198,8 @@ public:
     CSWGuiLabel m_lblDex;
     CSWGuiLabel m_lblDexterity;
     CSWGuiLabel m_lblDexMod;
-#ifdef _XBOX
-    CSWGuiLabel m_lblXScripts;
-    CSWGuiBlackenedLabel m_lblALevelUp;
-    CSWGuiBlackenedLabel m_lblAuto;
-    CSWGuiLabel m_lblX;
-    CSWGuiLabel m_lblA;
-    CSWGuiLabel m_lblY;
-    CSWGuiLabel m_lblBevel;
-    CSWGuiLabel m_lblStart;
-    CSWGuiLabel m_lblExit;
-    CSWGuiLabel m_lblBlack;
-    CSWGuiBlackenedLabel m_lblChangeChar;
-    CSWGuiLabel m_lblBevel2;
-#else
     CSWGuiLabel m_lblBevel;
     CSWGuiLabel m_lblBevel2;
-#endif
-#ifdef _XBOX
-    CSWGuiLabel m_lblGood[EFFECT_ICON_CAPACITY];
-#endif
     CSWGuiLabel m_lblMore;
     CSWGuiLabel m_lblAdorn;
     CSWGuiBlackenedLabel m_lblLight;
@@ -235,10 +207,24 @@ public:
 #ifdef _XBOX
     CSWGuiSlider m_sldAlign;
     CSWGui3DSceneView m_viewCharacter;
+    CSWGuiBlackenedLabel m_lblALevelUp;
+    CSWGuiBlackenedLabel m_lblAuto;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblY;
+    CSWGuiLabel m_lblStart;
+    CSWGuiLabel m_lblExit;
+    CSWGuiLabel m_lblBlack;
+    CSWGuiBlackenedLabel m_lblChangeChar;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_alblBar[7];
+    CSWGuiLabel m_lblStatBack;
+    CSWGuiLabel m_lblStatBorder;
+    CSWGuiLabel m_lblExpBack;
     int m_nPartySize;
     CSWCCreature* m_pCreature;
     CSWCCreature* m_pShownCreature;
     int m_nShownAlignment;
+    Vector m_vStatColor;
 #else
     CSWGuiButton m_btnAuto;
     CSWGuiButton m_btnLevelUp;

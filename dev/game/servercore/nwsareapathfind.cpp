@@ -1184,7 +1184,9 @@ int CSWSArea::TestSafeLocationPoint(const Vector& vPosition,
 {
     m_pPathfindInformation = pPathfind;
     float fRadius = pPathfind->m_fStepScale;
+#ifndef _XBOX
     int bFinished = 0;
+#endif
     Vector vStart = vPosition - Vector(AREA_SAFE_LOCATION_HORIZONTAL_RADIUS,
                                        AREA_SAFE_LOCATION_HORIZONTAL_RADIUS,
                                        AREA_SAFE_LOCATION_VERTICAL_RADIUS);
@@ -1196,6 +1198,9 @@ int CSWSArea::TestSafeLocationPoint(const Vector& vPosition,
     float fMaxHeight = pPathfind->m_fHalfStep;
     fMaxHeight += fMinHeight;
     fMaxHeight += AREA_SAFE_LOCATION_VERTICAL_RADIUS;
+#ifdef _XBOX
+    int bFinished = 0;
+#endif
     CSWSRoom* pRoom = GetRoom(vStart, NULL);
     if (pRoom == NULL)
     {
@@ -2025,8 +2030,8 @@ void CSWSArea::SmoothSelectNodes(int nPoints, float* pfPoints,
             if (nPending > 0)
             {
                 fX = pfPending[2 * (nPending - 1)];
+                fY = pfPending[2 * (nPending - 1) + 1];
                 --nPending;
-                fY = pfPending[2 * nPending + 1];
             }
             else
             {
@@ -2073,8 +2078,8 @@ void CSWSArea::SmoothSelectNodes(int nPoints, float* pfPoints,
                 if (nPending > 0)
                 {
                     fX = pfPending[2 * (nPending - 1)];
+                    fY = pfPending[2 * (nPending - 1) + 1];
                     --nPending;
-                    fY = pfPending[2 * nPending + 1];
                 }
             }
         }
@@ -2151,8 +2156,8 @@ int CSWSArea::SmoothSelectNodesRestartable(int nPoints, float* pfPoints,
             if (nPending > 0)
             {
                 fX = pfPending[2 * (nPending - 1)];
+                fY = pfPending[2 * (nPending - 1) + 1];
                 --nPending;
-                fY = pfPending[2 * nPending + 1];
             }
             else
             {
@@ -2202,8 +2207,8 @@ int CSWSArea::SmoothSelectNodesRestartable(int nPoints, float* pfPoints,
                 if (nPending > 0)
                 {
                     fX = pfPending[2 * (nPending - 1)];
+                    fY = pfPending[2 * (nPending - 1) + 1];
                     --nPending;
-                    fY = pfPending[2 * nPending + 1];
                 }
             }
         }

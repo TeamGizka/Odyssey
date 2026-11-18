@@ -40,12 +40,14 @@ void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)
 }
 #endif
 
+#ifndef _XBOX
 // Dead code: not in the PC executable
-void CSWGuiOptionsMouse::OnExitSlider(CSWGuiControl* pControl)  // Xbox 0x0012DB10
+void CSWGuiOptionsMouse::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 0;
 }
+#endif
 
 // Dead code: not in the PC executable
 void CSWGuiOptionsMain::ClosePanel()
@@ -235,7 +237,8 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360 
 #endif
 }
 #endif
-// PC 0x00759190 GOG 0x00758FB0 Xbox 0x00132320
+#ifndef _XBOX
+// PC 0x00759190 GOG 0x00758FB0
 void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -270,6 +273,7 @@ void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+#endif
 
 #ifdef _XBOX
 
@@ -384,14 +388,12 @@ void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
                     !pToggle->m_bToggled);
             }
             break;
-#ifndef _XBOX
         case 57:
             m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
             break;
         case 58:
             m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
             break;
-#endif
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -1121,14 +1123,12 @@ void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
             break;
-#ifndef _XBOX
         case 57:
             m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
             break;
         case 58:
             m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
             break;
-#endif
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -1620,6 +1620,7 @@ void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 }
 
+#ifndef _XBOX
 // PC 0x0074F770 GOG 0x00758FA0
 void CSWGuiOptionsMouse::OnPanelAdded()
 {
@@ -1663,12 +1664,16 @@ void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
+#endif
 // PC 0x00752430 GOG 0x007529A0
 CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
     StartLoadFromLayout("optfeedback_x");
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
     InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
     InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
@@ -1680,10 +1685,11 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     InitControl(m_lblSelect, "LBL_SELECT", 1);
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
     StopLoadFromLayout();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
     m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
@@ -1777,6 +1783,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     SetUpOptions();
 #endif
 }
+#ifndef _XBOX
 // PC 0x0074E890 GOG 0x0074EDF0
 void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
 {
@@ -1830,6 +1837,7 @@ void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
+#endif
 
 // PC 0x0074F9B0 GOG 0x0074DC70 Xbox 0x0012DB10
 void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
@@ -2363,6 +2371,7 @@ void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
         m_bChanged = 1;
     }
 }
+#ifndef _XBOX
 // PC 0x00751E90 GOG 0x00752400
 CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -2415,6 +2424,7 @@ CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     SetActiveControl(&m_sldMouseSen, 0);
     SetUpOptions();
 }
+#endif
 // PC 0x0074FBE0 GOG 0x0074FBB0
 void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
 {
@@ -2869,6 +2879,10 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
     StopLoadFromLayout();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
     m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);

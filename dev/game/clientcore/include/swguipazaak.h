@@ -200,10 +200,8 @@ public:
 #endif
     void HandleMoveCard(CSWGuiControl* pControl); void HandleStartDialog(CSWGuiControl* pControl);
     void HandleAcceptButton(CSWGuiControl* pControl);
-#ifndef _XBOX
     void UpdateHelpText(int nCardType);
     void ClearSideDeck(CSWGuiControl* pControl);
-#endif
 
     CSWGuiLabel m_lblTitle;
     CSWGuiPazaakCard m_cAvail[AvailCardCount];
@@ -222,6 +220,9 @@ public:
     CSWGuiLabel m_lblLtext;
 #ifdef _XBOX
     CSWGuiLabel m_lblRbutton;
+    CSWGuiLabel m_lblHelp;
+    CSWGuiLabel m_lblXbutton;
+    CSWGuiLabel m_lblXtext;
 #else
     CSWGuiLabel m_lblHelp;
     CSWGuiButton m_btnClearCards;
@@ -330,6 +331,10 @@ public:
     CSWGuiActivatedButton m_lblBbutton;
 #endif
     CSWGuiActivatedButton m_btnBlack;
+#ifdef _XBOX
+    CSWGuiActivatedButton m_lblWbutton;
+    CSWGuiActivatedButton m_btnWhite;
+#endif
     CSWGuiMessageBox m_cMessageBox;
     CSWGuiTutorial m_cTutorial;
     char* m_szStartTurnSound;
@@ -346,7 +351,12 @@ public:
     unsigned long m_bShownOpponentTurnHelp : 1;
     unsigned long m_bShownGameStartHelp : 1;
     unsigned long m_bShownTwentyHelp : 1;
+#ifdef _XBOX
+    unsigned long m_bShownChangeCardHelp : 1;
+    unsigned long m_nShownHelpFlags : 26;
+#else
     unsigned long m_nShownHelpFlags : 27;
+#endif
 #ifndef _XBOX
     int m_nPlayedCard;
     int m_nHandAction;

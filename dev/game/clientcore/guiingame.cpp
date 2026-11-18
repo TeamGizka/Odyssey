@@ -2899,12 +2899,10 @@ int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
             }
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
         }
-#ifndef _XBOX
         else if (g_pAppManager->m_pClientExoApp->GetCharacterChangeInProgress() != 0)
         {
             return 0;
         }
-#endif
         if (m_apScreenPanels[SCREEN_CHARACTER] == 0)
         {
             m_apScreenPanels[SCREEN_CHARACTER] = new CSWGuiInGameCharacter(m_pGuiManager);
@@ -2993,20 +2991,10 @@ int CGuiInGame::IsGlobalFading()
 {
     return m_pGlobalFade != 0 && !m_pGlobalFade->IsFadeDone();
 }
-#ifndef _XBOX
-int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x00680630 GOG 0x00680410
+int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x00680630 GOG 0x00680410 Xbox 0x000581B0
 {
     return m_pGlobalFade->m_fAlpha > 0.001f;
 }
-#endif
-
-#ifdef _XBOX
-
-int CGuiInGame::IsGlobalFadeObscuring()  // Xbox 0x000581B0
-{
-    return m_pGlobalFade->IsObscuring();
-}
-#endif
 
 #ifndef _XBOX
 void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMusic)
@@ -3029,7 +3017,13 @@ void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMu
                 m_pGuiManager->AddPanel(pCredits, CSWGuiManager::PANEL_MODE_MODAL, 1);
             }
             pCredits->m_vColor = vColor;
-            g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo->GetAmbientSound()->StopSounds(0);
+            if (g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+                g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo != NULL &&
+                g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo->m_pAmbientSound != NULL)
+            {
+                CSWCAmbientSound* pAmbientSound = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo->m_pAmbientSound;
+                pAmbientSound->StopSounds(0);
+            }
             if (m_pCreditsMusic != 0)
             {
                 delete m_pCreditsMusic;
@@ -3049,13 +3043,11 @@ void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMu
     }
 }
 
-void CGuiInGame::PostDialogConversationText(const CExoString& sConversation)
+void CGuiInGame::PostDialogConversationText(const CExoString& sConversation)  // Xbox 0x00059A30
 {
     if (m_bShowDialogDebugText)
     {
-        CExoString sText;
-        sText.Format("Conv: %s", sConversation.CStr());
-        AurPostString(sText.CStr(), 5, 15, 10000.0f);
+        EXOLOG("Conv: %s\n", sConversation.CStr());
     }
 }
 
@@ -3075,7 +3067,7 @@ void CGuiInGame::PostDialogSoundText(const CExoString& sSound)  // Xbox 0x00059A
         }
         CExoString sText;
         sText.Format(" ");
-        AurPostString(sText.CStr(), 5, nClearRow, 5.0f);
+        EXOLOG("%s\n", sText.CStr());
         if (nRow == 16)
         {
             sText.Format("Audio/Lip: - %s", sSound.CStr());
@@ -3084,7 +3076,7 @@ void CGuiInGame::PostDialogSoundText(const CExoString& sSound)  // Xbox 0x00059A
         {
             sText.Format("           - %s", sSound.CStr());
         }
-        AurPostString(sText.CStr(), 5, nRow, 10000.0f);
+        EXOLOG("%s\n", sText.CStr());
     }
 }
 
@@ -4129,7 +4121,7 @@ int CGuiInGame::SetTutorialReason(unsigned char nReason)
     return m_pTutorialBox->SetTutorialReason(nReason);
 }
 
-// PC 0x00681F30 GOG 0x00681D10
+// PC 0x00681F30 GOG 0x00681D10 Xbox 0x00054CC0
 int CGuiInGame::GetTutorialWindowHasBeenShown(unsigned char nReason)
 {
     if (nReason >= TUTORIAL_WINDOW_COUNT)
@@ -5326,7 +5318,11 @@ int CGuiInGame::HideSWInGameGui()  // Xbox 0x0005C3B0
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
-        if (pGuiManager != 0 && pGuiManager->m_lModalPanels.num == 0)
+        if (pGuiManager == 0)
+            return 0;
+        if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface != 0)
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface->RevertActionBarStates();
+        if (pGuiManager->m_lModalPanels.num == 0)
         {
             SetSWGuiStatus(GUISTATUS_RESTORE_MAIN_INTERFACE, 1);
             pGuiManager->RemovePanel(m_pInGameMenu);
@@ -5334,8 +5330,9 @@ int CGuiInGame::HideSWInGameGui()  // Xbox 0x0005C3B0
                 pGuiManager->RemovePanel(m_apScreenPanels[m_nLastGuiPanel]);
 
             int nOldScreen = m_nLastGuiPanel;
+            int nNewScreen = SCREEN_NONE;
             m_pPartySelection = 0;
-            UpdateCreatedInGameGUI(nOldScreen, SCREEN_NONE);
+            UpdateCreatedInGameGUI(nOldScreen, nNewScreen);
             if (m_bPaused != 0)
             {
                 if (g_bInScreenshotMode == 0 && !m_pGuiManager->PanelExists(m_pPausePanel))
@@ -7456,10 +7453,10 @@ int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
 void CGuiInGame::ClearDialogReplyText()  // Xbox 0x00054D00
 {
     CExoString sBlank(" ");
-    AurPostString(sBlank.CStr(), 5, 15, 5.0f);
+    EXOLOG("%s\n", sBlank.CStr());
     for (int i = 0; i < 5; i++)
     {
-        AurPostString(sBlank.CStr(), 5, i + 16, 5.0f);
+        EXOLOG("%s\n", sBlank.CStr());
     }
     m_nDialogReplyRow = 16;
 }

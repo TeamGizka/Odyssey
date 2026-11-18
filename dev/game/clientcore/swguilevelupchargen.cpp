@@ -39,9 +39,6 @@ void CSWGuiLevelUpCharGen::DetermineClass()
 void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
 {
     m_sName = sName;
-#ifdef _XBOX
-    CExoString sLevel(m_pCreature->m_pStats->GetLevel() + 1);
-#else
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     CExoString sLevel = pApp->GetGUIString(STRREF_LEVEL_LABEL);
     {
@@ -49,7 +46,6 @@ void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
         CExoString sNumber(nLevel);
         sLevel = sLevel + sNumber;
     }
-#endif
     m_lblName.m_cText.m_cParams.SetText(m_sName);
     m_lblClass.m_cText.m_cParams.SetText(m_sClass);
     m_lblLevelValue.m_cText.m_cParams.SetText(sLevel);
@@ -115,13 +111,8 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
         char nHitDie = g_pRules->m_pClasses[nClass].m_nHitDie;
         pStats = pCreature->GetStats();
         nStat = pStats->m_nConstitution;
-#ifdef _XBOX
-        char nHitPoints = nHitDie + pStats->CalcStatModifier(nStat) +
-                          m_pCreature->GetStats()->GetLevel() * nConDiff;
-#else
         char nHitPoints = m_pCreature->GetStats()->GetLevel() * nConDiff +
                           pStats->CalcStatModifier(nStat) + nHitDie;
-#endif
         if (nHitPoints <= 1)
         {
             nHitPoints = 1;
@@ -139,16 +130,8 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
             char nForceDie = g_pRules->m_pClasses[nClass].m_nForceDie;
             pStats = pCreature->GetStats();
             unsigned char nWisdom = pStats->m_nWisdom;
-#ifdef _XBOX
-            unsigned char nCharisma = pStats->m_nCharisma;
-            char nChaMod = pStats->CalcStatModifier(nCharisma);
-            char nForcePoints =
-                nForceDie + pStats->CalcStatModifier(nWisdom) + nChaMod +
-                m_pCreature->GetStats()->GetLevel() * (nWisDiff + nChaDiff);
-#else
             char nForcePoints = m_pCreature->GetStats()->GetLevel() * nWisDiff +
                                 pStats->CalcStatModifier(nWisdom) + nForceDie;
-#endif
             nForcePoints = nForcePoints > 1 ? nForcePoints : 1;
             short nForcePointsBase = m_pCreature->GetStats()->m_nForcePointsBase;
             pCreature->GetStats()->m_nForcePointsBase = nForcePointsBase + nForceDie;
@@ -259,18 +242,6 @@ void CSWGuiLevelUpCharGen::ClearPowers()
 
     if (pCreature != 0)
     {
-#ifdef _XBOX
-        int nClass = m_pCreature->m_pStats->m_nClassCount - 1;
-        pCreature->GetStats()->ClearKnownSpells();
-        for (unsigned char i = 0;
-             i < m_pCreature->m_pStats->GetNumberKnownSpells(nClass, 0); i++)
-        {
-            CSWCLevelUpStats* pStats = pCreature->m_pStats;
-            CSWCLevelUpStats* pOldStats = m_pCreature->m_pStats;
-            unsigned long nSpell = pOldStats->GetKnownSpell(nClass, 0, i);
-            pStats->AddKnownSpell(nClass, nSpell);
-        }
-#else
         pCreature->GetStats()->ClearKnownSpells();
         for (int nClass = 0; nClass < 2; nClass++)
         {
@@ -283,7 +254,6 @@ void CSWGuiLevelUpCharGen::ClearPowers()
                 pStats->AddKnownSpell(nClass, nSpell);
             }
         }
-#endif
     }
 }
 // PC 0x007579C0 GOG 0x00757A80
@@ -351,13 +321,8 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     CSWCLevelUpStats* pNewStats = pTo->m_pStats;
     CSWCLevelUpStats* pOldStats = pFrom->m_pStats;
 
-#ifdef _XBOX
-    pNewStats->m_sFirstName = pOldStats->m_sFirstName;
-    pNewStats->m_sLastName = pOldStats->m_sLastName;
-#else
     CExoString sName = pOldStats->GetFirstName() + " " + pOldStats->GetLastName();
     pNewStats->SetName(sName, "");
-#endif
     pNewStats->m_cPortrait.CResRef::operator=(pOldStats->GetPortrait(0));
     unsigned long nExperience = pOldStats->m_nExperience;
     pNewStats->m_nExperience = nExperience;
@@ -366,9 +331,7 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     unsigned char nGender = pOldStats->m_nGender;
     pNewStats->m_nGender = nGender;
     pNewStats->m_nGoodEvilAlignment = pOldStats->GetAlignment();
-#ifndef _XBOX
     pNewStats->SetBaseCNPCAlignment(pOldStats->m_nBaseCNPCAlignment);
-#endif
     unsigned char nStrength = pOldStats->m_aAbilities[0];
     pNewStats->SetSTRBase(nStrength);
     unsigned char nDexterity = pOldStats->m_aAbilities[1];
@@ -381,22 +344,12 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->SetWISBase(nWisdom);
     unsigned char nCharisma = pOldStats->m_aAbilities[5];
     pNewStats->SetCHABase(nCharisma);
-#ifdef _XBOX
-    pNewStats->m_nHitPointsBase = pOldStats->m_nHitPointsBase;
-    pNewStats->m_nCurrentHitPoints = pOldStats->m_nCurrentHitPoints;
-    pNewStats->m_nMaxHitPoints = pOldStats->GetMaxHitPoints();
-    pNewStats->m_nForcePointsBase = pOldStats->m_nForcePointsBase;
-    pNewStats->m_nCurrentForcePoints =
-        pOldStats->m_nCurrentForcePoints + pOldStats->m_nForcePointBonus;
-    pNewStats->m_nMaxForcePoints = pOldStats->m_nMaxForcePoints;
-#else
     pNewStats->m_nHitPointsBase = pOldStats->GetBaseHitPoints();
     pNewStats->m_nCurrentHitPoints = pOldStats->GetCurrentHitPoints();
     pNewStats->m_nMaxHitPoints = pOldStats->GetMaxHitPoints();
     pNewStats->m_nForcePointsBase = pOldStats->GetBaseForcePoints();
     pNewStats->m_nCurrentForcePoints = pOldStats->GetForcePoints();
     pNewStats->m_nMaxForcePoints = pOldStats->GetMaxForcePoints();
-#endif
 
     for (unsigned char nClass = 0; nClass < pOldStats->m_nClassCount; nClass++)
     {
@@ -423,15 +376,9 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     for (int nAttack = 0; nAttack < 4; nAttack++)
         pNewStats->m_nBaseAttackBonus = pOldStats->GetBaseAttackBonus();
     pNewStats->m_nGoodEvilAlignment = pOldStats->GetAlignment();
-#ifndef _XBOX
     pNewStats->SetBaseCNPCAlignment(pOldStats->m_nBaseCNPCAlignment);
-#endif
     pNewStats->ClearSkills();
-#ifdef _XBOX
-    pNewStats->m_nSkillPoints = pOldStats->m_nSkillPoints;
-#else
     pNewStats->m_nSkillPoints = pOldStats->GetSkillPoints();
-#endif
     for (unsigned char nSkill = 0; nSkill < g_pRules->m_nNumSkills; nSkill++)
         pNewStats->SetSkillRankBase(nSkill, pOldStats->GetSkillRank(nSkill));
     pNewStats->ClearFeats();
@@ -571,22 +518,20 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
     InitControl(m_lblFortitude, "LBL_FORTITUDE", 1);
     InitControl(m_lblReflex, "LBL_REFLEX", 1);
     InitControl(m_lblWill, "LBL_WILL", 1);
+    InitControl(m_viewModel, "MODEL_LBL", 1);
+    InitControl(m_lblPortrait, "PORTRAIT_LBL", 1);
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblBack, "LBL_BACK", 1);
     InitControl(m_lblAccept, "LBL_ACCEPT", 1);
 #endif
-    InitControl(m_viewModel, "MODEL_LBL", 1);
-    InitControl(m_lblPortrait, "PORTRAIT_LBL", 1);
-#ifndef _XBOX
     InitControl(m_lblStatsBack, "LBL_STATSBACK", 1);
     InitControl(m_lblStatsBorder, "LBL_STATSBORDER", 1);
     InitControl(m_lblPortBorder, "LBL_PORTBORDER", 1);
     InitControl(m_lblVitName, "LBL_VIT_NAME", 1);
     InitControl(m_lblDefName, "LBL_DEF_NAME", 1);
     InitControl(m_lblBar, "LBL_BAR1", 1);
-#endif
     StopLoadFromLayout();
     m_lblTitle.m_cText.m_cParams.SetStrRef(1071);
     m_pLevelUpPanel = new CSWGuiLevelUpPanel(m_pManager, m_nCreatureId);
@@ -597,12 +542,13 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
         CResRef* pPortrait = &pOriginal->GetPortrait(1);
         m_lblPortrait.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
     }
-    CAurScene* pScene = m_viewModel.m_cScene.m_pScene;
-    CAurCamera* pCamera = m_viewModel.m_cScene.m_pCamera;
+    CSWGuiScene& cScene = m_viewModel.m_cScene;
+    CAurScene* pScene = cScene.m_pScene;
+    CAurCamera* pCamera = cScene.m_pCamera;
     if (g_bDo3DGUIs != 0)
     {
         pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
-        m_viewModel.m_cScene.AddModel("charrec_light", -1);
+        cScene.AddModel("charrec_light", -1);
         pCreature->Setup3DScene(m_viewModel, pOriginal, 0, 1);
         pCreature->AttachToScene(pScene);
         pCreature->SetPosition(Vector());

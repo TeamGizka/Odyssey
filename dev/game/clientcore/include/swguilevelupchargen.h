@@ -73,20 +73,18 @@ public:
     CSWGuiLabel m_lblFortitude;
     CSWGuiLabel m_lblReflex;
     CSWGuiLabel m_lblWill;
-#ifndef _XBOX
-    CSWGuiLabel m_lblStatsBack;
-    CSWGuiLabel m_lblStatsBorder;
-    CSWGuiLabel m_lblPortBorder;
-    CSWGuiLabel m_lblVitName;
-    CSWGuiLabel m_lblDefName;
-    CSWGuiLabel m_lblBar;
-#endif
 #ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblAccept;
 #endif
+    CSWGuiLabel m_lblStatsBack;
+    CSWGuiLabel m_lblStatsBorder;
+    CSWGuiLabel m_lblPortBorder;
+    CSWGuiLabel m_lblVitName;
+    CSWGuiLabel m_lblDefName;
+    CSWGuiLabel m_lblBar;
     CSWGui3DSceneView m_viewModel;
     CSWGuiLabel m_lblPortrait;
     int m_nPreviousInputClass;

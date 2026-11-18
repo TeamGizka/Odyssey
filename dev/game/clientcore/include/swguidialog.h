@@ -50,10 +50,6 @@ public:
     unsigned long m_nReplyContext;
     int m_nSelectedReply;
     int m_nReplyCount;
-#ifdef _XBOX
-    int m_bDialogActive;
-    int m_bDialogWaiting;
-#endif
     CSWGuiLabel m_lblReply[MAX_REPLIES];
     unsigned long m_aReplyIndex[MAX_REPLIES];
     unsigned long m_nOwner;
@@ -62,13 +58,9 @@ public:
     Vector m_vReplyColor;
     Vector m_vReplyHighlightColor;
     CExoString m_sMessage;
-#ifdef _XBOX
-    int m_bDialogEnded;
-#else
     unsigned long m_bDialogActive : 1;
     unsigned long m_bDialogWaiting : 1;
     unsigned long m_bDialogEnded : 1;
-#endif
 };
 
 struct CSWGuiZeroExtent : public CSWGuiExtent
@@ -184,7 +176,12 @@ public:
 
     CSWGuiDialogComputerInfo m_aInfo[4];
     CSWGuiListBox m_lbMessage;
+#ifdef _XBOX
+    CSWGuiLabel m_lblRAnalog;
+    CSWGuiLabel m_lblBar[6];
+#else
     CSWGuiLabel m_lblBar[10];
+#endif
     CExoSoundSource* m_pSound;
 };
 

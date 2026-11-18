@@ -27,8 +27,14 @@ public:
     CSWGuiButton m_btnResume;
     CSWGuiButton m_btnExit;
     CSWGuiLabel m_alblBar[5];
+#else
+    CSWGuiLabel m_alblBar[6];
+    Vector m_vBorderColor;
+    Vector m_vHiliteColor;
 #endif
+#ifndef _XBOX
     virtual void OnPanelRemoved();
+#endif
     void OnLoadGame(CSWGuiControl*);
     void OnSaveGame(CSWGuiControl*);
     void OnGameplay(CSWGuiControl*);
@@ -41,7 +47,9 @@ public:
     void ReallyQuit(CSWGuiControl*);
     virtual void HandleInputEvent(int, int);
     void SetDescription(unsigned long);
+#ifndef _XBOX
     virtual void OnPanelAdded();
+#endif
     void OnQuit(CSWGuiControl*);
     void OnEnterSlot(CSWGuiControl*);
 #ifndef _XBOX

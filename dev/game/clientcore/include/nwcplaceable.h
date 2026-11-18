@@ -91,14 +91,10 @@ public:
     Gob* m_pLight;
 
     void MenuActionUseItem(unsigned long oidItem, CSWCCreature* pCreature);
-#ifndef _XBOX
     void MenuActionSetPlaceableMine(unsigned long oidItem, CSWCCreature* pCreature);
-#endif
     void GetUseItems(CSWCCreature* pCreature, CExoArrayList<CSWGuiInterfaceAction>& lstActions);
-#ifndef _XBOX
     void GetPlaceableInterfaceMines(CSWCCreature* pCreature,
                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions);
-#endif
     int ActionMenuExamine(unsigned long oidTarget, CSWCCreature* pCreature);
     int ActionMenuGiveItem(unsigned long oidTarget, CSWCCreature* pCreature);
     int MenuActionUseComputerSpike(unsigned long oidTarget, CSWCCreature* pCreature);

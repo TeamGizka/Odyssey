@@ -289,12 +289,21 @@ int CSWSPlayerCharSheetGUI::ComputeCharacterSheetUpdateRequired(CSWSPlayer* pPla
         return 0;
     case UPDATE_STATS:
     {
+#ifdef _XBOX
+        unsigned char nStrength = pUpdate->m_nStrength;
+        unsigned char nDexterity = pUpdate->m_nDexterity;
+        unsigned char nConstitution = pUpdate->m_nConstitution;
+        unsigned char nIntelligence = pUpdate->m_nIntelligence;
+        unsigned char nWisdom = pUpdate->m_nWisdom;
+        unsigned char nCharisma = pUpdate->m_nCharisma;
+#else
         unsigned char nDexterity = pUpdate->m_nDexterity;
         unsigned char nConstitution = pUpdate->m_nConstitution;
         unsigned char nIntelligence = pUpdate->m_nIntelligence;
         unsigned char nWisdom = pUpdate->m_nWisdom;
         unsigned char nCharisma = pUpdate->m_nCharisma;
         unsigned char nStrength = pUpdate->m_nStrength;
+#endif
         nUpdate = (pStats->GetSTRStat() != nStrength) |
                   (pStats->GetDEXStat() != nDexterity) |
                   (pStats->GetCONStat() != nConstitution) |

@@ -107,12 +107,10 @@ public:
     CExoString m_sTransitionDestination;
 
     void GetUseItems(CSWCCreature* pCreature, CExoArrayList<CSWGuiInterfaceAction>& lstActions);
-#ifndef _XBOX
     void DoorSaber(unsigned long oidDoor, CSWCCreature* pCreature);
     void MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreature);
     void GetDoorInterfaceMines(CSWCCreature* pCreature,
                                CExoArrayList<CSWGuiInterfaceAction>& lstActions);
-#endif
     int ActionMenuExamine(unsigned long oidTarget, CSWCCreature* pCreature);
     void SetMineIcon(unsigned char nIcon);
 };

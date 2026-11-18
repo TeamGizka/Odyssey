@@ -47,11 +47,14 @@ public:
 #ifdef _XBOX
     enum { NUM_KEYS = 65, KEYS_PER_ROW = 13, MAX_KEYBOARD_NAME_LENGTH = 16 };
     static const unsigned long STRREF_NAME_TOO_LONG = 42361;
+    CSWGuiButton m_btnDone;
+    CSWGuiLabel m_lblNameBox;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblSubTitle;
     CSWGuiButton m_aStdButtons[NUM_KEYS];
     CSWGuiButton m_aIntButtons[NUM_KEYS];
     CSWGuiButton m_btnSpace;
     CSWGuiButton m_btnBackspace;
-    CSWGuiButton m_btnDone;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblRandom;
@@ -59,9 +62,6 @@ public:
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblY;
     CSWGuiLabel m_lblX;
-    CSWGuiLabel m_lblNameBox;
-    CSWGuiLabel m_lblTitle;
-    CSWGuiLabel m_lblSubTitle;
     CSWGuiLabel m_lblIntl;
 #else
     CSWGuiButton m_btnDone;

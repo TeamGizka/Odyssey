@@ -3858,9 +3858,9 @@ void GetCreatureRadius(CAurObject* pObject, char* sProperty, void* pData)
 // PC 0x0065A520 GOG 0x0065A3D0 Xbox 0x00039CA0
 void GetPath(CAurObject* pObject, char* sProperty, void* pData)
 {
-    Vector* pPath = static_cast<Vector*>(pData);
-    pPath->m_fY = 0.0f;
-    pPath->m_fZ = 0.0f;
+    CAurPathInfo* pPathInfo = static_cast<CAurPathInfo*>(pData);
+    pPathInfo->m_nCoordinates = 0;
+    pPathInfo->m_pfCoordinates = NULL;
 }
 // PC 0x0065A530 GOG 0x0065A3E0 Xbox 0x00039CB0
 CSWCAnimBase* CSWCCreature::SetSpecialWalkAnimation(unsigned char nSpecialWalkAnimation)
@@ -4542,17 +4542,102 @@ void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
     }
     ForceMenuAction(nAction, pTarget);
 }
-// PC 0x00665900 GOG 0x006656A0
+#ifdef _XBOX
+enum
+{
+    XBOX_TARGET_MENU_DEFAULT = 0,
+    XBOX_TARGET_MENU_FORCE_POWERS = 1,
+    XBOX_TARGET_MENU_MINES = 2,
+    XBOX_TARGET_MENU_SELF_FORCE_POWERS = 3,
+    XBOX_TARGET_MENU_USABLE_ITEMS = 4,
+    XBOX_TARGET_MENU_STANCES = 5,
+    XBOX_TARGET_MENU_BEHAVIORS = 6
+};
+
+enum
+{
+    XBOX_ACTION_SWITCH_WEAPONS = 1036,
+    XBOX_STRREF_SWITCH_WEAPON = 48533,
+    XBOX_STRREF_UNEQUIP_WEAPON = 48534,
+    XBOX_STRREF_EQUIP_WEAPON = 48535,
+    XBOX_STRREF_SWITCH_WEAPONS = 48536,
+    XBOX_STRREF_UNEQUIP_WEAPONS = 48537,
+    XBOX_STRREF_EQUIP_WEAPONS = 48538
+};
+#endif
+// PC 0x00665900 GOG 0x006656A0 Xbox 0x00046990
 void CSWCCreature::GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, int nMenu)
 {
+#ifdef _XBOX
+    CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+#endif
     int nFirstAction = lstActions.num;
     CExoString sName;
+#ifdef _XBOX
+    if (nMenu == XBOX_TARGET_MENU_DEFAULT)
+    {
+        CSWSItem* pRightHand =
+            (GetServerObject() != NULL ? GetServerObject()->AsSWSCreature() : NULL)->GetInventory()->GetItemInSlot(
+                INVENTORY_SLOT_RIGHTHAND);
+        CSWSItem* pRightHand2 =
+            (GetServerObject() != NULL ? GetServerObject()->AsSWSCreature() : NULL)->GetInventory()->GetItemInSlot(
+                INVENTORY_SLOT_RIGHTHAND2);
+        CSWSItem* pLeftHand =
+            (GetServerObject() != NULL ? GetServerObject()->AsSWSCreature() : NULL)->GetInventory()->GetItemInSlot(
+                INVENTORY_SLOT_LEFTHAND);
+        CSWSItem* pLeftHand2 =
+            (GetServerObject() != NULL ? GetServerObject()->AsSWSCreature() : NULL)->m_pInventory->GetItemInSlot(
+                INVENTORY_SLOT_LEFTHAND2);
+        if (m_pArea != NULL)
+        {
+            CSWSArea* pServerArea = m_pArea->GetServerArea();
+            if (pServerArea != NULL && !pServerArea->GetPlayerRestrictMode() && (pRightHand != NULL || pRightHand2 != NULL))
+            {
+                if (pRightHand != NULL)
+                {
+                    if (pRightHand2 != NULL)
+                    {
+                        if (pLeftHand == NULL && pLeftHand2 == NULL)
+                            sName = pClientExoApp->GetGUIString(XBOX_STRREF_SWITCH_WEAPON);
+                        else
+                            sName = pClientExoApp->GetGUIString(XBOX_STRREF_SWITCH_WEAPONS);
+                    }
+                    else
+                    {
+                        if (pLeftHand != NULL)
+                            sName = pClientExoApp->GetGUIString(XBOX_STRREF_UNEQUIP_WEAPONS);
+                        else
+                            sName = pClientExoApp->GetGUIString(XBOX_STRREF_UNEQUIP_WEAPON);
+                    }
+                }
+                else
+                {
+                    if (pLeftHand2 != NULL)
+                        sName = pClientExoApp->GetGUIString(XBOX_STRREF_EQUIP_WEAPONS);
+                    else
+                        sName = pClientExoApp->GetGUIString(XBOX_STRREF_EQUIP_WEAPON);
+                }
+                lstActions.SetSize(nFirstAction + 1);
+                lstActions[nFirstAction].m_sName = sName;
+                lstActions[nFirstAction].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuSwitchWeapons;
+                lstActions[nFirstAction].m_oidTarget = (unsigned long)this;
+                lstActions[nFirstAction].m_nAction = XBOX_ACTION_SWITCH_WEAPONS;
+                lstActions[nFirstAction].m_resIcon = "i_swtchwpn";
+            }
+        }
+        return;
+    }
+#endif
     m_pStats->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER, 0, 0, 0,
         SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED, 0, -1, 0, 1, 0, 0, 0);
     for (int i = nFirstAction; i < lstActions.num; ++i)
     {
         lstActions.element[i].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuForm;
+#ifdef _XBOX
+        lstActions.element[i].m_oidTarget = (unsigned long)this;
+#else
         lstActions.element[i].m_oidTarget = GetId();
+#endif
         lstActions.element[i].m_nAction &= ~CSWGuiInterfaceAction::SPELL_ACTION_MASK;
         lstActions.element[i].m_bRevertActionBar = 1;
     }
@@ -6600,9 +6685,8 @@ void CSWCCreature::FollowAnimationUpdate()
          GetServerCreature()->IsDebilitated(0)))
         return;
 
-    unsigned long oidCreature = m_nId;
     int bSetAnimation = 1;
-    int nIndex = g_pAppManager->GetClientExoApp()->GetSWParty()->GetIndex(oidCreature);
+    int nIndex = g_pAppManager->m_pClientExoApp->GetSWParty()->GetIndex(m_nId);
     if (nIndex == 1 || nIndex == 2)
     {
 #ifdef _XBOX
@@ -6639,7 +6723,6 @@ void CSWCCreature::FollowAnimationUpdate()
         }
         else
         {
-            float fAnimationMoveSpeed;
             if (fSpeed >= fWalkThreshold)
             {
                 if (m_bInParty && IsInjured() &&
@@ -6650,7 +6733,7 @@ void CSWCCreature::FollowAnimationUpdate()
                 else
                     nAnimation = (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN)) ?
                         CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_RUN;
-                fAnimationMoveSpeed = fRunDistance / (GetAnimationLength(nAnimation) * 0.001f);
+                fAnimationSpeed = fSpeed / (fRunDistance / (GetAnimationLength(nAnimation) * 0.001f));
             }
             else
             {
@@ -6662,9 +6745,8 @@ void CSWCCreature::FollowAnimationUpdate()
                 else
                     nAnimation = (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN)) ?
                         CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_WALK;
-                fAnimationMoveSpeed = fWalkDistance / (GetAnimationLength(nAnimation) * 0.001f);
+                fAnimationSpeed = fSpeed / (fWalkDistance / (GetAnimationLength(nAnimation) * 0.001f));
             }
-            fAnimationSpeed = fSpeed / fAnimationMoveSpeed;
         }
 
         m_fAnimationSpeed = fAnimationSpeed;
@@ -9148,15 +9230,6 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot)  // Xbox 0x0004
 }
 #include "nwsplayer.h"
 
-enum
-{
-    XBOX_TARGET_MENU_DEFAULT = 0,
-    XBOX_TARGET_MENU_SPECIAL = 1,
-    XBOX_TARGET_MENU_FORCE_POWERS = 2,
-    XBOX_TARGET_MENU_MINES = 3,
-    XBOX_TARGET_MENU_SELF_FORCE_POWERS = 4,
-    XBOX_TARGET_MENU_USABLE_ITEMS = 5
-};
 void CSWCCreature::CreateUsableItemEntry(  // Xbox 0x00046C50
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWSItem* pItem, int bEquipped)
 {
@@ -9346,7 +9419,7 @@ void CSWCCreature::GetFriendlyInterfaceActions(  // Xbox 0x00047610
     }
 }
 
-void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
+void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,  // Xbox 0x00047B20
                                     CExoArrayList<CSWGuiInterfaceAction>& lActions)
 {
     switch (GetInterfaceTargetType(pTarget))
@@ -9355,17 +9428,22 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
         switch (nMenu)
         {
         case XBOX_TARGET_MENU_DEFAULT:
-            lActions.Allocate(1);
-            lActions.num = 1;
-            lActions[0].m_sName =
-                g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_NO_ACTION);
-            lActions[0].m_pfnAction = NULL;
-            lActions[0].m_oidTarget = 0;
-            lActions[0].m_nAction = CSWGuiInterfaceAction::ACTION_NO_ACTION;
-            lActions[0].m_resIcon = "i_noaction";
-            break;
-        case XBOX_TARGET_MENU_SPECIAL:
             GetNonCombatFeatsSkills(lActions);
+            GetStances(lActions, XBOX_TARGET_MENU_DEFAULT);
+            if (lActions.num < 1)
+            {
+                lActions.Allocate(1);
+                lActions.num = 1;
+                lActions[0].m_sName =
+                    g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_NO_ACTION);
+                lActions[0].m_pfnAction = NULL;
+                lActions[0].m_oidTarget = 0;
+                lActions[0].m_nAction = CSWGuiInterfaceAction::ACTION_NO_ACTION;
+                lActions[0].m_resIcon = "i_noaction";
+            }
+            break;
+        case XBOX_TARGET_MENU_STANCES:
+            GetStances(lActions, XBOX_TARGET_MENU_STANCES);
             break;
         case XBOX_TARGET_MENU_MINES:
             GetMines(lActions);
@@ -9375,6 +9453,9 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
             break;
         case XBOX_TARGET_MENU_SELF_FORCE_POWERS:
             GetSelfForcePowers(lActions);
+            break;
+        case XBOX_TARGET_MENU_BEHAVIORS:
+            GetBehaviors(lActions);
             break;
         }
         break;
@@ -9383,29 +9464,33 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
         {
         case XBOX_TARGET_MENU_DEFAULT:
             if (pTarget->AsSWCPlaceable() != NULL)
-                pTarget->AsSWCPlaceable()->GetTargetActions(this, 0, lActions);
+                pTarget->AsSWCPlaceable()->GetTargetActions(this, TARGET_ACTION_MENU_PRIMARY, lActions);
             else if (pTarget->AsSWCDoor() != NULL)
-                pTarget->AsSWCDoor()->GetTargetActions(this, 0, lActions);
-            break;
-        case XBOX_TARGET_MENU_SPECIAL:
-            if (pTarget->AsSWCPlaceable() != NULL)
-                pTarget->AsSWCPlaceable()->GetTargetActions(this, 1, lActions);
-            else if (pTarget->AsSWCDoor() != NULL)
-                pTarget->AsSWCDoor()->GetTargetActions(this, 1, lActions);
+                pTarget->AsSWCDoor()->GetTargetActions(this, TARGET_ACTION_MENU_PRIMARY, lActions);
             GetNonCombatFeatsSkills(lActions);
+            GetStances(lActions, XBOX_TARGET_MENU_DEFAULT);
+            break;
+        case XBOX_TARGET_MENU_STANCES:
+            GetStances(lActions, XBOX_TARGET_MENU_STANCES);
             break;
         case XBOX_TARGET_MENU_MINES:
-            GetMines(lActions);
+            if (pTarget->AsSWCPlaceable() != NULL)
+                pTarget->AsSWCPlaceable()->GetTargetActions(this, TARGET_ACTION_MENU_MINES, lActions);
+            else if (pTarget->AsSWCDoor() != NULL)
+                pTarget->AsSWCDoor()->GetTargetActions(this, TARGET_ACTION_MENU_MINES, lActions);
             break;
         case XBOX_TARGET_MENU_USABLE_ITEMS:
             if (pTarget->AsSWCPlaceable() != NULL)
-                pTarget->AsSWCPlaceable()->GetTargetActions(this, 5, lActions);
+                pTarget->AsSWCPlaceable()->GetTargetActions(this, XBOX_TARGET_MENU_USABLE_ITEMS, lActions);
             else if (pTarget->AsSWCDoor() != NULL)
-                pTarget->AsSWCDoor()->GetTargetActions(this, 5, lActions);
+                pTarget->AsSWCDoor()->GetTargetActions(this, XBOX_TARGET_MENU_USABLE_ITEMS, lActions);
             GetUsableItems(lActions);
             break;
         case XBOX_TARGET_MENU_SELF_FORCE_POWERS:
             GetSelfForcePowers(lActions);
+            break;
+        case XBOX_TARGET_MENU_BEHAVIORS:
+            GetBehaviors(lActions);
             break;
         }
         break;
@@ -9414,21 +9499,27 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
         {
         case XBOX_TARGET_MENU_DEFAULT:
             if (pTarget->AsSWCTrigger() != NULL)
-                pTarget->AsSWCTrigger()->GetTargetActions(this, 0, lActions);
+                pTarget->AsSWCTrigger()->GetTargetActions(this, TARGET_ACTION_MENU_PRIMARY, lActions);
+            GetStances(lActions, XBOX_TARGET_MENU_DEFAULT);
             break;
-        case XBOX_TARGET_MENU_SPECIAL:
-            if (pTarget->AsSWCTrigger() != NULL)
-                pTarget->AsSWCTrigger()->GetTargetActions(this, 1, lActions);
-            GetNonCombatFeatsSkills(lActions);
+        case XBOX_TARGET_MENU_STANCES:
+            GetStances(lActions, XBOX_TARGET_MENU_STANCES);
             break;
         case XBOX_TARGET_MENU_MINES:
             GetMines(lActions);
+            break;
+        case XBOX_TARGET_MENU_FORCE_POWERS:
+            if (pTarget->AsSWCTrigger() != NULL)
+                pTarget->AsSWCTrigger()->GetTargetActions(this, TARGET_ACTION_MENU_SKILLS, lActions);
             break;
         case XBOX_TARGET_MENU_USABLE_ITEMS:
             GetUsableItems(lActions);
             break;
         case XBOX_TARGET_MENU_SELF_FORCE_POWERS:
             GetSelfForcePowers(lActions);
+            break;
+        case XBOX_TARGET_MENU_BEHAVIORS:
+            GetBehaviors(lActions);
             break;
         }
         break;
@@ -9439,10 +9530,30 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
             if (pTarget->AsSWCCreature() != NULL)
                 pTarget->AsSWCCreature()->GetFriendlyInterfaceActions(this, 0, lActions);
             else if (pTarget->AsSWCPlaceable() != NULL)
-                pTarget->AsSWCPlaceable()->GetTargetActions(this, 0, lActions);
-            break;
-        case XBOX_TARGET_MENU_SPECIAL:
+                pTarget->AsSWCPlaceable()->GetTargetActions(this, TARGET_ACTION_MENU_PRIMARY, lActions);
             GetNonCombatFeatsSkills(lActions);
+            GetStances(lActions, XBOX_TARGET_MENU_DEFAULT);
+            break;
+        case XBOX_TARGET_MENU_STANCES:
+            GetStances(lActions, XBOX_TARGET_MENU_STANCES);
+            break;
+        case XBOX_TARGET_MENU_MINES:
+            GetMines(lActions);
+            if (pTarget->AsSWCPlaceable() != NULL &&
+                pTarget->AsSWCPlaceable()->GetServerPlaceable() == NULL)
+                break;
+            if (pTarget->AsSWCPlaceable() != NULL &&
+                pTarget->AsSWCPlaceable()->IsHostile() &&
+                pTarget->AsSWCPlaceable()->GetServerPlaceable()->GetReputation(
+                    GetServerObject()->GetId(), 0) <=
+                    CSWSObject::MAX_HOSTILE_REPUTATION)
+                GetHostileItems(lActions, (CSWCCreature*)pTarget->AsSWCPlaceable());
+            break;
+        case XBOX_TARGET_MENU_USABLE_ITEMS:
+            GetUsableItems(lActions);
+            break;
+        case XBOX_TARGET_MENU_SELF_FORCE_POWERS:
+            GetSelfForcePowers(lActions);
             break;
         case XBOX_TARGET_MENU_FORCE_POWERS:
             if (pTarget->AsSWCPlaceable() != NULL &&
@@ -9452,14 +9563,8 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
                     CSWSObject::MAX_HOSTILE_REPUTATION)
                 GetHostileForcePowers(pTarget, lActions);
             break;
-        case XBOX_TARGET_MENU_MINES:
-            GetMines(lActions);
-            break;
-        case XBOX_TARGET_MENU_USABLE_ITEMS:
-            GetUsableItems(lActions);
-            break;
-        case XBOX_TARGET_MENU_SELF_FORCE_POWERS:
-            GetSelfForcePowers(lActions);
+        case XBOX_TARGET_MENU_BEHAVIORS:
+            GetBehaviors(lActions);
             break;
         }
         break;
@@ -9468,9 +9573,11 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
         {
         case XBOX_TARGET_MENU_DEFAULT:
             pTarget->AsSWCCreature()->GetHostileInterfaceActions(this, 0, lActions);
-            break;
-        case XBOX_TARGET_MENU_SPECIAL:
             GetCombatFeatsSkills(lActions, pTarget->AsSWCCreature());
+            GetStances(lActions, XBOX_TARGET_MENU_DEFAULT);
+            break;
+        case XBOX_TARGET_MENU_STANCES:
+            GetStances(lActions, XBOX_TARGET_MENU_STANCES);
             break;
         case XBOX_TARGET_MENU_MINES:
             GetHostileItems(lActions, pTarget->AsSWCCreature());
@@ -9479,11 +9586,14 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
         case XBOX_TARGET_MENU_USABLE_ITEMS:
             GetUsableItems(lActions);
             break;
+        case XBOX_TARGET_MENU_SELF_FORCE_POWERS:
+            GetSelfForcePowers(lActions);
+            break;
         case XBOX_TARGET_MENU_FORCE_POWERS:
             GetHostileForcePowers(pTarget, lActions);
             break;
-        case XBOX_TARGET_MENU_SELF_FORCE_POWERS:
-            GetSelfForcePowers(lActions);
+        case XBOX_TARGET_MENU_BEHAVIORS:
+            GetBehaviors(lActions);
             break;
         }
         break;

@@ -1546,7 +1546,7 @@ int CSWRoomSurfaceMesh::ComputeClippedLineSegment(
     return 1;
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 #include "aurconsole.h"
 
 ConsoleFunc ConVcheckaabbtime("checkaabbtime", &checkaabbtime);

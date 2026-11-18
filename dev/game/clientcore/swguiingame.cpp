@@ -2312,9 +2312,12 @@ void CSWGuiInGameMenu::ShowChangeButtons(int bShow)
     m_btnChange3.SetEnabled(bShow);
 }
 #endif
-// PC 0x00676710 GOG 0x006764B0
+// PC 0x00676710 GOG 0x006764B0 Xbox 0x0004B740
 void CSWGuiDeathDisplay::OnPanelAdded()
 {
+#ifdef _XBOX
+    g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GUI);
+#else
     g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GUI, 0);
     CSWGuiExtent cExtent = m_cExtent;
     cExtent.m_nLeft = g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / 2 -
@@ -2323,14 +2326,24 @@ void CSWGuiDeathDisplay::OnPanelAdded()
                      cExtent.m_nHeight / 2;
     SetExtent(cExtent);
     g_pAppManager->m_pClientExoApp->ShowMouse(32);
+#endif
     g_pAppManager->m_pClientExoApp->SetGuiGameSlow(1);
+#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
+#endif
 }
 // PC 0x006767D0 GOG 0x00676570 Xbox 0x0004B760
 void CSWGuiDeathDisplay::OnPanelRemoved()
 {
     g_pAppManager->m_pClientExoApp->SetGuiGameSlow(0);
 }
+#ifdef _XBOX
+void CSWGuiDeathDisplay::Draw(float fDeltaTime)  // Xbox 0x00049EE0
+{
+    m_fFadeTime -= fDeltaTime;
+    CSWGuiPanel::Draw(fDeltaTime);
+}
+#else
 // PC 0x006767E0 GOG 0x00676580
 void CSWGuiDeathDisplay::Draw(float fDeltaTime)
 {
@@ -2346,17 +2359,42 @@ void CSWGuiDeathDisplay::Draw(float fDeltaTime)
     }
     CSWGuiPanel::Draw(fDeltaTime);
 }
+#endif
+#ifdef _XBOX
+void CSWGuiDeathDisplay::HandleInputEvent(int nEvent, int nState)  // Xbox 0x0004FFE0
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case GUIEVENT_CANCEL:
+            OnQuitPressed(NULL);
+            break;
+        case GUIEVENT_TOGGLE_MODE:
+            OnLoadGamePressed(NULL);
+            break;
+        case GUIEVENT_ACTIVATE:
+        case GUIEVENT_ACCEPT:
+            OnLastSavePressed(NULL);
+            break;
+        }
+    }
+}
+#else
 // PC 0x006049D0 GOG 0x006049B0
 void CSWGuiDeathDisplay::HandleInputEvent(int nEvent, int nState)
 {
 }
+#endif
 // PC 0x006768B0 GOG 0x00676650 Xbox 0x0004B770
 void CSWGuiDeathDisplay::OnQuitPressed(CSWGuiControl* pControl)
 {
     if (m_fFadeTime > 0.0)
         return;
     g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
+#ifndef _XBOX
     g_pAppManager->m_pClientExoApp->SetGameOver(0);
+#endif
     g_pAppManager->m_pClientExoApp->GetInGameGui()->RemoveDeathMessage(1);
 }
 #ifndef _XBOX
@@ -2366,7 +2404,22 @@ void CSWGuiDeathDisplay::OnQuitPressed(CSWGuiControl* pControl)
 #ifndef _XBOX
 #endif
 
-#ifndef _XBOX
+#ifdef _XBOX
+CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)  // Xbox 0x0004E790
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("gameover_x");
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblMessage, "LBL_MESSAGE", 1);
+    InitControl(m_lblLastSave, "LBL_LASTSAVE", 1);
+    InitControl(m_lblLoadGame, "LBL_LOADGAME", 1);
+    InitControl(m_lblQuit, "LBL_QUIT", 1);
+    StopLoadFromLayout();
+    m_fFadeTime = 0.5f;
+}
+#else
 // PC 0x0067AF50 GOG 0x0067AD20
 CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -2561,7 +2614,7 @@ void CSWGuiInGameMessages::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0xC, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x00679B50 GOG 0x006798F0
+// PC 0x00679B50 GOG 0x006798F0 Xbox 0x0004B7B0
 void CSWGuiDeathDisplay::OnLoadGamePressed(CSWGuiControl* pControl)
 {
     if (m_fFadeTime > 0.0)
@@ -2578,14 +2631,19 @@ void CSWGuiDeathDisplay::OnLoadGamePressed(CSWGuiControl* pControl)
     }
     else
     {
+#ifdef _XBOX
+        pSaveLoad->m_bDeferredRemoval = 0;
+        pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+#else
         delete pSaveLoad;
         if (SWGUIINGAME_DEBUG)
         {
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox->SetAllowCancel(0);
         }
+#endif
     }
 }
-// PC 0x00679C50 GOG 0x00679A00
+// PC 0x00679C50 GOG 0x00679A00 Xbox 0x0004EA50
 void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
 {
     if (m_fFadeTime > 0.0)
@@ -2599,12 +2657,22 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
     {
         if (pSaveLoad->LaunchMostRecentSave())
         {
+#ifdef _XBOX
+            pSaveLoad->m_bDeferredRemoval = 0;
+            pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+#else
             delete pSaveLoad;
+#endif
             g_pAppManager->m_pClientExoApp->GetInGameGui()->RemoveDeathMessage(0);
         }
         else
         {
+#ifdef _XBOX
+            pSaveLoad->m_bDeferredRemoval = 0;
+            pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+#else
             delete pSaveLoad;
+#endif
             CSWGuiMessageBox* pMessageBox =
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
             pMessageBox->SetAllowCancel(0);
@@ -2615,7 +2683,12 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
     }
     else
     {
+#ifdef _XBOX
+        pSaveLoad->m_bDeferredRemoval = 0;
+        pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+#else
         delete pSaveLoad;
+#endif
     }
 }
 #ifndef _XBOX

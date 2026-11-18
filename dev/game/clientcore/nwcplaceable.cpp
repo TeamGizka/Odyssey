@@ -488,7 +488,8 @@ void CSWCPlaceable::MenuActionUseItem(unsigned long oidItem, CSWCCreature* pCrea
 {
     pCreature->PerformUseItem(oidItem & ~OBJECT_LISTTYPE_MASK, 0, m_nId, m_vPosition);
 }
-// PC 0x006DA430 GOG 0x006DB450
+#endif
+// PC 0x006DA430 GOG 0x006DB450 Xbox 0x0009BFB0
 void CSWCPlaceable::MenuActionSetPlaceableMine(unsigned long oidItem, CSWCCreature* pCreature)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -512,7 +513,6 @@ void CSWCPlaceable::MenuActionSetPlaceableMine(unsigned long oidItem, CSWCCreatu
         pCreature->PerformUseItem(oidItem, 0, GetId(), m_vPosition);
     }
 }
-#endif
 // PC 0x006DA500 GOG 0x006DA0F0 Xbox 0x0009C080
 CSWSPlaceable* CSWCPlaceable::GetServerPlaceable()
 {
@@ -758,7 +758,8 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
         }
     }
 }
-// PC 0x006DADA0 GOG 0x006DA990
+#endif
+// PC 0x006DADA0 GOG 0x006DA990 Xbox 0x0009C910
 void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
                                                CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -824,7 +825,11 @@ void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
             lstActions[nAction].m_sName = sName;
             lstActions[nAction].m_pfnAction =
                 (PFNMENUACTION)&CSWCPlaceable::MenuActionSetPlaceableMine;
+#ifdef _XBOX
+            lstActions[nAction].m_oidTarget = (unsigned long)this;
+#else
             lstActions[nAction].m_oidTarget = GetId();
+#endif
             lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
             lstActions[nAction].m_resIcon = pItem->GetIcon();
             nAction++;
@@ -832,6 +837,7 @@ void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
         }
     }
 }
+#ifndef _XBOX
 void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DB0C0 GOG 0x006DACB0
                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -941,7 +947,7 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 
 #include "nwsplayer.h"
 #include "nwscreature.h"
 
-enum { XBOX_TARGET_ACTION_MENU_USE_ITEMS = 5 };
+enum { XBOX_TARGET_ACTION_MENU_USE_ITEMS = 4 };
 
 enum { XBOX_ITEM_TARGETING_PLACEABLE = 2 };
 
@@ -1015,16 +1021,31 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // Xbo
     case TARGET_ACTION_MENU_PRIMARY:
         if (pPlaceable != NULL && pPlaceable->m_bHasInventory)
         {
-            if (m_bUseable)
+            int bBash = 0;
+            int bSecurity = 0;
+            if (m_bLocked && pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
             {
                 lstActions.SetSize(nAction + 1);
                 lstActions[nAction].m_sName =
                     g_pAppManager->GetClientExoApp()->GetGUIString(
-                        CClientExoApp::GUI_STRING_OPEN);
-                lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_USE_PLACEABLE;
-                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCPlaceable::UsePlaceable;
+                        CClientExoApp::GUI_STRING_SECURITY);
+                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCPlaceable::ActionMenuSecurity;
                 lstActions[nAction].m_oidTarget = (unsigned long)this;
-                lstActions[nAction].m_resIcon = "i_openplace";
+                lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_SECURITY;
+                lstActions[nAction].m_resIcon = g_pRules->m_pSkills[CSWRules::SKILL_SECURITY].m_sIcon;
+                nAction++;
+                bSecurity = 1;
+            }
+            if (!m_bPlotObject && !nRestrictMode && m_bLocked)
+            {
+                lstActions.SetSize(nAction + 1);
+                lstActions[nAction].m_sName =
+                    g_pAppManager->GetClientExoApp()->GetGUIString(
+                        CClientExoApp::GUI_STRING_BASH);
+                lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_BASH;
+                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCPlaceable::BashPlaceable;
+                lstActions[nAction].m_oidTarget = (unsigned long)this;
+                lstActions[nAction].m_resIcon = "i_attack";
 
                 unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
                 CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayer);
@@ -1044,17 +1065,36 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // Xbo
                     }
                 }
                 nAction++;
+                bBash = 1;
             }
-            if (!m_bPlotObject && !nRestrictMode && m_bLocked)
+            if (m_bUseable && (!m_bLocked || (!bBash && !bSecurity)))
             {
                 lstActions.SetSize(nAction + 1);
+                unsigned long nStrRef = CClientExoApp::GUI_STRING_OPEN;
+                int bUseSearch;
+                int bRead;
+                {
+                    CExoString sColumn("UseSearch");
+                    unsigned long nAppearance = pPlaceable->m_nAppearance;
+                    bRead = g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(nAppearance, sColumn, &bUseSearch);
+                }
+                if (bRead)
+                {
+                    if (bUseSearch)
+                    {
+                        nStrRef = CClientExoApp::GUI_STRING_SEARCH;
+                    }
+                }
+                else if (pPlaceable->m_bIsBodyBag)
+                {
+                    nStrRef = CClientExoApp::GUI_STRING_SEARCH;
+                }
                 lstActions[nAction].m_sName =
-                    g_pAppManager->GetClientExoApp()->GetGUIString(
-                        CClientExoApp::GUI_STRING_BASH);
-                lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_BASH;
-                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCPlaceable::BashPlaceable;
+                    g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef);
+                lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_USE_PLACEABLE;
+                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCPlaceable::UsePlaceable;
                 lstActions[nAction].m_oidTarget = (unsigned long)this;
-                lstActions[nAction].m_resIcon = "i_attack";
+                lstActions[nAction].m_resIcon = "i_openplace";
 
                 unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
                 CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayer);
@@ -1102,18 +1142,10 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // Xbo
             }
         }
         break;
-    case TARGET_ACTION_MENU_SKILLS:
-        if (pPlaceable != NULL && pPlaceable->m_bHasInventory && m_bLocked &&
-            pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+    case TARGET_ACTION_MENU_MINES:
+        if (m_bLocked)
         {
-            lstActions.SetSize(nAction + 1);
-            lstActions[nAction].m_sName =
-                g_pAppManager->GetClientExoApp()->GetGUIString(
-                    CClientExoApp::GUI_STRING_SECURITY);
-            lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCPlaceable::ActionMenuSecurity;
-            lstActions[nAction].m_oidTarget = (unsigned long)this;
-            lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_SECURITY;
-            lstActions[nAction].m_resIcon = g_pRules->m_pSkills[CSWRules::SKILL_SECURITY].m_sIcon;
+            GetPlaceableInterfaceMines(pCreature, lstActions);
         }
         break;
     case XBOX_TARGET_ACTION_MENU_USE_ITEMS:

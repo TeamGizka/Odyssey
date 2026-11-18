@@ -43,13 +43,18 @@ public:
 
 #ifdef _XBOX
 
+    enum { STRREF_AUTO_CENTER = 42268, STRREF_REVERSE_MINIGAME = 42453 };
     struct CFlash { CSWGuiLabel* m_pLabel; float m_fTime; };
     virtual void Draw(float fElapsed); void FlashLabel(CSWGuiLabel* pLabel);
-    CSWGuiButton m_btnDifficulty; CSWGuiOptionsCheckbox m_cbAutoLevelUp; CSWGuiOptionsCheckbox m_cbInvertCam;
-    CSWGuiOptionsCheckbox m_cbAutoSave; CSWGuiOptionsCheckbox m_cbReverse; CSWGuiOptionsCheckbox m_cbCombatMovement;
-    CSWGuiLabel m_lblDiffRight; CSWGuiLabel m_lblDiffLeft; CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblDescription;
-    CSWGuiLabel m_lblSelect; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblTitle; CSWGuiLabel m_lblRAnalog;
-    CSWGuiListBox m_lbxDescription; int m_nDifficulty; CExoArrayList<CFlash> m_aFlashes;
+    void OnEnableGuiFade(CSWGuiControl* pControl);
+    CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbxDescription;
+    CSWGuiButton m_btnDifficulty; CSWGuiLabel m_lblDiffRight; CSWGuiLabel m_lblDiffLeft;
+    CSWGuiOptionsCheckbox m_cbAutoLevelUp; CSWGuiOptionsCheckbox m_cbInvertCam; CSWGuiOptionsCheckbox m_cbAutoSave;
+    CSWGuiOptionsCheckbox m_cbReverse; CSWGuiOptionsCheckbox m_cbReverseInGame; CSWGuiOptionsCheckbox m_cbCombatMovement;
+    CSWGuiOptionsCheckbox m_cbEnableGuiFade;
+    CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblSelect; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblRAnalog;
+    CSWGuiLabel m_alblBar[4];
+    int m_nDifficulty; CExoArrayList<CFlash> m_aFlashes;
 #else
     CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbxDescription;
     CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiButton m_btnKeyMap; CSWGuiButton m_btnMouse;

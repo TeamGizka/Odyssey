@@ -6421,6 +6421,14 @@ int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject,
             pWorldTimer->GetWorldTime(&nCalendarDay, &nTimeOfDay);
             int nIncubationHours;
             pDisease->GetINTEntry(nDisease, "Incu_Hours", &nIncubationHours);
+#ifdef _XBOX
+            CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
+            unsigned long nIncubationDay;
+            unsigned long nIncubationTime;
+            pWorldTimer->AddWorldTimes(nCalendarDay, nTimeOfDay, 0,
+                nIncubationHours * CWorldTimer::MILLISECONDS_IN_MINUTE * pModule->m_nMinutesPerHour,
+                &nIncubationDay, &nIncubationTime);
+#else
             unsigned long nIncubationMilliseconds =
                 nIncubationHours * CWorldTimer::MILLISECONDS_IN_MINUTE *
                 g_pAppManager->GetServerExoApp()->GetModule()->m_nMinutesPerHour;
@@ -6428,6 +6436,7 @@ int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject,
             unsigned long nIncubationTime;
             pWorldTimer->AddWorldTimes(nCalendarDay, nTimeOfDay, 0,
                 nIncubationMilliseconds, &nIncubationDay, &nIncubationTime);
+#endif
             pEffect->SetInteger(3, nIncubationDay);
             pEffect->SetInteger(4, nIncubationTime);
         }

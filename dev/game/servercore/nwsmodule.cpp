@@ -675,8 +675,13 @@ int CSWSModule::SaveModuleInProgress()
 void CSWSModule::SavePrimaryPlayerInfo(CSWSCreature* pCreature,
                                       const CExoString& sPath)
 {
+#ifdef _XBOX
+    CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->
+        GetClientObjectByObjectId(pCreature->GetId());
+#else
     CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->
         GetClientObjectByObjectId(pCreature->m_nId);
+#endif
     CResGFF* pGFF = new CResGFF;
 #ifdef _XBOX
     CResStruct* pStruct = new CResStruct();
@@ -2861,7 +2866,7 @@ CExoString CSWDomain::GetNameText()
     return strRes.m_sString;
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 void CSWSModule::TestPathPoints(char* szArgs)
 {
