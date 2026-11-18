@@ -112,6 +112,7 @@ int CTlkTable::AddFile(const CExoString& sResRef, int nContentPkg)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int CTlkTable::ExoIsDBCSLeadByte(unsigned char c)
 {
     if (IsDBCSLeadByte(c) || c > 0x7f)
@@ -119,6 +120,11 @@ int CTlkTable::ExoIsDBCSLeadByte(unsigned char c)
         return TRUE;
     }
     return FALSE;
+}
+// Dead code: not in the PC executable
+char* CTlkTable::RemapFontName(char* sFontName)
+{
+    return sFontName;
 }
 #endif
 // PC 0x0041DB50  Xbox 0x00143470
@@ -531,7 +537,7 @@ int CTlkTable::GetLanguageVersion()
 }
 
 long ExoResFileInfo(const char* szFileName);
-
+// Dead code: not in the PC executable
 long ExoLogResFileInfo(const CExoString& sFileName)
 {
     return ExoResFileInfo(sFileName.CStr());

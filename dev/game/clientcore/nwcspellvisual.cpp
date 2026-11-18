@@ -291,3 +291,19 @@ int CSWCSpellCastVisual::LoadCastVisual(CResRef cHeadVisual,
     }
     return 1;
 }
+// Dead code: not in the PC executable
+void CSWCSpellCastVisual::SetConjureDone(CAurObject* pObject)
+{
+    if (pObject == m_pHeadConjureVisual)
+    {
+        m_bHeadConjureFaded = 1;
+    }
+    if (pObject == m_pHandConjureVisual)
+    {
+        m_bHandConjureFaded = 1;
+    }
+    if (pObject == m_pGroundConjureVisual)
+    {
+        m_bGroundConjureFaded = 1;
+    }
+}

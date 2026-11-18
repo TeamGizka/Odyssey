@@ -11,7 +11,8 @@
 #include "twodimarray.h"
 #include "twodimarrays.h"
 
-static inline void NwsjournalTrace1();
+#define NWSJOURNAL_DEBUG 0
+
 // PC 0x005C5A30  Xbox 0x00205FC0
 CSWSJournal::CSWSJournal()
 {
@@ -21,13 +22,16 @@ CSWSJournal::~CSWSJournal()
 {
 }
 // PC 0x005C5630  Xbox 0x00205D70
-void CSWSJournal::SetPicture(const CExoString& sName, int nPicture, int nFlag)
+void CSWSJournal::SetPicture(const CExoString& sName, int nPicture, int bLoading)
 {
 }
 // PC 0x005C5740  Xbox 0x00205D80
 void SJournalEntry::Update(SJournalEntry entry, unsigned short nFlags)
 {
-    NwsjournalTrace1();
+    if (NWSJOURNAL_DEBUG)
+    {
+        EXOLOG("SJournalEntry::Update: quest update %d\n", CSWSPlayerJournalQuestUpdates().m_nQuest);
+    }
     m_sPlotID = entry.m_sPlotID;
     if ((nFlags & 1) || (nFlags & 0x8000))
         m_lsName = entry.m_lsName;
@@ -79,7 +83,7 @@ int CSWSJournal::GetState(const CExoString& sName)
 }
 // PC 0x005C5A40  Xbox 0x00206000
 void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
-                           int nFlag)
+                           int bLoading)
 {
     SJournalEntry entry;
     int nNum = m_lstEntries.num;
@@ -93,7 +97,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
     int bCategoryMissing = 1;
     int nEntry;
 
-    if (nFlag != 0)
+    if (bLoading != 0)
     {
         nFlags = CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
     }
@@ -220,7 +224,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                         C2DA* pPlotXP = g_pRules->Get2DArrays()->m_pPlotXP;
 #endif
                         EXOLOG("CSWSJournal::SetState: plot XP table %p, flag %p",
-                               p2DArrays, &nFlag);
+                               p2DArrays, &bLoading);
                         pPlotXP->GetINTEntry(
                             m_lstEntries.element[nEntry].m_nPlotIndex, "XP",
                             &nPlotXP);
@@ -243,7 +247,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                 }
             }
 
-            m_lstEntries.element[nEntry].m_bNew = (nFlag == 0);
+            m_lstEntries.element[nEntry].m_bNew = (bLoading == 0);
 
             CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
             int nPlayerCreatureId = pExoApp->GetPlayerCreatureId();
@@ -314,7 +318,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                         }
                     }
                 }
-                if (nFlag == 0)
+                if (bLoading == 0)
                 {
                     pMessage->SendServerToPlayerJournalUpdated(
                         pPlayer, 1, m_lstEntries.element[nEntry].m_bCompleted,
@@ -353,7 +357,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
 }
 // PC 0x005C63F0  Xbox 0x002069D0
 void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
-                          int nFlag)
+                          int bLoading)
 {
     SJournalEntry entry;
     CSWSPlayerJournalQuestUpdates update;
@@ -408,7 +412,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_DATE;
                         }
-                        if (nFlag != 0)
+                        if (bLoading != 0)
                         {
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
@@ -423,7 +427,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
                     update.m_nQuest =
                         bFound != 0 ? CSWSPlayerJournalQuestUpdates::QUEST_DATE
                                     : CSWSPlayerJournalQuestUpdates::QUEST_NEW;
-                    if (nFlag != 0)
+                    if (bLoading != 0)
                     {
                         update.m_nQuest |=
                             CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
@@ -436,7 +440,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
 }
 // PC 0x005C6650  Xbox 0x00206C30
 void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
-                          int nFlag)
+                          int bLoading)
 {
     SJournalEntry entry;
     CSWSPlayerJournalQuestUpdates update;
@@ -491,7 +495,7 @@ void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_TIME;
                         }
-                        if (nFlag != 0)
+                        if (bLoading != 0)
                         {
                             (*pUpdates)[nUpdate].m_nQuest |=
                                 CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
@@ -506,7 +510,7 @@ void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
                     update.m_nQuest =
                         bFound != 0 ? CSWSPlayerJournalQuestUpdates::QUEST_TIME
                                     : CSWSPlayerJournalQuestUpdates::QUEST_NEW;
-                    if (nFlag != 0)
+                    if (bLoading != 0)
                     {
                         update.m_nQuest |=
                             CSWSPlayerJournalQuestUpdates::QUEST_QUIET;
@@ -583,8 +587,4 @@ void CSWSJournal::Destroy(const CExoString& sName)
             return;
         }
     }
-}
-
-static inline void NwsjournalTrace1()
-{
 }

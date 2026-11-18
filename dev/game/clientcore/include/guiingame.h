@@ -235,6 +235,8 @@ public:
     void ShutDownGlobal();
     void ShutDown();
     int TutorialReasonWillShowWindow(unsigned char nReason);
+    int GetTutorialWindowHasBeenShown(unsigned char nReason);
+    void SetTutorialWindowHasBeenShown(unsigned char nReason, int bShown);
 
 #ifdef _XBOX
     enum { TUTORIAL_WINDOW_COUNT = 42 };
@@ -244,8 +246,8 @@ public:
     int ShowTutorialWindow(unsigned char nReason, unsigned long oidInstigator,
                            unsigned long oidTarget, unsigned long nActionParam);
     int SetTutorialReason(unsigned char nReason);
-    void SetMainInterfaceTarget(unsigned long oidTarget, int bFlag);
-    void StartGlobalFade(int nFade, float fA, float fB, const Vector& vColor);
+    void SetMainInterfaceTarget(unsigned long oidTarget, int nFlags);
+    void StartGlobalFade(int nFade, float fFadeStart, float fFadeLength, const Vector& vColor);
     void ShowBarkBubble(unsigned long oidObject, const CExoString& sText,
                         const CResRef& cSound, int nFlags);
     void RePopulateMainInterface();
@@ -255,7 +257,9 @@ public:
     int ChangeCharacter();
 #endif
     CExoString GetCameraAnimationName(unsigned short nAnimation);
+    int IsDialogStuntAnimation(unsigned short nAnimation);
     int IsLoopingDialogStuntAnimation(unsigned short nAnimation);
+    int IsFireForgetDialogStuntAnimation(unsigned short nAnimation);
     int IsFireForgetDialogAnimation(unsigned short nAnimation);
     int IsLoopingDialogAnimation(unsigned short nAnimation);
     int IsOverlayDialogAnimation(unsigned short nAnimation);
@@ -300,6 +304,7 @@ public:
     int InitializeStuntModelData(unsigned long nModels);
     int LoadStuntModelsForDialog();
     void UnloadStuntModelsForDialog();
+    void ShowReplyChosen(unsigned long nReply, unsigned long nReplyCount, const CExoString& sText);
     void SetConversationType(unsigned long nType, unsigned char nComputerType);
     void ClearRepliesData();
     int InitializeRepliesData(unsigned long nReplies);
@@ -307,15 +312,15 @@ public:
     int HandleDialogReplies(
         unsigned long oidPlayer, unsigned long oidSpeaker,
         unsigned char nComputerType, CExoString* psText,
-        unsigned long* pnValue1, unsigned long* pnValue2,
-        unsigned long* pnValue3, int* pnValue4, float* pfValue5,
-        float* pfValue6, unsigned long* pnValue7, unsigned short* pnValue8,
-        float* pfValue9, int* pnValue10, unsigned char* pnValue11,
-        Vector* pvValue12, float* pfValue13, float* pfValue14,
+        unsigned long* pnReplyIndex, unsigned long* poidListener,
+        unsigned long* pnCameraAngle, int* pnCameraId, float* pfCameraHeight,
+        float* pfTargetHeight, unsigned long* pnWaitFlags, unsigned short* pnCameraAnimation,
+        float* pfFieldOfView, int* pnVideoEffect, unsigned char* pnFadeType,
+        Vector* pvFadeColor, float* pfFadeDelay, float* pfFadeLength,
         unsigned long nEntries, unsigned long nReplies,
         unsigned long nReplyContext, unsigned long* pnAnimations,
         unsigned long** ppnAnimationIDs, unsigned short** ppnAnimationFlags,
-        int bUnknown);
+        int bEndOfDialog);
 
     int HandleDialogEntry(unsigned long nPlayerId, unsigned long oidTarget,
                           unsigned long oidSpeaker, unsigned long oidListener,
@@ -329,12 +334,12 @@ public:
                           const Vector& vFadeColor, float fFadeDelay,
                           float fFadeLength, int bSoundActive);
     void SetReplyData(unsigned long nReply, const CExoString& sText,
-                      unsigned long nValue1, unsigned long nValue2,
-                      unsigned long nValue3, int nValue4, float fValue5,
-                      float fValue6, unsigned long nValue7,
-                      unsigned short nValue8, float fValue9, int nValue10,
-                      unsigned char nValue11, const Vector& vValue12,
-                      float fValue13, float fValue14, unsigned long nAnimations,
+                      unsigned long nReplyIndex, unsigned long oidListener,
+                      unsigned long nCameraAngle, int nCameraId, float fCameraHeight,
+                      float fTargetHeight, unsigned long nWaitFlags,
+                      unsigned short nCameraAnimation, float fFieldOfView, int nVideoEffect,
+                      unsigned char nFadeType, const Vector& vFadeColor,
+                      float fFadeDelay, float fFadeLength, unsigned long nAnimations,
                       unsigned long* pnAnimationIDs,
                       unsigned short* pnAnimationFlags);
     void SetDialogAnimationData(unsigned long nIndex, unsigned long nAnimation,
@@ -367,7 +372,7 @@ public:
     int SetGlobalUnpauseableState(int bUnpauseable);
 #endif
     int GetPartyAccessPanelUp(int bAny); int GetCurrentEquipScreenNPC();
-    void UpdateStatus(unsigned char nMessage, int nUnknown); SFeedbackMessage* GetMessageBuffer();
+    void UpdateStatus(unsigned char nMessage, int nValue); SFeedbackMessage* GetMessageBuffer();
     int GetMessageBufferSize();
 
     enum ChatMessageMask
@@ -391,6 +396,7 @@ public:
     void SetCombatMessage(unsigned long nMessage);
     CSWGuiPanel* GetGuiInGameScreenPanel(unsigned char nScreen);
     void HideItemCreateMenu();
+    void CreateDeathMenuGUI();
     void DestroyDeathMenuGUI();
     void ShowSubItemCreateMenu(unsigned long nSubType);
     void DialogGuiDoneScroll();
@@ -402,6 +408,7 @@ public:
     void ShowDialogMessage();
     void ShowDialogReplies(unsigned long nStartIndex, unsigned long nReplyContext);
     void UnlockDialogParticipantOrientations();
+    void SetDialogFade(int bFadeIn, float fDelay, float fLength, const Vector& vColor);
     void UpdateShotCamera(unsigned long nShot, int nCamera, float fPitch,
                           float fHeight, unsigned long oidTarget, int nVideoEffect);
     int IsInDialog(unsigned long oidObject);
@@ -430,18 +437,23 @@ public:
     void SetDialogAnimations();
 
     void HandleDialogSelection(int nReply, int bSelected);
+    void HandleDialogClose(int bClose);
+    void HandleInventoryClose(int bClose);
     void UpdateDialogLipSync();
     void FadeAndStopDialogAmbientTrack();
     void LoadAmbientTrackForDialog(const CResRef& cAmbientTrack);
     void SwitchToSWInGameGui(int nMenu);
     void UpdateMessageGUI();
     void StopBarkBubble(int bFade);
+    void PauseBarkBubble();
+    void ResumeBarkBubble();
     void UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen);
     void ShowFlashingStatus(unsigned char nStatus);
     void EndControllerPauseState();
     void EnterControllerPauseState();
     void UpdateControllerPauseState();
     void SetGlobalDialogState(int nState);
+    void SetDialogLipSync(unsigned long nSoundId, const CResRef& cSound);
     void SetDialogSound(unsigned long nSoundId, const CResRef& cSound);
     int HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound);
     void LoadCameraModelForDialog(const CResRef& cCameraModel);
@@ -462,7 +474,7 @@ public:
     void SetSWGuiStatus(int nStatus, int bActive);
 
     int m_bInitialized;
-    unsigned char m_aUnknown04[4];
+    unsigned char m_bPanelsLoaded[4];
 
     CSWGuiInGameMenu* m_pInGameMenu;
     CSWGuiPanel* m_apScreenPanels[IN_GAME_SCREEN_COUNT];
@@ -509,7 +521,7 @@ public:
     int m_bDialogEntryShown;
     int m_nGlobalDialogState;
     unsigned char m_aUnknownB8[0xC0 - 0xB8];
-    int m_nC0;
+    int m_bAnimatedCut;
     int m_nDialogCameraType;
     int m_nDialogReply;
     int m_nDialogReplyCount;
@@ -532,20 +544,20 @@ public:
     int m_bReplyPending;
     int m_nReplies;
     CExoString* m_asReplyText;
-    unsigned long* m_pnReplyValue1;
-    unsigned long* m_pnReplyValue2;
-    unsigned long* m_pnReplyValue3;
-    int* m_pnReplyValue4;
-    float* m_pfReplyValue5;
-    float* m_pfReplyValue6;
-    unsigned long* m_pnReplyValue7;
-    unsigned short* m_pnReplyValue8;
-    float* m_pfReplyValue9;
-    int* m_pnReplyValue10;
-    unsigned char* m_pnReplyValue11;
-    Vector* m_pvReplyValue12;
-    float* m_pfReplyValue13;
-    float* m_pfReplyValue14;
+    unsigned long* m_pnReplyIndex;
+    unsigned long* m_poidReplyListener;
+    unsigned long* m_pnReplyCameraAngle;
+    int* m_pnReplyCameraId;
+    float* m_pfReplyCameraHeight;
+    float* m_pfReplyTargetHeight;
+    unsigned long* m_pnReplyWaitFlags;
+    unsigned short* m_pnReplyCameraAnimation;
+    float* m_pfReplyFieldOfView;
+    int* m_pnReplyVideoEffect;
+    unsigned char* m_pnReplyFadeType;
+    Vector* m_pvReplyFadeColor;
+    float* m_pfReplyFadeDelay;
+    float* m_pfReplyFadeLength;
 
     int* m_pnReplyAnimations;
     unsigned long** m_ppnReplyAnimationIDs;
@@ -553,7 +565,7 @@ public:
 
     unsigned long m_oidComputerCameraTarget;
     unsigned short m_nDialogCameraAnimation;
-    unsigned char m_aUnknown166[2];
+    unsigned char m_aCameraAnimationAlignment[2];
 
     int m_bDialogCameraAnimationActive;
 
@@ -585,7 +597,7 @@ public:
     int m_bAnimatedCameraActive;
     int m_bAnimatedCameraLoaded;
     float m_fAnimatedCameraTime;
-    unsigned char m_aUnknownB30[0xB34 - 0xB30];
+    unsigned char m_nAnimatedCameraFrame[0xB34 - 0xB30];
     int m_nDialogCameraState;
     int m_bPaused;
 
@@ -603,7 +615,7 @@ public:
     int m_bHoldWorldFadeInForDialog;
 #ifdef _XBOX
 
-    int m_nXboxUnmappedB98;
+    int m_bShowDialogDebugText;
     int m_nDialogReplyRow;
 #else
     unsigned char m_aUnknownB9C[0xBA4 - 0xB9C];
@@ -626,13 +638,13 @@ public:
 #endif
     unsigned char m_nAbilityMode;
     unsigned char m_nInventoryFilter;
-    unsigned char m_aUnknownBC2[2];
+    unsigned char m_aInventoryFilterAlignment[2];
     unsigned long m_bJournalDone : 1;
     unsigned long m_nJournalFlagsUnused : 31;
 
     enum { MESSAGE_TYPE_DIALOG = 0, MESSAGE_TYPE_FEEDBACK = 1 };
     unsigned char m_nMessageType;
-    unsigned char m_aUnknownBC9[0xBCC - 0xBC9];
+    unsigned char m_aMessageTypeAlignment[0xBCC - 0xBC9];
     unsigned long m_nNoClickDay;
     unsigned long m_nNoClickTime;
     unsigned long m_nNoClickDuration;
@@ -646,9 +658,9 @@ public:
     float m_fDeferredFieldOfView;
     int m_bTransitionScriptRunning;
 #ifdef _XBOX
-    int m_nXboxUnmappedC0C;
+    int m_bPlayCreditsMusic;
 
-    void SetXboxUnmappedC0C(int nValue) { m_nXboxUnmappedC0C = nValue; }
+    void SetXboxUnmappedC0C(int nValue) { m_bPlayCreditsMusic = nValue; }
 #endif
     int m_bInputActiveBeforeControllerPause;
 #ifndef _XBOX
@@ -659,7 +671,7 @@ public:
     int m_bDanceDanceMalak;
 #endif
     void ShowGalaxyMapGui(int nPlanet);
-    int ShowLevelUpGUI(int nArg1);
+    int ShowLevelUpGUI(int bAutomatic);
     void ShowUpgradeScreen(unsigned long oidItem);
     void SetShotFromScript(int nCamera, int nVideoEffect);
     void SetComputerCameraShot(int nCamera, unsigned long oidTarget,

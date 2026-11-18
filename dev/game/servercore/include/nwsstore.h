@@ -46,7 +46,10 @@ public:
     int GetItemInInventory(unsigned long oidItem);
     int SaveStore(CResGFF* pRes, CResStruct* pStruct);
     int AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bLoading);
+    void RemoveFromArea();
     int SellItem(CSWSItem* pItem, CSWSCreature* pCreature);
+    void RemoveCustomer(class CSWSPlayer* pPlayer);
+    int RemoveItemFromInventory(CSWSItem* pItem);
     int AddItemToInventory(CSWSItem** ppItem);
     int LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate);
     int AcquireItem(CSWSItem* pItem);
@@ -56,7 +59,7 @@ public:
     CItemRepository* m_pItemRepository;
     CExoLocString m_lsName;
     unsigned long m_oidEventCaller;
-    int m_n240;
+    int m_oidCustomer;
     int m_nMarkDown;
     int m_nMarkUp;
 

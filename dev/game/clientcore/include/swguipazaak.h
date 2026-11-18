@@ -78,6 +78,7 @@ public:
     virtual void Draw(float fElapsed);
 #ifndef _XBOX
     SWGUI_PCVIRTUAL void SetEnabled(int bEnabled);
+    void ActivateLabel(const Vector& vColor);
 #else
     void SetActivated(int bActivated);
 #endif
@@ -103,8 +104,10 @@ public:
 
     void PlaceRightOf(CSWGuiControl* pControl);
     void PlaceAbove(CSWGuiControl* pControl);
+    unsigned long GetHelpText();
     void ShowHelp(unsigned long nHelpStrRef, unsigned long nTitleStrRef,
                   unsigned long nButtonStrRef);
+    void SetBButtonEnabled(int bEnabled);
     void ShowMultipleHelp(const unsigned long* pStrRefs, int nCount);
 
     int GetEnabled()
@@ -133,6 +136,8 @@ public:
 
     void HandleWagerExit(int nWager);
     void HandleQuitDialog(CSWGuiControl* pControl);
+    int IsLeftSideActive();
+    int IsRightSideActive();
     int IsAvailCardActive();
     int ClearSideDeck();
     void ShowDisabledButtons();
@@ -199,8 +204,8 @@ public:
         STATE_EXIT_GAME = 12
     };
 
-    CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak, int nUnknown,
-                     unsigned long nUnknown2);
+    CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak, int bTutorial,
+                     unsigned long oidOpponent);
     virtual ~CSWGuiPazaakGame();
     virtual void Draw(float fElapsed);
     virtual void HandleInputEvent(int nEvent, int nState);
@@ -278,12 +283,12 @@ public:
     CSWPazaak* GetPazaak();
     int m_nState;
     float m_fTimer;
-    unsigned long m_bUnknown86DC0 : 1;
+    unsigned long m_bShownFlipCardHelp : 1;
     unsigned long m_bShownFirstCardHelp : 1;
     unsigned long m_bShownOpponentTurnHelp : 1;
     unsigned long m_bShownGameStartHelp : 1;
     unsigned long m_bShownTwentyHelp : 1;
-    unsigned long m_nUnknown86DC5 : 27;
+    unsigned long m_nShownHelpFlags : 27;
 #ifndef _XBOX
     int m_nPlayedCard;
     int m_nHandAction;

@@ -32,7 +32,7 @@ public:
     virtual void Reset();
     virtual void SetReplies(int nCount, CExoString* pReplies,
                             unsigned long* pReplyIndices, int nStartIndex,
-                            int bUnknown);
+                            int bShowReplies);
     virtual unsigned long SetOwner(unsigned long nOwner)  // PC 0x006A7C90  Xbox 0x000D4CE0
     {
         m_nOwner = nOwner;
@@ -99,6 +99,8 @@ public:
     virtual void Draw(float fElapsed);
 
     int IsFadeDone();
+    int GetLetterboxChangeHeight(const float& fElapsed);
+    int GetLetterboxChangeTop(const float& fElapsed);
     void SetExtentSpecial(CSWGuiExtent cExtent);
     void SetTop();
     void SetBottom();
@@ -111,7 +113,7 @@ public:
     CSWGuiZeroExtent m_cStart;
     int m_nPosition;
     int m_bDone;
-    CExoString m_sUnused;
+    CExoString m_sFadeText;
     float m_fFadeDelay;
     float m_fFadeLength;
     float m_fFadeTime;
@@ -140,7 +142,7 @@ public:
     virtual void Reset();
     virtual void SetReplies(int nCount, CExoString* pReplies,
                             unsigned long* pReplyIndices, int nStartIndex,
-                            int bUnknown);
+                            int bShowReplies);
     virtual void ShowDialogMessage();
 
     CSWGuiDialogTop* m_pTop;
@@ -174,7 +176,7 @@ public:
     virtual void OnPanelRemoved();
     virtual void SetReplies(int nCount, CExoString* pReplies,
                             unsigned long* pReplyIndices, int nStartIndex,
-                            int bUnknown);
+                            int bShowReplies);
     virtual void SetDialogMessage(const CExoString& sMessage);
     SWGUI_PCVIRTUAL CExoString GetFullScreenBG();
 

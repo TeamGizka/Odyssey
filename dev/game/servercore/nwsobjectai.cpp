@@ -167,7 +167,7 @@ unsigned short CSWSObject::GetAQActionIDByID(unsigned short nActionType,
     }
 
 }
-
+// Dead code: not in the PC executable
 unsigned short CSWSObject::GetIDByAQActionID(unsigned short nAQActionID)
 {
     switch (nAQActionID)
@@ -448,7 +448,7 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
                         pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                             CGameEffect::DURATION_TYPE_INSTANTANEOUS;
                         pOriginalPlayer->ApplyEffect(pEffect, 0, 0);
-                        pOriginalPlayer->m_nF0 = 1;
+                        pOriginalPlayer->m_bRaiseable = 1;
                     }
                     pOriginalPlayer->AddActionToFront(ACTION_DIALOG_OBJECT, pNode->m_nGroupId,
                         ACTION_PARAM_OBJECT, &oidTarget, ACTION_PARAM_STRING, &sDialog,
@@ -1274,7 +1274,7 @@ int CSWSObject::AddDoCommandAction(void* pScriptSituation)
     return 1;
 }
 #ifndef _XBOX
-int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x0057CB80  Xbox 0x001E83E0
+int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction)  // PC 0x0057CB80  Xbox 0x001E83E0
 {
     if (OverrideReputation != REPUTATION_NO_OVERRIDE)
     {
@@ -1307,7 +1307,7 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x00
                 if (pServer->GetObjectArray()->GetGameObject(
                         oidCreator, &pCreator) == CGameObjectArray::SUCCESS)
                 {
-                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUnknown);
+                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUseOriginalFaction);
                 }
             }
             else
@@ -1446,8 +1446,6 @@ int CSWSObject::AIActionPlaySound(CSWSObjectActionNode* pNode)
     return ACTION_COMPLETE;
 }
 
-#include "nwsdoor.h"
-#include "nwsscriptevent.h"
 // PC 0x0057D080  Xbox 0x001E8900
 int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
 {
@@ -1475,8 +1473,8 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
     pServer->GetWorldTimer()->GetWorldTime(&nCurrentDay, &nCurrentTime);
     if (bFirstUpdate == 1)
     {
-        m_nC4 = nCurrentDay;
-        m_nC8 = nCurrentTime;
+        m_nAnimationStartDay = nCurrentDay;
+        m_nAnimationStartTime = nCurrentTime;
         pNode->m_apParam[3] = (void*)0;
         pServer = g_pAppManager->GetServerExoApp();
         if (GetId() == pServer->GetPlayerCreatureId())
@@ -1514,7 +1512,7 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
     }
     pServer = g_pAppManager->GetServerExoApp();
     pServer->GetWorldTimer()->SubtractWorldTimes(
-        nCurrentDay, nCurrentTime, m_nC4, m_nC8,
+        nCurrentDay, nCurrentTime, m_nAnimationStartDay, m_nAnimationStartTime,
         &nElapsedDay, &nElapsedTime);
 
     int bDone = 0;
@@ -2604,9 +2602,9 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
             case ACTION_PHYSICAL_ATTACKS:
                 if (nObjectType == SW_OBJECT_TYPE_CREATURE)
                 {
-                    m_nUnknown84 = (unsigned long)pNode->m_apParam[0];
+                    m_oidCurrentActionTarget = (unsigned long)pNode->m_apParam[0];
                     nResult = AsSWSCreature()->AIActionPhysicalAttacks(pNode);
-                    m_nUnknown84 = OBJECT_INVALID;
+                    m_oidCurrentActionTarget = OBJECT_INVALID;
                     if (nResult != ACTION_IN_PROGRESS)
                     {
                         unsigned long nCurrentDay, nCurrentTime;
@@ -2844,7 +2842,7 @@ static inline CServerExoApp* GetServerExoApp()
 
 #ifdef _XBOX
 // PC 0x0057CB80  Xbox 0x001E83E0
-int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
+int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction)
 {
     if (OverrideReputation != REPUTATION_NO_OVERRIDE)
     {
@@ -2880,7 +2878,7 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
                 if (pServer->GetObjectArray()->GetGameObject(
                         oidCreator, &pCreator) == CGameObjectArray::SUCCESS)
                 {
-                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUnknown);
+                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUseOriginalFaction);
                 }
             }
             else

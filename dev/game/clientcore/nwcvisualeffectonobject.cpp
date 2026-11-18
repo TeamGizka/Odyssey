@@ -29,6 +29,8 @@
 #include "nwrules.h"
 #include "twodimarrays.h"
 
+#define NWCVISUALEFFECTONOBJECT_DEBUG 0
+
 short CSWCVisualEffectOnObject::m_nMotionBlurVFXCount;
 // PC 0x006A0480  Xbox 0x000CCA60
 int CSWCVisualEffectOnObject::IsDone()
@@ -79,7 +81,7 @@ void CSWCVisualEffectOnObject::SetEffectDone(CAurObject* pEffectModel)
         m_anAttachedModelFadeTime[2] = 3000;
     }
 }
-
+// Dead code: not in the PC executable
 int CSWCVisualEffectOnObject::GetHardCodedCessationLength(
     unsigned short nVisualEffect)
 {
@@ -285,6 +287,14 @@ char CSWCVisualEffectOnObject::GetHardCodedEffectClass(
     }
     return 0;
 }
+// Dead code: not in the PC executable
+void CSWCVisualEffectOnObject::EnableHardCodedEffectShadow(int bEnable)
+{
+    if (m_pEffectModel != 0)
+    {
+        m_bLightSourceDynamic = bEnable != 0;
+    }
+}
 // PC 0x006A09E0  Xbox 0x000CCEE0
 CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
 {
@@ -357,7 +367,7 @@ void CSWCVisualEffectOnObject::UnloadVisualEffect()
         }
     }
 }
-
+// Dead code: not in the PC executable
 CSWCObject* CSWCVisualEffectOnObject::GetTargetCSWCObject()
 {
     CSWCObject* pObject =
@@ -368,7 +378,7 @@ CSWCObject* CSWCVisualEffectOnObject::GetTargetCSWCObject()
     }
     return pObject->AsSWCObject();
 }
-
+// Dead code: not in the PC executable
 CSWCObject* CSWCVisualEffectOnObject::GetSourceCSWCObject()
 {
     CSWCObject* pObject =
@@ -379,7 +389,7 @@ CSWCObject* CSWCVisualEffectOnObject::GetSourceCSWCObject()
     }
     return pObject->AsSWCObject();
 }
-
+// Dead code: not in the PC executable
 void CSWCVisualEffectOnObject::DoVFXRumble()
 {
     CSWCObject* pObject = GetTargetCSWCObject();
@@ -441,7 +451,7 @@ void CSWCVisualEffectOnObject::AttachBeam()
             (char*)m_sBeamSourceNode.CStr());
     }
 }
-
+// Dead code: not in the PC executable
 CSWCObject* CSWCVisualEffectOnObject::GetOwnerCSWCObject()
 {
     CSWCObject* pObject =
@@ -1804,10 +1814,11 @@ void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
                 {
                     return;
                 }
-                if (FALSE)
+                if (NWCVISUALEFFECTONOBJECT_DEBUG)
                 {
                     CExoString sChunkModel;
                     sChunkModel = sBloodColor;
+                    EXOLOG("CSWCVisualEffectOnObject::ApplyChunk() chunk model %s\n", sChunkModel.CStr());
                 }
             }
         }
@@ -2297,6 +2308,20 @@ int CSWCVisualEffectOnObject::LoadLightSource(unsigned short nVisualEffect)
     static_cast<Gob*>(m_pEffectModel)->SetLightPriority(Gob::LIGHT_PRIORITY_VISUAL_EFFECT);
     return 1;
 }
+// Dead code: not in the PC executable
+int CSWCVisualEffectOnObject::LoadAlpha(unsigned short nVisualEffect)
+{
+    unsigned short nAlphaEffect = nVisualEffect - VFX_ALPHA_BEGIN;
+    switch (nAlphaEffect)
+    {
+    case ALPHA_HALF:
+    case ALPHA_HALF_BLUE_HILITE:
+    case ALPHA_HALF_PURPLE_HILITE:
+        m_fAlphaTarget = 0.5f;
+        break;
+    }
+    return 1;
+}
 // PC 0x006A5000  Xbox 0x000D16F0
 void CSWCVisualEffectOnObject::ReAttachVisualEffect()
 {
@@ -2572,9 +2597,6 @@ void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
     }
 }
 
-#include "nwrules.h"
-
-#include "twodimarrays.h"
 // PC 0x006A5890  Xbox 0x000D1F80
 int CSWCVisualEffectOnObject::LoadHardCodedVisualEffect(
     unsigned short nVisualEffect)

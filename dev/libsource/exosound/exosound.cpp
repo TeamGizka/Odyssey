@@ -269,7 +269,7 @@ void CExoStreamingSoundSource::SetVolume(unsigned char nVolume)
         pInternal->SetVolume(nVolume, 0, 1.0f);
     }
 }
-
+// Dead code: not in the PC executable
 unsigned char CExoStreamingSoundSource::GetVolume()
 {
     CExoStreamingSoundSourceInternal* pInternal;
@@ -314,7 +314,7 @@ void CExoStreamingSoundSource::SetPriorityGroup(unsigned char nGroup)
         pInternal->SetPriorityGroup(nGroup);
     }
 }
-
+// Dead code: not in the PC executable
 unsigned char CExoStreamingSoundSource::GetPriorityGroup()
 {
     CExoStreamingSoundSourceInternal* pInternal;
@@ -435,7 +435,7 @@ void CExoSound::SetDialogVolume(float fVolume)
         m_pInternal->ApplyNewVolume(0);
     }
 }
-
+// Dead code: not in the PC executable
 float CExoSound::GetMusicVolume()
 {
     CExoSoundInternal* pInternal;
@@ -447,7 +447,7 @@ float CExoSound::GetMusicVolume()
     }
     return 1.0f;
 }
-
+// Dead code: not in the PC executable
 float CExoSound::GetSoundEffectVolume()
 {
     CExoSoundInternal* pInternal;
@@ -459,7 +459,7 @@ float CExoSound::GetSoundEffectVolume()
     }
     return 1.0f;
 }
-
+// Dead code: not in the PC executable
 float CExoSound::GetDialogVolume()
 {
     CExoSoundInternal* pInternal;
@@ -521,15 +521,15 @@ void CExoSound::SetListenerPosition(const Vector& vPosition)
 }
 // PC 0x005D5E00  Xbox 0x00152D20
 int CExoSound::PlayOneShotSound(const CResRef& cResRef, unsigned char nType,
-                                unsigned long nA, unsigned char nB, float fA,
-                                float fB)
+                                unsigned long nOneShotDelay, unsigned char nVolume, float fFixedVariance,
+                                float fPitchVariance)
 {
     CExoSoundInternal* pInternal;
 
     pInternal = m_pInternal;
     if (pInternal != NULL)
     {
-        return pInternal->PlayOneShotSound(cResRef, nType, nA, nB, fA, fB);
+        return pInternal->PlayOneShotSound(cResRef, nType, nOneShotDelay, nVolume, fFixedVariance, fPitchVariance);
     }
     else
     {
@@ -539,8 +539,8 @@ int CExoSound::PlayOneShotSound(const CResRef& cResRef, unsigned char nType,
 // PC 0x005D5E10  Xbox 0x00152D30
 int CExoSound::Play3DOneShotSound(const CResRef& cResRef, Vector vPosition,
                                   float fRadius, unsigned char nGroup,
-                                  unsigned long nA, unsigned char nB, float fA,
-                                  float fB)
+                                  unsigned long nOneShotDelay, unsigned char nVolume, float fFixedVariance,
+                                  float fPitchVariance)
 {
     CExoSoundInternal* pInternal;
 
@@ -548,8 +548,8 @@ int CExoSound::Play3DOneShotSound(const CResRef& cResRef, Vector vPosition,
     if (pInternal != NULL)
     {
         vPosition.m_fZ += fRadius;
-        return pInternal->Play3DOneShotSound(cResRef, vPosition, nGroup, nA, nB,
-                                             fA, fB);
+        return pInternal->Play3DOneShotSound(cResRef, vPosition, nGroup, nOneShotDelay, nVolume,
+                                             fFixedVariance, fPitchVariance);
     }
     else
     {
@@ -614,7 +614,7 @@ void CExoSound::SetSoundMode(int nMode)  // PC 0x005D5E80  Xbox 0x00152DC0
         pInternal->SetSoundMode(nMode);
     }
 }
-
+// Dead code: not in the PC executable
 CExoSoundSource::~CExoSoundSource()
 {
     if (m_pInternal != NULL)
@@ -737,7 +737,7 @@ CExoStreamingSoundSourceInternal* CExoStreamingSoundSource::Set3D(int b3D)  // P
     return pInternal;
 }
 #endif
-
+// Dead code: not in the PC executable
 int CExoStreamingSoundSource::Get3D()
 {
     CExoStreamingSoundSourceInternal* pInternal;

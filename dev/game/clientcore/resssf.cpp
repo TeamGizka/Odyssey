@@ -8,6 +8,11 @@ CResSSF::CResSSF()
 CResSSF::~CResSSF()
 {
 }
+// Dead code: not in the PC executable
+int CResSSF::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x006DB680  Xbox 0x0010CAE0
 int CResSSF::OnResourceFreed()
 {

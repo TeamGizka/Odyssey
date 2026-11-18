@@ -27,7 +27,7 @@ struct DXTextureState
 {
     DXTextureState()  // Xbox 0x0027F890
     {
-        m_nUnknown0 = 0;
+        m_nComponents = 0;
         m_nType = 0;
         m_nWrapR = 0;
         m_nWrapS = 3;
@@ -36,7 +36,7 @@ struct DXTextureState
         m_nMinFilter = 5;
         m_nMipFilter = 5;
     }
-    int m_nUnknown0;
+    int m_nComponents;
     int m_nType;
     int m_nWrapR;
     int m_nWrapS;
@@ -1375,7 +1375,7 @@ inline void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOf
 #define GLRender_SetClearColor GLRender::SetClearColor
 #define GLRender_Rotate GLRender::Rotate
 
-#define GLRender_SetFogModef GLRender::SetFogModef
+#define GLRender_SetFogf GLRender::SetFogModef
 
 #define GLRender_SetColor4f GLRender::SetColor4f
 #define GLRender_SetAlphaFunc GLRender::SetAlphaFunc
@@ -1396,7 +1396,7 @@ inline void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOf
 #define GLRender_EnableLight GLRender::EnableLight
 #define GLRender_DisableLight GLRender::DisableLight
 #define GLRender_SetFogMode GLRender::SetFogMode
-#define GLRender_SetFogModev GLRender::SetFogModev
+#define GLRender_SetFogfv GLRender::SetFogModev
 #define GLRender_SetDepthFunc GLRender::SetDepthFunc
 #define GLRender_SetColorv GLRender::SetColorv
 #define GLRender_SetVertexProgramParameter4f AurSetVertexProgramParameter4f

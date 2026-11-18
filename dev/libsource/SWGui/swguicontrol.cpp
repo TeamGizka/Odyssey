@@ -4,6 +4,7 @@
 #include "resgff.h"
 #include "exoinput.h"
 #include "swgui.h"
+#include "aurora.h"
 
 class CSWGuiControl;
 class CSWGuiExtent;
@@ -18,14 +19,12 @@ template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 #include "clientexoapp.h"
 #include "nwrules.h"
 #include "twodimarrays.h"
-#include "aurora.h"
-#include "aurora.h"
 
 float CSWGuiListBox::m_fArrowAlpha = 1.0f;
 float CSWGuiListBox::m_fArrowAlphaPulseTime = 0.75f;
 bool CSWGuiListBox::m_bArrowAlphaPulseUp;
 
-static inline void SwguicontrolTrace1();
+static inline void TraceListBox();
 // PC 0x00417660  Xbox 0x002FCAA0
 void CSWGuiNavigable::SetMoveToControl(int nDirection, CSWGuiControl* pControl)
 {
@@ -795,7 +794,7 @@ void CSWGuiListBox::ClearItems()  // PC 0x00419A90  Xbox 0x002FE9E0
 // PC 0x00419B80  Xbox 0x002FEAA0
 void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent, CSWGuiListBox* pProto)
 {
-    SwguicontrolTrace1();
+    TraceListBox();
     Initialize(cExtent, pProto->m_cBorder.m_cParams, pProto->m_nPadding);
     CSWGuiScrollBar* pScrollBar = &pProto->m_cScrollBar;
     return m_cScrollBar.Initialize(pScrollBar->m_cExtent, pScrollBar);
@@ -1132,7 +1131,7 @@ void CSWGuiListBox::OrganizeUnequal()  // PC 0x00419EE0  Xbox 0x002FEC50
 // PC 0x0041A290  Xbox 0x0004CEC0
 inline int CSWGuiListBox::IsOversized()
 {
-    SwguicontrolTrace1();
+    TraceListBox();
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
@@ -1514,7 +1513,7 @@ int CSWGuiScrollBar::GetTopArrowOn()
     if (m_nVisibleValue < m_nMaxValue)
     {
 #ifdef _XBOX
-        if (m_nXboxUnmapped48 >= 1)
+        if (m_nTopValue >= 1)
 #else
         if (m_nCurValue >= 1)
 #endif
@@ -1530,12 +1529,12 @@ int CSWGuiScrollBar::GetBottomArrowOn()
     int nLast = m_nMaxValue;
 #ifdef _XBOX
     if (!m_bExtendedRange && m_nVisibleValue <= 1 &&
-        m_nXboxUnmapped48 != m_nMaxValue && m_nCurValue != m_nMaxValue)
+        m_nTopValue != m_nMaxValue && m_nCurValue != m_nMaxValue)
     {
         nLast++;
     }
     return m_nVisibleValue < m_nMaxValue &&
-           m_nVisibleValue + m_nXboxUnmapped48 < nLast;
+           m_nVisibleValue + m_nTopValue < nLast;
 #else
     if (!m_bExtendedRange && m_nVisibleValue <= 1 && m_nCurValue != m_nMaxValue)
     {
@@ -1853,6 +1852,37 @@ void CSWGuiEditbox::HandleLMouseUp()
 void CSWGuiEditbox::ReSetFont()
 {
     m_cText.m_cParams.ReSetFont();
+}
+
+// Dead code: not in the PC executable
+int CSWGuiControl::GetEvent(int nEvent, CSWGuiObject** ppObject, CSWGuiHandler* ppHandler)
+{
+    for (int i = 0; i < m_lEvents.num; i++)
+    {
+        CSWGuiControlEvent* pEvent = &m_lEvents.element[i];
+
+        if (pEvent->m_nEvent == nEvent)
+        {
+            if (ppObject)
+            {
+                *ppObject = pEvent->m_pObject;
+            }
+            if (ppHandler)
+            {
+                *ppHandler = pEvent->m_pHandler;
+            }
+            return 1;
+        }
+    }
+    if (ppObject)
+    {
+        *ppObject = NULL;
+    }
+    if (ppHandler)
+    {
+        *ppHandler = NULL;
+    }
+    return 0;
 }
 
 #ifndef _XBOX
@@ -2312,7 +2342,7 @@ CSWGuiScrollBar::CSWGuiScrollBar()  // PC 0x0041AFE0  Xbox 0x002FF760
     m_nCurValue = 0;
     m_nVisibleValue = 0;
 #ifdef _XBOX
-    m_nXboxUnmapped48 = 0;
+    m_nTopValue = 0;
 #endif
     m_bDrawMode = 0;
 }
@@ -3296,7 +3326,7 @@ int CSWGuiScrollBar::HitCheckScrollbar(int nX, int nY)
     }
 }
 
-static inline void SwguicontrolTrace1()
+static inline void TraceListBox()
 {
 }
 
@@ -3530,7 +3560,7 @@ void CSWGuiListBox::OrganizeUnequal()
         }
     }
     m_cScrollBar.SetVisibleValue(m_nBottomVisibleItem - m_nTopVisibleItem + 1);
-    m_cScrollBar.m_nXboxUnmapped48 = m_nTopVisibleItem;
+    m_cScrollBar.m_nTopValue = m_nTopVisibleItem;
     m_cScrollBar.SetCurValue(m_nSelectedItem + 1);
 }
 // PC 0x0041B140  Xbox 0x002FF8B0
@@ -3544,7 +3574,7 @@ void CSWGuiListBox::OrganizeControls()
             m_cScrollBar.SetMaxValue(1, 0);
             m_cScrollBar.SetCurValue(1);
             m_cScrollBar.SetVisibleValue(1);
-            m_cScrollBar.m_nXboxUnmapped48 = 1;
+            m_cScrollBar.m_nTopValue = 1;
             m_bOrganizePending = 0;
         }
         return;
@@ -3569,7 +3599,7 @@ void CSWGuiListBox::OrganizeControls()
             m_cScrollBar.SetMaxValue(1, 0);
             m_cScrollBar.SetCurValue(1);
             m_cScrollBar.SetVisibleValue(1);
-            m_cScrollBar.m_nXboxUnmapped48 = 1;
+            m_cScrollBar.m_nTopValue = 1;
             return;
         }
         nStride = m_nContentHeight + m_nPadding;
@@ -3612,7 +3642,7 @@ void CSWGuiListBox::OrganizeControls()
         m_nTopVisibleItem = m_nSelectedItem < m_nTopVisibleItem ? m_nSelectedItem :
                            (short)max(0, m_nSelectedItem - m_nVisibleItems + 1);
     }
-    m_cScrollBar.m_nXboxUnmapped48 = m_nTopVisibleItem;
+    m_cScrollBar.m_nTopValue = m_nTopVisibleItem;
     if (m_bScrollOnly)
     {
         m_cScrollBar.SetCurValue(m_nTopVisibleItem);
@@ -3771,7 +3801,7 @@ void CSWGuiListBox::OrganizeOversized()  // PC 0x0041A2D0  Xbox 0x002FEFB0
         cExtent.m_nTop =
             m_cItemExtent.m_nHeight - m_nContentHeight - m_nPadding;
         m_cScrollBar.SetCurValue(m_nContentHeight);
-        m_cScrollBar.m_nXboxUnmapped48 = m_nContentHeight;
+        m_cScrollBar.m_nTopValue = m_nContentHeight;
     }
     else
     {
@@ -3782,14 +3812,14 @@ void CSWGuiListBox::OrganizeOversized()  // PC 0x0041A2D0  Xbox 0x002FEFB0
         if (m_nScrollPosition == 1)
         {
             m_cScrollBar.SetCurValue(0);
-            m_cScrollBar.m_nXboxUnmapped48 = 0;
+            m_cScrollBar.m_nTopValue = 0;
         }
         else
         {
             int nValue = (int)((float)(m_nScrollPosition - 1) / (nRange - 1) *
                                (m_nContentHeight - m_cItemExtent.m_nHeight));
             m_cScrollBar.SetCurValue(nValue);
-            m_cScrollBar.m_nXboxUnmapped48 = nValue;
+            m_cScrollBar.m_nTopValue = nValue;
         }
     }
     m_lItems[0]->SetExtent(cExtent);

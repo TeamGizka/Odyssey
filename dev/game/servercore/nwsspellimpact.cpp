@@ -20,8 +20,8 @@
 
 #include <math.h>
 
-static inline void NwsspellimpactTrace1();
-#define NWSSPELLIMPACT_TRACE() NwsspellimpactTrace1()
+#define NWSSPELLIMPACT_DEBUG 0
+
 // PC 0x00594480  Xbox 0x0023B840
 CSWSAreaOfEffectObject::CSWSAreaOfEffectObject(unsigned long oidObject)
     : CSWSObject(SW_OBJECT_TYPE_AREA_OF_EFFECT, oidObject, 0)
@@ -87,7 +87,10 @@ void CSWSAreaOfEffectObject::SetShape(unsigned char nShape, float fWidth,
 // PC 0x005947B0  Xbox 0x0023BB80
 void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
 {
-    NWSSPELLIMPACT_TRACE();
+    if (NWSSPELLIMPACT_DEBUG)
+    {
+        EXOLOG("CSWSAreaOfEffectObject::LoadAreaEffect() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+    }
     m_nAreaEffectId = nAreaEffectId;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     C2DA* pAreaEffects = p2DArrays->m_pVisualEffectsPersistent;
@@ -130,7 +133,10 @@ void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
 // PC 0x00594B00  Xbox 0x0023BED0
 int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)
 {
-    NWSSPELLIMPACT_TRACE();
+    if (NWSSPELLIMPACT_DEBUG)
+    {
+        EXOLOG("CSWSAreaOfEffectObject::LoadEffect() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+    }
     int bSuccess;
     unsigned char nShape;
     float fRadius;
@@ -142,7 +148,7 @@ int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)
     m_nAreaEffectId = pRes->ReadFieldINT(pStruct, "AreaEffectId", bSuccess, 0);
     m_EffectSpellId = pRes->ReadFieldDWORD(pStruct, "SpellId", bSuccess, 0);
     nShape = pRes->ReadFieldBYTE(pStruct, "Shape", bSuccess, 0);
-    m_c1D5 = pRes->ReadFieldBYTE(pStruct, "MetaMagicType", bSuccess, 0);
+    m_nLastSpellCastMetaType = pRes->ReadFieldBYTE(pStruct, "MetaMagicType", bSuccess, 0);
     m_nSpellSaveDC = pRes->ReadFieldINT(pStruct, "SpellSaveDC", bSuccess, 0);
     m_nSpellLevel = pRes->ReadFieldINT(pStruct, "SpellLevel", bSuccess, 0);
 
@@ -182,7 +188,7 @@ int CSWSAreaOfEffectObject::SaveEffect(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldINT(pStruct, m_nAreaEffectId, "AreaEffectId");
     pRes->WriteFieldDWORD(pStruct, GetEffectSpellId(), "SpellId");
     pRes->WriteFieldBYTE(pStruct, m_nShape, "Shape");
-    pRes->WriteFieldBYTE(pStruct, m_c1D5, "MetaMagicType");
+    pRes->WriteFieldBYTE(pStruct, m_nLastSpellCastMetaType, "MetaMagicType");
     pRes->WriteFieldINT(pStruct, m_nSpellSaveDC, "SpellSaveDC");
     pRes->WriteFieldINT(pStruct, m_nSpellLevel, "SpellLevel");
 
@@ -224,7 +230,10 @@ int CSWSAreaOfEffectObject::SaveEffect(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x00594FF0  Xbox 0x0023C3C0
 void CSWSAreaOfEffectObject::SetCreator(unsigned long oidCreator)
 {
-    NWSSPELLIMPACT_TRACE();
+    if (NWSSPELLIMPACT_DEBUG)
+    {
+        EXOLOG("CSWSAreaOfEffectObject::SetCreator() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+    }
     CSWSCreature* pCreator;
     CSWSpell* pSpell;
 
@@ -234,14 +243,14 @@ void CSWSAreaOfEffectObject::SetCreator(unsigned long oidCreator)
     pCreator = pServer->GetCreatureByGameObjectID(oidCreator);
     if (pCreator != NULL && pCreator->GetEffectSpellId() != -1)
     {
-        m_c1D5 = pCreator->m_c1D5;
+        m_nLastSpellCastMetaType = pCreator->m_nLastSpellCastMetaType;
         m_nSpellSaveDC =
             pCreator->CalculateSpellSaveDC(pCreator->GetEffectSpellId());
 
-        if (pCreator->m_c1D4 != CASTING_CLASS_INNATE_FF &&
-            pCreator->m_c1D4 != CASTING_CLASS_INNATE_FE)
+        if (pCreator->m_nLastSpellCastMultiClass != CASTING_CLASS_INNATE_FF &&
+            pCreator->m_nLastSpellCastMultiClass != CASTING_CLASS_INNATE_FE)
         {
-            unsigned char nClass = pCreator->m_c1D4;
+            unsigned char nClass = pCreator->m_nLastSpellCastMultiClass;
             m_nSpellLevel = pCreator->m_pStats->GetClassLevel(nClass, 1);
         }
         else
@@ -717,7 +726,7 @@ void CSWSAreaOfEffectObject::EventHandler(unsigned long nEventId,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC != 0)
+        if (m_bDestroyable != 0)
         {
             RemoveFromArea();
             delete this;
@@ -825,8 +834,4 @@ void CSWSAreaOfEffectObject::SetDuration(unsigned char nDurationType,
     {
         m_nDuration = (unsigned long)(fDuration * 1000.0f);
     }
-}
-
-static inline void NwsspellimpactTrace1()
-{
 }

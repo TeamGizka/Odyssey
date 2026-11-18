@@ -878,6 +878,35 @@ int CSWSItemPropertyHandler::ApplyChangedSavingThrow(CSWSItem* pItem,
 
     return 0;
 }
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::ApplyChangedSavingThrowVsX(CSWSItem* pItem,
+                                                        int nSaveValue,
+                                                        CSWItemProperty* pProperty,
+                                                        CSWSCreature* pCreature,
+                                                        int bLoading)
+{
+    CGameEffect* pEffect = new CGameEffect(1);
+
+    if (nSaveValue >= 0)
+    {
+        pEffect->m_nType = CSWSEffectListHandler::EFFECT_SAVING_THROW_INCREASE;
+    }
+    else
+    {
+        pEffect->m_nType = CSWSEffectListHandler::EFFECT_SAVING_THROW_DECREASE;
+        nSaveValue = -nSaveValue;
+    }
+    pEffect->m_nSubType = CGameEffect::DURATION_TYPE_EQUIPPED |
+                          (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
+    pEffect->SetCreator(pItem->m_nId);
+    pEffect->SetInteger(0, nSaveValue);
+    pEffect->SetInteger(1, 0);
+    pEffect->SetInteger(3, g_pRules->m_nNumRaces);
+    pEffect->SetInteger(2, pProperty->m_nSubtype);
+    ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
+
+    return 0;
+}
 // PC 0x004E68E0  Xbox 0x002232A0
 int CSWSItemPropertyHandler::ApplySpecialWalk(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
@@ -2637,6 +2666,27 @@ int CSWSItemPropertyHandler::ApplyImprovedSavingThrow(
     }
     return 0;
 }
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::ApplyImprovedSavingThrowVsX(
+    CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
+    unsigned long nIndex, int bLoading)
+{
+    int nValue;
+    {
+        CExoString sColumn("Value");
+        unsigned short nCostValue = pProperty->m_nCostValue;
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+
+        p2DArrays->GetIPRPCostTable(1)->GetINTEntry(nCostValue, sColumn,
+                                                    &nValue);
+    }
+    if (nValue != 0)
+    {
+        ApplyChangedSavingThrowVsX(pItem, nValue, pProperty, pCreature,
+                                   bLoading);
+    }
+    return 0;
+}
 // PC 0x004E92E0  Xbox 0x00225CB0
 int CSWSItemPropertyHandler::ApplyReducedSavingThrow(CSWSItem* pItem,
                                                      CSWItemProperty* pProperty,
@@ -2657,6 +2707,30 @@ int CSWSItemPropertyHandler::ApplyReducedSavingThrow(CSWSItem* pItem,
     if (nValue != 0)
     {
         ApplyChangedSavingThrow(pItem, nValue, pProperty, pCreature, bLoading);
+    }
+
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::ApplyReducedSavingThrowVsX(CSWSItem* pItem,
+                                                        CSWItemProperty* pProperty,
+                                                        CSWSCreature* pCreature,
+                                                        unsigned long nIndex,
+                                                        int bLoading)
+{
+    int nValue;
+
+    {
+        CExoString sColumn("Value");
+        unsigned short nCostValue = pProperty->m_nCostValue;
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+
+        p2DArrays->GetIPRPCostTable(CTwoDimArrays::IPRP_COST_TABLE_MELEE)->GetINTEntry(nCostValue, sColumn,
+                                                     &nValue);
+    }
+    if (nValue != 0)
+    {
+        ApplyChangedSavingThrowVsX(pItem, nValue, pProperty, pCreature, bLoading);
     }
 
     return 0;
@@ -2724,6 +2798,52 @@ int CSWSItemPropertyHandler::RemoveChangedSavingThrow(
         ((CSWSObject*)pCreature)
             ->RemoveEffectById(pCreature->m_lstEffects.element[i]->m_nID);
         return 0;
+    }
+
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::RemoveChangedSavingThrowVsX(
+    int nSaveValue, CSWSItem* pItem, CSWItemProperty* pProperty,
+    CSWSCreature* pCreature)
+{
+    CGameEffect* pEffect;
+    int nSubtype = pProperty->m_nSubtype;
+    int nEffectType;
+    int nEffectSubtype;
+    unsigned char nNumRaces;
+    int i;
+
+    for (i = 0; i < pCreature->m_lstEffects.num; i++)
+    {
+        pEffect = pCreature->m_lstEffects.element[i];
+        nEffectType = pEffect->m_nType;
+        if (nEffectType !=
+                CSWSEffectListHandler::EFFECT_SAVING_THROW_INCREASE &&
+            nEffectType != CSWSEffectListHandler::EFFECT_SAVING_THROW_DECREASE)
+        {
+            continue;
+        }
+        if ((pEffect->m_nSubType & CGameEffect::DURATION_MASK) !=
+                CGameEffect::DURATION_TYPE_EQUIPPED ||
+            pEffect->m_oidCreator != pItem->m_nId ||
+            pEffect->GetInteger(0) != nSaveValue || pEffect->GetInteger(1) != 0)
+        {
+            continue;
+        }
+        nNumRaces = g_pRules->m_nNumRaces;
+        if (pEffect->GetInteger(3) != nNumRaces)
+        {
+            continue;
+        }
+        nEffectSubtype = pCreature->m_lstEffects.element[i]->GetInteger(2);
+        if (nEffectSubtype == nSubtype ||
+            (nEffectSubtype == 0 && nSubtype == 0))
+        {
+            ((CSWSObject*)pCreature)
+                ->RemoveEffectById(pCreature->m_lstEffects.element[i]->m_nID);
+            return 0;
+        }
     }
 
     return 0;
@@ -3678,6 +3798,28 @@ int CSWSItemPropertyHandler::RemoveImprovedSavingThrow(
 
     return 0;
 }
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::RemoveImprovedSavingThrowVsX(
+    CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
+    unsigned long nIndex)
+{
+    int nValue;
+
+    {
+        CExoString sColumn("Value");
+        unsigned short nCostValue = pProperty->m_nCostValue;
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+
+        p2DArrays->GetIPRPCostTable(1)->GetINTEntry(nCostValue, sColumn,
+                                                    &nValue);
+    }
+    if (nValue != 0)
+    {
+        RemoveChangedSavingThrowVsX(nValue, pItem, pProperty, pCreature);
+    }
+
+    return 0;
+}
 // PC 0x00401590
 int CSWSItemPropertyHandler::RemoveLight(
     CSWSItem* pItem, CSWItemProperty* pProperty,
@@ -3705,6 +3847,38 @@ int CSWSItemPropertyHandler::RemoveReducedSavingThrow(
         RemoveChangedSavingThrow(nValue, pItem, pProperty, pCreature);
     }
 
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::RemoveReducedSavingThrowVsX(
+    CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
+    unsigned long nIndex)
+{
+    int nValue;
+
+    {
+        CExoString sColumn("Value");
+        unsigned short nCostValue = pProperty->m_nCostValue;
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+
+        p2DArrays->GetIPRPCostTable(CTwoDimArrays::IPRP_COST_TABLE_MELEE)->GetINTEntry(nCostValue, sColumn,
+                                                     &nValue);
+    }
+    if (nValue != 0)
+    {
+        RemoveChangedSavingThrowVsX(nValue, pItem, pProperty, pCreature);
+    }
+
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::ApplyImprovedEvasion(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSItemPropertyHandler::RemoveImprovedEvasion(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex)
+{
     return 0;
 }
 // PC 0x004EA9F0  Xbox 0x002273B0

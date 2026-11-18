@@ -27,7 +27,7 @@
 #include "worldtimer.h"
 #include "clientaimaster.h"
 
-static inline void NwcobjectTrace1();
+#define NWCOBJECT_DEBUG 0
 
 int RenderPosition = 0;
 // PC 0x0063E530  Xbox 0x00098A90
@@ -284,7 +284,10 @@ int CSWCObject::AnimationRunning(unsigned short nAnimation)
 // PC 0x0063D820  Xbox 0x00097CE0
 void CSWCObject::AttachToScene(CAurScene* pScene)
 {
-    NwcobjectTrace1();
+    if (NWCOBJECT_DEBUG)
+    {
+        EXOLOG("CSWCObject::AttachToScene() server object %p\n", GetServerObject());
+    }
     if (m_pAnimBase != NULL)
     {
         m_pAnimBase->AttachToScene(pScene);
@@ -478,7 +481,7 @@ int CSWCObject::SetAnimation(unsigned short nAnimation, int nFlags, int nParam)
             nAnimation != 10006 && nAnimation != 10008 && nAnimation != 10156)
             return 0;
     }
-    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 &&
+    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut &&
         m_bPlayedOutOfPlace)
         return 0;
     if (m_pAnimBase == NULL)
@@ -1071,7 +1074,7 @@ int CSWCObject::AbortFireForgetAnimation(int bAbort)
 }
 // PC 0x0063CB00  Xbox 0x00096ED0
 int CSWCObject::Hilite(const Vector& vColor, unsigned char nModel,
-                       float fUnused, int bPulse)
+                       float fSpeed, int bPulse)
 {
     if (m_pAnimBase == NULL)
     {
@@ -2169,10 +2172,6 @@ float CSWCObject::GetStickyMouseThreshhold()  // PC 0x0063D780
     return fWidth * fWidth + fHeight * fHeight;
 }
 #endif
-
-static inline void NwcobjectTrace1()
-{
-}
 
 #ifdef _XBOX
 // Xbox 0x00098A30

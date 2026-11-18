@@ -19,18 +19,29 @@
       }
     },
     {
-      "name": "tier-b",
+      "name": "tier-a",
       "inherits": "vc70",
-      "displayName": "PC, byte-identical swkotor.exe (filler block on)",
+      "displayName": "PC, default: byte-identical swkotor.exe (filler block on, order file off)",
       "cacheVariables": {
+        "KOTOR_LINK_ORDER": "OFF",
         "KOTOR_KEEPER_FILL": "ON"
       }
     },
     {
-      "name": "tier-a",
+      "name": "tier-b",
       "inherits": "vc70",
-      "displayName": "PC, source tree only (filler block off)",
+      "displayName": "PC, functions in the original order (order file on, filler block off)",
       "cacheVariables": {
+        "KOTOR_LINK_ORDER": "ON",
+        "KOTOR_KEEPER_FILL": "OFF"
+      }
+    },
+    {
+      "name": "tier-c",
+      "inherits": "vc70",
+      "displayName": "PC, source tree only (order file off, filler block off)",
+      "cacheVariables": {
+        "KOTOR_LINK_ORDER": "OFF",
         "KOTOR_KEEPER_FILL": "OFF"
       }
     },
@@ -54,8 +65,9 @@
   ],
   "buildPresets": [
     { "name": "vc70", "configurePreset": "vc70" },
-    { "name": "tier-b", "configurePreset": "tier-b" },
     { "name": "tier-a", "configurePreset": "tier-a" },
+    { "name": "tier-b", "configurePreset": "tier-b" },
+    { "name": "tier-c", "configurePreset": "tier-c" },
     { "name": "xbox", "configurePreset": "xbox" }
   ]
 }

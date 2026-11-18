@@ -11,6 +11,17 @@ void CExoAliasList::Add(const CExoString& sAlias, const CExoString& sPath)
 {
     m_pInternal->Add(sAlias, sPath);
 }
+// Dead code: not in the PC executable
+void CExoAliasList::Clear()
+{
+    m_pInternal->Clear();
+}
+
+// Dead code: not in the PC executable
+void CExoAliasList::Delete(const CExoString& sAlias)
+{
+    m_pInternal->Delete(sAlias);
+}
 
 #ifdef _XBOX
 // Xbox 0x00134A10
@@ -92,6 +103,11 @@ CExoFile::~CExoFile()
         m_pInternal = 0;
     }
 }
+// Dead code: not in the PC executable
+int CExoFile::Eof()
+{
+    return m_pInternal->Eof();
+}
 // PC 0x005E6A10  Xbox 0x00134BB0
 int CExoFile::FileOpened()
 {
@@ -171,6 +187,11 @@ inline int CExoFileInternal::SeekBeginning()
 inline int CExoFileInternal::SeekEnd()
 {
     return m_pFile ? (fseek(m_pFile, 0, 2) == 0) : 0;
+}
+
+inline int CExoFileInternal::Eof()
+{
+    return m_pFile ? feof(m_pFile) : 0;
 }
 
 #ifdef _XBOX

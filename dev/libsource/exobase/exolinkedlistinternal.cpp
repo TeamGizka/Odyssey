@@ -24,7 +24,7 @@ CExoLinkedListInternal::~CExoLinkedListInternal()
         delete pDelete;
     }
 }
-
+// Dead code: not in the PC executable
 CExoLinkedListNode* CExoLinkedListInternal::AddAfter(
     void* pData, CExoLinkedListNode* pPosition)
 {

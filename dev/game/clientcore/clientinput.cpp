@@ -41,8 +41,7 @@
 #include "platform.h"
 #endif
 
-static inline void ClientInputTrace();
-#define CLIENTINPUT_TRACE() ClientInputTrace()
+#define CLIENTINPUT_DEBUG 0
 
 int g_nInputUnused1 = 0;
 int g_nInputUnused2 = 0;
@@ -161,19 +160,34 @@ int CClientExoAppInternal::PerformRButtonUpAction()
     return 0;
 #endif
 }
+// Dead code: not in the PC executable
+void CClientExoAppInternal::PerformMButtonDownAction()
+{
+}
+// Dead code: not in the PC executable
+void CClientExoAppInternal::PerformMButtonUpAction()
+{
+}
+// Dead code: not in the PC executable
+void CClientExoAppInternal::PerformZMouseMoveAction(int nZ)
+{
+#ifndef _XBOX
+    g_pGuiMan->HandleZMouse(nZ);
+#endif
+}
 // PC 0x0061F980
-void CClientExoAppInternal::SetMouseCursor(int nCursor, int nArg2, int nArg3)
+void CClientExoAppInternal::SetMouseCursor(int nCursor, int bCentered, int bMouseDown)
 {
     if (g_pExoInput != NULL)
     {
 #ifndef _XBOX
-        nCursor = g_pExoInput->SetMouseCursor(nCursor, nArg2, nArg3);
+        nCursor = g_pExoInput->SetMouseCursor(nCursor, bCentered, bMouseDown);
 #endif
     }
     if (m_pSWGuiManager != NULL)
     {
 #ifndef _XBOX
-        m_pSWGuiManager->SetSoftwareMouseCursor(nCursor, nArg2, nArg3);
+        m_pSWGuiManager->SetSoftwareMouseCursor(nCursor, bCentered, bMouseDown);
 #endif
     }
 }
@@ -227,7 +241,7 @@ void CClientExoAppInternal::ShowMouse(int nFlags)
         }
     }
 }
-
+// Dead code: not in the PC executable
 int NearestObjectCompare(void* pObjectId, CNearestStruct cNearest)
 {
     return pObjectId == (void*)cNearest.m_oidObject;
@@ -238,7 +252,7 @@ int TestNearestStruct(void* pObjectId, CNearestStruct cNearest)
     return (unsigned long)pObjectId == cNearest.m_oidObject;
 }
 // PC 0x0061FAA0
-int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
+int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int bMultipleActions)
 {
     int nCursor;
     switch (nAction & 0xFFFFFFF)
@@ -279,7 +293,10 @@ int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
 // PC 0x0061FBA0  Xbox 0x00060630
 void CClientExoAppInternal::ReadPlayBackInputEvents()
 {
-    CLIENTINPUT_TRACE();
+    if (CLIENTINPUT_DEBUG)
+    {
+        EXOLOG("CClientExoAppInternal::ReadPlayBackInputEvents() client options %p\n", GetClientOptions());
+    }
 
     char szBuffer[PLAYBACK_RECORD_LENGTH];
     int nStartTime;
@@ -468,7 +485,10 @@ void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
 
     if (m_nInputClass != nClass)
     {
-        CLIENTINPUT_TRACE();
+        if (CLIENTINPUT_DEBUG)
+        {
+            EXOLOG("CClientExoAppInternal::SetInputClass() client options %p\n", GetClientOptions());
+        }
         int nOldClass = m_nInputClass;
         m_nInputClass = nClass;
         g_pExoInput->ClearEvents();
@@ -618,7 +638,10 @@ void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00620530
 #ifndef _XBOX
 void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00620350
 {
-    CLIENTINPUT_TRACE();
+    if (CLIENTINPUT_DEBUG)
+    {
+        EXOLOG("CClientExoAppInternal::HandleMouseClickInWorld() client options %p\n", GetClientOptions());
+    }
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState == 0 &&
         m_pGuiInGame->m_pPartySelection == NULL &&
         m_pClientOptions->m_nCameraMode != CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
@@ -658,10 +681,10 @@ void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00620350
     }
 }
 #endif
-
-CResRef CClientExoAppInternal::ActionIconToCursorResref(int nAction, int nArg2)
+// Dead code: not in the PC executable
+CResRef CClientExoAppInternal::ActionIconToCursorResref(int nAction, int bMultipleActions)
 {
-    return CResRef(g_asMouseCursorNames[ActionIconToMouseCursor(nAction, nArg2)]);
+    return CResRef(g_asMouseCursorNames[ActionIconToMouseCursor(nAction, bMultipleActions)]);
 }
 
 #ifndef _XBOX
@@ -895,11 +918,11 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
             PerformRButtonUpAction();
         break;
     case INPUT_EVENT_MOUSE_MIDDLE:
-    case INPUT_EVENT_RESERVED_246:
-    case INPUT_EVENT_RESERVED_247:
+    case INPUT_EVENT_ACTION_MENU_LEFT:
+    case INPUT_EVENT_ACTION_MENU_RIGHT:
     case GUIEVENT_ACTION_MENU_UP:
     case GUIEVENT_ACTION_MENU_DOWN:
-    case INPUT_EVENT_RESERVED_252:
+    case INPUT_EVENT_ACTION_MENU_SHOW_MENU:
 
         if (nValue != 0)
         {
@@ -1775,7 +1798,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x006227E0  Xbo
             {
                 CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
 #ifndef _XBOX
-                hitInfo.m_bResult4 = 1;
+                hitInfo.m_bHitEmitterBounds = 1;
 #endif
                 Vector vHitPosition;
 #ifndef _XBOX
@@ -2260,10 +2283,6 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x006227E0  Xbo
     }
 }
 #endif
-static inline void ClientInputTrace()
-{
-}
-
 #ifdef _XBOX
 // Xbox 0x00060BB0
 void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)

@@ -35,6 +35,9 @@ public:
     void CopyEffect(CGameEffect* pEffect, int bSkipIntegers);
     void UpdateLinked();
     void SetLinked(CGameEffect* pLeft, CGameEffect* pRight);
+    CGameEffect& operator=(const CGameEffect& cEffect);
+    int operator==(const CGameEffect& cEffect) const;
+    int operator!=(const CGameEffect& cEffect) const;
 
     unsigned short GetEffectType() { return m_nType; }
 

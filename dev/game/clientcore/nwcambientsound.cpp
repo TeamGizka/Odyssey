@@ -65,6 +65,7 @@ void CSWCAmbientSound::SetMusicDelay(int nDelay)
         m_MusicDelay = nDelay;
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x000B4760
 void CSWCAmbientSound::SetMusicVolume(unsigned char nVolume)
 {
@@ -776,6 +777,13 @@ void CSWCAmbientSound::StopSounds(int bMusicOnly)
     {
         PlayAmbientSound(0);
     }
+}
+// Dead code: not in the PC executable
+void CSWCAmbientSound::StopAllMusic()
+{
+    PlayMusic(0);
+    m_bBattleMusic = 0;
+    m_nTimeRemaining = 0;
 }
 
 #ifdef _XBOX

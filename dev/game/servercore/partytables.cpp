@@ -86,7 +86,7 @@ int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
             fPercent = nPercentXP * 0.01f;
         }
 
-        int nXP = pCreature->m_pStats->m_nExperience - pCreature->m_nUnknown22C;
+        int nXP = pCreature->m_pStats->m_nExperience - pCreature->m_nJoiningXP;
         int nPoolXP = m_nXPPool;
         if (nXP < (int)(nPoolXP * fPercent))
         {
@@ -1086,7 +1086,7 @@ int CSWPartyTable::GetTotalPlayedSeconds()
     return m_nPlayedSeconds + (nElapsed + 5000000) / 10000000ui64;
 }
 // PC 0x00563C60  Xbox 0x00165330
-void CSWPartyTable::UnstealthParty(int nFlag)
+void CSWPartyTable::UnstealthParty(int nStealthModeValue)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     CSWSPlayer* pPlayer = pServerExoApp->GetClientObjectByObjectId(
@@ -1099,7 +1099,7 @@ void CSWPartyTable::UnstealthParty(int nFlag)
                 oidCreature);
         if (pCreature != NULL)
         {
-            pCreature->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nFlag);
+            pCreature->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nStealthModeValue);
         }
     }
 
@@ -1113,7 +1113,7 @@ void CSWPartyTable::UnstealthParty(int nFlag)
                 m_aoidNPC[m_anMembers[nMember]]);
             if (pMember != NULL)
             {
-                pMember->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nFlag);
+                pMember->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, nStealthModeValue);
             }
             nMember++;
         } while (nMember < m_nNumMembers);
@@ -1338,11 +1338,11 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x00564300  
     }
     if (nBaseXP <= nPoolXP)
     {
-        pCreature->m_nUnknown22C = 0;
+        pCreature->m_nJoiningXP = 0;
     }
     else
     {
-        pCreature->m_nUnknown22C = nBaseXP - nPoolXP;
+        pCreature->m_nJoiningXP = nBaseXP - nPoolXP;
     }
 
     CServerExoApp* pServerExoApp = g_pAppManager->GetServerExoApp();
@@ -1426,7 +1426,7 @@ unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
 
             if (bResurrect != 0 && pCreature->GetCurrentHitPoints(0) <= 0)
             {
-                pCreature->m_nF0 = 1;
+                pCreature->m_bRaiseable = 1;
                 CGameEffect* pEffect = new CGameEffect(1);
                 pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
                 pEffect->m_nSubType =
@@ -1898,11 +1898,11 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)
     }
     if (nBaseXP <= nPoolXP)
     {
-        pCreature->m_nUnknown22C = 0;
+        pCreature->m_nJoiningXP = 0;
     }
     else
     {
-        pCreature->m_nUnknown22C = nBaseXP - nPoolXP;
+        pCreature->m_nJoiningXP = nBaseXP - nPoolXP;
     }
 
     CServerExoApp* pServerExoApp = g_pAppManager->GetServerExoApp();

@@ -3,6 +3,7 @@
 
 #include "aurlist.h"
 #include "aurtristripper.h"
+#include <aurlist.h>
 
 const unsigned int nStripSplitThreshold = 1000;
 // PC 0x0047BB80  Xbox 0x002D2270
@@ -306,7 +307,6 @@ float NvStripifier::AvgStripSize(const NvStripInfoList& lstStrips)  // PC 0x0047
     return ((float)nSizeAccum) / ((float)nNumStrips);
 }
 
-#include <aurlist.h>
 // PC 0x0047C8A0  Xbox 0x002D3160
 bool NvStripInfo::Unique(NvFaceInfoList& lstFaces, NvFaceInfo* pFace)
 {

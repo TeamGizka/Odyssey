@@ -127,6 +127,25 @@ int CSWSMessage::ParseGetString(unsigned char* pString, unsigned long nLength,
     }
     return 0;
 }
+// Dead code: not in the PC executable
+int CSWSMessage::ParseGetBool(unsigned char* pString, unsigned long nLength,
+                              int& bValue)
+{
+    if (*pString == ' ' && nLength != 1)
+    {
+        if (pString[1] == '0')
+        {
+            bValue = 0;
+            return 1;
+        }
+        if (pString[1] == '1')
+        {
+            bValue = 1;
+            return 1;
+        }
+    }
+    return 0;
+}
 // PC 0x00528130  Xbox 0x00250390
 int CSWSMessage::ParseToken(const char* szToken, unsigned char** ppString,
                             unsigned long& nLength, int bPeriod)

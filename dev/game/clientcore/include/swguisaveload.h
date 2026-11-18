@@ -22,7 +22,7 @@ public:
 
     unsigned long m_bSaveMode : 1;
     unsigned long m_bExitToMainMenu : 1;
-    unsigned long m_nUnknown64Rest : 30;
+    unsigned long m_nFlagsUnused : 30;
     int m_nMaxSaveGame;
 
     CExoString m_sResourceDirectory;
@@ -67,6 +67,7 @@ public:
     void ShowGame(CSWGuiControl* pControl);
     int CopyGameToFutureGame(unsigned long nSaveGame,
                              const CExoString& sSaveName);
+    void DisplayLoadError(unsigned long nStrRef);
     void LoadPCAutoSave(const CExoString& sModuleName);
     void DeleteGame(CSWGuiControl* pControl);
     int UnpackGame(unsigned long nSaveGame, const CExoString& sSaveName,
@@ -77,6 +78,7 @@ public:
     static const int MISSING_LIVE_CONTENT_TOKEN = 0;
     void PromptForSaveName(CSWGuiControl* pControl);
     void HandleSaveButton(CSWGuiControl* pControl);
+    void SaveNamePanelClose(int bSave, CExoString sSaveName);
 
     static const unsigned long STRREF_CONFIRM_OVERWRITE = 1591;
     static const unsigned long STRREF_SAVE_SPACE_REQUIRED = 47989;
@@ -124,7 +126,7 @@ public:
     };
     enum SaveTitleToken
     {
-        TITLE_TOKEN_GAME = 0,
+        TITLE_TOKEN_NUMBER = 0,
         TITLE_TOKEN_HOURS = 1,
         TITLE_TOKEN_MINUTES = 2,
         TITLE_TOKEN_NAME = 3
@@ -158,7 +160,7 @@ public:
     CExoString m_sGameName;
     CExoString m_sAreaName;
     CExoString m_sLastModule;
-    CExoString m_sUnknown1F8;
+    CExoString m_sSaveDirectory;
     CExoString m_sXboxTitle;
     CExoString m_sScreenshot;
 
@@ -167,6 +169,7 @@ public:
     CResRef m_aPortraits[3];
 
     CExoString GetGameDirectory();
+    CResRef GetPlayerPortrait(int nIndex);
     // PC 0x006C8200
     CResRef GetPortrait(int nIndex)
     {

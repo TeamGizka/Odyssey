@@ -19,11 +19,7 @@
 #include "clientexoapp.h"
 #include "clientoptions.h"
 
-static inline void SwbehaviorcameraTrace5();
-static inline void SwbehaviorcameraTrace4();
-static inline void SwbehaviorcameraTrace3();
-static inline void SwbehaviorcameraTrace2();
-static inline void SwbehaviorcameraTrace1();
+#define SWBEHAVIORCAMERA_DEBUG 0
 
 float CameraPersonalSpace = 0.35f;
 float CameraLookUp = 30.0f;
@@ -234,7 +230,7 @@ void CSWCameraOnAStick::SetCameraStyle(int nStyle)
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWCameraOnAStick::UpdateCameraStyle()
 {
     SetCameraStyle(g_pAppManager->m_pClientExoApp->GetModule()
@@ -524,7 +520,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
             qResult = YawPitchRoll(Yaw(vDirection) - fYawOffset, 0.0f, 0.0f);
             m_fOrientationInterpAmount = CameraInterpAmt2;
             m_bPreserveLastYaw = 0;
-            m_nReservedAC = 1;
+            m_bKeepManualYaw = 1;
         }
       }
     }
@@ -858,9 +854,9 @@ CSWCameraOnAStick::CSWCameraOnAStick(CAurObject* pObject, CAurObject* pTarget)
     m_fShakeYaw = 0.0f;
     m_fShakePitch = 0.0f;
     m_oidLookAt = OBJECT_INVALID;
-    m_nReservedA4 = 0;
-    m_fReserved98 = -1.0f;
-    m_nReservedAC = 0;
+    m_bFollowingMove = 0;
+    m_fTargetMoveDelay = -1.0f;
+    m_bKeepManualYaw = 0;
 #ifndef _XBOX
     m_bMouseCameraRotateToggle = g_bMouseCameraRotateToggle;
 #endif
@@ -944,10 +940,10 @@ CSWCameraOnAStick::CSWCameraOnAStick(CCameraSettings& settings)
 #endif
     m_fShakeYaw = 0.0f;
     m_fShakePitch = 0.0f;
-    m_nReservedA4 = 0;
-    m_nReservedAC = 0;
+    m_bFollowingMove = 0;
+    m_bKeepManualYaw = 0;
     m_oidLookAt = OBJECT_INVALID;
-    m_fReserved98 = -1.0f;
+    m_fTargetMoveDelay = -1.0f;
 #ifndef _XBOX
     m_bMouseCameraRotateToggle = g_bMouseCameraRotateToggle;
 #endif
@@ -955,7 +951,10 @@ CSWCameraOnAStick::CSWCameraOnAStick(CCameraSettings& settings)
 // PC 0x0063B050  Xbox 0x000B1960
 Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
 {
-    SwbehaviorcameraTrace5();
+    if (SWBEHAVIORCAMERA_DEBUG)
+    {
+        m_pCombatTarget = m_pTarget;
+    }
     Vector vSafe = vPosition;
     Vector vHitRight;
     Vector vHitLeft;
@@ -963,7 +962,7 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
     Vector vHitDown;
     CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
     int nChecks = 1;
-    hitInfo.m_bResult0 = 1;
+    hitInfo.m_bIgnoreCharacters = 1;
     int bContinue = 1;
     hitInfo.m_lstHits.Add(m_pTarget);
     while (bContinue && nChecks-- > 0)
@@ -983,14 +982,14 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
 
         Vector vProbeRight = vPosition + vOffset;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneRight = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitRight = pSceneRight->HitCheck(
             vStart, vProbeRight, &vHitRight, &hitInfo) != 0;
 
         Vector vProbeLeft = vPosition - vOffset;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneLeft = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitLeft = pSceneLeft->HitCheck(
             vStart, vProbeLeft, &vHitLeft, &hitInfo) != 0;
@@ -998,14 +997,14 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
         Vector vVertical = Vector(0.0f, 0.0f, 1.0f) * CameraPersonalSpace;
         Vector vProbeUp = vPosition + vVertical;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneUp = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitUp = pSceneUp->HitCheck(
             vStart, vProbeUp, &vHitUp, &hitInfo) != 0;
 
         Vector vProbeDown = vPosition - vVertical;
         hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         CAurScene* pSceneDown = static_cast<Gob*>(m_pObject)->GetScene();
         int bHitDown = pSceneDown->HitCheck(
             vStart, vProbeDown, &vHitDown, &hitInfo) != 0;
@@ -1052,7 +1051,7 @@ void CSWCameraOnAStick::SaveCameraSettings(CCameraSettings& settings)
     settings.m_nHeightMode = m_nHeightMode;
     settings.m_nStyle = m_nStyle;
     settings.m_fPitch = m_fPitch;
-    settings.m_nReserved1C = -1;
+    settings.m_nMode = -1;
 }
 // PC 0x0063A5D0  Xbox 0x000B0D10
 CSWCameraFreeLook::CSWCameraFreeLook(CAurObject* pObject, CAurObject* pTarget,
@@ -1089,7 +1088,7 @@ CSWCameraFreeLook::CSWCameraFreeLook(CCameraSettings& settings)
     m_fTiltAcceleration = 0.0f;
 #endif
     UpdateCamraStyle();
-    m_nMode = settings.m_nReserved1C;
+    m_nMode = settings.m_nMode;
     g_pAppManager->m_pClientExoApp->EnableVideoEffect(m_nMode);
 #ifndef _XBOX
     m_integrator.m_fMaximumVelocity = 200.0f;
@@ -1107,9 +1106,9 @@ CSWCameraDeath::CSWCameraDeath(CAurObject* pObject, CAurObject* pTarget)
     m_fDesiredPitch = 90.0f;
     m_fLogDistance = 0.5f;
     m_fDesiredDistance = 3.0f;
-    m_fReserved34 = 0.75f;
-    m_fReserved38 = 0.0f;
-    m_fReserved3C = 0.01f;
+    m_fHeight = 0.75f;
+    m_fDesiredHeight = 0.0f;
+    m_fLogHeight = 0.01f;
     m_pTarget = NULL;
     SetTarget(pTarget);
 }
@@ -1136,7 +1135,7 @@ void CSWCameraDeath::SetTarget(CAurObject* pTarget)
             normalize(static_cast<Gob*>(pTarget)->GetPosition() -
                       static_cast<Gob*>(m_pObject)->GetPosition());
         m_fYaw = Yaw(vDirection);
-        m_fReserved34 = 0.75f;
+        m_fHeight = 0.75f;
     }
     m_pTarget = pTarget;
 }
@@ -1157,8 +1156,8 @@ int CSWCameraDeath::Control(float fTimeStep)
 
     if (m_pTarget != NULL)
     {
-        m_fReserved34 = (m_fReserved38 - m_fReserved34) * m_fReserved3C
-                        + m_fReserved34;
+        m_fHeight = (m_fDesiredHeight - m_fHeight) * m_fLogHeight
+                        + m_fHeight;
         m_fYaw += fTimeStep * m_fSpeedYaw;
         if (m_fYaw < 0.0f)
         {
@@ -1194,15 +1193,15 @@ int CSWCameraDeath::Control(float fTimeStep)
         fDistance = (m_fDesiredDistance - fDistance) * m_fLogDistance
                     + fDistance;
         Vector vTarget = static_cast<Gob*>((CAurObject*)m_pTarget)->GetPosition()
-                         + Vector(0.0f, 0.0f, m_fReserved34);
+                         + Vector(0.0f, 0.0f, m_fHeight);
         Vector vPosition = fDistance * qOrientation.zdir() + vTarget;
         Vector vHit;
         CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
-        hitInfo.m_bResult0 = 1;
+        hitInfo.m_bIgnoreCharacters = 1;
         hitInfo.m_lstHits.Add(m_pTarget);
         hitInfo.ClearOutput();
         Vector vOffset = normalize(vPosition - vTarget) * CAMERA_COLLISION_CLEARANCE;
-        hitInfo.m_bResult2 = 1;
+        hitInfo.m_bUseIgnoreHitCheck = 1;
         int bHit = static_cast<Gob*>(m_pObject)->GetScene()->HitCheck(
             vTarget, vPosition + vOffset, &vHit, &hitInfo) != 0;
         if (bHit)
@@ -1273,30 +1272,6 @@ int CSWCameraOnAStick::Control(float fTimeStep)
 
 #undef SW_CAMERA_QA_REPORT
 
-static inline void SwbehaviorcameraTrace5()
-{
-    SwbehaviorcameraTrace4();
-}
-
-static inline void SwbehaviorcameraTrace4()
-{
-    SwbehaviorcameraTrace3();
-}
-
-static inline void SwbehaviorcameraTrace3()
-{
-    SwbehaviorcameraTrace2();
-}
-
-static inline void SwbehaviorcameraTrace2()
-{
-    SwbehaviorcameraTrace1();
-}
-
-static inline void SwbehaviorcameraTrace1()
-{
-}
-
 #ifdef _XBOX
 
 #include "swplayercontrol.h"
@@ -1345,7 +1320,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
                 }
                 qResult = YawPitchRoll(Yaw(vDirection) - fYawOffset, 0.0f, 0.0f);
                 bLookAt = 1;
-                m_nReservedAC = 1;
+                m_bKeepManualYaw = 1;
             }
         }
     }
@@ -1370,15 +1345,15 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
     }
     m_bTargetTowardCamera = bTowardCamera;
 
-    m_fReserved98 -= fTimeStep;
+    m_fTargetMoveDelay -= fTimeStep;
     if (vTargetMove.m_fX == 0.0f && vTargetMove.m_fY == 0.0f &&
         vTargetMove.m_fZ == 0.0f)
     {
-        m_fReserved98 = fDelayAmount;
+        m_fTargetMoveDelay = fDelayAmount;
     }
-    if (m_fReserved98 < 0.0f)
+    if (m_fTargetMoveDelay < 0.0f)
     {
-        m_fReserved98 = -1.0f;
+        m_fTargetMoveDelay = -1.0f;
     }
 
     float fUpDown = g_pAppManager->m_pClientExoApp->m_pcExoAppInternal
@@ -1392,13 +1367,13 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
         bStickCentered = 1;
         if (m_fTurn != 0.0f)
         {
-            m_nReservedAC = 1;
+            m_bKeepManualYaw = 1;
         }
     }
     else
     {
         bStickCentered = 0;
-        m_nReservedAC = 0;
+        m_bKeepManualYaw = 0;
         if (OldCamera)
         {
             m_fPositionInterpSpeed = 0.0f;
@@ -1416,12 +1391,12 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
             vToTarget.m_fZ = 0.0f;
             qResult = YawPitchRoll(Yaw(vToTarget), 0.0f, 0.0f);
         }
-        if (m_fTurn == 0.0f && bStickCentered && !bLookAt && m_nReservedAC == 0)
+        if (m_fTurn == 0.0f && bStickCentered && !bLookAt && m_bKeepManualYaw == 0)
         {
             bSnapToFacing = 1;
         }
     }
-    else if (m_fTurn == 0.0f && !bStickCentered && m_fReserved98 == -1.0f)
+    else if (m_fTurn == 0.0f && !bStickCentered && m_fTargetMoveDelay == -1.0f)
     {
         bSnapToFacing = 1;
     }
@@ -1442,10 +1417,10 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
         else
         {
             fInterp = CameraInterpAmt1;
-            m_nReservedA4 = 1;
+            m_bFollowingMove = 1;
         }
     }
-    else if (!bLookAt && m_fTurn == 0.0f && m_nReservedAC != 1)
+    else if (!bLookAt && m_fTurn == 0.0f && m_bKeepManualYaw != 1)
     {
         fInterp = CameraInterpAmt3;
     }
@@ -1454,13 +1429,13 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
         fInterp = CameraInterpAmt2;
     }
     m_fOrientationInterpAmount = fInterp;
-    if (m_fTurn == 0.0f && m_nReservedA4 && OldCamera)
+    if (m_fTurn == 0.0f && m_bFollowingMove && OldCamera)
     {
         m_fOrientationInterpAmount = CameraInterpAmt3;
     }
     else
     {
-        m_nReservedA4 = 0;
+        m_bFollowingMove = 0;
     }
     m_fTurn = 0.0f;
     if (DesiredOrientation >= 0.0f)

@@ -9,7 +9,7 @@
 #include "twodimarray.h"
 #include "swmain.h"
 
-static inline void SwguiCreateItemTrace1();
+static inline void TraceCreateItemMenu();
 // PC 0x006D03A0  Xbox 0x000F77D0
 void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
 {
@@ -100,7 +100,7 @@ CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
 // PC 0x006D05A0
 void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
 {
-    SwguiCreateItemTrace1();
+    TraceCreateItemMenu();
     if (pControl->m_bSelected != 0)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()->HideItemCreateMenu();
@@ -110,7 +110,7 @@ void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
 // PC 0x006D05E0
 void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
 {
-    SwguiCreateItemTrace1();
+    TraceCreateItemMenu();
     unsigned long nSubType;
 
     if (pControl->m_bSelected != 0)
@@ -184,6 +184,6 @@ CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
     CenterPanel();
 }
 
-static inline void SwguiCreateItemTrace1()
+static inline void TraceCreateItemMenu()
 {
 }

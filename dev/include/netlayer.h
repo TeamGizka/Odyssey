@@ -29,6 +29,7 @@ class CNetLayerPlayerInfo
 {
 public:
     CNetLayerPlayerInfo();
+    void Initialize();
 
     static const unsigned long MAX_BUFFER_LENGTH;
 
@@ -111,6 +112,9 @@ public:
     int DisconnectPlayer(unsigned long nPlayerId, unsigned long nStrRef,
                          int bSendMessage);
     CExoString GetPlayerAddress(unsigned long nPlayerId);
+    int EndConnectToSession();
+    int ConnectToSessionLoop();
+    void SetDestNetLayer(CNetLayer* pNetLayer);
 
     char m_aBuffer[0x20000];
     unsigned long m_nReadPos;
@@ -121,9 +125,9 @@ public:
     CNetLayerPlayerInfo m_cPlayerInfo;
     int m_bServerMode;
     CExoString m_sServerName;
-    CExoString m_sServerString1;
-    CExoString m_sServerString2;
-    CExoString m_sServerString3;
+    CExoString m_sPlayerPassword;
+    CExoString m_sGameMasterPassword;
+    CExoString m_sServerAdminPassword;
     int m_bConnecting;
     CExoString m_sSessionName;
     int m_nClientType;

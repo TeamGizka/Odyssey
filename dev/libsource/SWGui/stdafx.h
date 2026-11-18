@@ -11,14 +11,14 @@ typedef CExoArrayList<CSWGuiControl*> SWGuiPchArraySWGuiControlPtr;
 
 inline CSWGuiObject* SWGuiPchObject_Construct() { return new CSWGuiObject; }
 inline void SWGuiPchTextParams_Destroy(CSWGuiTextParams* p) { p->~CSWGuiTextParams(); }
-inline SWGuiPchArraySWGuiControlPtr* SWGuiPchArraySWGuiControlPtr_Construct(int a0) { return new SWGuiPchArraySWGuiControlPtr(a0); }
+inline SWGuiPchArraySWGuiControlPtr* SWGuiPchArraySWGuiControlPtr_Construct(int nSize) { return new SWGuiPchArraySWGuiControlPtr(nSize); }
 inline void SWGuiPchArraySWGuiControlPtr_Add() { void (SWGuiPchArraySWGuiControlPtr::*p)(class CSWGuiControl *) = &SWGuiPchArraySWGuiControlPtr::Add; (void)p; }
 inline void SWGuiPchArraySWGuiControlPtr_IndexOf() { int (SWGuiPchArraySWGuiControlPtr::*p)(class CSWGuiControl *) const = &SWGuiPchArraySWGuiControlPtr::IndexOf; (void)p; }
 inline void SWGuiPchArraySWGuiControlPtr_Allocate() { void (SWGuiPchArraySWGuiControlPtr::*p)(int) = &SWGuiPchArraySWGuiControlPtr::Allocate; (void)p; }
 
 class CAurObject;
 typedef CExoArrayList<CAurObject*> SWGuiPchArrayAurObjectPtr;
-inline SWGuiPchArrayAurObjectPtr* SWGuiPchArrayAurObjectPtr_Construct(int a0) { return new SWGuiPchArrayAurObjectPtr(a0); }
+inline SWGuiPchArrayAurObjectPtr* SWGuiPchArrayAurObjectPtr_Construct(int nSize) { return new SWGuiPchArrayAurObjectPtr(nSize); }
 inline void SWGuiPchArrayAurObjectPtr_Insert() { void (SWGuiPchArrayAurObjectPtr::*p)(CAurObject*, int) = &SWGuiPchArrayAurObjectPtr::Insert; (void)p; }
 
 typedef CExoLinkedList<CRes> SWGuiPchListRes;

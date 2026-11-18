@@ -61,13 +61,13 @@ public:
 class CSWCCreaturePartyStatus
 {
 public:
-    int m_nUnknown00;
-    int m_nUnknown04;
-    int m_nUnknown08;
-    int m_nUnknown0C;
-    int m_nUnknown10;
-    int m_nUnknown14;
-    CExoString m_sUnknown18;
+    int m_bPartyMember;
+    int m_bSelectable;
+    int m_bAvailable;
+    int m_bLocked;
+    int m_bHasStatusObject;
+    int m_oidStatusObject;
+    CExoString m_sStatusName;
     CSWCCreaturePartyStatus();
 };
 
@@ -165,6 +165,7 @@ public:
 
     void AnimationUpdate();
     void AnimateFireAndForget();
+    int TestAIStateActionGroup(int nGroup);
 
     enum FireForgetLength
     {
@@ -198,6 +199,7 @@ public:
     void UpdateMonkVisuals();
 
     void HandleConjuringCreature();
+    void HandleSwitchWeapon();
     // PC 0x00641DB0
     virtual CSWCCreature* AsSWCCreature()
     {
@@ -245,7 +247,7 @@ public:
 
     void SetDesiredOrientation(const Vector& vOrientation);
     void SetDesiredOrientationForLock();
-    void SetLockOrientationToObject(unsigned long oidTarget, int bUnknown);
+    void SetLockOrientationToObject(unsigned long oidTarget, int bForce);
     void StripEquippedItems();
     void PlaySoundSetSound(unsigned short nSound, int bFlag);
     int GetSoundSetStrres(unsigned short nSound, STR_RES& strRes);
@@ -334,7 +336,6 @@ public:
     unsigned long GetAttackingWeapon(int nAttackType);
     void SetAppearance(CSWCCreatureAppearance* pAppearance, unsigned char nMode,
                        int bUpdate);
-    const Quaternion& GetOrientation();
     virtual unsigned char GetReticlePoint(Vector& vPoint);
     void RotateCreatureToOrientation(const Vector& vOrientation);
 
@@ -407,6 +408,7 @@ public:
                        CSWCCombatAttackData* pAttackData, int nSoundType);
     int LoadRollingFootstepSound();
     void PlayRollingFootstepSound(int bRunning);
+    void StopRollingFootstepSound();
     void UpdateRollingFootstepSound();
     int ShowLightSaberContactVisual(CSWCCombatAttackData* pAttackData);
 
@@ -420,6 +422,8 @@ public:
     float GetHeadTurnHorizontal();
     float GetHeadTurnVertical();
     void SetNewLoopingCreatureSound(const CExoString& sSound);
+    int ResolveSpecialAttackVisualsMelee(int nAttackType, int nType2Animation,
+                                     int nType3Animation, int nType4Animation);
     int SelectSpecialAttackAnimation(int nAttackType, int nType2Animation,
                                      int nType3Animation, int nType4Animation);
     int StopAmbientPauseAnim();
@@ -430,7 +434,7 @@ public:
     int InCreatureCombat(CSWCObject* pTarget);
     int UpdateMeleeAttackData(unsigned short nAnimation, int nAttackType, int bInCombat,
                               int nWieldClass);
-    int UpdateRangedAttackData(int nA, int nWieldClass);
+    int UpdateRangedAttackData(int nAttackType, int nWieldClass);
     int UpdateAttackData(unsigned short* pAnimation, CSWCCombatAttackData* pAttackData);
     unsigned short ResolveReactionAnimation(unsigned short nAnimation, unsigned short nReaction,
                                  int nWieldClass);
@@ -461,7 +465,7 @@ public:
     void PerformCombatFeat(unsigned short nFeat, CSWCCreature* pTarget);
     void PerformUseHostileItem(unsigned long nItem, CSWCCreature* pTarget);
     void PartyMenuUseHostileItem(unsigned long nItem, CSWCCreature* pTarget);
-    void ActionMenuAttack(unsigned long nA, CSWCCreature* pInstigator);
+    void ActionMenuAttack(unsigned long nAction, CSWCCreature* pInstigator);
     void ActionInitiateDialog(unsigned long nAction, CSWCCreature* pInstigator);
     void ForceMenuAction(unsigned long nAction, CSWCCreature* pTarget);
     void ForceMenuHostileAction(unsigned long nAction, CSWCCreature* pTarget);
@@ -477,13 +481,13 @@ public:
     void PerformAttack(unsigned long oidTarget);
     void PerformSkill(unsigned char nSkill, unsigned char nUseType,
                       unsigned long oidTarget);
-    void PerformCastSpell(unsigned long nSpell, unsigned long nTarget,
-                          const Vector& vTargetPos, unsigned char nA,
-                          unsigned char nB, unsigned char nC, int nD);
-    void ComputeZValue(CSWCArea* pArea, Vector* pPosition, float fUnused,
-                       Vector* pUnused);
-    void PerformUseItem(unsigned long nItem, int nA, unsigned long nB,
-                        const Vector& vPosition);
+    void PerformCastSpell(unsigned long nSpell, unsigned long oidTarget,
+                          const Vector& vTarget, unsigned char nMultiClass,
+                          unsigned char nDomainLevel, unsigned char nMetaMagic, int bCheat);
+    void ComputeZValue(CSWCArea* pArea, Vector* pPosition, float fCurrentZ,
+                       Vector* pNormal);
+    void PerformUseItem(unsigned long oidItem, int nPropertyIndex, unsigned long oidTarget,
+                        const Vector& vTarget);
 
     virtual void ClientServerSyncHandler_Orientation(const Vector& vOrientation);
     virtual void ClientServerSyncHandler_Animation(int nAnimation,
@@ -531,8 +535,8 @@ public:
     int RequestAppearance(CCAppearanceInfo* pCAppearanceInfo,
                           unsigned char bFlag);
     virtual void SetPortraitId(unsigned short nPortraitId);
-    CSWCAnimBase* SetSpecialWalkAnimation(unsigned char bFlag);
-    CSWCAnimBase* SetRunLooksAwful(int nValue);
+    CSWCAnimBase* SetSpecialWalkAnimation(unsigned char nSpecialWalkAnimation);
+    CSWCAnimBase* SetRunLooksAwful(int bRunLooksAwful);
     void HideEquippedHeadItem();
     void ShowEquippedHeadItem();
     void ShowEquippedItems();
@@ -548,7 +552,7 @@ public:
     virtual void SetQuededAnimationCallback();
     int ClearQuededAnimationCallback();
     int BarkString(unsigned long nValue, CExoString const& sString,
-                   CResRef const& cResRef, int nValue2);
+                   CResRef const& cResRef, int nFlags);
     int StopLipSync();
     int BarkBubble(unsigned long nStrRef, const CExoString& sText,
                    const CResRef& cSound, int nFlags);
@@ -577,11 +581,12 @@ public:
     void PlayDrawAnimation(unsigned short nValue);
     int ComputeWeaponOverlays(int bCheckAnimations, int bUnused);
     void ClearVisibilityList();
-    void HideEquippedItems(CResRef const& cResRef, CResRef const& cResRef2);
+    void HideEquippedItems(CResRef const& cResRight, CResRef const& cResLeft);
     void ForceAppearanceUpdate();
     void CreateNewSpellLikeAbilityList();
     void DeleteSpellLikeAbilityList();
     void SetCombatState(int nValue);
+    void SetDisableLookAt(int bDisable);
 
     enum { COMBAT_STATE_ACTIVE = 1 };
 
@@ -589,25 +594,25 @@ public:
 
     Gob* m_pBloodEffect;
 
-    CAurObject* m_pOwnedObject130;
-    CAurObject* m_pOwnedObject134;
+    CAurObject* m_pHitEffect;
+    CAurObject* m_pDeathEffect;
     int m_nCombatState;
     int m_nEngagedState;
 
     int m_bCombatReady;
     unsigned long m_nGold;
 #ifdef _XBOX
-    float m_fUnknown148;
+    float m_fInventoryUpdateTime;
 #else
-    int m_nUnknown148;
+    int m_nInventoryUpdateTime;
 #endif
 
     int m_bWeaponDrawBlocked;
-    int m_nUnknown150;
+    int m_nWeaponDrawState;
 
     int m_nWeaponCheckTimer;
     int m_nWeaponOverlayTimer;
-    CAurObject* m_pOwnedObject15C;
+    CAurObject* m_pWeaponOverlay;
 
     Gob* m_apAttachedModels[4];
     Gob* m_pMonkVisual;
@@ -621,19 +626,19 @@ public:
 
     int m_bDeadSelectable;
     int m_bLoopingSoundEnabled;
-    int m_nUnknown190;
+    int m_nDetectState;
 
     int m_nStealthState;
-    int m_nUnknown198;
-    int m_nUnknown19C;
-    int m_nUnknown1A0;
-    int m_nUnknown1A4;
-    int m_nUnknown1A8;
-    int m_nUnknown1AC;
+    int m_nParryState;
+    int m_nPowerAttackState;
+    int m_nImprovedPowerAttackState;
+    int m_nCriticalStrikeState;
+    int m_nRapidShotState;
+    int m_nFlurryState;
 
     int m_bInvisibilityVisualApplied;
-    int m_nUnknown1B4;
-    int m_nUnknown1B8;
+    int m_nEncumbranceState;
+    int m_bMovementSpeedLimited;
     Vector* m_pWayPoints;
     Vector* m_pCurrentWayPoint;
 
@@ -642,20 +647,20 @@ public:
     Vector m_vDesiredPosition;
     unsigned long m_nDesiredPositionTimer;
     unsigned short m_nWayPointCount;
-    unsigned char m_nUnknown1EE;
-    unsigned char m_nUnknown1EF;
-    unsigned char m_nUnknown1F0;
+    unsigned char m_nWayPointState;
+    unsigned char m_nLastWayPointSequence;
+    unsigned char m_nWayPointSequence;
     unsigned char m_aWayPointStatePadding[3];
 
     int m_nSpeedRampMode;
     float m_fSpeedFactor;
-    float m_fUnknown1FC;
-    Vector m_vUnknown200;
+    float m_fCustomSpeed;
+    Vector m_vVelocity;
 
     float m_fWalkSpeed;
 
     float m_fDriveSpeed;
-    int m_nUnknown214;
+    int m_bCustomSpeed;
     unsigned char m_nCreatureType;
     unsigned char m_aUnmapped219[0x3];
     CSWCCreatureAppearance* m_pAppearance;
@@ -680,7 +685,7 @@ public:
 
     int m_bConjuringCreature;
     int m_nConjuringSpell;
-    unsigned long m_oidUnknown2C8;
+    unsigned long m_oidConjuringTarget;
     int m_bBlurWeapon;
 
     unsigned short m_nWeaponOverlayState;
@@ -704,7 +709,7 @@ public:
 
     enum { HOSTILE_STATE_HOSTILE = 2 };
     unsigned char m_nHostile;
-    CResRef m_cUnknown2DD;
+    CResRef m_cConversation;
     unsigned char m_aResourcePadding[3];
     CSWCSpellCastVisual* m_pSpellCastVisual;
 
@@ -716,23 +721,23 @@ public:
     int m_bWetFootstep;
 
     float m_fFootstepGroundHeight;
-    unsigned long m_nUnknown308;
+    unsigned long m_nFootstepDelay;
     CSWCCreaturePartyStatus* m_pPartyStatus;
     unsigned long m_nCameraFollowDelay;
     int m_bCameraFollowPending;
     int m_bCameraFollowSnap;
-    unsigned char m_aUnmapped31C[0x3C];
+    unsigned char m_aRequestedAppearance[0x3C];
 
     CSWCAnimBase* m_pPendingAnimBase;
     float m_fPendingSpeedFactor;
 
     CExoArrayList<CSWVisibilityNode*> m_lstVisibilityList;
     CSoundSet* m_pSoundSet;
-    unsigned long m_nUnknown370;
-    unsigned long m_nUnknown374;
-    unsigned long m_nUnknown378;
+    unsigned long m_bDisguised;
+    unsigned long m_bCommandable;
+    unsigned long m_bExcited;
 
-    unsigned long m_aoidUnknown37C[4];
+    unsigned long m_aoidRecentAttackers[4];
 
     unsigned short m_nAppearance;
     unsigned char m_aUnmapped38E[2];
@@ -743,7 +748,7 @@ public:
     CExoArrayList<CSWCStats_SpellLikeAbility> *m_pSpellLikeAbilities;
     int m_bInParty;
     int m_nMode;
-    int m_nUnknown3AC;
+    int m_nPreviousMode;
     float m_fSWAnimationSpeed;
     float m_fSWTargetAnimationSpeed;
     float m_fDriveTurnAngle;

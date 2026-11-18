@@ -192,7 +192,7 @@ Vector VectorMin(Vector vFirst, Vector vSecond);
 Vector VectorMax(Vector vFirst, Vector vSecond);
 Vector VectorMin(List<Vector>& vectors);
 Vector VectorMax(List<Vector>& vectors);
-Vector cross(const Vector& vFirst, const Vector& vSecond);
+Vector cross(const Vector& vLeft, const Vector& vRight);
 Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
                 const Vector& vThird);
 float SphereAbovePlane(const Vector& vCenter, float fRadius,
@@ -228,12 +228,12 @@ Vector segmentproject(const Vector& vStart, const Vector& vEnd,
 int IntersectCircle2d(const Vector& vCenter, float fRadius,
                       const Vector& vStart, const Vector& vEnd, Vector& vHit1,
                       Vector& vHit2, bool bSegment);
-int equal(const Vector& vFirst, const Vector& vSecond);
+int equal(const Vector& vA, const Vector& vB);
 int IntersectLineSegments2d(const Vector& vStart, const Vector& vEnd,
                             const Vector& vSideStart, const Vector& vSideEnd,
                             Vector& vIntersection);
 int operator!=(const Vector& vFirst, const Vector& vSecond);
-float* Homogenize(const Vector& vector, const float& fW);
+float* Homogenize(const Vector& vVector, const float& fValue);
 float cosineLUT(float fAngle);
 float sineLUT(float fAngle);
 // PC 0x0044F420
@@ -310,6 +310,7 @@ public:
     Vector m_vFirst;
     Vector m_vSecond;
     Vector m_vThird;
+    Quaternion getquaternion() const;
 };
 // PC 0x0044F470  Xbox 0x002A2A00
 inline Matrix Quaternion::getmatrix() const

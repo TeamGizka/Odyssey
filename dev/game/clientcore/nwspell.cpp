@@ -37,11 +37,11 @@ CSWSpell::CSWSpell()
     m_nProjectileSpawnPoint = 0;
     m_nCastTime = 0;
     m_nProjectileOrientation = 0;
-    m_bUnknown11E = 0;
-    m_nUnknown120 = 0;
+    m_nImmunityType = 0;
+    m_bImmunityItem = 0;
     m_pSubRadialSpells = 0;
     m_nSubRadialSpellCount = 0;
-    m_nUnknown134 = 0;
+    m_bUseConcentration = 0;
     m_nUserType = USERTYPE_NONE;
     m_nAltMessage = 0;
     m_bHostileSetting = 0;
@@ -87,6 +87,14 @@ int CSWSpell::GetSubRadialSpell(unsigned char nIndex)
         return -1;
     }
     return m_pSubRadialSpells[nIndex];
+}
+// Dead code: not in the PC executable
+void CSWSpell::SetSubRadialSpell(unsigned char nIndex, unsigned long nSpell)
+{
+    if (nIndex < m_nSubRadialSpellCount)
+    {
+        m_pSubRadialSpells[nIndex] = nSpell;
+    }
 }
 // PC 0x005B3190
 CSWSpellArray::CSWSpellArray()
@@ -491,6 +499,16 @@ void CSWSpell::SetMasterSpells(const CExoString& sSpells)
             m_aMasterSpells[i] = nValue;
         }
     }
+}
+// Dead code: not in the PC executable
+CSWSpell CSWSpellArray::operator[](int nIndex) const
+{
+    if (nIndex >= 0 && m_pSpells != NULL && nIndex < m_nNumSpells)
+    {
+        return m_pSpells[nIndex];
+    }
+    CSWSpell cSpell;
+    return cSpell;
 }
 // PC 0x0059B8A0  Xbox 0x00069880
 int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust)

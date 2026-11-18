@@ -15,16 +15,26 @@ CResPLT::CResPLT()
 CResPLT::~CResPLT()
 {
 }
+// Dead code: not in the PC executable
+int CResPLT::CopyPLTData(unsigned char* pPLTData)
+{
+    if (m_bServiced == 0)
+    {
+        return 0;
+    }
+    memcpy(pPLTData, m_pPLTData, m_nPLTSize);
+    return 1;
+}
 // PC 0x00710B90  Xbox 0x002FADC0
-int CResPLT::GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long* pnC)
+int CResPLT::GetPLTAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned long* pnReserved)
 {
     if (m_pPLTHeader == 0)
     {
         return 0;
     }
-    *pnA = m_pPLTHeader[4];
-    *pnB = m_pPLTHeader[5];
-    *pnC = m_pPLTHeader[2];
+    *pnWidth = m_pPLTHeader[4];
+    *pnHeight = m_pPLTHeader[5];
+    *pnReserved = m_pPLTHeader[2];
     return 1;
 }
 // PC 0x00710BD0  Xbox 0x002FAE00
@@ -131,4 +141,24 @@ int CResPLT::ReadRLEPLT()
 unsigned char* CResPLT::GetPLTDataPtr()
 {
     return m_pPLTData;
+}
+// Dead code: not in the PC executable
+unsigned long* CResPLT::GetPLTHeaderPtr()
+{
+    return m_pPLTHeader;
+}
+// Dead code: not in the PC executable
+unsigned long CResPLT::GetPLTSize()
+{
+    return m_nPLTSize;
+}
+// Dead code: not in the PC executable
+int CResPLT::IsCompressed()
+{
+    return m_bCompressed;
+}
+// Dead code: not in the PC executable
+int CResPLT::IsLoaded()
+{
+    return m_bServiced;
 }

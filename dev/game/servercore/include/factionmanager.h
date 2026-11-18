@@ -22,6 +22,7 @@ public:
     int GetIsNPCFaction(int nFaction);
     void ResolveFactionName(const CExoString& sName, CSWSFaction* pFaction);
     void DeleteFaction(int nFaction);
+    int GetFactionIdByName(const CExoString& sName);
     CSWSFaction* GetFaction(int nFaction);
     void SetNPCFactionReputation(int nFaction1, int nFaction2, int nReputation);
     int GetNPCFactionReputation(int nFaction1, int nFaction2);

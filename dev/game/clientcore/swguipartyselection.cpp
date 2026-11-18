@@ -72,6 +72,11 @@ void CSWGuiPartySelectionButton::SetSelected(int bSelected)
         m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
     }
 }
+// Dead code: not in the PC executable
+int CSWGuiPartySelectionButton::GetSelected()
+{
+    return m_bPartySelected;
+}
 #endif
 // PC 0x006BE420  Xbox 0x000F3FC0
 inline CSWGuiPartySelectionData::~CSWGuiPartySelectionData()

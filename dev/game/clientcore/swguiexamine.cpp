@@ -4,9 +4,9 @@
 #include "guiingame.h"
 #include "swguiingametutorialbox.h"
 
-static inline void SwguiexamineTrace1();
-static inline void SwguiexamineTrace2();
-#define SWGUIEXAMINE_TRACE() SwguiexamineTrace1()
+static inline void TraceExamineInput();
+static inline void TraceExaminePanel();
+#define SWGUIEXAMINE_TRACE() TraceExamineInput()
 // PC 0x006CE9C0  Xbox 0x000F54C0
 CSWGuiExamine::CSWGuiExamine(CSWGuiManager* pManager)
     : CSWGuiMessageBox(pManager)
@@ -40,11 +40,11 @@ void CSWGuiExamine::HandleInputEvent(int nEvent, int nState)
     return CSWGuiMessageBox::HandleInputEvent(nEvent, nState);
 }
 
-static inline void SwguiexamineTrace1()
+static inline void TraceExamineInput()
 {
-    SwguiexamineTrace2();
+    TraceExaminePanel();
 }
 
-static inline void SwguiexamineTrace2()
+static inline void TraceExaminePanel()
 {
 }

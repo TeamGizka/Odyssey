@@ -9,13 +9,13 @@ class CSWJournalEntry
 public:
     CExoLocString m_lsName;
     CExoLocString m_lsText;
-    unsigned char m_aUnknown10[0x1C];
-    unsigned long m_nJournalFlagsUnknown : 2;
+    unsigned char m_aEntryFields[0x1C];
+    unsigned long m_nCompletedChangedFlags : 2;
     unsigned long m_bNew : 1;
     unsigned long m_nJournalFlagsUnused : 29;
-    unsigned char m_aUnknown30[4];
+    unsigned char m_aPlotIndex[4];
     int m_nQuestRow;
-    unsigned char m_aUnknown38[4];
+    unsigned char m_aXP[4];
 };
 
 class CSWCJournalPendingUpdate
@@ -38,6 +38,7 @@ public:
     };
 
     CSWCSortedJournalArrayList();
+    SJournalEntry* GetEntryAt(int nIndex);
 
     void SortList();
     int SortItemsByDate(int nFirst, int nSecond);

@@ -140,6 +140,9 @@ class CSWPlayerControlCamRelative : public CSWPlayerControl
 public:
     CSWPlayerControlCamRelative();
     CSWPlayerControlCamRelative(unsigned long oidPlayer, CAurCamera* pCamera);
+    void SetMaxSpeed(float fSpeed);
+    void SetAcceleration(float fAcceleration);
+    void SetTurnVelocity(float fVelocity);
     // PC 0x00679700
     virtual void UpDown(float fValue)
     {
@@ -191,8 +194,8 @@ public:
     int m_bPlayerWalking;
 #endif
     Vector m_vFacing;
-    Vector m_vReserved28;
-    float m_fReserved34;
+    Vector m_vDesiredFacing;
+    float m_fTurnRate;
     float m_fMinTurnRate;
     float m_fMaxTurnRate;
     float m_fTurnDirection;

@@ -22,7 +22,7 @@ int inputactive;
 PAINTSTRUCT paint;
 int inputlength;
 char inputline[500];
-
+// Dead code: not in the PC executable
 LRESULT CALLBACK AurLiteWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (nMsg)
@@ -82,7 +82,7 @@ LRESULT CALLBACK AurLiteWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lPar
     }
     return DefWindowProcA(hWnd, nMsg, wParam, lParam);
 }
-
+// Dead code: not in the PC executable
 void CalcFPSDeltaT()
 {
     static int bInitialized = 0;
@@ -131,6 +131,7 @@ class TimeTrigger;
 
 List<Binding*> bindings;
 List<TimeTrigger*> timetriggers;
+// Dead code: not in the PC executable
 // Xbox 0x002ACBB0
 char* keysdown()
 {

@@ -160,23 +160,23 @@ static int EnumRegistryDevices(const AnsiString Key, const AnsiString ValName1,
 {
     int found = 0;
     TRegistry* r = new TRegistry;
-    TStringList* l1 = new TStringList;
-    TStringList* l2 = new TStringList;
+    TStringList* devices = new TStringList;
+    TStringList* instances = new TStringList;
     r->RootKey = HKEY_LOCAL_MACHINE;
     if (r->OpenKey(Key, false))
     {
-        r->GetKeyNames(l1);
+        r->GetKeyNames(devices);
         r->CloseKey();
-        for (int i = 0; i < l1->Count; i++)
+        for (int i = 0; i < devices->Count; i++)
         {
-            r->OpenKey(JoinPath(Key, l1->Strings[i]), false);
-            l2->Clear();
-            r->GetKeyNames(l2);
+            r->OpenKey(JoinPath(Key, devices->Strings[i]), false);
+            instances->Clear();
+            r->GetKeyNames(instances);
             r->CloseKey();
-            for (int j = 0; j < l2->Count; j++)
+            for (int j = 0; j < instances->Count; j++)
             {
                 AnsiString subKey =
-                    JoinPath(JoinPath(Key, l1->Strings[i]), l2->Strings[j]);
+                    JoinPath(JoinPath(Key, devices->Strings[i]), instances->Strings[j]);
                 if (r->OpenKey(subKey, false))
                 {
                     AnsiString valA =
@@ -215,8 +215,8 @@ static int EnumRegistryDevices(const AnsiString Key, const AnsiString ValName1,
             }
         }
     }
-    delete l2;
-    delete l1;
+    delete instances;
+    delete devices;
     delete r;
     return found;
 }

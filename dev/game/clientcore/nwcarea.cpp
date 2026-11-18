@@ -41,7 +41,7 @@
 const int CSWCArea::MAX_INTERTILE_PATH_DEPTH = 5;
 
 
-static inline void NwcareaTrace1();
+#define NWCAREA_DEBUG 0
 
 float g_fOldShadowAlpha = 0.0f;
 
@@ -384,7 +384,7 @@ int CSWCArea::ClearLineOfSightOneWay(Vector vStart, Vector vEnd, Vector* pHit)
 
 
 
-
+// Dead code: not in the PC executable
 void CSWCArea::ChangeTriggerDisplay(int bDisplay)
 {
     for (int i = m_lstRenderTriggerIds.num - 1; i >= 0; i--)
@@ -399,7 +399,7 @@ void CSWCArea::ChangeTriggerDisplay(int bDisplay)
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWCArea::DisplayAllTriggers(int bDisplay)
 {
     for (int i = m_lstRenderTriggerIds.num - 1; i >= 0; i--)
@@ -520,7 +520,10 @@ CSWCRoom* CSWCArea::GetRoom(const CExoString& sRoomName)
 // PC 0x00605870  Xbox 0x00035AC0
 int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        EXOLOG("CSWCArea::SetFog() server area %p\n", GetServerArea());
+    }
     if (m_pScene == NULL)
     {
         return FALSE;
@@ -534,7 +537,10 @@ int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
 // PC 0x006058C0  Xbox 0x00035B10
 void CSWCArea::SetAsDay()
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        EXOLOG("CSWCArea::SetAsDay() server area %p\n", GetServerArea());
+    }
     if (m_bDayNightCycle == 0 && m_bIsNight != 0)
     {
         SetAsNight();
@@ -573,7 +579,10 @@ void CSWCArea::SetAsNight()
 // PC 0x00605AC0  Xbox 0x00035D10
 CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        EXOLOG("CSWCArea::GetMapPin() server area %p\n", GetServerArea());
+    }
     int nCount = m_lstMapPins.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -589,7 +598,10 @@ CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
 // PC 0x00605B10  Xbox 0x00035D60
 void CSWCArea::UpdateSoundObjectsTimeOfDay()
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        EXOLOG("CSWCArea::UpdateSoundObjectsTimeOfDay() server area %p\n", GetServerArea());
+    }
     int nCount = m_lstSoundObjectIds.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -606,7 +618,10 @@ void CSWCArea::UpdateSoundObjectsTimeOfDay()
 // PC 0x00605B50  Xbox 0x00035DA0
 void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        EXOLOG("CSWCArea::RemovePlaceableObjectLight() server area %p\n", GetServerArea());
+    }
     int nCount = m_lstPlaceableLights.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -637,7 +652,10 @@ void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
 // PC 0x00605BF0  Xbox 0x00035E40
 Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        EXOLOG("CSWCArea::GetPlaceableObjectLight() server area %p\n", GetServerArea());
+    }
     int nCount = m_lstPlaceableLights.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -652,7 +670,10 @@ Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
 // PC 0x00605C40  Xbox 0x00035E90
 void CSWCArea::HiliteAreaObjects(int bHilite)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        EXOLOG("CSWCArea::HiliteAreaObjects() server area %p\n", GetServerArea());
+    }
     for (int i = 0; i < m_lstObjectIds.num; i++)
     {
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -904,25 +925,25 @@ CSWCArea::CSWCArea()
     m_bDawning = 0;
     m_bDusking = 0;
     m_bIsNight = 0;
-    m_vUnknown170 = Vector();
-    m_nUnknown1BC = 0;
+    m_vDynAmbientColor = Vector();
+    m_bDayNightTransitionStarted = 0;
     m_bLightingChanged = 1;
     m_pAmbientSound = new CSWCAmbientSound(this);
     m_fLightningTimer = 0.0f;
     m_fLightningFlashTime = 0.0f;
-    m_nUnknown1E8 = 0;
+    m_nLightningFlashCount = 0;
     m_nWeatherDuration = 0;
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
     m_fWeatherStrength = 0.0f;
-    m_fUnknown1F8 = 0.0f;
+    m_fWindGustTimer = 0.0f;
     unsigned long nDay;
     unsigned long nTime;
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
     m_nCalendarDay = nDay;
     m_nTimeOfDay = nTime;
-    m_nUnknown208 = 0;
-    m_nUnknown230 = 0;
+    m_bHitCheckIgnoreChanged = 0;
+    m_bLightCountChanged = 0;
     m_bIsDark = 0;
     m_pAreaGrid = 0;
     m_nGridX = GRID_COORDINATE_INVALID;
@@ -1319,20 +1340,20 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
         SetAsNight();
     else
         SetAsDay();
-    m_vUnknown170.m_fX = (m_nDynAmbientColor & 0xFF) * (1.0f / 255.0f);
-    m_vUnknown170.m_fY = ((m_nDynAmbientColor >> 8) & 0xFF) * (1.0f / 255.0f);
-    m_vUnknown170.m_fZ = ((m_nDynAmbientColor >> 16) & 0xFF) * (1.0f / 255.0f);
-    m_pScene->SetAmbient(m_vUnknown170);
+    m_vDynAmbientColor.m_fX = (m_nDynAmbientColor & 0xFF) * (1.0f / 255.0f);
+    m_vDynAmbientColor.m_fY = ((m_nDynAmbientColor >> 8) & 0xFF) * (1.0f / 255.0f);
+    m_vDynAmbientColor.m_fZ = ((m_nDynAmbientColor >> 16) & 0xFF) * (1.0f / 255.0f);
+    m_pScene->SetAmbient(m_vDynAmbientColor);
     m_pScene->FinishSceneGeometry();
     m_pScene->ComputeStaticLighting();
     pCamera->AttachToScene(m_pScene);
     SetWind(m_nWind);
     pModule->SetTimeOfDayState(nTimeState, 0);
     pModule->m_fTimeOfDay = nTime * 0.001f;
-    pModule->m_nTimeA4 = nYear;
-    pModule->m_nTimeA8 = nMonth;
-    pModule->m_nTimeAC = nDay;
-    pModule->m_nTimeB0 = nHour;
+    pModule->m_nTimeYear = nYear;
+    pModule->m_nTimeMonth = nMonth;
+    pModule->m_nTimeDay = nDay;
+    pModule->m_nTimeHour = nHour;
     pModule->m_nDawnHour = nDawnHour;
     pModule->m_nDuskHour = nDuskHour;
     UpdateSoundObjectsTimeOfDay();
@@ -1417,12 +1438,12 @@ void CSWCArea::UnloadArea()
     }
     m_fLightningTimer = 0.0f;
     m_fLightningFlashTime = 0.0f;
-    m_nUnknown1E8 = 0;
+    m_nLightningFlashCount = 0;
     m_nWeatherDuration = 0;
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
     m_fWeatherStrength = 0.0f;
-    m_fUnknown1F8 = 0.0f;
+    m_fWindGustTimer = 0.0f;
     ClearAllMapPins();
     if (m_pShadowLight != NULL)
     {
@@ -1648,7 +1669,7 @@ void CSWCArea::Update(float fTimeDelta)
 
     if (m_nWind == 1 || m_nWind == 2)
     {
-        if (m_fUnknown1F8 <= fTimeStep)
+        if (m_fWindGustTimer <= fTimeStep)
         {
             int nGust;
             switch (m_nWind)
@@ -1660,11 +1681,11 @@ void CSWCArea::Update(float fTimeDelta)
                 nGust = rand();
                 break;
             }
-            m_fUnknown1F8 = (rand() % WIND_GUST_DELAY_RANGE) / 1000.0f + 5.0f;
+            m_fWindGustTimer = (rand() % WIND_GUST_DELAY_RANGE) / 1000.0f + 5.0f;
         }
         else
         {
-            m_fUnknown1F8 -= fTimeStep;
+            m_fWindGustTimer -= fTimeStep;
         }
     }
 
@@ -1672,9 +1693,9 @@ void CSWCArea::Update(float fTimeDelta)
     {
         UpdateDayNightCycle(fTimeStep);
     }
-    if (m_bIsNight && m_nUnknown230)
+    if (m_bIsNight && m_bLightCountChanged)
     {
-        m_nUnknown230 = 0;
+        m_bLightCountChanged = 0;
     }
 
     if (m_nWeatherDuration > 0)
@@ -1740,7 +1761,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
     }
     float fDuration = pModule->m_fTimeOfDayHours;
     float fTime = pModule->m_fTimeOfDay;
-    if (!m_nUnknown1BC)
+    if (!m_bDayNightTransitionStarted)
     {
 
         if (m_bDawning)
@@ -1755,7 +1776,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
             {
             }
         }
-        m_nUnknown1BC = TRUE;
+        m_bDayNightTransitionStarted = TRUE;
     }
     if (m_bDawning)
     {
@@ -1763,7 +1784,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
         {
             projectionalpha = 0.05f;
             shadowalpha = m_nShadowOpacity * 0.01f;
-            m_nUnknown1BC = FALSE;
+            m_bDayNightTransitionStarted = FALSE;
             m_bDawning = FALSE;
             vAmbient = m_vDayAmbientColor;
             vDiffuse = m_vDayDiffuseColor;
@@ -1793,7 +1814,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
         {
             projectionalpha = 0.0f;
             shadowalpha = m_nShadowOpacity * 0.01f;
-            m_nUnknown1BC = FALSE;
+            m_bDayNightTransitionStarted = FALSE;
             m_bDusking = FALSE;
             vAmbient = m_vNightAmbientColor;
             vDiffuse = m_vNightDiffuseColor;
@@ -2104,11 +2125,11 @@ int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
     }
     pPlaceable->m_bPlotObject = TRUE;
     pPlaceable->m_bUseable = 0;
-    pPlaceable->m_nUnknown130 = 0;
-    pPlaceable->m_nUnknown114 = 0;
+    pPlaceable->m_bTrapDisarmable = 0;
+    pPlaceable->m_bLockable = 0;
     pPlaceable->m_bLocked = 0;
-    pPlaceable->m_nUnknown12C = 0;
-    pPlaceable->m_nUnknown120 = 0;
+    pPlaceable->m_bSelectable = 0;
+    pPlaceable->m_bHasDescription = 0;
     pPlaceable->m_bTrapDetected = 0;
     pPlaceable->SetAnimation(0, 0, 0);
     g_pAppManager->m_pClientExoApp->RemoveObjectFromHitcheckIgnoreList(
@@ -2116,7 +2137,7 @@ int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
     m_lstDeferredDeleteIds.Add(oidPlaceable);
     return TRUE;
 }
-
+// Dead code: not in the PC executable
 void CSWCArea::EmptyCAurObjectToHitCheckIgnoreList()
 {
     while (m_lstHitCheckIgnoreObjects.GetHeadPos() != NULL)
@@ -2139,9 +2160,20 @@ CSWCArea::~CSWCArea()
         m_pServerArea = 0;
     }
 }
-
-static inline void NwcareaTrace1()
+// Dead code: not in the PC executable
+void CSWCArea::SetHideFadeGeometryMode(unsigned char nMode)
 {
+    if (m_pScene)
+    {
+        int nFade;
+        switch (nMode)
+        {
+        case 0: nFade = CAurScene::ENABLE_FADE; break;
+        case 1: nFade = CAurScene::DISABLE_FADE; break;
+        case 2: nFade = CAurScene::ALWAYS_FADE; break;
+        }
+        m_pScene->SetGeomFadeProperties(nFade);
+    }
 }
 
 #ifdef _XBOX

@@ -9,7 +9,9 @@
 #include "exobase.h"
 #include "exotlktable.h"
 
-static inline void SwguiingamecreditsTrace1();
+#define SWGUIINGAMECREDITS_DEBUG 0
+
+static inline void TraceCredits();
 
 static int g_nOldScreenHeight = 0;
 static int g_nOldHeight = 0;
@@ -17,7 +19,7 @@ static int g_nOldWidth = 0;
 static int g_nOldScreenWidth = 0;
 
 static float creditsscrollduration = 305.0f;
-
+// Dead code: not in the PC executable
 void CSWGuiInGameCredits::Initialize()
 {
     m_fScrollTime = 0.0f;
@@ -210,7 +212,7 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x0068F0E0  Xbox 0x001002F0
 // PC 0x0068F260  Xbox 0x00100110
 void CSWGuiInGameCredits::OnPanelAdded()
 {
-    SwguiingamecreditsTrace1();
+    TraceCredits();
 #ifndef _XBOX
     g_pAppManager->m_pClientExoApp->HideMouse(CLIENT_MOUSE_HIDE_EVIL_ENDING);
 #endif
@@ -237,7 +239,7 @@ void CSWGuiInGameCredits::OnPanelAdded()
 // PC 0x0068F350  Xbox 0x00100150
 void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
 {
-    SwguiingamecreditsTrace1();
+    TraceCredits();
     if (nState != 0)
     {
         switch (nEvent)
@@ -277,7 +279,7 @@ void CSWGuiInGameCredits::SetNextText()
 // PC 0x0068F3A0  Xbox 0x001001A0
 void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 {
-    SwguiingamecreditsTrace1();
+    TraceCredits();
     CSWGuiExtent cExtent;
 #ifndef _XBOX
     if (m_bFading)
@@ -335,7 +337,10 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbo
 #else
 void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbox 0x00100270
 {
-    SwguiingamecreditsTrace1();
+    if (SWGUIINGAMECREDITS_DEBUG)
+    {
+        CSWGuiInGameCredits::HandleInputEvent(GUIEVENT_CANCEL, 1);
+    }
     if (m_lbxCredits.m_cScrollBar.m_nCurValue ==
         m_lbxCredits.m_cScrollBar.m_nMaxValue)
     {
@@ -486,6 +491,6 @@ void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x0068F880  Xbox 0x0010058
 }
 #endif
 
-static inline void SwguiingamecreditsTrace1()
+static inline void TraceCredits()
 {
 }

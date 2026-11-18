@@ -40,8 +40,7 @@
 #include "clientexoappinternal.h"
 #include "nwclass.h"
 
-static inline void NwsobjectTrace2();
-static inline void NwsobjectTrace1();
+#define NWSOBJECT_DEBUG 0
 
 inline void NwsobjectDestroyScriptVar(CSWSScriptVar* pVar)
 {
@@ -94,7 +93,7 @@ CSWSObjectActionNode::~CSWSObjectActionNode()
         } while (i < m_nNumParams);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWSObject::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     m_lScriptVars.SaveVarTable(pRes, pStruct);
@@ -108,7 +107,7 @@ int CSWSObject::SaveObjectState(CResGFF* pRes, CResStruct* pStruct)
     SaveActionQueue(pRes, pStruct);
     return pRes->WriteFieldBYTE(pStruct, m_bCommandable, "Commandable");
 }
-
+// Dead code: not in the PC executable
 void CSWSObject::TestActionList()
 {
     CExoLinkedListNode* pPos = m_lstActions.GetHeadPos();
@@ -456,7 +455,7 @@ unsigned char CSWSObject::GetDamageLevel()
     }
     return DAMAGE_LEVEL_NEAR_DEATH;
 }
-
+// Dead code: not in the PC executable
 CSWSpell* CSWSObject::GetLastSpell()
 {
     return g_pRules->m_pSpellArray->GetSpell(m_nLastSpellId);
@@ -635,7 +634,10 @@ void CSWSObject::AddLoopingVisualEffect(unsigned short nVisualEffectId,
 // PC 0x004CF3F0  Xbox 0x001C6CA0
 void CSWSObject::RemoveEffectTarget(unsigned long oidTarget)
 {
-    NwsobjectTrace2();
+    if (NWSOBJECT_DEBUG)
+    {
+        EXOLOG("CSWSObject::RemoveEffectTarget() spell effect applied %d\n", HasSpellEffectApplied(0));
+    }
     CGameObject* pTarget =
         g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
 
@@ -679,9 +681,9 @@ int CSWSObject::StartDialog(unsigned long oidTarget,
         m_nDialogStartTime = 0;
         m_nDialogState = 0;
         m_nDialogPending = 0;
-        m_n74 = 1;
-        m_n60 = 0;
-        m_n64 = 0;
+        m_bNewDialog = 1;
+        m_nCameraAngle = 0;
+        m_nCameraId = 0;
         m_nCameraAnimState = 0;
         m_nCameraTimeStamp = 0;
 
@@ -714,7 +716,7 @@ int CSWSObject::StartDialog(unsigned long oidTarget,
             }
             delete pGFF;
             CSWSDialog* pDialog = m_pDialog;
-            pDialog->m_n90 = nConversationType;
+            pDialog->m_nConversationType = nConversationType;
             g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalDialogState(1);
             CExoString sDialog;
             cDialogResRef.CopyToString(sDialog);
@@ -789,7 +791,7 @@ void CSWSObject::SetListenExpression(const CExoString& sPattern, int nNumber)
     if (pExpression == NULL)
     {
         pExpression = new CSWSExpression;
-        pExpression->m_nReserved = nNumber;
+        pExpression->m_nId = nNumber;
         m_lstExpressions.Add(pExpression);
     }
     pExpression->ParseString(sPattern);
@@ -843,7 +845,7 @@ int CSWSObject::AddCloseDoorAction(unsigned long oidDoor, int bSuccess)
 }
 // PC 0x004CFB80  Xbox 0x001C7490
 int CSWSObject::AddUnlockObjectAction(unsigned long oidObject,
-                                      unsigned long oidKey, int bUnknown)
+                                      unsigned long oidKey, int bInstant)
 {
     if (AsSWSCreature() != NULL)
     {
@@ -861,7 +863,7 @@ int CSWSObject::AddUnlockObjectAction(unsigned long oidObject,
         return 0;
     }
 
-    AddAction(0x26, 0xffff, 3, &oidObject, 3, &oidKey, 1, &bUnknown, 0, 0, 0, 0,
+    AddAction(0x26, 0xffff, 3, &oidObject, 3, &oidKey, 1, &bInstant, 0, 0, 0, 0,
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
@@ -889,7 +891,7 @@ int CSWSObject::AddLockObjectAction(unsigned long oidObject)
 }
 // PC 0x004CFCB0  Xbox 0x001C75C0
 CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
-                       int bFlag)
+                       int bCharacterObject)
     : CGameObject(nObjectType, oidObject)
 {
     SetPosition(Vector(0.0f, 0.0f, 0.0f), 1, 0, 0);
@@ -898,11 +900,11 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_nActionStartDay = 0;
     m_nActionStartTime = 0;
     m_fMovementRate = 1.0f;
-    m_n88 = 0;
+    m_nCurrentActionState = 0;
 
     CServerExoApp* pServerApp = g_pAppManager->m_pServerExoApp;
     if (oidObject == OBJECT_INVALID)
-        pServerApp->GetObjectArray()->AddInternalObject(m_nId, this, bFlag);
+        pServerApp->GetObjectArray()->AddInternalObject(m_nId, this, bCharacterObject);
     else
         pServerApp->GetObjectArray()->AddObjectAtPos(m_nId, this);
 
@@ -913,16 +915,16 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_oidDialogOwner = CGameObjectArray::INVALIDOBJID;
     m_oidArea = CGameObjectArray::INVALIDOBJID;
     m_nDialogPending = 0;
-    m_n58 = ANIMATION_COMBAT_READY;
+    m_nReadyAnimation = ANIMATION_COMBAT_READY;
     m_nWaitFlags = 0;
     m_bCommandable = 1;
     m_bListening = 0;
     m_sTag = "";
-    m_c1D5 = -1;
-    m_c1D4 = -1;
-    m_nEC = 1;
-    m_nF0 = 0;
-    m_nF4 = 0;
+    m_nLastSpellCastMetaType = -1;
+    m_nLastSpellCastMultiClass = -1;
+    m_bDestroyable = 1;
+    m_bRaiseable = 0;
+    m_bDeadSelectable = 0;
     m_fSyncHeight = 1.0f;
     m_nAILevel = -1;
     m_oidLastSpeaker = OBJECT_INVALID;
@@ -930,19 +932,19 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_oidLastHostileActor = OBJECT_INVALID;
     m_oidLastDamager = OBJECT_INVALID;
     m_oidLastAttacker = OBJECT_INVALID;
-    m_n154 = OBJECT_INVALID;
+    m_oidLastKiller = OBJECT_INVALID;
     m_oidLastDisturbed = OBJECT_INVALID;
-    m_n1D0 = 0;
+    m_bLastSpellCastSpontaneous = 0;
     m_nLastSpellId = -1;
-    m_c1C4 = 0;
+    m_nLastSpellLevel = 0;
     m_oidSpellTargetObject = OBJECT_INVALID;
     m_vSpellTargetPosition = Vector(0.0f, 0.0f, 0.0f);
     m_bSafeProjectileBroadcast = 0;
-    m_n1DC = -1;
-    m_n1E0 = 0;
-    m_n1D8 = OBJECT_INVALID;
+    m_nLastSpellCastAtMeId = -1;
+    m_bLastSpellCastAtMeHarmful = 0;
+    m_oidLastSpellCaster = OBJECT_INVALID;
     m_oidInventoryDisturbItem = OBJECT_INVALID;
-    m_n178 = 0;
+    m_nInventoryDisturbType = 0;
     m_nSavingThrowSpellId = -1;
     m_pDamageImmunity = new char[LAST_DAMAGE_TYPE_COUNT];
     for (int i = 0; i < LAST_DAMAGE_TYPE_COUNT; i++)
@@ -958,7 +960,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_nLastGroupId = 0;
     m_pCurrentActionNode = NULL;
     m_nEffectIterator = 0;
-    m_n1EC = 0;
+    m_bApplyingInnateEffect = 0;
     m_bApplyingLinkedEffect = 0;
     m_nPortraitId = 0xFFFF;
     m_bOpenDoorStarted = 0;
@@ -969,21 +971,21 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_bDeleteNoFade = 0;
     m_bKeepCorpse = 0;
     m_nFadeOutTime = 0;
-    m_n74 = 0;
+    m_bNewDialog = 0;
     m_bDialogEnded = 0;
     m_nDialogStartDay = 0;
     m_nDialogStartTime = 0;
     m_nCameraAnimState = 0;
-    m_n60 = 0;
-    m_n64 = 0;
+    m_nCameraAngle = 0;
+    m_nCameraId = 0;
     m_bPartyInteract = 0;
     m_bDialogFaceSpeaker = 1;
     m_pClientObject = NULL;
     m_bDialogSoundStopped = 0;
     pServerApp = g_pAppManager->m_pServerExoApp;
-    pServerApp->GetWorldTimer()->GetWorldTime(&m_nC4, &m_nC8);
+    pServerApp->GetWorldTimer()->GetWorldTime(&m_nAnimationStartDay, &m_nAnimationStartTime);
 }
-
+// Dead code: not in the PC executable
 void CSWSObject::CopyScriptVars(CSWSScriptVarTable* pVarTable)
 {
     CExoString sName;
@@ -1439,9 +1441,9 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
             if (bRemainingDamage)
             {
                 CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-                pAttack->m_DamageBreakdown.m_nUnknown9 = nDamage;
-                pAttack->m_DamageBreakdown.m_nUnknown6 = CSWSCombatAttackExtra3::DAMAGE_ABSORPTION_ACTIVE;
-                pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
+                pAttack->m_DamageBreakdown.m_nToughnessDamage = nDamage;
+                pAttack->m_DamageBreakdown.m_nToughnessReduction = CSWSCombatAttackExtra3::DAMAGE_ABSORPTION_ACTIVE;
+                pAttack->m_DamageBreakdown.m_nResistedDamageType = nDamageType;
             }
         }
         if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
@@ -1450,9 +1452,9 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
             if (bRemainingDamage)
             {
                 CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-                pAttack->m_DamageBreakdown.m_nUnknownA = nDamage;
-                pAttack->m_DamageBreakdown.m_nUnknown7 = CSWSCombatAttackExtra3::DAMAGE_ABSORPTION_ACTIVE;
-                pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
+                pAttack->m_DamageBreakdown.m_nEnduranceDamage = nDamage;
+                pAttack->m_DamageBreakdown.m_nEnduranceReduction = CSWSCombatAttackExtra3::DAMAGE_ABSORPTION_ACTIVE;
+                pAttack->m_DamageBreakdown.m_nResistedDamageType = nDamageType;
             }
         }
     }
@@ -1473,7 +1475,7 @@ int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // PC 0x004D13A0  X
             int nClass = CSWClass::CCLASS_INVALID;
             if (bFromItem != 1)
             {
-                unsigned char nMultiClass = pCaster->m_c1D4;
+                unsigned char nMultiClass = pCaster->m_nLastSpellCastMultiClass;
                 CSWSCreatureStats* pStats = pCaster->AsSWSCreature()->m_pStats;
                 nClass = pStats->GetClass(nMultiClass);
             }
@@ -1518,7 +1520,7 @@ void CSWSObject::ApplyEffect(CGameEffect* pEffect, int bLoadingGame,  // PC 0x00
     g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
         &nCurrentDay, &nCurrentTime);
 
-    pEffect->m_bSkipOnLoad = m_n1EC != 0 || pEffect->m_bExposed == 0;
+    pEffect->m_bSkipOnLoad = m_bApplyingInnateEffect != 0 || pEffect->m_bExposed == 0;
     if (g_pAppManager->GetServerExoApp()->GetServerAIMaster()->OnEffectApplied(
             this, pEffect, bLoadingGame) != CSWSEffectListHandler::DELETE_EFFECT)
     {
@@ -1835,6 +1837,41 @@ void CSWSObject::UpdateEffectList(unsigned long nDay, unsigned long nTime)
         }
     }
 }
+// Dead code: not in the PC executable
+void CSWSObject::ClearSpellEffectsOnOthers()
+{
+    for (int i = m_lstEffectTargets.num - 1; i >= 0; i--)
+    {
+        CGameObject* pObject =
+            g_pAppManager->m_pServerExoApp->GetGameObject(m_lstEffectTargets[i]);
+        if (pObject != NULL && pObject->AsSWSObject() != NULL)
+        {
+            if (pObject->AsSWSAreaOfEffectObject() != NULL &&
+                pObject->AsSWSAreaOfEffectObject()->m_oidCreator == m_nId)
+            {
+                g_pAppManager->m_pServerExoApp->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, m_nId, m_lstEffectTargets[i],
+                    CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+            }
+            else
+            {
+                CSWSObject* pTarget = pObject->AsSWSObject();
+                for (int j = 0; j < pTarget->m_lstEffects.num; j++)
+                {
+                    if (pTarget->m_lstEffects[j]->m_oidCreator == m_nId &&
+                        (pTarget->m_lstEffects[j]->m_nSubType & CGameEffect::SUBTYPE_MASK) ==
+                            SUBTYPE_MAGICAL)
+                    {
+                        pObject->AsSWSObject()->RemoveEffectById(
+                            pTarget->m_lstEffects[j]->m_nID);
+                        j = 0;
+                    }
+                }
+            }
+        }
+    }
+    m_lstEffectTargets.num = 0;
+}
 // PC 0x004D1BE0  Xbox 0x001C94C0
 void CSWSObject::LoadEffectList(CResGFF* pRes, CResStruct* pStruct)
 {
@@ -1862,7 +1899,7 @@ void CSWSObject::LoadEffectList(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWSObject::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     m_lScriptVars.LoadVarTable(pRes, pStruct);
@@ -2035,6 +2072,18 @@ void CSWSObject::RemoveGroup(unsigned short nGroupId)  // PC 0x004CC6F0  Xbox 0x
         }
     }
 }
+// Dead code: not in the PC executable
+unsigned short CSWSObject::GetNewGroupID()
+{
+    unsigned short nNewGroupId = m_nNextGroupId;
+    m_nNextGroupId = nNewGroupId + 1;
+    if (m_nNextGroupId == ACTION_GROUP_NEW)
+    {
+        m_nNextGroupId = 0;
+    }
+    m_nLastGroupId = nNewGroupId;
+    return nNewGroupId;
+}
 #endif
 void CSWSObject::SetGroupInterruptable(unsigned short nGroupId,  // PC 0x004CC790  Xbox 0x001C4040
                                        int bInterruptable)
@@ -2046,7 +2095,7 @@ void CSWSObject::SetGroupInterruptable(unsigned short nGroupId,  // PC 0x004CC79
     {
         if (pAction->m_nGroupId == nGroupId)
         {
-            pAction->m_nField70 = bInterruptable;
+            pAction->m_bInterruptable = bInterruptable;
         }
         pAction = m_lstActions.GetNext(pPos);
     }
@@ -2128,7 +2177,7 @@ void CSWSObject::SaveListenData(CResGFF* pRes, CResStruct* pStruct)
         {
             pRes->AddListElement(&cExpressionStruct, &cExpressionList, 5);
             pRes->WriteFieldINT(&cExpressionStruct,
-                                m_lstExpressions[i]->m_nReserved,
+                                m_lstExpressions[i]->m_nId,
                                 "ExpressionId");
             pRes->WriteFieldCExoString(&cExpressionStruct,
                                        m_lstExpressions[i]->m_sPattern,
@@ -2139,15 +2188,15 @@ void CSWSObject::SaveListenData(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x004CCB00  Xbox 0x001C43B0
 void CSWSObject::AddActionToFront(
     unsigned long nActionType, unsigned short nGroupId,
-    unsigned long nParamType1, void* pParam1, unsigned long nParamType2,
-    void* pParam2, unsigned long nParamType3, void* pParam3,
-    unsigned long nParamType4, void* pParam4, unsigned long nParamType5,
-    void* pParam5, unsigned long nParamType6, void* pParam6,
-    unsigned long nParamType7, void* pParam7, unsigned long nParamType8,
-    void* pParam8, unsigned long nParamType9, void* pParam9,
-    unsigned long nParamType10, void* pParam10, unsigned long nParamType11,
-    void* pParam11, unsigned long nParamType12, void* pParam12,
-    unsigned long nParamType13, void* pParam13)
+    unsigned long nParamType1, void* pParameter1, unsigned long nParamType2,
+    void* pParameter2, unsigned long nParamType3, void* pParameter3,
+    unsigned long nParamType4, void* pParameter4, unsigned long nParamType5,
+    void* pParameter5, unsigned long nParamType6, void* pParameter6,
+    unsigned long nParamType7, void* pParameter7, unsigned long nParamType8,
+    void* pParameter8, unsigned long nParamType9, void* pParameter9,
+    unsigned long nParamType10, void* pParameter10, unsigned long nParamType11,
+    void* pParameter11, unsigned long nParamType12, void* pParameter12,
+    unsigned long nParamType13, void* pParameter13)
 {
     CSWSObjectActionNode* pNode = new CSWSObjectActionNode;
 
@@ -2155,7 +2204,7 @@ void CSWSObject::AddActionToFront(
 
     pNode->m_nActionType = nActionType;
     nNewGroupId = nGroupId;
-    pNode->m_nField70 = 1;
+    pNode->m_bInterruptable = 1;
     if (nGroupId == ACTION_GROUP_NEW)
     {
         nNewGroupId = m_nNextGroupId;
@@ -2177,56 +2226,56 @@ void CSWSObject::AddActionToFront(
     }
     if (nParamType1 != 0)
     {
-        AddActionNodeParameter(pNode, 0, nParamType1, pParam1);
+        AddActionNodeParameter(pNode, 0, nParamType1, pParameter1);
         if (nParamType2 != 0)
         {
-            AddActionNodeParameter(pNode, 1, nParamType2, pParam2);
+            AddActionNodeParameter(pNode, 1, nParamType2, pParameter2);
             if (nParamType3 != 0)
             {
-                AddActionNodeParameter(pNode, 2, nParamType3, pParam3);
+                AddActionNodeParameter(pNode, 2, nParamType3, pParameter3);
                 if (nParamType4 != 0)
                 {
-                    AddActionNodeParameter(pNode, 3, nParamType4, pParam4);
+                    AddActionNodeParameter(pNode, 3, nParamType4, pParameter4);
                     if (nParamType5 != 0)
                     {
-                        AddActionNodeParameter(pNode, 4, nParamType5, pParam5);
+                        AddActionNodeParameter(pNode, 4, nParamType5, pParameter5);
                         if (nParamType6 != 0)
                         {
                             AddActionNodeParameter(pNode, 5, nParamType6,
-                                                   pParam6);
+                                                   pParameter6);
                             if (nParamType7 != 0)
                             {
                                 AddActionNodeParameter(pNode, 6, nParamType7,
-                                                       pParam7);
+                                                       pParameter7);
                                 if (nParamType8 != 0)
                                 {
                                     AddActionNodeParameter(
-                                        pNode, 7, nParamType8, pParam8);
+                                        pNode, 7, nParamType8, pParameter8);
                                     if (nParamType9 != 0)
                                     {
                                         AddActionNodeParameter(
-                                            pNode, 8, nParamType9, pParam9);
+                                            pNode, 8, nParamType9, pParameter9);
                                         if (nParamType10 != 0)
                                         {
                                             AddActionNodeParameter(pNode, 9,
                                                                    nParamType10,
-                                                                   pParam10);
+                                                                   pParameter10);
                                             if (nParamType11 != 0)
                                             {
                                                 AddActionNodeParameter(
                                                     pNode, 10, nParamType11,
-                                                    pParam11);
+                                                    pParameter11);
                                                 if (nParamType12 != 0)
                                                 {
                                                     AddActionNodeParameter(
                                                         pNode, 11, nParamType12,
-                                                        pParam12);
+                                                        pParameter12);
                                                     if (nParamType13 != 0)
                                                     {
                                                         AddActionNodeParameter(
                                                             pNode, 12,
                                                             nParamType13,
-                                                            pParam13);
+                                                            pParameter13);
                                                     }
                                                 }
                                             }
@@ -2414,17 +2463,17 @@ void CSWSObject::RemoveLoopingVisualEffect(unsigned short nVisualEffectId)
         }
     }
 }
-
+// Dead code: not in the PC executable
 int CSWSObject::IsSoundPlayingInDialog()
 {
     return g_pAppManager->m_pClientExoApp->IsSoundPlayingInDialog();
 }
-
+// Dead code: not in the PC executable
 int CSWSObject::IsStuntAnimationPlayingInDialog()
 {
     return g_pAppManager->m_pClientExoApp->GetInGameGui()->IsAnimationPlayingInDialog();
 }
-
+// Dead code: not in the PC executable
 int CSWSObject::IsFadingInDialog()
 {
     return g_pAppManager->m_pClientExoApp->GetInGameGui()->IsFadingInDialog();
@@ -2467,7 +2516,7 @@ int CSWSObject::IsDialogDelay()
         bDelay |= IsFadingInDialog();
     }
 
-    if (m_nDialogReplyState != 0 && m_pDialog->m_n3C != 0)
+    if (m_nDialogReplyState != 0 && m_pDialog->m_bSkippable != 0)
     {
         StopSoundPlayingInDialog();
         g_pAppManager->GetServerExoApp()->GetWorldTimer()->AddWorldTimes(
@@ -2574,7 +2623,7 @@ int CSWSObject::UpdateDialog()
 
     if (IsDialogDelay() != 0 || m_nDialogState == 0)
     {
-        if (m_pDialog->m_n60 != 0 &&
+        if (m_pDialog->m_bEndPending != 0 &&
             IsSoundPlayingInDialog() == 0)
         {
             StopDialog();
@@ -2582,7 +2631,7 @@ int CSWSObject::UpdateDialog()
         return 1;
     }
 
-    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nC0 == 0 &&
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bAnimatedCut == 0 &&
         m_bDialogSoundStopped != 0 &&
         IsSoundPlayingInDialog() != 0)
     {
@@ -2619,7 +2668,7 @@ CSWSExpression* CSWSObject::GetListenExpressionObj(int nId)
 {
     for (int i = 0; i < m_lstExpressions.num; i++)
     {
-        if (m_lstExpressions[i]->m_nReserved == nId)
+        if (m_lstExpressions[i]->m_nId == nId)
         {
             return m_lstExpressions[i];
         }
@@ -2636,7 +2685,7 @@ int CSWSObject::TestListenExpression(const CExoString& sString)
         CSWSExpression* pExpression = m_lstExpressions[i];
         if (pExpression != NULL && pExpression->TestString(sString, 1) != 0)
         {
-            nResult = m_lstExpressions[i]->m_nReserved;
+            nResult = m_lstExpressions[i]->m_nId;
             break;
         }
     }
@@ -2739,6 +2788,20 @@ int CSWSObject::HasSpellEffectApplied(unsigned long nSpellId)
         }
     }
     return 0;
+}
+// Dead code: not in the PC executable
+void CSWSObject::RemoveEffectBySpellId(unsigned long nSpellId)
+{
+    if (nSpellId != -1)
+    {
+        for (int i = 0; i < m_lstEffects.num; i++)
+        {
+            if (m_lstEffects[i]->m_nSpellId == nSpellId)
+            {
+                RemoveEffect(m_lstEffects[i]);
+            }
+        }
+    }
 }
 // PC 0x004CDB00  Xbox 0x001C53E0
 void CSWSObject::BroadcastSafeProjectile(
@@ -3304,6 +3367,36 @@ unsigned long CSWSObject::GetNearestObjectByName(const CExoString& sName,
     }
     return oidNearest;
 }
+// Dead code: not in the PC executable
+void CSWSObject::PlaySoundSet(CSWSPlayer* pPlayer, unsigned char nVoiceChat)
+{
+    CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
+
+    if (pPlayer != NULL)
+    {
+        pMessage->SendServerToPlayerVoiceChat_Play(pPlayer, m_nId, nVoiceChat);
+    }
+    else
+    {
+        CExoLinkedList<CSWSClient>* pPlayerList =
+            g_pAppManager->m_pServerExoApp->GetPlayerList();
+        if (pPlayerList != NULL)
+        {
+            CExoLinkedListNode* pPosition = pPlayerList->GetHeadPos();
+            while (pPosition != NULL)
+            {
+                CSWSPlayer* pListPlayer =
+                    (CSWSPlayer*)pPlayerList->GetAtPos(pPosition);
+                if (pListPlayer != NULL)
+                {
+                    pMessage->SendServerToPlayerVoiceChat_Play(pListPlayer, m_nId,
+                                                              nVoiceChat);
+                }
+                pPlayerList->GetNext(pPosition);
+            }
+        }
+    }
+}
 // PC 0x004CB7A0  Xbox 0x001C2EF0
 void CSWSObject::SetDialogOwner(unsigned long oidOwner)
 {
@@ -3699,7 +3792,7 @@ int CSWSObject::GetHasFeatEffectApplied(unsigned short nFeat)
     return 0;
 }
 // PC 0x004CE6E0  Xbox 0x001C5F30
-void CSWSObject::ReportOverflow(int nType, int nValue, int nLimit, int nExtra)
+void CSWSObject::ReportOverflow(int nType, int nTotal, int nLimit, int bCritical)
 {
     if (g_pAppManager->m_pServerExoApp->GetDebugMode() == 1)
     {
@@ -3721,7 +3814,7 @@ void CSWSObject::ReportOverflow(int nType, int nValue, int nLimit, int nExtra)
                     if (pCreature != NULL)
                     {
                         CSWCCMessageData* pData = new CSWCCMessageData;
-                        pData->SetInteger(0, nValue);
+                        pData->SetInteger(0, nTotal);
                         pData->SetInteger(1, nLimit);
                         pData->SetObjectID(0, OBJECT_INVALID);
                         pData->SetObjectID(1, m_nId);
@@ -3831,15 +3924,15 @@ void CSWSObject::SetKeepCorpse(int bKeepCorpse)
 // PC 0x004CEA20  Xbox 0x001C6270
 void CSWSObject::AddAction(
     unsigned long nActionType, unsigned short nGroupId,
-    unsigned long nParamType1, void* pParam1, unsigned long nParamType2,
-    void* pParam2, unsigned long nParamType3, void* pParam3,
-    unsigned long nParamType4, void* pParam4, unsigned long nParamType5,
-    void* pParam5, unsigned long nParamType6, void* pParam6,
-    unsigned long nParamType7, void* pParam7, unsigned long nParamType8,
-    void* pParam8, unsigned long nParamType9, void* pParam9,
-    unsigned long nParamType10, void* pParam10, unsigned long nParamType11,
-    void* pParam11, unsigned long nParamType12, void* pParam12,
-    unsigned long nParamType13, void* pParam13)
+    unsigned long nParamType1, void* pParameter1, unsigned long nParamType2,
+    void* pParameter2, unsigned long nParamType3, void* pParameter3,
+    unsigned long nParamType4, void* pParameter4, unsigned long nParamType5,
+    void* pParameter5, unsigned long nParamType6, void* pParameter6,
+    unsigned long nParamType7, void* pParameter7, unsigned long nParamType8,
+    void* pParameter8, unsigned long nParamType9, void* pParameter9,
+    unsigned long nParamType10, void* pParameter10, unsigned long nParamType11,
+    void* pParameter11, unsigned long nParamType12, void* pParameter12,
+    unsigned long nParamType13, void* pParameter13)
 {
     CSWSObjectActionNode* pNode = new CSWSObjectActionNode;
 
@@ -3847,7 +3940,7 @@ void CSWSObject::AddAction(
 
     pNode->m_nActionType = nActionType;
     nNewGroupId = nGroupId;
-    pNode->m_nField70 = 1;
+    pNode->m_bInterruptable = 1;
     if (nGroupId == ACTION_GROUP_NEW)
     {
         nNewGroupId = m_nNextGroupId;
@@ -3869,56 +3962,56 @@ void CSWSObject::AddAction(
     }
     if (nParamType1 != 0)
     {
-        AddActionNodeParameter(pNode, 0, nParamType1, pParam1);
+        AddActionNodeParameter(pNode, 0, nParamType1, pParameter1);
         if (nParamType2 != 0)
         {
-            AddActionNodeParameter(pNode, 1, nParamType2, pParam2);
+            AddActionNodeParameter(pNode, 1, nParamType2, pParameter2);
             if (nParamType3 != 0)
             {
-                AddActionNodeParameter(pNode, 2, nParamType3, pParam3);
+                AddActionNodeParameter(pNode, 2, nParamType3, pParameter3);
                 if (nParamType4 != 0)
                 {
-                    AddActionNodeParameter(pNode, 3, nParamType4, pParam4);
+                    AddActionNodeParameter(pNode, 3, nParamType4, pParameter4);
                     if (nParamType5 != 0)
                     {
-                        AddActionNodeParameter(pNode, 4, nParamType5, pParam5);
+                        AddActionNodeParameter(pNode, 4, nParamType5, pParameter5);
                         if (nParamType6 != 0)
                         {
                             AddActionNodeParameter(pNode, 5, nParamType6,
-                                                   pParam6);
+                                                   pParameter6);
                             if (nParamType7 != 0)
                             {
                                 AddActionNodeParameter(pNode, 6, nParamType7,
-                                                       pParam7);
+                                                       pParameter7);
                                 if (nParamType8 != 0)
                                 {
                                     AddActionNodeParameter(
-                                        pNode, 7, nParamType8, pParam8);
+                                        pNode, 7, nParamType8, pParameter8);
                                     if (nParamType9 != 0)
                                     {
                                         AddActionNodeParameter(
-                                            pNode, 8, nParamType9, pParam9);
+                                            pNode, 8, nParamType9, pParameter9);
                                         if (nParamType10 != 0)
                                         {
                                             AddActionNodeParameter(pNode, 9,
                                                                    nParamType10,
-                                                                   pParam10);
+                                                                   pParameter10);
                                             if (nParamType11 != 0)
                                             {
                                                 AddActionNodeParameter(
                                                     pNode, 10, nParamType11,
-                                                    pParam11);
+                                                    pParameter11);
                                                 if (nParamType12 != 0)
                                                 {
                                                     AddActionNodeParameter(
                                                         pNode, 11, nParamType12,
-                                                        pParam12);
+                                                        pParameter12);
                                                     if (nParamType13 != 0)
                                                     {
                                                         AddActionNodeParameter(
                                                             pNode, 12,
                                                             nParamType13,
-                                                            pParam13);
+                                                            pParameter13);
                                                     }
                                                 }
                                             }
@@ -3937,15 +4030,7 @@ void CSWSObject::AddAction(
     TestActionList();
 }
 
-static inline void NwsobjectTrace2()
-{
-    NwsobjectTrace1();
-}
-
-static inline void NwsobjectTrace1()
-{
-}
-
+// Dead code: not in the PC executable
 int NwsobjectRemoveFromDialog(CSWSObject* pObject, unsigned long oidObject)
 {
     return pObject->RemoveObjectFromDialog(oidObject);
@@ -4072,7 +4157,7 @@ int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)
             int nClass = CSWClass::CCLASS_INVALID;
             if (bFromItem != 1)
             {
-                unsigned char nMultiClass = pCaster->m_c1D4;
+                unsigned char nMultiClass = pCaster->m_nLastSpellCastMultiClass;
                 CSWSCreatureStats* pStats = pCaster->AsSWSCreature()->m_pStats;
                 nClass = pStats->GetClass(nMultiClass);
             }

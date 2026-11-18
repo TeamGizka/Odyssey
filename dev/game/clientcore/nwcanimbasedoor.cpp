@@ -6,8 +6,8 @@
 #include "twodimarrays.h"
 #include <stdio.h>
 
-static inline void NwcanimbasedoorTrace1();
-#define NWCANIMBASEDOOR_TRACE() NwcanimbasedoorTrace1()
+static inline void TraceDoorAnimation();
+#define NWCANIMBASEDOOR_TRACE() TraceDoorAnimation()
 // PC 0x006E56A0  Xbox 0x0011EDF0
 CSWCAnimBaseDoor::CSWCAnimBaseDoor()
 {
@@ -164,6 +164,6 @@ unsigned short CSWCAnimBaseDoor::ServerToClientAnimation(
     return nClientAnimation;
 }
 
-static inline void NwcanimbasedoorTrace1()
+static inline void TraceDoorAnimation()
 {
 }

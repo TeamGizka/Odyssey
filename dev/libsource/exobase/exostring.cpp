@@ -658,6 +658,38 @@ int CExoString::Find(char cChar, int nStart) const
 
     return -1;
 }
+// Dead code: not in the PC executable
+int CExoString::FindNot(char cChar, int nStart) const
+{
+    const char* szPos = m_sString;
+    int nPosition = nStart;
+
+    if (szPos == NULL || nStart < 0)
+    {
+        return -1;
+    }
+
+    for (int i = 0; i < nStart; i++)
+    {
+        if (*szPos == 0)
+        {
+            return -1;
+        }
+        szPos++;
+    }
+
+    while (*szPos != 0)
+    {
+        if (*szPos != cChar)
+        {
+            return nPosition;
+        }
+        nPosition++;
+        szPos++;
+    }
+
+    return -1;
+}
 // PC 0x005E5F70  Xbox 0x00134180
 CExoString CExoString::Left(int nCount) const
 {

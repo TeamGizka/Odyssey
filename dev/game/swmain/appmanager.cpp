@@ -15,50 +15,20 @@
 #include "aurtexman.h"
 #include "aurinternal.h"
 #include <stdio.h>
+#include <time.h>
 void SetWindowTitle();
 extern int g_nReInitializing;
-
-#include <time.h>
 
 const int LARGE_TEMP_BUFFER_SIZE = 0x40000;
 
 #ifndef _XBOX
 #include "keeperfill_appmanager.inc"
 #endif
-
-void FreeAppObjectTables(CAppManager* pManager)
-{
-    unsigned long nTable;
-    CObjectTableManager* pTables;
-
-    pTables = pManager->m_pObjectTableManager;
-    for (nTable = 0; nTable < pTables->m_nTables; nTable++)
-    {
-        CObjectTable* pTable = pTables->m_apTables[nTable];
-        if (pTable)
-        {
-            delete [] pTable->m_pTable;
-            delete pTable;
-        }
-    }
-    pTables = pManager->m_pServerObjectTableManager;
-    for (nTable = 0; nTable < pTables->m_nTables; nTable++)
-    {
-        CObjectTable* pTable = pTables->m_apTables[nTable];
-        if (pTable)
-        {
-            delete [] pTable->m_pTable;
-            delete pTable;
-        }
-    }
-    delete pManager->m_pLargeTempBuffer;
-    pManager->m_pLargeTempBuffer = NULL;
-}
 // PC 0x00401000  Xbox 0x00011000
 CSWReentrantServerStats::~CSWReentrantServerStats()
 {
 }
-
+// Dead code: not in the PC executable
 void CAppManager::FreeLargeTempBuffer()
 {
     if (m_pLargeTempBuffer)
@@ -88,7 +58,7 @@ void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x0040108
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, true, true);
 }
-
+// Dead code: not in the PC executable
 void CAppManager::TakeScreenShot(const CExoString& sName)
 {
     AurSaveGameSnapshot((char*)sName.CStr(), (short)m_pClientExoApp->m_pcExoAppInternal->m_nScreenShot, false, true);
@@ -107,7 +77,7 @@ struct CAppManagerFileEntry
     unsigned long nTime;
     CExoString sName;
 };
-
+// Dead code: not in the PC executable
 void FreeFileNames(CExoString* pNames)
 {
     delete [] pNames;
@@ -116,7 +86,7 @@ void FreeFileNames(CExoString* pNames)
 static unsigned long s_nFilesWritten;
 static unsigned long s_nBytesWritten;
 static unsigned long s_nLastWriteTime;
-
+// Dead code: not in the PC executable
 int WriteFileToStream(FILE* pStream, CAppManagerFileEntry& entry)
 {
     FILE* pFile = fopen(entry.sName.CStr(), "rb");
@@ -255,6 +225,14 @@ CAppManager::~CAppManager()
         m_pLargeTempBuffer = NULL;
     }
 }
+// Dead code: not in the PC executable
+void CAppManager::ShowServerMem()
+{
+    if (m_pClientExoApp)
+    {
+        m_pClientExoApp->ShowServerMem();
+    }
+}
 // PC 0x00401380  Xbox 0x00011530
 void CAppManager::CreateServer(int nServices)
 {
@@ -303,7 +281,8 @@ const char* SetResolution(char* sCommand)
     return sBuffer;
 }
 #else
-const char* SetResolution(char* sBuffer)  // Xbox 0x000115E0
+// Dead code: not in the PC executable
+const char* SetResolution(char* sBuffer)
 {
     int nWidth = 0;
     int nHeight = 0;

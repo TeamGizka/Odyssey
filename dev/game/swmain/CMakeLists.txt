@@ -26,6 +26,17 @@ endif()
 
 set_target_properties(swmain PROPERTIES OUTPUT_NAME swkotor)
 target_link_options(swmain PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swkotor.map")
+if(KOTOR_LINK_ORDER)
+  # The functions in the order of the original executable (cmake/order/order_file.py): before the link, the names in
+  # anonymous namespaces get the numbers of this build.
+  set(order_file "${CMAKE_SOURCE_DIR}/cmake/order/swkotor.txt")
+  add_custom_command(TARGET swmain PRE_LINK
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/order/order_file.py" resolve "${order_file}"
+            "${CMAKE_CURRENT_BINARY_DIR}/swkotor.order" "${CMAKE_CURRENT_BINARY_DIR}"
+    VERBATIM)
+  target_link_options(swmain PRIVATE "/ORDER:@${CMAKE_CURRENT_BINARY_DIR}/swkotor.order")
+  set_property(TARGET swmain APPEND PROPERTY LINK_DEPENDS "${order_file}" "${CMAKE_SOURCE_DIR}/cmake/order/order_file.py")
+endif()
 enable_language(RC)
 target_sources(swmain PRIVATE swmain.rc)
 

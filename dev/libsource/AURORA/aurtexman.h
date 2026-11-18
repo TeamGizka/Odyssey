@@ -71,14 +71,14 @@ void AurTextureSetDynamicMemoryRatio(float fRatio);
 #ifdef _XBOX
 int AurTextureSetMem(int nMemory);
 #else
-bool AurTextureSetMem(int nMemory);
+bool AurTextureSetMem(int nMem);
 #endif
 List<int>* AurTextureGetOrdering();
 
 int AurTextureGetMaxTexID();
 bool AurTextureEnvMapDisabled();
 void AurTextureRefreshAll();
-int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPos, char* sOldName, char* sNewName);
+int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPosition, char* sOldTexture, char* sNewTexture);
 
 struct CAurFontInfo
 {
@@ -112,7 +112,7 @@ void AurTextureCalculateNewTexMem(List<CAurTextureBasic*>& lstTextures,
                                   TEXTUREMEMORYSTATS* pStats);
 
 unsigned char* AurGetImageWrapper(char* sFileName, int* pWidth, int* pHeight, int* pBPP,
-                                  int* pCompressedSize, int* pReserved6, int* pReserved7,
+                                  int* pCompressedSize, int* pDataSize, int* pTxiSize,
                                   Aurora::AuroraTextureFormats* pFormat, float* pAlpha,
                                   bool* pProcessed, short* pNumMipMaps,
                                   int bAllowCompression);
@@ -174,6 +174,7 @@ public:
 
     unsigned char IsNull();
     void SetIsEnvironmentMapped(bool bMapped);
+    void SetReference(CAurTexture* pTexture);
 #ifdef _XBOX
     void SetReferencedTexture(CAurTexture* pTexture);
 #endif
@@ -277,6 +278,10 @@ public:
     int CanReduceLevel();
     void RaiseLevel(int nLevels);
 #endif
+    void CheckAttributes();
+    int CanDownSampleFurther();
+    void SetNewDownSampleLevel(int nLevels);
+    void DownSample();
     void GetMemoryUsage(TEXTUREMEMORYSTATS* pStats);
     void AsNormalizeVectorCubeMap();
     void ConstructImage();

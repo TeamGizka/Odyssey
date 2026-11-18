@@ -31,9 +31,7 @@
 #include "nwsplayer.h"
 #include "serverexoappinternal.h"
 
-static inline void NwstriggerTrace2();
-static inline void NwstriggerTrace1();
-#define NWSTRIGGER_TRACE() NwstriggerTrace1()
+#define NWSTRIGGER_DEBUG 0
 
 static inline CServerExoApp* GetServerExoApp();
 
@@ -513,7 +511,7 @@ void CSWSTrigger::EventHandler(unsigned long nEventId, unsigned long oidCaller,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC)
+        if (m_bDestroyable)
         {
             RemoveFromArea();
             delete this;
@@ -1079,7 +1077,10 @@ int CSWSTrigger::SaveTrigger(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x0058EE30  Xbox 0x00205460
 void CSWSTrigger::RemoveFromArea()
 {
-    NwstriggerTrace2();
+    if (NWSTRIGGER_DEBUG)
+    {
+        EXOLOG("CSWSTrigger::RemoveFromArea() script name %p\n", GetScriptName(0));
+    }
     if (GetArea() != NULL)
     {
         GetArea()->RemoveObjectFromArea(m_nId);
@@ -1094,7 +1095,7 @@ void CSWSTrigger::RemoveFromArea()
     SetArea(NULL);
     SetPosition(Vector(0.0f, 0.0f, 0.0f), 1, 1, 0);
 }
-
+// Dead code: not in the PC executable
 CExoString* CSWSTrigger::GetScriptName(int nScript)
 {
     if (nScript < 0 || nScript > SCRIPT_ONCLICK)
@@ -1102,6 +1103,21 @@ CExoString* CSWSTrigger::GetScriptName(int nScript)
         return NULL;
     }
     return &m_asScripts[nScript];
+}
+// Dead code: not in the PC executable
+Vector CSWSTrigger::GetFacingPosition()
+{
+    Vector vFacing;
+    float fMinimumX;
+    float fMinimumY;
+    float fMaximumX;
+    float fMaximumY;
+
+    ComputeBoundingBox(&fMinimumX, &fMinimumY, &fMaximumX, &fMaximumY);
+    vFacing.m_fX = (fMaximumX - fMinimumX) * 0.5f + fMinimumX;
+    vFacing.m_fY = (fMaximumY - fMinimumY) * 0.5f + fMinimumY;
+    vFacing.m_fZ = GetArea()->ComputeHeight(vFacing, 1, NULL);
+    return vFacing;
 }
 // PC 0x0058CE40  Xbox 0x00203310
 int CSWSTrigger::InTrigger(const Vector& vPosition)
@@ -1221,13 +1237,4 @@ void CSWSTrigger::LoadTriggerGeometry(CResGFF* pRes, CResList& list)
 static inline CServerExoApp* GetServerExoApp()
 {
     return g_pAppManager->m_pServerExoApp;
-}
-
-static inline void NwstriggerTrace2()
-{
-    NwstriggerTrace1();
-}
-
-static inline void NwstriggerTrace1()
-{
 }

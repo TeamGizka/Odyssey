@@ -66,8 +66,16 @@ public:
     }
 
     int GetKnownSpell(unsigned char nLevel, unsigned char nIndex);
+    unsigned char GetSpellsPerDayLeft(unsigned char nSpellLevel);
+    void SetSpellsPerDayLeft(unsigned char nSpellLevel, unsigned char nSpells);
+    unsigned char GetMaxSpellsPerDayLeft(unsigned char nSpellLevel);
+    void SetMaxSpellsPerDayLeft(unsigned char nSpellLevel, unsigned char nSpells);
+    void DecrementSpellsPerDayLeft(unsigned char nSpellLevel);
+    void IncrementSpellsPerDayLeft(unsigned char nSpellLevel);
+    void ResetSpellsPerDayLeft(unsigned char nSpellLevel, unsigned char nSpellGain);
 
     void RemoveKnownSpell(unsigned char nSpellLevel, unsigned long nSpell);
+    int HasSpell(unsigned char nSpellLevel, unsigned long nSpell);
 
 };
 
@@ -149,6 +157,9 @@ public:
     enum { DARK_PORTRAIT_ALIGNMENT_THRESHOLD = 50 };
 
     int CalcStatModifier(unsigned char nScore);
+    void SetTag(const CExoString& sTag);
+    CExoString& GetTag();
+    CExoString GetAlignmentString();
     int EffectId2Effect2DAId(int nEffectId, int nEffectInteger);
     int GetEffectLinkImmunity(CGameEffect* pEffect);
     unsigned long CalculateExpNeededForNextLevel();
@@ -160,6 +171,9 @@ public:
     void GetTotalDamageRange(CSWSCreature* pCreature, CSWSItem* pItem,
                              int& nMinimum, int& nMaximum, int bOffHand,
                              int bIncludeEffects);
+    CResRef GetSmallPortrait();
+    CResRef GetLargePortrait();
+    CExoString GetRaceString();
 
     enum { WEAPON_SPECIALIZATION_DAMAGE_BONUS = 2 };
     // PC 0x005A4C50
@@ -197,6 +211,7 @@ public:
             m_aClassInfo[nClass].m_nLevel = nLevel;
     }
     int ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget);
+    unsigned char GetIsClass(unsigned char nClass);
     int ResolveSpecialAttackDamageBonus(CSWSCreature* pTarget);
     unsigned char GetClassLevel(unsigned char nClass,
                                 int bExcludeNegativeLevels);
@@ -230,6 +245,7 @@ public:
     unsigned char GetSpellGainWithBonus(unsigned char nMultiClass,
                                        unsigned char nSpellLevel);
     int HasFeat(unsigned short nFeat);
+    unsigned char GetCasterLevel(unsigned char nMultiClass);
     int FeatAcquired(unsigned short nFeat, CExoArrayList<unsigned short>* pList);
     int FeatRequirementsMet(unsigned short nFeat, CExoArrayList<unsigned short>* pList);
     int HasFeatPrereq(CSWFeat* pFeat, CExoArrayList<unsigned short>* pList);
@@ -244,6 +260,7 @@ public:
     void RemoveFeat(unsigned short nFeat);
     void DecrementFeatRemainingUses(unsigned short nFeat);
     unsigned char GetFeatRemainingUses(unsigned short nFeat);
+    void ResetFeatRemainingUses();
     int GetWeaponSpecialization(CSWSItem* pItem);
     int GetRangedDamageBonus();
     int GetWeaponFocus(CSWSItem* pItem);
@@ -279,10 +296,14 @@ public:
     short GetForcePointAbilityMod() { return GetWISMod() + GetCHAMod(); }
     unsigned char GetLevel(int bExcludeNegativeLevels);
     CSWLevelStats* GetLevelStats(unsigned char nLevel);
+    int GetHasLostClassAbilities(unsigned char nMultiClass);
+    void SetHasLostClassAbilities(unsigned char nMultiClass, int bLostClassAbilities);
     int ValidateLevelUp(CSWLevelStats* pLevelStats);
 
     void LevelUp(CSWLevelStats* pLevelStats, int bStoreLevelStats);
     int CanLevelUp();
+    unsigned char GetPotentialLevel();
+    unsigned char GetEffectiveCRForPotentialLevel();
     unsigned long GetExpNeededForLevelUp();
     void UpdateCombatInformation();
     void UpdateLastStatsObject(unsigned __int64 nUpdateMask,
@@ -323,6 +344,7 @@ public:
     void UpdateCHAModifier() { m_nCharismaModifier = CalcStatModifier(GetCHAStat()); }
     void RemoveKnownSpell(unsigned char nClass, unsigned long nSpell);
     void SetForceResistance(char nResistance);
+    int GetIsInKnownSpellList(unsigned char nMultiClass, unsigned long nSpell);
     void SetArcaneSpellFailure(unsigned char nFailure);
     void SetForceResistancePenalty(char nPenalty);
     void SetExperience(unsigned long nExperience, int bUseThreshold);
@@ -344,14 +366,18 @@ public:
     }
     void SetSpellLikeAbilityReady(unsigned long nSpell, unsigned char bReady,
                                   unsigned char nClass);
+    void ResetSpellLikeAbilities();
     int UnReadySpell(unsigned long nSpell);
+    void DecrementSpellsPerDayLeft(unsigned char nMultiClass, unsigned char nSpellLevel);
+    void IncrementSpellsPerDayLeft(unsigned char nMultiClass, unsigned char nSpellLevel);
+    void ResetSpellsPerDayLeft(unsigned char nMultiClass, unsigned char nSpellLevel);
     bool GetSpellUsesLeft(unsigned long nSpell, unsigned char nMultiClass,
                           unsigned char nSpellLevel, unsigned char nSpellIndex);
     void AutoLevelup(int bFeedback);
 
     unsigned long GetExperience() { return m_nExperience; }
-    int GetAlignment();
     char GetDEXMod(int bWithEffects);
+    int HasForcePowerRequirments(unsigned long nSpell);
 
     char GetPrimaryMod(unsigned char nMultiClass);
     char GetFortSavingThrow(int bBaseOnly);
@@ -385,11 +411,7 @@ public:
     unsigned char GetTattoo2Color();
 
     unsigned char GetNumClasses() { return m_nClassCount; }
-    float GetLeaderWeight();
-    int GetFactionIndex();
-    void SetFactionIndex(int nFaction);
     short GetArmorClassVersus(CSWSCreature* pTarget, int bTouchAttack);
-    int GetIsPCFaction();
 
     int GetIsPC() { return m_bIsPC; }
 
@@ -426,18 +448,20 @@ public:
                                     int& nTalentType, int& nTalent,
                                     unsigned char& nClass, int nExclusion,
                                     int nExcludedFeat);
+    int GetSpellMinAbilityMet(unsigned char nMultiClass, unsigned char nSpellLevel);
     int GetCreatureTalentRandomPower(int nFilter, int nSelection,
                                     int& nTalentType, int& nTalent,
-                                    unsigned char& nClass, int nUnknown,
+                                    unsigned char& nClass, int nExclusion,
                                     int nExcludedPower);
     int GetCreatureTalentRandomKnownPower(int nFilter, int nSelection,
                                          int& nTalentType, int& nTalent,
                                          unsigned char& nClass, int nClassIndex,
-                                         int nUnknown, int nExcludedPower);
+                                         int nExclusion, int nExcludedPower);
+    int CheckForCategoryMatch(int nPowerSuitability, int nFilter);
     int CheckPowerSuitability(int nPowerSuitability, int nFilter);
     int CheckPowerSuitability(int nTalent, CSWSpell* pSpell,
-                              int nPowerSuitability, int nUnknown1,
-                              int nUnknown2, int nUnknown3, int nUnknown4,
+                              int nPowerSuitability, int nSelection,
+                              int nMultiClass, int nSpellIndex, int nClassIndex,
                               int nInvalidTalent);
     int CanChooseSpell(unsigned long nSpell, unsigned char nMultiClass,
                        CExoArrayList<unsigned long>* pSpellList);
@@ -464,7 +488,7 @@ public:
     int m_nFactionId;
 
     int m_nOriginalFactionId;
-    unsigned char m_aUnmapped80[0x4];
+    unsigned char m_nPreviousFactionId[0x4];
     float m_fChallengeRating;
     float GetChallengeRating() const { return m_fChallengeRating; }
     unsigned char m_nStartingPackage;
@@ -503,7 +527,7 @@ public:
 
     unsigned char m_nBaseAttackBonus;
     char m_nEnemyAttackBonus;
-    unsigned char m_aUnmapped104[4];
+    unsigned char m_nAttackModifier[4];
 
     int m_nDamageRoll;
     int m_nCriticalHitRoll;
@@ -524,7 +548,7 @@ public:
     short m_nTemporaryForcePoints;
     CExoArrayList<CSWSStats_SpellLikeAbility>* m_pSpellLikeAbilities;
 
-    unsigned short m_nEffectIndex12C;
+    unsigned short m_nTemporaryHitPointsEffectIndex;
     unsigned short m_nACEffectIndex;
     unsigned short m_nAttackEffectIndex;
     unsigned short m_nDamageReductionEffectIndex;
@@ -571,7 +595,7 @@ public:
 #ifdef _XBOX
     void SetGoodEvilAlignment(short nAlignment);
 #endif
-    unsigned char m_aUnmapped180[2];
+    unsigned char m_nLawfulChaoticAlignment[2];
     unsigned char m_nSkinColor;
     unsigned char m_nHairColor;
     unsigned char m_nTattoo1Color;
@@ -597,7 +621,7 @@ public:
     CExoString m_sDeity;
     float m_fHPAccumulator;
     float m_fFPAccumulator;
-    unsigned char m_aUnmapped1B4[4];
+    unsigned char m_fRegenerationTimer[4];
 };
 
 #endif

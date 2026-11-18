@@ -62,27 +62,26 @@
 #include "nwscreaturestats.h"
 #include "worldtimer.h"
 #include "clientaimaster.h"
+#include "swmain.h"
+#include "resgff.h"
+#include "nwsdoor.h"
+#include "nwcdoor.h"
+#include "nwscombatround.h"
+#include "swbehaviorcamera.h"
+#include "nwctrigger.h"
+#include "swguicontrol.h"
 
 static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-#include "swmain.h"
-#include "resgff.h"
-#include "nwsdoor.h"
 
-static inline void NwccreatureTrace3();
-static inline void NwccreatureTrace2();
-static inline void NwccreatureTrace1();
+#define NWCCREATURE_DEBUG 0
 
 #define NWC_CREATURE_SIGHT_HEIGHT 1.5f
 #define SWCCREATURE_LIPSYNC_END_TIME_MIN 0.99999f
 #define SWCCREATURE_LIPSYNC_END_TIME_MAX 1.00001f
 #define LIP_VISEME_ANIMATION_SCALE 0.0625f
-
-#include "../../libsource/AURORA/aurpointer.h"
-#include "nwcdoor.h"
-#include "nwscombatround.h"
 
 const int CSWCCreature::MODE_DEFAULT = 0;
 const int CSWCCreature::MODE_SWDRIVE = 1;
@@ -159,7 +158,7 @@ void CSWCCreature::UnloadModel(unsigned char nModel)
 void CSWCCreature::UpdateMonkVisuals()
 {
 }
-
+// Dead code: not in the PC executable
 int CSWCCreature::ResetAnimationState()
 {
     if (GetLoopingAnimation() == CREATURE_ANIMATION_COMBAT_READY)
@@ -201,7 +200,7 @@ inline int CSWCCreature::IsHostile()
 {
     return this->m_nHostile == HOSTILE_STATE_HOSTILE;
 }
-
+// Dead code: not in the PC executable
 void CSWCCreature::DoFootstepRumble(int nFootstepType)
 {
     g_pAppManager->GetClientExoApp()->LookUpAndPerformRumbleWithCutOff(
@@ -319,11 +318,11 @@ void CSWCCombatAttackData::Copy(CSWCCombatAttackData* pAttackData)
 // PC 0x0060B750  Xbox 0x0003B5A0
 CSWCCreaturePartyStatus::CSWCCreaturePartyStatus()
 {
-    m_nUnknown04 = 1;
-    m_nUnknown08 = 1;
-    m_nUnknown0C = 0;
-    m_nUnknown14 = OBJECT_INVALID;
-    m_sUnknown18 = "";
+    m_bSelectable = 1;
+    m_bAvailable = 1;
+    m_bLocked = 0;
+    m_oidStatusObject = OBJECT_INVALID;
+    m_sStatusName = "";
 }
 // PC 0x00610C90  Xbox 0x00040ED0
 void SwingShortEvent(CAurObject* pObject, char* sEvent, void* pData)
@@ -654,7 +653,7 @@ void CSWCCreature::BlurWeapon(int bBlur)
         else
         {
             g_pRules->m_pBaseItems->GetBaseItem(pItem->m_nBaseItem);
-            if (pItem->m_nUnknown198 != 1)
+            if (pItem->m_bVisualEffectLoaded != 1)
                 m_bBlurWeapon = bBlur;
         }
     }
@@ -960,7 +959,10 @@ void CSWCCreature::ClientServerSyncHandler_Position(const Vector& vPosition,
 // PC 0x006123E0  Xbox 0x00042750
 void CSWCCreature::SaveCharGenCreature()
 {
-    NwccreatureTrace1();
+    if (NWCCREATURE_DEBUG)
+    {
+        EXOLOG("CSWCCreature::SaveCharGenCreature() pause ready animation %d\n", GetPauseReadyAnimation());
+    }
     CExoLocString locString;
     CResGFF* pGFF = new CResGFF;
     CResStruct topStruct;
@@ -1280,23 +1282,26 @@ int CSWCCreature::SetAppearance(CCAppearanceInfo* pAppearance,
 // PC 0x00613710  Xbox 0x00043AD0
 void CSWCCreature::UpdateWeaponClass()
 {
-    NwccreatureTrace1();
+    if (NWCCREATURE_DEBUG)
+    {
+        EXOLOG("CSWCCreature::UpdateWeaponClass() pause ready animation %d\n", GetPauseReadyAnimation());
+    }
     unsigned long oidRightHand = m_aoidEquippedItems[EQUIPPED_ITEM_RIGHTHAND];
     unsigned long oidLeftHand = m_aoidEquippedItems[EQUIPPED_ITEM_LEFTHAND];
-    unsigned char nWieldClass = CSWCAnimBase::WIELD_CLASS_NONE;
+    unsigned char bLightsaber = CSWCAnimBase::WIELD_CLASS_NONE;
     unsigned char nOffHandType = 0;
     if (oidRightHand == OBJECT_INVALID)
     {
         if (oidLeftHand == OBJECT_INVALID)
         {
-            nWieldClass = CSWCAnimBase::WIELD_CLASS_UNARMED;
+            bLightsaber = CSWCAnimBase::WIELD_CLASS_UNARMED;
             GetAnimationBase()->m_nOffHandType = CSWCAnimBase::OFF_HAND_TYPE_UNARMED;
         }
         else
         {
             CSWCItem* pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(oidLeftHand);
             if (pItem != NULL)
-                nWieldClass = CSWCAnimBase::WIELD_CLASS_NONE;
+                bLightsaber = CSWCAnimBase::WIELD_CLASS_NONE;
         }
     }
     else
@@ -1310,22 +1315,22 @@ void CSWCCreature::UpdateWeaponClass()
                 switch ((unsigned char)pBaseItem->m_nWeaponWield)
                 {
                 case CSWBaseItem::WEAPON_WIELD_ONE_HANDED_1:
-                    nWieldClass = CSWCAnimBase::WIELD_CLASS_1;
+                    bLightsaber = CSWCAnimBase::WIELD_CLASS_1;
                     break;
                 case CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2:
-                    nWieldClass = CSWCAnimBase::WIELD_CLASS_2;
+                    bLightsaber = CSWCAnimBase::WIELD_CLASS_2;
                     break;
                 case CSWBaseItem::WIELD_DOUBLE_WEAPON:
-                    nWieldClass = CSWCAnimBase::WIELD_CLASS_3;
+                    bLightsaber = CSWCAnimBase::WIELD_CLASS_3;
                     break;
                 case CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4:
-                    nWieldClass = CSWCAnimBase::WIELD_CLASS_4;
+                    bLightsaber = CSWCAnimBase::WIELD_CLASS_4;
                     break;
                 case CSWBaseItem::WEAPON_WIELD_5:
-                    nWieldClass = CSWCAnimBase::WIELD_CLASS_5;
+                    bLightsaber = CSWCAnimBase::WIELD_CLASS_5;
                     break;
                 case CSWBaseItem::WEAPON_WIELD_6:
-                    nWieldClass = CSWCAnimBase::WIELD_CLASS_6;
+                    bLightsaber = CSWCAnimBase::WIELD_CLASS_6;
                     break;
                 }
                 nOffHandType = pBaseItem->m_nWeaponType;
@@ -1340,10 +1345,10 @@ void CSWCCreature::UpdateWeaponClass()
                     switch ((unsigned char)pBaseItem->m_nWeaponWield)
                     {
                     case CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2:
-                        nWieldClass = CSWCAnimBase::WIELD_CLASS_DUAL_2;
+                        bLightsaber = CSWCAnimBase::WIELD_CLASS_DUAL_2;
                         break;
                     case CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4:
-                        nWieldClass = CSWCAnimBase::WIELD_CLASS_DUAL_4;
+                        bLightsaber = CSWCAnimBase::WIELD_CLASS_DUAL_4;
                         break;
                     }
                     nOffHandType = pBaseItem->m_nWeaponType;
@@ -1352,7 +1357,7 @@ void CSWCCreature::UpdateWeaponClass()
             }
         }
     }
-    GetAnimationBase()->m_nWieldClass = nWieldClass;
+    GetAnimationBase()->m_nWieldClass = bLightsaber;
 }
 // PC 0x00613850  Xbox 0x00043C10
 void CSWCCreature::UpdateVisibleWeapons(unsigned long nSlot, CSWCItem* pItem, int bInstant)
@@ -1506,8 +1511,8 @@ CSWCCreature::CSWCCreature()
     m_nCurrentAnimation = CREATURE_ANIMATION_COMBAT_IDLE;
     m_bConjuringCreature = 0;
     m_bWeaponDrawBlocked = 0;
-    m_nUnknown150 = 0;
-    m_nUnknown1B8 = 0;
+    m_nWeaponDrawState = 0;
+    m_bMovementSpeedLimited = 0;
     m_bOverrideLightsaberState = 0;
     m_oidVisibleRightWeapon = OBJECT_INVALID;
     m_oidVisibleLeftWeapon = OBJECT_INVALID;
@@ -1529,11 +1534,11 @@ CSWCCreature::CSWCCreature()
     if (m_pAppearance == NULL)
         return;
 
-    m_nUnknown1EE = 0;
-    m_nUnknown1EF = 0;
-    m_nUnknown1F0 = 0;
+    m_nWayPointState = 0;
+    m_nLastWayPointSequence = 0;
+    m_nWayPointSequence = 0;
     m_nSpeedRampMode = SPEED_RAMP_FAST;
-    m_nUnknown214 = 0;
+    m_bCustomSpeed = 0;
     m_vOrientation = Vector(1.0f, 0.0f, 0.0f);
     m_vMoveOrientation = Vector(1.0f, 0.0f, 0.0f);
     m_vDesiredOrientation = Vector(1.0f, 0.0f, 0.0f);
@@ -1548,25 +1553,25 @@ CSWCCreature::CSWCCreature()
     m_oidLockTarget = CGameObjectArray::INVALIDOBJID;
     m_nWeaponOverlayState = 0xffff;
     m_nCombatState = 0;
-    m_pOwnedObject15C = NULL;
-    m_nUnknown190 = 0;
+    m_pWeaponOverlay = NULL;
+    m_nDetectState = 0;
     m_nStealthState = 0;
-    m_nUnknown198 = 0;
-    m_nUnknown19C = 0;
-    m_nUnknown1A0 = 0;
-    m_nUnknown1A4 = 0;
-    m_nUnknown1A8 = 0;
-    m_nUnknown1AC = 0;
+    m_nParryState = 0;
+    m_nPowerAttackState = 0;
+    m_nImprovedPowerAttackState = 0;
+    m_nCriticalStrikeState = 0;
+    m_nRapidShotState = 0;
+    m_nFlurryState = 0;
     m_bInvisibilityVisualApplied = 0;
     for (int j = 0; j < 12; ++j)
         m_apOwnedObjects[j] = NULL;
     m_pBloodEffect = NULL;
-    m_pOwnedObject130 = NULL;
-    m_pOwnedObject134 = NULL;
+    m_pHitEffect = NULL;
+    m_pDeathEffect = NULL;
 #ifdef _XBOX
-    m_fUnknown148 = 0.0f;
+    m_fInventoryUpdateTime = 0.0f;
 #else
-    m_nUnknown148 = 0;
+    m_nInventoryUpdateTime = 0;
 #endif
     m_bWetFootstep = 0;
     m_fFootstepGroundHeight = 0.0f;
@@ -1576,11 +1581,11 @@ CSWCCreature::CSWCCreature()
     m_nMonkVisualState = 0;
     m_nMonkVisualTimer = 0;
     m_nHostile = HOSTILE_STATE_HOSTILE;
-    m_nUnknown1B4 = 0;
-    m_nUnknown308 = 200000;
+    m_nEncumbranceState = 0;
+    m_nFootstepDelay = 200000;
     m_pPartyStatus = NULL;
     m_nGold = 0;
-    m_oidUnknown2C8 = CGameObjectArray::INVALIDOBJID;
+    m_oidConjuringTarget = CGameObjectArray::INVALIDOBJID;
     m_nWeaponOverlayTimer = SWCCREATURE_WEAPON_OVERLAY_INTERVAL;
     m_nWeaponCheckTimer = 6000;
     m_pPendingAnimBase = NULL;
@@ -1588,19 +1593,19 @@ CSWCCreature::CSWCCreature()
     m_nCameraFollowDelay = 0;
     m_bCameraFollowPending = 0;
     m_bCameraFollowSnap = 0;
-    m_nUnknown370 = 0;
-    m_nUnknown374 = 0;
-    m_nUnknown378 = 0;
+    m_bDisguised = 0;
+    m_bCommandable = 0;
+    m_bExcited = 0;
     for (int nObject = 0; nObject < 4; ++nObject)
-        m_aoidUnknown37C[nObject] = CGameObjectArray::INVALIDOBJID;
+        m_aoidRecentAttackers[nObject] = CGameObjectArray::INVALIDOBJID;
     m_nAmbientPauseTimer = 0;
     m_bAmbientPause = 0;
     m_nAmbientPauseDelay = 30000 * (rand() % 4 + 2);
-    m_fUnknown1FC = 1.0f;
+    m_fCustomSpeed = 1.0f;
     m_oidArea = CGameObjectArray::INVALIDOBJID;
     m_pSpellLikeAbilities = NULL;
     m_nMode = 0;
-    m_nUnknown3AC = 0;
+    m_nPreviousMode = 0;
     m_fSWAnimationSpeed = 0.0f;
     m_fSWTargetAnimationSpeed = 0.0f;
     m_fDriveTurnAngle = 0.0f;
@@ -1642,10 +1647,10 @@ CSWCCreature::~CSWCCreature()
         delete m_pStats;
         m_pStats = NULL;
     }
-    if (m_pOwnedObject15C != NULL)
+    if (m_pWeaponOverlay != NULL)
     {
-        delete m_pOwnedObject15C;
-        m_pOwnedObject15C = NULL;
+        delete m_pWeaponOverlay;
+        m_pWeaponOverlay = NULL;
     }
     if (m_pLoopingSound != NULL)
     {
@@ -1681,8 +1686,8 @@ CSWCCreature::~CSWCCreature()
         m_pMonkVisual->AttachToScene(NULL);
         delete m_pMonkVisual;
     }
-    delete m_pOwnedObject130;
-    delete m_pOwnedObject134;
+    delete m_pHitEffect;
+    delete m_pDeathEffect;
     if (m_pPartyStatus != NULL)
     {
         delete m_pPartyStatus;
@@ -1811,7 +1816,26 @@ void CSWCCreature::SetDesiredOrientationForLock()
         SetOrientation(m_vOrientation);
     }
 }
-
+// Dead code: not in the PC executable
+int CSWCCreature::TestAIStateActionGroup(int nGroup)
+{
+    if (nGroup == 0 &&
+        (m_nReadyAnimationState == READY_ANIMATION_STATE_2 ||
+         m_nReadyAnimationState == READY_ANIMATION_STATE_3))
+        return 1;
+    if (nGroup == 1 &&
+        (m_nReadyAnimationState == 0 || m_nReadyAnimationState == 1))
+        return 1;
+    if (nGroup == 3 && m_nReadyAnimationState == READY_ANIMATION_STATE_14)
+        return 1;
+    if (nGroup == 2 &&
+        (m_nReadyAnimationState == 10 || m_nReadyAnimationState == 11 ||
+         m_nReadyAnimationState == 12 || m_nReadyAnimationState == 13 ||
+         m_nReadyAnimationState == 15 || m_nReadyAnimationState == 16))
+        return 1;
+    return 0;
+}
+// Dead code: not in the PC executable
 void CSWCCreature::LoadMonkVisuals()
 {
     unsigned short nAppearance = GetAppearance()->m_nAppearance;
@@ -1853,7 +1877,7 @@ void CSWCCreature::UnloadMonkVisuals()
         m_nMonkVisualTimer = 0;
     }
 }
-
+// Dead code: not in the PC executable
 void CSWCCreature::LoadSpecialAttacks(unsigned char nType)
 {
     switch (nType)
@@ -1897,7 +1921,7 @@ void CSWCCreature::LoadSpecialAttacks(unsigned char nType)
     m_apAttachedModels[nType]->AttachToObject(
         GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1), sHook, 0);
 }
-
+// Dead code: not in the PC executable
 void CSWCCreature::StopSpecialAttacks(unsigned char nType)
 {
     switch (nType)
@@ -2004,6 +2028,10 @@ void CSWCCreature::HandleConjuringCreature()
     m_pSpellCastVisual->UpdateTimer(m_nTimeDelta);
     m_bConjuringCreature = bConjuring;
 }
+// Dead code: not in the PC executable
+void CSWCCreature::HandleSwitchWeapon()
+{
+}
 // PC 0x0060BDF0  Xbox 0x0003BC80
 void CSWCCreature::MoveCreatureToPosition(const Vector& vPosition)
 {
@@ -2040,7 +2068,7 @@ void CSWCCreature::ResetDesiredPositionTimer()
 }
 // PC 0x0060BF20  Xbox 0x0003BF40
 void CSWCCreature::ComputeZValue(CSWCArea* pArea, Vector* pPosition,
-                                 float fUnused, Vector* pUnused)
+                                 float fCurrentZ, Vector* pNormal)
 {
     if (g_pAppManager->GetServerExoApp() != NULL)
     {
@@ -2332,7 +2360,7 @@ int CSWCCreature::RequestAppearance(CCAppearanceInfo* pAppearance,
         m_pAppearance->RequestTailAppearance(pAppearance);
     if (nParts & APPEARANCE_PART_WING)
         m_pAppearance->RequestWingAppearance(pAppearance);
-    memcpy(m_aUnmapped31C, pAppearance, sizeof(CCAppearanceInfo));
+    memcpy(m_aRequestedAppearance, pAppearance, sizeof(CCAppearanceInfo));
     return 1;
 }
 // PC 0x0060C980  Xbox 0x0003C9B0
@@ -3214,6 +3242,30 @@ void CSWCCreature::ResolveSpecialAttackVisuals(int nAttackType, int nWieldClass,
         }
     }
 }
+// Dead code: not in the PC executable
+int CSWCCreature::ResolveSpecialAttackVisualsMelee(int nAttackType,
+                                               int nType2Animation,
+                                               int nType3Animation,
+                                               int nType4Animation)
+{
+    int nAnimation = 0;
+
+    switch (nAttackType)
+    {
+    case 2:
+        nAnimation = nType2Animation;
+        break;
+
+    case 3:
+        nAnimation = nType3Animation;
+        break;
+
+    case 4:
+        nAnimation = nType4Animation;
+        break;
+    }
+    return nAnimation;
+}
 // PC 0x0060D430  Xbox 0x0003D460
 int CSWCCreature::SelectSpecialAttackAnimation(int nAttackType,
                                                int nType2Animation,
@@ -3511,19 +3563,19 @@ void GetPath(CAurObject* pObject, char* sProperty, void* pData)
     pPath->m_fZ = 0.0f;
 }
 // PC 0x0060E1D0  Xbox 0x0003E320
-CSWCAnimBase* CSWCCreature::SetSpecialWalkAnimation(unsigned char a1)
+CSWCAnimBase* CSWCCreature::SetSpecialWalkAnimation(unsigned char nSpecialWalkAnimation)
 {
     CSWCAnimBase* result;
     result = ((CSWCObject*)this)->GetAnimationBase();
-    result->m_nSpecialWalkAnimation = a1;
+    result->m_nSpecialWalkAnimation = nSpecialWalkAnimation;
     return result;
 }
 // PC 0x0060E1F0  Xbox 0x0003E340
-CSWCAnimBase* CSWCCreature::SetRunLooksAwful(int a1)
+CSWCAnimBase* CSWCCreature::SetRunLooksAwful(int bRunLooksAwful)
 {
     CSWCAnimBase* result;
     result = ((CSWCObject*)this)->GetAnimationBase();
-    result->m_bRunLooksAwful = a1;
+    result->m_bRunLooksAwful = bRunLooksAwful;
     return result;
 }
 // PC 0x0060E210  Xbox 0x0003E360
@@ -3573,13 +3625,13 @@ void CSWCCreature::ClearVisibilityList()
     }
 }
 // PC 0x00614630  Xbox 0x00044970
-void CSWCCreature::HideEquippedItems(const CResRef& cResRef,
-                                     const CResRef& cResRef2)
+void CSWCCreature::HideEquippedItems(const CResRef& cResRight,
+                                     const CResRef& cResLeft)
 {
     if (m_pAnimBase != NULL)
     {
         ComputeWeaponOverlays(0, 0);
-        m_pAnimBase->HideWieldedItems(cResRef, cResRef2);
+        m_pAnimBase->HideWieldedItems(cResRight, cResLeft);
         m_bEquippedItemsHidden = 1;
     }
 }
@@ -3608,7 +3660,10 @@ void CSWCCreature::ShowEquippedItems()
 // PC 0x006182A0  Xbox 0x00048AE0
 void CSWCCreature::SetCombatState(int nState)
 {
-    NwccreatureTrace3();
+    if (NWCCREATURE_DEBUG)
+    {
+        EXOLOG("CSWCCreature::SetCombatState() can see %d\n", CanSee(NULL));
+    }
     int nPreviousState = m_nCombatState;
     m_nCombatState = nState;
     if (nState != 0)
@@ -3645,6 +3700,17 @@ void CSWCCreature::SetCombatState(int nState)
         }
     }
     if (nState != 0)
+    {
+        LookAt(OBJECT_INVALID, 0.0f);
+        m_bCombatReady = 1;
+    }
+    else
+        m_bCombatReady = 0;
+}
+// Dead code: not in the PC executable
+void CSWCCreature::SetDisableLookAt(int bDisable)
+{
+    if (bDisable != 0)
     {
         LookAt(OBJECT_INVALID, 0.0f);
         m_bCombatReady = 1;
@@ -4048,7 +4114,7 @@ int CSWCCreature::CanSee(CSWCObject* pObject)
     vEnd.m_fZ += pObject->GetCanSeeHeight();
 
     DefaultHitInfo.ClearOutput();
-    DefaultHitInfo.m_bResult0 = 1;
+    DefaultHitInfo.m_bIgnoreCharacters = 1;
     DefaultHitInfo.m_lstHits.m_nCount = 0;
     DefaultHitInfo.m_lstHits.Add(GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1));
     Gob* pModel = GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1);
@@ -4811,7 +4877,7 @@ void CSWCCreature::EvaluateNewWayPoints(int nWayPointCount, Vector* pWayPoints,
     int nNewWayPointCount;
     Vector* pNewWayPoints;
 
-    if (m_nUnknown214 == 0 || nPathType == 0 || m_nUnknown1EF == nPathType)
+    if (m_bCustomSpeed == 0 || nPathType == 0 || m_nLastWayPointSequence == nPathType)
     {
         if (nWayPointCount > 0 && GetArea() != NULL)
         {
@@ -4921,9 +4987,9 @@ void CSWCCreature::EvaluateNewWayPoints(int nWayPointCount, Vector* pWayPoints,
     }
 }
 // PC 0x0060ED80  Xbox 0x0003EFA0
-void CSWCCreature::SetThrownLightsaber(unsigned long a1)
+void CSWCCreature::SetThrownLightsaber(unsigned long oidThrownLightsaber)
 {
-    this->m_oidThrownLightsaber = a1;
+    this->m_oidThrownLightsaber = oidThrownLightsaber;
 }
 // PC 0x00614A30  Xbox 0x00044E60
 void CSWCCreature::ForceAppearanceUpdate()
@@ -4934,7 +5000,7 @@ void CSWCCreature::ForceAppearanceUpdate()
     m_nCameraFollowDelay = 0;
     pModule = g_pAppManager->m_pClientExoApp->GetModule();
     m_pAppearance->m_nAppearance = m_nAppearance;
-    SetAppearance((CCAppearanceInfo*)m_aUnmapped31C, 0xEF, 1);
+    SetAppearance((CCAppearanceInfo*)m_aRequestedAppearance, 0xEF, 1);
     if (pModule != NULL)
     {
         pArea = pModule->m_pInfo;
@@ -5067,15 +5133,6 @@ void CSWCCreature::PerformCastSpell(unsigned long nSpell,
     }
 }
 
-#include "nwcplaceable.h"
-
-#include "nwsplaceable.h"
-
-#include "clientoptions.h"
-
-#include "swbehaviorcamera.h"
-
-#include "nwitem.h"
 // PC 0x0060EF50  Xbox 0x0003F160
 int CSWCCreature::SetInParty(int bInParty)
 {
@@ -5184,7 +5241,7 @@ int CSWCCreature::IsDriveAnimationBlocked()
     }
     return nEngagedState;
 }
-
+// Dead code: not in the PC executable
 void Swing(const CExoString& sSound, CSWCCombatAttackData* pAttackData,
            int nSoundCount)
 {
@@ -5200,10 +5257,10 @@ void Swing(const CExoString& sSound, CSWCCombatAttackData* pAttackData,
     }
 }
 // PC 0x0060F140  Xbox 0x0003F3B0
-int CSWCCreature::SetEngagedState(int a1)
+int CSWCCreature::SetEngagedState(int nState)
 {
-    this->m_nEngagedState = a1;
-    return a1;
+    this->m_nEngagedState = nState;
+    return nState;
 }
 // PC 0x0060F150  Xbox 0x0003F3C0
 void CSWCCreature::SetQuededAnimationCallback()
@@ -5392,9 +5449,9 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
         {
             CSWRoomSurfaceMeshHitInfo cMeshHit(SWROOMSURFACEMESH_ALL_MATERIALS_MASK);
             pRoom->GetWalkMesh()->CheckAABBAll(vStart, vEnd, cMeshHit);
-            if (cMeshHit.m_nField0C != -1)
+            if (cMeshHit.m_nHitFace != -1)
             {
-                pRoom->GetWalkMesh()->GetTriangleVertices(0, cMeshHit.m_nField0C,
+                pRoom->GetWalkMesh()->GetTriangleVertices(0, cMeshHit.m_nHitFace,
                                                        &nFirst, &nSecond, &nThird);
                 pRoom->GetWalkMesh()->GetVertex(nFirst, &vFirst);
                 pRoom->GetWalkMesh()->GetVertex(nSecond, &vSecond);
@@ -5483,18 +5540,18 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
             if ((nResult == CSWSArea::DIRECT_LINE_BLOCKED_ROOM ||
                  nResult == CSWSArea::DIRECT_LINE_BLOCKED_OBJECT ||
                  nResult == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE) &&
-                cHit.m_nUnknown00 == CWalkHitInfo::FAILURE_BLOCKED)
+                cHit.m_nFailureReason == CWalkHitInfo::FAILURE_BLOCKED)
             {
-                float fSide = vReverse * cross(zaxis, cHit.m_vUnknown10);
+                float fSide = vReverse * cross(zaxis, cHit.m_vNormal);
                 float fPreviousSide = vReverse * cross(zaxis, vPreviousNormal);
                 if (nTries > 1 && ((fSide > 0.0f && fPreviousSide < 0.0f) ||
                                   (fSide < 0.0f && fPreviousSide > 0.0f)))
                 {
-                    if (cHit.m_nUnknown44 != CWalkHitInfo::INTERSECTION_CORNER)
+                    if (cHit.m_nIntersectionType != CWalkHitInfo::INTERSECTION_CORNER)
                         break;
                     Vector vOffset = cross(zaxis, vDirection) * SWCCREATURE_DRIVE_REVERSE_CORNER_OFFSET;
-                    if (vDirection * Vector(-cHit.m_vUnknown34.m_fY,
-                                              cHit.m_vUnknown34.m_fX, 0.0f) > 0.0f)
+                    if (vDirection * Vector(-cHit.m_vDirection.m_fY,
+                                              cHit.m_vDirection.m_fX, 0.0f) > 0.0f)
                         vNewPosition = m_vPosition + vOffset;
                     else
                         vNewPosition = m_vPosition - vOffset;
@@ -5502,11 +5559,11 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
                 else
                 {
                     Vector vAdjustedPosition;
-                    if (cHit.m_nUnknown44 == CWalkHitInfo::INTERSECTION_CORNER)
+                    if (cHit.m_nIntersectionType == CWalkHitInfo::INTERSECTION_CORNER)
                     {
                         Vector vOffset = cross(zaxis, vDirection) * SWCCREATURE_DRIVE_CORNER_OFFSET;
-                        if (vDirection * Vector(-cHit.m_vUnknown10.m_fY,
-                                                  cHit.m_vUnknown10.m_fX, 0.0f) > 0.0f)
+                        if (vDirection * Vector(-cHit.m_vNormal.m_fY,
+                                                  cHit.m_vNormal.m_fX, 0.0f) > 0.0f)
                             vAdjustedPosition = m_vPosition - vOffset;
                         else
                             vAdjustedPosition = m_vPosition + vOffset;
@@ -5518,22 +5575,22 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
                         float fHitDistance = vToHit * vToHit;
                         float fDestinationDistance = vToDestination * vToDestination;
                         if (fHitDistance > fDestinationDistance)
-                            vAdjustedPosition = vNewPosition - cHit.m_vUnknown10 *
-                                ((cHit.m_vHitPosition - vNewPosition) * cHit.m_vUnknown10);
+                            vAdjustedPosition = vNewPosition - cHit.m_vNormal *
+                                ((cHit.m_vHitPosition - vNewPosition) * cHit.m_vNormal);
                         else
-                            vAdjustedPosition = vNewPosition - cHit.m_vUnknown10 *
-                                ((vNewPosition - cHit.m_vHitPosition) * cHit.m_vUnknown10);
+                            vAdjustedPosition = vNewPosition - cHit.m_vNormal *
+                                ((vNewPosition - cHit.m_vHitPosition) * cHit.m_vNormal);
                     }
                     vNewPosition = vAdjustedPosition;
                 }
-                vPreviousNormal = cHit.m_vUnknown10;
+                vPreviousNormal = cHit.m_vNormal;
                 if (renderintersects == 1)
                 {
                     char sDebug[256];
                     sprintf(sDebug, "V1:%3.2f,%3.2f  V2:%3.2f,%3.2f IT:%d FR:%d PF:%d WT:%d",
-                        cHit.m_vUnknown1C.m_fX, cHit.m_vUnknown1C.m_fY,
-                        cHit.m_vUnknown28.m_fX, cHit.m_vUnknown28.m_fY,
-                        cHit.m_nUnknown44, cHit.m_nUnknown00, nResult, nTries);
+                        cHit.m_vVertex1.m_fX, cHit.m_vVertex1.m_fY,
+                        cHit.m_vVertex2.m_fX, cHit.m_vVertex2.m_fY,
+                        cHit.m_nIntersectionType, cHit.m_nFailureReason, nResult, nTries);
                 }
             }
         } while (nTries <= DRIVE_WALK_LAST_TRY);
@@ -5905,8 +5962,6 @@ int CSWCCreature::LipSync(const CResRef& cLip)
     return 0;
 }
 
-#include "nwcdoor.h"
-#include "nwctrigger.h"
 // PC 0x0060F540  Xbox 0x0003F820
 int CSWCCreature::StopLipSync()
 {
@@ -6657,6 +6712,16 @@ void CSWCCreature::PlayRollingFootstepSound(int bRunning)
         }
     }
 }
+// Dead code: not in the PC executable
+void CSWCCreature::StopRollingFootstepSound()
+{
+    if (m_pRollingFootstepSound != NULL && m_bRollingFootstepPlaying != 0)
+    {
+        m_pRollingFootstepSound->Stop();
+        m_bRollingFootstepPlaying = 0;
+        m_bRollingFootstepRunning = 0;
+    }
+}
 // PC 0x00610840  Xbox 0x00040B30
 void CSWCCreature::UpdateRollingFootstepSound()
 {
@@ -6688,7 +6753,7 @@ void CSWCCreature::UpdateRollingFootstepSound()
     }
 }
 // PC 0x00610950  Xbox 0x00040C40
-void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bUnknown)
+void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bForce)
 {
     if (g_pAppManager->m_pServerExoApp != NULL)
     {
@@ -6698,7 +6763,7 @@ void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bUnkn
         {
             return;
         }
-        if (bUnknown == 0)
+        if (bForce == 0)
         {
             if (pCreature->GetDead() != 0)
             {
@@ -6883,10 +6948,8 @@ void CSWCCreature::GetCombatFeatsSkills(
     }
 }
 
-#include "swguicontrol.h"
-
-#include "swmain.h"
 #ifndef _XBOX
+// Dead code: not in the PC executable
 // Xbox 0x0004A930
 void CSWCCreature::GetFriendlyInterfaceActions(
     CSWCObject* pTarget, int nType,
@@ -7661,20 +7724,6 @@ int CSWCCreature::LoadModel(const CResRef& cModel, unsigned char nModel,
         }
     }
     return 1;
-}
-
-static inline void NwccreatureTrace3()
-{
-    NwccreatureTrace2();
-}
-
-static inline void NwccreatureTrace2()
-{
-    NwccreatureTrace1();
-}
-
-static inline void NwccreatureTrace1()
-{
 }
 
 #ifdef _XBOX

@@ -15,6 +15,7 @@ float DegToRad(float fDegrees)
 }
 
 #include <math.h>
+#define SEGMENT_MAX(a, b) ((a) > (b) ? (a) : (b))
 // PC 0x004A96E0  Xbox 0x00278E80
 double Round(float fValue, float fRoundTo)
 {
@@ -117,6 +118,11 @@ Matrix Transpose(const Matrix& matrix)
                          matrix.m_vThird.m_fY),
                   Vector(matrix.m_vFirst.m_fZ, matrix.m_vSecond.m_fZ,
                          matrix.m_vThird.m_fZ));
+}
+inline float norm(const Vector& vector)
+{
+    return SEGMENT_MAX(AbsoluteValue(vector.m_fX),
+                       SEGMENT_MAX(AbsoluteValue(vector.m_fY), AbsoluteValue(vector.m_fZ)));
 }
 // PC 0x004A9A60  Xbox 0x00277740
 Vector operator*(const Matrix& matrix, const Vector& vector)
@@ -1222,3 +1228,328 @@ int logbase2(unsigned int nValue)  // Xbox 0x00278AE0
     return nLog;
 }
 #endif
+// Dead code: not in the PC executable
+float clampf(float fValue)
+{
+    if (fValue < 0.0f)
+    {
+        return 0.0f;
+    }
+    if (fValue > 1.0f)
+    {
+        return 1.0f;
+    }
+    return fValue;
+}
+// Dead code: not in the PC executable
+int argmin(float* pValues, int nValues)
+{
+    int nMinimum = 0;
+    for (int i = 1; i < nValues; i++)
+    {
+        if (pValues[i] < pValues[nMinimum])
+        {
+            nMinimum = i;
+        }
+    }
+    return nMinimum;
+}
+// Dead code: not in the PC executable
+float norm(const Matrix& matrix)
+{
+    return SEGMENT_MAX(norm(matrix.m_vFirst),
+                       SEGMENT_MAX(norm(matrix.m_vSecond), norm(matrix.m_vThird)));
+}
+// Dead code: not in the PC executable
+Matrix operator*(const Matrix& left, const Matrix& right)
+{
+    return Matrix(left * right.m_vFirst, left * right.m_vSecond, left * right.m_vThird);
+}
+// Dead code: not in the PC executable
+float* Augment(const Matrix& matrix)
+{
+    static float a[16];
+    for (int i = 0; i < 16; i++)
+    {
+        a[i] = 0.0f;
+    }
+    a[15] = 1.0f;
+    a[0] = matrix.m_vFirst.m_fX;
+    a[4] = matrix.m_vFirst.m_fY;
+    a[8] = matrix.m_vFirst.m_fZ;
+    a[1] = matrix.m_vSecond.m_fX;
+    a[5] = matrix.m_vSecond.m_fY;
+    a[9] = matrix.m_vSecond.m_fZ;
+    a[2] = matrix.m_vThird.m_fX;
+    a[6] = matrix.m_vThird.m_fY;
+    a[10] = matrix.m_vThird.m_fZ;
+    return a;
+}
+// Dead code: not in the PC executable
+float Determinant(Matrix matrix)
+{
+    return matrix.m_vFirst.m_fX * matrix.m_vSecond.m_fY * matrix.m_vThird.m_fZ +
+           matrix.m_vSecond.m_fX * matrix.m_vThird.m_fY * matrix.m_vFirst.m_fZ +
+           matrix.m_vThird.m_fX * matrix.m_vFirst.m_fY * matrix.m_vSecond.m_fZ -
+           matrix.m_vFirst.m_fX * matrix.m_vThird.m_fY * matrix.m_vSecond.m_fZ -
+           matrix.m_vSecond.m_fX * matrix.m_vFirst.m_fY * matrix.m_vThird.m_fZ -
+           matrix.m_vThird.m_fX * matrix.m_vSecond.m_fY * matrix.m_vFirst.m_fZ;
+}
+// Dead code: not in the PC executable
+Matrix Inverse(Matrix matrix)
+{
+    static Matrix b;
+    float fDeterminant = Determinant(matrix);
+    float (*aafMatrix)[3] = (float (*)[3])&matrix;
+    float (*aafInverse)[3] = (float (*)[3])&b;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            aafInverse[j][i] = (aafMatrix[(i + 1) % 3][(j + 1) % 3] * aafMatrix[(i + 2) % 3][(j + 2) % 3] -
+                                aafMatrix[(i + 1) % 3][(j + 2) % 3] * aafMatrix[(i + 2) % 3][(j + 1) % 3]) /
+                               fDeterminant;
+        }
+    }
+    return b;
+}
+// Dead code: not in the PC executable
+Matrix inverse2(Matrix matrix)
+{
+    matrix.m_vThird = Vector(0.0f, 0.0f, 1.0f);
+    matrix.m_vSecond.m_fZ = 0.0f;
+    matrix.m_vFirst.m_fZ = 0.0f;
+    float fDeterminant = Determinant(matrix);
+    float fTemp = matrix.m_vFirst.m_fX;
+    matrix.m_vFirst.m_fX = matrix.m_vSecond.m_fY;
+    matrix.m_vSecond.m_fY = fTemp;
+    matrix.m_vFirst.m_fY = -matrix.m_vFirst.m_fY;
+    matrix.m_vSecond.m_fX = -matrix.m_vSecond.m_fX;
+    float fInverse = 1.0f / fDeterminant;
+    matrix.m_vFirst = matrix.m_vFirst * fInverse;
+    matrix.m_vSecond = matrix.m_vSecond * fInverse;
+    return matrix;
+}
+// Dead code: not in the PC executable
+Vector operator*(const Vector& vector, const Quaternion& quaternion)
+{
+    return Vector();
+}
+// Dead code: not in the PC executable
+Quaternion Matrix::getquaternion() const
+{
+    Quaternion quaternion;
+    Vector vFirst = m_vFirst;
+    Vector vSecond = m_vSecond;
+    Vector vThird = m_vThird;
+    int anNext[3] = {1, 2, 0};
+    float aafMatrix[3][3];
+
+    for (int i = 0; i < 3; i++)
+    {
+        aafMatrix[0][i] = (&vFirst.m_fX)[i];
+        aafMatrix[1][i] = (&vSecond.m_fX)[i];
+        aafMatrix[2][i] = (&vThird.m_fX)[i];
+    }
+
+    float fTrace = aafMatrix[0][0] + aafMatrix[1][1] + aafMatrix[2][2];
+    if (fTrace > 0.0f)
+    {
+        float fScale = (float)sqrt(fTrace + 1.0);
+        quaternion.m_fW = fScale * 0.5f;
+        fScale = 0.5f / fScale;
+        quaternion.m_fX = (aafMatrix[1][2] - aafMatrix[2][1]) * fScale;
+        quaternion.m_fY = (aafMatrix[2][0] - aafMatrix[0][2]) * fScale;
+        quaternion.m_fZ = (aafMatrix[0][1] - aafMatrix[1][0]) * fScale;
+    }
+    else
+    {
+        float afQuaternion[4];
+        int i = 0;
+        if (aafMatrix[1][1] > aafMatrix[0][0])
+        {
+            i = 1;
+        }
+        if (aafMatrix[2][2] > aafMatrix[i][i])
+        {
+            i = 2;
+        }
+        int j = anNext[i];
+        int k = anNext[j];
+
+        float fScale = (float)sqrt((aafMatrix[i][i] - (aafMatrix[j][j] + aafMatrix[k][k])) + 1.0);
+        afQuaternion[i] = fScale * 0.5f;
+        if (fScale != 0.0f)
+        {
+            fScale = 0.5f / fScale;
+        }
+        afQuaternion[3] = (aafMatrix[j][k] - aafMatrix[k][j]) * fScale;
+        afQuaternion[j] = (aafMatrix[i][j] + aafMatrix[j][i]) * fScale;
+        afQuaternion[k] = (aafMatrix[i][k] + aafMatrix[k][i]) * fScale;
+
+        quaternion.m_fX = afQuaternion[0];
+        quaternion.m_fY = afQuaternion[1];
+        quaternion.m_fZ = afQuaternion[2];
+        quaternion.m_fW = afQuaternion[3];
+    }
+
+    return quaternion;
+}
+// Dead code: not in the PC executable
+int isnormalized(const Vector& vector)
+{
+    float fLengthSquared = vector * vector;
+    return fLengthSquared >= 0.99 && fLengthSquared <= 1.01;
+}
+// Dead code: not in the PC executable
+int IsPowerOf2(int nValue)
+{
+    return (nValue & (nValue - 1)) == 0;
+}
+// Dead code: not in the PC executable
+Quaternion VirtualTrackBall(const Vector& vProjectionCenter, const Vector& vRotationCenter,
+                            const Vector& vFirstDirection, const Vector& vSecondDirection)
+{
+    Vector vNormal = vRotationCenter - vProjectionCenter;
+    float fFudgeFactor = 1.0f / (magnitude(vNormal) * 0.25f);
+    vNormal = normalize(vNormal);
+    float fDistance = -(vNormal * vRotationCenter);
+
+    Vector vFirst = planelineintersection(vNormal, fDistance, vProjectionCenter,
+                                          vProjectionCenter + vFirstDirection);
+    vFirst = vFirst - vRotationCenter;
+    vFirst = vFirst * fFudgeFactor;
+    float fMagnitude = magnitude(vFirst);
+    if (fMagnitude > 1.0f)
+    {
+        vFirst /= fMagnitude;
+    }
+    else
+    {
+        vFirst = vFirst - vNormal * (float)sqrt(1.0f - fMagnitude * fMagnitude);
+    }
+
+    Vector vSecond = planelineintersection(vNormal, fDistance, vProjectionCenter,
+                                           vProjectionCenter + vSecondDirection);
+    vSecond = vSecond - vRotationCenter;
+    vSecond = vSecond * fFudgeFactor;
+    fMagnitude = magnitude(vSecond);
+    if (fMagnitude > 1.0f)
+    {
+        vSecond /= fMagnitude;
+    }
+    else
+    {
+        vSecond = vSecond - vNormal * (float)sqrt(1.0f - fMagnitude * fMagnitude);
+    }
+
+    return RotationArc(vFirst, vSecond);
+}
+// Dead code: not in the PC executable
+int FloorLogBase2(unsigned long nValue)
+{
+    int nLog = 0;
+    int nShift = 16;
+    for (int i = 0; i < 5; i++)
+    {
+        if (nValue & topMask[i])
+        {
+            nValue &= topMask[i];
+            nLog += nShift;
+        }
+        nShift /= 2;
+    }
+    return nLog;
+}
+// Dead code: not in the PC executable
+int VectorMaxDir(List<Vector>& vectors, Vector vDirection)
+{
+    int nMaximum = 0;
+    for (int i = 0; i < vectors.m_nCount; i++)
+    {
+        if (vectors.m_pList[i] * vDirection > vectors.m_pList[nMaximum] * vDirection)
+        {
+            nMaximum = i;
+        }
+    }
+    return nMaximum;
+}
+// Dead code: not in the PC executable
+float ComputeArea(List<Vector>& vectors)
+{
+    float fArea = 0.0f;
+    for (int i = 0; i < vectors.m_nCount; i++)
+    {
+        Vector vFirst = vectors.m_pList[0];
+        Vector vSecond = vectors.m_pList[(i + 1) % vectors.m_nCount];
+        Vector vThird = vectors.m_pList[(i + 2) % vectors.m_nCount];
+        fArea += magnitude(cross(vSecond - vFirst, vThird - vSecond)) * 0.5f;
+    }
+    return fArea;
+}
+// Dead code: not in the PC executable
+int BoxInside(const Vector& vPoint, const Vector& vMinimum, const Vector& vMaximum)
+{
+    return vPoint.m_fX >= vMinimum.m_fX && vPoint.m_fX <= vMaximum.m_fX &&
+           vPoint.m_fY >= vMinimum.m_fY && vPoint.m_fY <= vMaximum.m_fY &&
+           vPoint.m_fZ >= vMinimum.m_fZ && vPoint.m_fZ <= vMaximum.m_fZ;
+}
+// Dead code: not in the PC executable
+Vector Orth(const Vector& vector)
+{
+    Vector vOrth = cross(vector, Vector(1.0f, 0.0f, 0.0f));
+    if (magnitude(vOrth) < 0.01)
+    {
+        vOrth = cross(vector, Vector(0.0f, 1.0f, 0.0f));
+    }
+    vOrth = normalize(vOrth);
+    return vOrth;
+}
+// Dead code: not in the PC executable
+Vector Orth(const Vector& vFirst, const Vector& vSecond)
+{
+    Vector vOrth = cross(vFirst, vSecond);
+    vOrth = normalize(vOrth);
+    return vOrth;
+}
+// Dead code: not in the PC executable
+int bitcount(unsigned char nValue)
+{
+    int nCount = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        if ((nValue >> i) & 1)
+        {
+            nCount++;
+        }
+    }
+    return nCount;
+}
+// Dead code: not in the PC executable
+Vector planesegmentintersection(const Vector& vNormal, float fDistance,
+                                const Vector& vStart, const Vector& vEnd)
+{
+
+    static Vector dif(0.0f, 0.0f, 0.0f);
+    dif = vEnd - vStart;
+    float fDenominator = dif.m_fX * vNormal.m_fX;
+    fDenominator += dif.m_fZ * vNormal.m_fZ;
+    fDenominator += dif.m_fY * vNormal.m_fY;
+    float fProjection = 0.0f;
+    if (fDenominator != 0.0f)
+    {
+        fProjection =
+            -(vStart.m_fX * vNormal.m_fX + vStart.m_fY * vNormal.m_fY +
+              vStart.m_fZ * vNormal.m_fZ + fDistance) /
+            fDenominator;
+        if (1.0f < fProjection)
+        {
+            fProjection = 1.0f;
+        }
+        else if (0.0f > fProjection)
+        {
+            fProjection = 0.0f;
+        }
+    }
+    return vStart + dif * fProjection;
+}

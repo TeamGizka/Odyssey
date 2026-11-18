@@ -23,9 +23,9 @@ int CExoMoviePlayer::Initialize(void* pParam)  // PC 0x0063E7C0  Xbox 0x00303E20
     return 0;
 }
 // PC 0x0070C1E0
-int CExoMoviePlayer::CancelMovie(int nA, int nB)
+int CExoMoviePlayer::CancelMovie(int nResult, int bForce)
 {
-    return m_pInternal->CancelMovie(nA, nB);
+    return m_pInternal->CancelMovie(nResult, bForce);
 }
 #endif
 // PC 0x0070C1F0  Xbox 0x00303E40
@@ -36,9 +36,9 @@ int CExoMoviePlayer::IsMoviePlaying()
 
 #ifdef _XBOX
 int CExoMoviePlayer::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,  // Xbox 0x00303E50
-                                     int nA)
+                                     int nMode)
 {
-    return m_pInternal->PlayMoviesAsync(lstMovies, nA);
+    return m_pInternal->PlayMoviesAsync(lstMovies, nMode);
 }
 // PC 0x0070C210  Xbox 0x00303E60
 void CExoMoviePlayer::ShowFadePanel()
@@ -57,10 +57,10 @@ void CExoMoviePlayer::SetFadeMsg(unsigned long nStrRef)
 }
 #else
 int CExoMoviePlayer::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,  // PC 0x0070C200
-                                     int nA,
+                                     int nMode,
                                      const CExoArrayList<int>* lstSkippable)
 {
-    return m_pInternal->PlayMoviesAsync(lstMovies, nA, lstSkippable);
+    return m_pInternal->PlayMoviesAsync(lstMovies, nMode, lstSkippable);
 }
 // PC 0x0070C210  Xbox 0x00303E60
 void CExoMoviePlayer::ShowFadePanel()

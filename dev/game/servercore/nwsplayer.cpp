@@ -78,6 +78,17 @@ void CSWSPlayerInventoryGUI::SetOpen(int bOpen)
     }
     m_bOpen = bOpen;
 }
+// Dead code: not in the PC executable
+void CSWSPlayerContainerGUI::SetOpen(CSWSPlayer* pPlayer, unsigned long oidContainer,
+                                     int bOpen)
+{
+    if (m_oidContainer != oidContainer)
+    {
+        pPlayer->m_pInventoryGUI->m_pLastUpdateObject->ClearContainer();
+    }
+    m_oidContainer = oidContainer;
+    m_bOpen = bOpen;
+}
 // PC 0x00560CC0  Xbox 0x001BF830
 int CSWSPlayer::GetIsAllowedToSave()
 {
@@ -905,16 +916,16 @@ CSWSPlayer::CSWSPlayer(unsigned long nPlayerId)
     m_bIsAllowedToSave = 1;
     m_bModuleCharacterLoaded = 0;
     m_nModulePlayerIndex = -1;
-    m_n60 = 1;
+    m_bAlwaysRun = 1;
     m_nCharacterType = 0;
     m_cServerCharacter = "";
-    m_n7C = 0;
+    m_bModuleLoaded = 0;
     m_oidPCObject = CGameObjectArray::INVALIDOBJID;
     m_pLastUpdateObject = NULL;
     m_nPlayModuleCharacterListState = 0;
     m_nPlayerIndex = 0;
 }
-
+// Dead code: not in the PC executable
 void CSWSPlayer::ClearPlayerLastUpdateObject()
 {
     if (m_pLastUpdateObject != NULL)

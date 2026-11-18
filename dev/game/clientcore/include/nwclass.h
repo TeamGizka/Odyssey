@@ -82,9 +82,10 @@ struct CSWClass
 
     char GetArmorBonus(int nLevel);
     static int IsJedi(int nClass);
-    unsigned long GetNameStrRef();
+    CExoString GetDescriptionText();
     CExoString GetNameText();
     CExoString GetNameLowerText();
+    CExoString GetNamePluralText();
     unsigned char GetAttackBonus(unsigned char nLevel);
     unsigned char GetFortSaveBonus(unsigned char nLevel);
     unsigned char GetRefSaveBonus(unsigned char nLevel);
@@ -110,6 +111,7 @@ struct CSWClass
     int IsNormalFeat(unsigned short nFeat);
     int IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel);
     int IsFeatUseable(unsigned short nFeat);
+    int IsDroid(int nRace);
     int GetRecommendedFeat(int nIndex);
     int GetRecommendedSkill(int nIndex);
     void LoadSpellsTable();

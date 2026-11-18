@@ -31,7 +31,7 @@
 #include "nwcanimbase.h"
 #include "nwscombatround.h"
 
-static inline void NwsplaceableTrace1();
+#define NWSPLACEABLE_DEBUG 0
 
 static inline CServerExoApp* GetServerExoApp();
 
@@ -69,13 +69,13 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_EffectSpellId = -1;
     m_fBearing = 0.0f;
     m_bLightIsOn = 1;
-    m_n390 = 0;
+    m_bLightStateChanged = 0;
     m_bDynamic = 0;
     if (oidSelf == OBJECT_INVALID)
         m_bDynamic = 1;
     m_nBodyBag = 0;
     m_n438 = 0;
-    m_n43C = 0;
+    m_nComputerUseBonus = 0;
     m_bPreciseUse = 0;
     m_bIsBodyBag = 0;
     m_bIsBodyBagVisible = 1;
@@ -453,7 +453,7 @@ void CSWSPlaceable::PostProcess()
 {
     if (m_nHardness > 0)
     {
-        m_n1EC = 1;
+        m_bApplyingInnateEffect = 1;
         CGameEffect* pEffect = new CGameEffect(1);
         pEffect->m_nType = CSWSEffectListHandler::EFFECT_DAMAGE_RESISTANCE;
         pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
@@ -462,7 +462,7 @@ void CSWSPlaceable::PostProcess()
         pEffect->SetInteger(1, m_nHardness);
         pEffect->m_bExposed = 0;
         ApplyEffect(pEffect, 0, 0);
-        m_n1EC = 0;
+        m_bApplyingInnateEffect = 0;
     }
 }
 // PC 0x00586A70  Xbox 0x00209350
@@ -874,7 +874,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x00585080  Xbox 0x00207
         }
         if (!bFailed)
         {
-            m_n390 = 1;
+            m_bLightStateChanged = 1;
             m_bLightIsOn = bLightIsOn;
         }
     }
@@ -963,7 +963,7 @@ void CSWSPlaceable::OnEndDialog(CSWSObject* pObject)
 {
     g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONENDDIALOGUE], m_nId,
                                  1);
-    m_n43C = 0;
+    m_nComputerUseBonus = 0;
 }
 // PC 0x00585490  Xbox 0x00207DA0
 CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
@@ -1046,7 +1046,6 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 // PC 0x00587710  Xbox 0x00209FD0
 int CSWSPlaceable::GetItemCount(int bDropableOnly)
 {
-    NwsplaceableTrace1();
     if (m_bHasInventory == 0)
         return 0;
 
@@ -1057,6 +1056,10 @@ int CSWSPlaceable::GetItemCount(int bDropableOnly)
         for (unsigned int i = 0; i < pRepository->GetNumItems(); i++)
         {
             CSWSItem* pItem = pRepository->ItemListGetItem(i);
+            if (NWSPLACEABLE_DEBUG)
+            {
+                EXOLOG("CSWSPlaceable::GetItemCount() item %lu\n", pRepository->m_lstItems[i]);
+            }
             if (pItem != NULL &&
                 (bDropableOnly == 0 || pItem->m_bDropable != 0))
                 nCount++;
@@ -1242,7 +1245,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH:
             SetAnimation(PLACEABLE_ANIMATION_DESTROYED);
-            m_n154 = oidCaller;
+            m_oidLastKiller = oidCaller;
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONDEATH], GetId(), 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DISARM:
@@ -1330,7 +1333,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_INVENTORY_DISTURBED:
             m_oidLastDisturbed = oidCaller;
-            m_n178 = pScriptEvent->GetInteger(0);
+            m_nInventoryDisturbType = pScriptEvent->GetInteger(0);
             m_oidInventoryDisturbItem = pScriptEvent->GetObjectID(0);
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONINVDISTURBED], GetId(), 1);
             break;
@@ -1343,13 +1346,13 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONUNLOCK], GetId(), 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_SPELLCASTAT:
-            m_n1D8 = pScriptEvent->GetObjectID(0);
-            m_n1DC = pScriptEvent->GetInteger(0);
-            m_n1E0 = pScriptEvent->GetInteger(1);
-            if (m_n1E0 != 0)
+            m_oidLastSpellCaster = pScriptEvent->GetObjectID(0);
+            m_nLastSpellCastAtMeId = pScriptEvent->GetInteger(0);
+            m_bLastSpellCastAtMeHarmful = pScriptEvent->GetInteger(1);
+            if (m_bLastSpellCastAtMeHarmful != 0)
             {
-                SetLastHostileActor(m_n1D8, 0);
-                unsigned long oidCaster = m_n1D8;
+                SetLastHostileActor(m_oidLastSpellCaster, 0);
+                unsigned long oidCaster = m_oidLastSpellCaster;
                 CSWSCreature* pCaster = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaster);
                 if (pCaster != NULL)
                 {
@@ -1528,14 +1531,31 @@ void CSWSPlaceable::DoDamage(int nDamage)
         CSWSObject::DoDamage(nDamage);
     }
 }
+// Dead code: not in the PC executable
+void CSWSPlaceable::DropItemsIntoArea()
+{
+    Vector vPosition;
+
+    if (m_bHasInventory != 0 && m_pcItemRepository != NULL)
+    {
+        vPosition = *GetPosition();
+        for (unsigned int i = 0; i < m_pcItemRepository->m_lstItems.num; i++)
+        {
+            CSWSItem* pItem = m_pcItemRepository->ItemListGetItem(i);
+            if (m_pcItemRepository->GetItemInRepository(pItem, 0) == 1)
+            {
+                m_pcItemRepository->RemoveItem(pItem);
+                pItem->SetPossessor(OBJECT_INVALID, 1, 1, OBJECT_INVALID);
+            }
+            pItem->AddToArea(GetArea(), vPosition.m_fX, vPosition.m_fY,
+                             vPosition.m_fZ, 1);
+        }
+    }
+}
 
 static inline CServerExoApp* GetServerExoApp()
 {
     return g_pAppManager->m_pServerExoApp;
-}
-
-static inline void NwsplaceableTrace1()
-{
 }
 
 #ifdef _XBOX
@@ -1548,7 +1568,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)
     {
         return;
     }
-    m_n390 = 1;
+    m_bLightStateChanged = 1;
     m_bLightIsOn = bLightIsOn;
 }
 #endif

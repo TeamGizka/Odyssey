@@ -7,22 +7,22 @@
 #include "nwrules.h"
 #include "nwclass.h"
 #include "serverexoapp.h"
+#include "nwportrait.h"
+#include "factionmanager.h"
+#include "twodimarray.h"
+#include "twodimarrays.h"
+#include "resgff.h"
+#include "pathfindinfo.h"
+#include "serverinfo.h"
 
 template void CExoArrayList<long>::Allocate(int);
 #include "swguiabilitieschargen.h"
 #include "nwmessage.h"
 #include "nwupdatestats.h"
-#include "nwportrait.h"
 #include "exotlktable.h"
-#include "factionmanager.h"
 #include "nwsparty.h"
 #include "nwjournal.h"
-#include "twodimarray.h"
-#include "twodimarrays.h"
-#include "resgff.h"
-#include "pathfindinfo.h"
 #include "guiingame.h"
-#include "serverinfo.h"
 #include "nwscombatround.h"
 
 class CFeatUseListEntry;
@@ -46,7 +46,8 @@ template int CExoArrayList<unsigned long>::Contains(unsigned long) const;
 #include "nwfeat.h"
 #include "nwspell.h"
 
-static inline void NwssendplayermessageTrace1();
+#define NWSSENDPLAYERMESSAGE_DEBUG 0
+
 // PC 0x00566DA0  Xbox 0x00229DD0
 void CSWSMessage::AddDoorAppearanceToMessage(CSWSDoor* pDoor)
 {
@@ -96,7 +97,7 @@ void CSWSMessage::AddActiveItemPropertiesToMessage(CSWSItem* pItem,
     int nActiveProperties;
     int i;
     CSWItemProperty* pActiveProperty;
-    unsigned char* pUnknown;
+    unsigned char* pUsesLeft;
     int j;
 
     if (pItem->GetBaseItem()->m_nItemType >= 31 &&
@@ -133,10 +134,10 @@ void CSWSMessage::AddActiveItemPropertiesToMessage(CSWSItem* pItem,
     }
     WriteBYTE(pItem->m_nUsableActivePropertyMask, 8);
     WriteBYTE(0xFF, 8);
-    pUnknown = pItem->m_aActivePropertyUsesLeft;
+    pUsesLeft = pItem->m_aActivePropertyUsesLeft;
     for (j = 8; j != 0; j--)
     {
-        WriteBYTE(*pUnknown++, 8);
+        WriteBYTE(*pUsesLeft++, 8);
     }
 }
 // PC 0x00570530  Xbox 0x00233800
@@ -748,7 +749,7 @@ int CSWSMessage::SendServerToPlayerChatMessage(unsigned char nType,
     }
     return nResult;
 }
-
+// Dead code: not in the PC executable
 void CSWSMessage::WriteGameObjUpdate_WriteInventorySlotDelete(
     CSWSCreature* pCreature, unsigned long nSlot)
 {
@@ -1148,7 +1149,7 @@ void CSWSMessage::TestPlayerUpdateDifferences(CSWSPlayer* pPlayer,
             nUpdateMask |= PLAYER_UPDATE_SPELL_LIKE_ABILITIES;
     }
 }
-
+// Dead code: not in the PC executable
 void CSWSMessage::AddAreaOfEffectObjectToMessage(CSWSAreaOfEffectObject* pObject)
 {
     WriteINT(pObject->m_nAreaEffectId, 32);
@@ -1706,7 +1707,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         if (!CompareVisualEffectLists(&pLastUpdateObject->m_lstLoopingVisualEffects,
                                       &pCreature->m_lstLoopingVisualEffects))
             nUpdateMask |= OBJECT_UPDATE_VISUAL_EFFECTS;
-        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fUnknown50 ||
+        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fAnimationSpeed ||
             pLastUpdateObject->m_nAnimation != pCreature->m_nAnimation)
             nUpdateMask |= OBJECT_UPDATE_ANIMATION;
 
@@ -1734,7 +1735,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
             pCreature->m_pStats->m_nSubraceIndex != pLastUpdateObject->m_nSubraceIndex ||
             pCreature->m_pStats->m_nGender != pLastUpdateObject->m_nGender ||
             pCreature->m_pStats->m_nGoodEvilAlignment != pLastUpdateObject->m_nGoodEvilAlignment ||
-            pCreature->m_nF4 != pLastUpdateObject->m_nObjectF4)
+            pCreature->m_bDeadSelectable != pLastUpdateObject->m_bDeadSelectable)
         {
             nUpdateMask |= OBJECT_UPDATE_CHARACTER_DETAILS;
         }
@@ -1748,12 +1749,12 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
                 Vector vDestination(pWayPoints[2 * nWayPoints - 2],
                                     pWayPoints[2 * nWayPoints - 1], 0.0f);
                 Vector vDifference;
-                vDifference = vDestination - pLastUpdateObject->m_vUnknown54;
+                vDifference = vDestination - pLastUpdateObject->m_vPathDestination;
                 float fDistanceSquared = vDifference * vDifference;
                 if (fDistanceSquared >= OBJECT_UPDATE_DISTANCE_SQUARED ||
-                    pPath->m_nField_23C != 0)
+                    pPath->m_bForceLocationUpdate != 0)
                 {
-                    pPath->m_nField_23C = 0;
+                    pPath->m_bForceLocationUpdate = 0;
                     nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION | OBJECT_UPDATE_ANIMATION;
                 }
             }
@@ -1767,9 +1768,9 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
                 nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
             else
             {
-                Vector vDifference = pLastUpdateObject->m_vUnknown30 - pCreature->m_vPosition;
+                Vector vDifference = pLastUpdateObject->m_vPosition - pCreature->m_vPosition;
                 if (vDifference * vDifference >= OBJECT_UPDATE_DISTANCE_SQUARED ||
-                    (pCreature->GetArea() != NULL && pCreature->GetArea()->GetId() != pLastUpdateObject->m_nUnknown3C) ||
+                    (pCreature->GetArea() != NULL && pCreature->GetArea()->GetId() != pLastUpdateObject->m_oidArea) ||
                     pLastUpdateObject->m_vOrientation * pCreature->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
                     nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
             }
@@ -1794,7 +1795,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         if (g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(pCreature->GetId()) != NULL || bPlayerObject)
         {
             if (pCreature->AsSWSCreature()->m_nAreaWaitState != pLastUpdateObject->m_nAreaWaitState ||
-                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) == CSWSCreature::AI_STATE_FLAG_0040) != pLastUpdateObject->m_bAIStateFlag0040 ||
+                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) == CSWSCreature::AI_STATE_CAN_USE_MIND) != pLastUpdateObject->m_bFreeWill ||
                 pCreature->GetFaction()->GetSingletonParty() != pLastUpdateObject->m_bSingletonParty ||
                 pCreature->AsSWSCreature()->m_bInvitedToParty != pLastUpdateObject->m_bInvitedToParty ||
                 (pCreature->AsSWSCreature()->GetFaction()->GetLeader() == pCreature->GetId()) != pLastUpdateObject->m_bPartyLeader)
@@ -1832,7 +1833,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         if (pLastUpdateObject->m_nPortraitId != pObject->GetPortraitId() ||
             pLastUpdateObject->m_resRef != pObject->GetPortrait())
             nUpdateMask |= OBJECT_UPDATE_PORTRAIT;
-        if (bPlayerObject && pLastUpdateObject->m_nClientSidePathType != pPath->m_nField_28)
+        if (bPlayerObject && pLastUpdateObject->m_nClientSidePathType != pPath->m_nMovementRate)
             nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION | OBJECT_UPDATE_ANIMATION;
         if (pLastUpdateObject->m_bDeleteNoFade != pCreature->m_bDeleteNoFade ||
             pLastUpdateObject->m_nFadeOutTime != pCreature->m_nFadeOutTime ||
@@ -1845,18 +1846,18 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
         pObject->m_nObjectType == CGameObject::OBJECT_TYPE_AREAOFEFFECTOBJECT ||
         pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
     {
-        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fUnknown50)
+        if (pObject->m_fSyncHeight != pLastUpdateObject->m_fAnimationSpeed)
             nUpdateMask |= OBJECT_UPDATE_ANIMATION;
         if (pLastUpdateObject->m_nAnimation != pObject->m_nAnimation)
             nUpdateMask |= OBJECT_UPDATE_ANIMATION;
-        Vector vDifference = pLastUpdateObject->m_vUnknown30 - pObject->m_vPosition;
+        Vector vDifference = pLastUpdateObject->m_vPosition - pObject->m_vPosition;
         if (vDifference * vDifference >= OBJECT_UPDATE_DISTANCE_SQUARED)
             nUpdateMask |= OBJECT_UPDATE_LOCATION;
         if (pLastUpdateObject->m_vOrientation * pObject->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
             nUpdateMask |= OBJECT_UPDATE_ORIENTATION;
         if (pLastUpdateObject->m_nPortraitId != pObject->GetPortraitId() || pLastUpdateObject->m_resRef != pObject->GetPortrait())
             nUpdateMask |= OBJECT_UPDATE_PORTRAIT;
-        if (pObject->GetArea() != NULL && pObject->GetArea()->GetId() != pLastUpdateObject->m_nUnknown3C)
+        if (pObject->GetArea() != NULL && pObject->GetArea()->GetId() != pLastUpdateObject->m_oidArea)
             nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
         if (!CompareVisualEffectLists(&pLastUpdateObject->m_lstLoopingVisualEffects, &pObject->m_lstLoopingVisualEffects))
             nUpdateMask |= OBJECT_UPDATE_VISUAL_EFFECTS;
@@ -2804,7 +2805,10 @@ int CSWSMessage::SendServerToPlayerChat_Whisper(unsigned long nPlayerId,
 int CSWSMessage::TestObjectVisible(CSWSObject* pObject,
     CSWSObject* pPlayerObject)
 {
-    NwssendplayermessageTrace1();
+    if (NWSSENDPLAYERMESSAGE_DEBUG)
+    {
+        EXOLOG("CSWSMessage::TestObjectVisible() node %p\n", pPlayerObject->AsSWSCreature()->m_lstVisibilityList[0]);
+    }
     Vector vObjectPosition = pObject->m_vPosition;
     int bVisible = 0;
     Vector vPlayerPosition = pPlayerObject->m_vPosition;
@@ -2935,7 +2939,7 @@ void CSWSMessage::DeleteLastUpdateObjectsInOtherAreas(CSWSPlayer* pPlayer)
         if (pPlayerObject != NULL &&
             pLastUpdateObject->m_oidObject == pPlayerObject->m_nId)
         {
-            pLastUpdateObject->m_nUnknown24 = 0;
+            pLastUpdateObject->m_bUpdated = 0;
             pPlayer->m_pActiveObjectsLastUpdate->GetNext(pNode);
             continue;
         }
@@ -3066,7 +3070,7 @@ void CSWSMessage::DeleteLastUpdateObjectsForObject(CSWSPlayer* pPlayer,
             delete pLastUpdateObject;
             return;
         }
-        pLastUpdateObject->m_nUnknown24 = 0;
+        pLastUpdateObject->m_bUpdated = 0;
         pPlayer->m_pActiveObjectsLastUpdate->GetNext(pNode);
     }
 }
@@ -3178,7 +3182,7 @@ void CSWSMessage::AddItemAppearanceToMessage(CSWSItem* pItem)
 #endif
     {
         WriteBYTE(pItem->m_nModelVariation, 8);
-        if (pBaseItem->m_bUnknown18 == 1)
+        if (pBaseItem->m_nModelType == 1)
         {
             WriteBYTE(pItem->m_nBodyVariation, 8);
             WriteBYTE(pItem->m_nTextureVar, 8);
@@ -3251,7 +3255,7 @@ unsigned long CSWSMessage::ComputeAppearanceUpdateRequired(
     {
         nAppearanceMask |= APPEARANCE_UPDATE_EQUIPMENT;
     }
-    if (pLastUpdateObject->m_nUnknown2A != pCreature->m_nSoundSetFile)
+    if (pLastUpdateObject->m_nSoundSetFile != pCreature->m_nSoundSetFile)
     {
         nAppearanceMask |= APPEARANCE_UPDATE_FLAGS;
     }
@@ -3475,7 +3479,7 @@ unsigned short CSWSMessage::ComputeLastUpdate_PlayerState(
     {
         nState |= PLAYER_STATE_ASSOCIATE_6;
     }
-    if (pCreature->m_nUnknown8E8 == 1)
+    if (pCreature->m_bLimitMovementSpeed == 1)
     {
         nState |= PLAYER_STATE_CREATURE_8E8;
     }
@@ -3871,8 +3875,8 @@ void CSWSMessage::TestPartyObjectUpdateDifferences(CSWSPlayer* pPlayer,
             }
 
             if (pCreature->AsSWSCreature()->m_nAreaWaitState != (*ppLastUpdateObject)->m_nAreaWaitState ||
-                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) ==
-                    CSWSCreature::AI_STATE_FLAG_0040) != (*ppLastUpdateObject)->m_bAIStateFlag0040 ||
+                ((pCreature->AsSWSCreature()->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) ==
+                    CSWSCreature::AI_STATE_CAN_USE_MIND) != (*ppLastUpdateObject)->m_bFreeWill ||
                 (pCreature->AsSWSCreature()->GetFaction()->GetLeader() == pCreature->GetId() ? TRUE : FALSE) !=
                     (*ppLastUpdateObject)->m_bPartyLeader ||
                 pCreature->GetFaction()->GetSingletonParty() != (*ppLastUpdateObject)->m_bSingletonParty ||
@@ -4480,7 +4484,7 @@ int CSWSMessage::SendServerToPlayerInventory_PickupCancel(
 // PC 0x0056FD10  Xbox 0x00232F80
 int CSWSMessage::SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
                                                      unsigned long oidObject,
-                                                     int bFlag)
+                                                     int bInstant)
 {
     int nResult;
     unsigned long nMessageSize;
@@ -4488,7 +4492,7 @@ int CSWSMessage::SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
 
     CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
     WriteOBJECTIDServer(oidObject);
-    WriteBOOL(bFlag);
+    WriteBOOL(bInstant);
     nResult = GetWriteMessage(&pMessage, &nMessageSize);
     if (nResult == 0)
     {
@@ -4520,17 +4524,17 @@ int CSWSMessage::SendServerToPlayerLogin_Confirm(unsigned long nPlayerId)
 }
 // PC 0x00567BA0  Xbox 0x0022AD70
 void CSWSMessage::WriteGameObjUpdate_WorkRemaining(CSWSObject* pObject,
-                                                   CSWSArea* pArea, int nValue,
-                                                   int nValue2)
+                                                   CSWSArea* pArea, int nStagesCompleted,
+                                                   int nCompleteStage)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL && (pArea == NULL || pCreature->m_bWorkRemainingCompleteSent == 0) &&
-        (nValue != nValue2 || pCreature->m_bWorkRemainingCompleteSent == 0))
+        (nStagesCompleted != nCompleteStage || pCreature->m_bWorkRemainingCompleteSent == 0))
     {
         WriteBYTE(0x57, 8);
-        WriteBYTE(nValue, 8);
-        WriteBYTE(nValue2, 8);
-        if (nValue == nValue2)
+        WriteBYTE(nStagesCompleted, 8);
+        WriteBYTE(nCompleteStage, 8);
+        if (nStagesCompleted == nCompleteStage)
         {
             pCreature->m_bWorkRemainingCompleteSent = 1;
         }
@@ -4589,9 +4593,9 @@ void CSWSMessage::StoreValuesInLastUpdatePartyObject(
     if (nUpdateMask & OBJECT_UPDATE_PARTY_STATE)
     {
         pLastUpdateObject->m_nAreaWaitState = pCreature->m_nAreaWaitState;
-        pLastUpdateObject->m_bAIStateFlag0040 =
-            (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) ==
-            CSWSCreature::AI_STATE_FLAG_0040;
+        pLastUpdateObject->m_bFreeWill =
+            (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) ==
+            CSWSCreature::AI_STATE_CAN_USE_MIND;
         pLastUpdateObject->m_bSingletonParty = pCreature->GetFaction()->GetSingletonParty();
         pLastUpdateObject->m_bPartyLeader =
             pCreature->GetFaction()->GetLeader() == pCreature->GetId();
@@ -5974,9 +5978,9 @@ int CSWSMessage::SendServerToPlayerLevelUp_Confirmation(unsigned long nPlayerId,
 }
 // PC 0x0056A5F0  Xbox 0x0022D860
 int CSWSMessage::SendServerToPlayerModuleUpdate_Time(
-    CSWSPlayer* pPlayer, unsigned char nUpdateMask, unsigned long nTimeOfDay,
-    unsigned long nDayOfMonth, unsigned long nMonth, unsigned long nYear,
-    unsigned char nCalendar, unsigned long nCalendarDay)
+    CSWSPlayer* pPlayer, unsigned char nUpdateMask, unsigned long nYear,
+    unsigned long nDayOfMonth, unsigned long nMonth, unsigned long nHour,
+    unsigned char nTimeOfDayState, unsigned long nTimeOfDayTime)
 {
     unsigned long nPlayerId;
     unsigned long nMessageSize;
@@ -5986,15 +5990,15 @@ int CSWSMessage::SendServerToPlayerModuleUpdate_Time(
     WriteBYTE(nUpdateMask, 8);
     if ((nUpdateMask & 1) != 0)
     {
-        WriteBYTE(nCalendar, 8);
-        if (nCalendar == 3 || nCalendar == 4)
+        WriteBYTE(nTimeOfDayState, 8);
+        if (nTimeOfDayState == 3 || nTimeOfDayState == 4)
         {
-            WriteDWORD(nCalendarDay, 32);
+            WriteDWORD(nTimeOfDayTime, 32);
         }
     }
     if ((nUpdateMask & 2) != 0)
     {
-        WriteBYTE(nYear, 8);
+        WriteBYTE(nHour, 8);
     }
     if ((nUpdateMask & 4) != 0)
     {
@@ -6006,7 +6010,7 @@ int CSWSMessage::SendServerToPlayerModuleUpdate_Time(
     }
     if ((nUpdateMask & 16) != 0)
     {
-        WriteDWORD(nTimeOfDay, 32);
+        WriteDWORD(nYear, 32);
     }
     if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
     {
@@ -6094,7 +6098,6 @@ int CSWSMessage::SendServerToPlayerDebugInfo_Item(CSWSPlayer* pPlayer,
                                      nMessageSize);
 }
 
-#include "nwstrigger.h"
 // PC 0x0056A8C0  Xbox 0x0022DB30
 int CSWSMessage::SendServerToPlayerDebugInfo_Placeable(CSWSPlayer* pPlayer,
                                                      unsigned long oidObject)
@@ -6626,7 +6629,7 @@ CLastUpdateObject* CSWSMessage::CreateNewLastUpdateObject(CSWSPlayer* pPlayer,
 {
     CLastUpdateObject* pLastUpdateObject = new CLastUpdateObject;
 
-    pLastUpdateObject->m_nUnknown24 = 1;
+    pLastUpdateObject->m_bUpdated = 1;
     pLastUpdateObject->m_oidObject = pObject->m_nId;
     if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
     {
@@ -6648,7 +6651,7 @@ CLastUpdateObject* CSWSMessage::CreateNewLastUpdateObject(CSWSPlayer* pPlayer,
         pLastUpdateObject->m_oidAppearanceRightHand = pCreature->m_cAppearanceInfo.m_oidAppearanceRightHand;
         pLastUpdateObject->m_nAppearanceState = pCreature->m_cAppearanceInfo.m_bUseBackupHead;
         pLastUpdateObject->m_nAppearanceVariant = pCreature->m_cAppearanceInfo.m_nAppearanceHead;
-        pLastUpdateObject->m_nUnknown2A = pCreature->m_nSoundSetFile;
+        pLastUpdateObject->m_nSoundSetFile = pCreature->m_nSoundSetFile;
         for (int i = 0; i < CLastUpdateObjectRecord::NUM_RECORDS; i++)
         {
             pLastUpdateObject->m_aRecords[i].m_nUnknown4 = 0;
@@ -7044,7 +7047,7 @@ int CSWSMessage::WriteGameObjUpdate_PartyAIState(CSWSPlayer* pPlayer)
             }
 
             CSWSCreature* pCreature = pGameObject->AsSWSCreature();
-            if (pCreature->m_nUnknown39C == 1)
+            if (pCreature->m_bExcludeFromPartyUpdate == 1)
             {
                 continue;
             }
@@ -7388,7 +7391,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
     CSWSCreature* pCreature = (CSWSCreature*)pObject;
     if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
     {
-        unsigned char nPathType = pCreature->m_pPathfindInformation->m_nField_28;
+        unsigned char nPathType = pCreature->m_pPathfindInformation->m_nMovementRate;
         if (pObject->m_nId == pPlayerObject->m_nId)
         {
             if (nPathType != 0 && pCreature->m_bJumped == 1)
@@ -7409,7 +7412,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         else
         {
             unsigned short nPoints = pPath->m_nWayPointCount / 2;
-            int nFirst = pPath->m_nField_9C / 2;
+            int nFirst = pPath->m_nCurrentWayPoint / 2;
             if (nPoints >= nFirst)
             {
                 nPoints -= nFirst;
@@ -7497,7 +7500,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
     if (nUpdateMask & OBJECT_UPDATE_PARTY_STATE)
     {
         WriteBOOL(pCreature->m_nAreaWaitState);
-        WriteBOOL((pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) == CSWSCreature::AI_STATE_FLAG_0040);
+        WriteBOOL((pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) == CSWSCreature::AI_STATE_CAN_USE_MIND);
         WriteBOOL(pCreature->GetFaction()->GetSingletonParty());
         WriteBOOL(pCreature->GetFaction()->GetLeader() == pObject->GetId());
         WriteBOOL(pCreature->m_bInvitedToParty);
@@ -7567,7 +7570,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         WriteBYTE(pCreature->m_pStats->m_nSubraceIndex, 8);
         WriteBYTE(pCreature->m_pStats->m_nGender, 8);
         WriteSHORT(pCreature->m_pStats->m_nGoodEvilAlignment, 16);
-        WriteBOOL(pObject->m_nF4);
+        WriteBOOL(pObject->m_bDeadSelectable);
         WriteBYTE(pCreature->m_pStats->m_nClassCount, 8);
         for (int i = 0; i < pCreature->m_pStats->m_nClassCount; i++)
         {
@@ -7583,16 +7586,16 @@ void CSWSMessage::UpdateLastUpdateObject(
 {
     pLastUpdateObject->m_nObjectType = pObject->m_nObjectType;
     if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
-        pLastUpdateObject->m_fUnknown50 = pObject->GetAnimationSpeed();
+        pLastUpdateObject->m_fAnimationSpeed = pObject->GetAnimationSpeed();
     if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
         pLastUpdateObject->m_nAnimation = pObject->m_nAnimation;
     if (nUpdateMask & OBJECT_UPDATE_LOCATION)
     {
-        pLastUpdateObject->m_vUnknown30 = pObject->m_vPosition;
+        pLastUpdateObject->m_vPosition = pObject->m_vPosition;
         if (pObject->GetArea() != NULL)
-            pLastUpdateObject->m_nUnknown3C = pObject->GetArea()->GetId();
+            pLastUpdateObject->m_oidArea = pObject->GetArea()->GetId();
         else
-            pLastUpdateObject->m_nUnknown3C = OBJECT_INVALID;
+            pLastUpdateObject->m_oidArea = OBJECT_INVALID;
     }
     if (nUpdateMask & OBJECT_UPDATE_ORIENTATION)
     {
@@ -7659,7 +7662,7 @@ void CSWSMessage::UpdateLastUpdateObject(
         CSWSCreature* pCreature = pObject->AsSWSCreature();
         if (nUpdateMask & OBJECT_UPDATE_ANIMATION)
             pLastUpdateObject->m_nClientSidePathType =
-                pCreature->m_pPathfindInformation->m_nField_28;
+                pCreature->m_pPathfindInformation->m_nMovementRate;
         if (nUpdateMask & OBJECT_UPDATE_AI_STATE)
         {
             pLastUpdateObject->m_nAIStateFlags = pCreature->m_nAIStateFlags;
@@ -7681,7 +7684,7 @@ void CSWSMessage::UpdateLastUpdateObject(
             CPathfindInformation* pPath = pCreature->m_pPathfindInformation;
             unsigned short nPoints = pPath->m_nWayPointCount / 2;
             if (pPath->m_pWayPoints != NULL && nPoints != 0)
-                pLastUpdateObject->m_vUnknown54 = Vector(
+                pLastUpdateObject->m_vPathDestination = Vector(
                     pPath->m_pWayPoints[(nPoints - 1) * 2],
                     pPath->m_pWayPoints[(nPoints - 1) * 2 + 1], 0.0f);
         }
@@ -7709,8 +7712,8 @@ void CSWSMessage::UpdateLastUpdateObject(
         if (nUpdateMask & OBJECT_UPDATE_PARTY_STATE)
         {
             pLastUpdateObject->m_nAreaWaitState = pCreature->m_nAreaWaitState;
-            pLastUpdateObject->m_bAIStateFlag0040 =
-                (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_FLAG_0040) == CSWSCreature::AI_STATE_FLAG_0040;
+            pLastUpdateObject->m_bFreeWill =
+                (pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_USE_MIND) == CSWSCreature::AI_STATE_CAN_USE_MIND;
             pLastUpdateObject->m_bSingletonParty = pCreature->GetFaction()->GetSingletonParty();
             pLastUpdateObject->m_bPartyLeader = pCreature->GetFaction()->GetLeader() == pCreature->GetId();
             pLastUpdateObject->m_bInvitedToParty = pCreature->m_bInvitedToParty;
@@ -7753,7 +7756,7 @@ void CSWSMessage::UpdateLastUpdateObject(
             pLastUpdateObject->m_nSubraceIndex = pCreature->m_pStats->m_nSubraceIndex;
             pLastUpdateObject->m_nGender = pCreature->m_pStats->m_nGender;
             pLastUpdateObject->m_nGoodEvilAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
-            pLastUpdateObject->m_nObjectF4 = pCreature->m_nF4;
+            pLastUpdateObject->m_bDeadSelectable = pCreature->m_bDeadSelectable;
             for (int i = 0; i < pCreature->m_pStats->GetNumClasses(); i++)
             {
                 pLastUpdateObject->m_nClass[i] = pCreature->m_pStats->GetClass(i);
@@ -8048,7 +8051,7 @@ void CSWSMessage::TestObjectUpdateDifferences(CSWSPlayer* pPlayer,
             pPlayer->m_pActiveObjectsLastUpdate->GetAtPos(pPosition);
         if ((*ppLastUpdateObject)->m_oidObject == pObject->m_nId)
         {
-            (*ppLastUpdateObject)->m_nUnknown24 = 1;
+            (*ppLastUpdateObject)->m_bUpdated = 1;
             *pnUpdateMask = ComputeUpdateRequired(pPlayer, pObject,
                 *ppLastUpdateObject, pObject->GetId() == pPlayerObject->GetId());
             *pnAppearanceMask = ComputeAppearanceUpdateRequired(pObject,
@@ -8285,10 +8288,6 @@ int CSWSMessage::SendServerToPlayerGameObjUpdate(CSWSPlayer* pPlayer)
     return SendServerToPlayerGameObjUpdate(pPlayer, OBJECT_INVALID);
 }
 
-static inline void NwssendplayermessageTrace1()
-{
-}
-
 #ifdef _XBOX
 // PC 0x00567EF0  Xbox 0x0022B0E0
 int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)
@@ -8314,3 +8313,148 @@ int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)
     return 0;
 }
 #endif
+// Dead code: not in the PC executable
+int CSWSMessage::ComputeLastUpdate_GuiMemorizedSpells(CSWSCreature* pCreature,
+    CSWSPlayerLastUpdateObject* pLastUpdateObject)
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSMessage::ComputeGameObjectUpdateForYourself(CSWSPlayer* pPlayer,
+    CSWSObject* pPlayerObject, CGameObjectArray* pObjectArray,
+    unsigned long oidObject)
+{
+    ComputeGameObjectUpdateForObject(pPlayer, pPlayerObject, pObjectArray,
+        oidObject);
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerModule_EndGame(unsigned long nPlayerId,
+                                                  const CExoString& sMovie)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteCExoString(sMovie, 32);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_MODULE, MODULE_END_GAME, pMessage, nMessageSize);
+}
+// Dead code: not in the PC executable
+int CSWSMessage::ComputeRepositoryUpdateRequired(CSWSPlayer* pPlayer,
+    CExoLinkedListNode* pRepositoryNode, CExoLinkedListNode* pLastUpdateNode)
+{
+    return 1;
+}
+// Dead code: not in the PC executable
+int CSWSMessage::ComputeLastUpdate_GuiNumberMemorizedSpells(
+    CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pLastUpdateObject)
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerDialogClose(unsigned long nPlayerId)
+{
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_DIALOG, 5, NULL, 0);
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerInventory_Equip(unsigned long nPlayerId,
+                                                   unsigned long oidObject,
+                                                   unsigned long nInventorySlot,
+                                                   int bInstant)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDServer(oidObject);
+    WriteDWORD(nInventorySlot, 32);
+    WriteBOOL(bInstant);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_INVENTORY, INVENTORY_EQUIP, pMessage, nMessageSize);
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerLogin_Fail(unsigned long nPlayerId,
+                                              unsigned long nReason)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteDWORD(nReason, 32);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_LOGIN, 18, pMessage, nMessageSize);
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerParty_Invite(unsigned long nPlayerId,
+                                                unsigned long oidInviter)
+{
+    return 1;
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerCheatPonyRide(unsigned long nPlayerId,
+                                                 unsigned long oidObject)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDServer(oidObject);
+    WriteBOOL(1);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_CHEAT, 12, pMessage, nMessageSize);
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerCheatRainOfCows(unsigned long nPlayerId,
+                                                   unsigned long oidObject)
+{
+    int nResult;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDServer(oidObject);
+    WriteBOOL(1);
+    nResult = GetWriteMessage(&pMessage, &nMessageSize);
+    if (nResult == 0)
+    {
+        return nResult;
+    }
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_CHEAT, 13, pMessage, nMessageSize);
+}
+// Dead code: not in the PC executable
+int CSWSMessage::SendServerToPlayerCombatRoundStarted(CSWSPlayer* pPlayer)
+{
+    unsigned long nPlayerId;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    CreateWriteMessage(1, RECIPIENT_UNSPECIFIED, 1);
+    WriteBYTE(1, 8);
+    if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+    {
+        return 0;
+    }
+    nPlayerId = pPlayer->m_nPlayerId;
+    return SendServerToPlayerMessage(nPlayerId, MESSAGE_COMBAT_ROUND, 1, pMessage, nMessageSize);
+}

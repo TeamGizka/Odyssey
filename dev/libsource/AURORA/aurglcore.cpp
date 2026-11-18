@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "aurora.h"
+#include <math.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "aurimage.h"
+#include "aurtexman.h"
+#include "swmain.h"
 
 static inline void AurGLPoolLists()
 {
@@ -11,9 +17,6 @@ static inline void AurGLPoolLists()
     List<char*> lstBackup(0);
     pPools->Remove(0);
 }
-#include <math.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 
 inline void PushMatrix()
 {
@@ -35,11 +38,8 @@ inline void Viewport(int nX, int nY, int nWidth, int nHeight)
     glViewport(nX, nY, nWidth, nHeight);
 }
 
-#include "aurimage.h"
-#include "aurtexman.h"
 #include "aurrendergl.h"
 #include "aurmodel.h"
-#include "swmain.h"
 #include "aurglext.h"
 
 extern float aquadraticterm;
@@ -586,7 +586,7 @@ void GLRender::MakeLookUpTexture(float fGamma)
         delete[] pPixels;
     }
 }
-
+// Dead code: not in the PC executable
 int GLRender::GetAvailableTextureMemory()
 {
     unsigned char data[256 * 256 * 4];
@@ -637,7 +637,7 @@ inline void SetDepthMask(unsigned char bWrite)
 {
     glDepthMask(bWrite);
 }
-
+// Dead code: not in the PC executable
 int GLRender::SetSpecularMode(int bSeparateSpecular)
 {
     if (bSeparateSpecular)
@@ -1264,7 +1264,7 @@ void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage,
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nMinFilter);
     }
 }
-
+// Dead code: not in the PC executable
 const char* GLStats(char* sBuffer)
 {
     sprintf(sBuffer, "faces[%d]", countfaces);
@@ -1587,7 +1587,7 @@ void ImposterManager::AllocateImposter(unsigned long nRecord, int nVertices,
     pRecord->m_pBuffer = pBuffer;
     wglMakeCurrent(hOldDC, hOldContext);
 }
-
+// Dead code: not in the PC executable
 void BeginImposterRender(unsigned long nRecord)
 {
     ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
@@ -1605,7 +1605,7 @@ void BeginImposterRender(unsigned long nRecord)
     gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     gluErrorString(glGetError());
 }
-
+// Dead code: not in the PC executable
 void EndImposterRender(unsigned long nRecord)
 {
     gluErrorString(glGetError());
@@ -1752,7 +1752,7 @@ void GLRender::RenderSquares(unsigned int nPool)
         glEnd();
     }
 }
-
+// Dead code: not in the PC executable
 void GLRender::RenderBox(Vector& vMinimum, Vector& vMaximum)
 {
     glColor3f(0.0f, 0.0f, 0.0f);
@@ -1869,7 +1869,7 @@ void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
         glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
     }
 }
-
+// Dead code: not in the PC executable
 void GLRender::RenderPausePlane()
 {
     glMatrixMode(GL_PROJECTION);
@@ -2225,7 +2225,7 @@ void GLRender::InitializeImageSpaceSoftShadows()
         glDisable(GL_FRAGMENT_SHADER_ATI);
     }
 }
-
+// Dead code: not in the PC executable
 unsigned int ones32popcount(unsigned int x)
 {
     x -= ((x >> 1) & 0x55555555);
@@ -3764,7 +3764,7 @@ void GLRender::BloomFilter(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glFlush();
 }
-
+// Dead code: not in the PC executable
 void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
                                       float fHeight, unsigned int nTexture,
                                       float fSourceWidth, float fSourceHeight)
@@ -4061,7 +4061,7 @@ void GLRender::RenderOverlayConvolution(unsigned long nTexture)
     wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
     FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
 }
-
+// Dead code: not in the PC executable
 void GLRender::SetUpSoftShadowsARB()
 {
     glEnable(GL_TEXTURE_RECTANGLE_NV);
@@ -4700,6 +4700,15 @@ void GLRender::RemoveSquareToRender(unsigned long nPool)
         {
             cm_listSquaresToRender.Remove(nPool);
         }
+    }
+}
+// Dead code: not in the PC executable
+void GLRender::RemoveAllDrawableSquares()
+{
+    int i = cm_listSquaresToRender.m_nCount;
+    while (i != 0)
+    {
+        RemoveSquareToRender(cm_listSquaresToRender.m_pList[--i]);
     }
 }
 // PC 0x00436490  Xbox 0x00286960
@@ -6543,6 +6552,34 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter,
         glPopMatrix();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
+}
+// Dead code: not in the PC executable
+void GLRender::RenderObjectsVTQuad(unsigned long nPool, int nVertices)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        int nBuffer = manRef->GetPool(nPool);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nBuffer);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVT), (const GLvoid*)12);
+        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVT), 0);
+        glDrawArrays(GL_QUADS, 0, nVertices);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    }
+    else
+    {
+        glBegin(GL_QUADS);
+        RenderVertexVT* pVertices =
+            (RenderVertexVT*)manRef->GetPool(nPool);
+        for (int i = 0; i < nVertices; ++i)
+        {
+            glTexCoord2f(pVertices[i].u, pVertices[i].v);
+            glVertex3fv(pVertices[i].position);
+        }
+        glEnd();
+    }
 }
 // PC 0x00431BB0
 void GLRender::RenderObjectsVTC(Aurora::AuroraPrimitiveTypes nPrimitive,

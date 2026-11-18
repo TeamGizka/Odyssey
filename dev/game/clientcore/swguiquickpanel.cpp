@@ -10,7 +10,7 @@
 #include "nwccreature.h"
 #include "nwclass.h"
 #include "nwccreaturestats.h"
-
+// Dead code: not in the PC executable
 void CSWGuiQuickPanel::CancelPanel()
 {
 #ifdef _XBOX
@@ -212,6 +212,11 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->AddDefaultPackageSkills(nClass, 1);
     m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
+// Dead code: not in the PC executable
+void CSWGuiQuickPanel::PlayGame()
+{
+    m_pMainCharGen->BeginPlayGame();
+}
 // PC 0x006F0220
 void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
 {
@@ -262,7 +267,7 @@ void CSWGuiQuickPanel::HandleInputEvent(int nEvent, int bPressed)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
-
+// Dead code: not in the PC executable
 CExoString CSWGuiQuickPanel::GetCurrentName()
 {
     return m_pMainCharGen->m_sName;

@@ -4,6 +4,7 @@
 #include "aurmodel.h"
 #include "resgff.h"
 #include "swgui.h"
+#include "aurgui.h"
 
 Vector CSWGuiDrawable::NO_COLOURING(-1.0f, -1.0f, -1.0f);
 
@@ -36,7 +37,6 @@ void CSWGuiDrawable::UpdatePulsing(float fElapsed)
                                       ((0.75f - m_fAlphaPulseTimer) * 1.3333334f);
 }
 
-#include "aurgui.h"
 // PC 0x00414AE0  Xbox 0x00300C40
 void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage, int bForceReload)
 {
@@ -1199,6 +1199,13 @@ void CSWGuiTextParams::SetText(const CExoString& sText)
         m_pText->m_pString->SetString((char*)m_sText.CStr());
         m_pText->WrapString();
     }
+}
+// Dead code: not in the PC executable
+void CSWGuiTextParams::SetLocString(CExoLocString& lsText, int nStrRef)
+{
+    CExoString sText;
+    lsText.GetString(nStrRef, &sText, 0);
+    SetText(sText);
 }
 // PC 0x00415E50  Xbox 0x00301EB0
 void CSWGuiTextParams::SetStrRef(unsigned long nStrRef)

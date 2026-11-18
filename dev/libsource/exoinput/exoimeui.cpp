@@ -35,7 +35,7 @@ void CExoImeUI::GetCompositionString(HWND hWnd, long nFlags)
         ImmReleaseContext(hWnd, hContext);
     }
 }
-
+// Dead code: not in the PC executable
 CExoString CExoImeUI::GetImeModeDescription(HWND hWnd)
 {
     CExoString sMode;
@@ -200,7 +200,7 @@ int CExoImeUI::HandleImeNotify(HWND hWnd, unsigned int nMsg, long nParam)
         return 0;
     }
 }
-
+// Dead code: not in the PC executable
 void CExoImeUI::TurnImeOff(HWND hWnd)
 {
     HIMC hContext = ImmGetContext(hWnd);
@@ -216,8 +216,8 @@ void CExoImeUI::TurnImeOff(HWND hWnd)
         {
             if (nLanguage == LANG_JAPANESE)
                 ImmSetOpenStatus(hContext, FALSE);
-            if (m_nUnknown104 != 0)
-                ActivateKeyboardLayout((HKL)m_nUnknown104, KLF_REORDER);
+            if (m_nPreviousKeyboardLayout != 0)
+                ActivateKeyboardLayout((HKL)m_nPreviousKeyboardLayout, KLF_REORDER);
         }
         ImmReleaseContext(hWnd, hContext);
         m_nCompositionActive = 0;
@@ -226,10 +226,10 @@ void CExoImeUI::TurnImeOff(HWND hWnd)
         m_sResult = "";
     }
 }
-
+// Dead code: not in the PC executable
 void CExoImeUI::TurnImeOn(HWND hWnd)
 {
-    m_nUnknown10C = 0;
+    m_bKatakana = 0;
     HIMC hContext = ImmGetContext(hWnd);
     if (hContext != 0)
     {
@@ -240,25 +240,25 @@ void CExoImeUI::TurnImeOn(HWND hWnd)
         nConversion |= IME_CMODE_NATIVE;
         if (nLanguage == LANG_CHINESE)
         {
-            if (m_nUnknown104 == 0)
-                m_nUnknown104 = (int)ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
+            if (m_nPreviousKeyboardLayout == 0)
+                m_nPreviousKeyboardLayout = (int)ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
             else
                 ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
-            if ((int)GetKeyboardLayout(0) == m_nUnknown104)
+            if ((int)GetKeyboardLayout(0) == m_nPreviousKeyboardLayout)
                 ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
         }
         else if (nLanguage == LANG_JAPANESE)
         {
-            if (m_nUnknown104 == 0)
-                m_nUnknown104 = (int)ActivateKeyboardLayout((HKL)HKL_NEXT, KLF_REORDER);
+            if (m_nPreviousKeyboardLayout == 0)
+                m_nPreviousKeyboardLayout = (int)ActivateKeyboardLayout((HKL)HKL_NEXT, KLF_REORDER);
             else
                 ActivateKeyboardLayout((HKL)HKL_NEXT, KLF_REORDER);
             ImmSetOpenStatus(hContext, TRUE);
-            if (m_nUnknown10C == 0)
+            if (m_bKatakana == 0)
                 nConversion |= IME_CMODE_KATAKANA | IME_CMODE_FULLSHAPE;
             else
                 nConversion = (nConversion & ~IME_CMODE_KATAKANA) | IME_CMODE_FULLSHAPE;
-            m_nUnknown10C = m_nUnknown10C == 0;
+            m_bKatakana = m_bKatakana == 0;
         }
         ImmSetConversionStatus(hContext, nConversion, nSentence);
         m_nCompositionActive = 1;

@@ -5,9 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static inline void ExoresfileTrace2();
-static inline void ExoresfileTrace1();
-#define EXORESFILE_TRACE() ExoresfileTrace1()
+#define EXORESFILE_DEBUG 0
 
 unsigned long CExoKeyTable::m_nCRC32[256];
 // PC 0x0040DB50
@@ -1306,32 +1304,47 @@ CKeyTableEntry* CExoKeyTable::FindKey(const CResRef& resRef,
 // PC 0x0040EE80  Xbox 0x0014D3E0
 CExoResFile::CExoResFile()
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoResFile::CExoResFile() files %d\n", CExoArrayList<CExoString>().num);
+    }
     m_nRefCount = 0;
     Initialize();
 }
 // PC 0x0040EF00  Xbox 0x0014D420
 CExoResFile::~CExoResFile()
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoResFile::~CExoResFile() files %d\n", CExoArrayList<CExoString>().num);
+    }
     CloseFile();
 }
 // PC 0x0040EF90  Xbox 0x0014D4A0
 CExoEncapsulatedFile::CExoEncapsulatedFile()
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        void (CExoArrayList<CExoString>::*pfnSetSize)(int) = &CExoArrayList<CExoString>::SetSize;
+    }
     Initialize();
 }
 // PC 0x0040F010  Xbox 0x0014D520
 CExoEncapsulatedFile::~CExoEncapsulatedFile()
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoEncapsulatedFile::~CExoEncapsulatedFile() files %d\n", CExoArrayList<CExoString>().num);
+    }
     CloseFile();
 }
-
+// Dead code: not in the PC executable
 CExoResourceImageFile::CExoResourceImageFile()
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        void (CExoArrayList<CExoString>::*pfnSetSize)(int) = &CExoArrayList<CExoString>::SetSize;
+    }
     m_pFile = NULL;
     m_nResourceType = 0;
     m_nFileSize = 0;
@@ -1342,13 +1355,19 @@ CExoResourceImageFile::CExoResourceImageFile()
 // PC 0x0040F0A0  Xbox 0x0014D5B0
 CExoResourceImageFile::~CExoResourceImageFile()
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoResourceImageFile::~CExoResourceImageFile() files %d\n", CExoArrayList<CExoString>().num);
+    }
     CExoResourceImageFile::CloseFile();
 }
 // PC 0x0040F120  Xbox 0x0014D610
 unsigned long CExoResourceImageFile::GetResourceSize(unsigned long nId)
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoResourceImageFile::GetResourceSize() files %d\n", CExoArrayList<CExoString>().num);
+    }
     CExoResourceImageFileEntry sEntry = GetKeyListEntry(nId & 0x3FFF);
 
     return sEntry.m_nSize;
@@ -1356,7 +1375,10 @@ unsigned long CExoResourceImageFile::GetResourceSize(unsigned long nId)
 // PC 0x0040F160  Xbox 0x0014D650
 void* CExoResourceImageFile::GetResource(unsigned long nId)
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoResourceImageFile::GetResource() files %d\n", CExoArrayList<CExoString>().num);
+    }
     CExoResourceImageFileEntry sEntry = GetKeyListEntry(nId & 0x3FFF);
 
     return m_pImageFile + sEntry.m_nOffset;
@@ -1367,7 +1389,10 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
                                                   unsigned long nSize,
                                                   unsigned long nOffset)
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoResourceImageFile::ReadResource() files %d\n", CExoArrayList<CExoString>().num);
+    }
     if (m_bFileOpened && pBuffer != NULL)
     {
         unsigned long nEntry = nId & 0x3FFF;
@@ -1444,8 +1469,8 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
 // PC 0x0040F3C0  Xbox 0x0014D8C0
 int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 {
-    CExoString sString1;
-    CExoString sString2;
+    CExoString sDrive;
+    CExoString sFileName;
     CResRef resRef;
     unsigned char nType;
     unsigned long nCount;
@@ -1651,7 +1676,10 @@ int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 // PC 0x0040F990  Xbox 0x0014DE90
 int CExoKeyTable::AddResourceImageContents(int bFlag)
 {
-    ExoresfileTrace2();
+    if (EXORESFILE_DEBUG)
+    {
+        EXOLOG("CExoKeyTable::AddResourceImageContents() flag %d\n", bFlag);
+    }
     CResRef resRef;
     CExoResourceImageFileEntry sEntry;
     unsigned long i;
@@ -2136,12 +2164,56 @@ int CExoResourceImageFile::UnloadHeader()
 {
     return 1;
 }
-
-static inline void ExoresfileTrace2()
+// Dead code: not in the PC executable
+CRes* CExoKeyTable::GetRes(const CResRef& resRef, unsigned short nType)
 {
-    ExoresfileTrace1();
+    CKeyTableEntry* pEntry = FindKey(resRef, nType);
+
+    if (pEntry != NULL)
+    {
+        return pEntry->m_pRes;
+    }
+
+    return NULL;
 }
-
-static inline void ExoresfileTrace1()
+// Dead code: not in the PC executable
+unsigned long CExoKeyTable::GetResID(const CResRef& resRef,
+                                     unsigned short nType)
 {
+    CKeyTableEntry* pEntry = FindKey(resRef, nType);
+
+    if (pEntry != NULL)
+    {
+        return pEntry->m_nResId;
+    }
+
+    return 0xFFFFFFFF;
+}
+// Dead code: not in the PC executable
+int CExoKeyTable::GetTableEntry(unsigned long nIndex, CResRef& resRef,
+                                unsigned short& nType)
+{
+    if (m_pKeyTable != NULL && nIndex < m_nTableSize)
+    {
+        CKeyTableEntry* pEntry = &m_pKeyTable[nIndex];
+        if (pEntry != NULL)
+        {
+            resRef = pEntry->m_resRef;
+            nType = pEntry->m_nType;
+            return 1;
+        }
+    }
+
+    return 0;
+}
+// Dead code: not in the PC executable
+CExoResourceImageFileEntry* CExoResourceImageFile::GetKeyList()
+{
+    return (CExoResourceImageFileEntry*)(m_pImageFile +
+                                         GetHeader()->m_nEntryOffset);
+}
+// Dead code: not in the PC executable
+CExoResourceImageFileHeader* CExoResourceImageFile::GetHeader()
+{
+    return (CExoResourceImageFileHeader*)m_pImageFile;
 }

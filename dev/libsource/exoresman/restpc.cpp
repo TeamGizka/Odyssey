@@ -19,7 +19,7 @@ CResTPC::~CResTPC()
 // PC 0x00712EF0  Xbox 0x00303AD0
 int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
                            int* pnCompressedSize, int* pnUncompressedSize,
-                           int* pnRemainingSize, float* pfUnknown,
+                           int* pnRemainingSize, float* pfAlphaBlending,
                            char* pnMipMapCount)
 {
     int nResult = (int)m_pHeader;
@@ -31,26 +31,26 @@ int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
     {
         *pnWidth = m_pHeader->m_nWidth;
         *pnHeight = m_pHeader->m_nHeight;
-        *pfUnknown = m_pHeader->m_fAlphaBlending;
+        *pfAlphaBlending = m_pHeader->m_fAlphaBlending;
         *pnMipMapCount = m_pHeader->m_nMipMapCount;
         *pnCompressedSize = m_nCompressedSize;
         *pnUncompressedSize = m_nUncompressedSize;
         *pnRemainingSize = m_nRemainingSize;
-        if (m_pHeader->m_bFormat1)
+        if (m_pHeader->m_bEncodingGray)
         {
             *pnFormat = 1;
             return 1;
         }
         else
         {
-            if (m_pHeader->m_bFormat3)
+            if (m_pHeader->m_bEncodingRGB)
             {
                 *pnFormat = 3;
                 return 1;
             }
             else
             {
-                if (m_pHeader->m_bFormat4)
+                if (m_pHeader->m_bEncodingRGBA)
                 {
                     *pnFormat = 4;
                 }
@@ -63,6 +63,11 @@ int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
 unsigned char* CResTPC::GetTPCDataPtr()
 {
     return m_pData;
+}
+// Dead code: not in the PC executable
+TPCHeader* CResTPC::GetTPCHeaderPtr()
+{
+    return m_pHeader;
 }
 // PC 0x00712FA0
 unsigned char* CResTPC::GetTPCTXIPtr()
@@ -85,6 +90,16 @@ int CResTPC::GetTPCSize()
 int CResTPC::GetTPCTXISize()
 {
     return m_nRemainingSize;
+}
+// Dead code: not in the PC executable
+int CResTPC::IsCompressed()
+{
+    return m_bCompressed;
+}
+// Dead code: not in the PC executable
+int CResTPC::IsLoaded()
+{
+    return m_bServiced;
 }
 // PC 0x00712FD0  Xbox 0x00303B80
 int CResTPC::OnResourceFreed()
@@ -134,15 +149,15 @@ int CResTPC::OnResourceServiced()
     m_pHeader = pTPC;
     m_pData = (unsigned char*)pTPC + sizeof(TPCHeader);
 
-    if (pTPC->m_bFormat1)
+    if (pTPC->m_bEncodingGray)
     {
         nFormat = 1;
     }
-    else if (pTPC->m_bFormat3)
+    else if (pTPC->m_bEncodingRGB)
     {
         nFormat = 3;
     }
-    else if (pTPC->m_bFormat4)
+    else if (pTPC->m_bEncodingRGBA)
     {
         nFormat = 4;
     }

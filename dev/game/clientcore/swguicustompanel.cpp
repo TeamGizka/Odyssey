@@ -254,6 +254,11 @@ void CSWGuiCustomPanel::ClearAbilities()
 #endif
     m_pCreature->m_pStats->m_nCreationStage = 30;
 }
+// Dead code: not in the PC executable
+void CSWGuiCustomPanel::PlayGame()
+{
+    ((CSWGuiMainCharGen*)m_pParentPanel)->BeginPlayGame();
+}
 // PC 0x006EF570  Xbox 0x00127B00
 void CSWGuiCustomPanel::CancelPanel()
 {

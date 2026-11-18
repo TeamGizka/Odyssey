@@ -75,7 +75,7 @@ public:
     int m_bDisplayed;
     int m_bHostile;
     float m_fHighlightFade;
-    unsigned char m_aUnknown11C[0x10];
+    unsigned char m_aLinkedToModule[0x10];
     short m_nCursor;
     int m_nNumVertices;
     Vector* m_pvVertices;

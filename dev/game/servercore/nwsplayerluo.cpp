@@ -1,6 +1,8 @@
 #include <string.h>
 #include "exobase.h"
 #include "exoresman.h"
+#include "appmanager.h"
+#include "serverexoapp.h"
 #include "nwsobject.h"
 #include "gameobjectarray.h"
 #include "nwsplayerluo.h"
@@ -75,6 +77,62 @@ void CSWSPlayerLUOInventory::ClearContainer()
         delete m_lstContainer.RemoveHead();
     }
 }
+// Dead code: not in the PC executable
+CSWSItem* CSWSPlayerLUOInventory::ItemListGetItem(CExoLinkedListNode* pNode,
+                                                  unsigned char nList)
+{
+    CSWSPlayerLUOInventoryItem* pItem = NULL;
+    CGameObject* pObject;
+
+    if (nList == 0)
+    {
+        pItem = m_lstContainer.GetAtPos(pNode);
+    }
+    else if (nList == 1)
+    {
+        pItem = m_lstRepository.GetAtPos(pNode);
+    }
+    else if (nList == 2)
+    {
+        pItem = m_lstOverflow.GetAtPos(pNode);
+    }
+
+    if (pItem != NULL)
+    {
+        if (g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(
+                pItem->m_oidItem, &pObject) == CGameObjectArray::SUCCESS &&
+            pObject != NULL)
+        {
+            return pObject->AsSWSItem();
+        }
+    }
+    return NULL;
+}
+// Dead code: not in the PC executable
+unsigned long CSWSPlayerLUOInventory::ItemListGetItemObjectID(
+    CExoLinkedListNode* pNode, unsigned char nList)
+{
+    CSWSPlayerLUOInventoryItem* pItem = NULL;
+
+    if (nList == 0)
+    {
+        pItem = m_lstContainer.GetAtPos(pNode);
+    }
+    else if (nList == 1)
+    {
+        pItem = m_lstRepository.GetAtPos(pNode);
+    }
+    else if (nList == 2)
+    {
+        pItem = m_lstOverflow.GetAtPos(pNode);
+    }
+
+    if (pItem != NULL)
+    {
+        return pItem->m_oidItem;
+    }
+    return CGameObjectArray::INVALIDOBJID;
+}
 // PC 0x005CA4D0  Xbox 0x00244B90
 CSWSPlayerLUOInventoryItem* CSWSPlayerLUOInventory::ItemListGetUpdateItem(
     CExoLinkedListNode* pNode, unsigned char nList)
@@ -95,6 +153,23 @@ CSWSPlayerLUOInventoryItem* CSWSPlayerLUOInventory::ItemListGetUpdateItem(
     }
     return pItem;
 }
+// Dead code: not in the PC executable
+void CSWSPlayerLUOInventory::ItemListSetStart(CExoLinkedListNode*& pNode,
+                                              unsigned char nList)
+{
+    if (nList == 0)
+    {
+        pNode = m_lstContainer.GetHeadPos();
+    }
+    else if (nList == 1)
+    {
+        pNode = m_lstRepository.GetHeadPos();
+    }
+    else if (nList == 2)
+    {
+        pNode = m_lstOverflow.GetHeadPos();
+    }
+}
 // PC 0x005CA520  Xbox 0x00244BE0
 void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
                                             unsigned char nList)
@@ -110,6 +185,23 @@ void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
     else if (nList == 2)
     {
         pNode = m_lstOverflow.GetTailPos();
+    }
+}
+// Dead code: not in the PC executable
+void CSWSPlayerLUOInventory::ItemListGetNext(CExoLinkedListNode*& pNode,
+                                             unsigned char nList)
+{
+    if (nList == 0)
+    {
+        m_lstContainer.GetNext(pNode);
+    }
+    else if (nList == 1)
+    {
+        m_lstRepository.GetNext(pNode);
+    }
+    else if (nList == 2)
+    {
+        m_lstOverflow.GetNext(pNode);
     }
 }
 // PC 0x005CA570  Xbox 0x00244C30
@@ -128,6 +220,23 @@ void CSWSPlayerLUOInventory::ItemListGetPrev(CExoLinkedListNode*& pNode,
     {
         m_lstOverflow.GetPrev(pNode);
     }
+}
+// Dead code: not in the PC executable
+int CSWSPlayerLUOInventory::ItemListGetNumber(unsigned char nList)
+{
+    if (nList == 0)
+    {
+        return m_lstContainer.Count();
+    }
+    else if (nList == 1)
+    {
+        return m_lstRepository.Count();
+    }
+    else if (nList == 2)
+    {
+        return m_lstOverflow.Count();
+    }
+    return 0;
 }
 // PC 0x005CA5C0  Xbox 0x00244C80
 void CSWSPlayerLUOInventory::ItemListRemove(CExoLinkedListNode* pNode,
@@ -208,7 +317,7 @@ void CSWSPlayerLastUpdateObject::ClearVisibilityList()
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWSPlayerLUOInventory::ClearStore()
 {
     while (!m_lstOverflow.IsEmpty())
@@ -237,8 +346,8 @@ CSWSPlayerLUOInventory::~CSWSPlayerLUOInventory()
 // PC 0x005CAA50  Xbox 0x00245120
 CLastUpdateObject::CLastUpdateObject()
 {
-    m_nUnknown2A = 0;
-    m_fUnknown50 = 1.0f;
+    m_nSoundSetFile = 0;
+    m_fAnimationSpeed = 1.0f;
     m_nAnimation = CSWSObject::ANIMATION_COMBAT_READY;
     memset(m_nClass, UNSET_SHORT_CACHE, sizeof(m_nClass));
     memset(m_nClassLevel, UNSET_SHORT_CACHE, sizeof(m_nClassLevel));

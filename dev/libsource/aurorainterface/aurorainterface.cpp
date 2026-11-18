@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline void AuroraInterfaceTrace();
-#define AURORAINTERFACE_TRACE() AuroraInterfaceTrace()
+#define AURORAINTERFACE_DEBUG 0
+
+static inline void TraceCompressedRaster();
+#define AURORAINTERFACE_TRACE() TraceCompressedRaster()
 
 extern int AurTextureSetDim(int, int);
 
@@ -81,7 +83,7 @@ void CAuroraInterface::ReleaseLayeredRaster(void* pRaster, int nWidth,
 // PC 0x0070C870  Xbox 0x002F6E70
 void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
                                     int nBytesPerPixel, int nSize,
-                                    int nReservedSize, int nTXISize,
+                                    int nDataSize, int nTXISize,
                                     bool bProcessed)
 {
     if (bProcessed)
@@ -97,7 +99,7 @@ void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
         else
         {
             pTrailer = (SProcessedTextureDataTrailer*)((unsigned char*)pRaster +
-                                                       nReservedSize + nTXISize +
+                                                       nDataSize + nTXISize +
                                                        sizeof(unsigned long));
         }
 #ifdef _XBOX
@@ -515,7 +517,7 @@ CAuroraInterface::~CAuroraInterface()
     }
     AurClearPalette();
 }
-
+// Dead code: not in the PC executable
 int CAuroraInterface::GetHighestPriorityTextureFormat(
     CResRef resRef, int bDDS, int b4PC, int bTGA, int bTPC)
 {
@@ -648,7 +650,10 @@ unsigned char* CAuroraInterface::GetProcessedRaster(char* szName, int* pnWidth,
                                          int* pnMips, float* pfAlpha,
                                          char* pnFormat)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        EXOLOG("CAuroraInterface::GetProcessedRaster() compressed raster %p\n", GetCompressedRaster(NULL, NULL, NULL, NULL, NULL, NULL));
+    }
     CAuroraProcessedTexture* pTexture;
     if (GetHighestPriorityTextureFormat(szName, 1, 1, 1, 1) !=
         RESTYPE_TPC)
@@ -690,7 +695,10 @@ CAuroraInterface::CAuroraInterface()
 unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int* pnHeight,
                                      float* pfAlpha, int* pnFormat)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        EXOLOG("CAuroraInterface::Get16BitRaster() compressed raster %p\n", GetCompressedRaster(NULL, NULL, NULL, NULL, NULL, NULL));
+    }
     CAurora16BitTexture* pTexture;
     int nWidth;
     int nHeight;
@@ -722,7 +730,10 @@ unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int*
 int CAuroraInterface::SetTexturePack(unsigned char nPack,
                                      const CExoString& sName)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        EXOLOG("CAuroraInterface::SetTexturePack() compressed raster %p\n", GetCompressedRaster(NULL, NULL, NULL, NULL, NULL, NULL));
+    }
     int bSameTexturePack;
 
     if (nPack >= 4)
@@ -743,7 +754,10 @@ int CAuroraInterface::SetTexturePack(unsigned char nPack,
 // PC 0x0070D8D0  Xbox 0x002F7B70
 void CAuroraInterface::RequestModel(char* szName)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        EXOLOG("CAuroraInterface::RequestModel() compressed raster %p\n", GetCompressedRaster(NULL, NULL, NULL, NULL, NULL, NULL));
+    }
     int bNew;
     CExoLinkedListNode* pPosition;
     CAuroraModel* pModel;
@@ -781,10 +795,13 @@ inline bool IsResident(char* szName)
 // PC 0x0070D980
 int CAuroraInterface::IsResident(char* szName)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        EXOLOG("CAuroraInterface::IsResident() compressed raster %p\n", GetCompressedRaster(NULL, NULL, NULL, NULL, NULL, NULL));
+    }
     return RenderInterface::IsResident(szName);
 }
 
-static inline void AuroraInterfaceTrace()
+static inline void TraceCompressedRaster()
 {
 }

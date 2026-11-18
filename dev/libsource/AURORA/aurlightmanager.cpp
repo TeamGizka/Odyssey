@@ -10,8 +10,7 @@
 #include "aurlightmanager.h"
 #include "aurrendergl.h"
 
-static inline void AurlightmanagerTrace1();
-#define AURLIGHTMANAGER_TRACE() AurlightmanagerTrace1()
+#define AURLIGHTMANAGER_DEBUG 0
 
 extern int dynamiclightscount;
 extern int staticlightscount;
@@ -118,7 +117,7 @@ void SetLightGL(int nLight, const Vector& vPosition, const Vector& vColor,
 LightManager::~LightManager()
 {
 }
-
+// Dead code: not in the PC executable
 Vector LightManager::GetEmitterLighting(Vector vPosition,
                                         List<PartLight*>* pExcludeLights)
 {
@@ -157,7 +156,10 @@ Vector LightManager::GetEmitterLighting(Vector vPosition,
 inline void LightManager::Reset()
 
 {
-    AURLIGHTMANAGER_TRACE();
+    if (AURLIGHTMANAGER_DEBUG)
+    {
+        AurPrintf("LightManager::Reset() phong lights %p\n", GetPhongLights());
+    }
     m_lstRenderLights.m_nCount = 0;
 }
 // PC 0x004A2E10  Xbox 0x002F2CF0
@@ -223,7 +225,10 @@ void LightManager::PrioritizeLights(const Vector& vPosition, bool bDynamicOnly)
 // PC 0x004A2FF0  Xbox 0x002F46F0
 void LightManager::EnableHeadLight()
 {
-    AurlightmanagerTrace1();
+    if (AURLIGHTMANAGER_DEBUG)
+    {
+        AurPrintf("LightManager::EnableHeadLight() phong lights %p\n", GetPhongLights());
+    }
     GLRender_SetLightProperties(0, LIGHT_AMBIENT, Homogenize(headlightambient, 1.0f));
     GLRender_SetLightProperties(0, LIGHT_DIFFUSE, Homogenize(headlightdiffuse, 1.0f));
     GLRender_SetLightProperties(0, LIGHT_POSITION, Homogenize(CurrentCamera->m_vPosition, 1.0f));
@@ -232,7 +237,10 @@ void LightManager::EnableHeadLight()
 // PC 0x004A3080  Xbox 0x002F3070
 void LightManager::EnableLights()
 {
-    AurlightmanagerTrace1();
+    if (AURLIGHTMANAGER_DEBUG)
+    {
+        AurPrintf("LightManager::EnableLights() phong lights %p\n", GetPhongLights());
+    }
     if (enablegetnearestlights == 0)
     {
         if (m_lstEnabledLights.m_nCount > 0)
@@ -1246,7 +1254,12 @@ void LightManager::EnableBumpMapLights()
     }
     m_bBumpMapLightsDisabled = 0;
 }
-
+// Dead code: not in the PC executable
+List<PartLight*>* LightManager::GetPhongLights()
+{
+    return &m_lstExcludedShaderLights;
+}
+// Dead code: not in the PC executable
 void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
 {
     int i = m_lstExcludedShaderLights.m_nCount;
@@ -1278,13 +1291,19 @@ void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
         }
     }
 }
+// Dead code: not in the PC executable
+void LightManager::DisablePhongLights()
+{
+    int i = m_lstExcludedShaderLights.m_nCount;
+    while (i != 0)
+    {
+        EnableThisLight(m_lstExcludedShaderLights[--i]);
+    }
+    m_lstExcludedShaderLights.m_nCount = 0;
+}
 
 Vector headlightdiffuse(0.8f, 0.8f, 0.8f);
 Vector headlightambient(0.2f, 0.2f, 0.2f);
-
-static inline void AurlightmanagerTrace1()
-{
-}
 
 #ifdef _XBOX
 void AurPostString(char* szString, int nColumn, int nRow, float fDuration);

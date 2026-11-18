@@ -27,7 +27,7 @@ struct CSWGuiControlFlags
 #ifdef _XBOX
     unsigned long m_bTargetChanged : 1;
 #endif
-    unsigned long m_bUnknown : 1;
+    unsigned long m_bAttackJustQueued : 1;
     unsigned long m_bEnabled : 1;
 #ifdef _XBOX
     unsigned long m_nUnused : 29;
@@ -57,6 +57,7 @@ public:
     void UpdateToolTipText();
     SWGUI_PCVIRTUAL int DisplayToolTip();
     virtual void Draw(float);
+    void SetCharPointer(CSWGuiMainInterfaceChar* pCharacter);
 };
 #endif
 
@@ -80,6 +81,7 @@ public:
     short m_nScreenX;
     short m_nScreenY;
     void CreateEntry(unsigned long, CExoString const&, Vector const&, float);
+    int IncrementPosition();
     virtual void Update(float);
 
     static CSWGuiMainInterface* m_pMainInterface;
@@ -102,10 +104,10 @@ public:
         STRREF_ACTIVATE_RIGHT_ACTION = 48311
     };
 #ifndef _XBOX
-    CSWGuiButton m_CSWGuiButton_0;
-    CSWGuiButton m_CSWGuiButton_1C4;
-    CSWGuiButton m_CSWGuiButton_388;
-    CSWGuiButton m_CSWGuiButton_54C;
+    CSWGuiButton m_btnAction;
+    CSWGuiButton m_btnIcon;
+    CSWGuiButton m_btnUp;
+    CSWGuiButton m_btnDown;
     float m_fFadeTimer;
     char m_nFadeSteps;
     char gap_715[3];
@@ -190,6 +192,7 @@ public:
     void SetNameLabel(CExoString const&);
     void UpdateNameLabel(CSWCObject*);
     void Draw(float);
+    void UpdateTimers(float fElapsed);
     void Update(float fElapsed);
     CSWGuiControl* HitCheckMouse(int, int);
     void PositionMenu(CSWCCreature*, CSWCObject*);
@@ -422,7 +425,7 @@ public:
 
     CSWGuiLabel m_aActionIcons[ACTION_QUEUE_ICON_COUNT];
     CSWGuiLabel m_aCombatbg[ACTION_ICON_COUNT - ACTION_QUEUE_FIRST_ICON];
-    CSWGuiLabelHilight m_CSWGuiLabelHilight_6B1C;
+    CSWGuiLabelHilight m_lblHighlight;
     CSWGuiButton m_btnClearone;
     CSWGuiButton m_btnClearone2;
     CSWGuiButton m_btnClearall;
@@ -487,7 +490,7 @@ public:
     CSWGuiLabel m_aActionIcons[ACTION_QUEUE_ICON_COUNT];
     CSWGuiLabel m_lblBg1;
     CSWGuiLabel m_lblBg2;
-    CSWGuiLabelHilight m_CSWGuiLabelHilight_6B1C;
+    CSWGuiLabelHilight m_lblHighlight;
     CSWGuiLabel m_lblActionQueueBackground;
     CSWGuiLabel m_lblCmbtmodemsg;
     float m_fCombatMessageDuration;
@@ -504,7 +507,7 @@ public:
     unsigned char m_nActionTextMargin;
     unsigned char m_nInterfaceOffset;
     CSWGuiControlFlags m_cActionDescriptionState;
-    int m_nXboxUnmapped5F18;
+    int m_nQueuedAction;
     CSWGuiExtent m_cActionTextBackExtent;
     CSWGuiMainInterfaceStatus m_aEffects[9];
 #endif

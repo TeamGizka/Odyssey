@@ -7,11 +7,11 @@
 
 class Vector;
 int Parse(char* sText, Vector& vValue);
-void Parse(char* sText, char* sValue);
+void Parse(char* sValue, char* sDest);
 char* skipspace(char* sText);
 char* AurResGetNextLine();
 void* AurResGetData(int nBytes);
-int Parse(char* sText, float& fValue);
+int Parse(char* sValue, float& fValue);
 
 template <class T> void Parse(char* sText, List<T>& lstValues)
 {

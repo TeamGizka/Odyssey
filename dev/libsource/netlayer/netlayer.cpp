@@ -78,9 +78,9 @@ int CNetLayer::StartServerMode(const CExoString& sServerName,
     }
     m_bServerMode = 1;
     m_sServerName = sServerName;
-    m_sServerString1 = "";
-    m_sServerString2 = "";
-    m_sServerString3 = "";
+    m_sPlayerPassword = "";
+    m_sGameMasterPassword = "";
+    m_sServerAdminPassword = "";
     return 1;
 }
 // PC 0x005D5020  Xbox 0x00157300
@@ -127,6 +127,19 @@ int CNetLayer::StartConnectToSession(unsigned long nPlayerId,
     delete[] pMessage;
     return 1;
 }
+// Dead code: not in the PC executable
+int CNetLayer::EndConnectToSession()
+{
+    if (m_bConnecting == 0)
+    {
+        return 0;
+    }
+    m_bConnecting = 0;
+    m_bConnected = 0;
+    m_nConnectState = 0;
+    m_nReserved = 0;
+    return 1;
+}
 // PC 0x005D5650  Xbox 0x00157930
 int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
 {
@@ -136,6 +149,19 @@ int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
         UpdateStatus();
     }
     return 1;
+}
+// Dead code: not in the PC executable
+int CNetLayer::ConnectToSessionLoop()
+{
+    if (m_bConnecting == 0)
+    {
+        return 0;
+    }
+    if (m_bConnected == 1)
+    {
+        return m_nConnectState;
+    }
+    return CONNECTION_PENDING;
 }
 // PC 0x005D5140  Xbox 0x00157420
 int CNetLayer::UpdateStatus()
@@ -182,7 +208,7 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
     m_cPlayerInfo.m_nPlayerId = 1;
     if (nClientType == CONNECTTYPE_SERVERADMIN)
     {
-        if (m_sServerString3 == "")
+        if (m_sServerAdminPassword == "")
         {
             m_cPlayerInfo.m_bGameMaster = 0;
             m_cPlayerInfo.m_bPlayer = 0;
@@ -191,7 +217,7 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
     }
     else if (nClientType == CONNECTTYPE_GAMEMASTER)
     {
-        if (m_sServerString2 == "")
+        if (m_sGameMasterPassword == "")
         {
             m_cPlayerInfo.m_bAuthorized = 0;
             m_cPlayerInfo.m_bGameMaster = 1;
@@ -200,7 +226,7 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
     }
     else
     {
-        if (m_sServerString1 == "")
+        if (m_sPlayerPassword == "")
         {
             m_cPlayerInfo.m_bGameMaster = 0;
             m_cPlayerInfo.m_bPlayer = 1;
@@ -208,9 +234,9 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
         }
     }
     pReply[4] = 'A';
-    if ((nClientType == CONNECTTYPE_PLAYER && m_sServerString1 == "") ||
-        (nClientType == CONNECTTYPE_GAMEMASTER && m_sServerString2 == "") ||
-        (nClientType == CONNECTTYPE_SERVERADMIN && m_sServerString3 == ""))
+    if ((nClientType == CONNECTTYPE_PLAYER && m_sPlayerPassword == "") ||
+        (nClientType == CONNECTTYPE_GAMEMASTER && m_sGameMasterPassword == "") ||
+        (nClientType == CONNECTTYPE_SERVERADMIN && m_sServerAdminPassword == ""))
     {
         pReply[5] = 'C';
         m_pExoApp->PlayerListChange(0, 1, 0);
@@ -276,6 +302,15 @@ int CNetLayer::HandleBNCRMessage(unsigned long nPlayerId, unsigned char* pData,
 }
 // PC 0x005D5440  Xbox 0x00157720
 CNetLayerPlayerInfo::CNetLayerPlayerInfo()
+{
+    m_nPlayerId = 0;
+    m_sPlayerName = "";
+    m_bPlayer = 0;
+    m_bGameMaster = 0;
+    m_bAuthorized = 0;
+}
+// Dead code: not in the PC executable
+void CNetLayerPlayerInfo::Initialize()
 {
     m_nPlayerId = 0;
     m_sPlayerName = "";
@@ -352,6 +387,11 @@ int CNetLayer::ShutDown()
     }
     m_bInitialized = 0;
     return 1;
+}
+// Dead code: not in the PC executable
+void CNetLayer::SetDestNetLayer(CNetLayer* pNetLayer)
+{
+    m_pPeer = pNetLayer;
 }
 // PC 0x005D57D0  Xbox 0x00157AB0
 void CNetLayer::ProcessReceivedFrames(int bProcess)

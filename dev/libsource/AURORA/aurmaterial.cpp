@@ -18,10 +18,10 @@ int usenewalpha = 1;
 float materialalpha = 0.35f;
 float* Homogenize(const Vector& vVector, const float& fValue);
 
-char* firstword(char* sLine);
+char* firstword(char* sMessage);
 void Parse(char* sValue, char* sDest);
 int Parse(char* sValue, bool& bValue);
-int Parse(char* sValue, int& nValue);
+int Parse(char* sText, int& nValue);
 int Parse(char* sValue, float& fValue);
 
 static inline void CopyString(char* sDest, const char* sSource)
@@ -34,6 +34,7 @@ static inline void CopyString(char* sDest, const char* sSource)
         *sDest++ = c;
     } while (c != 0);
 }
+// Dead code: not in the PC executable
 // Xbox 0x002D1280
 CAurTexture* LoadTexture(char* sName)
 {

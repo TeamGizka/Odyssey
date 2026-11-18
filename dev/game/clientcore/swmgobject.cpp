@@ -74,6 +74,20 @@ CSWMiniGameObject* CSWMiniGameObjectArray::GetMiniGameObjectByName(const CExoStr
     }
     return 0;
 }
+// Dead code: not in the PC executable
+inline unsigned long CSWMiniGameObjectArray::GetNextID()
+{
+    unsigned long nStart = m_nCurrentObject;
+    while (m_apObjects[m_nCurrentObject] != 0)
+    {
+        ++m_nCurrentObject;
+        if (m_nCurrentObject == MAX_OBJECTS)
+            m_nCurrentObject = 0;
+        if (m_nCurrentObject == nStart)
+            return INVALID_OBJECT_ID;
+    }
+    return m_nCurrentObject;
+}
 // PC 0x0066C060  Xbox 0x000B2CC0
 inline unsigned long CSWMiniGameObjectArray::FindNextEmptyIndex()
 {

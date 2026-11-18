@@ -19,7 +19,7 @@ public:
         m_bOperationActive = 1;
         m_nOperation = nEvent;
         m_bOperationStartPending = 1;
-        m_nUnknown56 = 0;
+        m_nError = 0;
     }
 
     CSWReentrantServerStats();
@@ -32,13 +32,13 @@ public:
     int m_nProgressTotal;
     int m_bOperationStartPending;
     int m_bOperationEndPending;
-    CExoString m_sUnknown24;
-    CExoString m_sUnknown32;
-    CExoString m_sUnknown40;
+    CExoString m_sName;
+    CExoString m_sSourcePath;
+    CExoString m_sDestinationPath;
 
     unsigned long m_nResourceType;
     unsigned char m_aUnmapped[4];
-    int m_nUnknown56;
+    int m_nError;
 };
 
 #endif

@@ -75,6 +75,17 @@ public:
                           unsigned long nDay2, unsigned long nTime2);
     void PauseWorldTimer();
     void UnpauseWorldTimer();
+    unsigned long GetWorldTimeCalendarDay();
+    CExoString GetWorldTimeCalendarDayString();
+    unsigned long GetWorldTimeTimeOfDay();
+    CExoString GetWorldTimeTimeOfDayString();
+    CExoString TranslateWorldTimeToString(unsigned long nCalendarDay,
+                                          unsigned long nTimeOfDay,
+                                          CExoString& sDayLabel,
+                                          CExoString& sMonthLabel);
+    unsigned long GetWorldTimeYear();
+    unsigned long GetWorldTimeMonth();
+    unsigned long GetWorldTimeDay();
     unsigned long GetWorldTimeHour();
     unsigned long GetWorldTimeMinute();
     unsigned long GetWorldTimeSecond();

@@ -14,10 +14,10 @@ public:
     enum { COMPOSITION_IN_PROGRESS = 1, CANDIDATE_LIST_OPEN = 2 };
     unsigned long m_nFlags;
     char m_aUnmapped0[256];
-    int m_nUnknown104;
+    int m_nPreviousKeyboardLayout;
     int m_nCompositionActive;
 
-    int m_nUnknown10C;
+    int m_bKatakana;
 
     CExoString m_sResult;
     CExoString m_sComposition;

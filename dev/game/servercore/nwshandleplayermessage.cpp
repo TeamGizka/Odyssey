@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include "nwclass.h"
 
-static inline void NwshandleplayermessageTrace1();
+#define NWSHANDLEPLAYERMESSAGE_DEBUG 0
 
 static const int nVolume = 1;
 
@@ -52,7 +52,13 @@ CSWSMessage::CSWSMessage()
 CSWSMessage::~CSWSMessage()
 {
 }
-
+// Dead code: not in the PC executable
+int CSWSMessage::HandlePlayerToServerServerChatMessage(CSWSPlayer* pPlayer,
+                                                       unsigned char nMinor)
+{
+    return 1;
+}
+// Dead code: not in the PC executable
 void ResetPlayerInventoryLastUpdate(CSWSPlayer* pPlayer)
 {
     CSWSPlayerLUOInventory* pLastUpdate =
@@ -337,7 +343,7 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
         CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
         unsigned char nValue = ReadBYTE(8);
         if (!MessageReadOverflow(1) && pModule != NULL)
-            pModule->m_n210 = nValue;
+            pModule->m_nPlayerPathfindRule = nValue;
         return 0;
     }
     if (nMinor == 32)
@@ -1211,7 +1217,7 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
             pPlayer->GetGameObject()->AsSWSCreature()->m_pPathfindInformation;
         Vector vDestination;
         unsigned long oidDestinationArea;
-        if (pPathfind->m_nField_84 == 0)
+        if (pPathfind->m_bPathReversed == 0)
         {
             vDestination = Vector(pPathfind->m_fStartX, pPathfind->m_fStartY,
                                   pPathfind->m_fStartZ);
@@ -1228,13 +1234,13 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
             Vector(fPositionX, fPositionY, fPositionZ) - vDestination;
         if (oidDestinationArea == oidArea && vDelta * vDelta < 0.01f)
         {
-            pPathfind->m_nField_28 = (unsigned char)nMovementRate;
+            pPathfind->m_nMovementRate = (unsigned char)nMovementRate;
             return 1;
         }
         pPathfind->ResetAtEndOfPath();
         if (nClientMoving == 1)
         {
-            pPathfind->m_nField_194 = 1;
+            pPathfind->m_bForceGridPath = 1;
         }
     }
 
@@ -1306,6 +1312,113 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
             nGroupId, Vector(fPositionX, fPositionY, fPositionZ), oidArea,
             oidTarget, bRun, 0.0f, 0.0f, bUsePath, nMovementRate, 0,
             nClientMoving, 0, 0, Vector(), 0, 0, 0);
+    }
+    return 1;
+}
+// Dead code: not in the PC executable
+int CSWSMessage::HandlePlayerToServerGroupInputWalkToWaypoint(
+    CSWSPlayer* pPlayer, CSWSCreature* pCreature, unsigned long oidArea,
+    float fPositionX, float fPositionY, float fPositionZ,
+    unsigned char nMovementRate, int bRun, int bUsePath,
+    unsigned long oidTarget)
+{
+    float fRange = 2.0f;
+
+    if (pCreature == NULL)
+    {
+        return 1;
+    }
+
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    Vector vDestination;
+    unsigned long oidDestinationArea;
+    if (pPathfind->m_bPathReversed == 0)
+    {
+        vDestination = Vector(pPathfind->m_fStartX, pPathfind->m_fStartY,
+                              pPathfind->m_fStartZ);
+        oidDestinationArea = pPathfind->m_nStartArea;
+    }
+    else
+    {
+        vDestination = Vector(pPathfind->m_fEndX, pPathfind->m_fEndY,
+                              pPathfind->m_fEndZ);
+        oidDestinationArea = pPathfind->m_nEndArea;
+    }
+
+    Vector vDelta =
+        Vector(fPositionX, fPositionY, fPositionZ) - vDestination;
+    if (oidDestinationArea == oidArea && vDelta * vDelta < 0.01f)
+    {
+        pPathfind->m_nMovementRate = nMovementRate;
+    }
+
+    Vector vWaypoint(fPositionX, fPositionY, fPositionZ);
+    Vector vOffset = pCreature->m_vPosition - vWaypoint;
+    if (vOffset * vOffset < 2.25f && pCreature->m_nAIState == 2)
+    {
+        unsigned long oidAITarget = pCreature->m_oidAITarget;
+        Vector vCross;
+        Vector vToWaypoint;
+        Vector vToTarget;
+        CGameObject* pGameObject =
+            g_pAppManager->GetServerExoApp()->GetGameObject(oidAITarget);
+        if (pGameObject == NULL || pGameObject->AsSWSObject() == NULL)
+        {
+            return 1;
+        }
+        CSWSObject* pTarget = pGameObject->AsSWSObject();
+        if (pTarget == NULL)
+        {
+            return 1;
+        }
+        pCreature->m_pcCombatRound->SetRoundPaused(1, pCreature->m_nId);
+        pCreature->m_pcCombatRound->SetPauseTimer(500, 0);
+        vToTarget = normalize(pTarget->m_vPosition - pCreature->m_vPosition);
+        vToWaypoint = normalize(vWaypoint - pCreature->m_vPosition);
+        vToWaypoint.m_fZ = vToTarget.m_fZ;
+        float fDot = vToTarget * vToWaypoint;
+        if (fDot >= 0.707f)
+        {
+            pCreature->DoCombatStep(2, 500, oidAITarget);
+        }
+        else if (fDot <= -0.707f)
+        {
+            pCreature->DoCombatStep(3, 500, oidAITarget);
+        }
+        else
+        {
+            vCross = cross(vToTarget, vToWaypoint);
+            if (vCross.m_fZ >= 0.0f)
+            {
+                pCreature->DoCombatStep(4, 500, oidAITarget);
+            }
+            else
+            {
+                pCreature->DoCombatStep(5, 500, oidAITarget);
+            }
+        }
+        return 1;
+    }
+
+    if (pCreature->m_bCommandable == 1)
+    {
+        pCreature->ClearAllActions(1);
+        pCreature->ActionManager(CSWSCreature::ACTION_MANAGER_REST);
+        pCreature->AddMoveToPointAction(CSWSObject::ACTION_GROUP_NEW,
+            Vector(fPositionX, fPositionY, fPositionZ), oidArea, oidTarget,
+            bRun, fRange, 0.0f, bUsePath, nMovementRate, 0, 0, 0, 0,
+            Vector(), 0, 0, 0);
+        pCreature->m_pPathfindInformation->ResetAtEndOfPath();
+        pCreature->AddAction(CSWSObject::ACTION_CHECK_MOVE_TO_POINT_RADIUS,
+            CSWSObject::ACTION_GROUP_NEW,
+            CSWSObject::ACTION_PARAM_FLOAT, &fPositionX,
+            CSWSObject::ACTION_PARAM_FLOAT, &fPositionY,
+            CSWSObject::ACTION_PARAM_FLOAT, &fPositionZ,
+            CSWSObject::ACTION_PARAM_OBJECT, &oidArea,
+            CSWSObject::ACTION_PARAM_OBJECT, &oidTarget,
+            CSWSObject::ACTION_PARAM_INTEGER, &bRun,
+            CSWSObject::ACTION_PARAM_FLOAT, &fRange,
+            0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
     }
     return 1;
 }
@@ -1381,7 +1494,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
                 pCreature->m_pcCombatRound->RemoveAllActions();
                 pCreature->AddEquipItemActions(pGameObject->AsSWSItem(),
                                                nSlot, 0, 1, 0, 1, 0);
-                unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidRoundTarget;
                 if (oidAttack != OBJECT_INVALID)
                     pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 0,
                                                 1, 10009, 1500, 1, 0, 0, 4, 0);
@@ -1542,7 +1655,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
             pCreature->ClearAllActions(1);
             pCreature->m_pcCombatRound->RemoveAllActions();
             pCreature->AddUnequipActions(pGameObject->AsSWSItem(), oidRepository, 0, 1, 0);
-            unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
+            unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidRoundTarget;
             if (oidAttack != OBJECT_INVALID)
                 pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 0,
                                             1, 10009, 1500, 1, 0, 0, 4, 0);
@@ -1724,7 +1837,7 @@ int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer, unsigned
         if (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_PENDING &&
             g_pAppManager->m_pServerExoApp->GetServerMode() == CServerExoAppInternal::SERVER_MODE_RUNNING)
         {
-            pPlayer->m_n7C = 1;
+            pPlayer->m_bModuleLoaded = 1;
             g_pAppManager->m_pServerExoApp->InitiateModuleForPlayer(pPlayer);
             bResult = SendServerToPlayerPlayerList_Add(
                           CNetLayer::PLAYERID_ALL_PLAYERS, pPlayer) & 1;
@@ -2239,14 +2352,14 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
         unsigned long oidOther = OBJECT_INVALID;
         pCreature->ActionManager(CSWSCreature::ACTION_MANAGER_REST);
         CExoString sDialog("");
-        int nUnknown = 0;
+        int bPrivateConversation = 0;
         int bPrivate = 1;
         int bPlayHello = 0;
         if (!pCreature->m_nAILevel)
             g_pAppManager->m_pServerExoApp->GetServerAIMaster()->SetAILevel(pObject, 1);
         pObject->AddAction(CSWSObject::ACTION_START_CONVERSATION,
             CSWSObject::ACTION_GROUP_NEW,
-            3, &oidTarget, 4, &sDialog, 1, &nUnknown, 1, &bPrivate,
+            3, &oidTarget, 4, &sDialog, 1, &bPrivateConversation, 1, &bPrivate,
             1, &bPlayHello, 3, &oidOther,
             0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
         return 1;
@@ -2258,7 +2371,7 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
                 pCreature->Rest(0);
         }
         else
-            pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_UNKNOWN_213, NULL);
+            pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_REST_CANT_UNDER_THIS_EFFECT, NULL);
         return 0;
     case 16:
         ReadBYTE(8);
@@ -2471,7 +2584,7 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
         ReadBOOL();
         if (!MessageReadOverflow(1))
         {
-            pPlayer->m_n60 = 1;
+            pPlayer->m_bAlwaysRun = 1;
         }
         return 0;
     case 28:
@@ -2528,7 +2641,10 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
 int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                                            unsigned char nMinor)
 {
-    NwshandleplayermessageTrace1();
+    if (NWSHANDLEPLAYERMESSAGE_DEBUG)
+    {
+        EXOLOG("CSWSMessage::HandlePlayerToServerParty() input %d\n", HandlePlayerToServerInputMessage(pPlayer, nMinor));
+    }
     STR_RES strRes;
     CExoString sMessage;
 
@@ -2570,7 +2686,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 if (pCreature != NULL)
                 {
                     pCreature->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_045, NULL);
+                        CSWSCreature::FEEDBACK_PARTY_YOU_LEFT, NULL);
                 }
             }
         }
@@ -2600,7 +2716,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                         CSWCCMessageData* pData = new CSWCCMessageData;
                         pData->SetObjectID(0, oidCreature);
                         pMember->SendFeedbackMessage(
-                            CSWSCreature::FEEDBACK_UNKNOWN_032, pData);
+                            CSWSCreature::FEEDBACK_PARTY_MEMBER_KICKED, pData);
                     }
                 }
                 CSWSCreature* pRemoved = g_pAppManager->GetServerExoApp()->
@@ -2608,7 +2724,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 if (pRemoved != NULL)
                 {
                     pRemoved->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_033, NULL);
+                        CSWSCreature::FEEDBACK_PARTY_KICKED_YOU, NULL);
                 }
             }
             if (pTarget->m_bNewAttackTarget)
@@ -2657,28 +2773,28 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_034, pData);
+                    CSWSCreature::FEEDBACK_PARTY_ALREADY_CONSIDERING, pData);
             }
             else if (pTarget->GetNumInvited() != 0)
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_035, pData);
+                    CSWSCreature::FEEDBACK_PARTY_ALREADY_INVOLVED, pData);
             }
             else if (pTarget->GetIsInInvitationsIgnored(pCreature->GetId()) == 1)
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_039, pData);
+                    CSWSCreature::FEEDBACK_PARTY_INVITATION_IGNORED, pData);
             }
             else if (!pTarget->GetFaction()->GetSingletonParty())
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, oidCreature);
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_202, pData);
+                    CSWSCreature::FEEDBACK_PARTY_YOU_INVITED_NON_SINGLETON, pData);
             }
             else
             {
@@ -2691,11 +2807,11 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                     CSWCCMessageData* pData = new CSWCCMessageData;
                     pData->SetObjectID(0, pCreature->GetId());
                     pTarget->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_037, pData);
+                        CSWSCreature::FEEDBACK_PARTY_RECEIVED_INVITATION, pData);
                     pData = new CSWCCMessageData;
                     pData->SetObjectID(0, oidCreature);
                     pCreature->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_UNKNOWN_036, pData);
+                        CSWSCreature::FEEDBACK_PARTY_SENT_INVITATION, pData);
                     g_pAppManager->GetServerExoApp()->GetSWSMessage()->
                         SendServerToPlayerPopUpGUIPanel(
                             oidCreature, 1, 0, 0, 0,
@@ -2718,11 +2834,11 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
             CSWCCMessageData* pData = new CSWCCMessageData;
             pData->SetObjectID(0, pInviter->GetId());
             pCreature->SendFeedbackMessage(
-                CSWSCreature::FEEDBACK_UNKNOWN_040, pData);
+                CSWSCreature::FEEDBACK_PARTY_YOU_IGNORED_INVITATION, pData);
             pData = new CSWCCMessageData;
             pData->SetObjectID(0, pCreature->GetId());
             pInviter->SendFeedbackMessage(
-                CSWSCreature::FEEDBACK_UNKNOWN_039, pData);
+                CSWSCreature::FEEDBACK_PARTY_INVITATION_IGNORED, pData);
         }
         else
         {
@@ -2790,11 +2906,11 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                 CSWCCMessageData* pData = new CSWCCMessageData;
                 pData->SetObjectID(0, pInviter->GetId());
                 pCreature->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_042, pData);
+                    CSWSCreature::FEEDBACK_PARTY_YOU_REJECTED_INVITATION, pData);
                 pData = new CSWCCMessageData;
                 pData->SetObjectID(0, pCreature->GetId());
                 pInviter->SendFeedbackMessage(
-                    CSWSCreature::FEEDBACK_UNKNOWN_041, pData);
+                    CSWSCreature::FEEDBACK_PARTY_INVITATION_REJECTED, pData);
             }
             else
             {
@@ -3344,10 +3460,6 @@ int CSWSMessage::HandlePlayerToServerMessage(unsigned long nPlayerId,
                       sMessageType.CStr(), nMinor);
     }
     return nResult;
-}
-
-static inline void NwshandleplayermessageTrace1()
-{
 }
 
 #ifdef _XBOX

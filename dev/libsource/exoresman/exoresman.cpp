@@ -15,7 +15,8 @@ char CResRef::RETURN_BUFFERS[4][17];
 int g_nResRefUnused = 0;
 int CResRef::s_nCurBufferIndex = 0;
 
-static inline void ExoresmanTrace1();
+#define EXORESMAN_DEBUG 0
+
 // PC 0x00405ED0  Xbox 0x0013DDD0
 CResRef::CResRef()
 {
@@ -64,7 +65,10 @@ int CResRef::operator!=(const CResRef& other) const
 // PC 0x00406DE0  Xbox 0x0013F660
 int CResRef::operator!=(const CExoString& sString) const
 {
-    ExoresmanTrace1();
+    if (EXORESMAN_DEBUG)
+    {
+        EXOLOG("CResRef::operator!=() resref %s\n", CResRef(sString).GetResRefStr());
+    }
     sString.IsEmpty();
 
     const char* pString = sString.CStr();
@@ -253,6 +257,21 @@ int CExoResMan::RemoveFixedKeyTableFile(const CExoString& sFileName)
 int CExoResMan::RemoveResourceDirectory(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_DIRECTORY);
+}
+// Dead code: not in the PC executable
+int CExoResMan::UpdateEncapsulatedResourceFile(const CExoString& sFileName)
+{
+    return UpdateKeyTable(sFileName, TABLE_ENCAPSULATED);
+}
+// Dead code: not in the PC executable
+int CExoResMan::UpdateResourceImageFile(const CExoString& sFileName)
+{
+    return UpdateKeyTable(sFileName, TABLE_RESOURCE_IMAGE);
+}
+// Dead code: not in the PC executable
+int CExoResMan::UpdateFixedKeyTableFile(const CExoString& sFileName)
+{
+    return UpdateKeyTable(sFileName, TABLE_KEY);
 }
 // PC 0x004088E0  Xbox 0x00141580
 int CExoResMan::UpdateResourceDirectory(const CExoString& sFileName)
@@ -917,7 +936,7 @@ void CExoResMan::AsyncLoad()  // PC 0x004094A0  Xbox 0x00142430
 
 }
 #endif
-
+// Dead code: not in the PC executable
 int CExoResMan::GetNewResRef(const CResRef& cResRef, unsigned short nType,
                              CResRef& cNewResRef)
 {
@@ -1025,6 +1044,12 @@ int CRes::Release()
 {
     return g_pExoResMan->Release(this);
 }
+// Dead code: not in the PC executable
+void CRes::SetID(unsigned long nResId)
+{
+    g_pExoResMan->Dump(this, 1);
+    m_nResId = nResId;
+}
 // PC 0x00409B90  Xbox 0x00142D40
 void AsyncRimLoadThreadProc(void* pParameter)
 {
@@ -1117,6 +1142,50 @@ int CExoResMan::ReleaseResObject(CRes* pRes)
 
     return 0;
 }
+// Dead code: not in the PC executable
+void CExoResMan::ResumeServicing()
+{
+    m_bUpdateDisabled = 0;
+}
+// Dead code: not in the PC executable
+int CExoResMan::ValidateSignedResource(const CExoString& sFileName,
+                                       unsigned short nType,
+                                       unsigned long nSize,
+                                       unsigned long nFlags)
+{
+    return 1;
+}
+// Dead code: not in the PC executable
+int CExoResMan::SetTotalResourceMemory(int nMemory)
+{
+    if (nMemory > (int)m_nTotalPhysicalMemory)
+    {
+        return 0;
+    }
+
+    if (m_nMemoryLimit > nMemory)
+    {
+        if (m_nMemoryLimit - nMemory > m_nAvailableMemory)
+        {
+            return 0;
+        }
+
+        m_nAvailableMemory -= m_nMemoryLimit - nMemory;
+    }
+    else
+    {
+        m_nAvailableMemory += nMemory - m_nMemoryLimit;
+    }
+
+    m_nMemoryLimit = nMemory;
+
+    return 1;
+}
+// Dead code: not in the PC executable
+void CExoResMan::SuspendServicing()
+{
+    m_bUpdateDisabled = 1;
+}
 // PC 0x00409D40  Xbox 0x00143030
 CRes::~CRes()
 {
@@ -1167,6 +1236,42 @@ int CExoResMan::Free(CRes* pRes)
     }
 
     return 0;
+}
+// Dead code: not in the PC executable
+void CExoResMan::DumpAll()
+{
+    DumpTable(m_lstEncapsulated);
+    DumpTable(m_lstResourceImages);
+    DumpTable(m_lstDirectories);
+    DumpTable(m_lstKeyTables);
+}
+// Dead code: not in the PC executable
+void CExoResMan::DumpTable(CExoLinkedList<CExoKeyTable>& lstTables)
+{
+    CExoKeyTable* pTable;
+    CExoLinkedListNode* pPos = lstTables.GetHeadPos();
+
+    if (pPos != NULL)
+    {
+        pTable = lstTables.GetAtPos(pPos);
+    }
+
+    while (pPos != NULL)
+    {
+        if (pTable != NULL)
+        {
+            for (unsigned long i = 0; i < pTable->m_nTableSize; i++)
+            {
+                CKeyTableEntry* pEntry = &pTable->m_pKeyTable[i];
+                if (pEntry != NULL)
+                {
+                    Dump(pEntry->m_pRes, 1);
+                }
+            }
+        }
+
+        pTable = lstTables.GetNext(pPos);
+    }
 }
 // PC 0x004070A0  Xbox 0x0013F8C0
 int CExoResMan::FreeChunk()
@@ -1473,6 +1578,19 @@ void CExoResMan::SetResObject(const CResRef& cResRef, unsigned short nType,
             pEntry->m_pRes->m_nResId = pEntry->m_nResId;
         }
     }
+}
+// Dead code: not in the PC executable
+unsigned long CExoResMan::GetResID(const CResRef& cResRef, unsigned short nType)
+{
+    CExoKeyTable* pTable = NULL;
+    CKeyTableEntry* pEntry = NULL;
+
+    if (GetKeyEntry(cResRef, nType, &pTable, &pEntry))
+    {
+        return pEntry->m_nResId;
+    }
+
+    return 0xFFFFFFFF;
 }
 // PC 0x004076E0  Xbox 0x00140460
 CExoKeyTable* CExoResMan::GetTable(CRes* pRes)
@@ -2269,6 +2387,16 @@ int CRes::GetDemands()
 {
     return m_nDemandCount;
 }
+// Dead code: not in the PC executable
+int CRes::GetRequests()
+{
+    return m_nRequestCount;
+}
+// Dead code: not in the PC executable
+unsigned long CRes::GetID()
+{
+    return m_nResId;
+}
 // PC 0x004064C0  Xbox 0x0013E3B0
 void CRes::GetResRef(CResRef& cResRef, unsigned short& nType)
 {
@@ -2409,6 +2537,11 @@ int CExoResMan::GetIsStaticType(unsigned short nType)
     }
 
     return 0;
+}
+// Dead code: not in the PC executable
+unsigned long CExoResMan::GetTotalPhysicalMemory()
+{
+    return m_nTotalPhysicalMemory;
 }
 // PC 0x004067B0  Xbox 0x0013E6F0
 int CExoResMan::GetFreeDiskSpace(const CExoString& sPath,
@@ -2776,12 +2909,13 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
 
 #ifndef _XBOX
 int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // PC 0x00406C60  Xbox 0x00141220
-                                    unsigned short nType, unsigned long nArg3,
-                                    unsigned long nArg4)
+                                    unsigned short nType, unsigned long nSize,
+                                    unsigned long nFlags)
 {
     return 1;
 }
 #endif
+// Dead code: not in the PC executable
 // Xbox 0x0013FAB0
 int CExoResMan::GetResourcesInMemory(int* pnResources, int* pnKeys,
                                      int* pnServicedSize, int* pnImageSize,
@@ -3262,10 +3396,6 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // PC 0x00406
 int CRes::Request()
 {
     return g_pExoResMan->Request(this);
-}
-
-static inline void ExoresmanTrace1()
-{
 }
 
 #ifdef _XBOX

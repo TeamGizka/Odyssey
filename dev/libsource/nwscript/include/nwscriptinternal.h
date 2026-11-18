@@ -377,6 +377,7 @@ public:
 
     char* GetNSSDataPtr();
     unsigned long GetNSSSize();
+    int IsLoaded();
 
     int m_bServiced;
     unsigned long m_nNSSSize;

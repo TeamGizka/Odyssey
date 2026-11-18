@@ -6,11 +6,13 @@
 #include <string.h>
 #include <time.h>
 
-static inline void NwerffileTrace3();
-static inline void NwerffileTrace2();
-static inline void NwerffileTrace1();
-#define NWERFFILE_TRACE() NwerffileTrace1()
+#define NWERFFILE_DEBUG 0
+#define STRREF_ERF_MODULE_NOT_FOUND 66742
+#define STRREF_ERF_NO_DESCRIPTION 67741
 
+static inline void TraceSetNumEntries();
+static inline void TraceERFFile();
+// Dead code: not in the PC executable
 int CERFRes::Read(CExoFile& file)
 {
     file.Read(this, 4, 1);
@@ -18,11 +20,14 @@ int CERFRes::Read(CExoFile& file)
     return 1;
 }
 // PC 0x005DE1A0  Xbox 0x0014B1F0
-void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
-                          int (*pfnProgress)(int, int, int, int), int nArg1,
-                          int nArg2)
+void CERFFile::ImportFiles(const CExoString& sDirectory, void* hSignature,
+                          int (*pfnProgress)(int, int, int, int), int nBase,
+                          int nRange)
 {
-    NwerffileTrace3();
+    if (NWERFFILE_DEBUG)
+    {
+        EXOLOG("CERFFile::ImportFiles() arg 2 %d\n", nRange);
+    }
     CExoArrayList<CExoString> lstFiles;
     CExoString sFile;
 
@@ -32,11 +37,11 @@ void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
     for (int i = 0; i < lstFiles.num; i++)
     {
         sFile.Format("%s%s", sDirectory.CStr(), lstFiles.element[i]);
-        WriteResource(sFile, pUnused);
+        WriteResource(sFile, hSignature);
 
         if (pfnProgress != NULL)
         {
-            pfnProgress(i, lstFiles.num, nArg1, nArg2);
+            pfnProgress(i, lstFiles.num, nBase, nRange);
         }
     }
 
@@ -188,7 +193,10 @@ int CERFFile::WriteStringTable()
 // PC 0x005DE2C0  Xbox 0x0014B310
 int CERFFile::Reset()
 {
-    NwerffileTrace3();
+    if (NWERFFILE_DEBUG)
+    {
+        EXOLOG("CERFFile::Reset() %p\n", this);
+    }
     memset(this, 0, 160);
 
     while (!m_lstStrings.IsEmpty())
@@ -228,7 +236,7 @@ CERFFile::~CERFFile()
 {
     Reset();
 }
-
+// Dead code: not in the PC executable
 int CERFString::Write(CExoFile& file)
 {
     file.Write(this, 4, 1);
@@ -238,9 +246,9 @@ int CERFString::Write(CExoFile& file)
 }
 // PC 0x005DD710  Xbox 0x0014AF90
 void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
-                                 const CExoString& sDirectory, void* pUnused,
+                                 const CExoString& sDirectory, void* hSignature,
                                  int (*pfnProgress)(int, int, int, int),
-                                 int nArg1, int nArg2)
+                                 int nBase, int nRange)
 {
     CExoFile file(sFileName, 2057, "rb");
 
@@ -256,12 +264,12 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
             CERFRes* pRes = m_lstResources.GetAtPos(pResPos);
             sPath = sDirectory + pKey->m_sResRef;
             CExoFile* pOut = new CExoFile(sPath, pKey->m_nResType, "wb");
-            pRes->CopyToFile(&file, pOut, pUnused);
+            pRes->CopyToFile(&file, pOut, hSignature);
             pOut->Flush();
 
             if (pfnProgress != NULL)
             {
-                pfnProgress(i, m_nEntryCount, nArg1, nArg2);
+                pfnProgress(i, m_nEntryCount, nBase, nRange);
             }
 
             delete pOut;
@@ -271,7 +279,7 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
 
         if (pfnProgress != NULL)
         {
-            pfnProgress(m_nEntryCount, m_nEntryCount, nArg1, nArg2);
+            pfnProgress(m_nEntryCount, m_nEntryCount, nBase, nRange);
         }
         return;
     }
@@ -279,15 +287,31 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
 // PC 0x005DD970  Xbox 0x0014A670
 inline CERFKey::~CERFKey()
 {
-    NwerffileTrace1();
+    if (NWERFFILE_DEBUG)
+    {
+        CExoFile* pFile = NULL;
+        Write(*pFile);
+    }
     m_nResId = 0;
     m_nResType = -1;
     memset(m_sResRef, 0, 16);
 }
+// Dead code: not in the PC executable
+int CERFKey::Reset()
+{
+    m_nResId = 0;
+    m_nResType = -1;
+    memset(m_sResRef, 0, 16);
+    return 1;
+}
 // PC 0x005DD990  Xbox 0x0014A690
 inline CERFRes::~CERFRes()
 {
-    NwerffileTrace1();
+    if (NWERFFILE_DEBUG)
+    {
+        CERFString* pString = NULL;
+        delete pString;
+    }
 
     if (m_pData != NULL)
     {
@@ -297,6 +321,19 @@ inline CERFRes::~CERFRes()
 
     m_nOffset = 0;
     m_nSize = 0;
+}
+// Dead code: not in the PC executable
+int CERFRes::Reset()
+{
+    if (m_pData != NULL)
+    {
+        delete m_pData;
+        m_pData = NULL;
+    }
+
+    m_nOffset = 0;
+    m_nSize = 0;
+    return 1;
 }
 // PC 0x005DD9C0  Xbox 0x0014A740
 CERFFile::CERFFile()
@@ -309,7 +346,7 @@ CERFFile::CERFFile()
 // PC 0x005DDA50  Xbox 0x0014A7D0
 int CERFFile::SetNumEntries(unsigned long nEntries)
 {
-    NwerffileTrace2();
+    TraceSetNumEntries();
     CERFKey key;
     unsigned long nFiller;
 
@@ -344,9 +381,12 @@ int CERFFile::SetNumEntries(unsigned long nEntries)
     return 0;
 }
 // PC 0x005DDBC0  Xbox 0x0014A940
-int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
+int CERFFile::WriteResource(const CExoString& sFileName, void* hSignature)
 {
-    NwerffileTrace2();
+    if (NWERFFILE_DEBUG)
+    {
+        EXOLOG("CERFFile::WriteResource() set entries %d\n", SetNumEntries(m_nNumEntries));
+    }
     if (m_nCurEntry < m_nNumEntries && m_pFile != NULL)
     {
         CERFKey key;
@@ -385,9 +425,9 @@ int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
             int nChunk = nRemaining > 0x3FFFF ? 0x3FFFF : nRemaining;
 
             pIn->Read(pTemp, 1, nChunk);
-            if (pUnused != INVALID_HANDLE_VALUE)
+            if (hSignature != INVALID_HANDLE_VALUE)
             {
-                XCalculateSignatureUpdate((HANDLE)pUnused,
+                XCalculateSignatureUpdate((HANDLE)hSignature,
                                           (unsigned char*)pTemp, nChunk);
             }
             m_pFile->Write(pTemp, nChunk, 1);
@@ -421,6 +461,105 @@ void CERFFile::SetVersion(char* sVersion)
 {
     memcpy(m_sFileType, sVersion, 4);
     memcpy(m_sVersion, sVersion + 4, 4);
+}
+// Dead code: not in the PC executable
+int CERFFile::AddResource(CExoString& sFileName)
+{
+    CExoString sExtension;
+    CExoString sName;
+    CERFKey* pKey = new CERFKey;
+    CERFRes* pRes = new CERFRes;
+    CExoFile* pFile = new CExoFile(sFileName, RESTYPE_INVALID, "rb");
+
+    if (pFile->FileOpened())
+    {
+        int nColon = sFileName.Find(":", 0);
+        sName = sFileName.Right(sFileName.GetLength() - nColon - 1);
+        int nDot = sName.Find(".", 0);
+        sExtension = sName.Right(sName.GetLength() - nDot - 1);
+        sName = sName.Left(nDot);
+
+        unsigned short nResType =
+            g_pExoBase->GetResTypeFromExtension(sExtension);
+        pKey->SetName(sName);
+        pKey->m_nResId = m_nEntryCount;
+        pKey->m_nResType = nResType;
+
+        pRes->m_nSize = pFile->GetSize();
+        pRes->m_pData = new char[pRes->m_nSize];
+        pFile->Read(pRes->m_pData, 1, pRes->m_nSize);
+
+        m_lstKeys.AddTail(pKey);
+        m_lstResources.AddTail(pRes);
+        m_nEntryCount++;
+        delete pFile;
+        return 1;
+    }
+
+    return 0;
+}
+// Dead code: not in the PC executable
+int CERFFile::AddResource(char* sResRef, unsigned short nResType, CRes* pRes)
+{
+    CERFKey* pKey = new CERFKey;
+    CERFRes* pERFRes = new CERFRes;
+
+    memcpy(pKey->m_sResRef, sResRef, 16);
+    pKey->m_nResId = m_nEntryCount;
+    pKey->m_nResType = nResType;
+
+    pERFRes->m_nSize = pRes->GetSize();
+    pERFRes->m_pData = new char[pERFRes->m_nSize];
+    memcpy(pERFRes->m_pData, pRes->GetData(), pERFRes->m_nSize);
+
+    m_lstKeys.AddTail(pKey);
+    m_lstResources.AddTail(pERFRes);
+    m_nEntryCount++;
+    return 1;
+}
+// Dead code: not in the PC executable
+int CERFFile::RemoveResource(CExoString& sResRef, unsigned short nResType)
+{
+    int bRemoved = 0;
+    CExoLinkedListNode* pPos = m_lstKeys.GetHeadPos();
+
+    while (pPos != NULL)
+    {
+        CERFKey* pKey = m_lstKeys.GetAtPos(pPos);
+
+        if (pKey->m_nResType == nResType &&
+            CExoString(pKey->m_sResRef) == sResRef)
+        {
+            CERFRes* pRes = m_lstResources.GetAtPos(pPos);
+            delete pKey;
+            delete pRes;
+            m_lstKeys.Remove(pPos);
+            m_lstResources.Remove(pPos);
+            m_nEntryCount--;
+            bRemoved = 1;
+            break;
+        }
+
+        m_lstResources.GetNext(pPos);
+    }
+
+    return bRemoved;
+}
+// Dead code: not in the PC executable
+int CERFFile::RemoveResource(CERFRes* pRes)
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+int CERFFile::AddString(CERFString* pString)
+{
+    CERFString* pNewString = new CERFString;
+    pNewString->m_nLanguageId = pString->m_nLanguageId;
+
+    CExoString sText = pString->GetText();
+    pNewString->SetText(sText);
+    m_lstStrings.AddTail(pNewString);
+    return 1;
 }
 // PC 0x005DCE50  Xbox 0x00149D10
 #ifdef _XBOX
@@ -501,7 +640,184 @@ int CERFFile::Finish()
     m_pFile = NULL;
     return 1;
 }
+// Dead code: not in the PC executable
+int CERFFile::Write(CExoString& sFileName)
+{
+    int bResult = 0;
+    CExoFile file(sFileName, 2057, "wb");
 
+    if (file.FileOpened())
+    {
+        RecalculateOffsets();
+
+        time_t tTime = time(NULL);
+        struct tm* pTime = localtime(&tTime);
+
+        if (pTime != NULL)
+        {
+            m_nBuildYear = pTime->tm_year;
+            m_nBuildDay = pTime->tm_yday;
+        }
+
+        file.Write(this, 8, 1);
+        file.Write(&m_nLanguageCount, 4, 1);
+        file.Write(&m_nLocStringSize, 4, 1);
+        file.Write(&m_nEntryCount, 4, 1);
+        file.Write(&m_nOffsetToLocStrings, 4, 1);
+        file.Write(&m_nOffsetToKeyList, 4, 1);
+        file.Write(&m_nOffsetToResourceList, 4, 1);
+        file.Write(&m_nBuildYear, 4, 1);
+        file.Write(&m_nBuildDay, 4, 1);
+        file.Write(&m_nDescriptionStrRef, 4, 1);
+        file.Write(m_aReserved, 116, 1);
+
+        CExoLinkedListNode* pPos = m_lstStrings.GetHeadPos();
+
+        while (pPos != NULL)
+        {
+            m_lstStrings.GetAtPos(pPos)->Write(file);
+            m_lstStrings.GetNext(pPos);
+        }
+
+        pPos = m_lstKeys.GetHeadPos();
+
+        while (pPos != NULL)
+        {
+            m_lstKeys.GetAtPos(pPos)->Write(file);
+            m_lstKeys.GetNext(pPos);
+        }
+
+        unsigned long nValue = 0xABCDABCD;
+
+        for (unsigned long i = 0; i < m_lstResources.Count(); i++)
+        {
+            file.Write(&nValue, 4, 1);
+            file.Write(&nValue, 4, 1);
+        }
+
+        pPos = m_lstResources.GetHeadPos();
+        nValue = 0;
+
+        while (pPos != NULL)
+        {
+            m_lstResources.GetAtPos(pPos)->Write(file,
+                                                 m_nOffsetToResourceList +
+                                                     nValue);
+            m_lstResources.GetNext(pPos);
+            nValue += 8;
+        }
+
+        bResult = 1;
+    }
+
+    return bResult;
+}
+// Dead code: not in the PC executable
+void CERFFile::RecalculateOffsets()
+{
+    m_nEntryCount = m_lstKeys.Count();
+    m_nLanguageCount = m_lstStrings.Count();
+
+    unsigned long nSize = 0;
+    CExoLinkedListNode* pPos = m_lstStrings.GetHeadPos();
+
+    while (pPos != NULL)
+    {
+        nSize += m_lstStrings.GetAtPos(pPos)->m_nLength + 8;
+        m_lstStrings.GetNext(pPos);
+    }
+
+    m_nLocStringSize = nSize;
+    m_nOffsetToLocStrings = 160;
+    m_nOffsetToKeyList = m_nOffsetToLocStrings + m_nLocStringSize;
+    m_nOffsetToResourceList = m_nOffsetToKeyList + m_lstKeys.Count() * 24;
+}
+// Dead code: not in the PC executable
+int CERFFile::ReadModuleDescription(const CExoString& sFileName,
+                                    unsigned short nLanguage,
+                                    unsigned long* pnStrRef,
+                                    CExoString* psDescription)
+{
+    CExoFile* pFile = new CExoFile(sFileName, RESTYPE_MOD, "rb");
+
+    if (!pFile->FileOpened())
+    {
+        *pnStrRef = STRREF_ERF_MODULE_NOT_FOUND;
+        delete pFile;
+        return 0;
+    }
+
+    unsigned long aHeader[40];
+    pFile->Read(aHeader, 160, 1);
+
+    if (aHeader[10] != 0xFFFFFFFF && aHeader[10] != 0)
+    {
+        *pnStrRef = aHeader[10];
+        delete pFile;
+        return 1;
+    }
+
+    *pnStrRef = 0xFFFFFFFF;
+    int nLanguageCount = aHeader[2];
+
+    if (nLanguageCount == 0)
+    {
+        *pnStrRef = STRREF_ERF_NO_DESCRIPTION;
+        delete pFile;
+        return 1;
+    }
+
+    CERFString* pStrings = new CERFString[nLanguageCount];
+
+    for (int i = 0; i < nLanguageCount; i++)
+    {
+        unsigned long nLanguageId;
+        unsigned long nLength;
+        pFile->Read(&nLanguageId, 4, 1);
+        pFile->Read(&nLength, 4, 1);
+        char* pText = new char[nLength];
+        pFile->Read(pText, 1, nLength);
+        pStrings[i].m_nLanguageId = nLanguageId;
+        pStrings[i].m_nLength = nLength;
+        pStrings[i].m_pText = pText;
+    }
+
+    if (nLanguageCount == 1)
+    {
+        psDescription->Format("%s", pStrings[0].GetText().CStr());
+        delete pFile;
+        delete[] pStrings;
+        return 1;
+    }
+
+    for (int j = 0; j < nLanguageCount; j++)
+    {
+        if (pStrings[j].m_nLanguageId == nLanguage)
+        {
+            psDescription->Format("%s", pStrings[j].GetText().CStr());
+            delete pFile;
+            delete[] pStrings;
+            return 1;
+        }
+    }
+
+    for (int k = 0; k < nLanguageCount; k++)
+    {
+        if (pStrings[k].m_nLanguageId == 0)
+        {
+            psDescription->Format("%s", pStrings[k].GetText().CStr());
+            delete pFile;
+            delete[] pStrings;
+            return 1;
+        }
+    }
+
+    psDescription->Format("%s", pStrings[0].GetText().CStr());
+    delete pFile;
+    delete[] pStrings;
+    return 1;
+}
+// Dead code: not in the PC executable
 int CERFKey::Read(CExoFile& file)
 {
     EXOXBOXASSERT(file.FileOpened());
@@ -561,9 +877,12 @@ int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 }
 // PC 0x005DDF30  Xbox 0x0014ACD0
 int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
-                            int bIsGFF, void* pUnused)
+                            int bIsGFF, void* hSignature)
 {
-    NwerffileTrace2();
+    if (NWERFFILE_DEBUG)
+    {
+        EXOLOG("CERFFile::WriteResource() set entries %d\n", SetNumEntries(m_nNumEntries));
+    }
     CERFKey key;
     CERFRes res;
 
@@ -585,9 +904,9 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
         pGFF->Pack(0, 0);
         pGFF->GetTotalSize();
 #ifdef _XBOX
-        if (pUnused != INVALID_HANDLE_VALUE)
+        if (hSignature != INVALID_HANDLE_VALUE)
         {
-            XCalculateSignatureUpdate((HANDLE)pUnused,
+            XCalculateSignatureUpdate((HANDLE)hSignature,
                                       (unsigned char*)pGFF->GetData(),
                                       pGFF->GetSize());
         }
@@ -604,9 +923,9 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
         void* pData = new char[pRes->GetSize()];
         memcpy(pData, pRes->GetData(), pRes->GetSize());
 #ifdef _XBOX
-        if (pUnused != INVALID_HANDLE_VALUE)
+        if (hSignature != INVALID_HANDLE_VALUE)
         {
-            XCalculateSignatureUpdate((HANDLE)pUnused,
+            XCalculateSignatureUpdate((HANDLE)hSignature,
                                       (unsigned char*)pRes->GetData(),
                                       pRes->GetSize());
         }
@@ -631,6 +950,24 @@ int CERFRes::Write(CExoFile& file, unsigned long nTableOffset)
     file.Write(&m_nSize, 4, 1);
     file.SeekEnd();
     return 1;
+}
+// Dead code: not in the PC executable
+int CERFString::Reset()
+{
+    if (m_pText != NULL)
+    {
+        delete m_pText;
+        m_pText = NULL;
+    }
+
+    m_nLanguageId = 0;
+    m_nLength = 0;
+    return 1;
+}
+// Dead code: not in the PC executable
+CExoString CERFString::GetText()
+{
+    return CExoString(m_pText, m_nLength);
 }
 // PC 0x005DD240  Xbox 0x0014A0D0
 int CERFString::SetText(CExoString& sText)
@@ -666,16 +1003,11 @@ int CERFString::Read(CExoFile& file)
     return 1;
 }
 
-static inline void NwerffileTrace3()
+static inline void TraceSetNumEntries()
 {
-    NwerffileTrace2();
+    TraceERFFile();
 }
 
-static inline void NwerffileTrace2()
-{
-    NwerffileTrace1();
-}
-
-static inline void NwerffileTrace1()
+static inline void TraceERFFile()
 {
 }

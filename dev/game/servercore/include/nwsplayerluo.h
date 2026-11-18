@@ -43,10 +43,15 @@ public:
     void ClearRepository();
     void ClearContainer();
     void ClearStore();
+    CSWSItem* ItemListGetItem(CExoLinkedListNode* pNode, unsigned char nList);
+    unsigned long ItemListGetItemObjectID(CExoLinkedListNode* pNode, unsigned char nList);
     CSWSPlayerLUOInventoryItem* ItemListGetUpdateItem(CExoLinkedListNode* pNode,
                                                       unsigned char nList);
+    void ItemListSetStart(CExoLinkedListNode*& pNode, unsigned char nList);
     void ItemListSetEnd(CExoLinkedListNode*& pNode, unsigned char nList);
+    void ItemListGetNext(CExoLinkedListNode*& pNode, unsigned char nList);
     void ItemListGetPrev(CExoLinkedListNode*& pNode, unsigned char nList);
+    int ItemListGetNumber(unsigned char nList);
     void ItemListRemove(CExoLinkedListNode* pNode, unsigned char nList);
     void ItemListAddHead(unsigned long oidItem, unsigned char nList,
                          unsigned long nStackSize, unsigned long nCost);
@@ -144,19 +149,19 @@ public:
     unsigned long m_nAppearanceState;
     unsigned char m_nAppearanceVariant;
     char m_nUnknown21[3];
-    int m_nUnknown24;
+    int m_bUpdated;
 
     unsigned char m_nObjectType;
     char m_nUnknown29;
-    short m_nUnknown2A;
+    short m_nSoundSetFile;
     unsigned long m_oidObject;
-    Vector m_vUnknown30;
-    int m_nUnknown3C;
+    Vector m_vPosition;
+    int m_oidArea;
 
     Vector m_vOrientation;
     int m_nAnimation;
-    float m_fUnknown50;
-    Vector m_vUnknown54;
+    float m_fAnimationSpeed;
+    Vector m_vPathDestination;
 
     unsigned char m_nClientSidePathType;
 
@@ -190,7 +195,7 @@ public:
     short m_nTemporaryHitPoints;
     short m_nMaxHitPoints;
     char m_nUnknownC2[2];
-    int m_bAIStateFlag0040;
+    int m_bFreeWill;
     int m_bPartyLeader;
     int m_bSingletonParty;
     int m_bInvitedToParty;
@@ -214,10 +219,10 @@ public:
     unsigned char m_nGender;
     unsigned char m_nClass[2];
     unsigned char m_nClassLevel[2];
-    char m_nUnknown116[2];
+    char m_nClassCount[2];
     short m_nGoodEvilAlignment;
     char m_nUnknown11A[2];
-    int m_nObjectF4;
+    int m_bDeadSelectable;
     int m_nAreaWaitState;
 
     unsigned char m_nStrengthBase;
@@ -270,7 +275,7 @@ public:
     unsigned long m_oidArea;
     Vector m_vPosition;
     int m_nAreaWaitState;
-    int m_bAIStateFlag0040;
+    int m_bFreeWill;
     int m_bPartyLeader;
     int m_bSingletonParty;
     int m_bInvitedToParty;

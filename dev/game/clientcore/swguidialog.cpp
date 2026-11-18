@@ -16,9 +16,11 @@
 #include "twodimarray.h"
 #include "clientexoappinternal.h"
 
-static inline void SwguidialogTrace2();
-static inline void SwguidialogTrace1();
-#define SWGUIDIALOG_TRACE() SwguidialogTrace1()
+#define SWGUIDIALOG_DEBUG 0
+
+static inline void TraceComputerDialog();
+static inline void TraceDialog();
+#define SWGUIDIALOG_TRACE() TraceDialog()
 // PC 0x006A6D70  Xbox 0x000D3550
 void CSWGuiDialog::EndDialog()
 {
@@ -71,7 +73,7 @@ CExoString CSWGuiDialogComputer::GetFullScreenBG()
     return sBackground;
 }
 
-static void SwguidialogTrace3(CSWGuiDialog* pDialog)
+static void TraceDialogDestructor(CSWGuiDialog* pDialog)
 {
     if (0)
     {
@@ -489,6 +491,18 @@ void CSWGuiDialogLetterbox::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
+// Dead code: not in the PC executable
+int CSWGuiDialogLetterbox::GetLetterboxChangeHeight(const float& fElapsed)
+{
+    float fScrollRate = (m_cTarget.m_nHeight - m_cStart.m_nHeight) * 2.0f;
+    return (int)(fScrollRate * fElapsed);
+}
+// Dead code: not in the PC executable
+int CSWGuiDialogLetterbox::GetLetterboxChangeTop(const float& fElapsed)
+{
+    float fScrollRate = (m_cTarget.m_nTop - m_cStart.m_nTop) * 2.0f;
+    return (int)(fScrollRate * fElapsed);
+}
 // PC 0x006A78C0  Xbox 0x000D4A50
 CSWGuiDialogTop::CSWGuiDialogTop(CSWGuiManager* pManager,
                                const CResRef& cFont, const Vector& vColor)
@@ -729,14 +743,14 @@ void CSWGuiDialogCinematic::Reset()
 // PC 0x006A8DE0  Xbox 0x000D4CF0
 void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
                                        unsigned long* pReplyIndices,
-                                       int nStartIndex, int bUnknown)
+                                       int nStartIndex, int bShowReplies)
 {
-    if (bUnknown)
+    if (bShowReplies)
     {
         m_pTop->SetReply(m_sMessage);
     }
     CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
-                             bUnknown);
+                             bShowReplies);
     if (m_lbReplies.m_bEnabled)
     {
         CSWGuiExtent cExtent = m_lbReplies.m_cExtent;
@@ -744,7 +758,7 @@ void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
         cExtent.m_nHeight -= cExtent.m_nHeight % nFontHeight;
         m_lbReplies.SetExtent(cExtent);
     }
-    if (bUnknown && !m_pManager->PanelExists(m_pTop))
+    if (bShowReplies && !m_pManager->PanelExists(m_pTop))
     {
         m_pManager->AddPanel(m_pTop, 0, 1);
     }
@@ -833,7 +847,10 @@ CSWGuiDialogComputer::~CSWGuiDialogComputer()
 // PC 0x006A81E0  Xbox 0x000D4300
 void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
 {
-    SwguidialogTrace1();
+    if (SWGUIDIALOG_DEBUG)
+    {
+        EXOLOG("CSWGuiDialogComputer::HandleInputEvent() state %d\n", nState);
+    }
     if (nState != 0)
     {
         switch (nEvent)
@@ -851,7 +868,7 @@ void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
 // PC 0x006A8240  Xbox 0x000D4360
 void CSWGuiDialogComputer::UpdateSkills()
 {
-    SwguidialogTrace1();
+    TraceDialog();
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
     CItemRepository* pRepository =
@@ -880,7 +897,7 @@ void CSWGuiDialogComputer::UpdateSkills()
 // PC 0x006A8400  Xbox 0x000D4540
 void CSWGuiDialogComputer::SetType(unsigned char nType)
 {
-    SwguidialogTrace1();
+    TraceDialog();
     C2DA* pTypes = new C2DA("comptypes", 0);
     if (!pTypes->Load2DArray())
     {
@@ -906,11 +923,11 @@ void CSWGuiDialogComputer::SetType(unsigned char nType)
 // PC 0x006A94E0  Xbox 0x000D4F00
 void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
                                       unsigned long* pReplyIndices,
-                                      int nStartIndex, int bUnknown)
+                                      int nStartIndex, int bShowReplies)
 {
     CSWGuiDialog::SetReplies(nCount, pReplies, pReplyIndices, nStartIndex,
-                             bUnknown);
-    if (bUnknown != 0)
+                             bShowReplies);
+    if (bShowReplies != 0)
     {
         m_lblMessage.SetEnabledFlag(1);
     }
@@ -919,7 +936,7 @@ void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
 // PC 0x006A9520  Xbox 0x000D4F40
 void CSWGuiDialogComputer::SetDialogMessage(const CExoString& sMessage)
 {
-    SwguidialogTrace2();
+    TraceComputerDialog();
     UpdateSkills();
     CSWGuiDialog::SetDialogMessage(sMessage);
     m_lbMessage.SetEnabledFlag(m_lblMessage.m_bEnabled);
@@ -995,7 +1012,7 @@ CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
 // PC 0x006A86A0  Xbox 0x000D46F0
 void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
                               unsigned long* pReplyIndices, int nStartIndex,
-                              int bUnknown)
+                              int bShowReplies)
 {
     Reset();
     CSWGuiExtent cExtent;
@@ -1042,7 +1059,7 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
         }
         m_aReplyIndex[i] = pReplyIndices[i];
     }
-    if (bUnknown)
+    if (bShowReplies)
     {
         m_lbReplies.AddControls(lReplies, 0, 0, 1);
         m_lbReplies.SetEnabledFlag(1);
@@ -1098,11 +1115,11 @@ CSWGuiManager* CSWGuiDialogLetterbox::SetMiddle()
     return pManager;
 }
 
-static inline void SwguidialogTrace2()
+static inline void TraceComputerDialog()
 {
-    SwguidialogTrace1();
+    TraceDialog();
 }
 
-static inline void SwguidialogTrace1()
+static inline void TraceDialog()
 {
 }

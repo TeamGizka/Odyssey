@@ -227,8 +227,8 @@ public:
     CAurora16BitTexture(CResRef cResRef, int bRequest);
     virtual ~CAurora16BitTexture();
 
-    int GetTextureAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC,
-                         int* pnD);
+    int GetTextureAttrib(unsigned long* pnWidth, unsigned long* pnHeight, float* pfAlpha,
+                         int* pnFormat);
     unsigned char* GetTextureDataPtr();
     int Load();
     void Unload();
@@ -260,6 +260,7 @@ public:
     int ReadTextureHeader(int*, int*, int*, int*, float*);
     unsigned char* GetPtrToResHelperInfo();
     unsigned char* GetCompressedTextureDataPtr();
+    int GetCompressedTextureDataSize();
 };
 
 class CAuroraLayeredTexture;
@@ -280,8 +281,8 @@ public:
     CAuroraLayeredTexture(CResRef cResRef, int bRequest);
     virtual ~CAuroraLayeredTexture();
 
-    int GetTextureAttrib(unsigned long* pnA, unsigned long* pnB,
-                         unsigned long* pnC);
+    int GetTextureAttrib(unsigned long* pnWidth, unsigned long* pnHeight,
+                         unsigned long* pnReserved);
     int Load();
     void Unload();
     unsigned char* GetTextureDataPtr();
@@ -471,6 +472,8 @@ public:
     char gap_0[1];
     static unsigned char* GetLayeredRaster(char*, int*, int*, int*);
     static unsigned char* GetRaster(char*, int*, int*, int*);
+    static unsigned char* GetFontRaster(char* sFileName, void** ppFontData,
+                                        int* pWidth, int* pHeight, int* pBPP);
     static void ReleaseLayeredRaster(void*, int, int);
     static void ReleaseRaster(void*, int, int, int, int, int, int, bool);
     static void* GetResource(char*, char*, int*);
@@ -537,13 +540,6 @@ public:
     static CAuroraTXI* GetTXI(CExoString const&);
     static CAuroraVisibility* GetVisibility(CExoString const&);
     static CAuroraModelX* GetModelX(CExoString const&);
-    static int ReleaseTexture(CAuroraTexture*);
-    static int Release16BitTexture(CAurora16BitTexture*);
-    static int ReleaseLayeredTexture(CAuroraLayeredTexture*);
-    static int ReleaseCompressedTexture(CAuroraCompressedTexture*);
-    static int ReleaseProcessedTexture(CAuroraProcessedTexture*);
-    static int ReleaseTXI(CAuroraTXI*);
-    static int ReleaseVisibility(CAuroraVisibility*);
     static int ReleaseModelX(CAuroraModelX*);
     static CExoLinkedList<CAuroraModel> m_lstRequestedModel;
     static CExoString m_pCurrentTexturePack[4];
@@ -618,7 +614,7 @@ extern "C" unsigned char* (*AurGetRaster)(char*, int*, int*, int*);
 extern "C" unsigned char* (*AurGetS3TCImage)(char*, int*, int*, int*, int*, float*);
 extern "C" unsigned char* (*AurGet16BitRaster)(char*, int*, int*, float*, int*);
 extern "C" unsigned char* (*AurGetProcessedRaster)(char*, int*, int*, char*, int*, int*, int*, float*, char*);
-extern "C" void (*AurReleaseRaster)(void* pImage, int nWidth, int nHeight, int nBPP, int nSize, int nReserved60, int nTxiSize, bool bProcessed);
+extern "C" void (*AurReleaseRaster)(void* pImage, int nWidth, int nHeight, int nBPP, int nSize, int nDataSize, int nTxiSize, bool bProcessed);
 extern "C" void (*AurReleaseLayeredRaster)(void*, int, int);
 extern "C" unsigned char* (*AurGetLayeredRaster)(char* sFileName, int* pWidth, int* pHeight, int* pReserved);
 extern "C" int (*AurGetRasterHeader)(char*, int*, int*, int*);

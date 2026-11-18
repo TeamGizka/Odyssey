@@ -10,7 +10,8 @@
 #include "math3d.h"
 #include "mss.h"
 
-static inline void ExostreamingsoundsourceinternalTrace1();
+#define EXOSTREAMINGSOUNDSOURCEINTERNAL_DEBUG 0
+
 // PC 0x004015A0  Xbox 0x001567B0
 void CExoStreamingSoundSourceInternal::DoObstructionWork()
 {
@@ -72,7 +73,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
 // PC 0x005DBCA0  Xbox 0x00155E90
 CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
 {
-    ExostreamingsoundsourceinternalTrace1();
+    EXOLOG("VO stream destroyed");
     int bPlaying;
     CExoSoundInternal* pSound;
 
@@ -99,7 +100,10 @@ CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
 // PC 0x005DBD30
 void CExoStreamingSoundSourceInternal::InitializeSource()
 {
-    ExostreamingsoundsourceinternalTrace1();
+    if (EXOSTREAMINGSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoStreamingSoundSourceInternal::InitializeSource() is scalable %d\n", IsScalable());
+    }
     char szHeader[5];
     if (g_bModifiedSound != 0)
     {
@@ -253,7 +257,10 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
 // PC 0x005DC300  Xbox 0x00155D70
 int CExoStreamingSoundSourceInternal::IsPlaying()
 {
-    ExostreamingsoundsourceinternalTrace1();
+    if (EXOSTREAMINGSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoStreamingSoundSourceInternal::IsPlaying() is scalable %d\n", IsScalable());
+    }
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {
         return AIL_stream_status(m_hStream) - SMP_PLAYING == 0;
@@ -279,7 +286,7 @@ void CExoStreamingSoundSourceInternal::SetLooping(int bLooping)
         AIL_set_stream_loop_count(m_hStream, nLoopCount);
     }
 }
-
+// Dead code: not in the PC executable
 int CExoStreamingSoundSourceInternal::IsScalable()
 {
     return m_nPriorityGroup == 4 || m_nPriorityGroup == 21;
@@ -287,7 +294,10 @@ int CExoStreamingSoundSourceInternal::IsScalable()
 // PC 0x005DC380  Xbox 0x001562E0
 void CExoStreamingSoundSourceInternal::Stop()
 {
-    ExostreamingsoundsourceinternalTrace1();
+    if (EXOSTREAMINGSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoStreamingSoundSourceInternal::Stop() play failed %d\n", GetPlayFailed());
+    }
     CExoSoundInternal* pSound;
 
     if (m_hStream != NULL)
@@ -428,7 +438,7 @@ void CExoStreamingSoundSourceInternal::Update3DStream()
 }
 // PC 0x005DC930  Xbox 0x001561B0
 void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
-                                                int bUnknown, float fScale)
+                                                int nSliderMode, float fScale)
 {
     int nSliderVolumeIndex;
     int nSliderType;
@@ -437,7 +447,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
     float fNewVolume;
     int nScaledVolume;
 
-    nSliderVolumeIndex = bUnknown;
+    nSliderVolumeIndex = nSliderMode;
     nSliderType = m_pSoundInternal->GetSliderType(this);
     if (!IsScalable())
     {
@@ -448,13 +458,13 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
         fVolumeScale = fScale;
     }
     nScaledVolume = (int)(nVolume * fVolumeScale);
-    if (bUnknown == 0)
+    if (nSliderMode == 0)
     {
         m_nVolume = nVolume;
     }
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {
-        if (m_pSoundInternal->GetMutable(this) == 0 && bUnknown == 0)
+        if (m_pSoundInternal->GetMutable(this) == 0 && nSliderMode == 0)
         {
             fVolume = m_pSoundInternal->GetSliderVolume(nSliderType, 1);
             nSliderVolumeIndex =
@@ -472,7 +482,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
 // PC 0x005DCA30  Xbox 0x00156C60
 int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
                                            unsigned short nResourceType,
-                                           int bVoice, int bMusic, int bUnused)
+                                           int bVoice, int bMusic, int bCached)
 {
     int nLoopCount;
 
@@ -628,8 +638,4 @@ void CExoStreamingSoundSourceInternal::Resume()
             m_nPausePosition = 0;
         }
     }
-}
-
-static inline void ExostreamingsoundsourceinternalTrace1()
-{
 }

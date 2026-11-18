@@ -17,10 +17,11 @@
 #include "aurrendergl.h"
 #include "aurwindmanager.h"
 
-static inline void AuranimTrace4();
-static inline void AuranimTrace3();
-static inline void AuranimTrace2();
-static inline void AuranimTrace1();
+#define AURANIM_DEBUG 0
+
+static inline void TracePlayAnimation();
+static inline void TraceAnimationRun();
+static inline void TraceAnimation();
 
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
@@ -210,6 +211,16 @@ CallBack::CallBack(void (*pfnCallBack)(CAurObject*, char*, void*), char* sEvent,
     m_fDelay = fDelay;
     m_bRepeat = bRepeat;
 }
+// Dead code: not in the PC executable
+bool Gob::CheckEvent(float fTime, bool bForce)
+{
+    if (!checkevents)
+        return true;
+    bool bFire = false;
+    if (fTime > m_fCameraDistance || (bForce && IsInViewVolume()))
+        bFire = true;
+    return bFire;
+}
 // PC 0x00481AA0  Xbox 0x002D76C0
 inline Quaternion Interpolate(const Quaternion& qFirst,
                               const Quaternion& qSecond, float fPosition)
@@ -268,6 +279,7 @@ void PartLightsaber::Animate(float fTimeStep)
     lightsaberSegments = m_nSegments;
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 OOAnimRun::~OOAnimRun()  // Xbox 0x002D7600
 {
     if (m_pDeltaValues != 0)
@@ -1131,6 +1143,89 @@ float FindAnimScale(Model* pModel, Animation* pAnimation)
 
     return fScale;
 }
+// Dead code: not in the PC executable
+void Gob::Reset()
+{
+    for (int i = 0; i < m_lOutOfOrderAnimations.m_nCount; i++)
+    {
+        AnimRun* pRun = m_lOutOfOrderAnimations[i];
+        pRun->m_fScale = FindAnimScale(m_pModel, FindAnimation(m_pModel, pRun->m_pAnimation->m_sName));
+    }
+    position_scale_factor = 1.0f;
+    AnimateHierarchy(m_pRootPart, m_pRootPart->m_pNode, 0.0f, 0.0f, 1.0f, false);
+}
+// Dead code: not in the PC executable
+float Gob::SetAnimationTime(char* sName, float fTime)
+{
+    if (sName == 0 || sName[0] == 0)
+    {
+        return ANIMATION_TIME_UNAVAILABLE;
+    }
+
+    AnimRun* pRun = 0;
+    for (int nRun = m_lOutOfOrderAnimations.m_nCount - 1; nRun >= 0; --nRun)
+    {
+        if (stricmp(m_lOutOfOrderAnimations[nRun]->m_pAnimation->m_sName, sName) == 0)
+        {
+            pRun = m_lOutOfOrderAnimations[nRun];
+            break;
+        }
+    }
+    if (pRun == 0)
+    {
+        return ANIMATION_TIME_UNAVAILABLE;
+    }
+
+    if (fTime < 0.0f)
+    {
+        pRun->m_fTime = 0.0f;
+        return 0.0f;
+    }
+    if (fTime > pRun->m_pAnimation->m_fLength)
+    {
+        pRun->m_fTime = pRun->m_pAnimation->m_fLength;
+        return pRun->m_fTime;
+    }
+    pRun->m_fTime = fTime;
+    return fTime;
+}
+// Dead code: not in the PC executable
+float Gob::SetAnimationPercentage(char* sName, float fPercentage)
+{
+    if (sName == 0 || sName[0] == 0)
+    {
+        return ANIMATION_TIME_UNAVAILABLE;
+    }
+
+    AnimRun* pRun = 0;
+    for (int nRun = m_lOutOfOrderAnimations.m_nCount - 1; nRun >= 0; --nRun)
+    {
+        if (stricmp(m_lOutOfOrderAnimations[nRun]->m_pAnimation->m_sName, sName) == 0)
+        {
+            pRun = m_lOutOfOrderAnimations[nRun];
+            break;
+        }
+    }
+    if (pRun == 0)
+    {
+        return ANIMATION_TIME_UNAVAILABLE;
+    }
+
+    if (fPercentage <= 0.0f)
+    {
+        pRun->m_fTime = 0.0f;
+        return 0.0f;
+    }
+    if (fPercentage >= 1.0f)
+    {
+        pRun->m_fTime = pRun->m_pAnimation->m_fLength;
+    }
+    else
+    {
+        pRun->m_fTime = pRun->m_pAnimation->m_fLength * fPercentage;
+    }
+    return pRun->m_fTime;
+}
 // PC 0x00484D20  Xbox 0x002D9F00
 OOAnimRun* Gob::GetAnimation(char* sName, float* pfTime, float* pfLength)
 {
@@ -1186,7 +1281,7 @@ Animation::~Animation()
 void Gob::PlayOutOfOrderAnimation(char* sName, float* pfWeights,
                                  float* pfTimes, int nCount, float fLength)
 {
-    AuranimTrace3();
+    TracePlayAnimation();
     Animation* pAnimation = FindAnimation(m_pModel, sName);
     if (pAnimation == 0)
     {
@@ -1216,7 +1311,10 @@ Animation::Animation(char* sName)
 void NewController::ReportKeys(Part* pPart, MdlNode* pNode,
                                float fStartTime, float fEndTime)
 {
-    AuranimTrace3();
+    if (AURANIM_DEBUG)
+    {
+        AnimRun::m_pTraceRun->m_pAnimation->m_lEvents.SetSize(0);
+    }
     if (pPart->m_pAurObject == 0)
         return;
 
@@ -1366,7 +1464,7 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
     else
         nFrame = 0;
 
-    if (nFrame >= 0 && nFrame < m_nAnimationDataCount1 - 1)
+    if (nFrame >= 0 && nFrame < m_nAnimVertFrames - 1)
     {
         float fAlpha = fPreviousTime / m_fSamplePeriod - nFrame;
         VertexPrimitiveAnim* pPrimitive = pAnimMesh->m_pVertexPrimitive->AsVertexPrimitiveAnim();
@@ -1379,13 +1477,13 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
             vOld.m_fX = pVertices[i].m_fX;
             vOld.m_fY = pVertices[i].m_fY;
             vOld.m_fZ = pVertices[i].m_fZ;
-            int nIndex = (i * m_nAnimationDataCount1 + nFrame) * 3;
-            vFirst.m_fX = ((float*)m_pAnimationData1)[nIndex];
-            vFirst.m_fY = ((float*)m_pAnimationData1)[nIndex + 1];
-            vFirst.m_fZ = ((float*)m_pAnimationData1)[nIndex + 2];
-            vSecond.m_fX = ((float*)m_pAnimationData1)[nIndex + 3];
-            vSecond.m_fY = ((float*)m_pAnimationData1)[nIndex + 4];
-            vSecond.m_fZ = ((float*)m_pAnimationData1)[nIndex + 5];
+            int nIndex = (i * m_nAnimVertFrames + nFrame) * 3;
+            vFirst.m_fX = ((float*)m_pAnimVertData)[nIndex];
+            vFirst.m_fY = ((float*)m_pAnimVertData)[nIndex + 1];
+            vFirst.m_fZ = ((float*)m_pAnimVertData)[nIndex + 2];
+            vSecond.m_fX = ((float*)m_pAnimVertData)[nIndex + 3];
+            vSecond.m_fY = ((float*)m_pAnimVertData)[nIndex + 4];
+            vSecond.m_fZ = ((float*)m_pAnimVertData)[nIndex + 5];
             vNew = Interpolate(vFirst, vSecond, fAlpha);
             vOld = Interpolate(vOld, vNew, fBlend);
             pVertices[i].m_fX = vOld.m_fX;
@@ -1394,7 +1492,7 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
         }
         GLRender::UnlockPool(pPrimitive->m_nVertexPool);
     }
-    else if (m_nAnimationDataCount1 != 0)
+    else if (m_nAnimVertFrames != 0)
     {
         VertexPrimitiveAnim* pPrimitive = pAnimMesh->m_pVertexPrimitive->AsVertexPrimitiveAnim();
         unsigned long nPool = pPrimitive->m_nVertexPool;
@@ -1402,17 +1500,17 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
                                                       RequestPoolManager::POOL_LOCK_WRITE);
         if (nFrame < 0)
             nFrame = 0;
-        if (nFrame > m_nAnimationDataCount1 - 1)
-            nFrame = m_nAnimationDataCount1 - 1;
+        if (nFrame > m_nAnimVertFrames - 1)
+            nFrame = m_nAnimVertFrames - 1;
         Vector vNew;
         for (int i = 0; i < m_nVertexCount; i++)
         {
-            float* pData = (float*)m_pAnimationData1;
+            float* pData = (float*)m_pAnimVertData;
             Vector vOld;
             vOld.m_fX = pVertices[i].m_fX;
             vOld.m_fY = pVertices[i].m_fY;
             vOld.m_fZ = pVertices[i].m_fZ;
-            int nIndex = (i * m_nAnimationDataCount1 + nFrame) * 3;
+            int nIndex = (i * m_nAnimVertFrames + nFrame) * 3;
             vNew.m_fX = pData[nIndex];
             vNew.m_fY = pData[nIndex + 1];
             vNew.m_fZ = pData[nIndex + 2];
@@ -1424,41 +1522,41 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
         GLRender::UnlockPool(pPrimitive->m_nVertexPool);
     }
 
-    if (m_nAnimationDataCount2 != 0)
+    if (m_nAnimTVertFrames != 0)
     {
         VertexPrimitiveAnim* pPrimitive = pAnimMesh->m_pVertexPrimitive->AsVertexPrimitiveAnim();
         float* pTexCoords = (float*)GLRender::LockPool(pPrimitive->m_nTexCoordPool, 0, 0,
                                                     RequestPoolManager::POOL_LOCK_WRITE);
-        if (nFrame >= 0 && nFrame < m_nAnimationDataCount2 - 1)
+        if (nFrame >= 0 && nFrame < m_nAnimTVertFrames - 1)
         {
             float fAlpha = fPreviousTime / m_fSamplePeriod - nFrame;
             Vector vFirst, vSecond;
             for (int i = 0; i < m_nVertexCount; i++)
             {
                 Vector vOld(pTexCoords[i * 2], pTexCoords[i * 2 + 1], 0.0f);
-                int nIndex = (i << 1) * m_nAnimationDataCount2 + (nFrame << 1);
-                vFirst.m_fX = ((float*)m_pAnimationData2)[nIndex];
-                vFirst.m_fY = ((float*)m_pAnimationData2)[nIndex + 1];
-                vSecond.m_fX = ((float*)m_pAnimationData2)[nIndex + 2];
-                vSecond.m_fY = ((float*)m_pAnimationData2)[nIndex + 3];
+                int nIndex = (i << 1) * m_nAnimTVertFrames + (nFrame << 1);
+                vFirst.m_fX = ((float*)m_pAnimTVertData)[nIndex];
+                vFirst.m_fY = ((float*)m_pAnimTVertData)[nIndex + 1];
+                vSecond.m_fX = ((float*)m_pAnimTVertData)[nIndex + 2];
+                vSecond.m_fY = ((float*)m_pAnimTVertData)[nIndex + 3];
                 Vector vNew = Interpolate(vFirst, vSecond, fAlpha);
                 vOld = Interpolate(vOld, vNew, fBlend);
                 pTexCoords[i * 2] = vOld.m_fX;
                 pTexCoords[i * 2 + 1] = vOld.m_fY;
             }
         }
-        else if (m_nAnimationDataCount2 != 0)
+        else if (m_nAnimTVertFrames != 0)
         {
             int nTexFrame = nFrame > 0 ? nFrame : 0;
-            if (nTexFrame >= m_nAnimationDataCount2 - 1)
-                nTexFrame = m_nAnimationDataCount2 - 1;
+            if (nTexFrame >= m_nAnimTVertFrames - 1)
+                nTexFrame = m_nAnimTVertFrames - 1;
             Vector vNew;
             for (int i = 0; i < m_nVertexCount; i++)
             {
                 Vector vOld(pTexCoords[i * 2], pTexCoords[i * 2 + 1], 0.0f);
-                int nIndex = (i << 1) * m_nAnimationDataCount2 + (nTexFrame << 1);
-                vNew.m_fX = ((float*)m_pAnimationData2)[nIndex];
-                vNew.m_fY = ((float*)m_pAnimationData2)[nIndex + 1];
+                int nIndex = (i << 1) * m_nAnimTVertFrames + (nTexFrame << 1);
+                vNew.m_fX = ((float*)m_pAnimTVertData)[nIndex];
+                vNew.m_fY = ((float*)m_pAnimTVertData)[nIndex + 1];
                 vOld = Interpolate(vOld, vNew, fBlend);
                 pTexCoords[i * 2] = vOld.m_fX;
                 pTexCoords[i * 2 + 1] = vOld.m_fY;
@@ -1471,7 +1569,7 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
 // PC 0x00485BD0  Xbox 0x002DB0E0
 int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
 {
-    AuranimTrace3();
+    TracePlayAnimation();
     if (sName == 0 || *sName == 0 || stricmp("NULL", sName) == 0)
     {
         for (int i = m_lOutOfOrderAnimations.m_nCount; i != 0; )
@@ -1652,7 +1750,10 @@ LookAtAnimation::~LookAtAnimation()
 // PC 0x00486140  Xbox 0x002DB5E0
 void LookAtAnimation::BuildAnimation()
 {
-    AuranimTrace4();
+    if (AURANIM_DEBUG)
+    {
+        m_pTarget = m_pGob;
+    }
     m_pTree = new Animation("LookAtAnimation");
     MdlNode* pLooking = new MdlNode("looking");
     pLooking->m_nNodeID = m_pHeadPart->m_nNodeID;
@@ -2039,22 +2140,17 @@ void Gob::BeginLookAtAnimate(CAurObject* pTarget, char* sTargetPart,
     }
 }
 
-static inline void AuranimTrace4()
+static inline void TracePlayAnimation()
 {
-    AuranimTrace3();
+    TraceAnimationRun();
 }
 
-static inline void AuranimTrace3()
+static inline void TraceAnimationRun()
 {
-    AuranimTrace2();
+    TraceAnimation();
 }
 
-static inline void AuranimTrace2()
-{
-    AuranimTrace1();
-}
-
-static inline void AuranimTrace1()
+static inline void TraceAnimation()
 {
 }
 

@@ -1,7 +1,7 @@
 #include "nwscript.h"
 #include "nwvmachineinternal.h"
 #include "nwscriptinternal.h"
-
+// Dead code: not in the PC executable
 CScriptCompiler::CScriptCompiler()
 {
     m_pScriptCompilerInternal = new CScriptCompilerInternal;
@@ -127,57 +127,57 @@ CScriptCompiler::~CScriptCompiler()
         delete m_pScriptCompilerInternal;
     }
 }
-
+// Dead code: not in the PC executable
 void CScriptCompiler::SetCompileSymbolicOutput(int nValue)
 {
     m_pScriptCompilerInternal->SetCompileSymbolicOutput(nValue);
 }
-
+// Dead code: not in the PC executable
 void CScriptCompiler::SetCompileDebugLevel(int nValue)
 {
     m_pScriptCompilerInternal->SetCompileDebugLevel(nValue);
 }
-
+// Dead code: not in the PC executable
 void CScriptCompiler::SetIdentifierSpecification(const CExoString& sLanguageSource)
 {
     m_pScriptCompilerInternal->SetIdentifierSpecification(sLanguageSource);
 }
-
+// Dead code: not in the PC executable
 void CScriptCompiler::SetOutputAlias(const CExoString& sAlias)
 {
     m_pScriptCompilerInternal->SetOutputAlias(sAlias);
 }
-
+// Dead code: not in the PC executable
 void CScriptCompiler::SetOptimizeBinaryCodeLength(int bValue)
 {
     m_pScriptCompilerInternal->SetOptimizeBinaryCodeLength(bValue);
 }
-
+// Dead code: not in the PC executable
 void CScriptCompiler::SetCompileConditionalFile(int bValue)
 {
     m_pScriptCompilerInternal->SetCompileConditionalFile(bValue);
 }
-
+// Dead code: not in the PC executable
 int CScriptCompiler::CompileFile(const CExoString& sFileName)
 {
     return m_pScriptCompilerInternal->CompileFile(sFileName);
 }
-
+// Dead code: not in the PC executable
 int CScriptCompiler::CompileScriptChunk(const CExoString& sScriptChunk)
 {
     return m_pScriptCompilerInternal->CompileScriptChunk(sScriptChunk);
 }
-
+// Dead code: not in the PC executable
 int CScriptCompiler::CompileScriptConditional(const CExoString& sScriptConditional)
 {
     return m_pScriptCompilerInternal->CompileScriptConditional(sScriptConditional);
 }
-
+// Dead code: not in the PC executable
 int CScriptCompiler::GetCompiledScriptCode(char** ppnCode, int* pnCodeSize)
 {
     return m_pScriptCompilerInternal->GetCompiledScriptCode(ppnCode, pnCodeSize);
 }
-
+// Dead code: not in the PC executable
 void CScriptCompiler::ClearCompiledScriptCode()
 {
     m_pScriptCompilerInternal->ClearCompiledScriptCode();

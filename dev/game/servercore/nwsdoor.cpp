@@ -33,12 +33,11 @@
 #include "nwsplayer.h"
 #include "nwportrait.h"
 
-static inline void NwsdoorTrace2();
-static inline void NwsdoorTrace1();
+#define NWSDOOR_DEBUG 0
 
 extern int nRenderDoorBBox;
 // PC 0x00588940  Xbox 0x0020B290
-int CSWSDoor::GetMeshOutline(Vector vPosition, Vector vUnused, Vector& vFirst,
+int CSWSDoor::GetMeshOutline(Vector vPosition, Vector vOrientation, Vector& vFirst,
                              Vector& vSecond, Vector& vThird, Vector& vFourth)
 {
     m_apCollisionMesh[CSWDoorSurfaceMesh::DOOR_STATE_CLOSED]->m_vWorldPosition =
@@ -218,8 +217,8 @@ int CSWSDoor::GetIsLinked()
 }
 // PC 0x005890F0  Xbox 0x0020BA10
 int CSWSDoor::NoNonWalkPolysInDoor(const Vector& vStart, const Vector& vEnd,
-                                   const float& fA, const float& fB,
-                                   const float& fC, CWalkHitInfo* pHitInfo)
+                                   const float& fMinHeight, const float& fMaxHeight,
+                                   const float& fRadius, CWalkHitInfo* pHitInfo)
 {
     CSWCollisionMesh* pMesh = m_apCollisionMesh[(unsigned char)m_nOpenState];
     if (pMesh == 0)
@@ -232,7 +231,7 @@ int CSWSDoor::NoNonWalkPolysInDoor(const Vector& vStart, const Vector& vEnd,
     m_apCollisionMesh[(unsigned char)m_nOpenState]->m_qOrientation =
         qOrientation;
     return m_apCollisionMesh[(unsigned char)m_nOpenState]->NoNonWalkPolys(
-        vStart, vEnd, fA, fB, fC, pHitInfo);
+        vStart, vEnd, fMinHeight, fMaxHeight, fRadius, pHitInfo);
 }
 // PC 0x00589190
 void CSWSDoor::DoDamage(int nDamage)
@@ -695,7 +694,7 @@ void CSWSDoor::PostProcess()
 {
     if (m_nHardness > 0)
     {
-        m_n1EC = 1;
+        m_bApplyingInnateEffect = 1;
         CGameEffect* pEffect = new CGameEffect(1);
         pEffect->m_nType = CSWSEffectListHandler::EFFECT_DAMAGE_RESISTANCE;
         pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
@@ -704,7 +703,7 @@ void CSWSDoor::PostProcess()
         pEffect->SetInteger(0, CSWSEffectListHandler::DAMAGE_FLAG_ALL);
         pEffect->SetInteger(1, m_nHardness);
         ApplyEffect(pEffect, 0, 0);
-        m_n1EC = 0;
+        m_bApplyingInnateEffect = 0;
     }
 
     if (m_bAnimatable == 0)
@@ -945,7 +944,7 @@ int CSWSDoor::InDoor(Vector vPoint)  // PC 0x005897D0  Xbox 0x0020C0E0
     return nCrossings % 2 == 1;
 }
 #endif
-int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vUnused,  // PC 0x00589980  Xbox 0x0020C240
+int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vOrientation,  // PC 0x00589980  Xbox 0x0020C240
                                  Vector& vMinimum, Vector& vMaximum)
 {
     int nMesh;
@@ -1071,7 +1070,10 @@ int CSWSDoor::LoadFromTemplate(CResRef const& cResRef)
 // PC 0x0058B490  Xbox 0x0020DE50
 void CSWSDoor::RemoveFromArea()
 {
-    NwsdoorTrace2();
+    if (NWSDOOR_DEBUG)
+    {
+        EXOLOG("CSWSDoor::RemoveFromArea() load door %d\n", LoadDoor(NULL, NULL, 0));
+    }
     if (GetArea() != 0)
     {
         GetArea()->RemoveObjectFromArea(m_nId);
@@ -1277,7 +1279,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_DAMAGED], m_nId, 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH:
-            m_n154 = oidCaller;
+            m_oidLastKiller = oidCaller;
             g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_DEATH], m_nId, 1);
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_DISARM:
@@ -1356,13 +1358,13 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_SPELLCASTAT:
             {
-                m_n1D8 = pEvent->GetObjectID(0);
-                m_n1DC = pEvent->GetInteger(0);
-                m_n1E0 = pEvent->GetInteger(1);
-                if (m_n1E0)
+                m_oidLastSpellCaster = pEvent->GetObjectID(0);
+                m_nLastSpellCastAtMeId = pEvent->GetInteger(0);
+                m_bLastSpellCastAtMeHarmful = pEvent->GetInteger(1);
+                if (m_bLastSpellCastAtMeHarmful)
                 {
-                    SetLastHostileActor(m_n1D8, 0);
-                    unsigned long oidCaster = m_n1D8;
+                    SetLastHostileActor(m_oidLastSpellCaster, 0);
+                    unsigned long oidCaster = m_oidLastSpellCaster;
                     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaster);
                     if (pCreature != NULL)
                     {
@@ -1477,7 +1479,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC)
+        if (m_bDestroyable)
         {
             if (!GetIsLinked())
             {
@@ -1535,17 +1537,6 @@ int CSWSDoor::LoadDoorExternal(CResGFF* pRes, CResStruct* pStruct,
         pServerApp->GetModule()->AddObjectToLookupTable(m_sTag, m_nId);
     }
     return bSuccess;
-}
-
-#include "nwportrait.h"
-
-static inline void NwsdoorTrace2()
-{
-    NwsdoorTrace1();
-}
-
-static inline void NwsdoorTrace1()
-{
 }
 
 #ifdef _XBOX

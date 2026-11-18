@@ -155,7 +155,7 @@ public:
     unsigned short m_nSubtype;
     unsigned short GetSubtype();
     unsigned char m_nCostTable;
-    unsigned char m_aUnmapped05[1];
+    unsigned char m_aCostTableAlignment[1];
     unsigned short m_nCostValue;
     unsigned short GetCostValue();
     unsigned char m_nParam1;
@@ -344,7 +344,7 @@ public:
     int LoadItem(CResGFF* pRes, CResStruct* pStruct);
     void GetSortedPropertyStrings(CExoArrayList<CExoString>& aStrings,
                                   CExoString& sString);
-    void SetPossessor(unsigned long oidPossessor, int bFlag1, int bFlag2,
+    void SetPossessor(unsigned long oidPossessor, int bRunScripts, int bDisplayFeedback,
                       unsigned long oidRepository);
 
     void ApplyItemProperties(CSWSCreature* pCreature, unsigned long nSlot,
@@ -372,7 +372,7 @@ public:
 class CItemRepository
 {
 public:
-    CItemRepository(unsigned long oidOwner, int bFlag);
+    CItemRepository(unsigned long oidOwner, int bPartyInventory);
     ~CItemRepository();
     void ClearNewItems(CExoArrayList<unsigned long>* pNewItems);
     int ClearItems();
@@ -381,14 +381,14 @@ public:
     int CalculateContentsWeight();
     int SetParentId(unsigned long oidParent);
     int RemoveItem(CSWSItem* pItem);
-    int AddItem(CSWSItem** ppItem, int bFlag1, int bFlag2, int bFlag3);
+    int AddItem(CSWSItem** ppItem, int bMergeItem, int bUpdatePossessor, int bNewItem);
     int GetNumItems() { return m_lstItems.num; }
-    int GetItemInRepository(CSWSItem* pItem, int bFlag);
+    int GetItemInRepository(CSWSItem* pItem, int bCheckContainers);
     void InsertItem(CSWSItem* pItem, int nIndex);
 
     unsigned long m_oidOwner;
     unsigned long m_nNewItems;
-    unsigned long m_bUnknown08 : 1;
+    unsigned long m_bPartyInventory : 1;
     unsigned long m_nUnknown09 : 31;
     CExoArrayList<unsigned long> m_lstItems;
     int FindItemWithBaseItemType(unsigned char nItemType, int nIndex);

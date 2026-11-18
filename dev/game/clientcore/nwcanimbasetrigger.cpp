@@ -7,8 +7,8 @@
 
 #include <stdio.h>
 
-static inline void NwcanimbasetriggerTrace1();
-#define NWCANIMBASETRIGGER_TRACE() NwcanimbasetriggerTrace1()
+static inline void TraceTriggerAnimation();
+#define NWCANIMBASETRIGGER_TRACE() TraceTriggerAnimation()
 // PC 0x006E5F40  Xbox 0x0011EB60
 CSWCAnimBaseTrigger::CSWCAnimBaseTrigger()
 {
@@ -80,6 +80,6 @@ unsigned short CSWCAnimBaseTrigger::ServerToClientAnimation(
     return nAnimation;
 }
 
-static inline void NwcanimbasetriggerTrace1()
+static inline void TraceTriggerAnimation()
 {
 }

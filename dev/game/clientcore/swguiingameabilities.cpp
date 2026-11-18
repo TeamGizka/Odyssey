@@ -17,9 +17,9 @@
 #include "nwccreature.h"
 #include "swguiingamecharacter.h"
 
-static inline void SwguiingameabilitiesTrace2();
-static inline void SwguiingameabilitiesTrace1();
-#define SWGUIINGAMEABILITIES_TRACE() SwguiingameabilitiesTrace2()
+static inline void TraceEnterFeat();
+static inline void TraceAbilitiesPanel();
+#define SWGUIINGAMEABILITIES_TRACE() TraceEnterFeat()
 // PC 0x006AB8B0  Xbox 0x000E2D00
 void CSWGuiInGameAbilities::OnPanelRemoved()
 {
@@ -963,7 +963,7 @@ void CSWGuiInGameAbilities::OnEnterFeat(unsigned short nFeat)
     SetDescription(pFeat->GetDescriptionText());
     m_lblName.m_cText.m_cParams.SetStrRef(pFeat->m_nNameStrRef);
 }
-
+// Dead code: not in the PC executable
 void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
 {
     m_lblDescription.m_cText.m_cParams.SetText(sText);
@@ -1207,7 +1207,7 @@ void CSWGuiInGameAbilities::OnSkillsButtonPressed(CSWGuiControl* pControl)  // P
     UpdateView();
 }
 #endif
-
+// Dead code: not in the PC executable
 void CSWGuiInGameAbilities::CreateFeatList()
 {
     if (m_pCreature != NULL)
@@ -1540,11 +1540,11 @@ void CSWGuiInGameAbilities::OnChangeCharacter(CSWGuiControl* pControl)  // PC 0x
 }
 #endif
 
-static inline void SwguiingameabilitiesTrace2()
+static inline void TraceEnterFeat()
 {
-    SwguiingameabilitiesTrace1();
+    TraceAbilitiesPanel();
 }
 
-static inline void SwguiingameabilitiesTrace1()
+static inline void TraceAbilitiesPanel()
 {
 }

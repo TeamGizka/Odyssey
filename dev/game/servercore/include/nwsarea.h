@@ -208,7 +208,7 @@ public:
     virtual CSWSArea* NWAreaAsSWSArea() { return this; }  // PC 0x00641DB0
     virtual int HandleTransparentDoors(
         const Vector& vStart, const Vector& vEnd, float fDistance, float fWidth,
-        float fHeight, unsigned long oidObject, unsigned long& oidHitObject, int bFlag,
+        float fHeight, unsigned long oidObject, unsigned long& oidHitObject, int bWalking,
         CExoArrayList<CGameObject*>* pExcludeList, int bCheckObjects);
     virtual CSWSArea* AsSWSArea() { return this; }  // PC 0x0050D340  Xbox 0x001D23C0
 
@@ -227,7 +227,7 @@ public:
                                     unsigned long* poidExclude);
     int NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
                           CPathfindInformation* pPathfind, int nFlags,
-                          int nCount, unsigned long* poidIgnore, int bFlag,
+                          int nCount, unsigned long* poidIgnore, int bCheckSize,
                           CWalkHitInfo* pWalkHitInfo);
     int GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
                                   int nX, int nY, int nZ,
@@ -272,7 +272,10 @@ public:
                          float** ppfResult);
     int SmoothPointsOnPath();
     int SmoothPointsOnPathRestartable();
+    int TestLineWalkable(float fStartX, float fStartY, float fEndX, float fEndY, float fZ);
     int PlotGridPath(CPathfindInformation* pPathfind, unsigned __int64 nFlags);
+    int PlotPath(CPathfindInformation* pPathfind, unsigned __int64 nFlags);
+    int RemoveInterTileExit(int nTileX, int nTileY, int nExitX, int nExitY);
     int PlotSoundPath(CPathfindInformation* pPathfind);
     int PlotPathPointPath(CPathfindInformation* pPathfind,
                           unsigned __int64 nFlags);
@@ -285,6 +288,7 @@ public:
     void GridDFSTransTableInitialize();
     int GridDFSTransTableGet(int nX, int nY, int* pnScore, int* pnTieBreak);
     void GridDFSTransTablePut(int nX, int nY, int nScore, int nTieBreak);
+    int GridDFSTransTableHash(int nX, int nY);
     void PathPointDFSTransTableInitialize();
     int PathPointDFSTransTableGet(float fX, float fY, float* pfScore,
                                   float* pfTieBreak);
@@ -308,7 +312,7 @@ public:
     class CSWSRoom* GetRoom(const Vector& vPosition, int* pnFace);
     class CSWSRoom* GetRoom(int nRoomIndex);
     int ComputeSafeLocation(const Vector& vPosition, float fRadius,
-                            CPathfindInformation* pPathfind, int bFlag,
+                            CPathfindInformation* pPathfind, int bCheckLine,
                             Vector* pSafePosition);
     static class CSWSRoom* LoadRooms(CLYT* pLayout);
     int LoadCreatures(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
@@ -404,11 +408,11 @@ public:
                                float fMinHeight, float fMaxHeight, float fRadius,
                                unsigned long oidObject, unsigned long& oidHitObject,
                                CExoArrayList<CGameObject*>* pExcludeList,
-                               int bFlag, int bCheckTransparentDoors);
+                               int bWalking, int bCheckTransparentDoors);
     int NoNonWalkPolysDetailed(const Vector& vStart, const Vector& vEnd,
                                float fDistance, float fWidth, float fHeight,
                                unsigned long oidObject, unsigned long& oidHitObject,
-                               int bFlag, CExoArrayList<CGameObject*>* pObjects,
+                               int bWalking, CExoArrayList<CGameObject*>* pObjects,
                                int bCheckObjects, CWalkHitInfo* pWalkHitInfo,
                                int bCheckDoors);
     void ClearObjects();
@@ -434,7 +438,7 @@ public:
     int ClearLineOfSight(const Vector& vStart, const Vector& vEnd,
                          Vector* pvHit, unsigned long* poidHit,
                          unsigned long oidObject, unsigned long oidTarget,
-                         int bFlag1, int bFlag2);
+                         int bCheckTransparentDoors, int bCheckAllRooms);
     void ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
                     const Vector& vOrientation);
     CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea);
@@ -445,6 +449,7 @@ public:
     enum { TRANSITION_FADE_DELAY = 500 };
     int RemoveObjectFromArea(unsigned long oidObject);
     int LoadGIT(int bLoadingGame);
+    void SaveArea(CERFFile* pERFFile, const CExoString& sName);
     void SaveGIT(CERFFile* pERFFile, const CExoString& sName,
                 CExoArrayList<unsigned long>& lstPlayers);
     int AddObjectToArea(unsigned long oidObject, int bLoadingGame);
@@ -485,7 +490,7 @@ public:
     CPathfindInformation* m_pPathfindInformation;
     CPathfindInformation* m_pAreaPathfindInformation;
     CSWSAreaGridTransEntry* m_pGridTransTable;
-    char m_aUnmapped1B8[0x14];
+    char m_anGridSearchState[0x14];
     int m_bGridSearchAborted;
     int m_nGridSearchNodes;
     unsigned long m_oidEnteringObject;
@@ -522,7 +527,7 @@ public:
     int* m_pPathConnections;
 
     int m_bPathPointDFSAborted;
-    char m_aUnmapped24C[0x4];
+    char m_nPathPointDFSDepth[0x4];
     CSWSAreaPathPointTransEntry* m_pPathPointTransTable;
     int m_nPathPointDFSExpansions;
     int m_nPathPointPathCapacity;

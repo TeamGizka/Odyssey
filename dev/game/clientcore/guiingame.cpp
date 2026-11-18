@@ -70,9 +70,8 @@
 #define SWGUI_PANEL_MODE_OVERLAY 0
 #endif
 
-static inline void GuiingameTrace2();
-static inline void GuiingameTrace1();
-#define GUIINGAME_HOOK() GuiingameTrace2()
+#define GUIINGAME_DEBUG 0
+
 
 static inline CServerExoApp* ServerExoAppLate3(CAppManager* p);
 static inline CServerExoApp* ServerExoAppLate2(CAppManager* p);
@@ -81,8 +80,8 @@ static inline CServerExoApp* ServerExoAppLate1(CAppManager* p);
 static inline CClientExoApp* ClientExoAppLate2(CAppManager* p);
 static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
 
-static inline void GuiInGameTrace();
-#define GUIINGAME_TRACE() GuiInGameTrace()
+static inline void TraceInGameGui();
+#define GUIINGAME_TRACE() TraceInGameGui()
 
 CSWGuiPanel* g_pDynamicGUI = 0;
 int trapbadstrref = 0;
@@ -110,6 +109,7 @@ Vector CGuiInGame::DISABLED_TEXT(0.0f, 0.33f, 0.49f);
 Vector CGuiInGame::COLOR_BLACK;
 
 extern int bDisableLetterbox;
+// Dead code: not in the PC executable
 // Xbox 0x00055E10
 const char* HideGUI(char* sCommand)
 {
@@ -131,6 +131,7 @@ const char* HideGUI(char* sCommand)
     return "";
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* ShowGUI(char* sCommand)  // Xbox 0x00055E60
 {
     if (*sCommand == 0)
@@ -214,20 +215,20 @@ CGuiInGame::CGuiInGame()
     for (int nScreen = 0; nScreen < IN_GAME_SCREEN_COUNT; nScreen++)
         m_apScreenPanels[nScreen] = 0;
     m_asReplyText = 0;
-    m_pnReplyValue1 = 0;
-    m_pnReplyValue2 = 0;
-    m_pnReplyValue3 = 0;
-    m_pnReplyValue4 = 0;
-    m_pfReplyValue5 = 0;
-    m_pfReplyValue6 = 0;
-    m_pnReplyValue7 = 0;
-    m_pnReplyValue8 = 0;
-    m_pfReplyValue9 = 0;
-    m_pnReplyValue10 = 0;
-    m_pnReplyValue11 = 0;
-    m_pvReplyValue12 = 0;
-    m_pfReplyValue13 = 0;
-    m_pfReplyValue14 = 0;
+    m_pnReplyIndex = 0;
+    m_poidReplyListener = 0;
+    m_pnReplyCameraAngle = 0;
+    m_pnReplyCameraId = 0;
+    m_pfReplyCameraHeight = 0;
+    m_pfReplyTargetHeight = 0;
+    m_pnReplyWaitFlags = 0;
+    m_pnReplyCameraAnimation = 0;
+    m_pfReplyFieldOfView = 0;
+    m_pnReplyVideoEffect = 0;
+    m_pnReplyFadeType = 0;
+    m_pvReplyFadeColor = 0;
+    m_pfReplyFadeDelay = 0;
+    m_pfReplyFadeLength = 0;
     m_pnReplyAnimations = 0;
     m_ppnReplyAnimationIDs = 0;
     m_ppnReplyAnimationFlags = 0;
@@ -259,7 +260,7 @@ CGuiInGame::CGuiInGame()
     m_bPendingDialogBark = 0;
     m_sPendingDialogBark = "";
     m_nGlobalDialogState = 0;
-    m_nC0 = 0;
+    m_bAnimatedCut = 0;
     m_nDialogCameraType = 0;
 #ifdef _XBOX
     m_bInitialized = 1;
@@ -289,7 +290,7 @@ CGuiInGame::CGuiInGame()
     m_bHoldWorldFadeInForDialog = 0;
     m_oidPostDialogCharacterSwitch = OBJECT_INVALID;
 #ifdef _XBOX
-    m_nXboxUnmappedB98 = 0;
+    m_bShowDialogDebugText = 0;
     m_nDialogReplyRow = 16;
 #endif
     for (int nTutorialByte = 0; nTutorialByte < sizeof(m_aTutorialWindowsShown); nTutorialByte++)
@@ -320,7 +321,7 @@ CGuiInGame::CGuiInGame()
     m_fDeferredFieldOfView = 0.0f;
     m_bTransitionScriptRunning = 0;
 #ifdef _XBOX
-    m_nXboxUnmappedC0C = 1;
+    m_bPlayCreditsMusic = 1;
 #endif
     m_bInputActiveBeforeControllerPause = 0;
 #ifndef _XBOX
@@ -351,7 +352,7 @@ CGuiInGame::~CGuiInGame()
         m_pDialogSound = 0;
     }
 }
-
+// Dead code: not in the PC executable
 void CGuiInGame::ClearLastDialogAnimationData()
 {
     m_nLastDialogAnimations = 0;
@@ -494,7 +495,7 @@ int CGuiInGame::CloseDialog()
     }
     return 0;
 }
-
+// Dead code: not in the PC executable
 void CGuiInGame::LoadCameraModelForDialog(const CResRef& cCameraModel)
 {
     if (cCameraModel.IsValid() && !m_bAnimatedCameraLoaded)
@@ -546,7 +547,7 @@ void CGuiInGame::SetConversationType(unsigned long nType,
         m_pDialog = m_pCameraDialog;
     }
 }
-
+// Dead code: not in the PC executable
 void CGuiInGame::ClearDialogAnimationData()
 {
     m_nDialogAnimations = 0;
@@ -576,30 +577,30 @@ void CGuiInGame::SetDialogAnimationData(unsigned long nIndex, unsigned long nAni
 }
 // PC 0x00628750  Xbox 0x000530D0
 void CGuiInGame::SetReplyData(
-    unsigned long nReply, const CExoString& sText, unsigned long nValue1,
-    unsigned long nValue2, unsigned long nValue3, int nValue4, float fValue5,
-    float fValue6, unsigned long nValue7, unsigned short nValue8, float fValue9,
-    int nValue10, unsigned char nValue11, const Vector& vValue12,
-    float fValue13, float fValue14, unsigned long nAnimations,
+    unsigned long nReply, const CExoString& sText, unsigned long nReplyIndex,
+    unsigned long oidListener, unsigned long nCameraAngle, int nCameraId, float fCameraHeight,
+    float fTargetHeight, unsigned long nWaitFlags, unsigned short nCameraAnimation, float fFieldOfView,
+    int nVideoEffect, unsigned char nFadeType, const Vector& vFadeColor,
+    float fFadeDelay, float fFadeLength, unsigned long nAnimations,
     unsigned long* pnAnimationIDs, unsigned short* pnAnimationFlags)
 {
     if (nReply < m_nReplies)
     {
         m_asReplyText[nReply] = sText;
-        m_pnReplyValue1[nReply] = nValue1;
-        m_pnReplyValue2[nReply] = nValue2;
-        m_pnReplyValue3[nReply] = nValue3;
-        m_pnReplyValue4[nReply] = nValue4;
-        m_pfReplyValue5[nReply] = fValue5;
-        m_pfReplyValue6[nReply] = fValue6;
-        m_pnReplyValue7[nReply] = nValue7;
-        m_pnReplyValue8[nReply] = nValue8;
-        m_pfReplyValue9[nReply] = fValue9;
-        m_pnReplyValue10[nReply] = nValue10;
-        m_pnReplyValue11[nReply] = nValue11;
-        m_pvReplyValue12[nReply] = vValue12;
-        m_pfReplyValue13[nReply] = fValue13;
-        m_pfReplyValue14[nReply] = fValue14;
+        m_pnReplyIndex[nReply] = nReplyIndex;
+        m_poidReplyListener[nReply] = oidListener;
+        m_pnReplyCameraAngle[nReply] = nCameraAngle;
+        m_pnReplyCameraId[nReply] = nCameraId;
+        m_pfReplyCameraHeight[nReply] = fCameraHeight;
+        m_pfReplyTargetHeight[nReply] = fTargetHeight;
+        m_pnReplyWaitFlags[nReply] = nWaitFlags;
+        m_pnReplyCameraAnimation[nReply] = nCameraAnimation;
+        m_pfReplyFieldOfView[nReply] = fFieldOfView;
+        m_pnReplyVideoEffect[nReply] = nVideoEffect;
+        m_pnReplyFadeType[nReply] = nFadeType;
+        m_pvReplyFadeColor[nReply] = vFadeColor;
+        m_pfReplyFadeDelay[nReply] = fFadeDelay;
+        m_pfReplyFadeLength[nReply] = fFadeLength;
         m_pnReplyAnimations[nReply] = nAnimations;
         if (nAnimations != 0)
         {
@@ -2227,6 +2228,16 @@ int CGuiInGame::GetMessageBufferSize()
 {
     return m_MessageBufferSize;
 }
+// Dead code: not in the PC executable
+void CGuiInGame::HandleDialogClose(int bClose)
+{
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->RemovePanel(m_pDialog);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->RemovePanel(m_pComputerScreen);
+}
+// Dead code: not in the PC executable
+void CGuiInGame::HandleInventoryClose(int bClose)
+{
+}
 // PC 0x0062AA00  Xbox 0x00057E00
 void CGuiInGame::SetSWGuiStatus(int nStatus, int bActive)
 {
@@ -2294,10 +2305,20 @@ void CGuiInGame::ShowBarkBubble(unsigned long oidObject,
         m_pGuiManager->AddPanel(m_pBarkBubble, SWGUI_PANEL_MODE_OVERLAY, 1);
     }
 }
+// Dead code: not in the PC executable
+void CGuiInGame::CreateDeathMenuGUI()
+{
+}
 // PC 0x0062AB70  Xbox 0x000553D0
 int CGuiInGame::IsLoopingDialogStuntAnimation(unsigned short nAnimation)
 {
     return (nAnimation >= 0x578u) && (nAnimation <= 0x6BFu);
+}
+// Dead code: not in the PC executable
+int CGuiInGame::IsFireForgetDialogStuntAnimation(unsigned short nAnimation)
+{
+    return nAnimation >= CUTSCENE_ANIMATION_FIRST &&
+           nAnimation <= CUTSCENE_ANIMATION_W_LAST;
 }
 // PC 0x0062AB90  Xbox 0x000553F0
 void CGuiInGame::DialogGuiDoneScroll()
@@ -2319,14 +2340,14 @@ int CGuiInGame::IsCameraDialog()
     return m_pDialog != 0 && m_pDialog == m_pCameraDialog;
 }
 // PC 0x0062ABF0  Xbox 0x00055450
-void CGuiInGame::StartGlobalFade(int nFade, float fA, float fB,
+void CGuiInGame::StartGlobalFade(int nFade, float fFadeStart, float fFadeLength,
                                  const Vector& vColor)
 {
     if (m_pGlobalFade != 0)
     {
         m_pGuiManager->AddPanel(m_pGlobalFade, SWGUI_PANEL_MODE_OVERLAY, 1);
         m_pGlobalFade->SetVisible(1);
-        m_pGlobalFade->SetFade(nFade, fA, fB, vColor);
+        m_pGlobalFade->SetFade(nFade, fFadeStart, fFadeLength, vColor);
     }
 }
 // PC 0x0062AC40  Xbox 0x000554A0
@@ -2389,6 +2410,7 @@ void CGuiInGame::UpdateMessageGUI()
         ->AddDialogMessages((CGuiInGameDialogMessage*)m_pDialogBuffer,
                             m_nDialogBufferSize);
 }
+// Dead code: not in the PC executable
 // Xbox 0x00055630
 void CGuiInGame::StopBarkBubble(int bFade)
 {
@@ -2475,11 +2497,11 @@ CExoString CGuiInGame::DialogNodeSpanningTextParse(const CExoString& sText)
     return sText;
 }
 // PC 0x0062B000  Xbox 0x000558C0
-void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int bFlag)
+void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int nFlags)
 {
     if (m_pMainInterface != 0)
     {
-        m_pMainInterface->SetTarget(oidTarget, bFlag);
+        m_pMainInterface->SetTarget(oidTarget, nFlags);
     }
 }
 
@@ -2541,6 +2563,35 @@ int CGuiInGame::SetTutorialReason(unsigned char nReason)
     }
     return m_pTutorialBox->SetTutorialReason(nReason);
 }
+// Dead code: not in the PC executable
+int CGuiInGame::GetTutorialWindowHasBeenShown(unsigned char nReason)
+{
+    if (nReason >= TUTORIAL_WINDOW_COUNT)
+    {
+        return 0;
+    }
+    unsigned char nByte = nReason / 8;
+    unsigned char nBit = nReason - nByte * 8;
+    return m_aTutorialWindowsShown[nByte] & (1 << nBit);
+}
+// Dead code: not in the PC executable
+void CGuiInGame::SetTutorialWindowHasBeenShown(unsigned char nReason, int bShown)
+{
+    if (nReason >= TUTORIAL_WINDOW_COUNT)
+    {
+        return;
+    }
+    unsigned char nByte = nReason / 8;
+    unsigned char nBit = nReason - nByte * 8;
+    if (bShown)
+    {
+        m_aTutorialWindowsShown[nByte] |= 1 << nBit;
+    }
+    else
+    {
+        m_aTutorialWindowsShown[nByte] &= ~(1 << nBit);
+    }
+}
 #ifndef _XBOX
 int CGuiInGame::ChangeCharacter()  // PC 0x0062B0F0
 {
@@ -2553,6 +2604,7 @@ void CGuiInGame::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x0062B100
     m_pMainInterface->SetupPauseGuiExtent(pExtent);
 #endif
 }
+// Dead code: not in the PC executable
 // Xbox 0x00055A30
 int CGuiInGame::IsPauseGUIVisible()
 {
@@ -2718,7 +2770,10 @@ int CGuiInGame::GetPartyAccessPanelUp(int bAny)
 // PC 0x0062B580  Xbox 0x00055DA0
 void CSWGuiStatusSummary::AddExperience(int nExperience)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CSWGuiStatusSummary::AddExperience() controls contains %d\n", m_lControls.Contains(NULL));
+    }
     if (nExperience != 0)
     {
         m_cStatusSummary.m_nExperience += nExperience;
@@ -2728,7 +2783,10 @@ void CSWGuiStatusSummary::AddExperience(int nExperience)
 // PC 0x0062B5A0  Xbox 0x00055DC0
 void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CSWGuiStatusSummary::AddStealthExperience() controls contains %d\n", m_lControls.Contains(NULL));
+    }
     if (nExperience != 0)
     {
         m_cStatusSummary.m_nStealthExperience += nExperience;
@@ -2739,7 +2797,10 @@ void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
 void CGuiInGame::AppendToMsgBuffer(const CExoString& sMessage,
                                    unsigned long nType, unsigned char nColor)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::AppendToMsgBuffer() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (sMessage != "")
     {
         if (m_MessageBufferSize >= 64)
@@ -2775,7 +2836,10 @@ void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
 void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
                                       const CExoString& sSpeaker)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::AppendToDialogBuffer() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (sMessage != "")
     {
         if (m_nDialogBufferSize >= 64)
@@ -2836,7 +2900,7 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
         m_oidDialogObject2 = m_oidPreviousDialogObject2;
     }
 
-    int nDialogState = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0;
+    int nDialogState = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut;
     if (nDialogState == 0 && m_pDialog != m_pComputerDialog)
     {
         unsigned long oidFirst = m_oidDialogObject1;
@@ -3483,7 +3547,7 @@ int CGuiInGame::HandleDialogEntry(
     {
         if (g_bDisableSound)
             m_nDialogScrollWait = 1;
-        else if (m_nC0 == 0)
+        else if (m_bAnimatedCut == 0)
         {
             if (m_pDialog != NULL && m_pDialog == m_pCameraDialog)
                 m_nDialogScrollWait = bSoundActive;
@@ -3601,7 +3665,10 @@ void CGuiInGame::UpdateAreaTransitionGUI()  // PC 0x00632180
 void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
                                  unsigned long oidOwner, unsigned long nFlags)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowDialogEntry() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_nReplies <= 1u)
     {
         g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->HideMouse(16);
@@ -3649,7 +3716,10 @@ void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
 // PC 0x0062B850  Xbox 0x00056C50
 int CGuiInGame::InitializeStuntModelData(unsigned long nModels)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::InitializeStuntModelData() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     int nResult = 0;
     if (nModels != 0)
     {
@@ -3685,7 +3755,10 @@ int CGuiInGame::InitializeStuntModelData(unsigned long nModels)
 // PC 0x0062B960  Xbox 0x00056D70
 int CGuiInGame::StoreLastDialogAnimationData()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::StoreLastDialogAnimationData() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     int i;
 
     ClearLastDialogAnimationData();
@@ -3705,81 +3778,80 @@ int CGuiInGame::StoreLastDialogAnimationData()
 // PC 0x0062BA30  Xbox 0x00056E40
 void CGuiInGame::ClearRepliesData()
 {
-    GUIINGAME_TRACE();
     if (m_asReplyText != 0)
     {
         delete[] m_asReplyText;
         m_asReplyText = 0;
     }
-    if (m_pnReplyValue1 != 0)
+    if (m_pnReplyIndex != 0)
     {
-        delete m_pnReplyValue1;
-        m_pnReplyValue1 = 0;
+        delete m_pnReplyIndex;
+        m_pnReplyIndex = 0;
     }
-    if (m_pnReplyValue2 != 0)
+    if (m_poidReplyListener != 0)
     {
-        delete m_pnReplyValue2;
-        m_pnReplyValue2 = 0;
+        delete m_poidReplyListener;
+        m_poidReplyListener = 0;
     }
-    if (m_pnReplyValue3 != 0)
+    if (m_pnReplyCameraAngle != 0)
     {
-        delete m_pnReplyValue3;
-        m_pnReplyValue3 = 0;
+        delete m_pnReplyCameraAngle;
+        m_pnReplyCameraAngle = 0;
     }
-    if (m_pnReplyValue4 != 0)
+    if (m_pnReplyCameraId != 0)
     {
-        delete m_pnReplyValue4;
-        m_pnReplyValue4 = 0;
+        delete m_pnReplyCameraId;
+        m_pnReplyCameraId = 0;
     }
-    if (m_pfReplyValue5 != 0)
+    if (m_pfReplyCameraHeight != 0)
     {
-        delete m_pfReplyValue5;
-        m_pfReplyValue5 = 0;
+        delete m_pfReplyCameraHeight;
+        m_pfReplyCameraHeight = 0;
     }
-    if (m_pfReplyValue6 != 0)
+    if (m_pfReplyTargetHeight != 0)
     {
-        delete m_pfReplyValue6;
-        m_pfReplyValue6 = 0;
+        delete m_pfReplyTargetHeight;
+        m_pfReplyTargetHeight = 0;
     }
-    if (m_pnReplyValue7 != 0)
+    if (m_pnReplyWaitFlags != 0)
     {
-        delete m_pnReplyValue7;
-        m_pnReplyValue7 = 0;
+        delete m_pnReplyWaitFlags;
+        m_pnReplyWaitFlags = 0;
     }
-    if (m_pnReplyValue8 != 0)
+    if (m_pnReplyCameraAnimation != 0)
     {
-        delete m_pnReplyValue8;
-        m_pnReplyValue8 = 0;
+        delete m_pnReplyCameraAnimation;
+        m_pnReplyCameraAnimation = 0;
     }
-    if (m_pfReplyValue9 != 0)
+    if (m_pfReplyFieldOfView != 0)
     {
-        delete m_pfReplyValue9;
-        m_pfReplyValue9 = 0;
+        delete m_pfReplyFieldOfView;
+        m_pfReplyFieldOfView = 0;
     }
-    if (m_pnReplyValue10 != 0)
+    if (m_pnReplyVideoEffect != 0)
     {
-        delete m_pnReplyValue10;
-        m_pnReplyValue10 = 0;
+        delete m_pnReplyVideoEffect;
+        m_pnReplyVideoEffect = 0;
     }
-    if (m_pnReplyValue11 != 0)
+    if (m_pnReplyFadeType != 0)
     {
-        delete m_pnReplyValue11;
-        m_pnReplyValue11 = 0;
+        delete m_pnReplyFadeType;
+        m_pnReplyFadeType = 0;
     }
-    if (m_pvReplyValue12 != 0)
+    if (m_pvReplyFadeColor != 0)
     {
-        delete m_pvReplyValue12;
-        m_pvReplyValue12 = 0;
+        delete m_pvReplyFadeColor;
+        m_pvReplyFadeColor = 0;
     }
-    if (m_pfReplyValue13 != 0)
+    if (m_pfReplyFadeDelay != 0)
     {
-        delete m_pfReplyValue13;
-        m_pfReplyValue13 = 0;
+        delete m_pfReplyFadeDelay;
+        m_pfReplyFadeDelay = 0;
     }
-    if (m_pfReplyValue14 != 0)
+    if (m_pfReplyFadeLength != 0)
     {
-        delete m_pfReplyValue14;
-        m_pfReplyValue14 = 0;
+        delete m_pfReplyFadeLength;
+        m_pfReplyFadeLength = 0;
     }
     for (int i = 0; i < m_nReplies; i++)
     {
@@ -3821,38 +3893,38 @@ int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
     ClearRepliesData();
     m_nReplies = nReplies;
     m_asReplyText = new CExoString[nReplies];
-    m_pnReplyValue1 = new unsigned long[m_nReplies];
-    m_pnReplyValue2 = new unsigned long[m_nReplies];
-    m_pnReplyValue3 = new unsigned long[m_nReplies];
-    m_pnReplyValue4 = new int[m_nReplies];
-    m_pfReplyValue5 = new float[m_nReplies];
-    m_pfReplyValue6 = new float[m_nReplies];
-    m_pnReplyValue7 = new unsigned long[m_nReplies];
-    m_pnReplyValue8 = new unsigned short[m_nReplies];
-    m_pfReplyValue9 = new float[m_nReplies];
-    m_pnReplyValue10 = new int[m_nReplies];
-    m_pnReplyValue11 = new unsigned char[m_nReplies];
-    m_pvReplyValue12 = new Vector[m_nReplies];
-    m_pfReplyValue13 = new float[m_nReplies];
-    m_pfReplyValue14 = new float[m_nReplies];
+    m_pnReplyIndex = new unsigned long[m_nReplies];
+    m_poidReplyListener = new unsigned long[m_nReplies];
+    m_pnReplyCameraAngle = new unsigned long[m_nReplies];
+    m_pnReplyCameraId = new int[m_nReplies];
+    m_pfReplyCameraHeight = new float[m_nReplies];
+    m_pfReplyTargetHeight = new float[m_nReplies];
+    m_pnReplyWaitFlags = new unsigned long[m_nReplies];
+    m_pnReplyCameraAnimation = new unsigned short[m_nReplies];
+    m_pfReplyFieldOfView = new float[m_nReplies];
+    m_pnReplyVideoEffect = new int[m_nReplies];
+    m_pnReplyFadeType = new unsigned char[m_nReplies];
+    m_pvReplyFadeColor = new Vector[m_nReplies];
+    m_pfReplyFadeDelay = new float[m_nReplies];
+    m_pfReplyFadeLength = new float[m_nReplies];
     m_pnReplyAnimations = new int[m_nReplies];
     m_ppnReplyAnimationIDs = new unsigned long*[m_nReplies];
     m_ppnReplyAnimationFlags = new unsigned short*[m_nReplies];
     if (m_asReplyText != 0 &&
-        m_pnReplyValue1 != 0 &&
-        m_pnReplyValue2 != 0 &&
-        m_pnReplyValue3 != 0 &&
-        m_pnReplyValue4 != 0 &&
-        m_pfReplyValue5 != 0 &&
-        m_pfReplyValue6 != 0 &&
-        m_pnReplyValue7 != 0 &&
-        m_pnReplyValue8 != 0 &&
-        m_pfReplyValue9 != 0 &&
-        m_pnReplyValue10 != 0 &&
-        m_pnReplyValue11 != 0 &&
-        m_pvReplyValue12 != 0 &&
-        m_pfReplyValue13 != 0 &&
-        m_pfReplyValue14 != 0 &&
+        m_pnReplyIndex != 0 &&
+        m_poidReplyListener != 0 &&
+        m_pnReplyCameraAngle != 0 &&
+        m_pnReplyCameraId != 0 &&
+        m_pfReplyCameraHeight != 0 &&
+        m_pfReplyTargetHeight != 0 &&
+        m_pnReplyWaitFlags != 0 &&
+        m_pnReplyCameraAnimation != 0 &&
+        m_pfReplyFieldOfView != 0 &&
+        m_pnReplyVideoEffect != 0 &&
+        m_pnReplyFadeType != 0 &&
+        m_pvReplyFadeColor != 0 &&
+        m_pfReplyFadeDelay != 0 &&
+        m_pfReplyFadeLength != 0 &&
         m_pnReplyAnimations != 0 &&
         *m_ppnReplyAnimationIDs != 0 &&
         *m_ppnReplyAnimationFlags != 0)
@@ -3864,7 +3936,10 @@ int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
 // PC 0x0062BF30  Xbox 0x00057340
 int CGuiInGame::InitializeShotCamera()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::InitializeShotCamera() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bShotCameraInitialized == 0)
     {
         CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
@@ -3880,7 +3955,10 @@ int CGuiInGame::InitializeShotCamera()
 #ifndef _XBOX
 int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)  // PC 0x0062BF70  Xbox 0x00057380
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SetAnimatedCamera() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bAnimatedCameraLoaded == 0 ||
         nAnimation < CUTSCENE_ANIMATION_FIRST ||
         nAnimation > CUTSCENE_ANIMATION_WL_LAST)
@@ -3914,7 +3992,10 @@ int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)
 void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
                                      int nVideoEffect)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SetComputerCameraShot() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_nPlaceableCameras != 0)
     {
         m_pGuiManager->RemovePanel(m_pDialog);
@@ -3966,7 +4047,10 @@ void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
 // PC 0x0062C2A0  Xbox 0x000576D0
 void CGuiInGame::EndDialogCamera()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::EndDialogCamera() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
     pModule->RestoreCamera();
     m_bAnimatedCameraActive = 0;
@@ -4159,7 +4243,10 @@ void CGuiInGame::ShutDown()
 // PC 0x0062C620  Xbox 0x00057A50
 int CGuiInGame::LoadStuntModelsForDialog()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::LoadStuntModelsForDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     char sModel[17];
     for (unsigned long nModel = 0; nModel < m_nStuntModels; ++nModel)
     {
@@ -4190,7 +4277,10 @@ int CGuiInGame::LoadStuntModelsForDialog()
 // PC 0x0062C6F0  Xbox 0x00057B40
 void CGuiInGame::UnloadStuntModelsForDialog()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::UnloadStuntModelsForDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     for (unsigned long nModel = 0; nModel < m_nStuntModels; ++nModel)
     {
         CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(
@@ -4258,6 +4348,11 @@ void CGuiInGame::UnloadStuntModelsForDialog()
     }
     m_nStuntModels = 0;
 }
+// Dead code: not in the PC executable
+void CGuiInGame::ShowReplyChosen(unsigned long nReply, unsigned long nReplyCount,
+                                 const CExoString& sText)
+{
+}
 // PC 0x0062C9B0  Xbox 0x00057EE0
 #ifdef _XBOX
 int CGuiInGame::ShowSWInGameGui()
@@ -4265,7 +4360,10 @@ int CGuiInGame::ShowSWInGameGui()
 int CGuiInGame::ShowSWInGameGui(int nMenu)
 #endif
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowSWInGameGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -4356,7 +4454,10 @@ int CGuiInGame::HideSWInGameGui()  // Xbox 0x0005D600
 #else
 int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x0062CBA0
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideSWInGameGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -4402,7 +4503,10 @@ int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x0062CBA0
 // PC 0x0062CCD0  Xbox 0x00058140
 void CGuiInGame::NextSWInGameGui()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::NextSWInGameGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -4433,7 +4537,10 @@ void CGuiInGame::NextSWInGameGui()
 // PC 0x0062CDF0  Xbox 0x00058260
 void CGuiInGame::PrevSWInGameGui()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::PrevSWInGameGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -4464,7 +4571,10 @@ void CGuiInGame::PrevSWInGameGui()
 // PC 0x0062CF10
 void CGuiInGame::SwitchToSWInGameGui(int nMenu)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SwitchToSWInGameGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (nMenu >= 0 && nMenu < IN_GAME_SCREEN_COUNT &&
         nMenu != m_nLastGuiPanel && m_bItemCreateMenuAvailable != 0)
     {
@@ -4493,7 +4603,10 @@ void CGuiInGame::SwitchToSWInGameGui(int nMenu)
 // PC 0x0062D040  Xbox 0x00058380
 void CGuiInGame::ShowGalaxyMapGui(int nPlanet)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowGalaxyMapGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0 && m_pPartySelection == 0 &&
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState == 0)
     {
@@ -4520,7 +4633,10 @@ void CGuiInGame::ShowGalaxyMapGui(int nPlanet)
 // PC 0x0062D1D0  Xbox 0x00058510
 void CGuiInGame::HideGalaxyMapGui()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideGalaxyMapGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (g_pAppManager->m_pClientExoApp->GetPausedByCombat() != 0)
@@ -4547,7 +4663,10 @@ void CGuiInGame::HideGalaxyMapGui()
 // PC 0x0062D280  Xbox 0x00058630
 void CGuiInGame::ShowItemCreateMenu()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowItemCreateMenu() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pGuiManager->AddPanel(m_pItemCreateMenu, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
@@ -4561,7 +4680,10 @@ void CGuiInGame::ShowItemCreateMenu()
 // PC 0x0062D2B0  Xbox 0x00058660
 void CGuiInGame::HideItemCreateMenu()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideItemCreateMenu() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pItemCreateMenu) != 0)
@@ -4590,7 +4712,10 @@ void CGuiInGame::HideItemCreateMenu()
 // PC 0x0062D320  Xbox 0x000586D0
 void CGuiInGame::ShowSubItemCreateMenu(unsigned long nSubType)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowSubItemCreateMenu() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pSubItemCreateMenu->LoadItems(nSubType);
@@ -4605,7 +4730,10 @@ void CGuiInGame::ShowSubItemCreateMenu(unsigned long nSubType)
 // PC 0x0062D360  Xbox 0x00058720
 void CGuiInGame::HideSubItemCreateMenu()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideSubItemCreateMenu() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pSubItemCreateMenu) != 0)
@@ -4635,7 +4763,10 @@ void CGuiInGame::HideSubItemCreateMenu()
 // PC 0x0062D3E0  Xbox 0x000587A0
 void CGuiInGame::ShowExamineBox(unsigned long nStrRef, int nReturnInputClass)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowExamineBox() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pExamineBox->SetMessage(nStrRef);
@@ -4651,7 +4782,10 @@ void CGuiInGame::ShowExamineBox(unsigned long nStrRef, int nReturnInputClass)
 // PC 0x0062D440  Xbox 0x000587F0
 void CGuiInGame::HideExamineBox()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideExamineBox() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pExamineBox) != 0)
@@ -4678,7 +4812,10 @@ void CGuiInGame::HideExamineBox()
 // PC 0x0062D4B0  Xbox 0x00058850
 void CGuiInGame::ShowContainerGui(unsigned long oidContainer, int nGuiType)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowContainerGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pContainer->SetContainer(oidContainer, nGuiType);
@@ -4694,7 +4831,10 @@ void CGuiInGame::ShowContainerGui(unsigned long oidContainer, int nGuiType)
 // PC 0x0062D510  Xbox 0x000588B0
 void CGuiInGame::HideContainerGui()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideContainerGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0 &&
         m_pGuiManager->PanelExists(m_pContainer) != 0)
     {
@@ -4711,7 +4851,10 @@ void CGuiInGame::HideContainerGui()
 // PC 0x0062D570  Xbox 0x00058910
 int CGuiInGame::IsAnimationPlayingInDialog()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::IsAnimationPlayingInDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     int bPlaying = 0;
     unsigned long i = 0;
     if (i < (unsigned long)m_nDialogAnimations)
@@ -4741,10 +4884,19 @@ int CGuiInGame::IsAnimationPlayingInDialog()
     }
     return bPlaying;
 }
+// Dead code: not in the PC executable
+int CGuiInGame::IsDialogStuntAnimation(unsigned short nAnimation)
+{
+    return nAnimation >= CUTSCENE_ANIMATION_FIRST &&
+           nAnimation <= CUTSCENE_ANIMATION_WL_LAST;
+}
 // PC 0x0062D5E0  Xbox 0x00058980
 int CGuiInGame::IsLoopingDialogAnimation(unsigned short nAnimation)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::IsLoopingDialogAnimation() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (nAnimation >= SERVER_ANIMATION_FIRST &&
         nAnimation < g_pRules->m_p2DArrays->m_pDialogAnimations->GetNumRows() +
                          SERVER_ANIMATION_FIRST)
@@ -4793,7 +4945,10 @@ int CGuiInGame::IsLoopingDialogAnimation(unsigned short nAnimation)
 // PC 0x0062D700  Xbox 0x00058BB0
 int CGuiInGame::IsFireForgetDialogAnimation(unsigned short nAnimation)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::IsFireForgetDialogAnimation() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (nAnimation >= SERVER_ANIMATION_FIRST &&
         nAnimation < g_pRules->m_p2DArrays->m_pDialogAnimations->GetNumRows() +
                          SERVER_ANIMATION_FIRST)
@@ -4849,7 +5004,10 @@ int CGuiInGame::IsFireForgetDialogAnimation(unsigned short nAnimation)
 // PC 0x0062D820  Xbox 0x00058DE0
 int CGuiInGame::IsOverlayDialogAnimation(unsigned short nAnimation)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::IsOverlayDialogAnimation() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (nAnimation >= SERVER_ANIMATION_FIRST &&
         nAnimation < g_pRules->m_p2DArrays->m_pDialogAnimations->GetNumRows() +
                          SERVER_ANIMATION_FIRST)
@@ -4873,7 +5031,7 @@ int CGuiInGame::IsOverlayDialogAnimation(unsigned short nAnimation)
     }
     return 0;
 }
-
+// Dead code: not in the PC executable
 void CGuiInGame::ResetComputerCameraShot()
 {
     if (m_pGuiManager->PanelExists(m_pComputerScreen))
@@ -4890,7 +5048,10 @@ void CGuiInGame::ResetComputerCameraShot()
 // PC 0x0062D8C0  Xbox 0x00058F30
 void CGuiInGame::CleanUpEntryNode()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::CleanUpEntryNode() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     m_vComputerCameraShot = Vector();
     m_bComputerCameraShot = 0;
     m_fComputerCameraMicRange = 0;
@@ -4932,7 +5093,10 @@ void CGuiInGame::CleanUpReplyNode()
 // PC 0x0062DA70  Xbox 0x000590D0
 void CGuiInGame::HideLoadModuleDebugMenu()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideLoadModuleDebugMenu() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pLoadModuleDebugMenu) != 0)
@@ -4961,7 +5125,10 @@ void CGuiInGame::HideLoadModuleDebugMenu()
 // PC 0x0062DAE0  Xbox 0x00059140
 void CGuiInGame::HidePowersFeatsSkillsDebugMenu()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HidePowersFeatsSkillsDebugMenu() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pPowersFeatsSkillsDebugMenu) != 0)
@@ -4990,7 +5157,10 @@ void CGuiInGame::HidePowersFeatsSkillsDebugMenu()
 // PC 0x0062DB50  Xbox 0x000591B0
 void CGuiInGame::UnlockDialogParticipantOrientations()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::UnlockDialogParticipantOrientations() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CSWCObject* pObject =
         g_pAppManager->m_pClientExoApp->GetGameObject(m_oidDialogObject1);
     if (pObject != 0 && pObject->AsSWCCreature() != 0)
@@ -5001,16 +5171,31 @@ void CGuiInGame::UnlockDialogParticipantOrientations()
     if (pObject != 0 && pObject->AsSWCCreature() != 0)
         pObject->AsSWCCreature()->SetLockOrientationToObject(OBJECT_INVALID, 0);
 }
+// Dead code: not in the PC executable
+void CGuiInGame::SetDialogFade(int bFadeIn, float fDelay, float fLength,
+                               const Vector& vColor)
+{
+    if (m_pDialogFade != 0)
+    {
+        m_pDialogFade->SetFade(bFadeIn, fDelay, fLength, vColor);
+    }
+}
 // PC 0x0062DBD0  Xbox 0x00059230
 int CGuiInGame::IsInDialog(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::IsInDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     return m_oidDialogObject1 == oidObject || m_oidDialogObject2 == oidObject;
 }
 // PC 0x0062DC00  Xbox 0x00059260
 int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowLevelUpGUI() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0 &&
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_LevelUpMode != 0)
     {
@@ -5048,7 +5233,10 @@ int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
 void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCancel,
                                     int nForceNPC1, int nForceNPC2)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowPartySelection() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     if (m_bItemCreateMenuAvailable != 0)
     {
@@ -5091,7 +5279,10 @@ void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCan
 #ifndef _XBOX
 int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x0062DED0  Xbox 0x000554E0
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::IsGlobalFadeObscuring() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     return m_pGlobalFade->m_fAlpha > 0.001f;
 }
 #endif
@@ -5143,7 +5334,10 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x0062DEF0
 #else
 void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x0062DEF0  Xbox 0x00059510
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SetPaused() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (bPaused != 0)
@@ -5192,7 +5386,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x0062DEF0
     }
 }
 #endif
-
+// Dead code: not in the PC executable
 void CGuiInGame::SetStuntModelData(unsigned long nModel, unsigned long oidObject,
                                    const CResRef& cModel)
 {
@@ -5230,7 +5424,10 @@ int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
                                       unsigned char nFlags,
                                       int bSelected)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HandleDialogReplyChosen() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CExoString sReply(sText);
     if (!sText.IsEmpty())
     {
@@ -5248,7 +5445,10 @@ int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
 // PC 0x0062E1D0  Xbox 0x0005DB70
 int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HandleDialogSound() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CSWCObject* pObject = g_pAppManager->m_pClientExoApp->GetGameObject(
         m_oidDialogObject1);
     if (pObject == 0 || pObject->AsSWCObject() == 0)
@@ -5278,7 +5478,10 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
 #endif
 void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)  // PC 0x0062E310  Xbox 0x000597A0
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowStoreGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0 && m_pPartySelection == 0 &&
         m_nGlobalDialogState == 0)
     {
@@ -5305,7 +5508,10 @@ void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)
 // PC 0x0062E4A0  Xbox 0x00059930
 void CGuiInGame::HideStoreGui()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideStoreGui() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (g_pAppManager->m_pClientExoApp->GetPausedByCombat() != 0)
@@ -5342,10 +5548,23 @@ void CGuiInGame::HideStoreGui()
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     }
 }
+// Dead code: not in the PC executable
+void CGuiInGame::PauseBarkBubble()
+{
+    m_pBarkBubble->Pause();
+}
+// Dead code: not in the PC executable
+void CGuiInGame::ResumeBarkBubble()
+{
+    m_pBarkBubble->Resume();
+}
 // PC 0x0062E550  Xbox 0x00059A50
 void CGuiInGame::ShowSoloModeQuery(int nQuery)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowSoloModeQuery() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable && m_pGuiManager && m_pSoloModeQuery)
     {
         CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -5392,7 +5611,10 @@ void CGuiInGame::ShowSoloModeQuery(int nQuery)
 // PC 0x0062E6D0  Xbox 0x00059BD0
 void CGuiInGame::HideSoloMode()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideSoloMode() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pGuiManager->PanelExists(m_pSoloModeQuery))
     {
         if (!m_bPaused)
@@ -5409,7 +5631,10 @@ void CGuiInGame::HideSoloMode()
 // PC 0x0062E760  Xbox 0x00059C50
 void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowUpgradeScreen() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -5441,7 +5666,10 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem)
 // PC 0x0062E870  Xbox 0x00059D60
 void CGuiInGame::HideUpgradeScreen()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideUpgradeScreen() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -5522,7 +5750,10 @@ void CGuiInGame::SetShotFromScript(int nCamera, int nVideoEffect)
 // PC 0x0062EB10  Xbox 0x0005A010
 void CGuiInGame::HideAreaTransition()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::HideAreaTransition() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (g_pAppManager->m_pClientExoApp->GetModule() != 0)
     {
         CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
@@ -5553,7 +5784,10 @@ void CGuiInGame::HideAreaTransition()
 // PC 0x0062EBE0  Xbox 0x0005A0E0
 int CGuiInGame::GetBarkBubbleVisible(int& nTop)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetBarkBubbleVisible() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CSWGuiExtent* pExtent;
 
     if (m_pBarkBubble == 0 || m_pGuiManager->PanelExists(m_pBarkBubble) == 0)
@@ -5567,7 +5801,10 @@ int CGuiInGame::GetBarkBubbleVisible(int& nTop)
 // PC 0x0062EC20  Xbox 0x0005A140
 Vector CGuiInGame::GetAreaTranstionPosition()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetAreaTranstionPosition() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pAreaTransition == NULL)
     {
         return Vector();
@@ -5577,11 +5814,14 @@ Vector CGuiInGame::GetAreaTranstionPosition()
 // PC 0x0062EC60  Xbox 0x0005A190
 void CGuiInGame::SetGlobalDialogState(int nState)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SetGlobalDialogState() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     m_nGlobalDialogState = nState;
     if (nState == 0)
     {
-        m_nC0 = 0;
+        m_bAnimatedCut = 0;
         g_pAppManager->m_pServerExoApp->SetIgnoreConversationStartRange(0);
         g_pAppManager->m_pClientExoApp->GetInGameGui()->SetGlobalUnpauseableState(0);
 #ifndef _XBOX
@@ -5597,7 +5837,10 @@ void CGuiInGame::SetGlobalDialogState(int nState)
 // PC 0x0062ED30  Xbox 0x0005A1F0
 Vector CGuiInGame::GetDialogCameraPosition(int bLookAhead)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetDialogCameraPosition() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
     Vector vResult;
     if (pCreature != 0)
@@ -5679,7 +5922,10 @@ void CGuiInGame::UpdateStatus(unsigned char nMessage, int nValue)
 // PC 0x0062EF70  Xbox 0x0005A4A0
 int CGuiInGame::GetPendingStatusSummary()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetPendingStatusSummary() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     return m_pStatusSummary != 0 &&
            (m_pStatusSummary->m_cStatusSummary.m_bDisplaySPending ||
             m_pStatusSummary->m_cStatusSummary.m_bSoundPending);
@@ -5687,7 +5933,10 @@ int CGuiInGame::GetPendingStatusSummary()
 // PC 0x0062EF90  Xbox 0x0005A4C0
 void CGuiInGame::ShowStatusSummary()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowStatusSummary() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pStatusSummary != 0)
     {
         if (m_pStatusSummary->m_cStatusSummary.m_bDisplaySPending &&
@@ -5714,7 +5963,10 @@ void CGuiInGame::ShowStatusSummary()
 // PC 0x0062F040  Xbox 0x0005A570
 void CGuiInGame::SetStatusSummary(const CStatusSummary& cSummary)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SetStatusSummary() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pStatusSummary != 0)
     {
         m_pStatusSummary->m_cStatusSummary = cSummary;
@@ -5731,7 +5983,10 @@ void CGuiInGame::SetStatusSummary(const CStatusSummary& cSummary)
 // PC 0x0062F0A0  Xbox 0x0005A600
 void CGuiInGame::GetStatusSummary(CStatusSummary& cSummary)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetStatusSummary() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pStatusSummary != 0)
     {
         cSummary = m_pStatusSummary->m_cStatusSummary;
@@ -5740,7 +5995,10 @@ void CGuiInGame::GetStatusSummary(CStatusSummary& cSummary)
 // PC 0x0062F0C0  Xbox 0x0005A640
 void CGuiInGame::SuppressStatusSummary(int nNumEntries)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SuppressStatusSummary() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pStatusSummary != 0 && nNumEntries >= 0)
     {
         m_pStatusSummary->m_cStatusSummary.m_nSuppressed = nNumEntries;
@@ -5749,7 +6007,10 @@ void CGuiInGame::SuppressStatusSummary(int nNumEntries)
 // PC 0x0062F0E0  Xbox 0x0005A660
 int CGuiInGame::CanPlayDialogAnimations(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::CanPlayDialogAnimations() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (oidObject != OBJECT_INVALID)
     {
         CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -5775,7 +6036,10 @@ int CGuiInGame::CanPlayDialogAnimations(unsigned long oidObject)
 // PC 0x0062F160  Xbox 0x0005A6E0
 void CGuiInGame::SetLockObjectOrientationInDialog(unsigned long oidObject, int bLock)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SetLockObjectOrientationInDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (bLock == 1)
     {
         CSWCObject* pObject = g_pAppManager->m_pClientExoApp->GetGameObject(oidObject);
@@ -5822,7 +6086,10 @@ void CGuiInGame::SetLockObjectOrientationInDialog(unsigned long oidObject, int b
 // PC 0x0062F250  Xbox 0x0005A7D0
 int CGuiInGame::GetCanOrientInDialog(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetCanOrientInDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (oidObject != OBJECT_INVALID)
     {
         CExoLinkedListNode* pPosition = m_lDialogNoOrientList.m_pInternal->m_pHead;
@@ -5846,7 +6113,10 @@ int CGuiInGame::GetCanOrientInDialog(unsigned long oidObject)
 // PC 0x0062F2B0  Xbox 0x0005A830
 void CGuiInGame::SetLockHeadFollowInDialog(unsigned long oidObject, int bLock)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::SetLockHeadFollowInDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (bLock == 1)
     {
         CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
@@ -5898,7 +6168,10 @@ void CGuiInGame::SetLockHeadFollowInDialog(unsigned long oidObject, int bLock)
 // PC 0x0062F3C0  Xbox 0x0005A940
 int CGuiInGame::GetCanHeadFollowInDialog(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetCanHeadFollowInDialog() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (oidObject != OBJECT_INVALID)
     {
         CExoLinkedListNode* pPosition = m_lDialogNoHeadFollowList.m_pInternal->m_pHead;
@@ -5922,7 +6195,10 @@ int CGuiInGame::GetCanHeadFollowInDialog(unsigned long oidObject)
 // PC 0x0062F420  Xbox 0x0005A9A0
 int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::TutorialReasonWillShowWindow() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bTutorialPopups)
     {
         int bShown = 0;
@@ -5945,14 +6221,16 @@ int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
     return 0;
 }
 
-#include "swmain.h"
 // PC 0x0062F4A0  Xbox 0x0005AA20
 int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
                                   unsigned long oidInstigator,
                                   unsigned long oidTarget,
                                   unsigned long nActionParam)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ShowTutorialWindow() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (!g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bTutorialPopups
         || nReason >= TUTORIAL_WINDOW_COUNT)
     {
@@ -5987,7 +6265,10 @@ int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
 // PC 0x0062F590  Xbox 0x0005ACB0
 void CGuiInGame::EnterControllerPauseState()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::EnterControllerPauseState() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CSWGuiPanel* pPanel;
     int bPausedByCombat;
 
@@ -6010,7 +6291,10 @@ void CGuiInGame::EnterControllerPauseState()
 // PC 0x0062F5F0
 void CGuiInGame::ResetInterfaceForSize()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::ResetInterfaceForSize() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pMainInterface != 0)
     {
         delete m_pMainInterface;
@@ -6059,7 +6343,10 @@ void CGuiInGame::UpdateControllerPauseState()
 // PC 0x0062F7E0  Xbox 0x0005AD70
 void CGuiInGame::EndControllerPauseState()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::EndControllerPauseState() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     int bInputActive;
 
     bInputActive = m_bInputActiveBeforeControllerPause == 1;
@@ -6081,7 +6368,10 @@ void CGuiInGame::EndControllerPauseState()
 // PC 0x0062F840  Xbox 0x0005AF40
 int CGuiInGame::IsOnDialogNonDependantList(const CExoString& sName)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::IsOnDialogNonDependantList() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (!sName.CompareNoCase(""))
     {
         CExoString* pName = (CExoString*)m_lDialogNonDependantList.m_pInternal->GetHead();
@@ -6113,7 +6403,10 @@ void CGuiInGame::ClearDialogNonDependantList()
 // PC 0x0062F8F0  Xbox 0x0005AFF0
 unsigned char CGuiInGame::GetInterfaceOffset()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetInterfaceOffset() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pMainInterface != 0)
     {
         return m_pMainInterface->m_nInterfaceOffset;
@@ -6123,7 +6416,10 @@ unsigned char CGuiInGame::GetInterfaceOffset()
 // PC 0x0062F910  Xbox 0x0005B010
 int CGuiInGame::GetMiniMapVisible()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetMiniMapVisible() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (!g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bMiniMap)
     {
         return 0;
@@ -6141,7 +6437,10 @@ int CGuiInGame::GetMiniMapVisible()
 // PC 0x0062F960  Xbox 0x0005B0F0
 void CGuiInGame::MarkNoClickEvent(unsigned long nMilliseconds)
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::MarkNoClickEvent() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     pApp->GetWorldTimer()->GetWorldTime(&m_nNoClickDay, &m_nNoClickTime);
     m_nNoClickDuration = nMilliseconds;
@@ -6149,7 +6448,10 @@ void CGuiInGame::MarkNoClickEvent(unsigned long nMilliseconds)
 // PC 0x0062F9A0  Xbox 0x0005B130
 int CGuiInGame::GetCanClick()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetCanClick() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     unsigned long nElapsedTime = 0;
     unsigned long nCurrentTime;
     unsigned long nCurrentDay;
@@ -6166,10 +6468,19 @@ int CGuiInGame::GetCanClick()
     }
     return nElapsedTime >= m_nNoClickDuration;
 }
+// Dead code: not in the PC executable
+void CGuiInGame::SetDialogLipSync(unsigned long nSoundId, const CResRef& cSound)
+{
+    m_nDialogSoundId = nSoundId;
+    m_cDialogSound = cSound;
+}
 // PC 0x0062FA30  Xbox 0x0005B1C0
 void CGuiInGame::UpdateDialogLipSync()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::UpdateDialogLipSync() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_nDialogSoundId != OBJECT_INVALID && m_pDialogSound != 0 &&
         m_pDialogSound->IsPlaying() && m_pDialogSound->GetHasStartedStreaming())
     {
@@ -6186,7 +6497,10 @@ void CGuiInGame::UpdateDialogLipSync()
 // PC 0x0062FAD0  Xbox 0x0005B260
 int CGuiInGame::GetFadeOverridePanelVisible()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetFadeOverridePanelVisible() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != 0)
     {
         return (m_pGalaxyMap != 0 && m_pGuiManager->PanelExists(m_pGalaxyMap) && m_pGalaxyMap->m_bVisible) ||
@@ -6200,7 +6514,10 @@ int CGuiInGame::GetFadeOverridePanelVisible()
 // PC 0x0062FB90
 void CGuiInGame::FadeAndStopDialogAmbientTrack()
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::FadeAndStopDialogAmbientTrack() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     if (m_pDialogAmbientTrack != 0)
     {
         g_pAppManager->m_pClientExoApp->FadeAndStopStreamingSoundSource(
@@ -6212,7 +6529,10 @@ void CGuiInGame::FadeAndStopDialogAmbientTrack()
 // PC 0x00632300  Xbox 0x0005DE30
 void CGuiInGame::AddToDialogNonDependantList(const CExoString& sName)
 {
-    GUIINGAME_HOOK();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::AddToDialogNonDependantList() current equip screen NPC %d\n", GetCurrentEquipScreenNPC());
+    }
     if (!sName.CompareNoCase("") && !sName.IsEmpty() &&
         !IsOnDialogNonDependantList(sName))
     {
@@ -6295,7 +6615,10 @@ int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
 #ifndef _XBOX
 int CGuiInGame::GetCurrentEquipScreenNPC()  // PC 0x0062FEA0
 {
-    GUIINGAME_TRACE();
+    if (GUIINGAME_DEBUG)
+    {
+        EXOLOG("CGuiInGame::GetCurrentEquipScreenNPC() dialog no orient list count %lu\n", m_lDialogNoOrientList.Count());
+    }
     int nNPC = -1;
 
     if (m_pGuiManager != 0 && m_pGuiManager->PanelExists(m_apScreenPanels[0]) != 0)
@@ -6446,15 +6769,15 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
                 m_ppnReplyAnimationFlags[nReply][nAnimation]);
         }
 
-        unsigned char nFade = m_pnReplyValue11[nReply];
+        unsigned char nFade = m_pnReplyFadeType[nReply];
         if (nFade != DIALOG_FADE_NONE)
         {
             int bFadeIn = 1;
             if (nFade == DIALOG_FADE_OUT_ALTERNATE || nFade == DIALOG_FADE_OUT)
                 bFadeIn = 0;
-            const Vector& vColor = m_pvReplyValue12[nReply];
-            float fLength = m_pfReplyValue14[nReply];
-            float fDelay = m_pfReplyValue13[nReply];
+            const Vector& vColor = m_pvReplyFadeColor[nReply];
+            float fLength = m_pfReplyFadeLength[nReply];
+            float fDelay = m_pfReplyFadeDelay[nReply];
             if (m_pDialogFade != 0)
                 m_pDialogFade->SetFade(bFadeIn, fDelay, fLength, vColor);
         }
@@ -6462,7 +6785,7 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
         if (bSelected)
         {
             UnlockDialogParticipantOrientations();
-            unsigned long oidListener = m_pnReplyValue2[nReply];
+            unsigned long oidListener = m_poidReplyListener[nReply];
             if (oidListener == OBJECT_INVALID)
             {
                 m_oidPreviousDialogObject2 = m_oidDialogObject2;
@@ -6479,21 +6802,21 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
             SetDialogAnimations();
             if (m_pDialog != 0 && m_pDialog == m_pCameraDialog)
             {
-                if (SetAnimatedCamera(m_pnReplyValue8[nReply], m_pfReplyValue9[nReply]) == 0)
+                if (SetAnimatedCamera(m_pnReplyCameraAnimation[nReply], m_pfReplyFieldOfView[nReply]) == 0)
                 {
                     if (m_bShotCameraInitialized == 0)
                         InitializeShotCamera();
-                    UpdateShotCamera(m_pnReplyValue3[nReply], m_pnReplyValue4[nReply],
-                                     m_pfReplyValue5[nReply], m_pfReplyValue6[nReply],
-                                     m_pnReplyValue7[nReply], m_pnReplyValue10[nReply]);
+                    UpdateShotCamera(m_pnReplyCameraAngle[nReply], m_pnReplyCameraId[nReply],
+                                     m_pfReplyCameraHeight[nReply], m_pfReplyTargetHeight[nReply],
+                                     m_pnReplyWaitFlags[nReply], m_pnReplyVideoEffect[nReply]);
                 }
             }
-            else if (m_pnReplyValue3[nReply] == DIALOG_SHOT_COMPUTER)
+            else if (m_pnReplyCameraAngle[nReply] == DIALOG_SHOT_COMPUTER)
             {
                 if (m_bShotCameraInitialized == 0)
                     InitializeShotCamera();
-                SetComputerCameraShot(m_pnReplyValue4[nReply], m_pnReplyValue7[nReply],
-                                      m_pnReplyValue10[nReply]);
+                SetComputerCameraShot(m_pnReplyCameraId[nReply], m_pnReplyWaitFlags[nReply],
+                                      m_pnReplyVideoEffect[nReply]);
             }
         }
         if (bEscape)
@@ -6527,10 +6850,10 @@ void CGuiInGame::UpdateDialog()
         return;
     unsigned long oidTarget = m_oidDialogObject1;
     int nReply = m_nDialogReply;
-    if (m_pnReplyValue2 == 0)
+    if (m_poidReplyListener == 0)
         return;
-    if (m_pnReplyValue2[nReply] != OBJECT_INVALID)
-        oidTarget = m_pnReplyValue2[nReply];
+    if (m_poidReplyListener[nReply] != OBJECT_INVALID)
+        oidTarget = m_poidReplyListener[nReply];
     unsigned long oidSpeaker = m_oidDialogCamera;
     CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(oidTarget);
     if (pObject == 0 || pObject->AsSWCObject() == 0)
@@ -6559,7 +6882,7 @@ void CGuiInGame::UpdateDialog()
         unsigned long oidDialogOwner = m_pDialog->m_nOwner;
         unsigned long oidOwner = g_pAppManager->GetServerExoApp()->ClientToServerObjectId(oidDialogOwner);
         CGameObject* pServerObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidOwner);
-        if (m_nC0 == 0)
+        if (m_bAnimatedCut == 0)
         {
             int nAnimations = m_pnReplyAnimations[nReply];
             InitializeDialogAnimationData(nAnimations);
@@ -6674,7 +6997,7 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
         unsigned long oidPlayer = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(oidServerCreature);
         if (m_nReplies == 1 && m_asReplyText[0] == "")
         {
-            m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyValue1,
+            m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyIndex,
                                   nStartIndex, 0);
             m_pDialog->m_nReplyContext = nReplyContext;
             int nReplyCount = 1;
@@ -6689,7 +7012,7 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
             m_pDialog->SetActiveControl(0, 0);
             return;
         }
-        m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyValue1,
+        m_pDialog->SetReplies(m_nReplies, m_asReplyText, m_pnReplyIndex,
                               nStartIndex, 1);
         m_pDialog->m_nReplyContext = nReplyContext;
         UnlockDialogParticipantOrientations();
@@ -6720,9 +7043,9 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
         {
             if (!m_bShotCameraInitialized)
                 InitializeShotCamera();
-            UpdateShotCamera(m_pnReplyValue3[0], m_pnReplyValue4[0],
-                             m_pfReplyValue5[0], m_pfReplyValue6[0],
-                             m_pnReplyValue7[0], m_pnReplyValue10[0]);
+            UpdateShotCamera(m_pnReplyCameraAngle[0], m_pnReplyCameraId[0],
+                             m_pfReplyCameraHeight[0], m_pfReplyTargetHeight[0],
+                             m_pnReplyWaitFlags[0], m_pnReplyVideoEffect[0]);
         }
     }
 }
@@ -6730,15 +7053,15 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
 int CGuiInGame::HandleDialogReplies(
     unsigned long oidPlayer, unsigned long oidSpeaker,
     unsigned char nComputerType, CExoString* psText,
-    unsigned long* pnValue1, unsigned long* pnValue2,
-    unsigned long* pnValue3, int* pnValue4, float* pfValue5,
-    float* pfValue6, unsigned long* pnValue7, unsigned short* pnValue8,
-    float* pfValue9, int* pnValue10, unsigned char* pnValue11,
-    Vector* pvValue12, float* pfValue13, float* pfValue14,
+    unsigned long* pnReplyIndex, unsigned long* poidListener,
+    unsigned long* pnCameraAngle, int* pnCameraId, float* pfCameraHeight,
+    float* pfTargetHeight, unsigned long* pnWaitFlags, unsigned short* pnCameraAnimation,
+    float* pfFieldOfView, int* pnVideoEffect, unsigned char* pnFadeType,
+    Vector* pvFadeColor, float* pfFadeDelay, float* pfFadeLength,
     unsigned long nEntries, unsigned long nReplies,
     unsigned long nReplyContext, unsigned long* pnAnimations,
     unsigned long** ppnAnimationIDs, unsigned short** ppnAnimationFlags,
-    int bUnknown)
+    int bEndOfDialog)
 {
     unsigned long nTotalReplies = nEntries + nReplies;
     if (nTotalReplies > 0)
@@ -6760,11 +7083,11 @@ int CGuiInGame::HandleDialogReplies(
                 g_pSWTlkTable->ParseStr(sReply, (CGameObject*)pObject,
                                        nReply > nEntries, 0);
             }
-            SetReplyData(nReply, sReply, pnValue1[nReply], pnValue2[nReply],
-                         pnValue3[nReply], pnValue4[nReply], pfValue5[nReply],
-                         pfValue6[nReply], pnValue7[nReply], pnValue8[nReply],
-                         pfValue9[nReply], pnValue10[nReply], pnValue11[nReply],
-                         pvValue12[nReply], pfValue13[nReply], pfValue14[nReply],
+            SetReplyData(nReply, sReply, pnReplyIndex[nReply], poidListener[nReply],
+                         pnCameraAngle[nReply], pnCameraId[nReply], pfCameraHeight[nReply],
+                         pfTargetHeight[nReply], pnWaitFlags[nReply], pnCameraAnimation[nReply],
+                         pfFieldOfView[nReply], pnVideoEffect[nReply], pnFadeType[nReply],
+                         pvFadeColor[nReply], pfFadeDelay[nReply], pfFadeLength[nReply],
                          pnAnimations[nReply], ppnAnimationIDs[nReply],
                          ppnAnimationFlags[nReply]);
         }
@@ -6774,7 +7097,7 @@ int CGuiInGame::HandleDialogReplies(
     return 1;
 }
 
-static inline void GuiInGameTrace()
+static inline void TraceInGameGui()
 {
 }
 
@@ -6801,15 +7124,6 @@ static inline CServerExoApp* ServerExoAppLate2(CAppManager* p)
 static inline CServerExoApp* ServerExoAppLate1(CAppManager* p)
 {
     return p->m_pServerExoApp;
-}
-
-static inline void GuiingameTrace2()
-{
-    GuiingameTrace1();
-}
-
-static inline void GuiingameTrace1()
-{
 }
 
 #ifdef _XBOX
@@ -6912,7 +7226,7 @@ void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMu
             if (m_pCreditsMusic != 0)
             {
                 m_pCreditsMusic->SetPriorityGroup(CExoStreamingSoundSource::PRIORITY_GROUP_DIALOG_AMBIENT);
-                if (m_nXboxUnmappedC0C == 1)
+                if (m_bPlayCreditsMusic == 1)
                 {
                     m_pCreditsMusic->Play(sMusic.CStr(), 11, 0, 1, 0);
                 }
@@ -6924,7 +7238,7 @@ void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMu
 // Xbox 0x0005AB10
 void CGuiInGame::PostDialogConversationText(const CExoString& sConversation)
 {
-    if (m_nXboxUnmappedB98)
+    if (m_bShowDialogDebugText)
     {
         CExoString sText;
         sText.Format("Conv: %s", sConversation.CStr());
@@ -6934,7 +7248,7 @@ void CGuiInGame::PostDialogConversationText(const CExoString& sConversation)
 // Xbox 0x0005ABA0
 void CGuiInGame::PostDialogSoundText(const CExoString& sSound)
 {
-    if (m_nXboxUnmappedB98)
+    if (m_bShowDialogDebugText)
     {
         int nRow = m_nDialogReplyRow++;
         if (m_nDialogReplyRow - 16 >= 5)

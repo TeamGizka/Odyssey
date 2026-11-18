@@ -115,7 +115,7 @@ void CSWGuiInGameOptKeyMappings::FillListWithEvents()
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiKeyMapButton::SetEditing(int bEditing)
 {
     if (bEditing)
@@ -502,7 +502,7 @@ void CSWGuiKeyMapButton::onEventClicked(CSWGuiControl* pControl)
         m_pParent->SetCaptureEvent(this);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiKeyMapButton::SetEvents()
 {
     AddEvent(CSWGuiControl::EVENT_SELECT, this,

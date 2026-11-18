@@ -15,22 +15,30 @@ CExoBase::CExoBase()
 #ifdef _XBOX
 int CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,  // Xbox 0x00134890
                                const CExoString& sPath,
-                               unsigned short nResType, int nArg4, int nArg5)
+                               unsigned short nResType, int bDirectories, int nSortMode)
 {
-    return m_pInternal->GetDirectoryList(pList, sPath, nResType, nArg4, nArg5);
+    return m_pInternal->GetDirectoryList(pList, sPath, nResType, bDirectories, nSortMode);
 }
 #else
 void CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,  // PC 0x005E6640
                                 const CExoString& sPath,
-                                unsigned short nResType, int nArg4, int nArg5)
+                                unsigned short nResType, int bDirectories, int nSortMode)
 {
-    m_pInternal->GetDirectoryList(pList, sPath, nResType, nArg4, nArg5);
+    m_pInternal->GetDirectoryList(pList, sPath, nResType, bDirectories, nSortMode);
 }
 #endif
 // PC 0x005E6650
 int CExoBase::GetDirectorySize(const CExoString& sPath)
 {
     return m_pInternal->GetDirectorySize(sPath);
+}
+// Dead code: not in the PC executable
+int CExoBase::GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList,
+                                        const CExoString& sDir,
+                                        unsigned short nResType, int bSorted)
+{
+    return m_pInternal->GetAugmentedDirectoryList(pList, sDir, nResType,
+                                                  bSorted);
 }
 // PC 0x005E6660  Xbox 0x001348A0
 const CExoString& CExoBase::GetResourceExtension(unsigned short resourceType)
@@ -47,8 +55,14 @@ void CExoBase::LoadAliases(const CExoString& sFile)
 {
     m_pInternal->LoadAliases(sFile);
 }
+// Dead code: not in the PC executable
+void CExoBase::ShutDown()
+{
+    m_pInternal->ShutDown();
+}
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CExoBase::SpawnExternalApplication(const CExoString& sApplication,
                                         const CExoString& sCommandLine,
                                         int bQuit)
@@ -61,6 +75,11 @@ int CExoBase::WcsToMbs(char* sDest, const wchar_t* sSource,
                        unsigned long nLength)
 {
     return m_pInternal->WcsToMbs(sDest, sSource, nLength);
+}
+// Dead code: not in the PC executable
+int CExoBase::CheckForCD()
+{
+    return m_pInternal->CheckForCD();
 }
 // PC 0x005E66A0  Xbox 0x001348E0
 CExoBase::~CExoBase()

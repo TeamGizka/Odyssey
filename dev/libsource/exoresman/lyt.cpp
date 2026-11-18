@@ -19,6 +19,11 @@ int CLYT::GetObstacleCount()
 {
     return m_nObstacleCount;
 }
+// Dead code: not in the PC executable
+int CLYT::GetDoorHookCount()
+{
+    return m_nDoorHookCount;
+}
 // PC 0x005DE450  Xbox 0x001498C0
 int CLYT::UnloadLayout()
 {

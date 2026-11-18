@@ -203,7 +203,7 @@ CScriptLocation CSWSScriptVarTable::GetLocation(const CExoString& sName)
     return lLocation;
 }
 #ifndef _XBOX
-void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)  // PC 0x0059A6F0  Xbox 0x00243920
+void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int bLoading)  // PC 0x0059A6F0  Xbox 0x00243920
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1)->m_nValue = nValue;
 
@@ -216,22 +216,22 @@ void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag) 
                 if (sName[11] == 'E')
                 {
                     m_pCreature->GetJournal()->SetState(
-                        sName.SubString(16, 128), nValue, nFlag);
+                        sName.SubString(16, 128), nValue, bLoading);
                 }
                 else if (sName[11] == 'D')
                 {
                     m_pCreature->GetJournal()->SetDate(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'T')
                 {
                     m_pCreature->GetJournal()->SetTime(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'P')
                 {
                     m_pCreature->GetJournal()->SetPicture(
-                        sName.SubString(18, 128), nValue, nFlag);
+                        sName.SubString(18, 128), nValue, bLoading);
                 }
             }
         }
@@ -282,6 +282,21 @@ CSWSScriptVarTable::~CSWSScriptVarTable()
         }
     }
 }
+// Dead code: not in the PC executable
+void CSWSScriptVarTable::DestroyInt(const CExoString& sName)
+{
+    DeleteIndex(sName, SCRIPTVAR_TYPE_INT);
+    if (m_pCreature != NULL)
+    {
+        if (sName.GetLength() > 10)
+        {
+            if (sName.Left(10) == "NW_JOURNAL")
+            {
+                m_pCreature->GetJournal()->Destroy(sName.SubString(16, 128));
+            }
+        }
+    }
+}
 // PC 0x0059AA50  Xbox 0x00243CC0
 void CSWSScriptVarTable::DestroyFloat(const CExoString& sName)
 {
@@ -296,6 +311,11 @@ void CSWSScriptVarTable::DestroyString(const CExoString& sName)
 void CSWSScriptVarTable::DestroyObject(const CExoString& sName)
 {
     DeleteIndex(sName, SCRIPTVAR_TYPE_OBJECT);
+}
+// Dead code: not in the PC executable
+void CSWSScriptVarTable::DestroyLocation(const CExoString& sName)
+{
+    DeleteIndex(sName, SCRIPTVAR_TYPE_LOCATION);
 }
 // PC 0x0059AA80  Xbox 0x00243CF0
 void CSWSScriptVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
@@ -368,7 +388,7 @@ void CSWSScriptVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 
 #ifdef _XBOX
 // PC 0x0059A6F0  Xbox 0x00243920
-void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)
+void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int bLoading)
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1)->m_nValue = nValue;
 
@@ -381,22 +401,22 @@ void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)
                 if (sName[11] == 'E')
                 {
                     m_pCreature->GetJournal()->SetState(
-                        sName.SubString(16, 128), nValue, nFlag);
+                        sName.SubString(16, 128), nValue, bLoading);
                 }
                 else if (sName[11] == 'D')
                 {
                     m_pCreature->GetJournal()->SetDate(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'T')
                 {
                     m_pCreature->GetJournal()->SetTime(sName.SubString(15, 128),
-                                                       nValue, nFlag);
+                                                       nValue, bLoading);
                 }
                 else if (sName[11] == 'P')
                 {
                     m_pCreature->GetJournal()->SetPicture(
-                        sName.SubString(18, 128), nValue, nFlag);
+                        sName.SubString(18, 128), nValue, bLoading);
                 }
             }
         }

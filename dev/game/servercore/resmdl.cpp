@@ -29,6 +29,11 @@ unsigned long CResMDL::GetMDLSize()
 {
     return m_nMDLSize;
 }
+// Dead code: not in the PC executable
+int CResMDL::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x005D4C60
 int CResMDL::OnResourceServiced()
 {

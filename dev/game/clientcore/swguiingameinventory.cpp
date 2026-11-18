@@ -18,8 +18,8 @@
 #include "swguiingamecharacter.h"
 #include "swguiingameequip.h"
 
-static inline void SwguiingameinventoryTrace2();
-static inline void SwguiingameinventoryTrace1();
+static inline void TraceInventoryPanel();
+static inline void TraceInventory();
 
 const int CSWGuiInGameInventory::m_nFilterName[6] =
 {
@@ -624,7 +624,7 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
     m_btnSwitchLeft.m_cBorder.m_cParams.m_fRotation = 180.0f;
     m_btnSwitchLeft.m_cHilite.m_cParams.m_fRotation = 180.0f;
 
-    m_lblUnknown64.Initialize(m_lbxDescription.m_pProtoItem->m_cExtent,
+    m_lblDescription.Initialize(m_lbxDescription.m_pProtoItem->m_cExtent,
                               (CSWGuiLabel*)m_lbxDescription.m_pProtoItem,
                               1.0f);
     CSWGuiListBox* pItems = &m_lbxItems;
@@ -679,7 +679,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         {
             CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
             CExoString sDescription = pItem->GetPropertyDescription();
-            m_lblUnknown64.m_cText.m_cParams.SetText(sDescription);
+            m_lblDescription.m_cText.m_cParams.SetText(sDescription);
             if (m_nCharacter != -1 &&
                 ((CSWServerInfo*)g_pAppManager->m_pServerExoApp->GetServerInfo())->m_bPartyPicking)
                 m_bUpdateUseItem = 0;
@@ -692,24 +692,24 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         {
             m_bUpdateUseItem = 0;
             CExoString sDescription("Error: Invalid item");
-            m_lblUnknown64.m_cText.m_cParams.SetText(sDescription);
+            m_lblDescription.m_cText.m_cParams.SetText(sDescription);
         }
         m_lbxDescription.ClearItems();
-        CSWGuiExtent cExtent = m_lblUnknown64.m_cExtent;
-        if (m_lblUnknown64.m_cText.m_cParams.m_sText.GetLength() > 0)
-            cExtent.m_nHeight = m_lblUnknown64.m_cText.GetIdealHeight();
+        CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+        if (m_lblDescription.m_cText.m_cParams.m_sText.GetLength() > 0)
+            cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
         else
-            cExtent.m_nHeight = m_lblUnknown64.m_cText.GetFontHeight();
-        m_lblUnknown64.SetExtent(cExtent);
-        CSWGuiControl* pDescription = &m_lblUnknown64;
+            cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+        m_lblDescription.SetExtent(cExtent);
+        CSWGuiControl* pDescription = &m_lblDescription;
         m_lbxDescription.AddControls(&pDescription, 1, 0, 0, 0);
-        m_lbxDescription.SetSelectedControl(&m_lblUnknown64, 0);
+        m_lbxDescription.SetSelectedControl(&m_lblDescription, 0);
     }
 }
 // PC 0x006B3ED0  Xbox 0x000E9080
 void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
 {
-    SwguiingameinventoryTrace2();
+    TraceInventoryPanel();
     if (nState != 0)
     {
         switch (nEvent)
@@ -757,7 +757,7 @@ void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
 // PC 0x006B40C0  Xbox 0x000E9260
 CSWGuiInGameInventory::~CSWGuiInGameInventory()
 {
-    SwguiingameinventoryTrace2();
+    TraceInventoryPanel();
     m_lbxDescription.ClearItems();
     m_lbxItems.ClearItems();
     for (int i = 0; i < m_aItemEntries.num; i++)
@@ -773,7 +773,7 @@ CSWGuiInGameInventory::~CSWGuiInGameInventory()
 // PC 0x006B4430  Xbox 0x000E9510
 void CSWGuiInGameInventory::OnPanelRemoved()
 {
-    SwguiingameinventoryTrace2();
+    TraceInventoryPanel();
     m_lbxItems.ClearItems();
     for (int i = 0; i < m_aItemEntries.num; i++)
     {
@@ -986,7 +986,7 @@ void CSWGuiInGameInventory::PopulateItemListBox()
         m_btnUseItem.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
         m_lbxItems.SetSelectedControl(-1, 0);
         CExoString sEmpty("");
-        m_lblUnknown64.m_cText.m_cParams.SetText(sEmpty);
+        m_lblDescription.m_cText.m_cParams.SetText(sEmpty);
     }
     m_bUpdateItems = 0;
 }
@@ -1036,12 +1036,12 @@ void CSWGuiInGameInventory::OnPanelAdded()
                                                        OBJECT_INVALID, 0);
 }
 
-static inline void SwguiingameinventoryTrace2()
+static inline void TraceInventoryPanel()
 {
-    SwguiingameinventoryTrace1();
+    TraceInventory();
 }
 
-static inline void SwguiingameinventoryTrace1()
+static inline void TraceInventory()
 {
 }
 
@@ -1110,7 +1110,7 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
         }
     }
     m_lblDownarrow.m_cBorder.m_cParams.m_fRotation = 180.0f;
-    m_lblUnknown64.Initialize(m_lbxDescription.m_pProtoItem->m_cExtent,
+    m_lblDescription.Initialize(m_lbxDescription.m_pProtoItem->m_cExtent,
                               (CSWGuiLabel*)m_lbxDescription.m_pProtoItem);
 
     int nNextFilter =
@@ -1446,7 +1446,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         {
             CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
             CExoString sDescription = pItem->GetPropertyDescription();
-            m_lblUnknown64.m_cText.m_cParams.SetText(sDescription);
+            m_lblDescription.m_cText.m_cParams.SetText(sDescription);
             bUseItem = pControl->m_nIndex;
             if (pItem->m_bNewItem)
                 m_aNewItems.AddUnique(oidItem);
@@ -1454,15 +1454,15 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         else
         {
             CExoString sDescription("Error: Invalid item");
-            m_lblUnknown64.m_cText.m_cParams.SetText(sDescription);
+            m_lblDescription.m_cText.m_cParams.SetText(sDescription);
         }
         m_lbxDescription.ClearItems();
-        CSWGuiExtent cExtent = m_lblUnknown64.m_cExtent;
-        if (m_lblUnknown64.m_cText.m_cParams.m_sText.GetLength() > 0)
-            cExtent.m_nHeight = m_lblUnknown64.m_cText.GetIdealHeight();
+        CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+        if (m_lblDescription.m_cText.m_cParams.m_sText.GetLength() > 0)
+            cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
         else
-            cExtent.m_nHeight = m_lblUnknown64.m_cText.GetFontHeight();
-        m_lblUnknown64.SetExtent(cExtent);
+            cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+        m_lblDescription.SetExtent(cExtent);
         if (bUseItem)
         {
             if (g_pAppManager->m_pServerExoApp->GetPlayerCreature()->m_nUseItemTimer == 0)
@@ -1474,9 +1474,9 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         {
             m_lblUseItem.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
         }
-        CSWGuiControl* pDescription = &m_lblUnknown64;
+        CSWGuiControl* pDescription = &m_lblDescription;
         m_lbxDescription.AddControls(&pDescription, 1, 0, 0, 0);
-        m_lbxDescription.SetSelectedControl(&m_lblUnknown64, 0);
+        m_lbxDescription.SetSelectedControl(&m_lblDescription, 0);
         m_lblRanalog.SetShown(m_lbxDescription.IsOversized());
     }
 }
@@ -1527,7 +1527,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)
                     {
                         m_lblUseItem.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
                         SetActiveControl(NULL, 0);
-                        m_lblUnknown64.m_cText.m_cParams.SetText("");
+                        m_lblDescription.m_cText.m_cParams.SetText("");
                     }
                 }
             }
@@ -1600,7 +1600,7 @@ void CSWGuiInGameInventory::PopulateItemListBox()
         m_lblUseItem.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
         SetActiveControl(NULL, 0);
         CExoString sEmpty("");
-        m_lblUnknown64.m_cText.m_cParams.SetText(sEmpty);
+        m_lblDescription.m_cText.m_cParams.SetText(sEmpty);
     }
     m_bUpdateItems = 0;
 }

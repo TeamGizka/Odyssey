@@ -6,8 +6,8 @@
 #include "nwcitem.h"
 #include "clientexoapp.h"
 
-static inline void NwcanimbasewieldTrace1();
-#define NWCANIMBASEWIELD_TRACE() NwcanimbasewieldTrace1()
+#define NWCANIMBASEWIELD_DEBUG 0
+
 // PC 0x00699DD0  Xbox 0x000C5980
 CSWCAnimBaseWield::CSWCAnimBaseWield()
 {
@@ -70,7 +70,6 @@ int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
                                             float fSpeed, int nFlags,
                                             float fBlend)
 {
-    NWCANIMBASEWIELD_TRACE();
     if (fSpeed == 0.0f)
     {
         fSpeed = 1.0f;
@@ -438,7 +437,10 @@ void CSWCAnimBaseWield::ReAttachWieldedObjects()
 Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
                                                 unsigned char nSlot)
 {
-    NWCANIMBASEWIELD_TRACE();
+    if (NWCANIMBASEWIELD_DEBUG)
+    {
+        EXOLOG("CSWCAnimBaseWield::GetItemAurObject() is all rooms %d\n", m_pHiddenRightModel->IsAllRooms());
+    }
     CSWCItem* pItem =
         g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nItemId);
     if (pItem == 0)
@@ -450,7 +452,10 @@ Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
 // PC 0x0069A680  Xbox 0x000C5F20
 int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
 {
-    NWCANIMBASEWIELD_TRACE();
+    if (NWCANIMBASEWIELD_DEBUG)
+    {
+        EXOLOG("CSWCAnimBaseWield::ItemIsValid() item aur object %p\n", GetItemAurObject(0, 0));
+    }
     if (m_bWieldLimited == 0)
     {
         return 1;
@@ -462,7 +467,10 @@ int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
 void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
                                          const CResRef& sLeft)
 {
-    NWCANIMBASEWIELD_TRACE();
+    if (NWCANIMBASEWIELD_DEBUG)
+    {
+        EXOLOG("CSWCAnimBaseWield::HideWieldedItems() item aur object %p\n", GetItemAurObject(0, 0));
+    }
     CExoString sModel;
 
     CSWCItem* pRightItem =
@@ -568,8 +576,4 @@ void CSWCAnimBaseWield::DisableDistortion()
         pRightModel->DisableDistortion();
     }
     CSWCAnimBase::DisableDistortion();
-}
-
-static inline void NwcanimbasewieldTrace1()
-{
 }

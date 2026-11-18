@@ -81,6 +81,7 @@ public:
     int ApplyChangedSavingThrow(CSWSItem* pItem, int nSaveValue,
                                 CSWItemProperty* pProperty,
                                 CSWSCreature* pCreature, int bLoading);
+    int ApplyChangedSavingThrowVsX(CSWSItem* pItem, int nSaveValue, CSWItemProperty* pProperty, CSWSCreature* pCreature, int bLoading);
     int ApplySpecialWalk(CSWSItem* pItem, CSWItemProperty* pProperty,
                          CSWSCreature* pCreature, unsigned long nIndex,
                          int bLoading);
@@ -158,12 +159,15 @@ public:
     int ApplyImprovedSavingThrow(CSWSItem* pItem, CSWItemProperty* pProperty,
                                  CSWSCreature* pCreature, unsigned long nIndex,
                                  int bLoading);
+    int ApplyImprovedSavingThrowVsX(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
     int ApplyReducedSavingThrow(CSWSItem* pItem, CSWItemProperty* pProperty,
                                 CSWSCreature* pCreature, unsigned long nIndex,
                                 int bLoading);
+    int ApplyReducedSavingThrowVsX(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
     int RemoveChangedSavingThrow(int nSaveValue, CSWSItem* pItem,
                                  CSWItemProperty* pProperty,
                                  CSWSCreature* pCreature);
+    int RemoveChangedSavingThrowVsX(int nSaveValue, CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature);
     int RemoveSpecialWalk(CSWSItem* pItem, CSWItemProperty* pProperty,
                           CSWSCreature* pCreature, unsigned long nIndex);
     int RemoveTrueSeeing(CSWSItem* pItem, CSWItemProperty* pProperty,
@@ -210,8 +214,12 @@ public:
     int RemoveImprovedSavingThrow(CSWSItem* pItem, CSWItemProperty* pProperty,
                                   CSWSCreature* pCreature,
                                   unsigned long nIndex);
+    int RemoveImprovedSavingThrowVsX(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex);
     int RemoveReducedSavingThrow(CSWSItem* pItem, CSWItemProperty* pProperty,
                                  CSWSCreature* pCreature, unsigned long nIndex);
+    int RemoveReducedSavingThrowVsX(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex);
+    int ApplyImprovedEvasion(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
+    int RemoveImprovedEvasion(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex);
 
     int RemoveLight(CSWSItem* pItem, CSWItemProperty* pProperty,
                     CSWSCreature* pCreature, unsigned long nIndex);

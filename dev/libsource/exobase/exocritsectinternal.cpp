@@ -19,3 +19,8 @@ void CExoCriticalSectionInternal::LeaveCriticalSection()
 {
     ::LeaveCriticalSection(&m_CriticalSection);
 }
+// Dead code: not in the PC executable
+int GetInstallVersion(CExoString& sVersion)
+{
+    return 0;
+}

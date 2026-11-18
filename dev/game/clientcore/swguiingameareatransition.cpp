@@ -11,7 +11,7 @@
 #include "gameobjectarray.h"
 #include "swparty.h"
 
-static inline void SwguiingameareatransitionTrace1();
+static inline void TraceAreaTransition();
 // PC 0x006C7D50  Xbox 0x000F4A60
 CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -34,7 +34,7 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
 void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
                                                      const Vector& vPosition)
 {
-    SwguiingameareatransitionTrace1();
+    TraceAreaTransition();
     if (m_oidTransitionObject != oidObject)
     {
         CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
@@ -73,7 +73,7 @@ void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
 // PC 0x006C8050  Xbox 0x000F4940
 void CSWGuiInGameAreaTransition::Draw(float fElapsed)
 {
-    SwguiingameareatransitionTrace1();
+    TraceAreaTransition();
     int nBarkBubbleTop;
     CSWGuiExtent extent = m_cExtent;
     CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
@@ -106,6 +106,6 @@ void CSWGuiInGameAreaTransition::Draw(float fElapsed)
     return CSWGuiPanel::Draw(fElapsed);
 }
 
-static inline void SwguiingameareatransitionTrace1()
+static inline void TraceAreaTransition()
 {
 }

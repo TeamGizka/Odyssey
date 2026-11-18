@@ -14,15 +14,12 @@
 #include <stdio.h>
 #include <string.h>
 
-static inline void SwmgtrackfollowerTrace4();
-static inline void SwmgtrackfollowerTrace3();
-static inline void SwmgtrackfollowerTrace2();
-static inline void SwmgtrackfollowerTrace1();
+#define SWMGTRACKFOLLOWER_DEBUG 0
 
 float fInertiaScale = 1.0f;
 
 extern float fInertiaScale;
-
+// Dead code: not in the PC executable
 void CSWTrackFollower::AttachGuns()
 {
     int nModels = m_lstModels.num;
@@ -151,6 +148,24 @@ void CSWTrackFollower::SetScriptName(int nScript, const CResRef& resRef)
         return;
     }
     m_aScripts[nScript] = resRef;
+}
+// Dead code: not in the PC executable
+CExoSoundSource* CSWTrackFollower::GetSound(int nSound)
+{
+    if (nSound < 0 || nSound >= NUM_SOUND_SOURCES)
+    {
+        return 0;
+    }
+    return m_apSoundSources[nSound];
+}
+// Dead code: not in the PC executable
+CResRef CSWTrackFollower::GetSoundName(int nSound)
+{
+    if (nSound < SOUND_DEATH || nSound >= SOUND_COUNT)
+    {
+        return CResRef();
+    }
+    return m_aOtherSoundNames[nSound - SOUND_DEATH];
 }
 // PC 0x0066C9F0  Xbox 0x000A6050
 int CSWTrackFollower::GetSoundVolume(int nSound)
@@ -528,7 +543,7 @@ void OnReportKey(CAurObject* pObject, char* sEvent, void* pUserData)
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWTrackFollower::UpdateGunBanks()
 {
     if (m_bDying)
@@ -638,7 +653,10 @@ CSWTrackFollower::~CSWTrackFollower()
 // PC 0x0066E110  Xbox 0x000A7810
 void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
 {
-    SwmgtrackfollowerTrace2();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        EXOLOG("CSWTrackFollower::RemoveGunBank() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+    }
     if (m_bDying)
     {
         m_lstGunBanks.Remove(pGunBank);
@@ -647,7 +665,10 @@ void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
 // PC 0x0066E130  Xbox 0x000A7830
 void CSWTrackFollower::Update(float fTime)
 {
-    SwmgtrackfollowerTrace2();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        EXOLOG("CSWTrackFollower::Update() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+    }
     CSWMiniGameObject::Update(fTime);
     if (m_fInvincibilityRemaining > 0.0f)
     {
@@ -755,7 +776,10 @@ int CSWTrackFollower::ForceSetTrack(CAurObject* pTrack, int bPlayAnimation)
 // PC 0x0066D440  Xbox 0x000A6AF0
 void CSWTrackFollower::Stop()
 {
-    SwmgtrackfollowerTrace1();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        EXOLOG("CSWTrackFollower::Stop() model %p\n", GetModel(0));
+    }
     Gob* pTrack = m_pTrack;
     if (pTrack != 0 && m_bTrackPlaying)
     {
@@ -832,9 +856,9 @@ void CSWTrackFollower::PlayAnimation(char* szAnimation, float fSpeed, int nFlags
     }
 }
 // PC 0x0066E2A0  Xbox 0x000A7990
-void CSWTrackFollower::OnDeath(int nReserved)
+void CSWTrackFollower::OnDeath(int bScript)
 {
-    if (nReserved == 0)
+    if (bScript == 0)
     {
         CResRef resScript = GetScriptName(SCRIPT_DEATH);
         if (resScript.IsValid())
@@ -898,10 +922,22 @@ void CSWTrackFollower::OnDeath(int nReserved)
     }
     GetMiniGame()->RemoveEnemy((CSWMiniEnemy*)this);
 }
+// Dead code: not in the PC executable
+void CSWTrackFollower::Die()
+{
+    if (!m_bDying)
+    {
+        m_bDying = 1;
+        OnDeath(0);
+    }
+}
 // PC 0x0066E490  Xbox 0x000A7B80
 int CSWTrackFollower::AttachGuns(CAurObject* pObject)
 {
-    SwmgtrackfollowerTrace2();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        EXOLOG("CSWTrackFollower::AttachGuns() position %f %f %f\n", GetPosition().m_fX, GetPosition().m_fY, GetPosition().m_fZ);
+    }
     List<CAurPart*> parts;
 
     static_cast<Gob*>(pObject)->EnumParts(EnumGunAttachPoints, &parts);
@@ -937,11 +973,11 @@ int CSWTrackFollower::AttachGuns(CAurObject* pObject)
     return nAttached;
 }
 // PC 0x0066E5C0  Xbox 0x000A7CD0
-void CSWTrackFollower::OnHitObstacle(int nReserved)
+void CSWTrackFollower::OnHitObstacle(int bScript)
 {
     int nModels;
     int i;
-    if (nReserved == 0)
+    if (bScript == 0)
     {
         CResRef resScript = GetScriptName(8);
         if (resScript.IsValid())
@@ -999,9 +1035,9 @@ int CSWTrackFollower::DoObstacleHitCheck(CSWMGObstacle* pObstacle)
     return 0;
 }
 // PC 0x0066E7A0  Xbox 0x000A7EB0
-void CSWTrackFollower::OnDamage(int nReserved)
+void CSWTrackFollower::OnDamage(int bScript)
 {
-    if (nReserved == 0)
+    if (bScript == 0)
     {
         CResRef resScript = GetScriptName(5);
         if (resScript.IsValid())
@@ -1807,7 +1843,10 @@ void OnAnimKeyEvent(CAurObject* pObject, char* sEvent, void* pUserData)
 // PC 0x0066FFF0  Xbox 0x000A96B0
 int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
-    SwmgtrackfollowerTrace4();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        SafePointer<CAurObject> pModel = m_pModel;
+    }
     int bSuccess;
     CResList listGunBanks;
     CResStruct structChild;
@@ -1974,23 +2013,4 @@ CSWMGObstacle::~CSWMGObstacle()
     {
         delete m_pModel;
     }
-}
-
-static inline void SwmgtrackfollowerTrace4()
-{
-    SwmgtrackfollowerTrace3();
-}
-
-static inline void SwmgtrackfollowerTrace3()
-{
-    SwmgtrackfollowerTrace2();
-}
-
-static inline void SwmgtrackfollowerTrace2()
-{
-    SwmgtrackfollowerTrace1();
-}
-
-static inline void SwmgtrackfollowerTrace1()
-{
 }

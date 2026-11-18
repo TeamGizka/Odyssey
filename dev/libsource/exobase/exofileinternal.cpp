@@ -454,6 +454,55 @@ CExoAliasListInternal::~CExoAliasListInternal()
         pAlias = pNext;
     }
 }
+// Dead code: not in the PC executable
+void CExoAliasListInternal::Clear()
+{
+    CExoAlias* pAlias = m_pAliasList;
+    while (pAlias != NULL)
+    {
+        CExoAlias* pNext = pAlias->m_pNext;
+        delete pAlias;
+        m_pAliasList = NULL;
+        pAlias = pNext;
+    }
+}
+
+// Dead code: not in the PC executable
+void CExoAliasListInternal::Delete(const CExoString& sAlias)
+{
+    CExoString sDeleteAlias = sAlias;
+
+    if (sDeleteAlias == "")
+    {
+        return;
+    }
+
+    CExoAlias* pPrev = NULL;
+    CExoAlias* pAlias = m_pAliasList;
+    while (pAlias != NULL)
+    {
+        CExoAlias* pNext = pAlias->m_pNext;
+        if (pAlias->m_sAlias.CompareNoCase(sDeleteAlias))
+        {
+            if (m_pAliasList == pAlias)
+            {
+                m_pAliasList = pAlias->m_pNext;
+            }
+            if (pPrev != NULL)
+            {
+                pPrev->m_pNext = pNext;
+            }
+            if (pNext != NULL)
+            {
+                pNext->m_pPrev = pPrev;
+            }
+            delete pAlias;
+            return;
+        }
+        pPrev = pAlias;
+        pAlias = pNext;
+    }
+}
 
 #ifdef _XBOX
 // Xbox 0x00138F40

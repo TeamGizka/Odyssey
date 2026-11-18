@@ -34,21 +34,21 @@ CSWCPlaceable::CSWCPlaceable()
     m_bTrap = 0;
     m_bTrapDetected = 0;
     m_bPlotObject = 0;
-    m_nUnknown114 = 0;
+    m_bLockable = 0;
     m_bLocked = 0;
     m_bUseable = 0;
-    m_nUnknown12C = 1;
-    m_nUnknown130 = 1;
-    m_nUnknown13C = 0;
-    m_nUnknown120 = 0;
+    m_bSelectable = 1;
+    m_bTrapDisarmable = 1;
+    m_bHilighted = 0;
+    m_bHasDescription = 0;
     m_nAppearance = -1;
-    m_nUnknown134 = -1;
-    m_nUnknown138 = 0;
+    m_nTrapType = -1;
+    m_nTrapDisarmDC = 0;
     m_sName = "";
     m_sTag = "";
     m_sModel = "";
     m_pLight = NULL;
-    m_nUnknown140 = 0;
+    m_nHilightTime = 0;
 }
 // PC 0x006823F0  Xbox 0x000B7560
 int CSWCPlaceable::LoadModel(const CResRef& cModel, unsigned char nModel,
@@ -639,7 +639,7 @@ void CSWCPlaceable::AnimationUpdate()
     }
 }
 // PC 0x00683630  Xbox 0x000B8840
-int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
+int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nFlags, int nParam)
 {
     if (GetServerObject() != NULL)
     {
@@ -655,7 +655,7 @@ int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
         UnloadLight();
     }
 
-    return CSWCObject::SetAnimation(nAnimation, nA, nB);
+    return CSWCObject::SetAnimation(nAnimation, nFlags, nParam);
 }
 #ifndef _XBOX
 void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006837D0  Xbox 0x000B8C70

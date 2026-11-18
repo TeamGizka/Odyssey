@@ -163,7 +163,7 @@ void RenderFlat(VertexPrimitiveFlat* pPrimitive);
 void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool bFog);
 #else
 void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool bVertexProgram,
-                              bool bATI);
+                              bool bFog);
 #endif
 
 #endif

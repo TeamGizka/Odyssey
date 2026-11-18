@@ -31,6 +31,9 @@ public:
     static const int SMOOTHING_STEP_4;
 
     void DeleteFirstTileFValueAlternatives();
+    void CreateFirstTileFValueAlternatives(int nCount);
+    void GetFirstTileFValueAlternatives(int nTile, int* pnFValue, int* pnFValue2, int** ppSuccessors);
+    void SetFirstTileFValueAlternatives(int nTile, int nFValue, int nFValue2, int* pSuccessors);
     void FlipStartEndPoints();
     void FlipTempEndPoints();
     void ComputeStepTolerance();
@@ -52,13 +55,13 @@ public:
     }
     void GetPathPointEndpoints(Vector& vStart, Vector& vEnd)  // PC 0x004BB380  Xbox 0x0018D4D0
     {
-        vStart = m_vField_1E4;
-        vEnd = m_vField_1F0;
+        vStart = m_vPathPointEndpointStart;
+        vEnd = m_vPathPointEndpointEnd;
     }
     void SetPathPointEndpoints(const Vector& vStart, const Vector& vEnd)  // PC 0x004BB3C0  Xbox 0x0018D510
     {
-        m_vField_1E4 = vStart;
-        m_vField_1F0 = vEnd;
+        m_vPathPointEndpointStart = vStart;
+        m_vPathPointEndpointEnd = vEnd;
     }
     void SetPathPointStartPath(int nCount, float* pfPoints)  // PC 0x004BB400  Xbox 0x0018D550
     {
@@ -132,11 +135,11 @@ public:
 
     float GetCreaturePersonalSpace() { return m_fStepScaleY; }
 
-    int GetAreaListCount() { return m_nField_B4; }
+    int GetAreaListCount() { return m_nAreaListCount; }
     unsigned long* GetAreaList() { return m_pAreaList; }
 
     int GetWayPointCount() { return m_nWayPointCount; }
-    int GetCurrentWayPoint() { return m_nField_9C; }
+    int GetCurrentWayPoint() { return m_nCurrentWayPoint; }
 
     void ResetGridSearchData();
     void ResetWayPointData();
@@ -163,22 +166,22 @@ public:
     float m_fStepScaleZ;
     float m_fHalfStep;
     float m_fHitDistance;
-    int m_nField_1C;
+    int m_bPathPointGridLeg;
     int m_nField_20;
-    int m_nField_24;
-    int m_nField_28;
+    int m_bReturnClosest;
+    int m_nMovementRate;
     unsigned long m_oidPathfindCreature;
     unsigned long m_oidPathfindTargetCreature;
-    int m_nField_34;
+    int m_oidIgnoreCreature;
     unsigned long m_oidUseTarget;
-    int m_nField_3C;
+    int m_nPlotAttempts;
     int m_nField_40;
     float m_fTempStartX;
     float m_fTempStartY;
     float m_fTempStartZ;
     float m_fTempDistance;
     int m_nTempArea;
-    int m_nField_58;
+    int m_bNewPathRequest;
     float m_fStartX;
     float m_fStartY;
     float m_fStartZ;
@@ -189,22 +192,22 @@ public:
     float m_fEndY;
     float m_fEndZ;
     int m_nEndArea;
-    int m_nField_84;
-    int m_nField_88;
+    int m_bPathReversed;
+    int m_bPlotFinished;
     int m_nWayPointCount;
     float* m_pWayPoints;
-    int m_nField_94;
+    int m_nWayPointTempCount;
     float* m_pWayPointsTemp;
-    int m_nField_9C;
-    int m_nField_A0;
-    int m_nField_A4;
-    int m_nField_A8;
+    int m_nCurrentWayPoint;
+    int m_bAreaPathFound;
+    int m_bAreaLegStarted;
+    int m_nAreaPathLength;
     int* m_pAreaPath;
     int* m_pAreaPathCost;
-    int m_nField_B4;
+    int m_nAreaListCount;
     unsigned long* m_pAreaList;
 
-    int m_nField_BC;
+    int m_oidIgnoreDoor;
     int m_nField_C0;
     int* m_pTileOpen;
     int* m_pTileClosed;
@@ -219,38 +222,38 @@ public:
     int* m_pFirstTileFValue2;
     int** m_ppFirstTileFValueAlternatives;
     int* m_pField_F4;
-    int m_nField_F8;
+    int m_bWayPointCut;
     int m_nWayPointCutState;
-    char m_bField_100;
-    int m_nField_104;
+    char m_nWayPointCutCount;
+    int m_nWayPointCutRemaining;
     Vector m_vWayPointOrigin;
     Vector m_vWayPointDirection;
     int m_nField_120;
-    int m_nField_124;
+    int m_nGridDistance;
     int m_nField_128;
-    Vector m_vField_12C;
-    Vector m_vField_138;
-    Vector m_vField_144;
-    Vector m_vField_150;
+    Vector m_vGridOrigin;
+    Vector m_vGridSide;
+    Vector m_vGridStep;
+    Vector m_vGridUp;
 
     int* m_pGridDFSPath;
     int m_nGridDFSDepth;
     float m_fField_164;
-    int m_nField_168;
-    int* m_pField_16C;
+    int m_nGridTransTableDepth;
+    int* m_pGridTransTable;
     Vector m_vGridStart;
     Vector m_vGridEnd;
 
     int m_nGridDFSBestPathLength;
     int* m_pGridDFSBestPath;
     int m_nGridDFSBestDistance;
-    int m_nField_194;
-    int m_nField_198;
+    int m_bForceGridPath;
+    int m_bPartialPathSearch;
 
     int m_nDirectLineResult;
     char m_bField_1A0;
-    int m_nField_1A4;
-    int m_nField_1A8;
+    int m_nStartPathPoint;
+    int m_nEndPathPoint;
     unsigned long* m_pPathPointDFSPath;
     int m_nPathPointDFSDepth;
     void* m_pPathPointTransTable;
@@ -260,15 +263,15 @@ public:
     float m_fPathPointDFSBestDistance;
     unsigned long* m_pPathPointDFSBestPath;
     int m_nPathPointDFSBestPathLength;
-    int m_nField_1E0;
-    Vector m_vField_1E4;
-    Vector m_vField_1F0;
+    int m_nPathPointState;
+    Vector m_vPathPointEndpointStart;
+    Vector m_vPathPointEndpointEnd;
     int m_nPathPointStartCount;
     float* m_pfPathPointStartPoints;
     int m_nPathPointEndCount;
     float* m_pfPathPointEndPoints;
     float m_fPathPointDFSBestScore;
-    int m_nField_210;
+    int m_bIgnoreCreatures;
     int m_nSmoothingStep;
     int m_nSmoothFirstCount;
     float* m_pfSmoothFirstPoints;
@@ -279,20 +282,20 @@ public:
     int m_nSmoothCurrentNode;
     int m_nSmoothIntermediateCount;
     float* m_pfSmoothIntermediatePoints;
-    int m_nField_23C;
-    int m_nField_240;
-    int m_nField_244;
+    int m_bForceLocationUpdate;
+    int m_bStopAtUseRange;
+    int m_nAvoidSide;
     // PC 0x0050E250  Xbox 0x001ABBB0
-    void SetTargetPosition(const Vector& vPosition) { m_vField_248 = vPosition; }
-    Vector m_vField_248;
+    void SetTargetPosition(const Vector& vPosition) { m_vTargetPosition = vPosition; }
+    Vector m_vTargetPosition;
     unsigned long m_oidBlockingCreature;
     Vector m_vBlockingCreaturePosition;
-    int m_nField_264;
+    int m_oidFoundEnemyCreature;
 
     int m_nBumpCount;
-    int m_nField_26C;
-    int m_nField_270;
-    int m_nField_274;
+    int m_bTimeout;
+    int m_nTimeoutDay;
+    int m_nTimeoutTime;
 };
 
 #define AVOID_CREATURE_POINT_TOLERANCE_SQUARED 0.001f
@@ -338,6 +341,7 @@ public:
 
     void ComputeHexPoints(const Vector& vCenter, const Vector& vDirection,
                          float fRadius);
+    void Render();
     int SideClearOfObstructions(unsigned long oidCreature, const Vector& vFrom,
                                 const Vector& vTo, unsigned long& oidBlocker);
     int IsPathClear(unsigned long oidCreature, Vector* pPoints, int nPoints,
@@ -351,7 +355,7 @@ public:
     int PlotPathAroundCreature(CSWSCreature* pCreature,
                                CSWSCreature* pAvoidCreature);
 
-    int m_nUnused;
+    int m_bAvoidLeft;
     Vector m_vHexPoints[6];
     int m_nEntrySegment;
     int m_nEntrySide;

@@ -133,6 +133,7 @@ public:
     void AddExperience(int nExperience);
     void AddStealthExperience(int nExperience);
     virtual void HandleInputEvent(int, int);
+    void Clear();
     void PlayPendingSounds()
     {
         if (m_cStatusSummary.m_bLevelUpSound)
@@ -306,7 +307,7 @@ public:
 
     static const int m_nFilterName[6];
 
-    CSWGuiLabel m_lblUnknown64;
+    CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblInv;
     CSWGuiLabel m_lblCredits;
     CSWGuiLabel m_lblCreditsValue;
@@ -360,7 +361,7 @@ public:
 
     int m_nEntryIndex;
     unsigned long m_bEncouraged : 1;
-    unsigned long m_nUnknown1C8Rest : 31;
+    unsigned long m_nEncouragedFlagsUnused : 31;
 };
 
 class CSWGuiInGameJournal : public CSWGuiPanel
@@ -412,7 +413,7 @@ public:
     CSWGuiButton m_btnExit;
 #endif
     CSWGuiQuestItem* m_pQuestItemPanel;
-    CSWGuiControl* m_pUnknownFB8;
+    CSWGuiControl* m_pLastSelectedItem;
     CExoArrayList<int> m_aNewQuests;
 };
 
@@ -500,7 +501,7 @@ public:
     unsigned char m_nTextCount;
     unsigned char m_aUnmapped5ED[3];
     float m_fScrollInterval;
-    unsigned char m_aUnmapped5F4[4];
+    unsigned char m_fScrollPosition[4];
 };
 
 #ifdef _XBOX
@@ -549,7 +550,7 @@ public:
 
     static const int m_nFilterName[6];
 
-    CSWGuiLabel m_lblUnknown64;
+    CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblStart;

@@ -226,6 +226,7 @@ public:
     Vector GetAcceleration(CSWMGPhysicsState& state, const Vector& vTarget);
     void GetClipDist(float* pfNear, float* pfFar);
     void SetClipDist(float fNear, float fFar);
+    void SetViewAngle(float fViewAngle);
     Vector BumpPlane(const Quaternion& qOrientation);
     int GetAttachType();
     void AxisAcceleration(const Vector& vAxis, float fScale);
@@ -252,6 +253,11 @@ public:
                              unsigned char bCameraRotate);
     int SetMouseAxisX(int nAxis);
     int SetMouseAxisY(int nAxis);
+    int SetBumpPlane(int nPlane);
+    int SetPlane(int& nPlane, int nValue);
+    int SetDOF(int nDOF);
+    void SetMovementPerSecond(float fMovementPerSecond);
+    int SetType(int nType);
     CSWMiniEnemy* AddEnemy(CExoArrayList<CResRef>& lstModels,
                            CExoArrayList<unsigned char>& lstRotating,
                            const CResRef& cTrack);
@@ -390,6 +396,7 @@ public:
 
     void* GetMiniGameObject(unsigned long nObjectId, unsigned char nType);
     CSWMiniGameObject* GetMiniGameObjectByName(const CExoString& sName);
+    unsigned long GetNextID();
 
     enum { MAX_OBJECTS = 255, INVALID_OBJECT_ID = 255 };
     unsigned long FindNextEmptyIndex();
@@ -536,6 +543,8 @@ public:
     float SetInvincibility(float fTime);
     int GetIsInvulnerable();
     int SetMaxHitPoints(int nHitPoints);
+    CExoSoundSource* GetSound(int nSound);
+    CResRef GetSoundName(int nSound);
     int GetSoundVolume(int nSound);
     void SetSoundFrequency(int nSound, int nFrequency);
     int GetSoundFrequencyIsRandom(int nSound);
@@ -560,10 +569,11 @@ public:
     void Stop();
     void Hit();
     void AdjustHitPoints(int nHitPoints);
-    void OnHitObstacle(int nReserved);
-    void OnDamage(int nReserved);
+    void OnHitObstacle(int bScript);
+    void OnDamage(int bScript);
     int DoObstacleHitCheck(CSWMGObstacle* pObstacle);
-    void OnDeath(int nReserved);
+    void OnDeath(int bScript);
+    void Die();
     void RemoveGunBank(CSWMGGunBank* pGunBank);
     void Go();
     int AttachGuns(CAurObject* pObject);
@@ -759,8 +769,8 @@ public:
     void SetGunModel(const CResRef& sGun);
     int ClearGuns();
 
-    CResRef m_resBank;
-    CResRef m_resGun;
+    CResRef m_resBulletModel;
+    CResRef m_resGunModel;
     CResRef m_resFireSound;
     CExoArrayList<CAurObject*> m_lstGuns;
     CSWMGBullet m_bullet;

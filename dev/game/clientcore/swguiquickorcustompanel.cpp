@@ -8,9 +8,9 @@
 #include "guiingame.h"
 #endif
 
-static inline void SwguiquickorcustompanelTrace2();
-static inline void SwguiquickorcustompanelTrace1();
-#define SWGUIQUICKORCUSTOMPANEL_TRACE() SwguiquickorcustompanelTrace2()
+static inline void TraceQuickOrCustomInput();
+static inline void TraceQuickOrCustomPanel();
+#define SWGUIQUICKORCUSTOMPANEL_TRACE() TraceQuickOrCustomInput()
 // PC 0x006F07D0  Xbox 0x001288F0
 void CSWGuiQuickOrCustomPanel::HandleCancelButton()
 {
@@ -169,11 +169,11 @@ void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 
-static inline void SwguiquickorcustompanelTrace2()
+static inline void TraceQuickOrCustomInput()
 {
-    SwguiquickorcustompanelTrace1();
+    TraceQuickOrCustomPanel();
 }
 
-static inline void SwguiquickorcustompanelTrace1()
+static inline void TraceQuickOrCustomPanel()
 {
 }

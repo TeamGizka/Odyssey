@@ -142,7 +142,7 @@ public:
         TIME_UPDATE_DAY = 0x04, TIME_UPDATE_MONTH = 0x08,
         TIME_UPDATE_YEAR = 0x10
     };
-    CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown);
+    CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveGame);
     virtual ~CSWSModule();
     virtual CSWSModule* AsSWSModule() { return this; }  // PC 0x004C6BB0  Xbox 0x00199A10
 
@@ -236,6 +236,7 @@ public:
     void PackModuleIntoMessage(unsigned long nPlayerId);
     void PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
         CExoArrayList<NWPlayerCharacterList_st*>& lstCharacters);
+    void UnloadModule();
     void AddObjectToLimbo(unsigned long oidObject);
     
     void SaveLimboCreatures(CResGFF* pRes, CResStruct* pStruct);
@@ -243,6 +244,7 @@ public:
                            int bIsSaveGame);
     void RemoveObjectFromLimbo(unsigned long oidObject);
     int IsObjectInLimbo(unsigned long oidObject);
+    void CleanUpLimboList();
     unsigned long GetWaypoint(const CExoString& sTag);
 
     CExoLinkedList<NWModuleExpansion_st> m_lstModuleExpansion;
@@ -288,7 +290,7 @@ public:
     unsigned long m_oidActivatedTarget2;
     Vector m_vActivatedLocation;
     unsigned long m_oidLevelingPlayer;
-    unsigned long m_n198;
+    unsigned long m_oidItemEquippedBy;
     unsigned long m_oidEquippedItem;
     unsigned char m_nMinutesPerHour;
     unsigned char m_nDawnHour;
@@ -311,7 +313,7 @@ public:
 
     int m_bIsSaveGame;
     CExoArrayList<CWorldJournalEntry> m_lstWorldJournal;
-    int m_n1D8;
+    int m_bModuleResReleased;
     CExoArrayList<unsigned long> m_lLimbo;
     CERFFile* m_pERFFile;
     CResStruct* m_pERFStruct;
@@ -322,7 +324,7 @@ public:
     CExoString m_sSaveName;
 
     int m_nResourceCount;
-    unsigned char m_n210;
+    unsigned char m_nPlayerPathfindRule;
     char m_aUnmapped211[3];
     int m_n214;
 

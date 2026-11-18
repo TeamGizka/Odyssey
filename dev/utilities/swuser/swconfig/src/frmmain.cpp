@@ -324,18 +324,18 @@ void ParseVersionDriver(TVersion* Result, const AnsiString& Value)
     Result->Part[2] = 0;
     Result->Part[3] = 0;
     Result->Part[0] = atol(buf);
-    int l0 = strlen(buf);
-    char* p1 = buf + l0 + 1;
-    if (l0 + 1 < len)
+    int firstLen = strlen(buf);
+    char* second = buf + firstLen + 1;
+    if (firstLen + 1 < len)
     {
-        Result->Part[1] = atol(p1);
-        char* p2 = p1 + strlen(p1) + 1;
-        if (p2 - buf < len)
+        Result->Part[1] = atol(second);
+        char* third = second + strlen(second) + 1;
+        if (third - buf < len)
         {
-            Result->Part[2] = atol(p2);
-            char* p3 = p2 + strlen(p2) + 1;
-            if (p3 - buf < len)
-                Result->Part[3] = atol(p3);
+            Result->Part[2] = atol(third);
+            char* fourth = third + strlen(third) + 1;
+            if (fourth - buf < len)
+                Result->Part[3] = atol(fourth);
         }
     }
 }

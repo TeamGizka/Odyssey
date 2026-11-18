@@ -162,6 +162,15 @@ Vector CSWCollisionMesh::WorldToLocal(const Vector& vPosition)
     }
     return -m_qOrientation * (vPosition - m_vWorldPosition) - m_vPosition;
 }
+// Dead code: not in the PC executable
+float CSWCollisionMesh::ZWorldToZLocal(float fZ)
+{
+    if (m_nType != 0)
+    {
+        return fZ;
+    }
+    return fZ - m_vWorldPosition.m_fZ - m_vPosition.m_fZ;
+}
 // PC 0x00596AA0  Xbox 0x00169220
 Vector CSWCollisionMesh::LocalToWorld(const Vector& vPosition)
 {
@@ -325,6 +334,19 @@ int CSWCollisionMesh::GetMeshOutline(Vector& vFirst, Vector& vSecond,
     vThird = LocalToWorld(vThird);
     vFourth = LocalToWorld(vFourth);
     return bFirst;
+}
+// Dead code: not in the PC executable
+void CSWCollisionMesh::GetTriangleVertices(int nTriangle, int* pnFirst,
+                                           int* pnSecond, int* pnThird)
+{
+    if (nTriangle < m_nFaceCount)
+    {
+        int nVertexOffset = nTriangle * 3;
+
+        *pnFirst = m_pFaces[nVertexOffset];
+        *pnSecond = m_pFaces[nVertexOffset + 1];
+        *pnThird = m_pFaces[nVertexOffset + 2];
+    }
 }
 // PC 0x00597090  Xbox 0x0016A350
 void CSWCollisionMesh::GetVertex(int nVertex, float* pfX, float* pfY,
@@ -832,8 +854,8 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             continue;
         if (pHitInfo != NULL)
         {
-            pHitInfo->m_nUnknown00 = CWalkHitInfo::FAILURE_INSIDE_TRIANGLE;
-            pHitInfo->m_nUnknown44 = CWalkHitInfo::INTERSECTION_TRIANGLE;
+            pHitInfo->m_nFailureReason = CWalkHitInfo::FAILURE_INSIDE_TRIANGLE;
+            pHitInfo->m_nIntersectionType = CWalkHitInfo::INTERSECTION_TRIANGLE;
         }
         return 0;
     }

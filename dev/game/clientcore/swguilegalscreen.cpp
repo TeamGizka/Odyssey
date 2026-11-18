@@ -6,7 +6,7 @@
 #define LEGALSCREEN_FADE_TIME 250.0f
 #define LEGALSCREEN_WAIT_SLEEP 50
 #define LEGALSCREEN_FRAME_SLEEP 20
-
+// Dead code: not in the PC executable
 CSWGuiLegalScreen::CSWGuiLegalScreen(CSWGuiManager* pManager,
                                      unsigned long nMinShowTime)
     : CSWGuiPanel(pManager)
@@ -15,11 +15,11 @@ CSWGuiLegalScreen::CSWGuiLegalScreen(CSWGuiManager* pManager,
     m_nShowTime = 0;
     m_nMinShowTime = nMinShowTime;
 }
-
+// Dead code: not in the PC executable
 CSWGuiLegalScreen::~CSWGuiLegalScreen()
 {
 }
-
+// Dead code: not in the PC executable
 void CSWGuiLegalScreen::SetImage(const CResRef& cImage)
 {
     CExoTimers* pTimers = g_pExoBase->m_pExoTimers;

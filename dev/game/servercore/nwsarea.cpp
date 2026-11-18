@@ -41,13 +41,13 @@
 #include <float.h>
 #include "worldtimer.h"
 
+#define NWSAREA_DEBUG 0
+
 static inline void NwsareaSync4();
 static inline void NwsareaSync3();
 static inline void NwsareaSync2();
 static inline void NwsareaSync1();
 
-static inline void NwsareaTrace1();
-#define NWSAREA_TRACE() NwsareaTrace1()
 
 static CResRef* AllocateResRefArray(int nCount)
 {
@@ -2078,6 +2078,10 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
     }
     return 1;
 }
+// Dead code: not in the PC executable
+void CSWSArea::SaveArea(CERFFile* pERFFile, const CExoString& sName)
+{
+}
 // PC 0x0050BA00  Xbox 0x001D0A40
 void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
                        CExoArrayList<unsigned long>& lstPlayers)
@@ -2199,18 +2203,18 @@ void CSWSArea::SavePlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x0050C0E0  Xbox 0x001D1130
 void CSWSArea::UnloadArea()
 {
-    delete[] m_p34;
-    m_p34 = NULL;
-    delete[] m_p40;
-    m_p40 = NULL;
-    delete[] m_p1C;
-    m_p1C = NULL;
-    delete[] m_p20;
-    m_p20 = NULL;
-    delete[] m_p24;
-    m_p24 = NULL;
-    delete[] m_p28;
-    m_p28 = NULL;
+    delete[] m_pStaticTriangles;
+    m_pStaticTriangles = NULL;
+    delete[] m_pStaticVertices;
+    m_pStaticVertices = NULL;
+    delete[] m_pStaticObjectTriangleStarts;
+    m_pStaticObjectTriangleStarts = NULL;
+    delete[] m_pStaticObjectTriangleCounts;
+    m_pStaticObjectTriangleCounts = NULL;
+    delete[] m_pStaticObjectVertexStarts;
+    m_pStaticObjectVertexStarts = NULL;
+    delete[] m_pStaticObjectVertexCounts;
+    m_pStaticObjectVertexCounts = NULL;
 
     while (!m_lstExpansions.IsEmpty())
     {
@@ -2269,6 +2273,7 @@ int CSWSArea::PositionWalkable(Vector vPosition)
     return 0;
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 // Xbox 0x001CB550
 int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 {
@@ -2892,7 +2897,10 @@ void CSWSArea::BudgeCreatures(const Vector& vCentre, const Vector& vMin,
 // PC 0x00508400  Xbox 0x001CD3F0
 int CSWSArea::LoadPathPoints(CResStruct* pStruct)
 {
-    NwsareaTrace1();
+    if (NWSAREA_DEBUG)
+    {
+        IncreaseAILevelPriority();
+    }
     int bSuccess = 1;
     int bFieldRead;
     CResStruct cRoot;
@@ -2973,7 +2981,7 @@ int CSWSArea::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
 int CSWSArea::NoNonWalkPolysDetailed(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
-    int bFlag, CExoArrayList<CGameObject*>* pExcludeList,
+    int bWalking, CExoArrayList<CGameObject*>* pExcludeList,
     int bCheckTransparentDoors, CWalkHitInfo* pWalkHitInfo, int bCheckDoors)
 {
     int bClear = 1;
@@ -3031,7 +3039,7 @@ int CSWSArea::NoNonWalkPolysDetailed(
                 continue;
             if (!GetIsIDInExcludeList(m_pBoundingBoxIds[i], pExcludeList) &&
                 !NoNoneWalkPolysInStaticObject(m_pBoundingBoxIds[i], vStart, vEnd,
-                    fMinHeight, fMaxHeight, fRadius, oidObject, bFlag, pWalkHitInfo))
+                    fMinHeight, fMaxHeight, fRadius, oidObject, bWalking, pWalkHitInfo))
             {
                 oidHitObject = m_pBoundingBoxIds[i];
                 if (pWalkHitInfo != NULL)
@@ -3039,7 +3047,7 @@ int CSWSArea::NoNonWalkPolysDetailed(
                 if (bCheckTransparentDoors == 1)
                 {
                     bClear &= HandleTransparentDoors(vStart, vEnd, fMinHeight,
-                        fMaxHeight, fRadius, oidObject, oidHitObject, bFlag,
+                        fMaxHeight, fRadius, oidObject, oidHitObject, bWalking,
                         pExcludeList, 1);
                 }
                 else
@@ -3188,7 +3196,11 @@ void CSWSArea::ClearObjects()
 // PC 0x00508770  Xbox 0x001CD780
 void CSWSArea::AwardStealthXP(unsigned long oidObject)
 {
-    NWSAREA_TRACE();
+    if (NWSAREA_DEBUG)
+    {
+        unsigned long oidObjectInArea;
+        EXOLOG("CSWSArea::AwardStealthXP() object in area %d\n", GetFirstObjectInArea(oidObjectInArea));
+    }
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidObject);
 
@@ -3272,7 +3284,7 @@ int CSWSArea::GetPlayerCanSetMines()
 int CSWSArea::HandleTransparentDoors(
     const Vector& vStart, const Vector& vEnd, float fDistance, float fWidth,
     float fHeight, unsigned long oidObject, unsigned long& oidHitObject,
-    int bFlag, CExoArrayList<CGameObject*>* pExcludeList, int bCheckObjects)
+    int bWalking, CExoArrayList<CGameObject*>* pExcludeList, int bCheckObjects)
 {
     if (oidHitObject != OBJECT_INVALID)
     {
@@ -3304,7 +3316,7 @@ int CSWSArea::HandleTransparentDoors(
                 pExcludeList->Add(pDoor->AsSWSObject());
                 return NoNonWalkPolysDetailed(
                     vStart, vEnd, fDistance, fWidth, fHeight, oidObject, oidHitObject,
-                    bFlag, pExcludeList, 0, NULL, 0);
+                    bWalking, pExcludeList, 0, NULL, 0);
             }
         }
     }
@@ -3446,7 +3458,7 @@ void CSWSArea::ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
 int CSWSArea::NoNonWalkPolysInDoors(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
-    CExoArrayList<CGameObject*>* pExcludeList, int bFlag,
+    CExoArrayList<CGameObject*>* pExcludeList, int bWalking,
     int bCheckTransparentDoors)
 {
     if (m_nBoundingBoxCount > 0)
@@ -3496,7 +3508,7 @@ int CSWSArea::NoNonWalkPolysInDoors(
             if (pObject != NULL && pObject->AsSWSDoor() != NULL &&
                 !GetIsIDInExcludeList(oidDoor, pExcludeList) &&
                 !NoNoneWalkPolysInStaticObject(m_pBoundingBoxIds[i], vStart,
-                    vEnd, fMinHeight, fMaxHeight, fRadius, oidObject, bFlag, NULL))
+                    vEnd, fMinHeight, fMaxHeight, fRadius, oidObject, bWalking, NULL))
             {
                 oidHitObject = m_pBoundingBoxIds[i];
                 if (bCheckTransparentDoors == 1)
@@ -3510,7 +3522,7 @@ int CSWSArea::NoNonWalkPolysInDoors(
                     }
                     int bClear = HandleTransparentDoors(vStart, vEnd,
                         fMinHeight, fMaxHeight, fRadius, oidObject, oidHitObject,
-                        bFlag, pExcludeList, 1);
+                        bWalking, pExcludeList, 1);
                     if (pExcludeList != NULL && bAllocatedExcludeList)
                         delete pExcludeList;
                     return bClear;
@@ -3601,10 +3613,6 @@ int CSWSArea::LoadArea(int bLoadingGame)
     m_nGridMaskBytes = (unsigned char)ceil(nWidth * nHeight / 8.0f);
 
     return 1;
-}
-
-static inline void NwsareaTrace1()
-{
 }
 
 static inline void NwsareaSync4()

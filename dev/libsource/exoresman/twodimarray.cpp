@@ -218,6 +218,17 @@ int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
+// Dead code: not in the PC executable
+int C2DA::SetBlankEntry(int nRow, int nColumn)
+{
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = "";
+    return 1;
+}
 // PC 0x004137B0  Xbox 0x001449F0
 unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 {
@@ -901,6 +912,7 @@ void C2DA::Unload2DArray()
         m_pLabelData = NULL;
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x00144D20
 int C2DA::SaveBinary2da(char* sFileName)
 {
@@ -1014,5 +1026,216 @@ int C2DA::SaveBinary2da(char* sFileName)
     delete[] pStrings;
     delete[] pStringIndices;
     delete[] pStringOffsets;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetCExoStringEntry(int nRow, int nColumn, const CExoString& sValue)
+{
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = sValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn, const CExoString& sValue)
+{
+    int nRow = GetRowIndex(sRow);
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow == -1 || nColumn == -1)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = sValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetCExoStringEntry(int nRow, const CExoString& sColumn, const CExoString& sValue)
+{
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = sValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetCExoStringEntry(const CExoString& sRow, int nColumn, const CExoString& sValue)
+{
+    int nRow = GetRowIndex(sRow);
+
+    if (nRow == -1 || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = sValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetFLOATEntry(int nRow, int nColumn, float fValue)
+{
+    char szValue[32];
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetFLOATEntry(const CExoString& sRow, const CExoString& sColumn, float fValue)
+{
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow == -1 || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetFLOATEntry(int nRow, const CExoString& sColumn, float fValue)
+{
+    char szValue[32];
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetFLOATEntry(const CExoString& sRow, int nColumn, float fValue)
+{
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+
+    if (nRow == -1 || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%f", fValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetINTEntry(const CExoString& sRow, const CExoString& sColumn, int nValue)
+{
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow == -1 || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetINTEntry(const CExoString& sRow, int nColumn, int nValue)
+{
+    char szValue[32];
+    int nRow = GetRowIndex(sRow);
+
+    if (nRow == -1 || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetINTEntry(int nRow, int nColumn, int nValue)
+{
+    char szValue[32];
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetINTEntry(int nRow, const CExoString& sColumn, int nValue)
+{
+    char szValue[32];
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        return 0;
+    }
+
+    sprintf(szValue, "%i", nValue);
+    m_ppEntries[nRow][nColumn] = szValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetBlankEntry(const CExoString& sRow, const CExoString& sColumn)
+{
+    int nRow = GetRowIndex(sRow);
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow == -1 || nColumn == -1)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = "";
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetBlankEntry(int nRow, const CExoString& sColumn)
+{
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = "";
+    return 1;
+}
+// Dead code: not in the PC executable
+int C2DA::SetBlankEntry(const CExoString& sRow, int nColumn)
+{
+    int nRow = GetRowIndex(sRow);
+
+    if (nRow == -1 || nColumn < 0 || nColumn >= m_nNumColumns)
+    {
+        return 0;
+    }
+
+    m_ppEntries[nRow][nColumn] = "";
     return 1;
 }

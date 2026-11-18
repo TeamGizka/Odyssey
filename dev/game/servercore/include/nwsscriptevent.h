@@ -98,6 +98,7 @@ public:
     unsigned short GetType() { return m_nType; }
 
     int operator==(const CScriptEvent& sev) const;
+    int operator!=(const CScriptEvent& sev) const;
     float GetFloat(int nIndex);
     int GetInteger(int nIndex);
     CExoString GetString(int nIndex);

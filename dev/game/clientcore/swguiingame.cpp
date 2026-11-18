@@ -1,11 +1,21 @@
 #include "swguiingame.h"
 #include "exotlktable.h"
+#include "swgui.h"
+#include "appmanager.h"
+#include "clientexoapp.h"
+#include "partytables.h"
+#include "nwsitem.h"
+#include "nwcjournal.h"
+#include "guiingame.h"
+#include "gameobjectarray.h"
+
+#define SWGUIINGAME_DEBUG 0
 
 template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 
-static inline void SwguiingameTrace2();
-static inline void SwguiingameTrace1();
-#define SWGUIINGAME_TRACE() SwguiingameTrace1()
+static inline void TraceToolTipPanel();
+static inline void TraceInGameMenu();
+#define SWGUIINGAME_TRACE() TraceInGameMenu()
 // PC 0x00624970
 void CSWGuiInGameMenu::HandleInputEvent(int nEvent, int nState)
 {
@@ -28,15 +38,7 @@ void CSWGuiMessageBox::SetMessage(unsigned long nStrRef)
     SetMessage(g_pTlkTable->GetSimpleString(nStrRef));
 }
 
-#include "swgui.h"
-#include "appmanager.h"
-#include "clientexoapp.h"
 #include "serverexoapp.h"
-#include "partytables.h"
-#include "nwsitem.h"
-#include "nwcjournal.h"
-#include "guiingame.h"
-#include "gameobjectarray.h"
 #include "clientexoappinternal.h"
 #include "nwccreature.h"
 #include "swguiingame.inl"
@@ -252,7 +254,7 @@ void CSWGuiInGameMessages::ShowDialogMessages()
 CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    SwguiingameTrace2();
+    TraceToolTipPanel();
     if (g_nScreenWidth == 1600)
     {
         CResRef cLayout("tooltip16X12");
@@ -296,7 +298,10 @@ CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
 CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    SwguiingameTrace2();
+    if (SWGUIINGAME_DEBUG)
+    {
+        EXOLOG("CSWGuiInGameMenu::CSWGuiInGameMenu() manager %p\n", pManager);
+    }
     StartLoadFromLayout("top");
     InitControl(m_LblhEqu, "LBLH_EQU", 1);
     InitControl(m_LblhInv, "LBLH_INV", 1);
@@ -1542,7 +1547,25 @@ CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     m_bPositioned = 1;
 #endif
 }
-
+// Dead code: not in the PC executable
+void CSWGuiStatusSummary::Clear()
+{
+    m_cStatusSummary.m_bDisplaySPending = 0;
+    m_cStatusSummary.m_bSoundPending = 0;
+    m_cStatusSummary.m_bItemReceived = 0;
+    m_cStatusSummary.m_bItemLost = 0;
+    m_cStatusSummary.m_bJournal = 0;
+    m_cStatusSummary.m_bLevelUpSound = 0;
+    m_cStatusSummary.m_bNewQuestSound = 0;
+    m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bCreditsNet = 0;
+    m_cStatusSummary.m_nCredits = 0;
+    m_cStatusSummary.m_nLightShift = 0;
+    m_cStatusSummary.m_nDarkShift = 0;
+    m_cStatusSummary.m_nExperience = 0;
+    m_cStatusSummary.m_nStealthExperience = 0;
+}
+// Dead code: not in the PC executable
 void CSWGuiInGameMessages::ToggleMessages()
 {
     if (m_lbMessages.m_bEnabled)
@@ -1551,12 +1574,12 @@ void CSWGuiInGameMessages::ToggleMessages()
         ShowFeedbackMessages();
 }
 
-static inline void SwguiingameTrace2()
+static inline void TraceToolTipPanel()
 {
-    SwguiingameTrace1();
+    TraceInGameMenu();
 }
 
-static inline void SwguiingameTrace1()
+static inline void TraceInGameMenu()
 {
 }
 

@@ -16,8 +16,7 @@
 #include "worldtimer.h"
 #include "serveraimaster.h"
 
-static inline void ServeraimasterTrace2();
-static inline void ServeraimasterTrace1();
+#define SERVERAIMASTER_DEBUG 0
 
 
 int g_nServerAIUnused = 0;
@@ -120,10 +119,10 @@ CServerAIMaster::CServerAIMaster()
     m_pEffectHandler->InitializeEffects();
     m_pItemPropertyHandler = new CSWSItemPropertyHandler;
     m_pItemPropertyHandler->InitializeItemProperties();
-    m_pUnused80 = NULL;
-    m_pUnused84 = NULL;
-    m_pUnused88 = NULL;
-    m_pUnused8C = NULL;
+    m_pAttackRepAdjustments = NULL;
+    m_pTheftRepAdjustments = NULL;
+    m_pKillRepAdjustments = NULL;
+    m_pHelpRepAdjustments = NULL;
 }
 // PC 0x004AF3D0  Xbox 0x0015F2B0
 BOOL CServerAIMaster::RemoveObject(CSWSObject* pObject)
@@ -152,7 +151,10 @@ void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
 void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
                           CExoString& sType)
 {
-    ServeraimasterTrace1();
+    if (SERVERAIMASTER_DEBUG)
+    {
+        EXOLOG("LogEventAddGetObject() length %d\n", sName.GetLength());
+    }
     CSWSObject* pObject = NULL;
     CExoString* pTag;
     CGameObject* pGameObject =
@@ -495,7 +497,10 @@ static void LogEventAdd(unsigned long oidCaller, unsigned long oidObject,
 // PC 0x004B0850  Xbox 0x001603A0
 BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)
 {
-    ServeraimasterTrace2();
+    if (SERVERAIMASTER_DEBUG)
+    {
+        EXOLOG("CServerAIMaster::AddObject() AI level %d\n", nAILevel);
+    }
     if (nAILevel > 4 || nAILevel < 0 || pObject == NULL)
     {
         return FALSE;
@@ -949,7 +954,7 @@ void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData) 
 
 
 
-
+// Dead code: not in the PC executable
 CSWSObject* CServerAIList::GetObjectAtPosition(int nPosition)
 {
     if (num == 0)
@@ -969,7 +974,7 @@ CSWSObject* CServerAIList::GetObjectAtPosition(int nPosition)
 
     return NULL;
 }
-
+// Dead code: not in the PC executable
 CSWSObject* CServerAIList::GetNextObject()
 {
     if (num == 0)
@@ -996,7 +1001,7 @@ CSWSObject* CServerAIList::GetNextObject()
 
     return NULL;
 }
-
+// Dead code: not in the PC executable
 BOOL CServerAIMaster::GetPendingEvent(unsigned long* pnCalendarDay,
                                       unsigned long* pnTimeOfDay,
                                       unsigned long* poidCaller,
@@ -1020,7 +1025,7 @@ BOOL CServerAIMaster::GetPendingEvent(unsigned long* pnCalendarDay,
     delete pNode;
     return TRUE;
 }
-
+// Dead code: not in the PC executable
 BOOL CServerAIMaster::EventPending(unsigned long nCalendarDay,
                                    unsigned long nTimeOfDay)
 {
@@ -1294,28 +1299,28 @@ CServerAIMaster::~CServerAIMaster()
         m_pItemPropertyHandler = NULL;
     }
 
-    if (m_pUnused80 != NULL)
+    if (m_pAttackRepAdjustments != NULL)
     {
-        delete m_pUnused80;
-        m_pUnused80 = NULL;
+        delete m_pAttackRepAdjustments;
+        m_pAttackRepAdjustments = NULL;
     }
 
-    if (m_pUnused84 != NULL)
+    if (m_pTheftRepAdjustments != NULL)
     {
-        delete m_pUnused84;
-        m_pUnused84 = NULL;
+        delete m_pTheftRepAdjustments;
+        m_pTheftRepAdjustments = NULL;
     }
 
-    if (m_pUnused88 != NULL)
+    if (m_pKillRepAdjustments != NULL)
     {
-        delete m_pUnused88;
-        m_pUnused88 = NULL;
+        delete m_pKillRepAdjustments;
+        m_pKillRepAdjustments = NULL;
     }
 
-    if (m_pUnused8C != NULL)
+    if (m_pHelpRepAdjustments != NULL)
     {
-        delete m_pUnused8C;
-        m_pUnused8C = NULL;
+        delete m_pHelpRepAdjustments;
+        m_pHelpRepAdjustments = NULL;
     }
 }
 // PC 0x004AF160  Xbox 0x0015F020
@@ -1338,14 +1343,11 @@ BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
     m_vPosition.m_fZ = pRes->ReadFieldFLOAT(pStruct, "PositionZ", bSuccess, 0.0f);
     return TRUE;
 }
-
-static inline void ServeraimasterTrace2()
+// Dead code: not in the PC executable
+BOOL CServerAIList::AddObject(unsigned long oidObject)
 {
-    ServeraimasterTrace1();
-}
-
-static inline void ServeraimasterTrace1()
-{
+    AddUnique(oidObject);
+    return TRUE;
 }
 
 #ifdef _XBOX

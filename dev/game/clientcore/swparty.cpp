@@ -1506,8 +1506,8 @@ void CSWParty::ResetAllFollowData(const Vector& vPosition, float fFacing, int bF
             pServerExoApp->ClientToServerObjectId(oidCreature));
         if (pCreature != NULL)
         {
-            pCreature->m_pPathfindInformation->m_nField_210 = 0;
-            pCreature->m_pPathfindInformation->m_nField_34 = OBJECT_INVALID;
+            pCreature->m_pPathfindInformation->m_bIgnoreCreatures = 0;
+            pCreature->m_pPathfindInformation->m_oidIgnoreCreature = OBJECT_INVALID;
             if (!g_pAppManager->GetServerExoApp()->TestSafeLocation(
                     pCreature->GetId(), pCreature->m_vPosition))
             {

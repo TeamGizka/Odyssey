@@ -21,10 +21,10 @@ inline void AurEmitterCopyParticles(Particle* pParticle, ChunkyParticle* pChunky
 #include "aurmaterial.h"
 #include "aurparse.h"
 
-static inline void AuremitterTrace4();
-static inline void AuremitterTrace3();
-static inline void AuremitterTrace2();
-static inline void AuremitterTrace1();
+static inline void TraceEmitterRender();
+static inline void TraceEmitterParticles();
+static inline void TraceEmitter();
+static inline void TraceParticleEffects();
 
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
@@ -69,6 +69,7 @@ unsigned char MdlNodeEmitter::IsAffectedByWind()
     unsigned char bAffectedByWind = m_EmitterFlags.m_bAffectedByWind;
     return bAffectedByWind;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002E17B0
 unsigned char MdlNodeEmitter::IsRandom()
 {
@@ -233,10 +234,10 @@ void Particle::inheritVelocity(float fTime)
         m_vVelocity = Vector(0.0f, 0.0f, 0.0f);
     }
 }
-
 #ifdef _XBOX
 inline float PartEmitter::GetRadius()
 #else
+// Dead code: not in the PC executable
 float PartEmitter::GetRadius()
 #endif
 {
@@ -338,11 +339,11 @@ static RenderVertexVTC* ResizeEmitterPool(RenderVertexVTC* pVertices,
     operator delete(pVertices);
     return pNewVertices;
 }
-
+// Dead code: not in the PC executable
 void PartEmitter::moveParticle(Particle* pParticle, float fTimeStep,
                                int bInheriting)
 {
-    if (pParticle->m_bReserved6C)
+    if (pParticle->m_bSettled)
         return;
 
     MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
@@ -614,7 +615,7 @@ void PartEmitter::RecursiveFractal(int nIndex, int nStep, int nCount,
     vOffset.m_fX += fRandom * m_fLightningRadius;
     LightningEmitter* pLightning = AsLightningEmitter();
     if (pLightning)
-        pLightning->m_lstReserved270.m_pList[nIndex] = vOffset.m_fX * vDirection;
+        pLightning->m_lstFractalOffsets.m_pList[nIndex] = vOffset.m_fX * vDirection;
     else
         m_lstActive.m_pList[nIndex]->m_vPosition += vOffset.m_fX * vDirection;
 
@@ -657,6 +658,7 @@ void PartEmitter::StartEmitterLayer()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 static int GetNextFrame(PartEmitter* pEmitter, int nFrame)
 {
     if (pEmitter->m_fFrameStart != pEmitter->m_fFrameEnd)
@@ -736,17 +738,17 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
     m_pEmitterMaterial->SetBlendingMode(0);
     vUp.m_fX = vUp.m_fY = 0.0f;
     vUp.m_fZ = 1.0f;
-    if (m_nReserved114 == NORMAL)
+    if (m_nRenderMode == NORMAL)
     {
         vDirection = CurrentCamera->m_qOrientation.zdir();
         qCamera = CurrentCamera->m_qOrientation;
     }
-    else if (m_nReserved114 == WorldZ)
+    else if (m_nRenderMode == WorldZ)
     {
         vDirection = vUp;
         qCamera = Quaternion(vUp, 0.0f);
     }
-    else if (m_nReserved114 == LocalZ)
+    else if (m_nRenderMode == LocalZ)
     {
         vDirection = m_qOrientation.zdir();
         qCamera = m_qOrientation;
@@ -900,7 +902,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
 
             if (bSplat)
             {
-                if (pParticle->m_bReserved6C)
+                if (pParticle->m_bSettled)
                 {
                     fXSize = m_fXSizeEnd;
                     if (m_fYSizeEnd != 0.0f)
@@ -917,7 +919,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
                         fYSize = fXSize;
                 }
             }
-            if (pParticle->m_bReserved6C)
+            if (pParticle->m_bSettled)
             {
                 qRotation = Quaternion(pParticle->m_vHeading, pParticle->m_fRotation);
                 qRotation = qRotation * pParticle->m_qOrientation;
@@ -990,7 +992,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
                     fFrameAlpha = 1.0f;
             }
             Vector vVertical;
-            if (m_nReserved114 == AlignedToParticleDir)
+            if (m_nRenderMode == AlignedToParticleDir)
             {
                 vRight = pParticle->m_qOrientation.xdir();
                 vVertical = pParticle->m_qOrientation.zdir();
@@ -998,7 +1000,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
             else
             {
                 vRight = qRotation.xdir();
-                if (m_nReserved114 == Aligned)
+                if (m_nRenderMode == Aligned)
                     vVertical = vUp;
                 else if (bSplat)
                     vVertical = cross(pParticle->m_vHeading, vRight);
@@ -1083,7 +1085,7 @@ void PartEmitter::RenderNothing()  // PC 0x00490700  Xbox 0x002E4A80
         {
             pParticle->m_pGob->SetPosition(pParticle->m_vPosition);
 
-            if (m_fParticleRotation != 0.0f && !pParticle->m_bReserved6C)
+            if (m_fParticleRotation != 0.0f && !pParticle->m_bSettled)
             {
                 pParticle->m_pGob->SetOrientation(
                     Quaternion(pParticle->m_vHeading, pParticle->m_fRotation));
@@ -1150,7 +1152,7 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
     qCamera = CurrentCamera->m_qOrientation;
 
     float fReciprocalLife;
-    if (m_pReserved1F4 == LIGHTNING)
+    if (m_nEmitterType == LIGHTNING)
         fReciprocalLife = 1.0f / m_lstActive.m_nCount;
     else if (m_fLifeTime > 0.0f)
         fReciprocalLife = 1.0f / m_fLifeTime;
@@ -1208,7 +1210,7 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
         float fHeight;
         if (m_fLifeTime >= 0.0f)
         {
-            if (m_pReserved1F4 == LIGHTNING)
+            if (m_nEmitterType == LIGHTNING)
                 fFrameTime = i * fReciprocalLife;
             else
                 fFrameTime = fReciprocalLife * pParticle->m_fAge;
@@ -1241,10 +1243,10 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
             {
                 fFrameTime = (fFrameTime - m_fPercentMid) / (m_fPercentEnd - m_fPercentMid);
                 vColor = Interpolate(m_vColorMid, m_vColorEnd, fFrameTime);
-                float fStart = 1.0f - fFrameTime;
-                fAlpha = fStart * m_fAlphaMid;
+                float fAge = 1.0f - fFrameTime;
+                fAlpha = fAge * m_fAlphaMid;
                 fAlpha += fFrameTime * m_fAlphaEnd;
-                fWidth = fStart * m_fXSizeMid;
+                fWidth = fAge * m_fXSizeMid;
                 fWidth += fFrameTime * m_fXSizeEnd;
                 fWidth *= 0.5f;
                 if (m_fYSizeMid == 0.0f && m_fYSizeEnd == 0.0f)
@@ -1252,7 +1254,7 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
                 else
                 {
                     fHeight = fFrameTime * m_fYSizeEnd;
-                    fHeight += fStart * m_fYSizeMid;
+                    fHeight += fAge * m_fYSizeMid;
                     fHeight *= 0.5f;
                 }
             }
@@ -1260,16 +1262,16 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
             {
                 fFrameTime = (fFrameTime - m_fPercentStart) / (m_fPercentMid - m_fPercentStart);
                 vColor = Interpolate(m_vColorStart, m_vColorMid, fFrameTime);
-                float fStart = 1.0f - fFrameTime;
-                fAlpha = fStart * m_fAlphaStart;
+                float fT = 1.0f - fFrameTime;
+                fAlpha = fT * m_fAlphaStart;
                 fAlpha += fFrameTime * m_fAlphaMid;
-                fWidth = fStart * m_fXSizeStart;
+                fWidth = fT * m_fXSizeStart;
                 fWidth += fFrameTime * m_fXSizeMid;
                 fWidth *= 0.5f;
                 if (m_fYSizeStart != 0.0f || m_fYSizeMid != 0.0f)
                 {
                     fHeight = fFrameTime * m_fYSizeMid;
-                    fHeight += fStart * m_fYSizeStart;
+                    fHeight += fT * m_fYSizeStart;
                     fHeight *= 0.5f;
                 }
                 else
@@ -1431,23 +1433,23 @@ void LightningEmitter::UpdateBranches()  // PC 0x00491A50  Xbox 0x002E60D0
             m_lstBranches[i]->m_fYSizeMid = fScale * m_fYSizeMid;
             m_lstBranches[i]->m_fYSizeEnd = fScale * m_fYSizeEnd;
             m_lstBranchIndices[i] = (int)(m_lstActive.m_nCount * fScale);
-            m_lstBranches[i]->m_vOrigin = m_lstBranches[i]->m_lstReserved210[0] =
+            m_lstBranches[i]->m_vOrigin = m_lstBranches[i]->m_lstControlPoints[0] =
                 m_lstActive[m_lstBranchIndices[i]]->m_vPosition;
             Vector vTangent;
             vTangent = YawPitchRoll(-(rand() % 45), 0.0f, rand() % 360) *
-                (m_vReserved27C * m_fTangentLength);
-            m_lstBranches[i]->m_lstReserved234[0] = vTangent;
+                (m_vPerpendicular * m_fTangentLength);
+            m_lstBranches[i]->m_lstTangents[0] = vTangent;
             if (fScale > 0.5f)
             {
                 m_lstBranches[i]->m_pTarget->SetPosition(m_pTarget->GetPosition());
-                m_lstBranches[i]->m_lstReserved210[1] = m_pTarget->GetPosition();
+                m_lstBranches[i]->m_lstControlPoints[1] = m_pTarget->GetPosition();
                 m_lstBranches[i]->m_fTargetSize = m_fTargetSize;
                 m_lstBranches[i]->m_fBirthRate = magnitude(
                     m_pTarget->GetPosition() -
                     m_lstActive[m_lstBranchIndices[i]]->m_vPosition) *
                     m_fLightningSubDivisions + 2.0f;
-                m_lstBranches[i]->m_lstReserved234[1] =
-                    m_lstReserved234[m_lstReserved234.m_nCount - 1];
+                m_lstBranches[i]->m_lstTangents[1] =
+                    m_lstTangents[m_lstTangents.m_nCount - 1];
             }
             else
             {
@@ -1458,16 +1460,16 @@ void LightningEmitter::UpdateBranches()  // PC 0x00491A50  Xbox 0x002E60D0
                 if (fDistance != 0.0f)
                 {
                     Vector vOffset = YawPitchRoll(0.0f, rand() % 360, 0.0f) *
-                        (m_vReserved27C * fDistance);
+                        (m_vPerpendicular * fDistance);
                     Vector vPosition = vOffset +
                         (vDirection * ((rand() % 25) / 100.0f + 0.25f) +
-                         m_lstBranches[i]->m_lstReserved210[0]);
+                         m_lstBranches[i]->m_lstControlPoints[0]);
                     m_lstBranches[i]->m_pTarget->SetPosition(vPosition);
                     m_lstBranches[i]->m_fBirthRate = magnitude(
                         vPosition - m_lstActive[m_lstBranchIndices[i]]->m_vPosition) *
                         m_fLightningSubDivisions + 2.0f;
-                    m_lstBranches[i]->m_lstReserved234[1] =
-                        m_lstBranches[i]->m_lstReserved234[0];
+                    m_lstBranches[i]->m_lstTangents[1] =
+                        m_lstBranches[i]->m_lstTangents[0];
                 }
                 else
                 {
@@ -1476,19 +1478,19 @@ void LightningEmitter::UpdateBranches()  // PC 0x00491A50  Xbox 0x002E60D0
                         m_lstActive[m_lstBranchIndices[i]]->m_vPosition);
                 }
                 m_lstBranches[i]->m_fTargetSize = 0.0f;
-                m_lstBranches[i]->m_lstReserved210[1] =
+                m_lstBranches[i]->m_lstControlPoints[1] =
                     m_lstBranches[i]->m_pTarget->GetPosition();
 
                 Vector vBranchDirection;
                 vBranchDirection = normalize(
-                    m_lstBranches[i]->m_lstReserved210[1] -
-                    m_lstBranches[i]->m_lstReserved210[1]);
-                m_lstBranches[i]->m_vReserved27C = Vector(
+                    m_lstBranches[i]->m_lstControlPoints[1] -
+                    m_lstBranches[i]->m_lstControlPoints[1]);
+                m_lstBranches[i]->m_vPerpendicular = Vector(
                     -vBranchDirection.m_fY, vBranchDirection.m_fZ, -vBranchDirection.m_fX);
             }
-            m_lstBranches[i]->m_vReserved1F8 =
+            m_lstBranches[i]->m_vTargetDirection =
                 m_lstBranches[i]->m_pTarget->GetPosition() - m_lstBranches[i]->m_vOrigin;
-            m_lstBranches[i]->m_vReserved204 = m_lstBranches[i]->m_vOrigin;
+            m_lstBranches[i]->m_vStart = m_lstBranches[i]->m_vOrigin;
         }
     }
 }
@@ -1524,7 +1526,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
     for (int i = 0; i < m_lstActive.m_nCount; i++)
     {
         Particle* pParticle = m_lstActive.m_pList[i];
-        if (pParticle->m_bReserved6C)
+        if (pParticle->m_bSettled)
             continue;
 
         Vector vOldPosition = pParticle->m_vPosition;
@@ -1546,14 +1548,14 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
         {
             if (m_pAurObject)
             {
-                Vector vOffset = m_pAurObject->m_vPosition - m_vReserved158;
+                Vector vOffset = m_pAurObject->m_vPosition - m_vInheritPosition;
                 vPosition += vOffset;
                 pParticle->m_vOrigin += vOffset;
             }
         }
         if (pNode->IsInheritingPart())
         {
-            Vector vOffset = m_vOrigin - m_vReserved158;
+            Vector vOffset = m_vOrigin - m_vInheritPosition;
             vPosition += vOffset;
             pParticle->m_vOrigin += vOffset;
         }
@@ -1627,7 +1629,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
                     acos(AbsoluteValue(m_pHitInfo->m_vOutputNormal.m_fY)) > EMITTER_BOUNCE_REST_ANGLE &&
                     fTimeStep * EMITTER_BOUNCE_REST_SPEED_PER_SECOND > fSpeed)
                 {
-                    pParticle->m_bReserved6C = 1;
+                    pParticle->m_bSettled = 1;
                     pParticle->m_qOrientation = RotationArc(Vector(0.0f, 0.0f, 1.0f),
                                                            m_pHitInfo->m_vOutputNormal);
                     pParticle->m_vPosition += m_pHitInfo->m_vOutputNormal * EMITTER_BOUNCE_SURFACE_OFFSET;
@@ -1641,13 +1643,13 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
 
     if (m_pAurObject && pNode->IsInheritingLocal())
     {
-        m_vReserved158 = m_pAurObject->m_vPosition;
-        m_qReserved194 = m_pAurObject->m_qOrientation;
+        m_vInheritPosition = m_pAurObject->m_vPosition;
+        m_qInheritOrientation = m_pAurObject->m_qOrientation;
     }
     else if (pNode->IsInheritingPart())
     {
-        m_vReserved158 = m_vOrigin;
-        m_qReserved194 = m_qOrientation;
+        m_vInheritPosition = m_vOrigin;
+        m_qInheritOrientation = m_qOrientation;
     }
 }
 // PC 0x00492EA0  Xbox 0x002E7650
@@ -1758,7 +1760,7 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
                     pParticle->m_vDrift.m_fY * pParticle->m_vDrift.m_fY +
                     pParticle->m_vDrift.m_fZ * pParticle->m_vDrift.m_fZ < EMITTER_SETTLED_SPEED_SQUARED)
                 {
-                    pParticle->m_bReserved6C = 1;
+                    pParticle->m_bSettled = 1;
                     pParticle->m_qOrientation = RotationArc(Vector(0.0f, 0.0f, 1.0f),
                                                            m_pHitInfo->m_vOutputNormal);
                     pParticle->m_vPosition += m_pHitInfo->m_vOutputNormal * EMITTER_SETTLED_OFFSET;
@@ -1828,28 +1830,28 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
             !pNode->IsInheriting() && m_pAurObject)
         {
             vPosition = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * (vPosition - m_vReserved158));
-            Vector vTranslation = m_pAurObject->m_vPosition - m_vReserved158;
+                (-m_qInheritOrientation * (vPosition - m_vInheritPosition));
+            Vector vTranslation = m_pAurObject->m_vPosition - m_vInheritPosition;
             vPosition += vTranslation;
             pParticle->m_vOrigin += vTranslation;
-            vPosition += m_vReserved158;
+            vPosition += m_vInheritPosition;
             pParticle->m_vDrift = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * pParticle->m_vDrift);
+                (-m_qInheritOrientation * pParticle->m_vDrift);
         }
         if (pNode->IsInheritingPart() && m_pAurObject)
         {
             vPosition = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * (vPosition - m_vReserved158));
-            Vector vTranslation = m_vOrigin - m_vReserved158;
+                (-m_qInheritOrientation * (vPosition - m_vInheritPosition));
+            Vector vTranslation = m_vOrigin - m_vInheritPosition;
             vPosition += vTranslation;
             pParticle->m_vOrigin += vTranslation;
             pParticle->m_vOrigin = pParticle->m_vOrigin - m_pAurObject->m_vPosition;
             pParticle->m_vOrigin = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * pParticle->m_vOrigin);
+                (-m_qInheritOrientation * pParticle->m_vOrigin);
             pParticle->m_vOrigin = pParticle->m_vOrigin + m_pAurObject->m_vPosition;
-            vPosition += m_vReserved158;
+            vPosition += m_vInheritPosition;
             pParticle->m_vDrift = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * pParticle->m_vDrift);
+                (-m_qInheritOrientation * pParticle->m_vDrift);
         }
         vNext = vPosition + fTimeStep * pParticle->m_vDrift;
         if (pNode->IsAffectedByWind())
@@ -1905,7 +1907,7 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
                     pParticle->m_vDrift.m_fZ * pParticle->m_vDrift.m_fZ <
                     EMITTER_SETTLED_SPEED_SQUARED)
                 {
-                    pParticle->m_bReserved6C = 1;
+                    pParticle->m_bSettled = 1;
                     pParticle->m_qOrientation = RotationArc(
                         Vector(0.0f, 0.0f, 1.0f), m_pHitInfo->m_vOutputNormal);
                     pParticle->m_vPosition += m_pHitInfo->m_vOutputNormal * EMITTER_SETTLED_PUSH_OFF;
@@ -1918,13 +1920,13 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
     }
     if (m_pAurObject && pNode->IsInheritingLocal())
     {
-        m_vReserved158 = m_pAurObject->m_vPosition;
-        m_qReserved194 = m_pAurObject->m_qOrientation;
+        m_vInheritPosition = m_pAurObject->m_vPosition;
+        m_qInheritOrientation = m_pAurObject->m_qOrientation;
     }
     else if (pNode->IsInheritingPart())
     {
-        m_vReserved158 = m_vOrigin;
-        m_qReserved194 = m_pAurObject->m_qOrientation;
+        m_vInheritPosition = m_vOrigin;
+        m_qInheritOrientation = m_pAurObject->m_qOrientation;
     }
 }
 // PC 0x00494B30  Xbox 0x002E9280
@@ -1980,7 +1982,7 @@ void Particle::initialize(float fTime, float fScale)
 {
     int nJitter;
 
-    m_bReserved6C = 0;
+    m_bSettled = 0;
     m_fRotation = 0;
     m_fFrameStartAge = 0;
     m_fAge = 0;
@@ -2057,7 +2059,7 @@ unsigned char MdlNodeEmitter::IsBouncing() { unsigned char bBouncing = m_Emitter
 inline unsigned char MdlNodeEmitter::IsBouncing() { return (unsigned char)m_EmitterFlags.m_bBouncing; }
 #endif
 inline void PartEmitter::SetLastOrigin(Vector v) { m_vLastOrigin = v; }
-inline void LightningEmitter::SetReserved1F8(Vector v) { m_vReserved1F8 = v; }
+inline void LightningEmitter::SetReserved1F8(Vector v) { m_vTargetDirection = v; }
 // PC 0x00494DA0  Xbox 0x002E94C0
 void PartEmitter::AnimateParticles(float fTimeStep)
 {
@@ -2069,11 +2071,11 @@ void PartEmitter::AnimateParticles(float fTimeStep)
     Vector vOffset;
     if (pNode->IsInheritingLocal())
     {
-        if (m_pAurObject != 0 && m_pReserved1F7 != 0)
-            vOffset = m_pAurObject->m_vPosition - m_vReserved158;
+        if (m_pAurObject != 0 && m_bStarted != 0)
+            vOffset = m_pAurObject->m_vPosition - m_vInheritPosition;
     }
 
-    if (m_pReserved1F7 == 0)
+    if (m_bStarted == 0)
     {
         GetWorld(m_vOrigin, m_qOrientation);
         if (m_pAurObject != 0)
@@ -2081,14 +2083,14 @@ void PartEmitter::AnimateParticles(float fTimeStep)
             if (pNode->IsInheritingPart() ||
                 pNode->IsInheritingLocal())
             {
-                m_vReserved158 = m_pAurObject->m_vPosition;
-                m_qReserved194 = m_pAurObject->m_qOrientation;
+                m_vInheritPosition = m_pAurObject->m_vPosition;
+                m_qInheritOrientation = m_pAurObject->m_qOrientation;
             }
         }
         if (pNode->IsInheritingPart())
         {
-            m_vReserved158 = m_vOrigin;
-            m_qReserved194 = m_qOrientation;
+            m_vInheritPosition = m_vOrigin;
+            m_qInheritOrientation = m_qOrientation;
         }
 
         if (m_pTarget != 0)
@@ -2104,22 +2106,22 @@ void PartEmitter::AnimateParticles(float fTimeStep)
                 m_fBirthRate = m_fLightningSubDivisions * m_fRadius + 2.0f;
                 Vector vForward = Part::m_qOrientation.zdir();
                 int nPoints = (int)(m_fNumControlPoints * m_fRadius + 0.5f);
-                pLightning->m_lstReserved210.SetSize(nPoints + 2);
-                pLightning->m_lstReserved21C.SetSize(nPoints + 2);
-                pLightning->m_lstReserved228.SetSize(nPoints + 2);
-                pLightning->m_lstReserved234.SetSize(nPoints + 2);
-                pLightning->m_lstReserved240.SetSize(nPoints + 2);
-                pLightning->m_lstReserved24C.SetSize(nPoints + 2);
+                pLightning->m_lstControlPoints.SetSize(nPoints + 2);
+                pLightning->m_lstPreviousPoints.SetSize(nPoints + 2);
+                pLightning->m_lstNextPoints.SetSize(nPoints + 2);
+                pLightning->m_lstTangents.SetSize(nPoints + 2);
+                pLightning->m_lstPreviousTangents.SetSize(nPoints + 2);
+                pLightning->m_lstNextTangents.SetSize(nPoints + 2);
 
                 Vector vTangent;
-                pLightning->m_lstReserved210[0] =
-                    pLightning->m_lstReserved228[0] = vStart;
-                pLightning->m_lstReserved210[nPoints + 1] =
-                    pLightning->m_lstReserved228[nPoints + 1] = vEnd;
-                pLightning->m_lstReserved234[0] =
-                    pLightning->m_lstReserved24C[0] = vForward * m_fTangentLength;
-                pLightning->m_lstReserved234[nPoints + 1] =
-                    pLightning->m_lstReserved24C[nPoints + 1] =
+                pLightning->m_lstControlPoints[0] =
+                    pLightning->m_lstNextPoints[0] = vStart;
+                pLightning->m_lstControlPoints[nPoints + 1] =
+                    pLightning->m_lstNextPoints[nPoints + 1] = vEnd;
+                pLightning->m_lstTangents[0] =
+                    pLightning->m_lstNextTangents[0] = vForward * m_fTangentLength;
+                pLightning->m_lstTangents[nPoints + 1] =
+                    pLightning->m_lstNextTangents[nPoints + 1] =
                         normalize(m_pTarget->GetPosition() - vStart) * m_fTangentLength;
 
                 for (int i = 1; i <= nPoints; i++)
@@ -2132,7 +2134,7 @@ void PartEmitter::AnimateParticles(float fTimeStep)
                     float fControl1Weight = fRemaining * fRemaining * fPosition * 3.0f;
                     float fControl2Weight = fRemaining * fPosition * fPosition * 3.0f;
                     float fEndWeight = fPosition * fPosition * fPosition;
-                    pLightning->m_lstReserved210[i] = pLightning->m_lstReserved228[i] =
+                    pLightning->m_lstControlPoints[i] = pLightning->m_lstNextPoints[i] =
                         vStart * fStartWeight +
                         (vStart + vForward * m_fTangentLength) * fControl1Weight +
                         (vEnd + m_pTarget->GetOrientation().zdir() * m_fTangentLength) *
@@ -2147,19 +2149,19 @@ void PartEmitter::AnimateParticles(float fTimeStep)
                         (vEnd + m_pTarget->GetOrientation().zdir() * m_fTangentLength) *
                             fControl2Weight + vEnd * fEndWeight;
                     vTangent.Normalize();
-                    pLightning->m_lstReserved234[i] = pLightning->m_lstReserved24C[i] =
+                    pLightning->m_lstTangents[i] = pLightning->m_lstNextTangents[i] =
                         vTangent * m_fTangentLength;
                 }
 
                 Vector vDirection = (m_pTarget->GetPosition() - vStart) / m_fRadius;
-                pLightning->m_vReserved27C = Vector(-vDirection.m_fY,
+                pLightning->m_vPerpendicular = Vector(-vDirection.m_fY,
                                                    vDirection.m_fZ,
                                                    (-vDirection.GetX()));
                 pLightning->SetReserved1F8(m_pTarget->GetPosition() - vStart);
-                pLightning->m_vReserved204 = vStart;
+                pLightning->m_vStart = vStart;
             }
         }
-        m_pReserved1F7 = 1;
+        m_bStarted = 1;
     }
 
     if (!pNode->IsInheritingLocal())
@@ -2226,7 +2228,7 @@ void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
     {
         lstPositions[i] = m_lstActive[i]->m_vPosition;
         if (pLightning)
-            lstPositions[i] += pLightning->m_lstReserved270[i];
+            lstPositions[i] += pLightning->m_lstFractalOffsets[i];
     }
 
     if (renderemitterspheres)
@@ -2249,7 +2251,7 @@ void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
     m_pEmitterMaterial->SetBlendingMode(0);
     qCamera = CurrentCamera->m_qOrientation;
     float fInverseLife;
-    if (m_pReserved1F4 == LIGHTNING)
+    if (m_nEmitterType == LIGHTNING)
         fInverseLife = 1.0f / m_lstActive.m_nCount;
     else if (m_fLifeTime > 0.0f)
         fInverseLife = 1.0f / m_fLifeTime;
@@ -2295,7 +2297,7 @@ void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
         if (m_fLifeTime >= 0.0f)
         {
             float fAge;
-            if (m_pReserved1F4 == LIGHTNING)
+            if (m_nEmitterType == LIGHTNING)
                 fAge = i * fInverseLife;
             else
                 fAge = fInverseLife * m_lstActive[i]->m_fAge;
@@ -2486,14 +2488,14 @@ void FountainEmitter::Update(float fTimeStep)  // PC 0x00496E40  Xbox 0x002EB8F0
 
     int nMotionBlurred = MotionBlurred;
     float fBlend;
-    if (m_nReserved114 == nMotionBlurred)
+    if (m_nRenderMode == nMotionBlurred)
         fBlend = (fTimeStep < m_fBlurLength ? fTimeStep : m_fBlurLength) / m_fBlurLength;
 
     for (int i = m_lstActive.m_nCount; i > 0; )
     {
         --i;
         Particle* pParticle = m_lstActive[i];
-        if (m_nReserved114 == nMotionBlurred)
+        if (m_nRenderMode == nMotionBlurred)
         {
             pParticle->m_vOrigin = fBlend * pParticle->m_vPosition +
                 (1.0f - fBlend) * pParticle->m_vOrigin;
@@ -2512,7 +2514,7 @@ void FountainEmitter::Update(float fTimeStep)  // PC 0x00496E40  Xbox 0x002EB8F0
         float fInterval = 1.0f / fBirthRate;
         if (pNode->m_nSpawnType != 0)
         {
-            Vector vDistance = m_vOrigin - m_vLastOrigin + m_vReserved14C;
+            Vector vDistance = m_vOrigin - m_vLastOrigin + m_vSpawnRemainder;
             float fDistance = (float)sqrt(vDistance.m_fY * vDistance.m_fY +
                 vDistance.m_fZ * vDistance.m_fZ + vDistance.m_fX * vDistance.m_fX);
             Vector vDirection = vDistance * (fDistance > 0.0f ? 1.0f / fDistance : 0.0f);
@@ -2540,12 +2542,12 @@ void FountainEmitter::Update(float fTimeStep)  // PC 0x00496E40  Xbox 0x002EB8F0
                 {
                     if (m_lstActive.m_nCount > 1)
                         m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition =
-                            m_vLastOrigin - m_vReserved14C + ((j + 1) * fInterval) * vDirection;
+                            m_vLastOrigin - m_vSpawnRemainder + ((j + 1) * fInterval) * vDirection;
                     else
                         m_lstActive[0]->m_vPosition = m_vOrigin - vDirection * fDistance;
                 }
             }
-            m_vReserved14C = vDistance - vDirection * (nParticles * fInterval);
+            m_vSpawnRemainder = vDistance - vDirection * (nParticles * fInterval);
         }
         else
         {
@@ -2602,13 +2604,13 @@ void ExplosionEmitter::Update(float fTimeStep)
     int nMotionBlurred = MotionBlurred;
     int i = m_lstActive.m_nCount;
     float fBlend;
-    if (m_nReserved114 == nMotionBlurred)
+    if (m_nRenderMode == nMotionBlurred)
         fBlend = (fTimeStep < m_fBlurLength ? fTimeStep : m_fBlurLength) / m_fBlurLength;
 
     for (; i > 0; )
     {
         --i;
-        if (m_nReserved114 == nMotionBlurred)
+        if (m_nRenderMode == nMotionBlurred)
         {
             m_lstActive[i]->m_vOrigin = fBlend * m_lstActive[i]->m_vPosition +
                 (1.0f - fBlend) * m_lstActive[i]->m_vOrigin;
@@ -2622,7 +2624,7 @@ void ExplosionEmitter::Update(float fTimeStep)
 
     MoveFunc(fTimeStep);
 
-    if (nParticles != 0 && m_bDetonated && m_fReservedF4 < 1.0f)
+    if (nParticles != 0 && m_bDetonated && m_fLightningElapsed < 1.0f)
     {
         if (pNode->m_fBlastRadius != 0.0f)
         {
@@ -2655,7 +2657,7 @@ void ExplosionEmitter::Update(float fTimeStep)
         }
     }
 
-    m_fReservedF4 = m_bDetonated ? 1.0f : 0.0f;
+    m_fLightningElapsed = m_bDetonated ? 1.0f : 0.0f;
     m_bDetonated = 0;
 }
 // PC 0x004979C0  Xbox 0x002EC390
@@ -2692,7 +2694,7 @@ void SingleEmitter::Update(float fTimeStep)
                 m_lstActive[0]->m_fRotation -= TWO_PI;
             else if (m_lstActive[0]->m_fRotation < -TWO_PI)
                 m_lstActive[0]->m_fRotation += TWO_PI;
-            if (m_nReserved114 == MotionBlurred)
+            if (m_nRenderMode == MotionBlurred)
             {
                 float fBlend = (fTimeStep < m_fBlurLength ? fTimeStep : m_fBlurLength) / m_fBlurLength;
                 m_lstActive[0]->m_vOrigin = fBlend * m_lstActive[0]->m_vPosition +
@@ -2708,6 +2710,7 @@ void SingleEmitter::Update(float fTimeStep)
         delete pParticle;
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x002E1770
 unsigned char MdlNodeEmitter::IsPointToPoint()
 {
@@ -2718,6 +2721,7 @@ unsigned char MdlNodeEmitter::IsPointToPoint()
     return (unsigned char)m_EmitterFlags.m_bPointToPoint;
 #endif
 }
+// Dead code: not in the PC executable
 // Xbox 0x002E1780
 unsigned char MdlNodeEmitter::IsPointToPointSel()
 {
@@ -2756,87 +2760,87 @@ void PartEmitter::MoveFunc(float fTimeStep)
 void LightningEmitter::UpdateControlPoints()
 {
     int nInterpolationPoint;
-    float fA, fB, fC, fD, fTime;
+    float fStartWeight, fStartControlWeight, fEndControlWeight, fEndWeight, fTime;
     int nPositionRandom = (int)(m_fControlPointRadius * 100.0f);
     int nTangentRandom = (int)(m_fTangentSpread * 100.0f);
     Vector vTarget = m_pTarget->GetPosition();
     int nControlPoints = (int)(magnitude(vTarget - m_vOrigin) * m_fNumControlPoints + 0.5f) + 2;
-    if (nControlPoints != m_lstReserved210.m_nCount)
+    if (nControlPoints != m_lstControlPoints.m_nCount)
     {
-        if (nControlPoints > m_lstReserved210.m_nCount)
+        if (nControlPoints > m_lstControlPoints.m_nCount)
         {
-            Vector vLast = m_lstReserved210[m_lstReserved210.m_nCount - 1];
-            m_lstReserved210.SetSize(nControlPoints);
-            m_lstReserved234.SetSize(nControlPoints);
-            m_lstReserved210[nControlPoints - 1] = vLast;
-            m_lstReserved21C.SetSize(nControlPoints);
-            m_lstReserved228.SetSize(nControlPoints);
-            m_lstReserved240.SetSize(nControlPoints);
-            m_lstReserved24C.SetSize(nControlPoints);
+            Vector vLast = m_lstControlPoints[m_lstControlPoints.m_nCount - 1];
+            m_lstControlPoints.SetSize(nControlPoints);
+            m_lstTangents.SetSize(nControlPoints);
+            m_lstControlPoints[nControlPoints - 1] = vLast;
+            m_lstPreviousPoints.SetSize(nControlPoints);
+            m_lstNextPoints.SetSize(nControlPoints);
+            m_lstPreviousTangents.SetSize(nControlPoints);
+            m_lstNextTangents.SetSize(nControlPoints);
         }
         else
         {
-            m_lstReserved210[nControlPoints - 1] =
-                m_lstReserved210[m_lstReserved210.m_nCount - 1];
-            while (nControlPoints < m_lstReserved210.m_nCount)
+            m_lstControlPoints[nControlPoints - 1] =
+                m_lstControlPoints[m_lstControlPoints.m_nCount - 1];
+            while (nControlPoints < m_lstControlPoints.m_nCount)
             {
-                m_lstReserved210.DelIndex(m_lstReserved210.m_nCount - 1);
-                m_lstReserved21C.DelIndex(m_lstReserved21C.m_nCount - 1);
-                m_lstReserved228.DelIndex(m_lstReserved228.m_nCount - 1);
-                m_lstReserved234.DelIndex(m_lstReserved234.m_nCount - 1);
-                m_lstReserved240.DelIndex(m_lstReserved240.m_nCount - 1);
-                m_lstReserved24C.DelIndex(m_lstReserved24C.m_nCount - 1);
+                m_lstControlPoints.DelIndex(m_lstControlPoints.m_nCount - 1);
+                m_lstPreviousPoints.DelIndex(m_lstPreviousPoints.m_nCount - 1);
+                m_lstNextPoints.DelIndex(m_lstNextPoints.m_nCount - 1);
+                m_lstTangents.DelIndex(m_lstTangents.m_nCount - 1);
+                m_lstPreviousTangents.DelIndex(m_lstPreviousTangents.m_nCount - 1);
+                m_lstNextTangents.DelIndex(m_lstNextTangents.m_nCount - 1);
             }
         }
         Vector vForward;
         vForward = Part::m_qOrientation.zdir();
-        m_lstReserved234[0] = vForward * m_fTangentLength;
-        m_lstReserved234[nControlPoints - 1] = normalize(vTarget - m_vOrigin) * m_fTangentLength;
+        m_lstTangents[0] = vForward * m_fTangentLength;
+        m_lstTangents[nControlPoints - 1] = normalize(vTarget - m_vOrigin) * m_fTangentLength;
         Vector vTangent;
-        for (nInterpolationPoint = 1; nInterpolationPoint < m_lstReserved210.m_nCount - 1; nInterpolationPoint++)
+        for (nInterpolationPoint = 1; nInterpolationPoint < m_lstControlPoints.m_nCount - 1; nInterpolationPoint++)
         {
-            fTime = (float)nInterpolationPoint / (m_lstReserved210.m_nCount - 1);
+            fTime = (float)nInterpolationPoint / (m_lstControlPoints.m_nCount - 1);
             if (fTime > 1.0f)
                 fTime = 1.0f;
             float fOther = 1.0f - fTime;
-            fA = fOther * fOther * fOther;
-            fB = fOther * fOther * fTime * 3.0f;
-            fC = fOther * fTime * fTime * 3.0f;
-            fD = fTime * fTime * fTime;
-            m_lstReserved210[nInterpolationPoint] =
-                m_lstReserved210[0] * fA +
-                (m_lstReserved210[0] + vForward * m_fTangentLength) * fB +
-                (m_lstReserved210[m_lstReserved210.m_nCount - 1] +
-                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fC +
-                m_lstReserved210[m_lstReserved210.m_nCount - 1] * fD;
-            fA = fOther * fOther * -3.0f;
-            fB = (1.0f - 3.0f * fTime) * fOther * 3.0f;
-            fC = (2.0f - 3.0f * fTime) * fTime * 3.0f;
-            fD = fTime * fTime * 3.0f;
+            fStartWeight = fOther * fOther * fOther;
+            fStartControlWeight = fOther * fOther * fTime * 3.0f;
+            fEndControlWeight = fOther * fTime * fTime * 3.0f;
+            fEndWeight = fTime * fTime * fTime;
+            m_lstControlPoints[nInterpolationPoint] =
+                m_lstControlPoints[0] * fStartWeight +
+                (m_lstControlPoints[0] + vForward * m_fTangentLength) * fStartControlWeight +
+                (m_lstControlPoints[m_lstControlPoints.m_nCount - 1] +
+                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fEndControlWeight +
+                m_lstControlPoints[m_lstControlPoints.m_nCount - 1] * fEndWeight;
+            fStartWeight = fOther * fOther * -3.0f;
+            fStartControlWeight = (1.0f - 3.0f * fTime) * fOther * 3.0f;
+            fEndControlWeight = (2.0f - 3.0f * fTime) * fTime * 3.0f;
+            fEndWeight = fTime * fTime * 3.0f;
             vTangent =
-                m_lstReserved210[0] * fA +
-                (m_lstReserved210[0] + vForward * m_fTangentLength) * fB +
-                (m_lstReserved210[m_lstReserved210.m_nCount - 1] +
-                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fC +
-                m_lstReserved210[m_lstReserved210.m_nCount - 1] * fD;
+                m_lstControlPoints[0] * fStartWeight +
+                (m_lstControlPoints[0] + vForward * m_fTangentLength) * fStartControlWeight +
+                (m_lstControlPoints[m_lstControlPoints.m_nCount - 1] +
+                       m_pTarget->GetOrientation().zdir() * m_fTangentLength) * fEndControlWeight +
+                m_lstControlPoints[m_lstControlPoints.m_nCount - 1] * fEndWeight;
             vTangent.Normalize();
-            m_lstReserved234[nInterpolationPoint] = vTangent * m_fTangentLength;
+            m_lstTangents[nInterpolationPoint] = vTangent * m_fTangentLength;
         }
     }
-    for (nInterpolationPoint = 0; nInterpolationPoint < m_lstReserved210.m_nCount; nInterpolationPoint++)
+    for (nInterpolationPoint = 0; nInterpolationPoint < m_lstControlPoints.m_nCount; nInterpolationPoint++)
     {
-        m_lstReserved21C[nInterpolationPoint] = m_lstReserved228[nInterpolationPoint];
-        m_lstReserved240[nInterpolationPoint] = m_lstReserved24C[nInterpolationPoint];
-        if (nInterpolationPoint == 0 || nInterpolationPoint == m_lstReserved210.m_nCount - 1)
+        m_lstPreviousPoints[nInterpolationPoint] = m_lstNextPoints[nInterpolationPoint];
+        m_lstPreviousTangents[nInterpolationPoint] = m_lstNextTangents[nInterpolationPoint];
+        if (nInterpolationPoint == 0 || nInterpolationPoint == m_lstControlPoints.m_nCount - 1)
         {
-            m_lstReserved228[nInterpolationPoint] = m_lstReserved210[nInterpolationPoint];
+            m_lstNextPoints[nInterpolationPoint] = m_lstControlPoints[nInterpolationPoint];
             if (nInterpolationPoint == 0)
-                m_lstReserved24C[nInterpolationPoint] = m_qOrientation.zdir() * m_fTangentLength;
+                m_lstNextTangents[nInterpolationPoint] = m_qOrientation.zdir() * m_fTangentLength;
             else
-                m_lstReserved24C[nInterpolationPoint] = normalize(
+                m_lstNextTangents[nInterpolationPoint] = normalize(
                     m_pTarget->GetPosition() - m_vOrigin) * m_fTangentLength;
             if (m_bBranch)
-                m_lstReserved21C[nInterpolationPoint] = m_lstReserved228[nInterpolationPoint];
+                m_lstPreviousPoints[nInterpolationPoint] = m_lstNextPoints[nInterpolationPoint];
         }
         else
         {
@@ -2846,11 +2850,11 @@ void LightningEmitter::UpdateControlPoints()
                 fRandom = (rand() % nPositionRandom) * 0.01f;
                 if (rand() & 1)
                     fRandom = -fRandom;
-                m_lstReserved228[nInterpolationPoint] = m_lstReserved210[nInterpolationPoint] +
-                    YawPitchRoll(0.0f, rand() % 360, 0.0f) * (m_vReserved27C * fRandom);
+                m_lstNextPoints[nInterpolationPoint] = m_lstControlPoints[nInterpolationPoint] +
+                    YawPitchRoll(0.0f, rand() % 360, 0.0f) * (m_vPerpendicular * fRandom);
             }
             else
-                m_lstReserved228[nInterpolationPoint] = m_lstReserved210[nInterpolationPoint];
+                m_lstNextPoints[nInterpolationPoint] = m_lstControlPoints[nInterpolationPoint];
             if (nTangentRandom != 0)
             {
                 fRandom = (rand() % nTangentRandom) * 0.01f;
@@ -2859,17 +2863,17 @@ void LightningEmitter::UpdateControlPoints()
                 float fPitch = (rand() % nTangentRandom) * 0.01f;
                 if (rand() & 1)
                     fPitch = -fPitch;
-                m_lstReserved24C[nInterpolationPoint] = YawPitchRoll(fRandom, fPitch, 0.0f) * m_lstReserved234[nInterpolationPoint];
+                m_lstNextTangents[nInterpolationPoint] = YawPitchRoll(fRandom, fPitch, 0.0f) * m_lstTangents[nInterpolationPoint];
             }
             else
-                m_lstReserved24C[nInterpolationPoint] = m_lstReserved234[nInterpolationPoint];
+                m_lstNextTangents[nInterpolationPoint] = m_lstTangents[nInterpolationPoint];
             if (m_bBranch)
-                m_lstReserved21C[nInterpolationPoint] = m_lstReserved228[nInterpolationPoint];
+                m_lstPreviousPoints[nInterpolationPoint] = m_lstNextPoints[nInterpolationPoint];
         }
     }
     int nSegment = 1;
     float fStart = 0.0f;
-    float fEnd = 1.0f / (m_lstReserved21C.m_nCount - 1);
+    float fEnd = 1.0f / (m_lstPreviousPoints.m_nCount - 1);
     for (nInterpolationPoint = 1; nInterpolationPoint < m_lstActive.m_nCount; nInterpolationPoint++)
     {
         fTime = (float)nInterpolationPoint / (m_lstActive.m_nCount - 1);
@@ -2879,12 +2883,12 @@ void LightningEmitter::UpdateControlPoints()
             {
                 nSegment++;
                 fStart = fEnd;
-                fEnd += 1.0f / (m_lstReserved21C.m_nCount - 1);
-                if (nSegment < m_lstReserved21C.m_nCount)
+                fEnd += 1.0f / (m_lstPreviousPoints.m_nCount - 1);
+                if (nSegment < m_lstPreviousPoints.m_nCount)
                     continue;
                 nSegment--;
-                fStart -= 1.0f / (m_lstReserved21C.m_nCount - 1);
-                fEnd -= 1.0f / (m_lstReserved21C.m_nCount - 1);
+                fStart -= 1.0f / (m_lstPreviousPoints.m_nCount - 1);
+                fEnd -= 1.0f / (m_lstPreviousPoints.m_nCount - 1);
                 break;
             } while (fTime > fEnd);
         }
@@ -2897,10 +2901,10 @@ void LightningEmitter::UpdateControlPoints()
         float fFinalC = fOther * fPosition * fPosition * 3.0f;
         float fFinalD = fPosition * fPosition * fPosition;
         m_lstActive[nInterpolationPoint]->m_vPosition =
-            fFinalA * m_lstReserved21C[nSegment - 1] +
-            fFinalB * (m_lstReserved21C[nSegment - 1] + m_lstReserved240[nSegment - 1]) +
-            fFinalC * (m_lstReserved21C[nSegment] - m_lstReserved240[nSegment]) +
-            fFinalD * m_lstReserved21C[nSegment];
+            fFinalA * m_lstPreviousPoints[nSegment - 1] +
+            fFinalB * (m_lstPreviousPoints[nSegment - 1] + m_lstPreviousTangents[nSegment - 1]) +
+            fFinalC * (m_lstPreviousPoints[nSegment] - m_lstPreviousTangents[nSegment]) +
+            fFinalD * m_lstPreviousPoints[nSegment];
     }
 }
 
@@ -2922,7 +2926,7 @@ void LightningEmitter::Update(float fTimeStep)
     if (m_pAurObject)
         fScale = m_pAurObject->m_fScale;
     int nActive = m_lstActive.m_nCount;
-    m_fReservedF4 += fTimeStep;
+    m_fLightningElapsed += fTimeStep;
     if (nParticles == 0 || !m_pTarget)
     {
         for (; nActive > 0; )
@@ -2959,8 +2963,8 @@ void LightningEmitter::Update(float fTimeStep)
             m_lstFree.Add(pParticle);
             nActive--;
         }
-        if (m_lstReserved270.m_nCount < m_lstActive.m_nCount)
-            m_lstReserved270.SetSize(m_lstActive.m_nCount);
+        if (m_lstFractalOffsets.m_nCount < m_lstActive.m_nCount)
+            m_lstFractalOffsets.SetSize(m_lstActive.m_nCount);
         int nMotionBlurred = MotionBlurred;
         for (int i = 0; i < m_lstActive.m_nCount; i++)
         {
@@ -2972,20 +2976,20 @@ void LightningEmitter::Update(float fTimeStep)
                 pParticle->m_fFrameAge = 0;
             }
             pParticle->m_fAge += fTimeStep;
-            if (m_nReserved114 == nMotionBlurred)
+            if (m_nRenderMode == nMotionBlurred)
             {
                 float fBlend = (fTimeStep < m_fBlurLength ? fTimeStep : m_fBlurLength) / m_fBlurLength;
                 pParticle->m_vOrigin = fBlend * pParticle->m_vPosition +
                     (1.0f - fBlend) * pParticle->m_vOrigin;
             }
         }
-        m_fReservedF8 += fTimeStep;
+        m_fControlPointElapsed += fTimeStep;
         MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
-        if (m_fReservedF8 > m_fControlPointDelay)
+        if (m_fControlPointElapsed > m_fControlPointDelay)
         {
-            m_fReservedF8 = 0;
-            m_lstReserved210[0] = m_vOrigin;
-            m_lstReserved210[m_lstReserved210.m_nCount - 1] =
+            m_fControlPointElapsed = 0;
+            m_lstControlPoints[0] = m_vOrigin;
+            m_lstControlPoints[m_lstControlPoints.m_nCount - 1] =
                 m_pTarget->GetPosition();
             UpdateControlPoints();
             if (pNode->m_nNumBranches > 0 && !m_bBranch)
@@ -2993,17 +2997,17 @@ void LightningEmitter::Update(float fTimeStep)
                 UpdateBranches();
                 bUpdateBranches = true;
                 for (j = 0; j < m_nBranches; j++)
-                    m_lstBranches[j]->m_fReservedF8 = m_fControlPointDelay;
+                    m_lstBranches[j]->m_fControlPointElapsed = m_fControlPointDelay;
             }
-            m_fReservedF4 = (m_fLightningDelay + 0.01f);
+            m_fLightningElapsed = (m_fLightningDelay + 0.01f);
         }
         else if (m_pNode->AsMdlNodeEmitter()->m_nControlPointSmoothing != 0 && !m_bBranch)
         {
             int nPoint = 1;
             float fBlend = 0.0f;
             if (m_fControlPointDelay != 0.0f)
-                fBlend = (m_fReservedF8 / m_fControlPointDelay);
-            float fEnd = 1.0f / (m_lstReserved228.m_nCount - 1);
+                fBlend = (m_fControlPointElapsed / m_fControlPointDelay);
+            float fEnd = 1.0f / (m_lstNextPoints.m_nCount - 1);
             float fStart = 0.0f;
             for (j = 1; j < m_lstActive.m_nCount - 1; j++)
             {
@@ -3012,7 +3016,7 @@ void LightningEmitter::Update(float fTimeStep)
                 {
                     nPoint++;
                     fStart = fEnd;
-                    fEnd += 1.0f / (m_lstReserved228.m_nCount - 1);
+                    fEnd += 1.0f / (m_lstNextPoints.m_nCount - 1);
                 }
                 float fTime = (fPosition - fStart) / (fEnd - fStart);
                 if (fTime > 1.0f)
@@ -3024,18 +3028,18 @@ void LightningEmitter::Update(float fTimeStep)
                 float fEndWeight = fTime * fTime * fTime;
                 m_lstActive[j]->m_vPosition =
                     fStartWeight *
-                        ((1.0f - fBlend) * m_lstReserved21C[nPoint - 1] + fBlend * m_lstReserved228[nPoint - 1]) +
+                        ((1.0f - fBlend) * m_lstPreviousPoints[nPoint - 1] + fBlend * m_lstNextPoints[nPoint - 1]) +
                     fStartControlWeight *
-                        (((1.0f - fBlend) * m_lstReserved21C[nPoint - 1] + fBlend * m_lstReserved228[nPoint - 1]) +
-                         (1.0f - fBlend) * m_lstReserved240[nPoint - 1] + fBlend * m_lstReserved24C[nPoint - 1]) +
+                        (((1.0f - fBlend) * m_lstPreviousPoints[nPoint - 1] + fBlend * m_lstNextPoints[nPoint - 1]) +
+                         (1.0f - fBlend) * m_lstPreviousTangents[nPoint - 1] + fBlend * m_lstNextTangents[nPoint - 1]) +
                     fEndControlWeight *
-                        (((1.0f - fBlend) * m_lstReserved21C[nPoint] + fBlend * m_lstReserved228[nPoint]) -
-                         ((1.0f - fBlend) * m_lstReserved240[nPoint] + fBlend * m_lstReserved24C[nPoint])) +
+                        (((1.0f - fBlend) * m_lstPreviousPoints[nPoint] + fBlend * m_lstNextPoints[nPoint]) -
+                         ((1.0f - fBlend) * m_lstPreviousTangents[nPoint] + fBlend * m_lstNextTangents[nPoint])) +
                     fEndWeight *
-                        ((1.0f - fBlend) * m_lstReserved21C[nPoint] + fBlend * m_lstReserved228[nPoint]);
+                        ((1.0f - fBlend) * m_lstPreviousPoints[nPoint] + fBlend * m_lstNextPoints[nPoint]);
             }
         }
-        if (m_fReservedF4 > m_fLightningDelay)
+        if (m_fLightningElapsed > m_fLightningDelay)
         {
             Particle* pFirstParticle = m_lstActive[0];
             if (m_fXSize == 0.0f && m_fYSize == 0.0f)
@@ -3072,23 +3076,23 @@ void LightningEmitter::Update(float fTimeStep)
             }
             if (bRandomStart || bRandomEnd)
             {
-                if (m_lstReserved210.m_nCount == 2)
+                if (m_lstControlPoints.m_nCount == 2)
                 {
                     if (bRandomStart)
-                        m_lstReserved210[0] = m_lstActive[0]->m_vPosition;
+                        m_lstControlPoints[0] = m_lstActive[0]->m_vPosition;
                     else
-                        m_lstReserved210[1] = m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition;
+                        m_lstControlPoints[1] = m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition;
                     UpdateControlPoints();
                 }
                 else if (bRandomStart)
                 {
-                    m_lstReserved210[0] = m_lstReserved228[0] = m_lstActive[0]->m_vPosition;
+                    m_lstControlPoints[0] = m_lstNextPoints[0] = m_lstActive[0]->m_vPosition;
                     int nPoint = 1;
                     float fBlend = 0.0f;
                     if (m_fControlPointDelay != 0.0f)
-                        fBlend = m_fReservedF8 / m_fControlPointDelay;
+                        fBlend = m_fControlPointElapsed / m_fControlPointDelay;
                     float fStart = 0.0f;
-                    float fEnd = 1.0f / (m_lstReserved228.m_nCount - 1);
+                    float fEnd = 1.0f / (m_lstNextPoints.m_nCount - 1);
                     for (j = 1; j < m_lstActive.m_nCount - 1 && nPoint <= 1; j++)
                     {
                         float fPosition = (float)j / (m_lstActive.m_nCount - 1);
@@ -3096,7 +3100,7 @@ void LightningEmitter::Update(float fTimeStep)
                         {
                             nPoint++;
                             fStart = fEnd;
-                            fEnd += 1.0f / (m_lstReserved228.m_nCount - 1);
+                            fEnd += 1.0f / (m_lstNextPoints.m_nCount - 1);
                         }
                         float fTime = (fPosition - fStart) / (fEnd - fStart);
                         if (fTime > 1.0f)
@@ -3108,15 +3112,15 @@ void LightningEmitter::Update(float fTimeStep)
                         float fEndWeight = fTime * fTime * fTime;
                         m_lstActive[j]->m_vPosition =
                             fStartWeight *
-                                ((1.0f - fBlend) * m_lstReserved21C[nPoint - 1] + fBlend * m_lstReserved228[nPoint - 1]) +
+                                ((1.0f - fBlend) * m_lstPreviousPoints[nPoint - 1] + fBlend * m_lstNextPoints[nPoint - 1]) +
                             fStartControlWeight *
-                                (((1.0f - fBlend) * m_lstReserved21C[nPoint - 1] + fBlend * m_lstReserved228[nPoint - 1]) +
-                                 (1.0f - fBlend) * m_lstReserved240[nPoint - 1] + fBlend * m_lstReserved24C[nPoint - 1]) +
+                                (((1.0f - fBlend) * m_lstPreviousPoints[nPoint - 1] + fBlend * m_lstNextPoints[nPoint - 1]) +
+                                 (1.0f - fBlend) * m_lstPreviousTangents[nPoint - 1] + fBlend * m_lstNextTangents[nPoint - 1]) +
                             fEndControlWeight *
-                                (((1.0f - fBlend) * m_lstReserved21C[nPoint] + fBlend * m_lstReserved228[nPoint]) -
-                                 ((1.0f - fBlend) * m_lstReserved240[nPoint] + fBlend * m_lstReserved24C[nPoint])) +
+                                (((1.0f - fBlend) * m_lstPreviousPoints[nPoint] + fBlend * m_lstNextPoints[nPoint]) -
+                                 ((1.0f - fBlend) * m_lstPreviousTangents[nPoint] + fBlend * m_lstNextTangents[nPoint])) +
                             fEndWeight *
-                                ((1.0f - fBlend) * m_lstReserved21C[nPoint] + fBlend * m_lstReserved228[nPoint]);
+                                ((1.0f - fBlend) * m_lstPreviousPoints[nPoint] + fBlend * m_lstNextPoints[nPoint]);
                     }
                 }
                 else if (bRandomEnd)
@@ -3125,14 +3129,14 @@ void LightningEmitter::Update(float fTimeStep)
                     {
                         vDistance.m_fX = 0.0f;
                     }
-                    m_lstReserved210[m_lstReserved210.m_nCount - 1] =
-                        m_lstReserved228[m_lstReserved210.m_nCount - 1] =
+                    m_lstControlPoints[m_lstControlPoints.m_nCount - 1] =
+                        m_lstNextPoints[m_lstControlPoints.m_nCount - 1] =
                         m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition;
-                    int nPoint = m_lstReserved228.m_nCount - 1;
+                    int nPoint = m_lstNextPoints.m_nCount - 1;
                     float fBlend = 0.0f;
                     if (m_fControlPointDelay != 0.0f)
-                        fBlend = m_fReservedF8 / m_fControlPointDelay;
-                    float fStart = (float)(m_lstReserved228.m_nCount - 2) / nPoint;
+                        fBlend = m_fControlPointElapsed / m_fControlPointDelay;
+                    float fStart = (float)(m_lstNextPoints.m_nCount - 2) / nPoint;
                     float fEnd = 1.0f;
                     for (j = (int)(m_lstActive.m_nCount * fStart) + 1; j < m_lstActive.m_nCount - 1; j++)
                     {
@@ -3147,15 +3151,15 @@ void LightningEmitter::Update(float fTimeStep)
                         float fEndWeight = fTime * fTime * fTime;
                         m_lstActive[j]->m_vPosition =
                             fStartWeight *
-                                ((1.0f - fBlend) * m_lstReserved21C[nPoint - 1] + fBlend * m_lstReserved228[nPoint - 1]) +
+                                ((1.0f - fBlend) * m_lstPreviousPoints[nPoint - 1] + fBlend * m_lstNextPoints[nPoint - 1]) +
                             fStartControlWeight *
-                                (((1.0f - fBlend) * m_lstReserved21C[nPoint - 1] + fBlend * m_lstReserved228[nPoint - 1]) +
-                                 (1.0f - fBlend) * m_lstReserved240[nPoint - 1] + fBlend * m_lstReserved24C[nPoint - 1]) +
+                                (((1.0f - fBlend) * m_lstPreviousPoints[nPoint - 1] + fBlend * m_lstNextPoints[nPoint - 1]) +
+                                 (1.0f - fBlend) * m_lstPreviousTangents[nPoint - 1] + fBlend * m_lstNextTangents[nPoint - 1]) +
                             fEndControlWeight *
-                                (((1.0f - fBlend) * m_lstReserved21C[nPoint] + fBlend * m_lstReserved228[nPoint]) -
-                                 ((1.0f - fBlend) * m_lstReserved240[nPoint] + fBlend * m_lstReserved24C[nPoint])) +
+                                (((1.0f - fBlend) * m_lstPreviousPoints[nPoint] + fBlend * m_lstNextPoints[nPoint]) -
+                                 ((1.0f - fBlend) * m_lstPreviousTangents[nPoint] + fBlend * m_lstNextTangents[nPoint])) +
                             fEndWeight *
-                                ((1.0f - fBlend) * m_lstReserved21C[nPoint] + fBlend * m_lstReserved228[nPoint]);
+                                ((1.0f - fBlend) * m_lstPreviousPoints[nPoint] + fBlend * m_lstNextPoints[nPoint]);
                     }
                 }
             }
@@ -3166,7 +3170,7 @@ void LightningEmitter::Update(float fTimeStep)
             vDistance = m_lstActive[0]->m_vPosition - vEnd;
             if (!equal(vDistance, Vector()))
             {
-                m_fReservedF4 = 0;
+                m_fLightningElapsed = 0;
                 if (useoldlightninginterp)
                 {
                     int nMidpoint = (int)(magnitude(vDistance) * m_fLightningSubDivisions * 0.5f);
@@ -3198,7 +3202,7 @@ void LightningEmitter::Update(float fTimeStep)
                                          vDistance.m_fX * vDistance.m_fX) / m_lstActive.m_nCount * 0.5) *
                         m_fLightningScale * m_fScale;
                     Vector vLongitudinal = fRange * normalize(vDistance);
-                    Vector vJitterDirection = m_vReserved27C;
+                    Vector vJitterDirection = m_vPerpendicular;
                     int nAngleRange = (int)m_fLightningZigZag;
                     Vector vAxis = m_pTarget->GetPosition() - m_vOrigin;
                     int nAngle = 0;
@@ -3220,7 +3224,7 @@ void LightningEmitter::Update(float fTimeStep)
                         vOffset = (rand() % 100) * 0.01f * vLongitudinal;
                         if (rand() & 1)
                             vOffset = -vOffset;
-                        m_lstReserved270[i] = fRandom * vJitterDirection + vOffset;
+                        m_lstFractalOffsets[i] = fRandom * vJitterDirection + vOffset;
                     }
                     if (pNode->m_nNumBranches > 0 && m_lstBranches.m_nCount != 0)
                     {
@@ -3234,12 +3238,12 @@ void LightningEmitter::Update(float fTimeStep)
                                 }
                             }
                             m_lstBranches[i]->m_vOrigin =
-                                m_lstBranches[i]->m_lstReserved21C[0] =
-                                m_lstBranches[i]->m_lstReserved228[0] =
-                                m_lstActive[m_lstBranchIndices[i]]->m_vPosition + m_lstReserved270[m_lstBranchIndices[i]];
-                            m_lstBranches[i]->m_vReserved1F8 =
+                                m_lstBranches[i]->m_lstPreviousPoints[0] =
+                                m_lstBranches[i]->m_lstNextPoints[0] =
+                                m_lstActive[m_lstBranchIndices[i]]->m_vPosition + m_lstFractalOffsets[m_lstBranchIndices[i]];
+                            m_lstBranches[i]->m_vTargetDirection =
                                 m_lstBranches[i]->m_pTarget->GetPosition() - m_lstBranches[i]->m_vOrigin;
-                            m_lstBranches[i]->m_vReserved204 = m_lstBranches[i]->m_vOrigin;
+                            m_lstBranches[i]->m_vStart = m_lstBranches[i]->m_vOrigin;
                         }
                     }
                 }
@@ -3248,31 +3252,31 @@ void LightningEmitter::Update(float fTimeStep)
         else
         {
             Vector vNewDirection = m_pTarget->GetPosition() - m_vOrigin;
-            Quaternion qRotation = RotationArc(m_vReserved1F8, vNewDirection);
+            Quaternion qRotation = RotationArc(m_vTargetDirection, vNewDirection);
             for (j = 0; j < m_lstActive.m_nCount; j++)
                 m_lstActive[j]->m_vPosition =
-                    qRotation * (m_lstActive[j]->m_vPosition - m_vReserved204) + m_vOrigin;
-            for (j = 0; j < m_lstReserved210.m_nCount; j++)
+                    qRotation * (m_lstActive[j]->m_vPosition - m_vStart) + m_vOrigin;
+            for (j = 0; j < m_lstControlPoints.m_nCount; j++)
             {
-                m_lstReserved210[j] = qRotation * (m_lstReserved210[j] - m_vReserved204) + m_vOrigin;
-                m_lstReserved234[j] = qRotation * m_lstReserved234[j];
+                m_lstControlPoints[j] = qRotation * (m_lstControlPoints[j] - m_vStart) + m_vOrigin;
+                m_lstTangents[j] = qRotation * m_lstTangents[j];
             }
             if (pNode->m_nNumBranches > 0 && m_lstBranches.m_nCount != 0)
             {
                 for (j = 0; j < m_nBranches; j++)
                 {
                     m_lstBranches[j]->m_vOrigin =
-                        m_lstBranches[j]->m_lstReserved21C[0] =
-                        m_lstBranches[j]->m_lstReserved228[0] =
-                        m_lstActive[m_lstBranchIndices[j]]->m_vPosition + m_lstReserved270[m_lstBranchIndices[j]];
+                        m_lstBranches[j]->m_lstPreviousPoints[0] =
+                        m_lstBranches[j]->m_lstNextPoints[0] =
+                        m_lstActive[m_lstBranchIndices[j]]->m_vPosition + m_lstFractalOffsets[m_lstBranchIndices[j]];
                     Vector vPosition;
                     vPosition = m_lstBranches[j]->m_pTarget->GetPosition();
-                    vPosition = qRotation * (vPosition - m_vReserved204) + m_vOrigin;
+                    vPosition = qRotation * (vPosition - m_vStart) + m_vOrigin;
                     m_lstBranches[j]->m_pTarget->SetPosition(vPosition);
                 }
             }
-            m_vReserved1F8 = vNewDirection;
-            m_vReserved204 = m_vOrigin;
+            m_vTargetDirection = vNewDirection;
+            m_vStart = m_vOrigin;
         }
         if (pNode->m_nNumBranches > 0 && !m_bBranch)
         {
@@ -3324,15 +3328,15 @@ SingleEmitter::SingleEmitter(MdlNode* pNode) : PartEmitter(pNode) {}
 #endif
 LightningEmitter::LightningEmitter(MdlNode* pNode)  // PC 0x0049D1D0  Xbox 0x002F0840
     : PartEmitter(pNode),
-      m_lstReserved210(0),
-      m_lstReserved21C(0),
-      m_lstReserved228(0),
-      m_lstReserved234(0),
-      m_lstReserved240(0),
-      m_lstReserved24C(0),
+      m_lstControlPoints(0),
+      m_lstPreviousPoints(0),
+      m_lstNextPoints(0),
+      m_lstTangents(0),
+      m_lstPreviousTangents(0),
+      m_lstNextTangents(0),
       m_lstBranches(0),
       m_lstBranchIndices(0),
-      m_lstReserved270(0)
+      m_lstFractalOffsets(0)
 {
     m_fLightningScale = 0;
     m_nBranches = 0;
@@ -3358,7 +3362,7 @@ void LightningEmitter::Initialize()
     m_fLifeTime = 1.0f;
     CallBack* pCallBack = m_pAurObject->RegisterCallBack(
         SetEmitterTarget, "_EmitterTarget", this, 9999.0f, 0);
-    m_pReserved1F4 = LIGHTNING;
+    m_nEmitterType = LIGHTNING;
     m_pEmitterTargetCallback = pCallBack;
 
     MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
@@ -3444,8 +3448,8 @@ PartEmitter::PartEmitter(MdlNode* pNode)
     m_fTangentSpread = 0;
     m_fTangentLength = 0.0f;
     m_fTargetSize = 0.0f;
-    m_fReservedF4 = EMITTER_INITIAL_ELAPSED_TIME;
-    m_fReservedF8 = EMITTER_INITIAL_ELAPSED_TIME;
+    m_fLightningElapsed = EMITTER_INITIAL_ELAPSED_TIME;
+    m_fControlPointElapsed = EMITTER_INITIAL_ELAPSED_TIME;
     m_bDetonated = false;
     m_pEmitterMaterial = 0;
     m_fRadius = 1.0f;
@@ -3461,7 +3465,7 @@ PartEmitter::PartEmitter(MdlNode* pNode)
 // PC 0x0049B680  Xbox 0x002EFEF0
 void PartEmitter::RenderFunc()
 {
-    AuremitterTrace4();
+    TraceEmitterRender();
     if (m_pAurObject != 0)
     {
         if (m_pAurObject->m_pModel != 0 &&
@@ -3523,7 +3527,7 @@ void PartEmitter::RenderFunc()
         return;
     }
 
-    if (m_nReserved114 == Linked)
+    if (m_nRenderMode == Linked)
     {
         LightningEmitter* pLightning = AsLightningEmitter();
         int i;
@@ -3538,85 +3542,85 @@ void PartEmitter::RenderFunc()
                 glLineWidth(2.5f);
                 float fBlend = 0.0f;
                 if (pLightning->m_fControlPointDelay != 0.0f)
-                    fBlend = (pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay);
+                    fBlend = (pLightning->m_fControlPointElapsed / pLightning->m_fControlPointDelay);
                 m_fFramesPerSecond = m_fFramesPerSecond;
                 m_fBirthRate = m_fBirthRate;
                 if (AUREMITTER_DEBUG_CONTROL_POINTS)
                 {
                     glBegin(GL_POINTS);
-                    for (i = 0; i < pLightning->m_lstReserved21C.m_nCount; i++)
+                    for (i = 0; i < pLightning->m_lstPreviousPoints.m_nCount; i++)
                     {
-                        glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fX + fBlend * pLightning->m_lstReserved228[i].m_fX,
-                                   (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fY + fBlend * pLightning->m_lstReserved228[i].m_fY,
-                                   (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fZ + fBlend * pLightning->m_lstReserved228[i].m_fZ);
+                        glVertex3f((1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fX + fBlend * pLightning->m_lstNextPoints[i].m_fX,
+                                   (1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fY + fBlend * pLightning->m_lstNextPoints[i].m_fY,
+                                   (1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fZ + fBlend * pLightning->m_lstNextPoints[i].m_fZ);
                     }
                     glEnd();
                 }
                 glBegin(GL_LINES);
-                glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fX +
-                                   fBlend * pLightning->m_lstReserved228[0].m_fX,
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fY +
-                                   fBlend * pLightning->m_lstReserved228[0].m_fY,
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fZ +
-                                   fBlend * pLightning->m_lstReserved228[0].m_fZ);
-                glVertex3f(((1.0f - fBlend)) * pLightning->m_lstReserved21C[0].m_fX +
-                            fBlend * pLightning->m_lstReserved228[0].m_fX +
-                            (1.0f - fBlend) * pLightning->m_lstReserved240[0].m_fX +
-                            fBlend * pLightning->m_lstReserved24C[0].m_fX,
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fY +
-                            fBlend * pLightning->m_lstReserved228[0].m_fY +
-                            (1.0f - fBlend) * pLightning->m_lstReserved240[0].m_fY +
-                            fBlend * pLightning->m_lstReserved24C[0].m_fY,
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fZ +
-                            fBlend * pLightning->m_lstReserved228[0].m_fZ +
-                            (1.0f - fBlend) * pLightning->m_lstReserved240[0].m_fZ +
-                            fBlend * pLightning->m_lstReserved24C[0].m_fZ);
-                for (i = 1; i < pLightning->m_lstReserved21C.m_nCount - 1; i++)
+                glVertex3f((1.0f - fBlend) * pLightning->m_lstPreviousPoints[0].m_fX +
+                                   fBlend * pLightning->m_lstNextPoints[0].m_fX,
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[0].m_fY +
+                                   fBlend * pLightning->m_lstNextPoints[0].m_fY,
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[0].m_fZ +
+                                   fBlend * pLightning->m_lstNextPoints[0].m_fZ);
+                glVertex3f(((1.0f - fBlend)) * pLightning->m_lstPreviousPoints[0].m_fX +
+                            fBlend * pLightning->m_lstNextPoints[0].m_fX +
+                            (1.0f - fBlend) * pLightning->m_lstPreviousTangents[0].m_fX +
+                            fBlend * pLightning->m_lstNextTangents[0].m_fX,
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[0].m_fY +
+                            fBlend * pLightning->m_lstNextPoints[0].m_fY +
+                            (1.0f - fBlend) * pLightning->m_lstPreviousTangents[0].m_fY +
+                            fBlend * pLightning->m_lstNextTangents[0].m_fY,
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[0].m_fZ +
+                            fBlend * pLightning->m_lstNextPoints[0].m_fZ +
+                            (1.0f - fBlend) * pLightning->m_lstPreviousTangents[0].m_fZ +
+                            fBlend * pLightning->m_lstNextTangents[0].m_fZ);
+                for (i = 1; i < pLightning->m_lstPreviousPoints.m_nCount - 1; i++)
                 {
-                    glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fX +
-                                fBlend * pLightning->m_lstReserved228[i].m_fX -
-                                ((1.0f - fBlend) * pLightning->m_lstReserved240[i].m_fX +
-                                 fBlend * pLightning->m_lstReserved24C[i].m_fX),
-                               (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fY +
-                                fBlend * pLightning->m_lstReserved228[i].m_fY -
-                                ((1.0f - fBlend) * pLightning->m_lstReserved240[i].m_fY +
-                                 fBlend * pLightning->m_lstReserved24C[i].m_fY),
-                               (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fZ +
-                                fBlend * pLightning->m_lstReserved228[i].m_fZ -
-                                ((1.0f - fBlend) * pLightning->m_lstReserved240[i].m_fZ +
-                                 fBlend * pLightning->m_lstReserved24C[i].m_fZ));
-                    glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fX +
-                                fBlend * pLightning->m_lstReserved228[i].m_fX +
-                                (1.0f - fBlend) * pLightning->m_lstReserved240[i].m_fX +
-                                fBlend * pLightning->m_lstReserved24C[i].m_fX,
-                               (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fY +
-                                fBlend * pLightning->m_lstReserved228[i].m_fY +
-                                (1.0f - fBlend) * pLightning->m_lstReserved240[i].m_fY +
-                                fBlend * pLightning->m_lstReserved24C[i].m_fY,
-                               (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fZ +
-                                fBlend * pLightning->m_lstReserved228[i].m_fZ +
-                                (1.0f - fBlend) * pLightning->m_lstReserved240[i].m_fZ +
-                                fBlend * pLightning->m_lstReserved24C[i].m_fZ);
+                    glVertex3f((1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fX +
+                                fBlend * pLightning->m_lstNextPoints[i].m_fX -
+                                ((1.0f - fBlend) * pLightning->m_lstPreviousTangents[i].m_fX +
+                                 fBlend * pLightning->m_lstNextTangents[i].m_fX),
+                               (1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fY +
+                                fBlend * pLightning->m_lstNextPoints[i].m_fY -
+                                ((1.0f - fBlend) * pLightning->m_lstPreviousTangents[i].m_fY +
+                                 fBlend * pLightning->m_lstNextTangents[i].m_fY),
+                               (1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fZ +
+                                fBlend * pLightning->m_lstNextPoints[i].m_fZ -
+                                ((1.0f - fBlend) * pLightning->m_lstPreviousTangents[i].m_fZ +
+                                 fBlend * pLightning->m_lstNextTangents[i].m_fZ));
+                    glVertex3f((1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fX +
+                                fBlend * pLightning->m_lstNextPoints[i].m_fX +
+                                (1.0f - fBlend) * pLightning->m_lstPreviousTangents[i].m_fX +
+                                fBlend * pLightning->m_lstNextTangents[i].m_fX,
+                               (1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fY +
+                                fBlend * pLightning->m_lstNextPoints[i].m_fY +
+                                (1.0f - fBlend) * pLightning->m_lstPreviousTangents[i].m_fY +
+                                fBlend * pLightning->m_lstNextTangents[i].m_fY,
+                               (1.0f - fBlend) * pLightning->m_lstPreviousPoints[i].m_fZ +
+                                fBlend * pLightning->m_lstNextPoints[i].m_fZ +
+                                (1.0f - fBlend) * pLightning->m_lstPreviousTangents[i].m_fZ +
+                                fBlend * pLightning->m_lstNextTangents[i].m_fZ);
                 }
-                int nLast = pLightning->m_lstReserved21C.m_nCount - 1;
-                glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fX +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fX -
-                            ((1.0f - fBlend) * pLightning->m_lstReserved240[nLast].m_fX +
-                             fBlend * pLightning->m_lstReserved24C[nLast].m_fX),
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fY +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fY -
-                            ((1.0f - fBlend) * pLightning->m_lstReserved240[nLast].m_fY +
-                             fBlend * pLightning->m_lstReserved24C[nLast].m_fY),
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fZ +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fZ -
-                            ((1.0f - fBlend) * pLightning->m_lstReserved240[nLast].m_fZ +
-                             fBlend * pLightning->m_lstReserved24C[nLast].m_fZ));
-                glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fX +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fX,
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fY +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fY,
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fZ +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fZ);
+                int nLast = pLightning->m_lstPreviousPoints.m_nCount - 1;
+                glVertex3f((1.0f - fBlend) * pLightning->m_lstPreviousPoints[nLast].m_fX +
+                            fBlend * pLightning->m_lstNextPoints[nLast].m_fX -
+                            ((1.0f - fBlend) * pLightning->m_lstPreviousTangents[nLast].m_fX +
+                             fBlend * pLightning->m_lstNextTangents[nLast].m_fX),
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[nLast].m_fY +
+                            fBlend * pLightning->m_lstNextPoints[nLast].m_fY -
+                            ((1.0f - fBlend) * pLightning->m_lstPreviousTangents[nLast].m_fY +
+                             fBlend * pLightning->m_lstNextTangents[nLast].m_fY),
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[nLast].m_fZ +
+                            fBlend * pLightning->m_lstNextPoints[nLast].m_fZ -
+                            ((1.0f - fBlend) * pLightning->m_lstPreviousTangents[nLast].m_fZ +
+                             fBlend * pLightning->m_lstNextTangents[nLast].m_fZ));
+                glVertex3f((1.0f - fBlend) * pLightning->m_lstPreviousPoints[nLast].m_fX +
+                            fBlend * pLightning->m_lstNextPoints[nLast].m_fX,
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[nLast].m_fY +
+                            fBlend * pLightning->m_lstNextPoints[nLast].m_fY,
+                           (1.0f - fBlend) * pLightning->m_lstPreviousPoints[nLast].m_fZ +
+                            fBlend * pLightning->m_lstNextPoints[nLast].m_fZ);
                 glEnd();
                 glEnable(GL_TEXTURE_2D);
                 glEnable(GL_LIGHTING);
@@ -3624,11 +3628,11 @@ void PartEmitter::RenderFunc()
 
             if (auremitterrenderbezier)
             {
-                List<Vector>& lstPoints = pLightning->m_lstReserved21C;
+                List<Vector>& lstPoints = pLightning->m_lstPreviousPoints;
                 float fBlend = 0.0f;
                 if (pLightning->m_fControlPointDelay != 0.0f)
-                    fBlend = pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay;
-                List<Vector>& lstTargetPoints = pLightning->m_lstReserved228;
+                    fBlend = pLightning->m_fControlPointElapsed / pLightning->m_fControlPointDelay;
+                List<Vector>& lstTargetPoints = pLightning->m_lstNextPoints;
                 glDisable(GL_LIGHTING);
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(1.0f, 0.0f, 0.0f);
@@ -3673,13 +3677,13 @@ void PartEmitter::RenderFunc()
                             fWeight1 *
                                 ((1.0f - fBlend) * lstPoints[j - 1] +
                                  fBlend * lstTargetPoints[j - 1] +
-                                 (1.0f - fBlend) * pLightning->m_lstReserved240[j - 1] +
-                                 fBlend * pLightning->m_lstReserved24C[j - 1]) +
+                                 (1.0f - fBlend) * pLightning->m_lstPreviousTangents[j - 1] +
+                                 fBlend * pLightning->m_lstNextTangents[j - 1]) +
                             fWeight2 *
                                 ((1.0f - fBlend) * lstPoints[j] +
                                  fBlend * lstTargetPoints[j] -
-                                 ((1.0f - fBlend) * pLightning->m_lstReserved240[j] +
-                                  fBlend * pLightning->m_lstReserved24C[j])) +
+                                 ((1.0f - fBlend) * pLightning->m_lstPreviousTangents[j] +
+                                  fBlend * pLightning->m_lstNextTangents[j])) +
                             fWeight3 *
                                 ((1.0f - fBlend) * lstPoints[j] +
                                  fBlend * lstTargetPoints[j]);
@@ -3702,7 +3706,7 @@ void PartEmitter::RenderFunc()
             {
                 float fBlend = 0.0f;
                 if (pLightning->m_fControlPointDelay != 0.0f)
-                    fBlend = pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay;
+                    fBlend = pLightning->m_fControlPointElapsed / pLightning->m_fControlPointDelay;
                 glDisable(GL_LIGHTING);
                 glDisable(GL_TEXTURE_2D);
                 for (int i = 0; i < pLightning->m_nBranches; i++)
@@ -3711,27 +3715,27 @@ void PartEmitter::RenderFunc()
                     glColor3f(1.0f, 0.0f, 0.0f);
                     glPointSize(10.0f);
                     glBegin(GL_POINTS);
-                    for (j = 0; j < pLightning->m_lstBranches[i]->m_lstReserved21C.m_nCount; j++)
+                    for (j = 0; j < pLightning->m_lstBranches[i]->m_lstPreviousPoints.m_nCount; j++)
                     {
-                        glVertex3f((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[j].m_fX +
-                                           fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[j].m_fX,
-                                   (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[j].m_fY +
-                                           fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[j].m_fY,
-                                   (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[j].m_fZ +
-                                           fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[j].m_fZ);
+                        glVertex3f((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[j].m_fX +
+                                           fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[j].m_fX,
+                                   (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[j].m_fY +
+                                           fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[j].m_fY,
+                                   (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[j].m_fZ +
+                                           fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[j].m_fZ);
                     }
                     glEnd();
                     glColor3f(0.0f, 1.0f, 1.0f);
                     glLineWidth(1.0f);
                     glBegin(GL_LINE_STRIP);
-                    glVertex3f((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[0].m_fX +
-                                       fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[0].m_fX,
-                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[0].m_fY +
-                                       fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[0].m_fY,
-                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[0].m_fZ +
-                                       fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[0].m_fZ);
+                    glVertex3f((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[0].m_fX +
+                                       fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[0].m_fX,
+                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[0].m_fY +
+                                       fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[0].m_fY,
+                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[0].m_fZ +
+                                       fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[0].m_fZ);
                     Vector vTarget = static_cast<Gob*>(pLightning->m_lstBranches[i]->m_pTarget.m_pObject)->GetPosition();
-                    for (j = 1; j < pLightning->m_lstBranches[i]->m_lstReserved21C.m_nCount; j++)
+                    for (j = 1; j < pLightning->m_lstBranches[i]->m_lstPreviousPoints.m_nCount; j++)
                     {
                         float fTime = 0.0f;
                         do
@@ -3745,32 +3749,32 @@ void PartEmitter::RenderFunc()
                             float fWeight3 = fTime * fTime * fTime;
                             Vector vPosition =
                                 fWeight0 *
-                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[j - 1] +
-                                     fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[j - 1]) +
+                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[j - 1] +
+                                     fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[j - 1]) +
                                 fWeight1 *
-                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[j - 1] +
-                                     fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[j - 1] +
-                                     (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved240[j - 1] +
-                                     fBlend * pLightning->m_lstBranches[i]->m_lstReserved24C[j - 1]) +
+                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[j - 1] +
+                                     fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[j - 1] +
+                                     (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousTangents[j - 1] +
+                                     fBlend * pLightning->m_lstBranches[i]->m_lstNextTangents[j - 1]) +
                                 fWeight2 *
-                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[j] +
-                                     fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[j] -
-                                     ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved240[j] +
-                                      fBlend * pLightning->m_lstBranches[i]->m_lstReserved24C[j])) +
+                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[j] +
+                                     fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[j] -
+                                     ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousTangents[j] +
+                                      fBlend * pLightning->m_lstBranches[i]->m_lstNextTangents[j])) +
                                 fWeight3 *
-                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[j] +
-                                     fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[j]);
+                                    ((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[j] +
+                                     fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[j]);
                             glVertex3f(vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ);
                             fTime += 0.05f;
                         } while (fTime <= 1.0f);
                     }
-                    int nLast = pLightning->m_lstBranches[i]->m_lstReserved21C.m_nCount - 1;
-                    glVertex3f((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[nLast].m_fX +
-                                fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[nLast].m_fX,
-                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[nLast].m_fY +
-                                fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[nLast].m_fY,
-                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstReserved21C[nLast].m_fZ +
-                                fBlend * pLightning->m_lstBranches[i]->m_lstReserved228[nLast].m_fZ);
+                    int nLast = pLightning->m_lstBranches[i]->m_lstPreviousPoints.m_nCount - 1;
+                    glVertex3f((1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[nLast].m_fX +
+                                fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[nLast].m_fX,
+                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[nLast].m_fY +
+                                fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[nLast].m_fY,
+                               (1.0f - fBlend) * pLightning->m_lstBranches[i]->m_lstPreviousPoints[nLast].m_fZ +
+                                fBlend * pLightning->m_lstBranches[i]->m_lstNextPoints[nLast].m_fZ);
                     glEnd();
                 }
                 glEnable(GL_TEXTURE_2D);
@@ -3780,10 +3784,10 @@ void PartEmitter::RenderFunc()
             if (AUREMITTER_DEBUG_CONTROL_POINTS)
             {
                 glBegin(GL_POINTS);
-                for (i = 0; i < pLightning->m_lstReserved21C.m_nCount; i++)
+                for (i = 0; i < pLightning->m_lstPreviousPoints.m_nCount; i++)
                 {
-                    Vector vPoint = pLightning->m_lstReserved21C[i];
-                    Vector vTangent = pLightning->m_lstReserved240[i];
+                    Vector vPoint = pLightning->m_lstPreviousPoints[i];
+                    Vector vTangent = pLightning->m_lstPreviousTangents[i];
                     Vector vHandle0 = vPoint + vTangent;
                     glVertex3f(vHandle0.m_fX, vHandle0.m_fY, vHandle0.m_fZ);
                     Vector vHandle1 = vPoint - vTangent;
@@ -3805,7 +3809,7 @@ void PartEmitter::RenderFunc()
         if (pLightning == 0 || auremitterrenderlightning)
             RenderLinked();
     }
-    else if (m_nReserved114 == MotionBlurred)
+    else if (m_nRenderMode == MotionBlurred)
     {
         RenderMotionBlurred();
     }
@@ -3829,22 +3833,22 @@ void PartEmitter::Initialize()
     MdlNodeEmitter* pNode = (MdlNodeEmitter*)m_pNode;
     char* sRender = pNode->m_sRender;
     if (strcmp(sRender, "Normal") == 0)
-        m_nReserved114 = NORMAL;
+        m_nRenderMode = NORMAL;
     else if (strcmp(sRender, "Billboard_to_World_Z") == 0)
-        m_nReserved114 = WorldZ;
+        m_nRenderMode = WorldZ;
     else if (strcmp(sRender, "Billboard_to_Local_Z") == 0)
-        m_nReserved114 = LocalZ;
+        m_nRenderMode = LocalZ;
     else if (strcmp(sRender, "Linked") == 0)
-        m_nReserved114 = Linked;
+        m_nRenderMode = Linked;
     else if (strcmp(sRender, "Aligned_to_World_Z") == 0)
-        m_nReserved114 = Aligned;
+        m_nRenderMode = Aligned;
     else if (strcmp(sRender, "Aligned_to_Particle_Dir") == 0)
-        m_nReserved114 = AlignedToParticleDir;
+        m_nRenderMode = AlignedToParticleDir;
     else if (strcmp(sRender, "Motion_Blur") == 0)
-        m_nReserved114 = MotionBlurred;
+        m_nRenderMode = MotionBlurred;
 
-    m_pReserved1F7 = 0;
-    m_pReserved1F4 = OTHER;
+    m_bStarted = 0;
+    m_nEmitterType = OTHER;
     if (pNode->IsPointToPoint())
     {
         m_pEmitterTargetCallback = m_pAurObject->RegisterCallBack(
@@ -3871,12 +3875,12 @@ void PartEmitter::Initialize()
     }
 #endif
     if (AsLightningEmitter())
-        m_fReservedF4 = EMITTER_INITIAL_ELAPSED_TIME;
+        m_fLightningElapsed = EMITTER_INITIAL_ELAPSED_TIME;
     else
-        m_fReservedF4 = 0.0f;
-    m_fReservedF8 = EMITTER_INITIAL_ELAPSED_TIME;
+        m_fLightningElapsed = 0.0f;
+    m_fControlPointElapsed = EMITTER_INITIAL_ELAPSED_TIME;
     m_fBirthElapsed = 0.0f;
-    m_vReserved14C = Vector(0.0f, 0.0f, 0.0f);
+    m_vSpawnRemainder = Vector(0.0f, 0.0f, 0.0f);
     m_vLastOrigin = m_vOrigin;
     m_qWorldOrientation = m_qOrientation;
     m_vXAxis = m_qOrientation.xdir();
@@ -3888,12 +3892,12 @@ void LightningEmitter::InitializeBranch()
 {
     PartEmitter::Initialize();
     m_pNode->ControlDispatch(this, -1.0f, 0.0f, 1.0f);
-    m_lstReserved210.SetSize(2);
-    m_lstReserved21C.SetSize(2);
-    m_lstReserved228.SetSize(2);
-    m_lstReserved234.SetSize(2);
-    m_lstReserved240.SetSize(2);
-    m_lstReserved24C.SetSize(2);
+    m_lstControlPoints.SetSize(2);
+    m_lstPreviousPoints.SetSize(2);
+    m_lstNextPoints.SetSize(2);
+    m_lstTangents.SetSize(2);
+    m_lstPreviousTangents.SetSize(2);
+    m_lstNextTangents.SetSize(2);
     m_lstBranches.SetSize(0);
     m_lstBranchIndices.SetSize(0);
     m_bBranch = true;
@@ -3901,8 +3905,8 @@ void LightningEmitter::InitializeBranch()
     m_fYSize = 0.0f;
     m_fXSize = 0.0f;
     m_fTargetSize = 0.0f;
-    m_fReservedF4 = m_fLightningDelay;
-    m_fReservedF8 = m_fControlPointDelay;
+    m_fLightningElapsed = m_fLightningDelay;
+    m_fControlPointElapsed = m_fControlPointDelay;
 }
 // PC 0x0049CFA0  Xbox 0x002F0690
 PartEmitter::~PartEmitter()
@@ -3931,6 +3935,7 @@ PartEmitter::~PartEmitter()
     delete m_pEmitterMaterial;
     totalemitters--;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002E17E0
 unsigned char MdlNodeEmitter::IsInheritingVelocity()
 {
@@ -3942,22 +3947,22 @@ unsigned char MdlNodeEmitter::IsInheritingVelocity()
 #endif
 }
 
-static inline void AuremitterTrace4()
+static inline void TraceEmitterRender()
 {
-    AuremitterTrace3();
+    TraceEmitterParticles();
 }
 
-static inline void AuremitterTrace3()
+static inline void TraceEmitterParticles()
 {
-    AuremitterTrace2();
+    TraceEmitter();
 }
 
-static inline void AuremitterTrace2()
+static inline void TraceEmitter()
 {
-    AuremitterTrace1();
+    TraceParticleEffects();
 }
 
-static inline void AuremitterTrace1()
+static inline void TraceParticleEffects()
 {
 }
 
@@ -4069,7 +4074,7 @@ void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
     {
         lstPositions[i] = m_lstActive[i]->m_vPosition;
         if (pLightning)
-            lstPositions[i] += pLightning->m_lstReserved270[i];
+            lstPositions[i] += pLightning->m_lstFractalOffsets[i];
     }
 
     if (renderemitterspheres)
@@ -4092,7 +4097,7 @@ void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
     qCamera = CurrentCamera->m_qOrientation;
     Vector vCameraZ = CurrentCamera->m_qOrientation.zdir();
     float fInverseLife;
-    if (m_pReserved1F4 == LIGHTNING)
+    if (m_nEmitterType == LIGHTNING)
         fInverseLife = 1.0f / m_lstActive.m_nCount;
     else if (m_fLifeTime > 0.0f)
         fInverseLife = 1.0f / m_fLifeTime;
@@ -4138,7 +4143,7 @@ void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
         if (m_fLifeTime >= 0.0f)
         {
             float fAge;
-            if (m_pReserved1F4 == LIGHTNING)
+            if (m_nEmitterType == LIGHTNING)
                 fAge = i * fInverseLife;
             else
                 fAge = fInverseLife * m_lstActive[i]->m_fAge;
@@ -4366,7 +4371,7 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
     qCamera = CurrentCamera->m_qOrientation;
 
     float fReciprocalLife;
-    if (m_pReserved1F4 == LIGHTNING)
+    if (m_nEmitterType == LIGHTNING)
         fReciprocalLife = 1.0f / m_lstActive.m_nCount;
     else if (m_fLifeTime > 0.0f)
         fReciprocalLife = 1.0f / m_fLifeTime;
@@ -4424,7 +4429,7 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
         float fHeight;
         if (m_fLifeTime >= 0.0f)
         {
-            if (m_pReserved1F4 == LIGHTNING)
+            if (m_nEmitterType == LIGHTNING)
                 fFrameTime = i * fReciprocalLife;
             else
                 fFrameTime = fReciprocalLife * pParticle->m_fAge;
@@ -4693,17 +4698,17 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
     }
     vUp.m_fX = vUp.m_fY = 0.0f;
     vUp.m_fZ = 1.0f;
-    if (m_nReserved114 == NORMAL)
+    if (m_nRenderMode == NORMAL)
     {
         vDirection = CurrentCamera->m_qOrientation.zdir();
         qCamera = CurrentCamera->m_qOrientation;
     }
-    else if (m_nReserved114 == WorldZ)
+    else if (m_nRenderMode == WorldZ)
     {
         vDirection = vUp;
         qCamera = Quaternion(vUp, 0.0f);
     }
-    else if (m_nReserved114 == LocalZ)
+    else if (m_nRenderMode == LocalZ)
     {
         vDirection = m_qOrientation.zdir();
         qCamera = m_qOrientation;
@@ -4866,7 +4871,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
 
             if (bSplat)
             {
-                if (pParticle->m_bReserved6C)
+                if (pParticle->m_bSettled)
                 {
                     fXSize = m_fXSizeEnd;
                     if (m_fYSizeEnd != 0.0f)
@@ -4883,7 +4888,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
                         fYSize = fXSize;
                 }
             }
-            if (pParticle->m_bReserved6C)
+            if (pParticle->m_bSettled)
             {
                 qRotation = Quaternion(pParticle->m_vHeading, pParticle->m_fRotation);
                 qRotation = qRotation * pParticle->m_qOrientation;
@@ -4956,7 +4961,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
                     fFrameAlpha = 1.0f;
             }
             Vector vVertical;
-            if (m_nReserved114 == AlignedToParticleDir)
+            if (m_nRenderMode == AlignedToParticleDir)
             {
                 vRight = pParticle->m_qOrientation.xdir();
                 vVertical = pParticle->m_qOrientation.zdir();
@@ -4964,7 +4969,7 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
             else
             {
                 vRight = qRotation.xdir();
-                if (m_nReserved114 == Aligned)
+                if (m_nRenderMode == Aligned)
                     vVertical = vUp;
                 else if (bSplat)
                     vVertical = cross(pParticle->m_vHeading, vRight);
@@ -5038,3 +5043,43 @@ void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
     if (bFog) GLRender_Enable(ENABLE_FOG);
 }
 #endif
+// Dead code: not in the PC executable
+int PartEmitter::GetPreviousParticleFrame(int nFrame)
+{
+    if (m_fFrameStart != m_fFrameEnd)
+    {
+        if (m_fFrameEnd < m_fFrameStart)
+        {
+            int nNext = nFrame + 1;
+            if (nNext <= m_fFrameStart)
+                return nNext;
+        }
+        else
+        {
+            int nPrev = nFrame - 1;
+            if (nPrev >= m_fFrameStart)
+                return nPrev;
+        }
+    }
+    return -1;
+}
+// Dead code: not in the PC executable
+int PartEmitter::GetNextParticleFrame(int nFrame)
+{
+    if (m_fFrameStart != m_fFrameEnd)
+    {
+        if (m_fFrameEnd < m_fFrameStart)
+        {
+            int nPrev = nFrame - 1;
+            if (nPrev >= m_fFrameEnd)
+                return nPrev;
+        }
+        else
+        {
+            int nNext = nFrame + 1;
+            if (nNext <= m_fFrameEnd)
+                return nNext;
+        }
+    }
+    return -1;
+}

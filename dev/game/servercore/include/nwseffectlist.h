@@ -403,7 +403,6 @@ public:
                            int bLoadingModule);
     int OnApplyForceShield(CSWSObject* pObject, CGameEffect* pEffect,
                            int bLoadingModule);
-    int OnRemoveNothing(CSWSObject* pObject, CGameEffect* pEffect);
     int OnApplyResurrection(CSWSObject* pObject, CGameEffect* pEffect,
                             int bLoadingModule);
     int OnRemoveHitPointChangeWhenDying(CSWSObject* pObject,
@@ -445,7 +444,7 @@ public:
     int OnApplyBonusFeat(CSWSObject* pObject, CGameEffect* pEffect,
                          int bLoadingModule);
     int OnApplyInvisibility(CSWSObject* pObject, CGameEffect* pGameEffect,
-                            int nValue);
+                            int bLoadingModule);
     int OnRemoveInvisibility(CSWSObject* pObject, CGameEffect* pEffect);
     int OnApplySanctuary(CSWSObject* pObject, CGameEffect* pEffect,
                          int bLoadingModule);

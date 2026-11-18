@@ -51,3 +51,8 @@ CSWLevelStats::~CSWLevelStats()
     m_lstSpellsAdded[0].SetSize(0);
     m_lstSpellsRemoved[0].SetSize(0);
 }
+// Dead code: not in the PC executable
+void CSWLevelStats::ClearFeats()
+{
+    m_lstFeats.SetSize(0);
+}

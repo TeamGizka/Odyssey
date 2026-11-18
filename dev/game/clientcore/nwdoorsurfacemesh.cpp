@@ -21,7 +21,7 @@ CSWDoorSurfaceMesh::CSWDoorSurfaceMesh()
 CSWDoorSurfaceMesh::~CSWDoorSurfaceMesh()
 {
 }
-
+// Dead code: not in the PC executable
 int LoadDoorWalkMesh(CSWDoorSurfaceMesh* pMesh, CResDWK* pRes)
 {
     return pMesh->LoadMeshText(pRes->GetDWKDataPtr(), pRes->GetDWKSize());

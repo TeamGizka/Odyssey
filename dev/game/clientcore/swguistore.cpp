@@ -13,9 +13,8 @@
 #include "swguicustompanel.h"
 #include "swguiingameequip.h"
 
-static inline void SwguistoreTrace2();
-static inline void SwguistoreTrace1();
-#define SWGUISTORE_TRACE() SwguistoreTrace1()
+static inline void TraceItemEntries();
+static inline void TraceStorePanel();
 // PC 0x006C0610  Xbox 0x000F0ED0
 void CSWGuiStore::PopulateStore()
 {
@@ -40,7 +39,7 @@ void CSWGuiStore::SetDescription(CExoString const& sDescription)
     CSWGuiControl* pLabel;
 
     m_lblDescription.m_cText.m_cParams.SetText(sDescription);
-    pListBox = &m_CSWGuiListBox_1A40;
+    pListBox = &m_lbxDescription;
     pListBox->ClearItems();
     CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
     if (sDescription.GetLength() > 0)
@@ -56,7 +55,7 @@ void CSWGuiStore::SetDescription(CExoString const& sDescription)
     pLabel = &m_lblDescription;
     pListBox->AddControls(&pLabel, 1, 0, 0, 0);
     pListBox->SetSelectedControl(&m_lblDescription, 0);
-    m_lblUnknownF80.m_bEnabled =
+    m_lblRanalog.m_bEnabled =
         pListBox->m_nContentHeight + pListBox->m_nPadding >
             pListBox->m_cItemExtent.m_nHeight &&
         pListBox->m_lItems.num > 0 && !pListBox->m_bHideScrollIcon;
@@ -81,12 +80,12 @@ void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
                 m_lblItemValue.m_cText.m_cParams.SetText(CExoString(GetItemSellValue(pItem)));
             if (pItem->m_bInfinite)
             {
-                m_lblUnknownD00.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
+                m_lblStockValue.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
             }
             else
             {
                 int nStackSize = pItem->m_nStackSize;
-                m_lblUnknownD00.m_cText.m_cParams.SetText(CExoString(nStackSize));
+                m_lblStockValue.m_cText.m_cParams.SetText(CExoString(nStackSize));
             }
             SetDescription(pItem->GetPropertyDescription());
         }
@@ -225,7 +224,6 @@ void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
 // PC 0x006C0BE0  Xbox 0x000F14A0
 void CSWGuiStore::BuyItem(CSWSItem* pItem)
 {
-    SWGUISTORE_TRACE();
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature =
         pServer->GetPlayerCreature();
@@ -411,16 +409,16 @@ void CSWGuiStore::PopulateInventoryItemListBox()
         {
             m_lbxInventoryItems.SetSelectedControl(-1, 0);
             m_lblItemValue.m_cText.m_cParams.SetText("");
-            m_lblUnknownD00.m_cText.m_cParams.SetText("");
+            m_lblStockValue.m_cText.m_cParams.SetText("");
             m_lblDescription.m_cText.m_cParams.SetText("");
         }
     }
-    m_nUnknown2274 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x006C1330  Xbox 0x000F2200
 void CSWGuiStore::DeleteItemEntries()
 {
-    SwguistoreTrace2();
+    TraceItemEntries();
     CExoArrayList<CSWGuiStoreItemEntry*>& lStoreEntries = m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*>& lInventoryEntries = m_lInventoryEntries;
     m_lbxInventoryItems.ClearItems();
@@ -446,7 +444,7 @@ void CSWGuiStore::ShowSellGUI()
     pActiveList = &m_lbxInventoryItems;
     pActiveList->m_bEnabled = 1;
     m_lbxStoreItems.m_bEnabled = 0;
-    m_lblUnknown1C0.m_cText.m_cParams.SetStrRef(32130);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(32130);
 #ifndef _XBOX
     m_btnAccept.m_cText.m_cParams.SetStrRef(32130);
 #endif
@@ -455,7 +453,7 @@ void CSWGuiStore::ShowSellGUI()
         39, this, (CSWGuiHandler)&CSWGuiStore::OnControlInvAButton);
 #endif
     m_lblBuySell.m_cText.m_cParams.SetStrRef(32130);
-    m_lblUnknown6C0.m_cText.m_cParams.SetStrRef(41937);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(41937);
 #ifndef _XBOX
     m_btnExamine.m_cText.m_cParams.SetStrRef(41937);
 #endif
@@ -467,7 +465,7 @@ void CSWGuiStore::ShowSellGUI()
 CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    m_nUnknown226C = 0;
+    m_nPreviousGold = 0;
 
     StartLoadFromLayout("store");
     InitControl(m_lblBuySell, "LBL_BUYSELL", 1);
@@ -476,21 +474,21 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     InitControl(m_lblCredits, "LBL_CREDITS", 1);
     InitControl(m_lblCreditsValue, "LBL_CREDITS_VALUE", 1);
 #ifdef _XBOX
-    InitControl(m_lblUnknown80, "LBL_A", 1);
-    InitControl(m_lblUnknown1C0, "LBL_Accept", 1);
-    InitControl(m_lblUnknown300, "LBL_B", 1);
-    InitControl(m_lblUnknown440, "LBL_Cancel", 1);
-    InitControl(m_lblUnknown800, "LBL_X", 1);
-    InitControl(m_lblUnknown6C0, "LBL_Examine", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblAccept, "LBL_Accept", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblCancel, "LBL_Cancel", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblExamine, "LBL_Examine", 1);
 #endif
-    InitControl(m_CSWGuiListBox_1A40, "LB_DESCRIPTION", 1);
-    m_CSWGuiListBox_1A40.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_lbxDescription, "LB_DESCRIPTION", 1);
+    m_lbxDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_lblCost, "LBL_COST", 1);
     InitControl(m_lblItemValue, "LBL_COST_VALUE", 1);
     InitControl(m_lblStock, "LBL_STOCK", 1);
-    InitControl(m_lblUnknownD00, "LBL_STOCK_VALUE", 1);
+    InitControl(m_lblStockValue, "LBL_STOCK_VALUE", 1);
 #ifdef _XBOX
-    InitControl(m_lblUnknownF80, "LBL_RANALOG", 1);
+    InitControl(m_lblRanalog, "LBL_RANALOG", 1);
 #else
     InitControl(m_btnCancel, "BTN_Cancel", 1);
     InitControl(m_btnExamine, "BTN_Examine", 1);
@@ -498,7 +496,7 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
 #endif
     StopLoadFromLayout();
 
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_CSWGuiListBox_1A40.m_pProtoItem;
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbxDescription.m_pProtoItem;
     m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
 
     CSWGuiListBox* pStoreItems = &m_lbxStoreItems;
@@ -508,8 +506,8 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     SetActiveControl(pStoreItems, 0);
     pInventoryItems->m_bEnabled = 0;
 
-    m_nUnknown64 = 0;
-    m_nUnknown2274 = 0;
+    m_nPendingAction = 0;
+    m_nSelectedEntry = 0;
     m_nGold = 0;
 
 #ifndef _XBOX
@@ -555,10 +553,10 @@ void CSWGuiStore::HandleInputEvent(int nEvent, int nState)
             g_pAppManager->m_pClientExoApp->GetInGameGui()->HideStoreGui();
             break;
         case 58:
-            m_CSWGuiListBox_1A40.HandleInputEvent(GUIEVENT_DOWN, 1);
+            m_lbxDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
             break;
         case 57:
-            m_CSWGuiListBox_1A40.HandleInputEvent(GUIEVENT_UP, 1);
+            m_lbxDescription.HandleInputEvent(GUIEVENT_UP, 1);
             break;
         case 41:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
@@ -649,11 +647,11 @@ void CSWGuiStore::PopulateStoreItemListBox()
         {
             m_lbxStoreItems.SetSelectedControl(-1, 0);
             m_lblItemValue.m_cText.m_cParams.SetText("");
-            m_lblUnknownD00.m_cText.m_cParams.SetText("");
+            m_lblStockValue.m_cText.m_cParams.SetText("");
             m_lblDescription.m_cText.m_cParams.SetText("");
         }
     }
-    m_nUnknown2274 = 0;
+    m_nSelectedEntry = 0;
 }
 // PC 0x006C1660  Xbox 0x000F2450
 int CSWGuiStore::CreateItemEntry(int& nEntries,
@@ -720,7 +718,7 @@ void CSWGuiStore::ShowBuyGUI()
     m_lbxInventoryItems.m_bEnabled = 0;
     pActiveList->m_bEnabled = 1;
 #endif
-    m_lblUnknown1C0.m_cText.m_cParams.SetStrRef(32132);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(32132);
 #ifndef _XBOX
     m_btnAccept.m_cText.m_cParams.SetStrRef(32132);
 #endif
@@ -729,7 +727,7 @@ void CSWGuiStore::ShowBuyGUI()
         39, this, (CSWGuiHandler)&CSWGuiStore::OnControlStoreAButton);
 #endif
     m_lblBuySell.m_cText.m_cParams.SetStrRef(32132);
-    m_lblUnknown6C0.m_cText.m_cParams.SetStrRef(41938);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(41938);
 #ifndef _XBOX
     m_btnExamine.m_cText.m_cParams.SetStrRef(41938);
 #endif
@@ -787,24 +785,24 @@ void CSWGuiStore::InitializeStoreType()
         switch (pStore->m_nBuySellFlag)
         {
         case CSWSStore::BuySellFlagBuy:
-            m_lblUnknown800.SetEnabledFlag(0);
-            m_lblUnknown6C0.SetEnabledFlag(0);
+            m_lblX.SetEnabledFlag(0);
+            m_lblExamine.SetEnabledFlag(0);
 #ifndef _XBOX
             m_btnExamine.SetEnabledFlag(0);
 #endif
             ShowBuyGUI();
             return;
         case CSWSStore::BuySellFlagSell:
-            m_lblUnknown800.SetEnabledFlag(0);
-            m_lblUnknown6C0.SetEnabledFlag(0);
+            m_lblX.SetEnabledFlag(0);
+            m_lblExamine.SetEnabledFlag(0);
 #ifndef _XBOX
             m_btnExamine.SetEnabledFlag(0);
 #endif
             ShowSellGUI();
             return;
         case CSWSStore::BuySellFlagBoth:
-            m_lblUnknown800.SetEnabledFlag(1);
-            m_lblUnknown6C0.SetEnabledFlag(1);
+            m_lblX.SetEnabledFlag(1);
+            m_lblExamine.SetEnabledFlag(1);
 #ifndef _XBOX
             m_btnExamine.SetEnabledFlag(1);
 #endif
@@ -814,11 +812,11 @@ void CSWGuiStore::InitializeStoreType()
     }
 }
 
-static inline void SwguistoreTrace2()
+static inline void TraceItemEntries()
 {
-    SwguistoreTrace1();
+    TraceStorePanel();
 }
 
-static inline void SwguistoreTrace1()
+static inline void TraceStorePanel()
 {
 }

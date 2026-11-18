@@ -27,9 +27,6 @@
 #include "clientoptions.h"
 #include <float.h>
 
-static inline void SwguiingamemapTrace2();
-static inline void SwguiingamemapTrace1();
-#define SWGUIINGAMEMAP_TRACE() SwguiingamemapTrace2()
 
 int g_bEnableFogOfWar = 1;
 int g_bShowFogOfWar = 1;
@@ -945,7 +942,6 @@ void CSWGuiMapHider::Draw(float fElapsed)
 CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    SWGUIINGAMEMAP_TRACE();
     CExoString sIcon;
     CExoString sModel;
     CExoString sTag;
@@ -1331,14 +1327,5 @@ void CSWGuiInGameGalaxyMap::Draw(float fElapsed)
         m_aPlanetButtons[nSelected].SetActive(1);
     }
     return CSWGuiPanel::Draw(fElapsed);
-}
-
-static inline void SwguiingamemapTrace2()
-{
-    SwguiingamemapTrace1();
-}
-
-static inline void SwguiingamemapTrace1()
-{
 }
 

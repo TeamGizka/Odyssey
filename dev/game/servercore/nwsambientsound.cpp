@@ -40,7 +40,7 @@ int CSWSAmbientSound::Load(CResGFF* pRes, CResStruct* pStruct)
                                                bSuccess, m_nAmbientNightVolume);
     return bSuccess;
 }
-
+// Dead code: not in the PC executable
 void CSWSAmbientSound::CacheSound(int nTrack, int bMusic)
 {
     CExoString sResource;

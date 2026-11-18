@@ -20,6 +20,11 @@ unsigned long CResNCS::GetNCSSize()
 {
     return m_nNCSSize;
 }
+// Dead code: not in the PC executable
+int CResNCS::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x00710E60
 int CResNCS::OnResourceFreed()
 {

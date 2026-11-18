@@ -203,6 +203,7 @@ public:
     void ClearAllPlayerHostileActions();
     void RunScript(CSWSObject* pObject, const CResRef& cScript);
     void InitializePsuedoRandomCameraAngles(CResGFF* pResGFF);
+    int AssignPseudoRandomCameraAngle();
     int SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer);
     int SendDialogEntryNode(unsigned long nPlayerId, unsigned long oidTarget,
                             unsigned long oidSpeaker, unsigned long oidListener,
@@ -222,6 +223,7 @@ public:
     void UnequipHItemForDialog(unsigned long oidObject);
     float SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
                          unsigned long nDelay, int bSound, unsigned long nFlag);
+    void SetDialogWaitFlags(CSWSObject* pObject, unsigned long nWaitFlags);
 
     int m_nEntries;
     CSWSDialogEntry* m_pEntries;
@@ -231,13 +233,13 @@ public:
     CSWSDialogActiveEntry* m_pStartingEntries;
     CResRef m_cEndConversationScript;
     CResRef m_cEndConversationAbortedScript;
-    int m_n3C;
-    int m_n40;
-    int m_n44;
+    int m_bSkippable;
+    int m_bUnequipItems;
+    int m_bUnequipHeadItem;
     int m_nStunts;
     CSWSDialogStuntModel* m_pStunts;
     CResRef m_cCameraModel;
-    int m_n60;
+    int m_bEndPending;
     CExoLinkedList<CSWSDialogPlayer> m_lstPlayers;
 
     int m_bRepliesSent;
@@ -253,19 +255,19 @@ public:
     unsigned long m_nSpeakers;
 
     int m_bMultiPCDialogViewOnly;
-    int m_n90;
+    int m_nConversationType;
 
     unsigned long m_oidLastEntrySpeaker;
-    int m_n98;
+    int m_oidLastReplySpeaker;
     int m_nPseudoRandomCameraAngle;
     int m_nPseudoRandomCameraStep;
     int m_bPseudoRandomCameraDirection;
     int m_nPseudoRandomCameraAngles[PSEUDO_RANDOM_CAMERA_COUNT];
-    int m_nF4;
-    int m_nF8;
+    int m_bFirstEntry;
+    int m_bFirstReply;
     CResRef m_cAmbientTrack;
-    int m_n10C;
-    int m_n110;
+    int m_bEndScriptRun;
+    int m_bSuppressBark;
     CExoLinkedList<unsigned long> m_lstUnequippedItems;
     CExoLinkedList<unsigned long> m_lstUnequippedHeadItems;
     int m_nOwnerAILevel;

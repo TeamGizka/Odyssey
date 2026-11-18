@@ -73,6 +73,7 @@ public:
 
     void PlayTruncated(int bPlay, CSWCAmbientSoundPriority nPriority);
     void StopSounds(int bMusicOnly);
+    void StopAllMusic();
     void LoadFromMessage(CSWCMessage* pMessage);
 
     void Update();
@@ -86,7 +87,7 @@ public:
     unsigned long m_nTimeRemaining;
     unsigned long m_nLastUpdateLow;
     unsigned long m_nLastUpdateHigh;
-    int m_aUnknownDC[1];
+    int m_nUpdateInterval[1];
     CExoStreamingSoundSource* m_pMusicSource;
     CExoStreamingSoundSource* m_pAmbientSource;
     CSWCArea* m_pArea;

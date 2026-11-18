@@ -460,11 +460,11 @@ void __fastcall TfrmSysInfo::LayoutForm()
 
 void __fastcall TfrmSysInfo::LayoutColumns()
 {
-    int w1 = max(OS->Width, CPU->Width);
-    int w2 = max(RAM->Width, HD->Width);
-    int w3 = max(Vid->Width, AUD->Width);
-    int w4 = max(GL->Width, DX->Width);
-    int headerW = max(max(w3, w4), max(w1, w2));
+    int osCpuW = max(OS->Width, CPU->Width);
+    int ramHdW = max(RAM->Width, HD->Width);
+    int vidAudW = max(Vid->Width, AUD->Width);
+    int glDxW = max(GL->Width, DX->Width);
+    int headerW = max(max(vidAudW, glDxW), max(osCpuW, ramHdW));
 
     int pf1 = max(lPassFailOS->Width, lPassFailCPU->Width);
     int pf2 = max(lPassFailRAM->Width, lPassFailHD->Width);

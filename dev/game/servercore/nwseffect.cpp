@@ -611,6 +611,111 @@ void CGameEffect::CopyEffect(CGameEffect* pEffect, int bSkipIntegers)
         }
     }
 }
+// Dead code: not in the PC executable
+CGameEffect& CGameEffect::operator=(const CGameEffect& cEffect)
+{
+    if (m_nID == 0)
+    {
+        m_nID = cEffect.m_nID;
+    }
+
+    m_nType = cEffect.m_nType;
+    m_nSubType = cEffect.m_nSubType;
+    m_bExposed = cEffect.m_bExposed;
+    m_fDuration = cEffect.m_fDuration;
+    m_nExpireDay = cEffect.m_nExpireDay;
+    m_nExpireTime = cEffect.m_nExpireTime;
+    m_oidCreator = cEffect.m_oidCreator;
+    m_nSpellId = cEffect.m_nSpellId;
+
+    if (cEffect.m_pLinkLeft != NULL)
+    {
+        m_pLinkLeft = new CGameEffect(0);
+        m_pLinkLeft->CopyEffect(cEffect.m_pLinkLeft, 0);
+    }
+
+    if (cEffect.m_pLinkRight != NULL)
+    {
+        m_pLinkRight = new CGameEffect(0);
+        m_pLinkRight->CopyEffect(cEffect.m_pLinkRight, 0);
+    }
+
+    SetNumIntegers(cEffect.m_nNumIntegers);
+
+    for (int i = 0; i < m_nNumIntegers; i++)
+    {
+        m_pIntegers[i] = cEffect.m_pIntegers[i];
+    }
+
+    m_fFloat[0] = cEffect.m_fFloat[0];
+    m_fFloat[1] = cEffect.m_fFloat[1];
+    m_fFloat[2] = cEffect.m_fFloat[2];
+    m_fFloat[3] = cEffect.m_fFloat[3];
+    m_oidObject[0] = cEffect.m_oidObject[0];
+    m_oidObject[1] = cEffect.m_oidObject[1];
+    m_oidObject[2] = cEffect.m_oidObject[2];
+    m_oidObject[3] = cEffect.m_oidObject[3];
+
+    for (int j = 0; j < 6; j++)
+    {
+        m_sString[j] = cEffect.m_sString[j];
+    }
+
+    return *this;
+}
+// Dead code: not in the PC executable
+int CGameEffect::operator==(const CGameEffect& cEffect) const
+{
+    int i;
+
+    if (m_nID != cEffect.m_nID || m_nType != cEffect.m_nType ||
+        m_nSubType != cEffect.m_nSubType ||
+        m_oidCreator != cEffect.m_oidCreator ||
+        m_nSpellId != cEffect.m_nSpellId ||
+        m_nNumIntegers != cEffect.m_nNumIntegers)
+    {
+        return 0;
+    }
+
+    for (i = 0; i < m_nNumIntegers; i++)
+    {
+        if (m_pIntegers[i] != cEffect.m_pIntegers[i])
+        {
+            return 0;
+        }
+    }
+
+    for (i = 0; i < 4; i++)
+    {
+        if (m_fFloat[i] != cEffect.m_fFloat[i])
+        {
+            return 0;
+        }
+    }
+
+    for (i = 0; i < 4; i++)
+    {
+        if (m_oidObject[i] != cEffect.m_oidObject[i])
+        {
+            return 0;
+        }
+    }
+
+    for (i = 0; i < 6; i++)
+    {
+        if (m_sString[i] != cEffect.m_sString[i])
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+// Dead code: not in the PC executable
+int CGameEffect::operator!=(const CGameEffect& cEffect) const
+{
+    return !(*this == cEffect);
+}
 // PC 0x00504240  Xbox 0x001F5500
 void CGameEffect::UpdateLinked()
 {

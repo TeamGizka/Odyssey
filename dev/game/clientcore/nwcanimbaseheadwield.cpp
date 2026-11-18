@@ -3,8 +3,8 @@
 #include "clientexoapp.h"
 #include "nwcitem.h"
 
-static inline void NwcanimbaseheadwieldTrace1();
-#define NWCANIMBASEHEADWIELD_TRACE() NwcanimbaseheadwieldTrace1()
+static inline void TraceHeadItem();
+#define NWCANIMBASEHEADWIELD_TRACE() TraceHeadItem()
 // PC 0x00698EC0  Xbox 0x000C49D0
 CSWCAnimBaseHeadWield::CSWCAnimBaseHeadWield()
 {
@@ -150,10 +150,10 @@ int CSWCAnimBaseHeadWield::Wield(unsigned long nObject,
     return CSWCAnimBaseWield::Wield(nObject, sSlot, nModel, fScale);
 }
 // PC 0x006992A0  Xbox 0x000C4DB0
-void CSWCAnimBaseHeadWield::HideWieldedItems(const CResRef& sLeft,
-                                            const CResRef& sRight)
+void CSWCAnimBaseHeadWield::HideWieldedItems(const CResRef& sRight,
+                                            const CResRef& sLeft)
 {
-    return CSWCAnimBaseWield::HideWieldedItems(sLeft, sRight);
+    return CSWCAnimBaseWield::HideWieldedItems(sRight, sLeft);
 }
 // PC 0x006992B0  Xbox 0x000C4DC0
 void CSWCAnimBaseHeadWield::ShowWieldedItems()
@@ -452,15 +452,14 @@ int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
 // PC 0x00699CE0  Xbox 0x000C5890
 void CSWCAnimBaseHeadWield::SetHeadItem(unsigned long nItem)
 {
-    NWCANIMBASEHEADWIELD_TRACE();
     CSWCAnimBaseHead::SetHeadItem(nItem);
 }
-
+// Dead code: not in the PC executable
 CSWCAnimBaseHeadWield::~CSWCAnimBaseHeadWield()
 {
     UnloadModel();
 }
 
-static inline void NwcanimbaseheadwieldTrace1()
+static inline void TraceHeadItem()
 {
 }

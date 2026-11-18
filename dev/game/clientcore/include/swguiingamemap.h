@@ -38,7 +38,7 @@ public:
 #endif
     CExoLinkedList<unsigned long> m_lstMapNotes;
     CExoLinkedListNode* m_pCurrentNote;
-    unsigned char m_aUnknown240[4];
+    unsigned char m_nSelectedNote[4];
     int m_nMapMode;
 };
 
@@ -96,7 +96,7 @@ public:
 
     unsigned long m_bPartySelection : 1;
     unsigned long m_bReturnButton : 1;
-    unsigned long m_bUnknownFlagsRest : 30;
+    unsigned long m_nMapFlagsUnused : 30;
 };
 
 class CSWGuiInGameGalaxyMap : public CSWGuiPanel

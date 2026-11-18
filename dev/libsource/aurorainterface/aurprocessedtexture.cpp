@@ -150,15 +150,15 @@ int CAuroraProcessedTexture::ReadProcessedTextureHeader(
     *pnHeight = nHeight;
     *pfAlphaBlending = header.m_fAlphaBlending;
     *pnMipMapCount = header.m_nMipMapCount;
-    if (header.m_bFormat1)
+    if (header.m_bEncodingGray)
     {
         *pnEncoding = 1;
     }
-    else if (header.m_bFormat3)
+    else if (header.m_bEncodingRGB)
     {
         *pnEncoding = 3;
     }
-    else if (header.m_bFormat4)
+    else if (header.m_bEncodingRGBA)
     {
         *pnEncoding = 4;
     }

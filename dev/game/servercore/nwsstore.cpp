@@ -13,9 +13,9 @@
 #include "gameobjectarray.h"
 #include "nwsstore.h"
 
-static inline void NwsstoreTrace2();
-static inline void NwsstoreTrace1();
-#define NWSSTORE_TRACE() NwsstoreTrace2()
+#define NWSSTORE_DEBUG 0
+
+static inline void TraceStoreItems();
 // PC 0x005C6AB0  Xbox 0x00213DB0
 CSWSStore::CSWSStore(unsigned long oidStore)
     : CSWSObject(CGameObject::OBJECT_TYPE_STORE, oidStore, 0)
@@ -31,7 +31,7 @@ CSWSStore::CSWSStore(unsigned long oidStore)
 void CSWSStore::AIUpdate()
 {
 }
-
+// Dead code: not in the PC executable
 unsigned long CSWSStore::CalculateItemBuyPrice(CSWSItem* pItem,
                                                unsigned long oidCreature)
 {
@@ -50,7 +50,7 @@ unsigned long CSWSStore::CalculateItemBuyPrice(CSWSItem* pItem,
     }
     return nCost;
 }
-
+// Dead code: not in the PC executable
 unsigned long CSWSStore::CalculateItemSellPrice(CSWSItem* pItem,
                                                 unsigned long oidCreature)
 {
@@ -86,7 +86,7 @@ int CSWSStore::GetItemInInventory(unsigned long oidItem)
 CSWSStore::~CSWSStore()
 {
     delete m_pItemRepository;
-    m_n240 = OBJECT_INVALID;
+    m_oidCustomer = OBJECT_INVALID;
     GetArea();
     g_pAppManager->m_pServerExoApp->GetServerAIMaster()->RemoveObject(this);
 
@@ -100,7 +100,7 @@ CSWSStore::~CSWSStore()
 // PC 0x005C6CD0  Xbox 0x00213FD0
 int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
 {
-    NwsstoreTrace1();
+    TraceStoreItems();
     pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
     pRes->WriteFieldCExoLocString(pStruct, m_lsName, "LocName");
     pRes->WriteFieldINT(pStruct, m_nMarkDown, "MarkDown");
@@ -142,7 +142,7 @@ int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
 int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                          int bLoadingGame)
 {
-    NwsstoreTrace1();
+    TraceStoreItems();
     int result = (int)pArea;
 
     if (pArea != NULL)
@@ -154,6 +154,10 @@ int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
     }
 
     return result;
+}
+// Dead code: not in the PC executable
+void CSWSStore::RemoveFromArea()
+{
 }
 // PC 0x005C6EE0  Xbox 0x002141F0
 void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
@@ -185,7 +189,7 @@ void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
 // PC 0x005C6F70  Xbox 0x00214280
 int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
 {
-    NwsstoreTrace1();
+    TraceStoreItems();
     if (pItem->m_bInfinite)
     {
         CSWSItem* pNewItem = new CSWSItem(OBJECT_INVALID);
@@ -207,6 +211,16 @@ int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
         return pCreature->AcquireItem(&pItem, oidCaller, OBJECT_INVALID, 1);
     }
     return 0;
+}
+// Dead code: not in the PC executable
+int CSWSStore::RemoveItemFromInventory(CSWSItem* pItem)
+{
+    return m_pItemRepository->RemoveItem(pItem);
+}
+// Dead code: not in the PC executable
+void CSWSStore::RemoveCustomer(CSWSPlayer* pPlayer)
+{
+    m_oidCustomer = OBJECT_INVALID;
 }
 // PC 0x005C7180  Xbox 0x002144F0
 int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
@@ -297,7 +311,6 @@ int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
 // PC 0x005C7610  Xbox 0x00214980
 int CSWSStore::AcquireItem(CSWSItem* pItem)
 {
-    NWSSTORE_TRACE();
     if (pItem == NULL || pItem->m_bPlotObject != 0)
         return 0;
 
@@ -347,7 +360,10 @@ int CSWSStore::AcquireItem(CSWSItem* pItem)
 // PC 0x005C70C0  Xbox 0x002143D0
 int CSWSStore::AddItemToInventory(CSWSItem** ppItem)
 {
-    NwsstoreTrace1();
+    if (NWSSTORE_DEBUG)
+    {
+        m_pItemRepository->m_lstItems.Add((*ppItem)->m_nId);
+    }
     unsigned long nCost = (*ppItem)->GetCost();
     CSWSItem* pItem = m_pItemRepository->ItemListGetItem(0);
 
@@ -406,11 +422,6 @@ int CSWSStore::LoadFromTemplate(const CResRef& cResRef, int bFromTemplate)
     }
 }
 
-static inline void NwsstoreTrace2()
-{
-    NwsstoreTrace1();
-}
-
-static inline void NwsstoreTrace1()
+static inline void TraceStoreItems()
 {
 }

@@ -3,10 +3,10 @@
 #include <limits.h>
 #include "swmain.h"
 
-static inline void ExoinputinternalTrace3();
-static inline void ExoinputinternalTrace2();
-static inline void ExoinputinternalTrace1();
-#define EXOINPUTINTERNAL_TRACE() ExoinputinternalTrace3()
+static inline void TraceInputEventDescriptions();
+static inline void TraceInputClasses();
+static inline void TraceInput();
+#define EXOINPUTINTERNAL_TRACE() TraceInputEventDescriptions()
 
 float fMaxMickies = 100.0f;
 
@@ -30,27 +30,28 @@ void CExoInputInternal::Configure()
 {
 }
 // PC 0x00401590  Xbox 0x0013A150
-int CExoInputInternal::SetRumble(int nArg1, float fArg2, float fArg3,
-                               unsigned long nArg4)
+int CExoInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,
+                               unsigned long nDuration)
 {
 #ifdef _XBOX
-    return m_pRawInput->SetRumble(nArg1, fArg2, fArg3, nArg4);
+    return m_pRawInput->SetRumble(nJoystick, fLeft, fRight, nDuration);
 #else
     return 0;
 #endif
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int CExoInputInternal::IsModalKeyDown_Shift()
 {
     return (GetKeyState(VK_SHIFT) >> 15) & 1;
 }
-
+// Dead code: not in the PC executable
 int CExoInputInternal::IsModalKeyDown_Ctrl()
 {
     return (GetKeyState(VK_CONTROL) >> 15) & 1;
 }
-
+// Dead code: not in the PC executable
 int CExoInputInternal::IsModalKeyDown_Alt()
 {
     return (GetKeyState(VK_MENU) >> 15) & 1;
@@ -446,10 +447,10 @@ CExoInputInternal::CExoInputInternal(HINSTANCE hInstance, HWND hWnd)  // PC 0x00
     m_nOutputEvents = 0;
     m_bKeyboardMode = 0;
     m_bCaptureKeyboardKeys = 0;
-    m_nUnknown388 = 0;
-    m_nUnknown38C = 0;
-    m_nUnknown390 = 0;
-    m_nUnknown394 = 0;
+    m_nMouseMinX = 0;
+    m_nMouseMinY = 0;
+    m_nMouseMaxX = 0;
+    m_nMouseMaxY = 0;
 
     m_aControlMap[CExoInput::JOYSTICK_BUTTON0] = DIJOFS_BUTTON(0);
     m_aControlMap[CExoInput::JOYSTICK_BUTTON1] = DIJOFS_BUTTON(1);
@@ -611,13 +612,13 @@ CExoInputInternal::CExoInputInternal(HINSTANCE hInstance, HWND hWnd)  // PC 0x00
 
             m_nLastTime = (unsigned long)(
                 g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
-            m_nUnknown160 = 0;
+            m_nCheatCombos = 0;
             m_nMouseMode = 0;
             m_nMouseX = -1;
             m_nMouseY = -1;
             m_bMouseWarped = 0;
             m_nCursor = -1;
-            m_nUnknown39C = 0;
+            m_bCursorCentered = 0;
             m_nLastSetMouseDownState = 0;
         }
     }
@@ -814,7 +815,7 @@ int CExoInputInternal::AddEvent(unsigned long nEvent, unsigned long nInputClass)
             }
         }
 
-        pDesc->m_nUnknown8++;
+        pDesc->m_nInputClassCount++;
         if (pDesc->m_nClass == CExoInput::INPUTDEVICE_NONE)
         {
             m_aClasses[nInputClass].m_llEvents.AddHead(&pDesc->m_nEvent);
@@ -850,7 +851,7 @@ int CExoInputInternal::AddEvent(unsigned long nEvent, unsigned long nInputClass)
                 }
             }
 
-            pDesc->m_nUnknown8++;
+            pDesc->m_nInputClassCount++;
             if (pDesc->m_nClass == CExoInput::INPUTDEVICE_NONE)
             {
                 m_aClasses[nInputClass].m_llEvents.AddHead(&pDesc->m_nEvent);
@@ -1198,10 +1199,10 @@ void CExoInputInternal::RefreshMouseCursor(int bMouseDown)
     {
         nCursor = 1;
     }
-    SetMouseCursor(nCursor, m_nUnknown39C, bMouseDown);
+    SetMouseCursor(nCursor, m_bCursorCentered, bMouseDown);
 }
 // PC 0x005E0000
-int CExoInputInternal::SetMouseCursor(int nCursor, int nArg2, int bMouseDown)
+int CExoInputInternal::SetMouseCursor(int nCursor, int bCentered, int bMouseDown)
 {
     int nResource = nCursor;
 
@@ -1263,10 +1264,10 @@ void CExoInputInternal::ShowMouse()
     }
 }
 // PC 0x005E00F0
-void CExoInputInternal::GetMouseDelta(float* fX, float* fY)
+void CExoInputInternal::GetMouseDelta(float* pfX, float* pfY)
 {
-    *fX = m_fMouseDeltaX;
-    *fY = m_fMouseDeltaY;
+    *pfX = m_fMouseDeltaX;
+    *pfY = m_fMouseDeltaY;
 }
 // PC 0x005E0110
 void CExoInputInternal::UpdateMouseDelta(float fElapsed)
@@ -1444,7 +1445,7 @@ CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEv
     for (int i = 0; i < m_nDevices; ++i)
         m_pRawInput->GetJoystickBuffer(i, aBuffers[i]);
     if (m_pRawInput->GetCheatCombo(0))
-        m_nUnknown160 = 1;
+        m_nCheatCombos = 1;
 
     int nBindControl;
     int nBindValue;
@@ -1791,17 +1792,17 @@ void CExoInputInternal::ClearAllInputEventDescriptions()
     m_lstEvents.num = 0;
 }
 
-static inline void ExoinputinternalTrace3()
+static inline void TraceInputEventDescriptions()
 {
-    ExoinputinternalTrace2();
+    TraceInputClasses();
 }
 
-static inline void ExoinputinternalTrace2()
+static inline void TraceInputClasses()
 {
-    ExoinputinternalTrace1();
+    TraceInput();
 }
 
-static inline void ExoinputinternalTrace1()
+static inline void TraceInput()
 {
 }
 
@@ -1838,7 +1839,7 @@ int CExoInputInternal::GetCheatCombo(unsigned char nCombo)
     {
         return 0;
     }
-    return (m_nUnknown160 & (1 << nCombo)) != 0;
+    return (m_nCheatCombos & (1 << nCombo)) != 0;
 }
 // Xbox 0x0013A210
 int CExoInputInternal::GetDebugOption()
@@ -1935,7 +1936,7 @@ CExoInputInternal::CExoInputInternal()
 
             m_nLastTime = (unsigned long)(
                 g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
-            m_nUnknown160 = 0;
+            m_nCheatCombos = 0;
         }
     }
 }

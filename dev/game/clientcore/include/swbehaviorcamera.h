@@ -77,7 +77,7 @@ public:
     int m_nStyle;
     int m_nHeightMode;
     float m_fPitch;
-    int m_nReserved1C;
+    int m_nMode;
 };
 
 class CSWCameraNavigate : public CAurBehavior
@@ -171,7 +171,7 @@ public:
     SafePointer<CAurObject> m_pTarget;
     SafePointer<CAurObject> m_pCombatTarget;
     Gob* m_pCamera;
-    char m_aReserved20[8];
+    char m_aCameraState[8];
     Quaternion m_qLastOrientation;
     Vector m_vDesiredPosition;
 
@@ -185,7 +185,7 @@ public:
 #endif
     int m_nHeightMode;
     float m_fPitch;
-    char m_aReserved70[4];
+    char m_fYaw[4];
     Vector m_vLookAtOffset;
     unsigned long m_oidLookAt;
 
@@ -195,18 +195,18 @@ public:
     float m_fShakeYaw;
     float m_fShakePitch;
 
-    float m_fReserved98;
+    float m_fTargetMoveDelay;
 
     float m_fPositionInterpSpeed;
 
     float m_fOrientationInterpAmount;
-    int m_nReservedA4;
+    int m_bFollowingMove;
 #ifdef _XBOX
     int m_bTargetTowardCamera;
 #else
     char m_aReservedA8[4];
 #endif
-    int m_nReservedAC;
+    int m_bKeepManualYaw;
 #ifndef _XBOX
     int m_bMouseCameraRotateToggle;
     CSWRK4SplitAcceleration m_integrator;
@@ -249,7 +249,7 @@ public:
 
     SafePointer<CAurObject> m_pTarget;
     CAurObject* m_pCamera;
-    char m_aReserved1C[4];
+    char m_aCameraState[4];
 
     float m_fPitch;
 #ifndef _XBOX
@@ -261,9 +261,9 @@ public:
     float m_fLookDown;
     float m_fTiltInput;
     Quaternion m_qOrientation;
-    Vector m_vReserved4C;
-    Vector m_vReserved58;
-    Vector m_vReserved64;
+    Vector m_vPosition;
+    Vector m_vTarget;
+    Vector m_vUp;
     float m_fYawOffset;
     float m_fPitchOffset;
     int m_nMode;
@@ -294,9 +294,9 @@ public:
     float m_fLogYaw;
     float m_fLogPitch;
     float m_fLogDistance;
-    float m_fReserved34;
-    float m_fReserved38;
-    float m_fReserved3C;
+    float m_fHeight;
+    float m_fDesiredHeight;
+    float m_fLogHeight;
 };
 
 #endif

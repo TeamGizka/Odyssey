@@ -11,9 +11,8 @@
 #include "aurrendergl.h"
 #include "swmain.h"
 
-static inline void AurcameraTrace2();
-static inline void AurcameraTrace1();
-#define AURCAMERA_TRACE() AurcameraTrace1()
+#define AURCAMERA_DEBUG 0
+
 
 Camera* CurrentCamera = 0;
 
@@ -194,7 +193,10 @@ inline CAurCamera::~CAurCamera()
 inline void GLRender::SetViewPort(double fFieldOfView, double fAspect,
                            double fNearClip, double fFarClip)
 {
-    AURCAMERA_TRACE();
+    if (AURCAMERA_DEBUG)
+    {
+        GLRender::SetViewPort(0, 0, 0, 0);
+    }
     GLRender_SetPerspectiveTransform(fFieldOfView, fAspect, fNearClip, fFarClip);
 }
 // PC 0x0045D800  Xbox 0x002BDDA0
@@ -406,7 +408,10 @@ int Camera::HitCheck(int nX, int nY, Vector* pHit, CHitInfo* pInfo)
 // PC 0x0045CF30  Xbox 0x002BD1B0
 Vector Camera::MouseDir(int nX, int nY)
 {
-    AurcameraTrace1();
+    if (AURCAMERA_DEBUG)
+    {
+        AurPrintf("Camera::MouseDir() hit check %d\n", Camera::HitCheck(nX, nY, NULL, NULL));
+    }
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)
     {
@@ -431,7 +436,10 @@ Vector Camera::MouseDir(int nX, int nY)
 // PC 0x0045D040  Xbox 0x002BD2E0
 Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 {
-    AurcameraTrace1();
+    if (AURCAMERA_DEBUG)
+    {
+        AurPrintf("Camera::MapToScreen() hit check %d\n", Camera::HitCheck(0, 0, NULL, NULL));
+    }
 
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)
@@ -466,7 +474,10 @@ Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 // PC 0x0045D220  Xbox 0x002BD4E0
 void Camera::Animate(float fTimeStep)
 {
-    AurcameraTrace1();
+    if (AURCAMERA_DEBUG)
+    {
+        AurPrintf("Camera::Animate() mouse direction x %f\n", Camera::MouseDir(0, 0).m_fX);
+    }
     if (m_pViewAngleAnimation != 0)
     {
         m_pViewAngleAnimation->m_fElapsed =
@@ -641,15 +652,6 @@ Plane Camera::GetViewVolume(int nIndex)
 CAurCamera* NewCAurCamera(char* sName)
 {
     return new Camera(sName);
-}
-
-static inline void AurcameraTrace2()
-{
-    AurcameraTrace1();
-}
-
-static inline void AurcameraTrace1()
-{
 }
 
 #ifdef _XBOX

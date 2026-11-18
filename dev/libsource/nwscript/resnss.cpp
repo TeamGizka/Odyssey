@@ -1,27 +1,32 @@
 #include "exoresman.h"
 #include "nwscriptinternal.h"
-
+// Dead code: not in the PC executable
 CResNSS::CResNSS()
 {
     m_bServiced = 0;
     m_nNSSSize = 0;
     m_pNSSData = NULL;
 }
-
+// Dead code: not in the PC executable
 CResNSS::~CResNSS()
 {
 }
-
+// Dead code: not in the PC executable
 char* CResNSS::GetNSSDataPtr()
 {
     return (char*)m_pNSSData;
 }
-
+// Dead code: not in the PC executable
 unsigned long CResNSS::GetNSSSize()
 {
     return m_nNSSSize;
 }
-
+// Dead code: not in the PC executable
+int CResNSS::IsLoaded()
+{
+    return m_bServiced;
+}
+// Dead code: not in the PC executable
 int CResNSS::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -29,7 +34,7 @@ int CResNSS::OnResourceFreed()
     m_pNSSData = 0;
     return 1;
 }
-
+// Dead code: not in the PC executable
 int CResNSS::OnResourceServiced()
 {
     unsigned char* pData;

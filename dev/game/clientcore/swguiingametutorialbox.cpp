@@ -18,8 +18,8 @@
 #include "swguiingame.h"
 #include "swguiingame.inl"
 
-static inline void SwguiingametutorialboxTrace1();
-#define SWGUIINGAMETUTORIALBOX_TRACE() SwguiingametutorialboxTrace1()
+static inline void TraceTutorialMessage();
+#define SWGUIINGAMETUTORIALBOX_TRACE() TraceTutorialMessage()
 // PC 0x006AA040  Xbox 0x000DCD60
 void CSWGuiTutorialBox::SetMessage(unsigned long nStrRef)
 {
@@ -170,7 +170,7 @@ void CSWGuiTutorialBox::PerformAttack(CSWGuiControl* pControl)
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiTutorialBox::MessageBoxPause(CSWGuiControl* pControl)
 {
     SWGUIINGAMETUTORIALBOX_TRACE();
@@ -234,12 +234,12 @@ int CSWGuiTutorialBox::SetNextMessage()
     {
         int bFound;
         sColumn.Format("Message%i", (unsigned char)m_nMessageIndex);
-        int nStrRef2;
+        int nNextStrRef;
         p2DArrays = g_pRules->Get2DArrays();
         EXOXBOXASSERT(p2DArrays->m_pTutorial);
         pTutorial = p2DArrays->m_pTutorial;
         if (pTutorial->GetINTEntry(
-                m_nTutorialReason, sColumn, &nStrRef2) != 0)
+                m_nTutorialReason, sColumn, &nNextStrRef) != 0)
         {
             SetOkButtonMessage(38623);
         }
@@ -380,13 +380,13 @@ int CSWGuiTutorialBox::SetTutorialReason(unsigned char nReason)
     }
 }
 
-static inline void SwguiingametutorialboxTrace2();
+static inline void TraceTutorialBox();
 
-static inline void SwguiingametutorialboxTrace1()
+static inline void TraceTutorialMessage()
 {
-    SwguiingametutorialboxTrace2();
+    TraceTutorialBox();
 }
 
-static inline void SwguiingametutorialboxTrace2()
+static inline void TraceTutorialBox()
 {
 }

@@ -146,6 +146,7 @@ public:
     virtual int ContinueMessageProcessing();
     virtual CNetLayer* GetNetLayer();
     virtual void ShutDownToMainMenu();
+    void ShowServerMem();
     virtual CConnectionLib* GetConnectionLib();
     virtual CExoLocString* GetModuleDescription();
     virtual int GetApplicationId();
@@ -163,7 +164,7 @@ public:
     void SetInStartNewModule(int bInStartNewModule);
     CSWCDoor* GetDoorByGameObjectID(unsigned long oidObject);
     CSWCPlaceable* GetPlaceableByGameObjectID(unsigned long oidObject);
-    void SetPausedByCombat(int nA, unsigned char nB, int nC);
+    void SetPausedByCombat(int bPaused, unsigned char nPauseType, int bForce);
 
     enum AutoPauseReason
     {
@@ -177,7 +178,7 @@ public:
     static const unsigned char TUTORIAL_ENEMY_SIGHTED = 21;
     int GetPausedByCombat();
     CSWMiniGame* GetMiniGame();
-    void SetAutoPaused(int bAuto, unsigned char nB);
+    void SetAutoPaused(int bAuto, unsigned char nPauseType);
     int GetCombatMode();
     int GetAutoPaused();
     void PlayerFlourishWeapons();
@@ -196,8 +197,8 @@ public:
     int GetInputClass();
     int GetInFreeLook();
     CExoString GetDisplayCharacterForKey(int nKey);
-    int GetPazaakResults(int* pnResult, int* pnUnused);
-    void SetEndGamePending(int bPending, float fDelay, int nC);
+    int GetPazaakResults(int* pnResult, int* pnWager);
+    void SetEndGamePending(int bPending, float fDelay, int bShowDeathMessage);
     void EnableVideoEffect(int nEffect);
     void DisableVideoEffect();
     CSWParty* GetSWParty();
@@ -250,15 +251,15 @@ public:
     void SetLoadScreenByModuleName(const CExoString& sModule);
     void ShowLoadScreen(int bFade, int bPlayMusic, int bSaving);
     int GetNextLoadScreenHintSTRREF(const CExoString& sModule,
-                                    unsigned char nB);
+                                    unsigned char nHintType);
     void SetLoadScreenHint(unsigned long nHint);
     unsigned long GetLoadScreenHint();
     void ShowMouse(int nFlags);
     void HideMouse(int nFlags);
     int GetLastTarget();
     CAurCamera* GetModuleCamera();
-    int ChangeCharacterToNextLivingPartyMember(int nA, int nB,
-                                               unsigned char nC);
+    int ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound,
+                                               unsigned char nPartyMembers);
 #ifdef _XBOX
     int ChangeCharacterToNextLivingPartyMember(int nA, int nB);
 #endif
@@ -279,7 +280,7 @@ public:
     int IsMoviePlaying();
     int GetCreditSequenceInProgress();
     void SetCreditSequenceInProgress(int bInProgress);
-    void SetInputActive(int nA, int nB);
+    void SetInputActive(int bActive, int bClearEvents);
     int GetCaptureEvents();
     void SetCaptureEvents(const CExoString& sFileName);
     CExoFile* GetCaptureEventFile();
@@ -303,15 +304,15 @@ public:
     int Initialize();
     int Uninitialize();
 #ifndef _XBOX
-    int StartServices(int nServices, const CExoString& sArg2,
-                      const CExoString& sArg3, const CExoString& sArg4,
-                      unsigned long nArg5);
+    int StartServices(int nServices, const CExoString& sModule,
+                      const CExoString& sLoadMusic, const CExoString& sLoadScreen,
+                      unsigned long nPlayerId);
 #endif
     void StopServices();
     void SetLoadStep(int nStep, unsigned char cValue);
     void SetLoadBarProgress(int nProgress, int bUpdateHint);
     void BeginIntro();
-    void DisplayMainMenu(int bUnknown);
+    void DisplayMainMenu(int bScanContent);
 #ifdef _XBOX
 
     void StartServices(int nServices, const CExoString& sArg2, const CExoString& sArg3, const CExoString& sArg4, unsigned long nArg5);
@@ -385,7 +386,7 @@ public:
     int GetAreaNotReadyToDisplay();
     void SetAreaNotReadyToDisplay(int bNotReady);
     int PlayLoadModuleMovies();
-    int PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC);
+    int PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips, int bNoMusic);
     int AddMoveToModuleMovie(const CExoString& sMovie);
     CExoArrayList<CExoString>* GetMoveToModuleMovies();
     void IndicateObject(CSWCObject* pObject, int nFlags);
@@ -399,18 +400,18 @@ public:
     int GetGameOver();
     void SetLastPartyMemberTempKilled(unsigned long oidObject);
     void SetCanSendDialog(int bCanSend);
-    int GetCanSendDialog(unsigned long nA, unsigned long nB,
+    int GetCanSendDialog(unsigned long oidSpeaker, unsigned long oidListener,
                          CSWSDialog* pDialog);
     void SetDialogSent(int bSent);
     int GetDialogSent();
     void SetDialogModelsSent(int bSent);
     int GetDialogModelsSent();
-    int GetClientRangedAnimation(unsigned long nA, int nB, int nC, int nD);
-    int GetClientMeleeAnimation(unsigned long nA, unsigned long nB,
-                                unsigned short nC, int nD, int nE, int nF);
+    int GetClientRangedAnimation(unsigned long oidAttacker, int nAttackType, int bOverride, int nOverrideAnimation);
+    int GetClientMeleeAnimation(unsigned long oidAttacker, unsigned long oidTarget,
+                                unsigned short nAnimation, int nAttack, int bOverride, int nOverrideAnimation);
     void SetLoadFromIFO(int bValue);
     int GetLoadFromIFO();
-    void SetLastTarget(unsigned long oidObject, int nB);
+    void SetLastTarget(unsigned long oidObject, int bChanged);
     void SetRunScript(const CExoString& sScript);
     void UpdateRoom(const Vector& vPosition);
     void StartPazaakGame(int nSideDeck, const CExoString& sEndScript, int nWager, int bTutorial,
@@ -457,7 +458,7 @@ public:
     int GetPazaakIsRunning();
     void SetCharacterChangeInProgress(int bInProgress);
     void FadeAndStopStreamingSoundSource(CExoStreamingSoundSource* pSource,
-                                         unsigned long nB);
+                                         unsigned long nFadeTime);
     void StartCreditSequence(const Vector& vColor, const CExoString& sMusic);
     void StopCreditSequence();
     void SetLastClickedOnTarget(unsigned long oidObject);

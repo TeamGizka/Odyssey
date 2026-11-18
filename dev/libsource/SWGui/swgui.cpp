@@ -1,7 +1,15 @@
 #include "swgui.h"
+#include "exobase.h"
+#include "exoresman.h"
+#include "exoinput.h"
+#include "resgff.h"
+#include "twodimarray.h"
+#include <string.h>
 
-static inline void SwguiTrace2();
-static inline void SwguiTrace1();
+#define SWGUI_DEBUG 0
+
+static inline void TraceToolTip();
+static inline void TraceGuiManager();
 
 int g_bDrawSafeRegion = 0;
 
@@ -75,19 +83,12 @@ void CSWGuiPanel::HandleInputEvent(int nEvent, int nState)
 #include "nwccreature.h"
 #include "nwcanimbase.h"
 
-#include "exobase.h"
-#include "exoresman.h"
-#include "exoinput.h"
-#include "exobase.h"
-#include "resgff.h"
-#include "twodimarray.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
 #include "clientexoappinternal.h"
 #include "clientoptions.h"
 #include "aurora.h"
 #include "aurcamera.h"
-#include <string.h>
 // PC 0x0040BAD0  Xbox 0x002FBFC0
 CSWGuiManager::CSWGuiManager()
     : m_lPanels(0),
@@ -119,7 +120,7 @@ CSWGuiManager::CSWGuiManager()
 #ifndef _XBOX
     m_nMouseCaptureType = 0;
     m_bLeftMouseDown = 0;
-    m_bUnknown1C1 = 0;
+    m_bRightMouseDown = 0;
     m_pLastMouseOverControl = NULL;
     m_pKeyFocus = NULL;
     m_pMouseCursor = NULL;
@@ -1216,7 +1217,10 @@ void CSWGuiManager::DisplayToolTip(const CExoString& sText)  // PC 0x0040B490
 // PC 0x0040C120  Xbox 0x002FC1C0
 void CSWGuiManager::HideAllPanels()
 {
-    SwguiTrace2();
+    if (SWGUI_DEBUG)
+    {
+        EXOLOG("CSWGuiManager::HideAllPanels() is on top %d\n", IsOnTop(NULL));
+    }
     for (int i = 0; i < m_lPanels.num; i++)
     {
         m_lPanels.element[i]->SetVisible(0);
@@ -1702,7 +1706,7 @@ int CSWGuiManager::HandleZMouse(int nDelta)  // PC 0x0040C650
 #ifndef _XBOX
 void CSWGuiManager::RemoveToolTip()  // PC 0x0040C150
 {
-    SwguiTrace2();
+    TraceToolTip();
     m_bToolTipShown = 0;
     ResetToolTipTimer();
     if (m_pToolTipControl != NULL)
@@ -2425,12 +2429,12 @@ CSWGuiPanel::~CSWGuiPanel()
     }
 }
 
-static inline void SwguiTrace2()
+static inline void TraceToolTip()
 {
-    SwguiTrace1();
+    TraceGuiManager();
 }
 
-static inline void SwguiTrace1()
+static inline void TraceGuiManager()
 {
 }
 

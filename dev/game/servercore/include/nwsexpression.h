@@ -48,6 +48,7 @@ public:
 
     void DeleteAlternate(CSWSExpressionNode* pNode);
     int AddNode(CSWSExpressionNode* pNode);
+    void AddNodeToHead(CSWSExpressionNode* pNode);
     void DeleteList();
 
     CSWSExpressionNode* GetHead() { return m_pHead; }
@@ -60,6 +61,7 @@ public:
     CSWSExpressionNode* m_pHead;
     CSWSExpressionNode* m_pCurrent;
     CSWSExpressionNode* m_pTail;
+    ~CSWSExpressionList();
 };
 
 class CSWSExpression
@@ -74,7 +76,7 @@ public:
     int ParseString(CExoString sPattern);
     int TestString(const CExoString& sString, int bCapture);
 
-    int m_nReserved;
+    int m_nId;
     CExoArrayList<CExoString*> m_lstMatches;
     int m_bCaseSensitive;
     CSWSExpressionList* m_pList;

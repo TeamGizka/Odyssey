@@ -203,6 +203,74 @@ unsigned char CGameObjectArray::AddObjectAtPos(unsigned long oidObject,
 
     return NULL_GAMEOBJECT;
 }
+// Dead code: not in the PC executable
+unsigned char CGameObjectArray::AddCharacterObjectAtPos(unsigned long oidObject,
+                                                        CGameObject* pObject)
+{
+    if (pObject == NULL)
+    {
+        return NULL_GAMEOBJECT;
+    }
+
+    unsigned short nList = (unsigned short)((oidObject >> 31) & 1);
+    unsigned long nIndex = (oidObject & ARRAYINDEX_MASK) + (nList << ARRAYINDEX_SHIFT);
+    unsigned long nId = oidObject & 0x7FFFFFFF;
+
+    if ((nId & CHAROBJECT_MASK) != 0)
+    {
+        return BAD_ID;
+    }
+    if (nId < MINCHAROBJID || nId > MAXCHAROBJID)
+    {
+        return BAD_ID;
+    }
+    if (m_nPrevObjectId[nList] >= nId)
+    {
+        m_nPrevObjectId[nList] = nId - 1;
+    }
+
+    CGameObjectArrayNode* pNew = new CGameObjectArrayNode;
+    pNew->m_oidObject = nId;
+    pNew->m_pObject = pObject;
+    pNew->m_pNext = NULL;
+
+    CGameObjectArrayNode* pHead = m_pArray[nIndex];
+    if (pHead == NULL)
+    {
+        m_pArray[nIndex] = pNew;
+        return SUCCESS;
+    }
+
+    CGameObjectArrayNode* pCur = pHead;
+    CGameObjectArrayNode* pPrev = NULL;
+    do
+    {
+        if (pCur->m_oidObject <= pNew->m_oidObject)
+        {
+            break;
+        }
+        pPrev = pCur;
+        pCur = pCur->m_pNext;
+    } while (pCur != NULL);
+
+    if (pCur == NULL)
+    {
+        pPrev->m_pNext = pNew;
+        return SUCCESS;
+    }
+
+    if (pPrev == NULL)
+    {
+        pNew->m_pNext = m_pArray[nIndex];
+        m_pArray[nIndex] = pNew;
+    }
+    else
+    {
+        pNew->m_pNext = pPrev->m_pNext;
+        pPrev->m_pNext = pNew;
+    }
+    return SUCCESS;
+}
 // PC 0x004D7FF0  Xbox 0x000926B0
 unsigned char CGameObjectArray::AddExternalObject(unsigned long& oidObject,
                                                   CGameObject* pObject,
@@ -391,6 +459,10 @@ unsigned char CGameObjectArray::Delete(unsigned long oidObject,
     }
     delete pNode;
     return SUCCESS;
+}
+// Dead code: not in the PC executable
+void CGameObjectArray::Clean(unsigned short nType)
+{
 }
 // PC 0x004D8230  Xbox 0x00092910
 unsigned char CGameObjectArray::GetGameObject(unsigned long oidObject,

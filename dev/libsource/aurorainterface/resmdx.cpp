@@ -21,6 +21,11 @@ unsigned long CResMDX::GetMDXSize()
 {
     return m_nMDXSize;
 }
+// Dead code: not in the PC executable
+int CResMDX::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x00710E60
 int CResMDX::OnResourceFreed()
 {

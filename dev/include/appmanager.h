@@ -19,6 +19,7 @@ public:
 
     CObjectTableManager* GetObjectTableManager(unsigned long nTable);
     void DoSaveGameScreenShot(const CExoString& sName);
+    void ShowServerMem();
     void TakeScreenShot(const CExoString& sName);
     void AllocLargeTempBuffer();
     void FreeLargeTempBuffer();
@@ -66,9 +67,14 @@ class CObjectTableManager
 public:
     CObjectTableManager();
     ~CObjectTableManager();
+    BOOL CreateNewPlayer(unsigned long nPlayerId);
 
     void ClearAll();
     BOOL RemovePlayer(unsigned long nPlayerId);
+    BOOL Touch(unsigned long nIndex, unsigned long nPlayerId);
+    BOOL AddID(unsigned long nID, unsigned long* pIndex, unsigned long nPlayerId);
+    unsigned long GetIDFromIndex(unsigned long nIndex, unsigned long nPlayerId);
+    unsigned long GetIndexFromID(unsigned long nID, unsigned long nPlayerId);
 
     CObjectTable* m_apTables[96];
     unsigned long m_nTables;

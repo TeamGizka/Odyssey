@@ -57,6 +57,7 @@ public:
                            CExoString* psEntry);
     int GetCExoStringEntry(const CExoString& sRow, int nColumn,
                            CExoString* psEntry);
+    int SetCExoStringEntry(int nRow, int nColumn, const CExoString& sValue);
     int GetFLOATEntry(int nRow, int nColumn, float* pfEntry);
     int GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry);
     int GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
@@ -88,6 +89,13 @@ public:
 
 
     int GetNumRows() { return m_nNumRows; }
+    int SetBlankEntry(const CExoString& sRow, const CExoString& sColumn);
+    int SetBlankEntry(const CExoString& sRow, int nColumn);
+    int SetBlankEntry(int nRow, const CExoString& sColumn);
+    int SetBlankEntry(int nRow, int nColumn);
+    int SetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn, const CExoString& sValue);
+    int SetCExoStringEntry(const CExoString& sRow, int nColumn, const CExoString& sValue);
+    int SetCExoStringEntry(int nRow, const CExoString& sColumn, const CExoString& sValue);
 
     CExoString m_sDefault;
     int m_nNumRows;

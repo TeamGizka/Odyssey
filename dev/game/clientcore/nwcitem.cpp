@@ -22,7 +22,7 @@ static int enableitemgroundalignment = 0;
 CSWCItem::CSWCItem(unsigned long nBaseItem)
     : CSWItem(), CSWCObject(CGameObject::OBJECT_TYPE_ITEM)
 {
-    m_nUnknown150 = -1;
+    m_nLastEquipSlot = -1;
     m_nAttachSlot = INVENTORY_SLOT_INVALID;
     m_oidEquippedBy = OBJECT_INVALID;
     m_nEquipSlot = INVENTORY_SLOT_INVALID;
@@ -31,8 +31,8 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
     m_nContainerType = 0xff;
     m_nContainerSlot = 0xff;
     m_nBaseItem = nBaseItem;
-    m_nUnknownContainer2 = 0xff;
-    m_nUnknownContainer1 = 0xff;
+    m_nRepositoryPosY = 0xff;
+    m_nRepositoryPosX = 0xff;
     m_nNumActiveProperties = 0;
     m_pActiveProperties = 0;
     m_bIdentified = 0;
@@ -49,16 +49,16 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
     m_nActivePropertyIndex = INVALID_ACTIVE_PROPERTY_INDEX;
     m_nBodyVariation = 0;
     m_pVisualEffect = 0;
-    m_nUnknown198 = 0;
+    m_bVisualEffectLoaded = 0;
     m_pPowerSound = 0;
     m_bPowered = 0;
-    m_nUnknown1A0 = 0;
+    m_bPowerSoundPlaying = 0;
 }
 
 #include "appmanager.h"
 
-static inline void NwcitemTrace1();
-#define NWCITEM_TRACE() NwcitemTrace1()
+static inline void TraceClientItem();
+#define NWCITEM_TRACE() TraceClientItem()
 // PC 0x00646390  Xbox 0x0009F3D0
 void CSWCItem::AIUpdate()
 {
@@ -257,7 +257,7 @@ enum
     ITEM_VISUAL_EFFECT_HOLY = 6,
     ITEM_VISUAL_EFFECT_NEGATIVE = 7
 };
-
+// Dead code: not in the PC executable
 int CSWCItem::LoadVisualEffect(unsigned char nEffect)
 {
     CExoString sModel;
@@ -301,7 +301,7 @@ int CSWCItem::LoadVisualEffect(unsigned char nEffect)
     {
         return 0;
     }
-    m_nUnknown198 = 1;
+    m_bVisualEffectLoaded = 1;
     return 1;
 }
 // PC 0x00646830  Xbox 0x0009F8A0
@@ -529,6 +529,14 @@ CSWCItem::~CSWCItem()
     }
     m_pPowerSound = NULL;
 }
+// Dead code: not in the PC executable
+void CSWCItem::UnloadVisualEffect()
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel(MODEL_SLOT_VISUAL_EFFECT);
+    }
+}
 // PC 0x00646DD0  Xbox 0x0009FE50
 void CSWCItem::SetOrientation(const Vector& vOrientation)
 {
@@ -708,6 +716,6 @@ void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
     m_bPowered = bPower;
 }
 
-static inline void NwcitemTrace1()
+static inline void TraceClientItem()
 {
 }

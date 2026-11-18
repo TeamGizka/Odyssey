@@ -1,9 +1,12 @@
 #include "exobase.h"
 #include "nwsexpression.h"
 
-static inline void NwsexpressionTrace2();
-static inline void NwsexpressionTrace1();
-#define NWSEXPRESSION_TRACE() NwsexpressionTrace2()
+#define NWSEXPRESSION_DEBUG 0
+
+// Dead code: not in the PC executable
+CSWSExpressionList::~CSWSExpressionList()
+{
+}
 // PC 0x0059D7D0  Xbox 0x002455F0
 void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
 {
@@ -28,7 +31,10 @@ void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
 // PC 0x0059D820  Xbox 0x00245640
 int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
 {
-    NwsexpressionTrace2();
+    if (NWSEXPRESSION_DEBUG)
+    {
+        DeleteAlternate(pNode->m_pAlternate);
+    }
     CSWSExpressionNode* pLast;
 
     if (m_pHead != NULL || m_pTail != NULL)
@@ -50,10 +56,32 @@ int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
     }
     return (int)pNode;
 }
+// Dead code: not in the PC executable
+void CSWSExpressionList::AddNodeToHead(CSWSExpressionNode* pNode)
+{
+    if (m_pHead != NULL || m_pTail != NULL)
+    {
+        if (m_pCurrent == m_pHead)
+        {
+            m_pCurrent = pNode;
+        }
+        pNode->SetNext(m_pHead);
+        m_pHead = pNode;
+    }
+    else
+    {
+        m_pHead = pNode;
+        m_pTail = pNode;
+        m_pCurrent = pNode;
+    }
+}
 // PC 0x0059D860  Xbox 0x00245680
 CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 {
-    NwsexpressionTrace2();
+    if (NWSEXPRESSION_DEBUG)
+    {
+        EXOLOG("CSWSExpression::NewNode() add node %d\n", m_pList->AddNode(NULL));
+    }
     CSWSExpressionNode* pNode = new CSWSExpressionNode;
     pNode->m_nType = nType;
     return pNode;
@@ -61,7 +89,10 @@ CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 // PC 0x0059D8E0  Xbox 0x00245700
 void CSWSExpression::ClearAlternate(CSWSExpressionNode* pNode)
 {
-    NWSEXPRESSION_TRACE();
+    if (NWSEXPRESSION_DEBUG)
+    {
+        m_pList->DeleteAlternate(pNode);
+    }
     for (; pNode != NULL; pNode = pNode->m_pNext)
     {
         if (pNode->m_nType == EXPRESSION_NODE_ALTERNATIVE_END)
@@ -117,7 +148,7 @@ CSWSExpression::CSWSExpression()
 {
     m_pList = NULL;
     m_bCaseSensitive = 0;
-    m_nReserved = 0;
+    m_nId = 0;
 }
 // PC 0x0059D9E0  Xbox 0x00245800
 CSWSExpression::~CSWSExpression()
@@ -529,13 +560,4 @@ int CSWSExpression::TestString(const CExoString& sString, int bCapture)
     delete lstStack[0];
     ClearGraph();
     return 1;
-}
-
-static inline void NwsexpressionTrace2()
-{
-    NwsexpressionTrace1();
-}
-
-static inline void NwsexpressionTrace1()
-{
 }

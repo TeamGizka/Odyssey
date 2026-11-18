@@ -7,7 +7,7 @@
 #include "twodimarray.h"
 #include "swguiingamecharacter.h"
 
-static inline void SwguiscriptselectTrace1();
+static inline void TraceScriptSelect();
 // PC 0x006EA000  Xbox 0x00123D50
 CSWGuiScriptSelect::CSWGuiScriptSelect(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -16,7 +16,7 @@ CSWGuiScriptSelect::CSWGuiScriptSelect(CSWGuiManager* pManager)
     int nDescriptionStrRef;
     int nAIState;
 
-    m_nUnknownC38 = 0;
+    m_nSelectedScript = 0;
 
 #ifdef _XBOX
     StartLoadFromLayout("ScriptSelect");
@@ -88,7 +88,7 @@ CSWGuiScriptSelect::~CSWGuiScriptSelect()
 // PC 0x006E9B90  Xbox 0x00123840
 void CSWGuiScriptSelect::OnPanelAdded()
 {
-    SwguiscriptselectTrace1();
+    TraceScriptSelect();
 #ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
 #endif
@@ -98,7 +98,7 @@ void CSWGuiScriptSelect::OnPanelAdded()
 // PC 0x006E9BC0  Xbox 0x00123860
 void CSWGuiScriptSelect::HandleInputEvent(int nEvent, int nState)
 {
-    SwguiscriptselectTrace1();
+    TraceScriptSelect();
     if (nState != 0)
     {
         switch (nEvent)
@@ -140,7 +140,7 @@ void CSWGuiScriptSelect::HandleInputEvent(int nEvent, int nState)
 // PC 0x006E9CA0  Xbox 0x00123A00
 void CSWGuiScriptSelect::SetCreatureID(unsigned long oidCreature)
 {
-    SwguiscriptselectTrace1();
+    TraceScriptSelect();
     CSWGuiScriptCreature* pCreature =
         (CSWGuiScriptCreature*)g_pAppManager->m_pServerExoApp
             ->GetCreatureByGameObjectID(oidCreature);
@@ -209,7 +209,7 @@ void CSWGuiScriptSelect::OnEnter(CSWGuiControl* pControl)
 // PC 0x006E9D50  Xbox 0x00123AB0
 void CSWGuiScriptSelect::SetDescription(unsigned long nStrRef)
 {
-    SwguiscriptselectTrace1();
+    TraceScriptSelect();
     STR_RES strRes;
 
     g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
@@ -232,7 +232,7 @@ void CSWGuiScriptSelect::SetDescription(unsigned long nStrRef)
 // PC 0x006E9E70
 void CSWGuiScriptSelect::OnScriptSelected(CSWGuiControl* pControl)
 {
-    SwguiscriptselectTrace1();
+    TraceScriptSelect();
     CSWGuiScriptCreature* pCreature =
         (CSWGuiScriptCreature*)g_pAppManager->m_pServerExoApp
             ->GetCreatureByGameObjectID(m_oidCreature);
@@ -250,6 +250,6 @@ void CSWGuiScriptSelect::OnScriptSelected(CSWGuiControl* pControl)
     }
 }
 
-static inline void SwguiscriptselectTrace1()
+static inline void TraceScriptSelect()
 {
 }

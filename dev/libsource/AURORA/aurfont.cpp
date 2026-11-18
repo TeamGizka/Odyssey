@@ -135,6 +135,14 @@ void AurFreeFont()
         g_pStringObj = NULL;
     }
 }
+// Dead code: not in the PC executable
+void PrintStringScreenPos(char* szString, float fX, float fY)
+{
+    if (szString != NULL && *szString != 0)
+    {
+        GLRender::PrintStringAtScreenPos(szString, fX, fY);
+    }
+}
 
 #ifndef _XBOX
 // PC 0x0044CCA0
@@ -235,6 +243,7 @@ void AurPrintString(char* szString, int nColumn, int nRow)
 }
 #endif
 #ifndef _XBOX
+// Dead code: not in the PC executable
 // Xbox 0x0029F8C0
 int SetConsoleFont(char* szFontName)
 {

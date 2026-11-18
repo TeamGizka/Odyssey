@@ -16,8 +16,8 @@
 #include "exoinput.h"
 #endif
 
-static inline void SwguibarkbubbleTrace1();
-#define SWGUIBARKBUBBLE_TRACE() SwguibarkbubbleTrace1()
+static inline void TraceBarkBubble();
+#define SWGUIBARKBUBBLE_TRACE() TraceBarkBubble()
 // PC 0x006A9770  Xbox 0x000D6420
 CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -283,6 +283,6 @@ void CSWGuiBarkBubble::SetExtent(const CSWGuiExtent& cExtent)
     CSWGuiPanel::SetExtent(cExtent);
 }
 
-static inline void SwguibarkbubbleTrace1()
+static inline void TraceBarkBubble()
 {
 }

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <float.h>
 #include <string.h>
+#include "nwsspellimpact.h"
 
 int nPathfindUnused1 = 0;
 int DumpRoomBBox = 0;
@@ -59,7 +60,7 @@ CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace)
             pRoom = &m_pRooms[nRoom];
             if (pnFace != NULL)
             {
-                *pnFace = hitInfo.m_nField0C;
+                *pnFace = hitInfo.m_nHitFace;
             }
             break;
         }
@@ -282,6 +283,11 @@ void CSWSArea::GridDFSTransTablePut(int nX, int nY, int nScore, int nTieBreak)
     m_pGridTransTable[nSlot].m_nY = nY;
     m_pGridTransTable[nSlot].m_nScore = nScore;
     m_pGridTransTable[nSlot].m_nTieBreak = nTieBreak;
+}
+// Dead code: not in the PC executable
+int CSWSArea::GridDFSTransTableHash(int nX, int nY)
+{
+    return (17 * nX + 23 * nY + 6000) % 256;
 }
 // PC 0x004BBE20  Xbox 0x0018DED0
 int CSWSArea::NoNoneWalkPolysInStaticObject(
@@ -586,7 +592,7 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                 nResult = DIRECT_LINE_BLOCKED_ROOM;
                 break;
             }
-            unsigned long oidObject = m_pPathfindInformation->m_nField_BC;
+            unsigned long oidObject = m_pPathfindInformation->m_oidIgnoreDoor;
             float fObjectMinHeight = fMinHeight - AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
             float fObjectMaxHeight = fMaxHeight + AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
             if (!NoNonWalkPolysDetailed(vClippedStart, vClippedEnd, fObjectMinHeight, fObjectMaxHeight, fRadius, oidObject, oidHit, 0, NULL, 0, pWalkHitInfo, 0))
@@ -594,7 +600,7 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                 nResult = DIRECT_LINE_BLOCKED_OBJECT;
                 break;
             }
-            if (m_pPathfindInformation == NULL || (!m_pPathfindInformation->m_nField_210 && (!(fRadius > 0.0f) || !NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
+            if (m_pPathfindInformation == NULL || (!m_pPathfindInformation->m_bIgnoreCreatures && (!(fRadius > 0.0f) || !NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
             {
                 nResult = DIRECT_LINE_BLOCKED_CREATURE;
                 break;
@@ -663,10 +669,10 @@ int CSWSArea::GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
     }
     else
     {
-        vStart = m_pPathfindInformation->m_vField_12C +
-                 m_pPathfindInformation->m_vField_138 * nX +
-                 m_pPathfindInformation->m_vField_144 * nY +
-                 m_pPathfindInformation->m_vField_150 * nZ;
+        vStart = m_pPathfindInformation->m_vGridOrigin +
+                 m_pPathfindInformation->m_vGridSide * nX +
+                 m_pPathfindInformation->m_vGridStep * nY +
+                 m_pPathfindInformation->m_vGridUp * nZ;
     }
 
     int bFound = 0;
@@ -674,7 +680,7 @@ int CSWSArea::GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
         (nRemainingCost > GRID_DIRECT_LINE_BUDGET &&
          nCost % GRID_DIRECT_LINE_COST_INTERVAL == GRID_DIRECT_LINE_COST_PHASE))
     {
-        vEnd = m_pPathfindInformation->m_vField_12C;
+        vEnd = m_pPathfindInformation->m_vGridOrigin;
         int nEndX = 0;
         int nEndY = 0;
         int nTolerance = m_pPathfindInformation->m_nStepTolerance;
@@ -697,10 +703,10 @@ int CSWSArea::GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
             nEndY = (int)(nTolerance * (nY / fDistance) / AREA_GRID_DIRECT_LINE_SCALE);
             if (fDistanceSquared >= nTolerance * nTolerance)
             {
-                vEnd = m_pPathfindInformation->m_vField_12C +
-                       m_pPathfindInformation->m_vField_138 * nEndX +
-                       m_pPathfindInformation->m_vField_144 * nEndY +
-                       m_pPathfindInformation->m_vField_150 * 0;
+                vEnd = m_pPathfindInformation->m_vGridOrigin +
+                       m_pPathfindInformation->m_vGridSide * nEndX +
+                       m_pPathfindInformation->m_vGridStep * nEndY +
+                       m_pPathfindInformation->m_vGridUp * 0;
                 if (TestDirectLine(vStart, vEnd, fPersonalSpace, fHalfStep, 1, NULL) == DIRECT_LINE_CLEAR)
                 {
                     (*ppSuccessors)[0].m_nCost = abs(nX - nEndX) + abs(nY - nEndY);
@@ -722,9 +728,9 @@ int CSWSArea::GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
             int nTestY = nY + (int)(fFraction * fDeltaY);
             if (nTestX != nX || nTestY != nY)
             {
-                vEnd = m_pPathfindInformation->m_vField_12C +
-                       m_pPathfindInformation->m_vField_138 * nTestX +
-                       m_pPathfindInformation->m_vField_144 * nTestY;
+                vEnd = m_pPathfindInformation->m_vGridOrigin +
+                       m_pPathfindInformation->m_vGridSide * nTestX +
+                       m_pPathfindInformation->m_vGridStep * nTestY;
                 if (TestDirectLine(vStart, vEnd, fPersonalSpace, fHalfStep, 1, NULL) == DIRECT_LINE_CLEAR)
                 {
                     (*ppSuccessors)[0].m_nCost = abs(nX - nTestX) + abs(nY - nTestY);
@@ -754,10 +760,10 @@ int CSWSArea::GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
         {
             if (nDeltaY != 0 || nDeltaX != 0)
             {
-                vEnd = m_pPathfindInformation->m_vField_12C +
-                       m_pPathfindInformation->m_vField_138 * (nDeltaX + nX) +
-                       m_pPathfindInformation->m_vField_144 * (nDeltaY + nY) +
-                       m_pPathfindInformation->m_vField_150 * nZ;
+                vEnd = m_pPathfindInformation->m_vGridOrigin +
+                       m_pPathfindInformation->m_vGridSide * (nDeltaX + nX) +
+                       m_pPathfindInformation->m_vGridStep * (nDeltaY + nY) +
+                       m_pPathfindInformation->m_vGridUp * nZ;
                 if (TestDirectLine(vStart, vEnd, fPersonalSpace, fHalfStep, 1, NULL) == DIRECT_LINE_CLEAR)
                 {
                     (*ppSuccessors)[nSuccessors].m_nCost = abs(nDeltaY) + abs(nDeltaX);
@@ -953,7 +959,7 @@ int CSWSArea::PathPointDFSGenerateSuccessors(
             }
         }
 
-        int nGoalPathPoint = m_pPathfindInformation->m_nField_1A8;
+        int nGoalPathPoint = m_pPathfindInformation->m_nEndPathPoint;
         Vector vGoal(m_pPathPoints[nGoalPathPoint].m_fX,
                      m_pPathPoints[nGoalPathPoint].m_fY,
                      0.0f);
@@ -1064,8 +1070,6 @@ Vector CSWSArea::ComputeAwayVector(const Vector& vPosition, const Vector& vAway,
     }
     return vBest;
 }
-
-#include "nwsspellimpact.h"
 
 #include "nwsencounter.h"
 // PC 0x004BE3A0  Xbox 0x00190B50
@@ -1180,7 +1184,7 @@ int CSWSArea::TestSafeLocationPoint(const Vector& vPosition,
         }
     } while (!bFinished);
 
-    unsigned long oidObject = pPathfind->m_nField_BC;
+    unsigned long oidObject = pPathfind->m_oidIgnoreDoor;
     if (!NoNonWalkPolys(vStart, vEnd, fMinHeight, fMaxHeight, fRadius,
                         oidObject, NULL, 0))
     {
@@ -1653,6 +1657,46 @@ int CSWSArea::ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,
         }
     } while (bRepeat == 1);
     return bShrunk;
+}
+// Dead code: not in the PC executable
+int CSWSArea::PlotPath(CPathfindInformation* pPathfind,
+                       unsigned __int64 nFlags)
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWSArea::RemoveInterTileExit(int nTileX, int nTileY, int nExitX,
+                                  int nExitY)
+{
+    int nEntries = m_pPathfindInformation->m_nField_C0 * 2;
+    int* pTileClosed = new int[nEntries + 2];
+    int* pTileOpen = new int[nEntries + 2];
+
+    for (int i = 0; i < nEntries; i++)
+    {
+        pTileClosed[i] = m_pPathfindInformation->m_pTileClosed[i];
+        pTileOpen[i] = m_pPathfindInformation->m_pTileOpen[i];
+    }
+
+    m_pPathfindInformation->m_nField_C0++;
+    pTileClosed[nEntries] = nExitX;
+    pTileClosed[nEntries + 1] = nExitY;
+    pTileOpen[nEntries] = nTileX;
+    pTileOpen[nEntries + 1] = nTileY;
+
+    if (m_pPathfindInformation->m_pTileClosed != NULL)
+    {
+        delete[] m_pPathfindInformation->m_pTileClosed;
+        m_pPathfindInformation->m_pTileClosed = NULL;
+    }
+    if (m_pPathfindInformation->m_pTileOpen != NULL)
+    {
+        delete[] m_pPathfindInformation->m_pTileOpen;
+        m_pPathfindInformation->m_pTileOpen = NULL;
+    }
+    m_pPathfindInformation->m_pTileClosed = pTileClosed;
+    m_pPathfindInformation->m_pTileOpen = pTileOpen;
+    return 1;
 }
 // PC 0x004BFE20  Xbox 0x00192730
 int CSWSArea::SmoothCornerOptimize(int nPoints, float* pfPoints,
@@ -2240,6 +2284,12 @@ int CSWSArea::ComputeSafeLocationInDirection(const Vector& vPosition,
     }
     return ComputeSafeLocation(vPosition, fDistance, pPathfind, nFlags, pvLocation);
 }
+// Dead code: not in the PC executable
+int CSWSArea::TestLineWalkable(float fStartX, float fStartY, float fEndX,
+                               float fEndY, float fZ)
+{
+    return 1;
+}
 // PC 0x004C13E0  Xbox 0x00193EC0
 int CSWSArea::SmoothSelectionRestartable(int nPoints, float* pfPoints,
                                          int* pnResultCount, float** ppfResult)
@@ -2317,7 +2367,7 @@ int CSWSArea::SmoothPointsOnPath()
         m_pPathfindInformation->m_nWayPointCount = 0;
     }
 
-    int nPoints = m_pPathfindInformation->m_nField_94;
+    int nPoints = m_pPathfindInformation->m_nWayPointTempCount;
     float* pfPoints = m_pPathfindInformation->m_pWayPointsTemp;
 
     if (nPoints == 0)
@@ -2327,7 +2377,7 @@ int CSWSArea::SmoothPointsOnPath()
         return 1;
     }
 
-    if (m_pPathfindInformation->m_nField_1C == 1)
+    if (m_pPathfindInformation->m_bPathPointGridLeg == 1)
     {
         float* pfCopy = new float[nPoints];
         for (int i = 0; i < nPoints; i++)
@@ -2342,18 +2392,18 @@ int CSWSArea::SmoothPointsOnPath()
     int nCount;
     float* pfSmoothed;
     {
-        int nA;
-        float* pfA;
-        SmoothSelection(nPoints, pfPoints, &nA, &pfA);
-        nCount = nA;
-        pfSmoothed = pfA;
+        int nResultCount;
+        float* pfResult;
+        SmoothSelection(nPoints, pfPoints, &nResultCount, &pfResult);
+        nCount = nResultCount;
+        pfSmoothed = pfResult;
     }
     {
-        int nB;
-        float* pfB;
-        SmoothCornerOptimize(nCount, pfSmoothed, &nB, &pfB);
-        m_pPathfindInformation->m_pWayPoints = pfB;
-        m_pPathfindInformation->m_nWayPointCount = nB;
+        int nResultCount;
+        float* pfResult;
+        SmoothCornerOptimize(nCount, pfSmoothed, &nResultCount, &pfResult);
+        m_pPathfindInformation->m_pWayPoints = pfResult;
+        m_pPathfindInformation->m_nWayPointCount = nResultCount;
     }
     delete[] pfSmoothed;
     return 1;
@@ -2367,7 +2417,7 @@ int CSWSArea::SmoothPointsOnPathRestartable()
     int bRestart;
     float* pfSelection;
     {
-        int nInputCount = m_pPathfindInformation->m_nField_94;
+        int nInputCount = m_pPathfindInformation->m_nWayPointTempCount;
         float* pfInputPoints = m_pPathfindInformation->m_pWayPointsTemp;
         if (nInputCount == 0)
         {
@@ -2384,7 +2434,7 @@ int CSWSArea::SmoothPointsOnPathRestartable()
                 m_pPathfindInformation->m_pWayPoints = NULL;
                 m_pPathfindInformation->m_nWayPointCount = 0;
             }
-            if (m_pPathfindInformation->m_nField_1C == 1)
+            if (m_pPathfindInformation->m_bPathPointGridLeg == 1)
             {
                 float* pfCopy = new float[nInputCount];
                 for (int i = 0; i < nInputCount; i++)
@@ -2460,13 +2510,13 @@ int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
     Vector vSide(vStep.m_fY, -vStep.m_fX, 0.0f);
     int nDistance = (int)(magnitude(vEnd - vStart) / fStep + 0.5);
     pPathfind->m_nField_120 = 0;
-    pPathfind->m_nField_124 = nDistance;
+    pPathfind->m_nGridDistance = nDistance;
     pPathfind->m_nField_128 = 0;
-    pPathfind->m_vField_12C = vStart;
-    pPathfind->m_vField_138 = vSide;
-    pPathfind->m_vField_144 = vStep;
-    pPathfind->m_vField_150 = vUp;
-    pPathfind->m_nField_24 = 1;
+    pPathfind->m_vGridOrigin = vStart;
+    pPathfind->m_vGridSide = vSide;
+    pPathfind->m_vGridStep = vStep;
+    pPathfind->m_vGridUp = vUp;
+    pPathfind->m_bReturnClosest = 1;
     int nMaxDepth = nDistance + CPathfindInformation::GRID_SEARCH_DEPTH_ALLOWANCE;
     int* pGridPath = new int[2 * nMaxDepth + 4];
     pPathfind->m_pGridDFSPath = pGridPath;
@@ -2484,21 +2534,21 @@ int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
     if (vEndDifference * vEndDifference >= 0.0001f ||
         vStartDifference * vStartDifference >= 0.0001f)
     {
-        if (pPathfind->m_pField_16C != NULL)
-            m_pGridTransTable = (CSWSAreaGridTransEntry*)pPathfind->m_pField_16C;
+        if (pPathfind->m_pGridTransTable != NULL)
+            m_pGridTransTable = (CSWSAreaGridTransEntry*)pPathfind->m_pGridTransTable;
         GridDFSTransTableInitialize();
         nDepth = nDistance + 2;
     }
     else
     {
-        m_pGridTransTable = (CSWSAreaGridTransEntry*)pPathfind->m_pField_16C;
-        nDepth = pPathfind->m_nField_168 + 2;
+        m_pGridTransTable = (CSWSAreaGridTransEntry*)pPathfind->m_pGridTransTable;
+        nDepth = pPathfind->m_nGridTransTableDepth + 2;
     }
 
     pPathfind->m_fField_164 = 10.0f;
     unsigned __int64 nElapsed = g_pExoBase->m_pExoTimers->GetHighResolutionTimer() - nStartTime;
     int nResult = CSWSObject::ACTION_IN_PROGRESS;
-    if (pPathfind->m_nField_24 == 1 && pPathfind->m_nField_84 == 1)
+    if (pPathfind->m_bReturnClosest == 1 && pPathfind->m_bPathReversed == 1)
     {
         pPathfind->HandlePathfindError(2, "we can not return a closest result if points are reversed.");
         nResult = CSWSObject::ACTION_FAILED;
@@ -2518,7 +2568,7 @@ int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
         if (GridDFSearch(0, 0, nDepth, 0, nDistance, 0) == 1)
             nResult = CSWSObject::ACTION_COMPLETE;
         nElapsed = g_pExoBase->m_pExoTimers->GetHighResolutionTimer() - nStartTime;
-        if (pPathfind->m_nField_24 == 1)
+        if (pPathfind->m_bReturnClosest == 1)
         {
             int nBestLength = pPathfind->m_nGridDFSBestPathLength;
             if (nBestLength > 1 && nResult != CSWSObject::ACTION_COMPLETE && nSearches == 1 &&
@@ -2558,8 +2608,8 @@ int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
     {
         pPathfind->m_vGridStart = Vector(fEndX, fEndY, 0.0f);
         pPathfind->m_vGridEnd = Vector(fStartX, fStartY, 0.0f);
-        pPathfind->m_nField_168 = nDepth;
-        pPathfind->m_pField_16C = (int*)m_pGridTransTable;
+        pPathfind->m_nGridTransTableDepth = nDepth;
+        pPathfind->m_pGridTransTable = (int*)m_pGridTransTable;
         m_pGridTransTable = NULL;
     }
     else
@@ -2568,8 +2618,8 @@ int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
         m_pGridTransTable = NULL;
         pPathfind->m_vGridStart = Vector(0.0f, 0.0f, 0.0f);
         pPathfind->m_vGridEnd = Vector(0.0f, 0.0f, 0.0f);
-        pPathfind->m_nField_168 = 0;
-        pPathfind->m_pField_16C = NULL;
+        pPathfind->m_nGridTransTableDepth = 0;
+        pPathfind->m_pGridTransTable = NULL;
     }
     if (nResult == CSWSObject::ACTION_COMPLETE)
     {
@@ -2585,7 +2635,7 @@ int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
             pfPoints[2 * i] = vPosition.m_fX;
             pfPoints[2 * i + 1] = vPosition.m_fY;
         }
-        pPathfind->m_nField_94 = 2 * nLength;
+        pPathfind->m_nWayPointTempCount = 2 * nLength;
         pPathfind->m_pWayPointsTemp = pfPoints;
     }
     if (nResult != CSWSObject::ACTION_IN_PROGRESS)
@@ -2611,7 +2661,7 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
     unsigned long nEndPoint;
     int nResult;
 
-    if (pPathfind->m_nField_1E0 == CPathfindInformation::PATH_POINT_STARTPOINTS)
+    if (pPathfind->m_nPathPointState == CPathfindInformation::PATH_POINT_STARTPOINTS)
     {
         int bStartSafe = TestSafeLocationPoint(vStart, pPathfind);
         int bEndSafe = TestSafeLocationPoint(vEnd, pPathfind);
@@ -2645,34 +2695,34 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
         if (!ClosestPathPoint(vStart, nStartPoint) || !ClosestPathPoint(vEnd, nEndPoint))
         {
             pPathfind->HandlePathfindError(2, "Error could not find closest path node to start or end");
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_STARTPOINTS;
             return CSWSObject::ACTION_FAILED;
         }
-        pPathfind->m_nField_1A4 = nStartPoint;
-        pPathfind->m_nField_1A8 = nEndPoint;
-        pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_PATHFIND;
+        pPathfind->m_nStartPathPoint = nStartPoint;
+        pPathfind->m_nEndPathPoint = nEndPoint;
+        pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_PATHFIND;
         if (g_pExoBase->m_pExoTimers->GetHighResolutionTimer() - nStartTime > nTimeLimit)
             return CSWSObject::ACTION_IN_PROGRESS;
     }
     else
     {
-        nStartPoint = pPathfind->m_nField_1A4;
-        nEndPoint = pPathfind->m_nField_1A8;
+        nStartPoint = pPathfind->m_nStartPathPoint;
+        nEndPoint = pPathfind->m_nEndPathPoint;
     }
 
-    if (nStartPoint == nEndPoint && pPathfind->m_nField_1E0 == CPathfindInformation::PATH_POINT_PATHFIND)
+    if (nStartPoint == nEndPoint && pPathfind->m_nPathPointState == CPathfindInformation::PATH_POINT_PATHFIND)
     {
         pPathfind->m_nPathPointDFSDepth = 1;
         unsigned long* pPath = new unsigned long[1];
         pPath[0] = nStartPoint;
         pPathfind->SetPathPointPath(pPath);
-        pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_GRIDSTART;
+        pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_GRIDSTART;
     }
 
-    if (pPathfind->m_nField_1E0 == CPathfindInformation::PATH_POINT_PATHFIND)
+    if (pPathfind->m_nPathPointState == CPathfindInformation::PATH_POINT_PATHFIND)
     {
-        pPathfind->m_nField_1A4 = nStartPoint;
-        pPathfind->m_nField_1A8 = nEndPoint;
+        pPathfind->m_nStartPathPoint = nStartPoint;
+        pPathfind->m_nEndPathPoint = nEndPoint;
         float fDistance = magnitude(vEnd - vStart);
         m_nPathPointPathCapacity = m_nPathPointCount;
         pPathfind->SetPathPointPath(new unsigned long[m_nPathPointCount]);
@@ -2749,16 +2799,16 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
         }
         if (nResult == CSWSObject::ACTION_COMPLETE)
         {
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_GRIDSTART;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_GRIDSTART;
             return CSWSObject::ACTION_IN_PROGRESS;
         }
     }
 
-    if (pPathfind->m_nField_1E0 == CPathfindInformation::PATH_POINT_GRIDSTART)
+    if (pPathfind->m_nPathPointState == CPathfindInformation::PATH_POINT_GRIDSTART)
     {
         Vector vPoint(m_pPathPoints[nStartPoint].m_fX, m_pPathPoints[nStartPoint].m_fY, 0.0f);
         int nGridResult = CSWSObject::ACTION_COMPLETE;
-        pPathfind->m_nField_210 = nStartPoint != nEndPoint;
+        pPathfind->m_bIgnoreCreatures = nStartPoint != nEndPoint;
         float fRadius = pPathfind->m_fStepScale;
         float fHeight = pPathfind->m_fHalfStep;
         if (TestDirectLine(vStart, vPoint, fRadius, fHeight, 1, NULL) != 1)
@@ -2766,17 +2816,17 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pPathfind->SetPathPointEndpoints(vStart, vEnd);
             pPathfind->SetStartX(m_pPathPoints[nStartPoint].m_fX);
             pPathfind->SetStartY(m_pPathPoints[nStartPoint].m_fY);
-            pPathfind->m_nField_1C = 1;
+            pPathfind->m_bPathPointGridLeg = 1;
             nGridResult = PlotGridPath(pPathfind, nTimeLimit);
-            pPathfind->m_nField_1C = 0;
+            pPathfind->m_bPathPointGridLeg = 0;
             pPathfind->GetPathPointEndpoints(vStart, vEnd);
             pPathfind->m_fStartX = vEnd.m_fX;
             pPathfind->m_fStartY = vEnd.m_fY;
             if (nGridResult == CSWSObject::ACTION_COMPLETE)
             {
-                pPathfind->SetPathPointStartPath(m_pPathfindInformation->m_nField_94,
+                pPathfind->SetPathPointStartPath(m_pPathfindInformation->m_nWayPointTempCount,
                                                 m_pPathfindInformation->m_pWayPointsTemp);
-                m_pPathfindInformation->m_nField_94 = 0;
+                m_pPathfindInformation->m_nWayPointTempCount = 0;
                 m_pPathfindInformation->m_pWayPointsTemp = NULL;
             }
         }
@@ -2789,11 +2839,11 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pfPoints[3] = m_pPathPoints[nStartPoint].m_fY;
             pPathfind->SetPathPointStartPath(4, pfPoints);
         }
-        pPathfind->m_nField_210 = 0;
+        pPathfind->m_bIgnoreCreatures = 0;
         if (nGridResult == CSWSObject::ACTION_COMPLETE)
         {
             unsigned __int64 nNow = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_GRIDEND;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_GRIDEND;
             if (nNow - nStartTime > nTimeLimit)
                 return CSWSObject::ACTION_IN_PROGRESS;
         }
@@ -2806,11 +2856,11 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
                 for (int i = 1; i < nCount; i++)
                     pPath[i - 1] = pPath[i];
                 pPathfind->m_nPathPointDFSDepth = nCount - 1;
-                pPathfind->m_nField_1A4 = pPath[0];
-                pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_GRIDSTART;
+                pPathfind->m_nStartPathPoint = pPath[0];
+                pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_GRIDSTART;
                 return CSWSObject::ACTION_IN_PROGRESS;
             }
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_STARTPOINTS;
             pPathfind->HandlePathfindError(0, "    failed to grid based pathfind from the creatures position to the starting path point.");
             return CSWSObject::ACTION_FAILED;
         }
@@ -2818,11 +2868,11 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             return CSWSObject::ACTION_IN_PROGRESS;
     }
 
-    if (pPathfind->m_nField_1E0 == CPathfindInformation::PATH_POINT_GRIDEND)
+    if (pPathfind->m_nPathPointState == CPathfindInformation::PATH_POINT_GRIDEND)
     {
         Vector vPoint(m_pPathPoints[nEndPoint].m_fX, m_pPathPoints[nEndPoint].m_fY, 0.0f);
         int nGridResult = CSWSObject::ACTION_COMPLETE;
-        pPathfind->m_nField_210 = nStartPoint != nEndPoint;
+        pPathfind->m_bIgnoreCreatures = nStartPoint != nEndPoint;
         float fRadius = pPathfind->m_fStepScale;
         float fHeight = pPathfind->m_fHalfStep;
         int nLineResult = TestDirectLine(vEnd, vPoint, fRadius, fHeight, 1, NULL);
@@ -2831,17 +2881,17 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pPathfind->SetPathPointEndpoints(vStart, vEnd);
             pPathfind->SetEndX(m_pPathPoints[nEndPoint].m_fX);
             pPathfind->SetEndY(m_pPathPoints[nEndPoint].m_fY);
-            pPathfind->m_nField_1C = 1;
+            pPathfind->m_bPathPointGridLeg = 1;
             nGridResult = PlotGridPath(pPathfind, nTimeLimit);
-            pPathfind->m_nField_1C = 0;
+            pPathfind->m_bPathPointGridLeg = 0;
             pPathfind->GetPathPointEndpoints(vStart, vEnd);
             pPathfind->m_fEndX = vStart.m_fX;
             pPathfind->m_fEndY = vStart.m_fY;
             if (nGridResult == CSWSObject::ACTION_COMPLETE)
             {
-                pPathfind->SetPathPointEndPath(m_pPathfindInformation->m_nField_94,
+                pPathfind->SetPathPointEndPath(m_pPathfindInformation->m_nWayPointTempCount,
                                               m_pPathfindInformation->m_pWayPointsTemp);
-                m_pPathfindInformation->m_nField_94 = 0;
+                m_pPathfindInformation->m_nWayPointTempCount = 0;
                 m_pPathfindInformation->m_pWayPointsTemp = NULL;
             }
         }
@@ -2854,11 +2904,11 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             pfPoints[3] = vEnd.m_fY;
             pPathfind->SetPathPointEndPath(4, pfPoints);
         }
-        pPathfind->m_nField_210 = 0;
+        pPathfind->m_bIgnoreCreatures = 0;
         if (nGridResult == CSWSObject::ACTION_COMPLETE)
         {
             unsigned __int64 nNow = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_SMOOTH;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_SMOOTH;
             pPathfind->m_nSmoothingStep = CPathfindInformation::SMOOTHING_START;
             if (nNow - nStartTime > nTimeLimit)
                 return CSWSObject::ACTION_IN_PROGRESS;
@@ -2871,11 +2921,11 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
                 unsigned long* pPath = pPathfind->m_pPathPointDFSPath;
                 --nCount;
                 pPathfind->m_nPathPointDFSDepth = nCount;
-                pPathfind->m_nField_1A8 = pPath[nCount - 1];
-                pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_GRIDEND;
+                pPathfind->m_nEndPathPoint = pPath[nCount - 1];
+                pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_GRIDEND;
                 return CSWSObject::ACTION_IN_PROGRESS;
             }
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_STARTPOINTS;
             pPathfind->HandlePathfindError(0, "    failed to grid based pathfind from the ending path point ot the destiantion.");
             return CSWSObject::ACTION_FAILED;
         }
@@ -2883,7 +2933,7 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             return CSWSObject::ACTION_IN_PROGRESS;
     }
 
-    if (pPathfind->m_nField_1E0 == CPathfindInformation::PATH_POINT_SMOOTH)
+    if (pPathfind->m_nPathPointState == CPathfindInformation::PATH_POINT_SMOOTH)
     {
         if (pPathfind->m_nSmoothingStep == CPathfindInformation::SMOOTHING_START)
         {
@@ -2917,7 +2967,7 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
             if (pPathfind->m_pfPathPointEndPoints != NULL)
                 delete[] pPathfind->m_pfPathPointEndPoints;
             pPathfind->m_pfPathPointEndPoints = NULL;
-            pPathfind->m_nField_94 = nCount;
+            pPathfind->m_nWayPointTempCount = nCount;
             pPathfind->m_pWayPointsTemp = pfPoints;
             pPathfind->SetPathPointPath(NULL);
             pPathfind->m_nSmoothingStep = CPathfindInformation::SMOOTHING_STEP_1;
@@ -2927,7 +2977,7 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
         }
         if (!SmoothPointsOnPathRestartable())
         {
-            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
+            pPathfind->m_nPathPointState = CPathfindInformation::PATH_POINT_STARTPOINTS;
             return CSWSObject::ACTION_COMPLETE;
         }
         return CSWSObject::ACTION_IN_PROGRESS;
@@ -2959,7 +3009,7 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
         bBumpCreatures = 0;
     }
     unsigned long oidTarget = pPathfind->m_oidPathfindTargetCreature;
-    unsigned long oidIgnore = pPathfind->m_nField_34;
+    unsigned long oidIgnore = pPathfind->m_oidIgnoreCreature;
     float fDeltaY = vEnd.m_fY - vStart.m_fY;
     float fDeltaX = vEnd.m_fX - vStart.m_fX;
     float fMaxX = vEnd.m_fX > vStart.m_fX ? vEnd.m_fX : vStart.m_fX;

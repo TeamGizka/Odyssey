@@ -16,7 +16,9 @@
 #include "swcroom.h"
 #include "aurscene.h"
 
-static inline void SwminigameTrace1();
+#define SWMINIGAME_DEBUG 0
+
+static inline void TraceMiniGame();
 
 inline void SwminigameContainerAllocates(CExoArrayList<unsigned long>* pIds,
                                          CExoArrayList<SWMGTrackInfo*>* pTracks,
@@ -33,7 +35,7 @@ inline void SwminigameContainerAllocates(CExoArrayList<unsigned long>* pIds,
     pPointers->allocate(1);
 }
 
-#define SWMINIGAME_TRACE() SwminigameTrace1()
+#define SWMINIGAME_TRACE() TraceMiniGame()
 // PC 0x00670A10
 inline void CSWMiniGame::AxisVelocity(const Vector& vAxis, float fScale)
 {
@@ -96,6 +98,15 @@ void CSWMiniGame::SetClipDist(float fNear, float fFar)
     if (m_pCam != NULL)
     {
         m_pCam->SetClipDist(m_fNearClip, m_fFarClip);
+    }
+}
+// Dead code: not in the PC executable
+void CSWMiniGame::SetViewAngle(float fViewAngle)
+{
+    m_fViewAngle = fViewAngle;
+    if (m_pCam != NULL)
+    {
+        m_pCam->SetViewAngle(fViewAngle);
     }
 }
 // PC 0x00670BB0  Xbox 0x000BBC30
@@ -414,14 +425,17 @@ CSWMiniEnemy* CSWMiniGame::RemoveEnemy(CSWMiniEnemy* pEnemy)
 // PC 0x00671610
 SWMGTrackInfo* CSWMiniGame::GetProtoTrack(int nIndex)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        EXOLOG("CSWMiniGame::GetProtoTrack() enemy %d\n", GetEnemy(0));
+    }
     if (nIndex >= m_lstTracks.num)
     {
         return 0;
     }
     return m_lstTracks.element[nIndex];
 }
-
+// Dead code: not in the PC executable
 SWMGTrackInfo* CSWMiniGame::GetProtoTrack(const CResRef& cResRef)
 {
     int nTracks = m_lstTracks.num;
@@ -438,7 +452,10 @@ SWMGTrackInfo* CSWMiniGame::GetProtoTrack(const CResRef& cResRef)
 // PC 0x00671630  Xbox 0x000BD140
 CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        EXOLOG("CSWMiniGame::GetObstacle() enemy %d\n", GetEnemy(0));
+    }
     if (nIndex >= m_lstObstacleIds.num)
     {
         return 0;
@@ -449,7 +466,10 @@ CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
 // PC 0x00671670  Xbox 0x000BD180
 CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        EXOLOG("CSWMiniGame::SetCamera() obstacle %p\n", GetObstacle(0));
+    }
     m_pCam = pCamera;
     if (m_pCam != NULL && m_pPlayer != NULL && m_pPlayer->m_pTrack != NULL)
     {
@@ -595,7 +615,10 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
 // PC 0x00671BC0  Xbox 0x000BD700
 int CSWMiniGame::SetMouseAxisX(int nAxis)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        SetCamera(m_pCam);
+    }
     if (nAxis >= 0 && nAxis <= 3)
     {
         m_nMouseAxisX = nAxis;
@@ -605,12 +628,52 @@ int CSWMiniGame::SetMouseAxisX(int nAxis)
 // PC 0x00671BE0  Xbox 0x000BD720
 int CSWMiniGame::SetMouseAxisY(int nAxis)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        SetCamera(m_pCam);
+    }
     if (nAxis >= 0 && nAxis <= 3)
     {
         m_nMouseAxisY = nAxis;
     }
     return m_nMouseAxisY;
+}
+// Dead code: not in the PC executable
+int CSWMiniGame::SetBumpPlane(int nPlane)
+{
+    return SetPlane(m_nBumpPlane, nPlane);
+}
+// Dead code: not in the PC executable
+int CSWMiniGame::SetPlane(int& nPlane, int nValue)
+{
+    if (nValue >= 0 && nValue <= 3)
+    {
+        nPlane = nValue;
+    }
+    return nPlane;
+}
+// Dead code: not in the PC executable
+int CSWMiniGame::SetDOF(int nDOF)
+{
+    if ((nDOF & ~DOF_VALID_MASK) == 0)
+    {
+        m_nDOF = nDOF;
+    }
+    return m_nDOF;
+}
+// Dead code: not in the PC executable
+void CSWMiniGame::SetMovementPerSecond(float fMovementPerSecond)
+{
+    m_fAxisScale = fMovementPerSecond;
+}
+// Dead code: not in the PC executable
+int CSWMiniGame::SetType(int nType)
+{
+    if (nType == ATTACH_PLAYER_MODEL || nType == ATTACH_CAMERA_HOOK)
+    {
+        m_nAttachType = nType;
+    }
+    return m_nAttachType;
 }
 // PC 0x00671C00  Xbox 0x000BD740
 template <> void CExoArrayList<SWMGExplodeBullet*>::Add(SWMGExplodeBullet* value)
@@ -1181,7 +1244,7 @@ int CSWMiniGame::ClearObstacles()
     return nOldCount;
 }
 
-static inline void SwminigameTrace1()
+static inline void TraceMiniGame()
 {
 }
 

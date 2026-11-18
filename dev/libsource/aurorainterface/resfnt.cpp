@@ -1,5 +1,5 @@
 #include "resfnt.h"
-
+// Dead code: not in the PC executable
 CResFNT::CResFNT()
 {
     m_bAllocSuffix = 1;
@@ -16,16 +16,16 @@ CResFNT::CResFNT()
     m_pFontInfo = 0;
     m_pImageEnd = 0;
 }
-
+// Dead code: not in the PC executable
 CResFNT::~CResFNT()
 {
 }
-
+// Dead code: not in the PC executable
 unsigned long* CResFNT::GetFNTDataPtr()
 {
     return m_pFontInfo;
 }
-
+// Dead code: not in the PC executable
 int CResFNT::GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnDepth)
 {
     if (m_pImageEnd == 0)
@@ -38,12 +38,12 @@ int CResFNT::GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsig
     *pnDepth = m_pHeader->nBitsPerPixel;
     return 1;
 }
-
+// Dead code: not in the PC executable
 unsigned char* CResFNT::GetTGADataPtr()
 {
     return m_pFNTData;
 }
-
+// Dead code: not in the PC executable
 int CResFNT::ReadUnmappedRLETGA()
 {
     unsigned char* pSource = m_pFNTData;
@@ -124,7 +124,7 @@ int CResFNT::ReadUnmappedRLETGA()
     m_bDataOwned = 1;
     return 1;
 }
-
+// Dead code: not in the PC executable
 int CResFNT::OnResourceFreed()
 {
     if (m_bDataOwned && m_pFNTData)
@@ -146,7 +146,7 @@ int CResFNT::OnResourceFreed()
     m_pImageEnd = 0;
     return 1;
 }
-
+// Dead code: not in the PC executable
 int CResFNT::ReadColorMappedRLETGA()
 {
     unsigned char* pSource = m_pFNTData;
@@ -183,7 +183,7 @@ int CResFNT::ReadColorMappedRLETGA()
     m_bDataOwned = 1;
     return 1;
 }
-
+// Dead code: not in the PC executable
 int CResFNT::OnResourceServiced()
 {
     if (m_pResource == 0)

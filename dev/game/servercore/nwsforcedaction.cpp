@@ -26,3 +26,16 @@ BOOL CSWSForcedAction::SaveForcedAction(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldFLOAT(pStruct, m_vTargetLocation.m_fZ, "Target_LocZ");
     return TRUE;
 }
+// Dead code: not in the PC executable
+BOOL CSWSForcedAction::LoadForcedAction(CResGFF* pRes, CResStruct* pStruct)
+{
+    int bSuccess;
+    m_nActionId = pRes->ReadFieldDWORD(pStruct, "ActionId", bSuccess, 0);
+    m_nGroupId = pRes->ReadFieldWORD(pStruct, "GroupId", bSuccess, 0);
+    m_oidTargetArea = pRes->ReadFieldDWORD(pStruct, "Target_Area", bSuccess, 0);
+    m_oidTargetObject = pRes->ReadFieldDWORD(pStruct, "Target_Object", bSuccess, 0);
+    m_vTargetLocation.m_fX = pRes->ReadFieldFLOAT(pStruct, "Target_LocX", bSuccess, 0.0f);
+    m_vTargetLocation.m_fY = pRes->ReadFieldFLOAT(pStruct, "Target_LocY", bSuccess, 0.0f);
+    m_vTargetLocation.m_fZ = pRes->ReadFieldFLOAT(pStruct, "Target_LocZ", bSuccess, 0.0f);
+    return TRUE;
+}

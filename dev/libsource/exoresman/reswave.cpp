@@ -17,6 +17,26 @@ CResWave::CResWave()
 CResWave::~CResWave()
 {
 }
+// Dead code: not in the PC executable
+unsigned long CResWave::GetWaveSize()
+{
+    return m_nDataSize;
+}
+// Dead code: not in the PC executable
+int CResWave::IsLoaded()
+{
+    return m_bServiced;
+}
+// Dead code: not in the PC executable
+int CResWave::IsCompressed()
+{
+    return m_bDataOwned;
+}
+// Dead code: not in the PC executable
+int CResWave::IsModifiedWav()
+{
+    return m_bLegacyHeader;
+}
 
 #ifdef _XBOX
 // PC 0x005DF1F0  Xbox 0x00303540

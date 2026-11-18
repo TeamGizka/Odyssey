@@ -1,9 +1,9 @@
 #include "nwcanimbase.h"
 #include "math3d.h"
 
-static inline void NwcanimbaseprojectileTrace2();
-static inline void NwcanimbaseprojectileTrace1();
-#define NWCANIMBASEPROJECTILE_TRACE() NwcanimbaseprojectileTrace2()
+static inline void TraceProjectileOrientation();
+static inline void TraceProjectileAnimation();
+#define NWCANIMBASEPROJECTILE_TRACE() TraceProjectileOrientation()
 // PC 0x006EA6A0  Xbox 0x001244A0
 int CSWCAnimBaseProjectile::SetOrientation(const Vector& vFacing)
 {
@@ -83,11 +83,11 @@ int CSWCAnimBaseProjectile::SetAnimation(unsigned short nAnimation,
     }
 }
 
-static inline void NwcanimbaseprojectileTrace2()
+static inline void TraceProjectileOrientation()
 {
-    NwcanimbaseprojectileTrace1();
+    TraceProjectileAnimation();
 }
 
-static inline void NwcanimbaseprojectileTrace1()
+static inline void TraceProjectileAnimation()
 {
 }

@@ -7,7 +7,8 @@
 
 static const unsigned char ANIM_MODEL_HEAD = 254;
 
-static inline void NwcanimbaseheadTrace1();
+#define NWCANIMBASEHEAD_DEBUG 0
+
 // PC 0x0069BB80  Xbox 0x000C7770
 CSWCAnimBaseHead::CSWCAnimBaseHead()
 {
@@ -21,7 +22,10 @@ CSWCAnimBaseHead::CSWCAnimBaseHead()
     m_cEnvMap = "";
     m_nEnvMapType = 0;
     m_nHeadItem = OBJECT_INVALID;
-    NwcanimbaseheadTrace1();
+    if (NWCANIMBASEHEAD_DEBUG)
+    {
+        EXOLOG("CSWCAnimBaseHead::CSWCAnimBaseHead() model %p\n", GetModel(0));
+    }
 }
 // PC 0x0069B030  Xbox 0x000C6BC0
 CSWCAnimBaseHead::~CSWCAnimBaseHead()
@@ -410,8 +414,4 @@ void CSWCAnimBaseHead::DisableDistortion()
         }
     }
     CSWCAnimBase::DisableDistortion();
-}
-
-static inline void NwcanimbaseheadTrace1()
-{
 }

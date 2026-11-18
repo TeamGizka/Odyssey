@@ -5,11 +5,10 @@
 #include "nwscreaturestats.h"
 #include "nwrules.h"
 #include "nwfeat.h"
+#include "nwspell.h"
 
-static inline void SwguiskillflowchartTrace3();
-static inline void SwguiskillflowchartTrace2();
-static inline void SwguiskillflowchartTrace1();
-#define SWGUISKILLFLOWCHART_TRACE() SwguiskillflowchartTrace1()
+#define SWGUISKILLFLOWCHART_DEBUG 0
+
 // PC 0x006CCC40  Xbox 0x000EF170
 void CSWGuiSkillFlow::Draw(float fElapsed)
 {
@@ -75,10 +74,25 @@ CSWGuiSkillFlow::CSWGuiSkillFlow()
         m_aSkills[i].m_nStatus = 0;
     }
 }
+// Dead code: not in the PC executable
+void CSWGuiSkillFlow::Clear()
+{
+    int i;
+
+    for (i = 0; i < 3; i++)
+    {
+        m_aSkills[i].m_bSelected = 0;
+        m_aSkills[i].m_nSkill = -1;
+        m_aSkills[i].m_nStatus = 0;
+    }
+}
 // PC 0x006CCE30  Xbox 0x000EF1F0
 void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
 {
-    SwguiskillflowchartTrace1();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillFlow::SetExtent() children contains %d\n", m_lChildren.Contains(NULL));
+    }
     CSWGuiExtent cSkillExtent;
     cSkillExtent.m_nLeft = cExtent.m_nLeft;
     cSkillExtent.m_nTop = cExtent.m_nTop;
@@ -123,7 +137,10 @@ void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
 // PC 0x006CD4C0  Xbox 0x000EF8D0
 void CSWGuiSkillFlow::SetSkillSelected(unsigned char nSkill, int bSelected)
 {
-    SwguiskillflowchartTrace2();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillFlow::SetSkillSelected() selected %d\n", bSelected);
+    }
     if (m_aSkills[nSkill].m_bSelected != bSelected)
     {
         m_aSkills[nSkill].m_bSelected = bSelected;
@@ -267,7 +284,6 @@ void CSWGuiSkillFlowChart::BuildSortedFeatList(
     }
 }
 
-#include "nwspell.h"
 // PC 0x006CDA80  Xbox 0x000EFEA0
 void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
                                      unsigned long nFeat2,
@@ -419,7 +435,10 @@ int CSWGuiSkillFlowChart::HandleInput(int nEvent)
 CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    SwguiskillflowchartTrace3();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillInfoBox::CSWGuiSkillInfoBox() manager %p\n", pManager);
+    }
 #ifdef _XBOX
     StartLoadFromLayout("skillinfo");
 #else
@@ -460,7 +479,10 @@ CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
 // PC 0x006CCFD0  Xbox 0x000EF390
 void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus)
 {
-    SwguiskillflowchartTrace1();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillFlow::SetSkillStatus() children contains %d\n", m_lChildren.Contains(NULL));
+    }
     m_aSkills[nSkill].m_nStatus = nStatus;
     m_aSkills[nSkill].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
     m_aSkills[nSkill].m_cLeftImage.m_cParams.m_fAlpha = 1.0f;
@@ -515,7 +537,10 @@ void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus
 // PC 0x006CD1C0
 unsigned int CSWGuiSkillFlow::SkillHitCheckMouse(int nX, int nY)
 {
-    SwguiskillflowchartTrace1();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillFlow::SkillHitCheckMouse() children contains %d\n", m_lChildren.Contains(NULL));
+    }
     int nHit;
     int i;
     CSWGuiExtent cExtent;
@@ -599,7 +624,10 @@ void CSWGuiSkillInfoBox::SetSkillList(const CExoArrayList<unsigned long>& lSkill
 void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
                                           int bAllPowers)
 {
-    SwguiskillflowchartTrace2();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillFlowChart::CreatePowerChart() all powers %d\n", bAllPowers);
+    }
     CSWSpell* pSpell;
     CSWSpell* pNextSpell;
     CExoArrayList<unsigned long> aPowers;
@@ -670,7 +698,10 @@ void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
 // PC 0x006CE370  Xbox 0x000F0840
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
 {
-    SwguiskillflowchartTrace2();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillFlowChart::CreateFeatChart() stats %p\n", pStats);
+    }
     CSWClass* pClass;
     CSWFeat* pFeat;
     CSWFeat* pNextFeat;
@@ -743,7 +774,10 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
                                            int bBonusFeats)
 {
-    SwguiskillflowchartTrace2();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillFlowChart::CreateFeatChart() bonus feats %d\n", bBonusFeats);
+    }
     CSWClass* pClass;
     CSWFeat* pFeat;
     CSWFeat* pNextFeat;
@@ -819,6 +853,22 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
         AddFeatSet(aFeats[i], nNextFeat, nAltFeat);
     }
 }
+// Dead code: not in the PC executable
+unsigned char CSWGuiSkillFlowChart::GetSkillStatus(unsigned long nSkill)
+{
+    for (int i = 0; i < m_cFlows.num; i++)
+    {
+        CSWGuiSkillFlow* pFlow = static_cast<CSWGuiSkillFlow*>(m_cFlows[i]);
+        for (int j = 0; j < 3; j++)
+        {
+            if (pFlow->m_aSkills[j].m_nSkill == nSkill)
+            {
+                return pFlow->m_aSkills[j].m_nStatus;
+            }
+        }
+    }
+    return 0xFF;
+}
 // PC 0x006CD2E0  Xbox 0x000EF620
 int CSWGuiSkillFlowChart::SetSkillStatusAll(unsigned char nStatus)
 {
@@ -846,7 +896,10 @@ CSWGuiSkillInfoBox::~CSWGuiSkillInfoBox()
 // PC 0x006CD3C0  Xbox 0x000EF660
 void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUISKILLFLOWCHART_TRACE();
+    if (SWGUISKILLFLOWCHART_DEBUG)
+    {
+        EXOLOG("CSWGuiSkillInfoBox::HandleInputEvent() controls contains %d\n", m_lControls.Contains(NULL));
+    }
     if (nState != 0)
     {
         switch (nEvent)
@@ -861,18 +914,4 @@ void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-
-static inline void SwguiskillflowchartTrace3()
-{
-    SwguiskillflowchartTrace2();
-}
-
-static inline void SwguiskillflowchartTrace2()
-{
-    SwguiskillflowchartTrace1();
-}
-
-static inline void SwguiskillflowchartTrace1()
-{
 }

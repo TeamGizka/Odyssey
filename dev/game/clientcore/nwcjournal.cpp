@@ -492,12 +492,21 @@ void CSWCWorldJournal::DeleteAllEntries()
     m_lstOrder.SetSize(0);
     m_bChanged = 1;
 }
-
+// Dead code: not in the PC executable
 CSWCSortedJournalArrayList::CSWCSortedJournalArrayList()
     : m_lstEntries(0), m_lstOrder(0)
 {
     m_nSortBy = SORT_BY_DATE;
     m_bHasChanged = 0;
+}
+// Dead code: not in the PC executable
+SJournalEntry* CSWCSortedJournalArrayList::GetEntryAt(int nIndex)
+{
+    if (nIndex >= 0 && nIndex < m_lstEntries.num)
+    {
+        return &m_lstEntries[m_lstOrder[nIndex]];
+    }
+    return 0;
 }
 // PC 0x00677000  Xbox 0x00092000
 void CSWCWorldJournal::SortList()

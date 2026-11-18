@@ -16,14 +16,14 @@ public:
 #ifdef _XBOX
         CErrorMessageData()
         {
-            m_nUnknown08 = 0;
-            m_nUnknown0C = 0;
+            m_bHideButtons = 0;
+            m_bAllowCancel = 0;
             m_pCallbackObject = 0;
             m_pfnCallback = 0;
         }
         CExoString m_sMessage;
-        int m_nUnknown08;
-        int m_nUnknown0C;
+        int m_bHideButtons;
+        int m_bAllowCancel;
         CSWGuiObject* m_pCallbackObject;
         CSWGuiHandler m_pfnCallback;
 #else
@@ -50,6 +50,7 @@ public:
     void OnExitButton(CSWGuiControl* pControl);
     void LaunchDashboard(CSWGuiControl* pControl);
     void OnQuitButtonPressed(CSWGuiControl* pControl);
+    void ClearListBox();
     void DeleteModuleList();
 #ifdef _XBOX
     void AddErrorMessage(const CErrorMessageData& cMessage);
@@ -71,7 +72,7 @@ public:
     CSWGuiButton m_btnLoadGame;
     CSWGuiButton m_btnMovies;
     CSWGuiButton m_btnOptions;
-    CSWGuiButton m_btnUnused;
+    CSWGuiButton m_btnCredits;
 #ifdef _XBOX
     CSWGuiLabel m_lblWarp;
     CSWGuiLabel m_lblY;

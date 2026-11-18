@@ -156,7 +156,7 @@ CServerInfo::CServerInfo()
     m_bConversationMultiPlayerViewOnly = 0;
     m_nDifficultyLevel = GAME_DIFFICULTY_NORMAL;
 
-    m_aOptions[0] = SServerOption("Undefined", "UndefinedOption", NULL, SServerOption::OPTION_UNUSED);
+    m_aOptions[0] = SServerOption("Undefined", "UndefinedOption", NULL, SServerOption::OPTION_UNDEFINED);
     m_aOptions[1] = SServerOption(CMessageServerAdmin_JoiningRestrictions,
         CMessageServerAdmin_JoiningRestrictions_AllowLocal, &m_bAllowLocal, SServerOption::OPTION_BOOLEAN);
     m_aOptions[2] = SServerOption(CMessageServerAdmin_JoiningRestrictions,
@@ -251,7 +251,7 @@ CServerInfo::CServerInfo()
         CMessageServerAdmin_AutoSave_OnPlayerChange, &m_bAutoSaveOnPlayerChange, SServerOption::OPTION_BOOLEAN);
     m_aOptions[47] = SServerOption(CMessageServerAdmin_AutoSave,
         CMessageServerAdmin_AutoSave_Interval, &m_nAutoSaveInterval, SServerOption::OPTION_INTEGER);
-    m_aOptions[48] = SServerOption("Undefined", "UndefinedOption", NULL, SServerOption::OPTION_UNUSED);
+    m_aOptions[48] = SServerOption("Undefined", "UndefinedOption", NULL, SServerOption::OPTION_UNDEFINED);
     m_aOptions[49] = SServerOption(CMessageServerAdmin_PlayOptions,
         CMessageServerAdmin_PlayOptions_GetPauseAndPlay, &m_bPauseAndPlay, SServerOption::OPTION_BOOLEAN);
 }

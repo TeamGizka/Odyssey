@@ -68,6 +68,7 @@ public:
                               BOOL bAllowPunctuation);
     int Find(const CExoString& sString, int nStart) const;
     int Find(char cChar, int nStart) const;
+    int FindNot(char cChar, int nStart) const;
     CExoString Left(int nCount) const;
     CExoString Right(int nCount) const;
     CExoString SubString(int nStart, int nCount) const;
@@ -138,12 +139,18 @@ public:
     void Add(CExoString* pString);
     void AddSorted(CExoString* pString);
     void Clear();
+    void Delete(CExoString* pString);
     CExoString* GetString(int nIndex);
     void Insert(CExoString* pString, int nPosition);
+    void Remove(int nIndex);
+    CExoStringList& operator=(CExoStringList& list);
     CExoStringList* Merge(CExoStringList* pList, int nSortMode,
                           int nDuplicateMode);
 
     int GetCount();
+    int GetDuplicate();
+    int GetSorted();
+    int GetSize();
     CExoString* operator[](int nIndex);
 
 private:
@@ -343,12 +350,21 @@ public:
 
 
     void Assert(int line, char* file, const char* message);
+    void CloseLogFiles();
+    void FlushErrorFile();
+    void FlushLogFile();
+    void FlushResourcesLogFile();
+    unsigned long GetCurrentAllocatedMemory();
     unsigned long GetCurrentMemoryAllocations();
     unsigned long GetMaxAllocatedMemory();
     unsigned long GetTotalMemoryAllocations();
     void SetRotateLogFile(int bRotate);
     void WriteToErrorFile(const CExoString& text);
     void WriteToLogFile(const CExoString& text);
+    void WriteToResourcesLogFile(const CExoString& text);
+    void WriteToSoundLogFile(const CExoString& text);
+    void WriteToResourceTrackingFile(const CExoString& text);
+    void WriteResourceToScreen(const CExoString& text, int nColumn, int nRow, float fDuration);
 #ifdef _DEBUG
 
     void Log(const char* format, ...);
@@ -399,6 +415,7 @@ public:
     int Seek(int offset, int origin);
     int SeekBeginning();
     int SeekEnd();
+    int Eof();
 
     CExoFileInternal* m_pInternal;
 };
@@ -432,6 +449,7 @@ public:
     float GetSpokenTimeEstimate(int nID, unsigned char nGender) const;
     int AddString(int nID, const CExoString& sString, unsigned char nGender);
     void RemoveString(int nID, unsigned char nGender);
+    void RemoveString(int nID);
 
 private:
 
@@ -476,6 +494,9 @@ public:
     CExoRand();
     ~CExoRand();
     unsigned long Rand();
+    CExoString GetString(unsigned short nLength);
+    void SignalEvent();
+    void SignalEvent(unsigned long nEvent);
 
     CExoRandInternal* m_pInternal;
 };
@@ -507,6 +528,7 @@ class CExoDebug;
 class CExoRand;
 class CExoBaseInternal;
 class CExoString;
+class CFileInfo;
 
 class CExoAliasListInternal;
 
@@ -520,6 +542,8 @@ public:
 
     void ChangePath(const CExoString& sAlias, const CExoString& sPath);
 #endif
+    void Clear();
+    void Delete(const CExoString& sAlias);
     const CExoString& GetAliasPath(const CExoString& sAlias, int nLength) const;
     CExoString ResolveFileName(const CExoString& sAlias,
                                unsigned short nResType) const;
@@ -802,20 +826,23 @@ public:
 #ifdef _XBOX
     int GetDirectoryList(CExoArrayList<CExoString>* pList,
                          const CExoString& sPath, unsigned short nResType,
-                         int nArg4, int nArg5);
+                         int bDirectories, int nSortMode);
 #else
     void GetDirectoryList(CExoArrayList<CExoString>* pList,
                           const CExoString& sPath, unsigned short nResType,
-                          int nArg4, int nArg5);
+                          int bDirectories, int nSortMode);
 #endif
     int GetDirectorySize(const CExoString& sPath);
+    int GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList, const CExoString& sDir, unsigned short nResType, int bSorted);
     const CExoString& GetResourceExtension(unsigned short resourceType);
     unsigned short GetResTypeFromExtension(const CExoString& extension);
     void LoadAliases(const CExoString& sFile);
+    void ShutDown();
     void SpawnExternalApplication(const CExoString& sApplication,
                                   const CExoString& sCommandLine,
                                   int bQuit);
     int WcsToMbs(char* sDest, const wchar_t* sSource, unsigned long nLength);
+    int CheckForCD();
 
     CExoIni* m_pExoIni;
     CExoTimers* m_pExoTimers;
@@ -838,8 +865,6 @@ extern CExoBase* g_pExoBase;
 
 
 
-class CFileInfo;
-
 class CExoBaseInternal
 {
 public:
@@ -849,11 +874,12 @@ public:
                          const CExoString& sDir, unsigned short nResType,
                          int bDirectories, int nSortMode);
     void AddAlias(const CExoString& sFile, const CExoString& sAlias,
-                  const CExoString& sDefault, const CExoString& sUnused);
+                  const CExoString& sDefault, const CExoString& sXboxDefault);
     int GetDirectorySize(const CExoString& sPath);
     const CExoString& GetResourceExtension(unsigned short resourceType);
     unsigned short GetResTypeFromExtension(const CExoString& extension);
     void LoadAliases(const CExoString& sFile);
+    void ShutDown();
     void SpawnExternalApplication(const CExoString& sApplication,
                                   const CExoString& sCommandLine,
                                   int bQuit);
@@ -893,10 +919,23 @@ public:
     ~CExoDebugInternal();
     void CloseLogFiles();
     void FlushScriptLogFile();
+    void FlushErrorFile();
+    void FlushLogFile();
+    void FlushResourcesLogFile();
+    void FlushSoundLogFile();
+    void FlushResourceTrackingFile();
+    CExoFile* OpenLogFile(const CExoString& path, CExoString name);
     void OpenLogFiles(const CExoString& path);
     void Assert(int line, char* file, const char* message);
     void InitializeWarningFile();
+    void InitializeAssertFile();
     void Warning(int line, char* file, const char* message);
+    void WriteToErrorFile(const CExoString& text);
+    void WriteToLogFile(const CExoString& text);
+    void WriteToResourcesLogFile(const CExoString& text);
+    void WriteToSoundLogFile(const CExoString& text);
+    void WriteToResourceTrackingFile(const CExoString& text);
+    void WriteResourceToScreen(const CExoString& text, int nColumn, int nRow, float fDuration);
     void GetCurrentTimestamp(CExoString& timestamp);
     void WriteToScriptLogFile(const CExoString& text);
 
@@ -921,6 +960,8 @@ public:
     void Add(unsigned char* pData, int nLength);
     void GenSeed();
     CExoString GetString(unsigned short nLength);
+    void SignalEvent();
+    void SignalEvent(unsigned long nEvent);
     void ReSeed(unsigned long nSeed0, unsigned long nSeed1,
                 unsigned long nSeed2, unsigned long nSeed3);
 
@@ -987,15 +1028,15 @@ public:
 #ifdef _XBOX
     void CancelMovie();
     int IsMoviePlaying();
-    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nA);
+    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nMode);
     void ShowFadePanel();
     void HideFadePanel(int bWait);
     void SetFadeMsg(unsigned long nStrRef);
     int Initialize(void* pParam);
 #else
-    int CancelMovie(int nA, int nB);
+    int CancelMovie(int nResult, int bForce);
     int IsMoviePlaying();
-    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nA,
+    int PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nMode,
                         const CExoArrayList<int>* lstSkippable);
     void ShowFadePanel();
     void HideFadePanel();
@@ -1105,10 +1146,10 @@ public:
     ~CExoSound();
     int Play3DOneShotSound(const CResRef& cResRef, Vector vPosition,
                            float fRadius, unsigned char nGroup,
-                           unsigned long nA, unsigned char nB, float fA,
-                           float fB);
-    void PlaySound(CResRef& cResRef, unsigned char nType, unsigned long nA,
-                   unsigned char nB, float fA, float fB);
+                           unsigned long nOneShotDelay, unsigned char nVolume, float fFixedVariance,
+                           float fPitchVariance);
+    void PlaySound(CResRef& cResRef, unsigned char nType, unsigned long nOneShotDelay,
+                   unsigned char nVolume, float fFixedVariance, float fPitchVariance);
     int GetBestEAXAvailable();
     void SetMusicVolume(float fVolume, int bFade);
     void SetDialogVolume(float fVolume);
@@ -1126,8 +1167,8 @@ public:
     void SetListenerOrientation(const Vector& vOrientation, const Vector& vUp);
     void SetListenerPosition(const Vector& vPosition);
     int PlayOneShotSound(const CResRef& cResRef, unsigned char nType,
-                         unsigned long nDelay, unsigned char nGroup,
-                         float fVolume, float fPitchVariance);
+                         unsigned long nOneShotDelay, unsigned char nVolume,
+                         float fFixedVariance, float fPitchVariance);
     void StopAllOneShots();
     void Set2D3DBias(float fBias);
     float Get2D3DBias();

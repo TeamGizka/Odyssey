@@ -29,17 +29,17 @@ int CNetLayer::EndProtocol(unsigned long nProtocol)
 
 void CNetLayer::SetPlayerPassword(CExoString sPassword)
 {
-    m_sServerString1 = sPassword;
+    m_sPlayerPassword = sPassword;
 }
 
 void CNetLayer::SetGameMasterPassword(CExoString sPassword)
 {
-    m_sServerString2 = sPassword;
+    m_sGameMasterPassword = sPassword;
 }
 
 void CNetLayer::SetServerAdminPassword(CExoString sPassword)
 {
-    m_sServerString3 = sPassword;
+    m_sServerAdminPassword = sPassword;
 }
 
 void CNetLayer::SetSessionMaxPlayers(unsigned long nMaxPlayers)

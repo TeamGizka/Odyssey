@@ -25,7 +25,7 @@ int CServerExoApp::SaveGame(unsigned long nSlot, const CExoString& sName,
 {
     return m_pcExoAppInternal->SaveGame(nSlot, sName, pPlayer, bAutoSave);
 }
-
+// Dead code: not in the PC executable
 int CServerExoApp::SendCharacterQuery(CSWSPlayer* pPlayer)
 {
     return m_pcExoAppInternal->SendCharacterQuery(pPlayer);
@@ -36,7 +36,7 @@ int CServerExoApp::LoadGame(unsigned long nSlot, const CExoString& sName,
 {
     return m_pcExoAppInternal->LoadGame(nSlot, sName, sModule, pPlayer);
 }
-
+// Dead code: not in the PC executable
 int CServerExoApp::StartNewModule(const CExoString& sModule)
 {
     return m_pcExoAppInternal->StartNewModule(sModule);
@@ -54,7 +54,7 @@ int CServerExoApp::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
 {
     return m_pcExoAppInternal->LoadCharacterFinish(pPlayer, bSuccess);
 }
-
+// Dead code: not in the PC executable
 int CServerExoApp::LoadPrimaryPlayer(CSWSPlayer* pPlayer)
 {
     return m_pcExoAppInternal->LoadPrimaryPlayer(pPlayer);
@@ -73,6 +73,11 @@ CSWSItem* CServerExoApp::GetItemByGameObjectID(unsigned long oidObject)
 CSWSCreature* CServerExoApp::GetCreatureByGameObjectID(unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetCreatureByGameObjectID(oidObject);
+}
+// Dead code: not in the PC executable
+CSWSModule* CServerExoApp::GetModuleByGameObjectID(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->GetModuleByGameObjectID(oidObject);
 }
 // PC 0x004AE780  Xbox 0x0015E5C0
 CSWSArea* CServerExoApp::GetAreaByGameObjectID(unsigned long oidObject)
@@ -122,6 +127,11 @@ CSWSSoundObject* CServerExoApp::GetSoundObjectByGameObjectID(
     unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetSoundObjectByGameObjectID(oidObject);
+}
+// Dead code: not in the PC executable
+unsigned long CServerExoApp::GetPlayerIDByGameObjectID(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->GetPlayerIDByGameObjectID(oidObject);
 }
 // PC 0x004AE810  Xbox 0x0015E650
 int CServerExoApp::GetPlayerLanguage(unsigned long nPlayerId)
@@ -192,30 +202,35 @@ CExoString CServerExoApp::GetPlayerListString()
 {
     return m_pcExoAppInternal->GetPlayerListString();
 }
-
+// Dead code: not in the PC executable
 void CServerExoApp::OnCDChange()
 {
     m_pcExoAppInternal->OnCDChange();
 }
-
+// Dead code: not in the PC executable
 void CServerExoApp::OnExit()
 {
     m_pcExoAppInternal->OnExit();
 }
-
+// Dead code: not in the PC executable
 void CServerExoApp::OnGainFocus()
 {
     m_pcExoAppInternal->OnGainFocus();
 }
-
+// Dead code: not in the PC executable
 void CServerExoApp::OnLostFocus()
 {
     m_pcExoAppInternal->OnLostFocus();
 }
-
+// Dead code: not in the PC executable
 void CServerExoApp::OnVideoChange()
 {
     m_pcExoAppInternal->OnVideoChange();
+}
+// Dead code: not in the PC executable
+void CServerExoApp::SetForceUpdate()
+{
+    m_pcExoAppInternal->m_bForceUpdate = 1;
 }
 // PC 0x004AE8F0  Xbox 0x0015E750
 void CServerExoApp::StartServices(int nServices)
@@ -247,6 +262,11 @@ void CServerExoApp::InitiateModuleForPlayer(void* pData)
 void CServerExoApp::MovePlayerToArea(void* pData)
 {
     m_pcExoAppInternal->MovePlayerToArea(pData);
+}
+// Dead code: not in the PC executable
+int CServerExoApp::GetIsControlledByPlayer(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->GetClientObjectByObjectId(oidObject) != NULL;
 }
 // PC 0x004AE950  Xbox 0x0015E7B0
 int CServerExoApp::GetFactionOfObject(unsigned long oidObject, int* pnFaction)
@@ -295,7 +315,7 @@ CExoLinkedList<unsigned long>* CServerExoApp::GetActiveExclusionList()
 {
     return m_pcExoAppInternal->GetActiveExclusionList();
 }
-
+// Dead code: not in the PC executable
 int CServerExoApp::IsOnActiveExclusionList(unsigned long oidObject)
 {
     return m_pcExoAppInternal->IsOnActiveExclusionList(oidObject);
@@ -314,6 +334,11 @@ int CServerExoApp::GetDifficultyOption(int nOption)
 void CServerExoApp::AddCharListRequest(unsigned long nPlayerId)
 {
     m_pcExoAppInternal->AddCharListRequest(nPlayerId);
+}
+// Dead code: not in the PC executable
+int CServerExoApp::IsOnExclusionList(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->IsOnExclusionList(oidObject);
 }
 // PC 0x004AEA10  Xbox 0x0015E870
 int CServerExoApp::GetFirstPCObject()
@@ -503,7 +528,7 @@ void CServerExoApp::SetMoveToModulePending(int bPending)
 {
     m_pcExoAppInternal->m_bMoveToModulePending = bPending;
 }
-
+// Dead code: not in the PC executable
 int CServerExoApp::GetMoveToModulePending()
 {
     return m_pcExoAppInternal->m_bMoveToModulePending;
@@ -513,7 +538,7 @@ void CServerExoApp::SetMoveToModuleString(const CExoString& sModule)
 {
     m_pcExoAppInternal->m_sMoveToModule = sModule;
 }
-
+// Dead code: not in the PC executable
 CExoString CServerExoApp::GetMoveToModuleString()
 {
     return m_pcExoAppInternal->m_sMoveToModule;
@@ -523,7 +548,7 @@ void CServerExoApp::SetExportAllCharactersPending(int bPending)
 {
     m_pcExoAppInternal->m_bExportAllCharactersPending = bPending;
 }
-
+// Dead code: not in the PC executable
 int CServerExoApp::ExportAllPlayers()
 {
     return m_pcExoAppInternal->ExportAllPlayers();
@@ -635,7 +660,7 @@ CSWGlobalVariableTable* CServerExoApp::GetGlobalVariableTable()
 {
     return &m_pcExoAppInternal->m_globalVariableTable;
 }
-
+// Dead code: not in the PC executable
 void CServerExoApp::SetCreatureFollowing(unsigned long oidCreature,
                                          unsigned long oidTarget, int bRun,
                                          const Vector& vDestination)
@@ -717,7 +742,7 @@ void CServerExoApp::ClearAllActions(unsigned long oidObject)
     {
         pCreature->ClearAllActions(1);
         pCreature->m_pcCombatRound->RemoveAllActions();
-        pCreature->m_pcCombatRound->m_oidUnknown9CC = 2130706432;
+        pCreature->m_pcCombatRound->m_oidRoundTarget = 2130706432;
         pCreature->m_oidAttemptedAttackTarget = 2130706432;
         pCreature->m_oidAttackTarget = 2130706432;
         pCreature->m_oidAttemptedSpellTarget = 2130706432;

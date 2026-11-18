@@ -4,7 +4,7 @@
 #include "exoresman.h"
 #include "nwcanimbase.h"
 
-static inline void NwcanimbaseheadTrace2();
+static inline void TraceSetHeadItem();
 
 class CSWCAnimBaseHead : public virtual CSWCAnimBaseTW
 {
@@ -42,14 +42,14 @@ public:
     virtual void DisableDistortion();
     virtual void SetHeadItem(unsigned long nItemId)  // PC 0x00699AD0  Xbox 0x000C5670
     {
-        NwcanimbaseheadTrace2();
+        TraceSetHeadItem();
         m_nHeadItem = nItemId;
     }
 
     unsigned short m_aParts[10];
     unsigned char m_nPartCount;
     unsigned char m_nPartStart;
-    unsigned char m_aPad1A[2];
+    unsigned char m_nPartMask[2];
     CResRef m_cReplacedTexture;
     int m_bTextureReplaced;
     CResRef m_cEnvMap;
@@ -59,7 +59,7 @@ public:
     unsigned long m_nHeadItem;
 };
 
-static inline void NwcanimbaseheadTrace2()
+static inline void TraceSetHeadItem()
 {
 }
 

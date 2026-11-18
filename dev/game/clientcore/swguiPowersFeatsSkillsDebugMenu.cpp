@@ -12,14 +12,18 @@
 #include "swguipowersfeatsskillsdebugmenu.h"
 #include "swmain.h"
 
-static inline void SwguipowersfeatsskillsdebugmenuTrace2();
-static inline void SwguipowersfeatsskillsdebugmenuTrace1();
-#define SWGUIPOWERSFEATSSKILLSDEBUGMENU_TRACE() SwguipowersfeatsskillsdebugmenuTrace1()
+#define SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG 0
+
+static inline void TraceDebugMenuOption();
+static inline void TraceDebugMenu();
 // PC 0x006CEBA0  Xbox 0x000F5EE0
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
     unsigned long nSpell, CSWSCreature* pCreature)
 {
-    SwguipowersfeatsskillsdebugmenuTrace2();
+    if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
+    {
+        TraceDebugMenuOption();
+    }
     const int nNoPrerequisiteSpell = -1;
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
     int nClass = pCreature->m_pStats->m_nClassCount - 1;
@@ -47,7 +51,10 @@ void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteFeats(
     unsigned short nFeat, CSWSCreature* pCreature)
 {
-    SwguipowersfeatsskillsdebugmenuTrace2();
+    if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
+    {
+        AddPrerequisiteSpells(0, pCreature);
+    }
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
 
     if (pFeat != NULL && pCreature != NULL)
@@ -65,7 +72,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteFeats(
         pCreature->m_pStats->AddFeat(nFeat);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiPowersFeatsSkillsDebugMenu::HideMenu()
 {
     CreateMainPowersFeatsSkillsMenu();
@@ -74,7 +81,10 @@ void CSWGuiPowersFeatsSkillsDebugMenu::HideMenu()
 // PC 0x006CECD0  Xbox 0x000F6010
 void CSWGuiPowersFeatsSkillsDebugMenu::OnSkillPicked(CSWGuiControl* pControl)
 {
-    SwguipowersfeatsskillsdebugmenuTrace2();
+    if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
+    {
+        AddPrerequisiteFeats(0, NULL);
+    }
     if (pControl->m_bSelected != 0)
     {
         int i;
@@ -377,11 +387,11 @@ CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
     return pButton;
 }
 
-static inline void SwguipowersfeatsskillsdebugmenuTrace2()
+static inline void TraceDebugMenuOption()
 {
-    SwguipowersfeatsskillsdebugmenuTrace1();
+    TraceDebugMenu();
 }
 
-static inline void SwguipowersfeatsskillsdebugmenuTrace1()
+static inline void TraceDebugMenu()
 {
 }

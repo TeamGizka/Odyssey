@@ -3,13 +3,19 @@
 #include <GL/gl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <aurlist.h>
+#include <aurpointer.h>
+#include <string.h>
+#include "aurlist.h"
+#include "aurpointer.h"
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void AurPushClientState()
 {
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 }
-
+// Dead code: not in the PC executable
 void AurPopClientState()
 {
     glPopClientAttrib();
@@ -20,15 +26,13 @@ class CHitInfo;
 static inline void AurSceneTrace(CHitInfo* = 0);
 #include "aurscene.h"
 #include "aurora.h"
-#include <aurlist.h>
-#include <aurpointer.h>
 #include "aurrendergl.h"
 
-static inline void AurSceneTrace4();
-static inline void AurSceneTrace3();
-static inline void AurSceneTrace2();
-static inline void AurSceneTrace1();
-#define AURSCENE_TRACE() AurSceneTrace2()
+static inline void TraceHitInfo();
+static inline void TraceSceneQuery();
+static inline void TraceTileFlame();
+static inline void TraceScene();
+#define AURSCENE_TRACE() TraceTileFlame()
 
 const int Scene::FADING_OFF = 1;
 const int Scene::FADING_ON = 2;
@@ -160,7 +164,7 @@ class CAurTriangleBin;
 extern int enablefocusshadowing;
 extern float maxshadowdist;
 extern float shadowlength;
-
+// Dead code: not in the PC executable
 void SetShadowStencilBuffer()
 {
     int nStencilBits = AurGetAvailableStencilBits();
@@ -239,7 +243,6 @@ char Scene::IsAnimating()
 #include "aurtrigger.h"
 #include "aurscenemanager.h"
 #include "aurconsole.h"
-#include <string.h>
 #include <math.h>
 #include "aurtexman.h"
 #include "aurprimitive.h"
@@ -293,7 +296,7 @@ void AurDisableInterleavedAnimations()
 {
     g_bEnableInterleavedAnimations = 0;
 }
-
+// Dead code: not in the PC executable
 int SceneGetNearestLights(Scene* pScene, Vector vPosition, float fRadius)
 {
     return pScene->m_pLightManager->GetNearestLights(pScene, vPosition, fRadius, 0);
@@ -897,12 +900,12 @@ void CHitInfo::Reset(int nType, int nFlags, int nMask)
     m_nMask = nMask;
     m_lstHits.m_nCount = 0;
     m_nResult = 0;
-    m_bResult0 = 0;
-    m_bResult1 = 1;
-    m_bResult2 = 0;
-    m_bResult3 = 0;
+    m_bIgnoreCharacters = 0;
+    m_bIgnoreFaded = 1;
+    m_bUseIgnoreHitCheck = 0;
+    m_bSkipStatic = 0;
 #ifndef _XBOX
-    m_bResult4 = 0;
+    m_bHitEmitterBounds = 0;
 #endif
     ClearOutput();
 }
@@ -1782,13 +1785,13 @@ CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
              pGob->m_bDistortion ||
 #else
             ((bool(pGob->m_pModel->m_Classification.m_bEmitterBounds) &&
-              !pHitInfo->m_bResult4) || pGob->m_bDistortion ||
+              !pHitInfo->m_bHitEmitterBounds) || pGob->m_bDistortion ||
 #endif
              bool(pGob->m_pModel->m_Classification.m_bSceneHitDisabled) ||
              pGob->IsSceneHitExcluded()))
             continue;
 
-        if (pHitInfo->m_bResult0 && pGob->m_pModel &&
+        if (pHitInfo->m_bIgnoreCharacters && pGob->m_pModel &&
             (bool(pGob->m_pModel->m_Classification.m_bCharacter) ||
              bool(pGob->m_pModel->m_Classification.m_bRenderEarly) ||
              (bool(pGob->m_pModel->m_Classification.m_bAlternateShadowCaster) &&
@@ -2304,18 +2307,18 @@ void Scene::DoFog()
             if (LightManager::m_pOnlyGob)
             {
                 Vector vBlack(0.0f, 0.0f, 0.0f);
-                GLRender_SetFogModev(FOG_COLOR, vBlack);
+                GLRender_SetFogfv(FOG_COLOR, vBlack);
             }
             else
             {
-                GLRender_SetFogModev(FOG_COLOR, m_vFogColor);
+                GLRender_SetFogfv(FOG_COLOR, m_vFogColor);
             }
             float fNear = m_fFogNear;
-            GLRender_SetFogModef(FOG_START, fNear);
+            GLRender_SetFogf(FOG_START, fNear);
             float fFar = m_fFogFar;
-            GLRender_SetFogModef(FOG_END, fFar);
+            GLRender_SetFogf(FOG_END, fFar);
             float fDensity = m_fFogDensity;
-            GLRender_SetFogModef(FOG_DENSITY, fDensity);
+            GLRender_SetFogf(FOG_DENSITY, fDensity);
         }
         else
         {
@@ -2334,15 +2337,15 @@ void Scene::DoFog()
             m_nFogMode == FOG_MODE_EXP ? FOG_MODE_EXP : FOG_MODE_EXP2);
         {
             Vector vRed(1.0f, 0.0f, 0.0f);
-            GLRender_SetFogModev(FOG_COLOR, vRed);
+            GLRender_SetFogfv(FOG_COLOR, vRed);
         }
         m_vFogColor = Vector(1.0f, 0.0f, 0.0f);
-        GLRender_SetFogModef(FOG_START, AUR_FOG_TEST_START);
+        GLRender_SetFogf(FOG_START, AUR_FOG_TEST_START);
         m_fFogNear = 0.0f;
         m_fFogFar = AUR_FOG_TEST_END;
         m_fFogDensity = AUR_FOG_TEST_DENSITY;
-        GLRender_SetFogModef(FOG_END, AUR_FOG_TEST_END);
-        GLRender_SetFogModef(FOG_DENSITY, AUR_FOG_TEST_DENSITY);
+        GLRender_SetFogf(FOG_END, AUR_FOG_TEST_END);
+        GLRender_SetFogf(FOG_DENSITY, AUR_FOG_TEST_DENSITY);
     }
 }
 // PC 0x00450FA0  Xbox 0x002A50B0
@@ -2946,7 +2949,7 @@ void Scene::RenderShadows(int nReserved1, int nReserved2,
 }
 #else
 // PC 0x00451A50  Xbox 0x002A5B70
-void Scene::RenderShadows(int nReserved1, int nReserved2,
+void Scene::RenderShadows(int bStaticShadows, int bDynamicShadows,
                           int bRenderGobs, int bClearStencil)
 {
     int nStencilBits = AurGetAvailableStencilBits();
@@ -3184,7 +3187,7 @@ int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo
     CurrentHitInfo = pHitInfo;
     CAurObject* pHitObject = 0;
 
-    if (!pHitInfo->m_bResult3)
+    if (!pHitInfo->m_bSkipStatic)
     {
         if (!m_lstRooms.m_nCount)
         {
@@ -3499,12 +3502,6 @@ void CHitInfo::ClearOutput()
     m_pOutputRoom = 0;
     m_nOutputType = -1;
 }
-
-#include "aurlist.h"
-
-#include <stdlib.h>
-
-#include "aurpointer.h"
 
 Vector Scene::m_vLastCameraPosition;
 Quaternion Scene::m_qLastCameraOrientation;
@@ -3840,28 +3837,37 @@ CAurScene* NewCAurScene(char* sName)
 {
     return (CAurScene*)new Scene(sName);
 }
+// Dead code: not in the PC executable
+void Scene::ListSpecialParts(Part* pPart)
+{
+    ListSpecialPartsR(pPart);
+}
+// Dead code: not in the PC executable
+void Scene::ListSpringPartsR(Part* pPart)
+{
+}
 
 static inline void AurSceneTrace(CHitInfo*)
 {
-    AurSceneTrace4();
+    TraceHitInfo();
 }
 
-static inline void AurSceneTrace4()
+static inline void TraceHitInfo()
 {
-    AurSceneTrace3();
+    TraceSceneQuery();
 }
 
-static inline void AurSceneTrace3()
+static inline void TraceSceneQuery()
 {
-    AurSceneTrace2();
+    TraceTileFlame();
 }
 
-static inline void AurSceneTrace2()
+static inline void TraceTileFlame()
 {
-    AurSceneTrace1();
+    TraceScene();
 }
 
-static inline void AurSceneTrace1()
+static inline void TraceScene()
 {
 }
 

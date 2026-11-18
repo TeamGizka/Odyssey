@@ -28,8 +28,8 @@ typedef CExoArrayList<CSWGuiKeyMapButton*> CCPchArraySWGuiKeyMapButtonPtr;
 typedef CExoArrayList<CFeatUseListEntry*> CCPchArrayFeatUseListEntryPtr;
 typedef CExoArrayList<CSWGuiFloatyText*> CCPchArraySWGuiFloatyTextPtr;
 
-inline CCPchArraySWGuiControlPtr* CCPchArraySWGuiControlPtr_Construct(int a0) { return new CCPchArraySWGuiControlPtr(a0); }
-inline CCPchArrayResRef* CCPchArrayResRef_Construct(int a0) { return new CCPchArrayResRef(a0); }
+inline CCPchArraySWGuiControlPtr* CCPchArraySWGuiControlPtr_Construct(int nSize) { return new CCPchArraySWGuiControlPtr(nSize); }
+inline CCPchArrayResRef* CCPchArrayResRef_Construct(int nSize) { return new CCPchArrayResRef(nSize); }
 inline void CCPchArraySWGuiControlPtr_Destroy(CCPchArraySWGuiControlPtr* p) { p->~CCPchArraySWGuiControlPtr(); }
 inline void CCPchArraySWGuiKeyMapButtonPtr_Destroy(CCPchArraySWGuiKeyMapButtonPtr* p) { p->~CCPchArraySWGuiKeyMapButtonPtr(); }
 inline void CCPchLinkedAurObject_Destroy(CCPchLinkedAurObject* p) { p->~CCPchLinkedAurObject(); }
@@ -105,4 +105,4 @@ inline void CCPchPanelSlots_Thunks()
 
 class CSWGuiButton;
 typedef CExoArrayList<CSWGuiButton*> CCPchArraySWGuiButtonPtr;
-inline CCPchArraySWGuiButtonPtr* CCPchArraySWGuiButtonPtr_Construct(int a0) { return new CCPchArraySWGuiButtonPtr(a0); }
+inline CCPchArraySWGuiButtonPtr* CCPchArraySWGuiButtonPtr_Construct(int nSize) { return new CCPchArraySWGuiButtonPtr(nSize); }

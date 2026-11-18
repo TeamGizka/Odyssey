@@ -26,7 +26,7 @@ void CSWSWaypoint::EventHandler(unsigned long nEventId, unsigned long oidCaller,
 {
     if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC != 0)
+        if (m_bDestroyable != 0)
         {
             delete this;
         }

@@ -11,7 +11,7 @@ CSWInventory::CSWInventory()
         m_oidSlot[i] = 0;
     }
 }
-
+// Dead code: not in the PC executable
 CSWInventory::~CSWInventory()
 {
 }

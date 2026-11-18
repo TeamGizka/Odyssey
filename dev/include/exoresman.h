@@ -212,12 +212,15 @@ public:
     void* Demand();
     void Dump(int bFlag);
     int GetDemands();
+    int GetRequests();
+    unsigned long GetID();
     void GetResRef(CResRef& cResRef, unsigned short& nType);
     int ReadRaw(int nSize, char* pBuffer);
     int Release();
     unsigned long GetSize();
     void* GetData();
     int Request();
+    void SetID(unsigned long nResId);
 
     unsigned short m_nDemandCount;
     unsigned short m_nRequestCount;
@@ -241,17 +244,19 @@ class CRes2DA : public CRes
 public:
     CRes2DA();
     virtual ~CRes2DA();
+    unsigned long* Get2DAHeaderPtr();
 
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
 
     void* Get2DADataPtr();
     unsigned long Get2DASize();
+    int IsLoaded();
 
     int m_bServiced;
     unsigned long m_n2DASize;
     void* m_p2DAData;
-    unsigned long m_nUnknown34;
+    unsigned long m_p2DAHeader;
     int m_bPacked;
 };
 
@@ -267,13 +272,17 @@ class CRes4PC : public CRes
 public:
     CRes4PC();
     virtual ~CRes4PC();
+    int Copy4PCData(unsigned char* p4PCData);
 
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
 
-    int Get4PCAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC,
-                     int* pnD);
+    int Get4PCAttrib(unsigned long* pnWidth, unsigned long* pnHeight, float* pfAlpha,
+                     int* pnFormat);
     unsigned char* Get4PCDataPtr();
+    unsigned long* Get4PCHeaderPtr();
+    int Get4PCSize();
+    int IsLoaded();
 
     int m_bServiced;
     int m_nReserved;
@@ -290,6 +299,7 @@ class CResDDS : public CRes
 public:
     CResDDS();
     virtual ~CResDDS();
+    int CopyDDSData(unsigned char* pDDSData);
 
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
@@ -298,6 +308,9 @@ public:
                      unsigned char* pnBpp, unsigned long* pnSize,
                      float* pfAlpha);
     unsigned char* GetDDSDataPtr();
+    unsigned long* GetDDSHeaderPtr();
+    int GetDDSSize();
+    int IsLoaded();
 
     int m_bServiced;
     int m_nReserved;
@@ -312,6 +325,8 @@ public:
     ~CResLIP();
     virtual int OnResourceFreed();
     char* GetLIPDataPtr();
+    unsigned long GetLIPSize();
+    int IsLoaded();
     virtual int OnResourceServiced();
 
     int m_bServiced;
@@ -374,6 +389,7 @@ public:
     virtual int OnResourceServiced();
     unsigned char* GetLYTDataPtr();
     int GetLYTSize();
+    int IsLoaded();
     CResLYT();
     ~CResLYT();
 };
@@ -386,6 +402,7 @@ public:
     virtual int OnResourceFreed();
     unsigned char* GetMDXDataPtr();
     unsigned long GetMDXSize();
+    int IsLoaded();
     virtual int OnResourceServiced();
 
     int m_bServiced;
@@ -405,12 +422,17 @@ class CResPLT : public CRes
 public:
     CResPLT();
     virtual ~CResPLT();
+    int CopyPLTData(unsigned char* pPLTData);
 
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
 
-    int GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long* pnC);
+    int GetPLTAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned long* pnReserved);
     unsigned char* GetPLTDataPtr();
+    unsigned long* GetPLTHeaderPtr();
+    unsigned long GetPLTSize();
+    int IsCompressed();
+    int IsLoaded();
 
 private:
     int ReadRLEPLT();
@@ -465,16 +487,23 @@ class CResTGA : public CRes
 public:
     CResTGA();
     virtual ~CResTGA();
+    int CopyTGAData(unsigned char* pTGAData);
 
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
 
     int GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnDepth);
+    unsigned char* GetTGAColorMapPtr();
     unsigned char* GetTGADataPtr();
+    TGAHeader* GetTGAHeaderPtr();
     unsigned long GetTGASize();
+    int IsColorMapped();
+    int IsCompressed();
+    int IsLoaded();
 
     int ReadColorMappedRLETGA();
     int ReadUnmappedRLETGA();
+    int Write(const CExoString& sFileName);
 
     int m_bDataOwned;
     int m_bColorMapped;
@@ -494,12 +523,12 @@ struct TPCHeader
     float m_fAlphaBlending;
     unsigned short m_nWidth;
     unsigned short m_nHeight;
-    unsigned char m_bFormat1 : 1;
-    unsigned char m_bFormat3 : 1;
-    unsigned char m_bFormat4 : 1;
+    unsigned char m_bEncodingGray : 1;
+    unsigned char m_bEncodingRGB : 1;
+    unsigned char m_bEncodingRGBA : 1;
     unsigned char m_nFormatUnused : 5;
     unsigned char m_nMipMapCount;
-    unsigned char m_nUnknown0E[114];
+    unsigned char m_aReserved[114];
 };
 #pragma pack(pop)
 
@@ -529,12 +558,15 @@ public:
 
     int GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
                      int* pnCompressedSize, int* pnUncompressedSize,
-                     int* pnRemainingSize, float* pfUnknown,
+                     int* pnRemainingSize, float* pfAlphaBlending,
                      char* pnMipMapCount);
     unsigned char* GetTPCDataPtr();
+    TPCHeader* GetTPCHeaderPtr();
     int GetTPCSize();
     unsigned char* GetTPCTXIPtr();
     int GetTPCTXISize();
+    int IsCompressed();
+    int IsLoaded();
 
     int m_bCompressed;
     int m_bServiced;
@@ -555,6 +587,7 @@ public:
     virtual int OnResourceServiced();
     void* GetTXIDataPtr();
     unsigned long GetTXISize();
+    int IsLoaded();
 
 
 
@@ -578,6 +611,7 @@ public:
     virtual int OnResourceServiced();
     unsigned char* GetVISDataPtr();
     unsigned long GetVISSize();
+    int IsLoaded();
 };
 
 
@@ -595,7 +629,7 @@ struct CBMUFileHeader
 
 struct CLegacyWaveHeader
 {
-    unsigned char m_auUnknown[470];
+    unsigned char m_abHeader[470];
 };
 #pragma pack(pop)
 
@@ -604,6 +638,10 @@ class CResWave : public CRes
 public:
     CResWave();
     virtual ~CResWave();
+    unsigned long GetWaveSize();
+    int IsLoaded();
+    int IsCompressed();
+    int IsModifiedWav();
 
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
@@ -645,6 +683,7 @@ public:
     virtual int OnResourceFreed();
     unsigned char* GetMDLDataPtr();
     unsigned long GetMDLSize();
+    int IsLoaded();
     virtual int OnResourceServiced();
 };
 
@@ -658,6 +697,7 @@ public:
 
     char* GetNCSDataPtr();
     unsigned long GetNCSSize();
+    int IsLoaded();
 
     int m_bServiced;
     unsigned long m_nNCSSize;
@@ -679,6 +719,7 @@ public:
 
     unsigned char* GetDWKDataPtr();
     unsigned long GetDWKSize();
+    int IsLoaded();
 
     int m_bServiced;
     unsigned long m_nDWKSize;
@@ -694,6 +735,7 @@ class CResSSF : public CRes
 public:
     CResSSF();
     virtual ~CResSSF();
+    int IsLoaded();
 
     virtual int OnResourceFreed();
     virtual int OnResourceServiced();
@@ -866,6 +908,7 @@ public:
     int GetRoomCount();
     int GetTrackCount();
     int GetObstacleCount();
+    int GetDoorHookCount();
     int UnloadLayout();
     CResRef GetRoomName(int nRoom);
     Vector GetRoomPosition(int nRoom);
@@ -1011,6 +1054,10 @@ public:
                            unsigned long nResId, int);
     CKeyTableEntry* FindKey(const CResRef& resRef, unsigned short nType);
     CExoStringList* GetKeysOfType(unsigned short nType);
+    CRes* GetRes(const CResRef& resRef, unsigned short nType);
+    unsigned long GetResID(const CResRef& resRef, unsigned short nType);
+    int GetTableEntry(unsigned long nIndex, CResRef& resRef,
+                      unsigned short& nType);
     void DestroyTable();
     int LocateBifFile(const CExoString& sFileName);
     int AddDirectoryContents(int bFlag);
@@ -1165,6 +1212,8 @@ public:
 
 
     virtual void* GetResource(unsigned long nId);
+    CExoResourceImageFileEntry* GetKeyList();
+    CExoResourceImageFileHeader* GetHeader();
 
 
     CExoResourceImageFileEntry GetKeyListEntry(unsigned long nIndex)
@@ -1287,9 +1336,11 @@ public:
 
 
     int CreateSignatureFile(const CExoString& sFileName, unsigned short nType,
-                            unsigned long nArg3, unsigned long nArg4);
+                            unsigned long nSize, unsigned long nFlags);
     void* Demand(CRes* pRes);
     void Dump(CRes* pRes, int bFlag);
+    void DumpAll();
+    void DumpTable(CExoLinkedList<CExoKeyTable>& lstTables);
     int Exists(const CResRef& cResRef, unsigned short nType,
                unsigned long* pnTableType);
     int Exists(const CResRef& cResRef, unsigned short nType,
@@ -1302,9 +1353,11 @@ public:
     int Free(CRes* pRes);
     int FreeChunk();
     void FreeResourceData(CRes* pRes);
+    CExoLocString GetEncapsulatedFileDescription(const CExoString& sFileName);
     int GetFreeDiskSpace(const CExoString& sPath,
                          unsigned __int64* pnFreeBytes);
     int GetIsStaticType(unsigned short nType);
+    unsigned long GetResID(const CResRef& cResRef, unsigned short nType);
     int GetKeyEntry(const CResRef& cResRef, unsigned short nType,
                     CExoKeyTable** ppTable, CKeyTableEntry** ppEntry);
     int GetKeyEntryFromTable(CExoLinkedList<CExoKeyTable>& lstTables,
@@ -1326,6 +1379,7 @@ public:
     unsigned short GetResTypeFromFile(const CExoString& sFileName);
     CExoKeyTable* GetTable(CRes* pRes);
     int GetTableCount(CRes* pRes, int bCountAll);
+    unsigned long GetTotalPhysicalMemory();
     int Malloc(CRes* pRes);
     int NukeDirectory(const CExoString& sPath, int bDeleteFiles, int bRecurse);
     int ReadRaw(CRes* pRes, int nSize, char* pBuffer);
@@ -1337,6 +1391,7 @@ public:
     int RemoveKeyTable(const CExoString& sFileName, unsigned long nType);
     int RemoveResourceDirectory(const CExoString& sFileName);
     int RemoveResourceImageFile(const CExoString& sFileName);
+    void ResumeServicing();
 
     int Request(CRes* pRes)
     {
@@ -1374,9 +1429,17 @@ public:
     int ServiceFromResFile(CRes* pRes, int bAsync);
     int ServiceFromResFileRaw(CRes* pRes, int nSize, char* pBuffer);
     void SetResObject(const CResRef& cResRef, unsigned short nType, CRes* pRes);
+    int SetTotalResourceMemory(int nMemory);
+    void SuspendServicing();
     void Update(unsigned long nTime);
+    int UpdateEncapsulatedResourceFile(const CExoString& sFileName);
+    int UpdateFixedKeyTableFile(const CExoString& sFileName);
     int UpdateKeyTable(const CExoString& sFileName, unsigned long nType);
     int UpdateResourceDirectory(const CExoString& sFileName);
+    int UpdateResourceImageFile(const CExoString& sFileName);
+    int ValidateSignedResource(const CExoString& sFileName,
+                               unsigned short nType, unsigned long nSize,
+                               unsigned long nFlags);
     int WipeDirectory(const CExoString& sPath, int bDeleteFiles,
                       int bRemoveDirectory, int bRecurseClean, int bRecurse);
 

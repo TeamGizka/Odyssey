@@ -22,7 +22,7 @@ public:
     unsigned char m_nClass;
     unsigned char m_nGender;
     unsigned char m_nSoundSet;
-    unsigned char m_bUnknown03;
+    unsigned char m_nPortrait;
     unsigned long m_nDescriptionStrRef;
 };
 
@@ -69,7 +69,7 @@ public:
         STRREF_SCOUNDREL = 135
     };
 
-    unsigned char m_aUnmapped64[4];
+    unsigned char m_nSelectedCharacter[4];
     CSWCCreature* m_pSelectedCreature;
     CSWGuiClassSelChar m_aCharacters[6];
     CSWGuiLabel m_lblCharGen;

@@ -21,9 +21,11 @@
 #include <math.h>
 #include <string.h>
 
-static inline void NwccreaturestatsTrace3();
-static inline void NwccreaturestatsTrace2();
-static inline void NwccreaturestatsTrace1();
+#define NWCCREATURESTATS_DEBUG 0
+
+static inline void TraceKnownSpells();
+static inline void TraceClassInfo();
+static inline void TraceCreatureStats();
 // PC 0x0064AF10  Xbox 0x000AD8C0
 void CSWCCreatureStats::GetMenuInfo(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, unsigned long nTarget,
@@ -68,26 +70,26 @@ CSWCCreatureStats::CSWCCreatureStats()
     m_aAbilities[ABILITY_CHARISMA] = 0;
     m_aAbilities[ABILITY_CONSTITUTION] = 0;
     m_nDexterityBonus = 0;
-    m_aUnknown41[0] = 0;
-    m_aUnknown41[1] = 0;
-    m_aUnknown41[2] = 0;
-    m_aUnknown41[3] = 0;
-    m_aUnknown41[4] = 0;
-    m_aUnknown41[5] = 0;
+    m_aBaseAbilities[0] = 0;
+    m_aBaseAbilities[1] = 0;
+    m_aBaseAbilities[2] = 0;
+    m_aBaseAbilities[3] = 0;
+    m_aBaseAbilities[4] = 0;
+    m_aBaseAbilities[5] = 0;
     m_nDefenseBase = 0;
     m_nHitPointsBase = 0;
     m_nHitPointBonus = 0;
     m_nMaxHitPoints = 0;
     m_nCurrentHitPoints = 0;
-    m_aUnknown52[0] = 0;
-    m_fUnknown54 = 6.0f;
+    m_nMovementRate[0] = 0;
+    m_fChallengeRating = 6.0f;
     m_nExperience = 0;
     m_nFortitudeSave = 0;
     m_nWillSave = 0;
     m_nReflexSave = 0;
     m_nGoodEvilAlignment = NEUTRAL_GOOD_EVIL_ALIGNMENT;
-    m_nUnknown60 = 0;
-    m_nUnknown64 = 0;
+    m_bUseMonkAttackTables = 0;
+    m_nBaseAttackBonus = 0;
     m_nAppearance = m_nRace;
     m_pSkillRanksTotal = new char[g_pRules->m_nNumSkills];
     m_pSkillRanks = new char[g_pRules->m_nNumSkills];
@@ -128,6 +130,19 @@ void CSWCCreatureStats::ClearSkills()
 char CSWCCreatureStats::CalcStatModifier(unsigned char nScore)
 {
     return (int)floor(nScore * 0.5) - 5;
+}
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats::GetCasterLevel(unsigned char nClass)
+{
+    if (nClass >= 2)
+    {
+        return 0;
+    }
+    if (g_pRules->m_pClasses[GetClass(nClass)].m_bSpellCaster)
+    {
+        return GetClassLevel(nClass);
+    }
+    return 0;
 }
 // PC 0x00647660  Xbox 0x000A9F70
 CExoString CSWCCreatureStats::GetRaceString()
@@ -345,6 +360,25 @@ void CSWCCreatureStats::SetCombatInformation(CCombatInformation* pInfo)
     }
     m_pCombatInformation = pInfo;
 }
+// Dead code: not in the PC executable
+int CSWCCreatureStats::GetNumOnHandAttacks()
+{
+    if (m_pCombatInformation != NULL)
+    {
+        return m_pCombatInformation->GetNumAttacks();
+    }
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWCCreatureStats::GetNumOffHandAttacks()
+{
+    if (m_pCombatInformation != NULL &&
+        m_pCombatInformation->GetOffHandWeaponEquipped() == 1)
+    {
+        return 1;
+    }
+    return 0;
+}
 // PC 0x00647AE0  Xbox 0x000AA3F0
 int CSWCCreatureStats::CalculateNumAttacks()
 {
@@ -362,7 +396,7 @@ int CSWCCreatureStats::CalculateNumAttacks()
     }
     return 1;
 }
-
+// Dead code: not in the PC executable
 CExoString CSWCCreatureStats::GetAlignmentInfo()
 {
     CExoString sInfo;
@@ -454,6 +488,18 @@ float CSWCCreatureStats_ClassInfo::GetMinSpellRange(const CExoString& sRange)
     }
     return fRange;
 }
+// Dead code: not in the PC executable
+int CSWCCreatureStats_ClassInfo::HasSpell(unsigned char nLevel, unsigned long nSpell)
+{
+    for (int i = 0; i < (unsigned short)m_lstKnownSpells[nLevel].num; i++)
+    {
+        if (m_lstKnownSpells[nLevel].element[i] == nSpell)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
 // PC 0x00647E80  Xbox 0x000AA880
 CResRef CSWCCreatureStats::GetPortrait(int bAlternate)
 {
@@ -503,12 +549,12 @@ CResRef CSWCCreatureStats::GetPortrait(int bAlternate)
     }
     return CResRef(sResRef);
 }
-
+// Dead code: not in the PC executable
 int CSWCCreatureStats::GetBaseAttackBonus()
 {
     if (m_bOwnsCombatInformation == 1)
     {
-        return m_nUnknown64;
+        return m_nBaseAttackBonus;
     }
 
     unsigned char nBonus = 0;
@@ -522,32 +568,32 @@ int CSWCCreatureStats::GetBaseAttackBonus()
     }
     return nBonus;
 }
-
+// Dead code: not in the PC executable
 int CSWCCreatureStats::GetCombatModeAttackModifier(CSWCCreature* pCreature)
 {
     if (pCreature == NULL)
     {
         return 0;
     }
-    if (pCreature->m_nUnknown19C == 1)
+    if (pCreature->m_nPowerAttackState == 1)
     {
         return -5;
     }
-    if (pCreature->m_nUnknown1A0 == 1)
+    if (pCreature->m_nImprovedPowerAttackState == 1)
     {
         return -10;
     }
-    if (pCreature->m_nUnknown1A8 == 1)
+    if (pCreature->m_nRapidShotState == 1)
     {
         return -2;
     }
-    if (pCreature->m_nUnknown1AC == 1)
+    if (pCreature->m_nFlurryState == 1)
     {
         return -2;
     }
     return 0;
 }
-
+// Dead code: not in the PC executable
 CExoString CSWCCreatureStats::GetAttackBonusString(CSWCCreature* pCreature, int nAttack,
                                                    int bOffHand)
 {
@@ -617,7 +663,7 @@ CExoString CSWCCreatureStats::GetAttackBonusString(CSWCCreature* pCreature, int 
         int nBonus = 0;
         if (m_pCombatInformation != NULL)
         {
-            nBonus = m_nUnknown60 ? GetBaseAttackBonus() - 3 * i : GetBaseAttackBonus() - 5 * i;
+            nBonus = m_bUseMonkAttackTables ? GetBaseAttackBonus() - 3 * i : GetBaseAttackBonus() - 5 * i;
         }
         if (nBonus + nModifier >= 0)
         {
@@ -666,7 +712,7 @@ CExoString CSWCCreatureStats::GetAttackBonusString(CSWCCreature* pCreature, int 
     }
     return sResult;
 }
-
+// Dead code: not in the PC executable
 CExoString CSWCCreatureStats::GetGeneralDamageBonusString(CSWCCreature* pCreature,
                                                           int bOffHand)
 {
@@ -717,14 +763,14 @@ CExoString CSWCCreatureStats::GetGeneralDamageBonusString(CSWCCreature* pCreatur
     }
     return sResult;
 }
-
+// Dead code: not in the PC executable
 int CSWCCreatureStats::GetCombatModeDamageModifier(CSWCCreature* pCreature)
 {
-    if (pCreature->m_nUnknown19C == 1)
+    if (pCreature->m_nPowerAttackState == 1)
     {
         return 5;
     }
-    if (pCreature->m_nUnknown1A0 == 1)
+    if (pCreature->m_nImprovedPowerAttackState == 1)
     {
         return 10;
     }
@@ -733,49 +779,73 @@ int CSWCCreatureStats::GetCombatModeDamageModifier(CSWCCreature* pCreature)
 // PC 0x00648150  Xbox 0x000AABB0
 inline char CSWCCreatureStats::GetSTRMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetSTRMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     return (int)floor(m_nStrength * 0.5) - 5;
 }
 // PC 0x00648180  Xbox 0x000AABE0
 inline char CSWCCreatureStats::GetDEXMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetDEXMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     return CalcStatModifier(m_nDexterity) + m_nDexterityBonus;
 }
 // PC 0x006481C0  Xbox 0x000AAC20
 inline int CSWCCreatureStats::GetCONMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetCONMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     return (int)floor(m_nConstitution * 0.5) - 5;
 }
 // PC 0x006481F0  Xbox 0x000AAC50
 inline int CSWCCreatureStats::GetINTMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     return (int)floor(m_nIntelligence * 0.5) - 5;
 }
 // PC 0x00648220  Xbox 0x000AAC80
 inline int CSWCCreatureStats::GetWISMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetWISMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     return (int)floor(m_nWisdom * 0.5) - 5;
 }
 // PC 0x00648250  Xbox 0x000AACB0
 inline int CSWCCreatureStats::GetCHAMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetCHAMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     return (int)floor(m_nCharisma * 0.5) - 5;
 }
 // PC 0x00648280  Xbox 0x000AACE0
 inline char CSWCCreatureStats::GetBaseINTMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetBaseINTMod() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     return (int)floor(m_aAbilities[3] * 0.5) - 5;
 }
 // PC 0x006482B0  Xbox 0x000AAD10
 inline int CSWCCreatureStats::FeatAcquired(unsigned short nFeat)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::FeatAcquired() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     int nLeft = m_lstFeats.num;
     int nCount = 0;
     if (nLeft > 0)
@@ -819,7 +889,10 @@ inline int CSWCCreatureStats::FeatAcquired(unsigned short nFeat)
 // PC 0x00648320  Xbox 0x000AAD80
 void CSWCCreatureStats::ClearFeats()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::ClearFeats() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     while (m_lstFeats.num != 0)
     {
         m_lstFeats.DelIndex(m_lstFeats.num - 1);
@@ -837,7 +910,10 @@ void CSWCCreatureStats::ClearFeats()
 // PC 0x00648430  Xbox 0x000AAE90
 unsigned char CSWCCreatureStats::GetLevel()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetLevel() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     int nLevel = 0;
     for (int i = 0; i < m_nClassCount; i++)
     {
@@ -848,7 +924,10 @@ unsigned char CSWCCreatureStats::GetLevel()
 // PC 0x00648470  Xbox 0x000AAED0
 CExoString CSWCCreatureStats::GetClassesString(char cSeparator)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetClassesString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     CExoString sClasses;
     char szSeparator[2];
     szSeparator[0] = 0;
@@ -870,7 +949,10 @@ CExoString CSWCCreatureStats::GetClassesString(char cSeparator)
 // PC 0x006486E0  Xbox 0x000AB140
 unsigned short CSWCCreatureStats::GetFeat(unsigned short nIndex)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetFeat() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     if (nIndex >= m_lstFeats.num)
     {
         return 0xFFFF;
@@ -881,7 +963,10 @@ unsigned short CSWCCreatureStats::GetFeat(unsigned short nIndex)
 void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat,
                                              unsigned char nUses)
 {
-    NwccreaturestatsTrace2();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::SetFeatRemainingUses() has feat 0 %d\n", HasFeat(0));
+    }
     for (int i = 0; i < m_lstFeatUses.num; i++)
     {
         if (m_lstFeatUses.element[i]->m_nFeat == nFeat)
@@ -894,6 +979,31 @@ void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat,
     pUse->m_nFeat = nFeat;
     pUse->m_nUses = nUses;
     m_lstFeatUses.Add(pUse);
+}
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats::GetFeatRemainingUses(unsigned short nFeat)
+{
+    for (int i = 0; i < m_lstFeatUses.num; i++)
+    {
+        if (m_lstFeatUses.element[i]->m_nFeat == nFeat)
+        {
+            return m_lstFeatUses.element[i]->m_nUses;
+        }
+    }
+    if (m_lstFeats.Contains(nFeat) || m_lstBonusFeats.Contains(nFeat))
+    {
+        return CSWFeat::MAX_FEAT_USES;
+    }
+    return 0;
+}
+// Dead code: not in the PC executable
+unsigned short CSWCCreatureStats::GetBonusFeat(unsigned short nFeat)
+{
+    if (nFeat >= m_lstBonusFeats.num)
+    {
+        return 0xFFFF;
+    }
+    return m_lstBonusFeats.element[nFeat];
 }
 // PC 0x00649520  Xbox 0x000ABF90
 void CSWCCreatureStats::ClearKnownSpells()
@@ -916,7 +1026,10 @@ unsigned long CSWCCreatureStats::GetKnownSpell(unsigned char nClass,
                                                unsigned char nLevel,
                                                unsigned char nIndex)
 {
-    NwccreaturestatsTrace2();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetKnownSpell() has feat 0 %d\n", HasFeat(0));
+    }
     if (nClass >= 2)
     {
         return 0xFFFFFFFF;
@@ -937,15 +1050,40 @@ inline unsigned long CSWCCreatureStats_ClassInfo::GetKnownSpell(unsigned char nL
     }
     return m_lstKnownSpells[nLevel][nIndex];
 }
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats_ClassInfo::GetSpellsPerDayLeft(unsigned char nLevel)
+{
+    if (nLevel >= SPELL_LEVEL_COUNT)
+    {
+        return 0;
+    }
+    return m_aSpellsPerDayLeft[nLevel];
+}
 // PC 0x006495F0  Xbox 0x000AC060
 CSWCCreatureStats_ClassInfo::~CSWCCreatureStats_ClassInfo()
 {
     ClearKnownSpells();
 }
+// Dead code: not in the PC executable
+unsigned long CSWCCreatureStats::GetAlignmentStringRef(int nAlignment)
+{
+    switch (GetSimpleAlignmentGoodEvil())
+    {
+    case CSWSCreatureStats::ALIGNMENT_GOOD:
+        return 0;
+    case CSWSCreatureStats::ALIGNMENT_EVIL:
+        return 0;
+    default:
+        return 0;
+    }
+}
 // PC 0x00648710  Xbox 0x000AB170
 CExoString CSWCCreatureStats::GetAlignmentString(int nAlignment)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetAlignmentString() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     STR_RES strRes;
 
     unsigned long nStrRef;
@@ -969,7 +1107,10 @@ CExoString CSWCCreatureStats::GetAlignmentString(int nAlignment)
 unsigned short CSWCCreatureStats::GetNumberKnownSpells(unsigned char nClass,
                                                        unsigned char nLevel)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetNumberKnownSpells() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     if (nClass >= 2)
     {
         return 0;
@@ -980,7 +1121,10 @@ unsigned short CSWCCreatureStats::GetNumberKnownSpells(unsigned char nClass,
 unsigned char CSWCCreatureStats::GetSpellsPerDayLeft(unsigned char nClass,
                                                      unsigned char nLevel)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::GetSpellsPerDayLeft() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     if (nClass >= 2)
     {
         return 0;
@@ -996,7 +1140,10 @@ unsigned char CSWCCreatureStats::GetSpellsPerDayLeft(unsigned char nClass,
 void CSWCCreatureStats_ClassInfo::AddKnownSpell(unsigned char nLevel,
                                                unsigned long nSpell)
 {
-    NwccreaturestatsTrace2();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        ClearKnownSpells();
+    }
     if (nLevel < 1)
     {
         if (m_lstKnownSpells[nLevel].IndexOf(nSpell) == -1)
@@ -1028,7 +1175,10 @@ char CSWCCreatureStats::GetSkillModifier(unsigned short nSkill)
 // PC 0x006488B0  Xbox 0x000AB330
 void CSWCCreatureStats_ClassInfo::ClearKnownSpells()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        m_lstKnownSpells[0].Remove(0);
+    }
     for (int i = m_lstKnownSpells[0].num - 1; i >= 0; i--)
     {
         m_lstKnownSpells[0].DelIndex(i);
@@ -1278,7 +1428,10 @@ void CSWCLevelUpStats::DecreaseSkillRank(unsigned short nSkill,
 void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
                                        unsigned char& nBonus)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCLevelUpStats::CalcNumberFeats() level %d\n", GetLevel());
+    }
     CSWClass* pClass = &g_pRules->m_pClasses[GetClassLeveledUpIn()];
     unsigned char nLevel = GetClassLevel(m_nClassCount - 1);
 
@@ -1288,7 +1441,10 @@ void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
 // PC 0x00649070  Xbox 0x000ABAF0
 unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCLevelUpStats::ComputeNumberKnownSpellsLeft() level %d\n", GetLevel());
+    }
     unsigned char nIndex = m_nClassCount - 1;
     unsigned char nClass = GetClass(nIndex);
     CSWClass* pClass = &g_pRules->m_pClasses[nClass];
@@ -1313,7 +1469,10 @@ unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
 void CSWCLevelUpStats::SetNormalBonusFlags(unsigned short nFeat, int& bNormal,
                                            int& bBonus)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCLevelUpStats::SetNormalBonusFlags() INT mod %d\n", GetINTMod());
+    }
     bNormal = 0;
     bBonus = 0;
     if (g_pRules->GetFeat(nFeat) != NULL)
@@ -1369,7 +1528,7 @@ void CSWCLevelUpStats::AddDefaultPackageSkills(int nClass, int bAllSkills)
 void CSWCCreatureStats::RemoveKnownSpell(unsigned char nClass,
                                          unsigned long nSpell)
 {
-    NwccreaturestatsTrace3();
+    TraceKnownSpells();
     if (nClass < 2)
     {
         if (g_pRules->m_pSpellArray->GetSpell(nSpell) != NULL)
@@ -1381,15 +1540,15 @@ void CSWCCreatureStats::RemoveKnownSpell(unsigned char nClass,
 // PC 0x0064A050  Xbox 0x000AC9F0
 CSWCCreatureStats_ClassInfo::CSWCCreatureStats_ClassInfo()
 {
-    NwccreaturestatsTrace3();
+    TraceKnownSpells();
     m_nClass = 0;
     m_nLevel = 0;
-    m_nUnknown19 = 0;
-    m_nUnknown1A = 0xFF;
-    m_nUnknown1B = 0xFF;
+    m_nSchool = 0;
+    m_nDomain1 = 0xFF;
+    m_nDomain2 = 0xFF;
     memset(m_aSpellsPerDayLeft, 0, sizeof(m_aSpellsPerDayLeft));
 }
-
+// Dead code: not in the PC executable
 void CSWCCreatureStats_ClassInfo::RemoveKnownSpell(unsigned char nLevel,
                                                    unsigned long nSpell)
 {
@@ -1743,7 +1902,10 @@ int CSWCLevelUpStats::HasFeatPrereq(CSWFeat* pFeat,
 // PC 0x00649950  Xbox 0x000AC350
 void CSWCLevelUpStats::AddGrantedFeats(CExoArrayList<unsigned long>* pList)
 {
-    NwccreaturestatsTrace2();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCLevelUpStats::AddGrantedFeats() attack modifier %d\n", CalculateAttackModifier());
+    }
     CSWRace* pRace = &g_pRules->m_pRaces[m_nRace];
     for (int i = 0; i < g_pRules->m_nNumFeats; i++)
     {
@@ -1923,7 +2085,10 @@ int CSWCLevelUpStats::FeatAcquired(unsigned short nFeat,
 // PC 0x006492C0  Xbox 0x000ABD40
 int CSWCCreatureStats::HasSpell(unsigned char nLevel, unsigned long nSpell)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        FeatAcquired(0);
+    }
     for (unsigned char i = 0; i < m_nClassCount; i++)
     {
         CSWCCreatureStats_ClassInfo* pInfo = &m_aClassInfo[i];
@@ -1941,7 +2106,10 @@ int CSWCCreatureStats::HasSpell(unsigned char nLevel, unsigned long nSpell)
 // PC 0x00649340  Xbox 0x000ABDB0
 int CSWCCreatureStats::HasFeat(unsigned short nFeat)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        EXOLOG("CSWCCreatureStats::HasFeat() unarmed damage dice %d\n", CalculateUnarmedDamageDice());
+    }
     int nCount = m_lstFeats.num;
     int nIndex = 0;
     if (nCount > 0)
@@ -1975,7 +2143,7 @@ void CSWCCreatureStats::UpdateAbilityModifiedSkillRanks()
         }
     }
 }
-
+// Dead code: not in the PC executable
 unsigned char CSWCCreatureStats::CalculateUnarmedDamageDice()
 {
     int nSizeCategory;
@@ -1984,7 +2152,7 @@ unsigned char CSWCCreatureStats::CalculateUnarmedDamageDice()
         CTwoDimArrays::COL2DA_APPEARANCETABLE_SIZECATEGORY, &nSizeCategory);
     return 0;
 }
-
+// Dead code: not in the PC executable
 unsigned char CSWCCreatureStats::CalculateUnarmedDamageDie()
 {
     int nSizeCategory;
@@ -1992,6 +2160,11 @@ unsigned char CSWCCreatureStats::CalculateUnarmedDamageDie()
         g_pRules->m_pRaces[m_nRace].m_nAppearance,
         CTwoDimArrays::COL2DA_APPEARANCETABLE_SIZECATEGORY, &nSizeCategory);
     return 0;
+}
+// Dead code: not in the PC executable
+unsigned char CSWCCreatureStats::CalculateCriticalHitRange()
+{
+    return 1;
 }
 // PC 0x0064A770  Xbox 0x000AD120
 unsigned char CSWCLevelUpStats::AddDefaultPackageFeats(
@@ -2121,22 +2294,27 @@ void CSWCCreatureStats_ClassInfo::GetMenuInfo(
         }
     }
 }
-
+// Dead code: not in the PC executable
 int CSWCCreatureStats::CalculateAttackModifier()
 {
     return GetSTRMod();
 }
-
-static inline void NwccreaturestatsTrace3()
+// Dead code: not in the PC executable
+int CSWCCreatureStats::CalculateDamageModifier()
 {
-    NwccreaturestatsTrace2();
+    return GetSTRMod();
 }
 
-static inline void NwccreaturestatsTrace2()
+static inline void TraceKnownSpells()
 {
-    NwccreaturestatsTrace1();
+    TraceClassInfo();
 }
 
-static inline void NwccreaturestatsTrace1()
+static inline void TraceClassInfo()
+{
+    TraceCreatureStats();
+}
+
+static inline void TraceCreatureStats()
 {
 }

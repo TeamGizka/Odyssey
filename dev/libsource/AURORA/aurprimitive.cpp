@@ -8,9 +8,10 @@
 #include "aurmaterial.h"
 #include "aurlightmanager.h"
 
-static inline void AurprimitiveTrace2();
-static inline void AurprimitiveTrace1();
-#define AURPRIMITIVE_TRACE() AurprimitiveTrace1()
+#define AURPRIMITIVE_DEBUG 0
+
+static inline void TraceVertexArrays();
+static inline void TraceVertexPrimitive();
 
 const unsigned char NodeVertex::NODEVERTEX_ANIM_ID = 1;
 const unsigned char NodeVertex::NODEVERTEX_DANGLY_ID = 2;
@@ -20,6 +21,7 @@ int verticescount;
 int enablevar;
 int vertexsize;
 int usevertexprograms = 1;
+// Dead code: not in the PC executable
 // Xbox 0x002D0A80
 VertexPrimitive::VertexPrimitive(Part* pPart)
 #ifdef _XBOX
@@ -168,13 +170,15 @@ VertexPrimitiveSkinned::~VertexPrimitiveSkinned()
 // PC 0x00478A40  Xbox 0x002D0BA0
 VertexPrimitiveDangly::~VertexPrimitiveDangly()
 {
-    AurprimitiveTrace2();
+    if (AURPRIMITIVE_DEBUG)
+    {
+        AurPrintf("VertexPrimitiveDangly::~VertexPrimitiveDangly() part tri mesh %p\n", GetPartTriMesh());
+    }
     delete[] m_pOffsets;
 }
 // PC 0x00478AC0  Xbox 0x002D0C20
 VertexPrimitiveAnim::~VertexPrimitiveAnim()
 {
-    AurprimitiveTrace2();
     int nVertexPool = m_nVertexPool;
     GLRender::DeletePool(nVertexPool);
     m_nVertexPool = RequestPoolManager::INVALID_POOL;
@@ -224,7 +228,10 @@ NodeVertexAnim::NodeVertexAnim(Vector* pPosition, Vector* pTexCoord0,
 VertexPrimitiveFlat::VertexPrimitiveFlat(PartTriMesh* pPart)
     : VertexPrimitive(pPart)
 {
-    AurprimitiveTrace2();
+    if (AURPRIMITIVE_DEBUG)
+    {
+        AurPrintf("VertexPrimitiveFlat::VertexPrimitiveFlat() part %p\n", pPart);
+    }
 #ifdef _XBOX
     m_pNode = (MdlNodeTriMesh*)m_pPart->m_pNode;
 #else
@@ -264,7 +271,7 @@ VertexPrimitiveFlat::VertexPrimitiveFlat(PartTriMesh* pPart)
 // PC 0x00478B50  Xbox 0x002D0CB0
 void VertexPrimitiveFlat::BuildVertexArrays()
 {
-    AurprimitiveTrace2();
+    TraceVertexArrays();
     MdlNodeTriMesh* pNode = m_pNode;
 
     if (pNode->m_bAnimateUV != 0)
@@ -296,7 +303,7 @@ void VertexPrimitiveFlat::BuildVertexArrays()
 // PC 0x00478C20  Xbox 0x002D0740
 unsigned char* VertexPrimitiveFlat::ReconnectArraysVAR(unsigned char* pData)
 {
-    AurprimitiveTrace2();
+    TraceVertexArrays();
 #ifdef _XBOX
     PartTriMesh* pMesh = GetPartTriMesh();
     pMesh->m_pNode->AsMdlNodeTriMesh();
@@ -404,7 +411,10 @@ unsigned char* VertexPrimitiveFlat::ReconnectArraysVAR(unsigned char* pData)
 // PC 0x00478F50  Xbox 0x002D0D80
 unsigned char* VertexPrimitiveSkinned::ReconnectArraysVAR(unsigned char* pData)
 {
-    AurprimitiveTrace2();
+    if (AURPRIMITIVE_DEBUG)
+    {
+        AurPrintf("VertexPrimitiveSkinned::ReconnectArraysVAR() data %p\n", pData);
+    }
     unsigned char* pNext = VertexPrimitiveFlat::ReconnectArraysVAR(pData);
 #ifdef _XBOX
     int nVertices = m_pNode->m_nVertexCount;
@@ -444,7 +454,7 @@ unsigned char* VertexPrimitiveSkinned::ReconnectArraysVAR(unsigned char* pData)
 // PC 0x00479020  Xbox 0x002D0DB0
 void VertexPrimitiveFlat::SetupArrays()
 {
-    AurprimitiveTrace2();
+    TraceVertexArrays();
     VertexPrimitiveAnim* pAnim = AsVertexPrimitiveAnim();
     AsVertexPrimitiveDangly();
     PartTriMesh* pMesh = GetPartTriMesh();
@@ -474,7 +484,7 @@ void VertexPrimitiveFlat::SetupArrays()
 // PC 0x004790E0  Xbox 0x002D0E80
 void VertexPrimitive::SetupVertexArraysStandard()
 {
-    AurprimitiveTrace2();
+    TraceVertexArrays();
     SetupColorState(GetPartTriMesh()->m_bColors != 0);
     SetupArrays();
     m_bRebuild = 0;
@@ -509,12 +519,12 @@ VertexPrimitiveSkinned::VertexPrimitiveSkinned(PartSkin* pPart)
     m_nArrayCount += 6;
 }
 
-static inline void AurprimitiveTrace2()
+static inline void TraceVertexArrays()
 {
-    AurprimitiveTrace1();
+    TraceVertexPrimitive();
 }
 
-static inline void AurprimitiveTrace1()
+static inline void TraceVertexPrimitive()
 {
 }
 

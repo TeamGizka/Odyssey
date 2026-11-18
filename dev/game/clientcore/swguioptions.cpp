@@ -18,13 +18,14 @@
 #include "swguiingameautopause.h"
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 0;
 }
 #endif
-
+// Dead code: not in the PC executable
 void CSWGuiOptionsMouse::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
@@ -338,7 +339,7 @@ void CSWGuiOptionsMain::OnAutopauseOpt(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiOptionsMain::ClosePanel()
 {
     g_pAppManager->m_pClientExoApp->SaveOptions();
@@ -484,10 +485,10 @@ void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
     {
 #ifdef _XBOX
         int bFloaty = (g_pAppManager->m_pClientExoApp->GetClientOptions()
-                           ->m_nXboxUnmappedBit26 == 0);
+                           ->m_bShowFloaty == 0);
         CClientOptions* pOptions =
             g_pAppManager->m_pClientExoApp->GetClientOptions();
-        pOptions->m_nXboxUnmappedBit26 = bFloaty;
+        pOptions->m_bShowFloaty = bFloaty;
 #else
         int bFloaty = (g_pAppManager->m_pClientExoApp->GetClientOptions()
                            ->m_bFloatingNumbers == 0);
@@ -555,7 +556,7 @@ void CSWGuiOptionsFeedback::SetUpOptions()
         unsigned int bMiniMap = pOptions->m_bMiniMap;
         CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
         pToggle3->m_bToggled = bMiniMap;
-        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        unsigned int bFloaty = pOptions->m_bShowFloaty;
         CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
         pToggle5->m_bToggled = bFloaty;
         unsigned int bRumble = pOptions->m_bFloatingNumbers;
@@ -680,7 +681,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
             m_pManager->PopModalPanel();
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
-            if (m_nUnknown18BC != 0)
+            if (m_bReInitPending != 0)
             {
                 CExoIni cIni;
                 CExoString sValue;
@@ -711,7 +712,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
                         }
                     }
                 }
-                m_nUnknown18BC = 0;
+                m_bReInitPending = 0;
             }
             break;
         case 45:
@@ -1035,7 +1036,7 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
             m_lbResolutions.SetSelectedControl(pSelected, 0);
         }
     }
-    m_nUnknown80C = 0;
+    m_bResolutionChanged = 0;
 }
 #endif
 // PC 0x006DF2C0
@@ -1165,7 +1166,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
             m_pManager->PopModalPanel();
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
-            if (m_nUnknown80C != 0)
+            if (m_bResolutionChanged != 0)
             {
                 CExoIni cIni;
                 CExoString sValue;
@@ -1196,7 +1197,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
                         }
                     }
                 }
-                m_nUnknown80C = 0;
+                m_bResolutionChanged = 0;
             }
             break;
         case 39:
@@ -1235,7 +1236,7 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
         m_pManager->PopModalPanel();
         m_bDeferredRemoval = 0;
         m_nExitState = EXITSTATE_DELETE;
-        m_nUnknown80C = 1;
+        m_bResolutionChanged = 1;
         g_pGuiMan->ReloadToolTipPanel();
     }
 }
@@ -1647,7 +1648,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
         unsigned int bMiniMap = pOptions->m_bMiniMap;
         CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
         pToggle3->m_bToggled = bMiniMap;
-        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        unsigned int bFloaty = pOptions->m_bShowFloaty;
         CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
         pToggle5->m_bToggled = bFloaty;
         unsigned int bRumble = pOptions->m_bFloatingNumbers;
@@ -1762,6 +1763,14 @@ void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// Dead code: not in the PC executable
+void CSWGuiOptionsMain::SetActiveButton(int nOption)
+{
+    if (nOption >= 0 && nOption < 6)
+    {
+        SetActiveControl(&m_btnOptions[nOption], 0);
+    }
 }
 // PC 0x006E0010  Xbox 0x001186A0
 void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
@@ -2478,6 +2487,7 @@ void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
 {
     if (nOption >= 0 && nOption < OPTION_COUNT)
@@ -2558,7 +2568,7 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x0
     pAdvanced->AddEvent(39, this,
                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnAdvanced);
     SetActiveControl(&m_sldGamma, 0);
-    m_nUnknown18BC = 0;
+    m_bReInitPending = 0;
 }
 #endif
 // PC 0x006E3550  Xbox 0x001188B0

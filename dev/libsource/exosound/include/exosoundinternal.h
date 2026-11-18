@@ -300,7 +300,7 @@ public:
     int m_nOcclusionState;
 
     CExoString m_s3DProviderName;
-    CExoStringList m_CExoStringList_D8;
+    CExoStringList m_lst3DProviderNames;
 
     CExoArrayList<HPROVIDER> m_a3DProviders;
     HPROVIDER m_h3DProvider;
@@ -465,6 +465,7 @@ public:
     virtual ~CExoSoundSourceInternal();
     int IsPaused();
     int Demand();
+    int Release();
     int ReleaseDemand();
     void DoObstructionWork();
     CExoSoundSourceInternal(CExoSoundInternal*);
@@ -506,7 +507,7 @@ public:
 
     int m_b3D;
 #ifdef _XBOX
-    int m_nUnknown20;
+    int m_bStreaming;
 #else
     unsigned char m_aUnmapped20[4];
 #endif
@@ -630,21 +631,21 @@ public:
     DWORD m_nMagic;
     int m_bStopped;
     unsigned char m_nPriorityVolume;
-    int m_nUnknown14;
+    int m_nStartTime;
     int m_bStarting;
     int m_bLooping;
-    unsigned char m_nUnmapped20;
+    unsigned char m_nSliderType;
     unsigned char m_nPriorityGroup;
     CResRef m_resRef;
-    int m_nUnmapped34;
+    int m_bPlayRequested;
     CExoSoundInternal* m_pSoundInternal;
     CExoString m_sFileName;
     unsigned long m_nFadeDuration;
     int m_nSourceId;
     unsigned long m_nFadeStartTime;
     unsigned char m_aUnmapped50[0xC];
-    int m_nUnknown5C;
-    int m_nUnmapped60;
+    int m_nPausePosition;
+    int m_bReverbChanged;
     int m_bReverbEnabled;
     int m_b3D;
     int m_bPaused;
@@ -653,7 +654,7 @@ public:
     CExoXboxStreamPacket m_aPackets[NUM_PACKETS];
     DWORD m_nBlockAlign;
     DWORD m_nFileLength;
-    DWORD m_nUnknownB0;
+    DWORD m_nFilePosition;
     DWORD m_nPacketSize;
     DWORD m_nPacketsRead;
     DWORD m_nPacketsSubmitted;
@@ -735,14 +736,14 @@ public:
     void Update();
     void Initialize();
 
-    int m_nUnmapped00;
+    int m_bShuttingDown;
     CExoLinkedList<CExoXboxStream> m_lstStreams;
     CExoSoundInternal* m_pSoundInternal;
     HANDLE m_hEvent;
     HANDLE m_hThread;
     float m_fVolumeScale;
     float m_fLastVolumeScale;
-    float m_fUnknown1C;
+    float m_fTargetVolumeScale;
     unsigned long m_nStartTime;
     CExoXboxStreamCommand m_aCommands[QUEUE_SIZE];
     CExoXboxStream* m_apDeletedStreams[QUEUE_SIZE];
@@ -766,7 +767,7 @@ public:
     int m_bLooping;
     unsigned char m_nPriorityGroup;
     int m_b3D;
-    int m_nUnknown34;
+    int m_bReservedStream;
     int m_nVolume;
     Vector m_vPosition;
     float m_fMaxVolumeDist;
@@ -827,7 +828,7 @@ public:
     int m_nSourceId;
     unsigned long m_nFadeStartTime;
     FILE* m_pFile;
-    char m_aUnmapped3C[4];
+    char m_nFileSize[4];
     int m_nPausePosition;
     unsigned short m_nResourceType;
     unsigned char m_nVolume;
@@ -854,7 +855,7 @@ public:
     int GetLooping();
     CResRef GetFilePlaying();
     void Set3D(int b3D);
-    void SetDistance(float fMinDistance, float fMaxDistance);
+    void SetDistance(float fMaxVolumeDist, float fMinVolumeDist);
     void SetPosition(Vector vPosition);
     CResRef& GetResRef();
     int GetResourceType();

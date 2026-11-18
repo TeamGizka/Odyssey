@@ -112,9 +112,9 @@ public:
     virtual ~Gob();
     void Reset();
     void RenderBoundingBox();
-    void CheckEvent(float fTime, bool bForce);
-    void SetAnimationTime(char* sName, float fTime);
-    void SetAnimationPercentage(char* sName, float fPercentage);
+    bool CheckEvent(float fTime, bool bForce);
+    float SetAnimationTime(char* sName, float fTime);
+    float SetAnimationPercentage(char* sName, float fPercentage);
     int ShouldWeCheckVisibilityHACK();
     static int cm_nLastGobIndex;
     // PC 0x0063E7F0
@@ -447,12 +447,12 @@ public:
 
     char m_bSingleTexture;
 
-    char m_bUnused;
+    char m_bSingleMaterial;
     char m_bHasGeometry;
     char m_bProcessFlag;
     Material* m_pSingleTexture;
 
-    int m_nUnused1;
+    int m_nSingleTextureID;
     TileData* m_pTileData;
     LookAtAnimation* m_pLookAtAnimation;
 
@@ -489,7 +489,7 @@ public:
     bool IsAlternateShadowCaster();
     bool IsEmitterBounds(); bool CheckEventCallBack(float fDelay, bool bRepeat);
 #else
-    int m_nUnused2;
+    int m_bSkipHierarchyAnimation;
 #endif
 };
 
@@ -598,9 +598,9 @@ public:
     int m_nTexCoord3Offset;
     int m_TangentBases;
 
-    int m_nUnusedVertexOffset1;
-    int m_nUnusedVertexOffset2;
-    int m_nUnusedVertexOffset3;
+    int m_TangentBases1;
+    int m_TangentBases2;
+    int m_TangentBases3;
     short m_nVertexCount;
 
     short m_nTextureCount;
@@ -978,13 +978,13 @@ class MdlNodeAnimMesh : public MdlNodeTriMesh
 public:
     float m_fSamplePeriod;
 
-    List<Vector> m_lAnimationVectors1;
-    List<Vector> m_lAnimationVectors2;
-    List<Vector> m_lAnimationVectors3;
-    void* m_pAnimationData1;
-    void* m_pAnimationData2;
-    int m_nAnimationDataCount1;
-    int m_nAnimationDataCount2;
+    List<Vector> m_lAnimVerts;
+    List<Vector> m_lAnimTVerts;
+    List<Vector> m_lAnimNormals;
+    void* m_pAnimVertData;
+    void* m_pAnimTVertData;
+    int m_nAnimVertFrames;
+    int m_nAnimTVertFrames;
     void InternalGenVertices(); void InternalRemoveTemporaryArrays();
     Part* InternalCreateInstance(Gob*);
     ~MdlNodeAnimMesh(); MdlNodeAnimMesh(char*);
@@ -1119,7 +1119,7 @@ public:
 
     Gob* m_pReferenceObject;
 
-    int m_nReserved50;
+    int m_bReattached;
 };
 
 class PartSkin : public PartTriMesh
@@ -1572,6 +1572,8 @@ public:
     Animation(char* sName);
     ~Animation();
     int InternalParseField(char*);
+    void PostProcess();
+    void Prune(MdlNode* pNode);
 #ifdef _XBOX
     void PruneNodes(MdlNode* pNode);
     void PruneToAnimRoot();
@@ -1605,6 +1607,10 @@ public:
     static IODispatcher* GetRef();
     MaxTree* ReadSync(char* sFileName);
     MaxTree* ReadSync(FILE* pModelFile, FILE* pVertexFile);
+    void PreSpawnAsync(char* sFileName);
+    MaxTree* RetreiveAsync(void* pRequest);
+    bool Write(MaxTree* pTree, char* sFileName);
+    bool Write(MaxTree* pTree, FILE* pModelFile, FILE* pVertexFile);
     bool WriteSync(MaxTree* pTree, char* sFileName);
 
     List<int> m_lDispatchEntries;

@@ -15,10 +15,10 @@
 #include "guiingame.h"
 #include "aurscene.h"
 
-static inline void SwguilevelupchargenTrace3();
-static inline void SwguilevelupchargenTrace2();
-static inline void SwguilevelupchargenTrace1();
-#define SWGUILEVELUPCHARGEN_TRACE() SwguilevelupchargenTrace3()
+static inline void TraceLevelUpInput();
+static inline void TraceLevelUpPanel();
+static inline void TraceLevelUpCharGen();
+#define SWGUILEVELUPCHARGEN_TRACE() TraceLevelUpInput()
 // PC 0x006E7B40
 void CSWGuiLevelUpCharGen::OnPanelAdded()
 {
@@ -176,20 +176,20 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
         CSWCLevelUpStats* pStats = pCreature->GetStats();
         unsigned char nStat = pStats->m_nConstitution;
         CSWSCreatureStats* pServerStats = pCreature->GetServerCreature()->m_pStats;
-        char nMod = pServerStats->m_nConstitutionModifier;
-        int nConDiff = pStats->CalcStatModifier(nStat) - nMod;
+        char nConMod = pServerStats->m_nConstitutionModifier;
+        int nConDiff = pStats->CalcStatModifier(nStat) - nConMod;
 
         pStats = pCreature->GetStats();
         nStat = pStats->m_nWisdom;
         pServerStats = pCreature->GetServerCreature()->m_pStats;
-        nMod = pServerStats->m_nWisdomModifier;
-        int nWisDiff = pStats->CalcStatModifier(nStat) - nMod;
+        nConMod = pServerStats->m_nWisdomModifier;
+        int nWisDiff = pStats->CalcStatModifier(nStat) - nConMod;
 
         pStats = pCreature->GetStats();
         nStat = pStats->m_nCharisma;
         pServerStats = pCreature->GetServerCreature()->m_pStats;
-        nMod = pServerStats->m_nCharismaModifier;
-        int nChaDiff = pStats->CalcStatModifier(nStat) - nMod;
+        nConMod = pServerStats->m_nCharismaModifier;
+        int nChaDiff = pStats->CalcStatModifier(nStat) - nConMod;
 
         char nHitDie = g_pRules->m_pClasses[nClass].m_nHitDie;
         pStats = pCreature->GetStats();
@@ -422,7 +422,7 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->SetWillSavingThrow();
     pNewStats->SetReflexSavingThrow();
     for (int nAttack = 0; nAttack < 4; nAttack++)
-        pNewStats->m_nUnknown64 = pOldStats->GetBaseAttackBonus();
+        pNewStats->m_nBaseAttackBonus = pOldStats->GetBaseAttackBonus();
     pNewStats->m_nGoodEvilAlignment = pOldStats->GetAlignment();
     pNewStats->ClearSkills();
     pNewStats->m_nSkillPoints = pOldStats->m_nSkillPoints;
@@ -487,7 +487,7 @@ void CSWGuiLevelUpCharGen::CancelLevelUp()
         g_pAppManager->m_pClientExoApp->SetInputClass(m_nInputClass, 1);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiLevelUpCharGen::LevelUpCreature()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -499,7 +499,7 @@ void CSWGuiLevelUpCharGen::LevelUpCreature()
         pStats->SetClassLevel(nClass, pStats->GetClassLevel(nClass) + 1);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiLevelUpCharGen::RemoveSubPanels()
 {
     m_pManager->PopModalPanel();
@@ -509,7 +509,7 @@ void CSWGuiLevelUpCharGen::RemoveSubPanels()
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
 }
-
+// Dead code: not in the PC executable
 void CSWGuiLevelUpCharGen::HandleCancelButton()
 {
     RemoveSubPanels();
@@ -527,17 +527,17 @@ void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 
-static inline void SwguilevelupchargenTrace3()
+static inline void TraceLevelUpInput()
 {
-    SwguilevelupchargenTrace2();
+    TraceLevelUpPanel();
 }
 
-static inline void SwguilevelupchargenTrace2()
+static inline void TraceLevelUpPanel()
 {
-    SwguilevelupchargenTrace1();
+    TraceLevelUpCharGen();
 }
 
-static inline void SwguilevelupchargenTrace1()
+static inline void TraceLevelUpCharGen()
 {
 }
 

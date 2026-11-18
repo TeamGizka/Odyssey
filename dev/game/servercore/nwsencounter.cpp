@@ -18,8 +18,8 @@
 
 #include "factionmanager.h"
 
-static inline void NwsencounterTrace1();
-#define NWSENCOUNTER_TRACE() NwsencounterTrace1()
+static inline void TraceEncounter();
+#define NWSENCOUNTER_TRACE() TraceEncounter()
 // PC 0x0058FFC0
 CEncounterSpawnPoint::CEncounterSpawnPoint()
     : m_fOrientation(0.0f)
@@ -842,6 +842,16 @@ void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
                 fPoints -= m_pSpawnEntries[i].m_fSpawnPoolCost;
             }
         }
+    }
+}
+// Dead code: not in the PC executable
+void PrintCreatureList(CEncounterListEntry* pEntries, int nCount)
+{
+    CExoString sResRef;
+    for (int i = 0; i < nCount; i++)
+    {
+        pEntries[i].m_cResRef.CopyToString(sResRef);
+        sResRef.CStr();
     }
 }
 // PC 0x00592430  Xbox 0x00240D70
@@ -1809,7 +1819,7 @@ void CSWSEncounter::RemoveFromArea()
 
 CExoArrayList<float> CSWSEncounter::m_sPowerLookup;
 
-static inline void NwsencounterTrace1()
+static inline void TraceEncounter()
 {
 }
 // PC 0x00593C50  Xbox 0x00242620

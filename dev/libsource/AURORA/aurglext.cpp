@@ -407,7 +407,7 @@ int AurVertexProgramsNVAvailable()
 
     return returnval;
 }
-
+// Dead code: not in the PC executable
 int AurVertexProgramsARBAvailable()
 {
     static int returnval = -1;

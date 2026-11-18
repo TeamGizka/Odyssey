@@ -12,11 +12,11 @@
 #include "nwcplaceable.h"
 #include "nwcdoor.h"
 
-static inline void SwbehaviorcameradialogTrace5();
-static inline void SwbehaviorcameradialogTrace4();
-static inline void SwbehaviorcameradialogTrace3();
-static inline void SwbehaviorcameradialogTrace2();
-static inline void SwbehaviorcameradialogTrace1();
+static inline void TraceCameraParameters();
+static inline void TraceCameraShot();
+static inline void TraceCameraSide();
+static inline void TraceCameraPosition();
+static inline void TraceCameraOrientation();
 // PC 0x0060E760
 void CSWBehaviorCameraDialog::Message(char* sMessage)
 {
@@ -105,7 +105,7 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
                                                 Vector& vPosition,
                                                 Quaternion& qOrientation)
 {
-    SwbehaviorcameradialogTrace5();
+    TraceCameraParameters();
     Vector vDirection;
     Vector vLookAt;
     float fFraction;
@@ -705,26 +705,26 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
     m_nCameraState = INITIAL_CAMERA_STATE;
 }
 
-static inline void SwbehaviorcameradialogTrace5()
+static inline void TraceCameraParameters()
 {
-    SwbehaviorcameradialogTrace4();
+    TraceCameraShot();
 }
 
-static inline void SwbehaviorcameradialogTrace4()
+static inline void TraceCameraShot()
 {
-    SwbehaviorcameradialogTrace3();
+    TraceCameraSide();
 }
 
-static inline void SwbehaviorcameradialogTrace3()
+static inline void TraceCameraSide()
 {
-    SwbehaviorcameradialogTrace2();
+    TraceCameraPosition();
 }
 
-static inline void SwbehaviorcameradialogTrace2()
+static inline void TraceCameraPosition()
 {
-    SwbehaviorcameradialogTrace1();
+    TraceCameraOrientation();
 }
 
-static inline void SwbehaviorcameradialogTrace1()
+static inline void TraceCameraOrientation()
 {
 }

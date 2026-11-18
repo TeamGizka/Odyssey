@@ -80,11 +80,11 @@ public:
 #endif
     CSWGui3DSceneView m_viewModel;
     CSWGuiLabel m_lblPortrait;
-    int m_nUnknown2540;
+    int m_nPreviousInputClass;
     int m_nInputClass;
     CExoString m_sClass;
     CExoString m_sName;
-    int m_nUnknown2558;
+    int m_nPortraitId;
     unsigned long m_nCreatureId;
 };
 

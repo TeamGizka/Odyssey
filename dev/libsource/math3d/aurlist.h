@@ -113,7 +113,7 @@ template <class T> List<T>::List(List<T>& other)
         Add(other.m_pList[i]);
     }
 }
-// PC 0x004AF240  Xbox 0x002D7B50
+// Xbox 0x002D7B50
 template <class T> int List<T>::Contains(T item)
 {
     int nFound = 0;

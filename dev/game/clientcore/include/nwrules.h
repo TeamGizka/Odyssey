@@ -34,6 +34,7 @@ public:
         DAMAGE_UNKNOWN = 14
     };
     CCombatInformationNode();
+    int operator==(CCombatInformationNode& cNode);
     int operator!=(CCombatInformationNode& cNode);
 
     CCombatInformationNode& operator=(CCombatInformationNode& cNode)
@@ -64,6 +65,7 @@ public:
 
     int SaveData(CResGFF* pGFF, CResStruct* pStruct);
     int LoadData(CResGFF* pGFF, CResStruct* pStruct);
+    int operator==(CCombatInformation& cInfo);
     int operator!=(CCombatInformation& cInfo);
     CCombatInformation& operator=(CCombatInformation& cInfo);
 
@@ -253,7 +255,11 @@ public:
     };
     unsigned short RollDice(unsigned char nDice, unsigned char nDie);
     unsigned char GetMetaMagicLevelCost(unsigned char nMetaMagic);
+    int IsFeatUseable(unsigned char nWisdom, unsigned short nFeat);
     CSWFeat* GetFeat(unsigned short nFeat);
+    CExoString GetMasterFeatNameText(char nMasterFeat);
+    CExoString GetMasterFeatDescriptionText(char nMasterFeat);
+    CResRef GetMasterFeatIcon(char nMasterFeat);
     int GetDifficultyOption(int nOption, int nDifficulty);
     void LoadDifficultyInfo();
     int GetWeightedDamageAmount(int nMinimum, int nMaximum, int nCritical,

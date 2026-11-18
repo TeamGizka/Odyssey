@@ -24,6 +24,7 @@ MdlNodeTrigger::MdlNodeTrigger(char* sName)
 {
     m_nNodeType = MdlNode::MDLNODE_TRIGGER_ID;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002C7580
 void AurPartTriggerSetColor(PartTrigger* pTrigger, float* pfColor)
 {

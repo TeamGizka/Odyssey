@@ -3,8 +3,7 @@
 #include "exotlktable.h"
 #include "clientexoappinternal.h"
 
-static inline void ExolocstringTrace1();
-#define EXOLOCSTRING_TRACE() ExolocstringTrace1()
+#define EXOLOCSTRING_DEBUG 0
 
 const float CExoLocString::TIME_PER_CHARACTER_SPOKEN = 0.11f;
 // PC 0x005E9E10  Xbox 0x00135230
@@ -51,7 +50,10 @@ int CExoLocString::GetStringLength(unsigned long nIndex) const
 // PC 0x005E9F10  Xbox 0x00135320
 int CExoLocString::Compare(const CExoLocString& lsString) const
 {
-    EXOLOCSTRING_TRACE();
+    if (EXOLOCSTRING_DEBUG)
+    {
+        EXOLOG("CExoLocString: string 0 found %d\n", GetStringInternal(0, NULL));
+    }
     if (m_pExoLocStringInternal->m_bFetched &&
         lsString.m_pExoLocStringInternal->m_bFetched)
     {
@@ -79,12 +81,15 @@ int CExoLocString::Compare(const CExoLocString& lsString) const
 // PC 0x005E9F80  Xbox 0x00135390
 CExoLocString::CExoLocString(const CExoLocString& lsString)
 {
-    EXOLOCSTRING_TRACE();
     m_pExoLocStringInternal = new CExoLocStringInternal();
     if (this != &lsString)
     {
         m_pExoLocStringInternal->Assign(lsString.m_pExoLocStringInternal);
         m_dwStringRef = lsString.m_dwStringRef;
+    }
+    if (EXOLOCSTRING_DEBUG)
+    {
+        EXOLOG("CExoLocString::Compare %d\n", Compare(lsString));
     }
 }
 // PC 0x005EA000  Xbox 0x00135410
@@ -167,7 +172,7 @@ int CExoLocString::GetStringLoc(int nID, CExoString* psString,
     nGender = (nID == 0) ? 0 : nGender;
     return GetStringInternal(nGender + 2 * nID, psString);
 }
-
+// Dead code: not in the PC executable
 int CExoLocString::GetStringInternal(int nStringID, CExoString* psString) const
 {
     return m_pExoLocStringInternal->GetString(nStringID, psString);
@@ -187,7 +192,7 @@ float CExoLocString::GetSpokenTimeEstimate(int nID, unsigned char nGender) const
     }
     return 0.0f;
 }
-
+// Dead code: not in the PC executable
 void CExoLocString::RemoveString(int nID, unsigned char nGender)
 {
     nGender = (nID == 0) ? 0 : nGender;
@@ -209,8 +214,4 @@ int CExoLocString::AddString(int nID, const CExoString& sString,
         return 1;
     }
     return m_pExoLocStringInternal->AddString(nStringID, sString);
-}
-
-static inline void ExolocstringTrace1()
-{
 }

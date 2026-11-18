@@ -7,7 +7,7 @@ extern const char* g_aszServerOptionText[];
 
 struct SServerOption
 {
-    enum { OPTION_UNUSED = 0, OPTION_BOOLEAN = 1, OPTION_INTEGER = 2 };
+    enum { OPTION_UNDEFINED = 0, OPTION_BOOLEAN = 1, OPTION_INTEGER = 2 };
 
     SServerOption() {}
     SServerOption(const char* szCategory, const char* szName, int* pValue, int nValueType)
@@ -95,8 +95,8 @@ public:
     int m_nLoseItemsNum;
     int m_bPauseAndPlay;
 #ifdef _XBOX
-    int m_nXboxUnmapped0D0;
-    int m_nXboxUnmapped0D4;
+    int m_bOnePartyOnly;
+    int m_bEnforceLegalCharacters;
 #endif
     int m_bItemLevelRestrictions;
     int m_bResetOnVacant;
@@ -114,7 +114,7 @@ public:
     CExoString m_sModuleName;
 #ifdef _XBOX
 
-    short m_nXboxUnmapped114;
+    short m_nGameType;
 #endif
     unsigned int m_bPartyPicking : 1;
 

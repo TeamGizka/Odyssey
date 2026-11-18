@@ -10,6 +10,7 @@
 #include "nwitem.h"
 #include "nwspell.h"
 #include "nwskill.h"
+#include "exotlktable.h"
 
 static const int RULES_SPECIAL_RANGE = 5;
 static const int RULES_SPECIAL_RANGE_ROW = 19;
@@ -156,6 +157,54 @@ int CCombatInformation::SaveData(CResGFF* pGFF, CResStruct* pStruct)
 
     return 1;
 }
+// Dead code: not in the PC executable
+int CCombatInformation::operator==(CCombatInformation& cInfo)
+{
+    if (m_nNumAttacks != cInfo.m_nNumAttacks ||
+        m_nOnHandAttackMod != cInfo.m_nOnHandAttackMod ||
+        m_nOnHandDamageMod != cInfo.m_nOnHandDamageMod ||
+        m_nOffHandAttackMod != cInfo.m_nOffHandAttackMod ||
+        m_nOffHandDamageMod != cInfo.m_nOffHandDamageMod ||
+        m_nOffHandWeaponEquipped != cInfo.m_nOffHandWeaponEquipped ||
+        m_nForceResistance != cInfo.m_nForceResistance ||
+        m_nArcaneSpellFailure != cInfo.m_nArcaneSpellFailure ||
+        m_nArmorCheckPenalty != cInfo.m_nArmorCheckPenalty ||
+        m_nUnarmedDamageDice != cInfo.m_nUnarmedDamageDice ||
+        m_nUnarmedDamageDie != cInfo.m_nUnarmedDamageDie ||
+        m_nOnHandCriticalRange != cInfo.m_nOnHandCriticalRange ||
+        m_nOnHandCriticalMultiplier != cInfo.m_nOnHandCriticalMultiplier ||
+        m_nOffHandCriticalRange != cInfo.m_nOffHandCriticalRange ||
+        m_nOffHandCriticalMultiplier != cInfo.m_nOffHandCriticalMultiplier ||
+        m_nLeftEquipment != cInfo.m_nLeftEquipment ||
+        m_nRightEquipment != cInfo.m_nRightEquipment ||
+        m_lstAttacks.num != cInfo.m_lstAttacks.num ||
+        m_lstDamage.num != cInfo.m_lstDamage.num)
+    {
+        return 0;
+    }
+
+    for (int i = 0; i < m_lstAttacks.num; i++)
+    {
+        CCombatInformationNode* pNode = m_lstAttacks[i];
+        CCombatInformationNode* pOther = cInfo.m_lstAttacks[i];
+        if (*pNode != *pOther)
+        {
+            return 0;
+        }
+    }
+
+    for (int i = 0; i < m_lstDamage.num; i++)
+    {
+        CCombatInformationNode* pNode = m_lstDamage[i];
+        CCombatInformationNode* pOther = cInfo.m_lstDamage[i];
+        if (*pNode != *pOther)
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
 // PC 0x005512D0  Xbox 0x000A2540
 int CCombatInformation::operator!=(CCombatInformation& cInfo)
 {
@@ -287,6 +336,15 @@ CSWRules::CSWRules()
     LoadClassInfo();
     LoadRaceInfo();
     LoadDifficultyInfo();
+}
+// Dead code: not in the PC executable
+int CCombatInformationNode::operator==(CCombatInformationNode& cNode)
+{
+    return m_nModifier == cNode.m_nModifier &&
+           m_nModifierType == cNode.m_nModifierType &&
+           m_nWeaponWield == cNode.m_nWeaponWield &&
+           m_nVersusGoodEvil == cNode.m_nVersusGoodEvil &&
+           m_nVersusRace == cNode.m_nVersusRace;
 }
 // PC 0x0054F280  Xbox 0x000A1EB0
 int CCombatInformationNode::operator!=(CCombatInformationNode& cNode)
@@ -684,6 +742,11 @@ unsigned char CSWRules::GetMetaMagicLevelCost(unsigned char nMetaMagic)
         return 0;
     }
 }
+// Dead code: not in the PC executable
+int CSWRules::IsFeatUseable(unsigned char nWisdom, unsigned short nFeat)
+{
+    return nWisdom >= GetFeat(nFeat)->m_nMinWisdom;
+}
 // PC 0x00550C00  Xbox 0x000A4DC0
 CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
 {
@@ -696,6 +759,25 @@ CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
         }
     }
     return 0;
+}
+// Dead code: not in the PC executable
+CExoString CSWRules::GetMasterFeatNameText(char nMasterFeat)
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_pMasterFeatStrRefs[nMasterFeat], strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+// Dead code: not in the PC executable
+CExoString CSWRules::GetMasterFeatDescriptionText(char nMasterFeat)
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_pMasterFeatDescriptionStrRefs[nMasterFeat], strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+// Dead code: not in the PC executable
+CResRef CSWRules::GetMasterFeatIcon(char nMasterFeat)
+{
+    return m_pMasterFeatIcons[nMasterFeat];
 }
 // PC 0x00550C30  Xbox 0x000A1F90
 int CSWRules::GetDifficultyOption(int nOption, int nDifficulty)

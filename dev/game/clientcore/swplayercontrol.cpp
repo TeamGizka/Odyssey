@@ -90,7 +90,7 @@ int CSWPlayerControl::SetCamera(CAurCamera* pCamera)
 }
 
 #define SWPLAYERCONTROL_DEFAULT_ACCELERATION 20.0f
-
+// Dead code: not in the PC executable
 float CSWPlayerControlCamRelative::GetAcceleration()
 {
     if (GetPlayer() != NULL)
@@ -99,10 +99,18 @@ float CSWPlayerControlCamRelative::GetAcceleration()
     }
     return SWPLAYERCONTROL_DEFAULT_ACCELERATION;
 }
+// Dead code: not in the PC executable
+void CSWPlayerControlCamRelative::SetAcceleration(float fAcceleration)
+{
+    if (GetPlayer() != NULL)
+    {
+        GetPlayer()->m_pAppearance->m_fDriveAcceleration = fAcceleration;
+    }
+}
 // PC 0x006793C0  Xbox 0x00093990
 void CSWPlayerControlCamRelative::Init()
 {
-    m_fReserved34 = 480.0f;
+    m_fTurnRate = 480.0f;
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
     int nRow = pArea->m_nTurnRateRow;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -151,6 +159,11 @@ float CSWPlayerControlCamRelative::GetMaxSpeed()
     }
     return 6.0f;
 }
+// Dead code: not in the PC executable
+void CSWPlayerControlCamRelative::SetTurnVelocity(float fVelocity)
+{
+    m_integrator.SetVelocity(fVelocity);
+}
 // PC 0x006795C0  Xbox 0x00093B30
 void CSWPlayerControlCamRelative::ResetDriveAcceleration()
 {
@@ -161,14 +174,14 @@ void CSWPlayerControlCamRelative::ResetDriveAcceleration()
     m_vTarget = Vector();
     m_vFacing = Vector();
 }
-
+// Dead code: not in the PC executable
 CSWPlayerControl::CSWPlayerControl()
 {
     m_oidPlayer = OBJECT_INVALID;
     m_pCamera = 0;
     m_bEnabled = 0;
 }
-
+// Dead code: not in the PC executable
 CSWPlayerControl::CSWPlayerControl(unsigned long oidPlayer, CAurCamera* pCamera)
 {
     m_oidPlayer = OBJECT_INVALID;
@@ -177,7 +190,7 @@ CSWPlayerControl::CSWPlayerControl(unsigned long oidPlayer, CAurCamera* pCamera)
     SetPlayer(oidPlayer);
     m_pCamera = pCamera;
 }
-
+// Dead code: not in the PC executable
 CSWPlayerControlCamRelative::CSWPlayerControlCamRelative()
 {
     Init();

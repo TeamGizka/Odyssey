@@ -120,12 +120,14 @@ public:
     unsigned char* AddDataLayoutList(unsigned long nOldOffset,
                                      unsigned long nOldSize,
                                      unsigned long nSize);
+    int GetFileData(char* szFileName);
     int GetElementType(CResStruct* pStructure);
     int GetFieldCount(CResStruct* pStructure);
     int GetTopLevelStruct(CResStruct* pStructure);
     int CreateGFFFile(CResStruct* pStructure, const CExoString& sFileType,
                       const CExoString& sVersion);
     int WriteGFFData(CExoFile& file, unsigned long& nSize);
+    int WriteGFFFile(char* szFileName);
     int GetTotalSize();
     unsigned long GetFieldByLabel(CResStruct* pStructure, char* szLabel);
     CResGFFField* AddField(CResStruct* pStructure, char* szLabel,
@@ -205,6 +207,21 @@ public:
 
     void Pack(unsigned char nFlag, unsigned long nSize);
     int WriteGFFFile(const CExoString& sFileName, unsigned short nResType);
+    unsigned long ByteSwap(unsigned long nValue);
+    unsigned __int64 ByteSwap64(unsigned __int64 nValue);
+    char* GetLabel(CResStruct* pStructure, unsigned long nIndex);
+    void* GetDataLayoutField(CResGFFField* pField, unsigned long& nSize);
+    unsigned long GetFieldCount(CResGFFStruct* pStruct);
+    int IsDataInPlace(unsigned long nType);
+    void GetGFFFileInfo(CExoString* psFileType, CExoString* psFileVersion);
+    void SetFileType(char* szFileType);
+    char* GetFieldLabel(CResStruct* pStructure, unsigned long nIndex);
+    char* GetFieldStringID(CResStruct* pStructure, unsigned long nIndex);
+    __int64 ReadFieldINT64(CResStruct* pStructure, char* szLabel, int& bSuccess, __int64 nDefault);
+    int SetFieldINT(CResStruct* pStructure, char* szLabel, int& bSuccess, int nValue);
+    double ReadFieldDOUBLE(CResStruct* pStructure, char* szLabel, int& bSuccess, double fDefault);
+    BOOL WriteFieldINT64(CResStruct* pStructure, __int64 nValue, char* szLabel);
+    BOOL WriteFieldDOUBLE(CResStruct* pStructure, double fValue, char* szLabel);
 
     static char* VERSION;
 
@@ -229,7 +246,7 @@ public:
     unsigned char* m_pListIndices;
     unsigned long m_nListIndicesAlloc;
     unsigned long m_nListIndicesLost;
-    unsigned char m_aUnmapped7C[16];
+    unsigned char m_aLabelBuffer[16];
     char m_cFlags;
     char m_szFileType[4];
     unsigned char m_aPad91[3];

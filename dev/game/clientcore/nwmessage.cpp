@@ -6,9 +6,9 @@
 #include "nwmessage.h"
 #include "gameobjectarray.h"
 
-static inline void NwmessageTrace2();
-static inline void NwmessageTrace1();
-#define NWMESSAGE_TRACE() NwmessageTrace2()
+static inline void TraceReadVector();
+static inline void TraceMessageRead();
+#define NWMESSAGE_TRACE() TraceReadVector()
 
 const int CSWMessage::DEFAULT_WRITE_BUFFER_SIZE = 128;
 // PC 0x004D7360  Xbox 0x00095100
@@ -56,59 +56,59 @@ void CSWCCMessageData::SetObjectID(int nIndex, unsigned long oidValue)
 
     m_lstObjectIDs.element[nIndex] = oidValue;
 }
-
+// Dead code: not in the PC executable
 unsigned char CSWMessage::ReadBit(unsigned char nBit)
 {
-    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
+    unsigned char* pFragments = (unsigned char*)m_pReadFragmentsBuffer;
 
-    return (pFragments[m_nUnknown3C] & (1 << (7 - nBit))) >> (7 - nBit);
+    return (pFragments[m_nReadFragmentsIndex] & (1 << (7 - nBit))) >> (7 - nBit);
 }
-
+// Dead code: not in the PC executable
 unsigned __int64 CSWMessage::ReadBits(int nBits)
 {
-    unsigned char* pFragments = (unsigned char*)m_nUnknown34;
+    unsigned char* pFragments = (unsigned char*)m_pReadFragmentsBuffer;
     unsigned __int64 nValue = 0;
     unsigned char cBit;
     int i;
 
     for (i = 0; i < nBits; i++)
     {
-        cBit = (unsigned char)((pFragments[m_nUnknown3C] &
-                                (1 << (7 - m_bUnknown44))) >>
-                               (7 - m_bUnknown44));
+        cBit = (unsigned char)((pFragments[m_nReadFragmentsIndex] &
+                                (1 << (7 - m_nReadFragmentsBitPos))) >>
+                               (7 - m_nReadFragmentsBitPos));
         nValue = (nValue << 1) | (cBit & 1);
 
-        m_bUnknown44++;
+        m_nReadFragmentsBitPos++;
 
-        if (m_bUnknown44 == 8)
+        if (m_nReadFragmentsBitPos == 8)
         {
-            m_nUnknown3C++;
-            m_bUnknown44 = 0;
+            m_nReadFragmentsIndex++;
+            m_nReadFragmentsBitPos = 0;
         }
     }
 
     return nValue;
 }
-
+// Dead code: not in the PC executable
 void CSWMessage::WriteBit(unsigned char bValue)
 {
-    unsigned char* pFragment = m_pUnknown10 + m_nUnknown18;
-    unsigned char nBitPos = *(unsigned char*)&m_nUnknown20;
+    unsigned char* pFragment = m_pWriteFragmentsBuffer + m_nWriteFragmentsIndex;
+    unsigned char nBitPos = *(unsigned char*)&m_nWriteFragmentsBitPos;
 
     *pFragment &= ~(1 << (7 - nBitPos));
     *pFragment |= bValue << (7 - nBitPos);
 }
-
+// Dead code: not in the PC executable
 void CSWMessage::WriteBits(unsigned __int64 nValue, int nBits)
 {
-    unsigned char& nBitPos = *(unsigned char*)&m_nUnknown20;
+    unsigned char& nBitPos = *(unsigned char*)&m_nWriteFragmentsBitPos;
     unsigned char* pFragment;
 
     while (nBits > 0)
     {
         nBits--;
 
-        pFragment = m_pUnknown10 + m_nUnknown18;
+        pFragment = m_pWriteFragmentsBuffer + m_nWriteFragmentsIndex;
         *pFragment &= ~(1 << (7 - nBitPos));
         *pFragment |= ((unsigned char)(nValue >> nBits) & 1) << (7 - nBitPos);
 
@@ -116,12 +116,12 @@ void CSWMessage::WriteBits(unsigned __int64 nValue, int nBits)
 
         if (nBitPos == 8)
         {
-            m_nUnknown18++;
+            m_nWriteFragmentsIndex++;
             nBitPos = 0;
         }
     }
 }
-
+// Dead code: not in the PC executable
 unsigned __int64 CSWMessage::ReadUnsigned(int nBits)
 {
     unsigned __int64 nValue = 0;
@@ -183,12 +183,12 @@ unsigned __int64 CSWMessage::ReadUnsigned(int nBits)
 
     if (nBits > 0)
     {
-        nFragmentIndex = m_nUnknown3C +
-                         (unsigned char)((m_bUnknown44 - 1 + nBits) >> 3);
+        nFragmentIndex = m_nReadFragmentsIndex +
+                         (unsigned char)((m_nReadFragmentsBitPos - 1 + nBits) >> 3);
 
-        if (nFragmentIndex > m_nUnknown38)
+        if (nFragmentIndex > m_nReadFragmentsBufferSize)
         {
-            m_nUnknown3C = nFragmentIndex;
+            m_nReadFragmentsIndex = nFragmentIndex;
             return 0;
         }
 
@@ -197,13 +197,13 @@ unsigned __int64 CSWMessage::ReadUnsigned(int nBits)
 
     return nValue;
 }
-
+// Dead code: not in the PC executable
 __int64 CSWMessage::ReadSigned(int nBits)
 {
     unsigned char bNegative;
     __int64 nValue;
 
-    if (m_nUnknown3C > m_nUnknown38)
+    if (m_nReadFragmentsIndex > m_nReadFragmentsBufferSize)
     {
         return 0;
     }
@@ -232,7 +232,7 @@ CSWMessage::CSWMessage()
     m_pReadBuffer = NULL;
     m_nReadBufferSize = 0;
     m_nReadIndex = 0;
-    m_pUnknown10 = NULL;
+    m_pWriteFragmentsBuffer = NULL;
     m_nWriteBufferSize = DEFAULT_WRITE_BUFFER_SIZE;
 }
 // PC 0x004D6130  Xbox 0x00094D80
@@ -244,10 +244,10 @@ CSWMessage::~CSWMessage()
         m_pWriteBuffer = NULL;
     }
 
-    if (m_pUnknown10 != NULL)
+    if (m_pWriteFragmentsBuffer != NULL)
     {
-        delete[] m_pUnknown10;
-        m_pUnknown10 = NULL;
+        delete[] m_pWriteFragmentsBuffer;
+        m_pWriteFragmentsBuffer = NULL;
     }
 }
 // PC 0x004D6170  Xbox 0x00094DC0
@@ -541,7 +541,7 @@ void CSWMessage::WriteWORD(unsigned short nValue, int nBits)
     m_nWriteIndex += 2;
     m_nTotalBytesWritten += 2;
 }
-
+// Dead code: not in the PC executable
 void CSWMessage::WriteUnsigned(unsigned __int64 nValue, int nBits)
 {
     unsigned short nBytes = (unsigned short)(nBits >> 3);
@@ -587,7 +587,7 @@ void CSWMessage::WriteUnsigned(unsigned __int64 nValue, int nBits)
         WriteBits(nValue & (0xFF >> (8 - nBits)), nBits);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWMessage::WriteSigned(__int64 nValue, int nBits)
 {
     if (nValue < 0)
@@ -738,12 +738,12 @@ void CSWMessage::SetReadMessage(unsigned char* pBuffer, unsigned long nSize,
     m_nReadIndex = 0;
     m_nRecipient = nRecipient;
     m_nMsgType = nMsgType;
-    m_nUnknown38 = 0;
-    m_nUnknown3C = 0;
+    m_nReadFragmentsBufferSize = 0;
+    m_nReadFragmentsIndex = 0;
 
     if (nSize == 0)
     {
-        m_bUnknown44 = m_bUnknown45;
+        m_nReadFragmentsBitPos = m_nLastByteBits;
     }
 }
 // PC 0x004D66F0  Xbox 0x00095370
@@ -913,11 +913,139 @@ void CSWMessage::WriteBOOL(int bValue)
     m_nTotalBytesWritten += 4;
 }
 
-static inline void NwmessageTrace2()
+static inline void TraceReadVector()
 {
-    NwmessageTrace1();
+    TraceMessageRead();
 }
 
-static inline void NwmessageTrace1()
+static inline void TraceMessageRead()
 {
+}
+// Dead code: not in the PC executable
+void CSWCCMessageData::ClearData()
+{
+    m_lstIntegers.num = 0;
+    m_lstFloats.num = 0;
+    m_lstObjectIDs.num = 0;
+    m_lstStrings.num = 0;
+    m_nType = 0;
+}
+// Dead code: not in the PC executable
+void CSWMessage::WriteDOUBLE(double fValue, double fDefault, int nBits)
+{
+    if (m_nWriteIndex + 8 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(8);
+    }
+
+    *(double*)(m_pWriteBuffer + m_nWriteIndex) = fValue;
+    m_nWriteIndex += 8;
+    m_nTotalBytesWritten += 8;
+}
+// Dead code: not in the PC executable
+void CSWMessage::WriteDOUBLE(double fValue, double fLowerRange,
+                             double fUpperRange, int nBits)
+{
+    if (m_nWriteIndex + 8 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(8);
+    }
+
+    *(double*)(m_pWriteBuffer + m_nWriteIndex) = fValue;
+    m_nWriteIndex += 8;
+    m_nTotalBytesWritten += 8;
+}
+// Dead code: not in the PC executable
+void CSWMessage::WriteDWORD64(unsigned __int64 nValue, int nBits)
+{
+    if (m_nWriteIndex + 8 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(8);
+    }
+
+    *(unsigned __int64*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
+    m_nWriteIndex += 8;
+    m_nTotalBytesWritten += 8;
+}
+// Dead code: not in the PC executable
+void CSWMessage::ExtendWriteFragmentsBuffer(unsigned long nExtraBytes)
+{
+}
+// Dead code: not in the PC executable
+void CSWMessage::WriteINT64(__int64 nValue, int nBits)
+{
+    if (m_nWriteIndex + 8 > m_nWriteBufferSize)
+    {
+        ExtendWriteBuffer(8);
+    }
+
+    *(__int64*)(m_pWriteBuffer + m_nWriteIndex) = nValue;
+    m_nWriteIndex += 8;
+    m_nTotalBytesWritten += 8;
+}
+// Dead code: not in the PC executable
+__int64 CSWMessage::ReadINT64(int nBits)
+{
+    if (m_nReadIndex + 8 > m_nReadBufferSize)
+    {
+        m_nReadIndex += 8;
+        return 0;
+    }
+    __int64 nValue = *(__int64*)(m_pReadBuffer + m_nReadIndex);
+    m_nReadIndex += 8;
+    return nValue;
+}
+// Dead code: not in the PC executable
+unsigned __int64 CSWMessage::ReadDWORD64(int nBits)
+{
+    unsigned __int64 nValue;
+
+    if (m_nReadIndex + 8 > m_nReadBufferSize)
+    {
+        nValue = 0;
+    }
+    else
+    {
+        nValue = *(unsigned __int64*)(m_pReadBuffer + m_nReadIndex);
+    }
+
+    m_nReadIndex += 8;
+
+    return nValue;
+}
+// Dead code: not in the PC executable
+double CSWMessage::ReadDOUBLE(double fDefault, int nBits)
+{
+    double fValue;
+
+    if (m_nReadIndex + 8 > m_nReadBufferSize)
+    {
+        fValue = 0.0;
+    }
+    else
+    {
+        fValue = *(double*)(m_pReadBuffer + m_nReadIndex);
+    }
+
+    m_nReadIndex += 8;
+
+    return fValue;
+}
+// Dead code: not in the PC executable
+double CSWMessage::ReadDOUBLE(double fLowerRange, double fUpperRange, int nBits)
+{
+    double fValue;
+
+    if (m_nReadIndex + 8 > m_nReadBufferSize)
+    {
+        fValue = 0.0;
+    }
+    else
+    {
+        fValue = *(double*)(m_pReadBuffer + m_nReadIndex);
+    }
+
+    m_nReadIndex += 8;
+
+    return fValue;
 }

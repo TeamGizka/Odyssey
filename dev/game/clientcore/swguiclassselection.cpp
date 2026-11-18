@@ -334,7 +334,6 @@ void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 
 }
 
-#include "nwclass.h"
 // PC 0x006DBA70  Xbox 0x0010D690
 void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
 {
@@ -385,7 +384,7 @@ void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
         m_lblClass.m_cText.m_cParams.SetText(sClass);
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiClassSelection::HandleCancelButton()
 {
     m_bDeferredRemoval = 0;

@@ -255,8 +255,10 @@ public:
 
     static void RemoveFromSceneManager(Part* pPart);
     static void RemoveFromSceneManager(Gob* pGob);
+    void ListSpecialParts(Part* pPart);
     void UnlistSpecialParts(Part* pPart);
     void ListSpecialPartsR(Part* pPart);
+    void ListSpringPartsR(Part* pPart);
     void UpdateEmitters();
     CAurObject* HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
                            CHitInfo* pHitInfo);
@@ -373,12 +375,12 @@ public:
 
     CAurRoom* m_pOutputRoom;
     int m_nResult;
-    unsigned char m_bResult0;
-    unsigned char m_bResult1;
-    unsigned char m_bResult2;
-    unsigned char m_bResult3;
+    unsigned char m_bIgnoreCharacters;
+    unsigned char m_bIgnoreFaded;
+    unsigned char m_bUseIgnoreHitCheck;
+    unsigned char m_bSkipStatic;
 #ifndef _XBOX
-    unsigned char m_bResult4;
+    unsigned char m_bHitEmitterBounds;
 #endif
 };
 

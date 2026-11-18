@@ -96,6 +96,7 @@ public:
     static const unsigned long SKILL_INVALID = -1;
 
     CSWGuiSkillFlow();
+    void Clear();
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     SWGUI_PCVIRTUAL CSWGuiSkillFlow* AsSkillFlow()  // PC 0x00641DB0
@@ -137,6 +138,7 @@ public:
     int ClearChart();
     void SetSkillStatus(unsigned long nSkill, unsigned char nStatus);
     int SetSkillStatusAll(unsigned char nStatus);
+    unsigned char GetSkillStatus(unsigned long nSkill);
     int SetTopLeft();
     int HandleInput(int nEvent);
     void CreatePowerChart(CSWSCreatureStats* pStats, int bAllPowers);
@@ -147,13 +149,11 @@ public:
 
     int GetSelected();
     void SetSelectedSkill(unsigned long nSkill);
-    void SetNumColumns(unsigned char nColumns);
     void Add(unsigned long nSkill, unsigned char nState);
     void AddPowerSet(unsigned long nPower1, unsigned long nPower2,
                      unsigned long nPower3);
     void AddFeatSet(unsigned long nFeat1, unsigned long nFeat2,
                     unsigned long nFeat3);
-    unsigned long GetFirst();
 
     CExoArrayList<CSWGuiSkillFlow*> m_cFlows;
     unsigned char m_nSelectedCol;

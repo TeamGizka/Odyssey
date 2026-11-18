@@ -25,8 +25,7 @@
 #include "clientoptions.h"
 #include "nwcitem.h"
 
-static inline void NwsitemTrace1();
-#define NWSITEM_TRACE() NwsitemTrace1()
+#define NWSITEM_DEBUG 0
 
 enum UpgradeItemType
 {
@@ -48,7 +47,7 @@ inline void CSWSItem::SetNonEquippable(int bNonEquippable) { m_bNonEquippable = 
 inline void CSWSItem::SetNewItem(int bNewItem) { m_bNewItem = bNewItem; }
 inline int CSWSItem::GetUpgrades() { return m_nUpgrades; }
 inline char CSWSItem::GetModelVariation() { return m_nModelVariation; }
-
+// Dead code: not in the PC executable
 void CSWSItem::SetNumPassiveProperties(int nNumProperties)
 {
     m_nPassiveProperties = nNumProperties;
@@ -401,7 +400,7 @@ int CItemRepository::FindItemWithTag(const CExoString& sTag)
     return OBJECT_INVALID;
 }
 // PC 0x00555F40  Xbox 0x001D61B0
-int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
+int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bCheckContainers)
 {
     CServerExoApp* pServerExoApp;
     CSWSItem* pRepositoryItem;
@@ -418,7 +417,7 @@ int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
             return 1;
         }
 
-        if (bFlag != 0 && pRepositoryItem != NULL)
+        if (bCheckContainers != 0 && pRepositoryItem != NULL)
         {
             int nBaseItem = pRepositoryItem->m_nBaseItem;
             pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
@@ -426,7 +425,7 @@ int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
             {
                 pSubRepository = pRepositoryItem->m_pRepository;
                 if (pSubRepository != NULL &&
-                    pSubRepository->GetItemInRepository(pItem, bFlag) != 0)
+                    pSubRepository->GetItemInRepository(pItem, bCheckContainers) != 0)
                 {
                     return 1;
                 }
@@ -729,7 +728,7 @@ void CSWSItem::RemoveFromArea()
     SetArea(NULL);
     SetPosition(Vector(), 1, 1, 0);
 }
-
+// Dead code: not in the PC executable
 void CSWSItem::SetNumActiveProperties(int nNumProperties)
 {
     m_nActiveProperties = nNumProperties;
@@ -757,7 +756,10 @@ int CSWSItem::ActiveProperty(unsigned short nPropertyType)
 // PC 0x005561A0  Xbox 0x001D6410
 void CSWSItem::OpenInventory(unsigned long oidOpener)
 {
-    NwsitemTrace1();
+    if (NWSITEM_DEBUG)
+    {
+        EXOLOG("CSWSItem::OpenInventory() passive %d\n", GetPassiveProperties());
+    }
     if (m_bInventoryOpen != 0)
         return;
 
@@ -1202,17 +1204,17 @@ NextDamageProperty:
     }
 }
 // PC 0x0055D290  Xbox 0x001DD3C0
-CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
+CItemRepository::CItemRepository(unsigned long oidOwner, int bPartyInventory)
     : m_lstItems(0)
 {
     m_oidOwner = oidOwner;
     m_nNewItems = 0;
-    m_bUnknown08 = bFlag;
+    m_bPartyInventory = bPartyInventory;
 }
 // PC 0x0055D2C0  Xbox 0x001DD3F0
 void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
 {
-    if (m_bUnknown08)
+    if (m_bPartyInventory)
     {
         return;
     }
@@ -1300,7 +1302,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
     nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
     CExoString sName;
     CExoString sItemName;
-    if (m_bUnknown08)
+    if (m_bPartyInventory)
     {
         (*ppItem)->m_sLocalizedName.GetString(nLanguage, &sName, 0);
     }
@@ -1313,7 +1315,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
             pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
             if (pItem != NULL)
             {
-                if (m_bUnknown08 && !bFoundPosition)
+                if (m_bPartyInventory && !bFoundPosition)
                 {
                     pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
                     if ((unsigned long)(*ppItem)->m_nBaseItem <
@@ -1375,13 +1377,13 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
             }
         }
     }
-    else if (m_bUnknown08)
+    else if (m_bPartyInventory)
     {
         for (nItem = 0; nItem < m_lstItems.num; nItem++)
         {
             unsigned long oidItem = m_lstItems[nItem];
             pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
-            if (pItem != NULL && m_bUnknown08)
+            if (pItem != NULL && m_bPartyInventory)
             {
                 pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
                 if (sName < sItemName)
@@ -1396,7 +1398,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
 
     CExoArrayList<CSWSItem*> lstAddedItems;
     lstAddedItems.Add(*ppItem);
-    if (m_bUnknown08)
+    if (m_bPartyInventory)
     {
         pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByPlayerId(0, 1);
         if (pPlayer != NULL)
@@ -1514,7 +1516,7 @@ int CSWSItem::CopyItem(CSWSItem* pItem)
     m_nBaseItem = pItem->GetBaseItemType();
     for (int i = 0; i < 6; i++)
     {
-        m_aUnknown04[i] = pItem->m_aUnknown04[i];
+        m_anArmorModelPart[i] = pItem->m_anArmorModelPart[i];
     }
     g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(
         m_sTag, GetId());
@@ -2744,7 +2746,7 @@ int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bDropable, "Dropable");
     pRes->WriteFieldBYTE(pStruct, m_bPickpocketable, "Pickpocketable");
     pRes->WriteFieldBYTE(pStruct, m_nModelVariation, "ModelVariation");
-    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_bUnknown18)
+    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_nModelType)
     {
     case BASEITEM_MODEL_TYPE_BODY_VARIATION:
         pRes->WriteFieldBYTE(pStruct, m_nBodyVariation, "BodyVariation");
@@ -3011,7 +3013,7 @@ void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
 // PC 0x00553CC0  Xbox 0x001D3EF0
 int CSWSItem::ComputeArmorClass()
 {
-    if (GetBaseItem()->m_bUnknown18 != 1)
+    if (GetBaseItem()->m_nModelType != 1)
     {
         return 0;
     }
@@ -3635,7 +3637,7 @@ int CSWSItem::GetExistsHigherValuedProperty(unsigned short nPropertyType,
 
     return 0;
 }
-
+// Dead code: not in the PC executable
 void CSWSItem::PowerItem(int bPower, int bAnimate, int bSilent)
 {
     CSWCItem* pClientItem = GetClientItem();
@@ -3671,7 +3673,7 @@ CResRef CSWSItem::GetIcon()
         return CResRef("");
     }
 
-    if (pBaseItem->m_bUnknown18 != 0)
+    if (pBaseItem->m_nModelType != 0)
     {
         return pBaseItem->GetIconResRef((unsigned char)m_nTextureVar, 'm');
     }
@@ -3744,7 +3746,7 @@ void CSWSItem::EventHandler(unsigned long nEventId, unsigned long oidCaller,
     }
     else if (nEventId == CServerAIMaster::EVENT_DESTROY_OBJECT)
     {
-        if (m_nEC != 0)
+        if (m_bDestroyable != 0)
         {
             CloseItemForAllPlayers();
             unsigned long oidPossessor = m_oidPossessor;
@@ -3814,7 +3816,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
             nModelVariation = 1;
     }
     m_nModelVariation = nModelVariation;
-    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_bUnknown18)
+    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_nModelType)
     {
     case BASEITEM_MODEL_TYPE_BODY_VARIATION:
         m_nBodyVariation = g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nBodyVar;
@@ -4211,8 +4213,4 @@ int CSWSItem::LoadItem(CResGFF* pRes, CResStruct* pStruct)
         }
     }
     return bSuccess;
-}
-
-static inline void NwsitemTrace1()
-{
 }

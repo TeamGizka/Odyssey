@@ -70,8 +70,8 @@ public:
     CSWGuiLabel m_lblAccept;
 #endif
     CSWGuiLabel m_lblDescriptionHeader;
-    CSWGuiLabel m_lblUnmapped7EC;
-    CSWGuiLabel m_lblUnmapped92C;
+    CSWGuiLabel m_lblSelectionsRemainingCount;
+    CSWGuiLabel m_lblPowerTitle;
     CSWGuiLabel m_lblDescription;
 #ifdef _XBOX
     CSWGuiLabel m_lblBack;

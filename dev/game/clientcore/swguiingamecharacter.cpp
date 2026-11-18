@@ -635,7 +635,7 @@ void CSWGuiInGameCharacter::SetStats()
         m_nShownAlignment != pServerStats->m_nGoodEvilAlignment)
     {
         CCAppearanceInfo aAppearance = *pCreature->GetAppearance();
-        aAppearance.m_nUnmapped10 = OBJECT_INVALID;
+        aAppearance.m_oidHeadItem = OBJECT_INVALID;
         m_pCreature->SetPortrait(pCreature->GetPortrait(0));
         if (g_bDo3DGUIs != 0)
         {
@@ -808,13 +808,13 @@ void CSWGuiInGameCharacter::RotateCharacter(int nDirection)
 }
 
 #ifndef _XBOX
-void CSWGuiInGameCharacter::RotateCharacterLeft(int nUnused)  // PC 0x006AED90
+void CSWGuiInGameCharacter::RotateCharacterLeft(int nControl)  // PC 0x006AED90
 {
     m_pCreature->SetOrientation(
         YawPitchRoll(-10.0f, 0.0f, 0.0f) * m_pCreature->m_vOrientation);
 }
 // PC 0x006AEDE0
-void CSWGuiInGameCharacter::RotateCharacterRight(int nUnused)
+void CSWGuiInGameCharacter::RotateCharacterRight(int nControl)
 {
     m_pCreature->SetOrientation(
         YawPitchRoll(10.0f, 0.0f, 0.0f) * m_pCreature->m_vOrientation);

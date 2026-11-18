@@ -11,6 +11,8 @@
 #include "aurimage.h"
 #include "auremitter.h"
 #include "aurbehavior.h"
+#include "aurscenemanager.h"
+#include "aurparse.h"
 
 class CAurTextureBasic;
 inline void AurTexPchDelIndex() { (void)&List<CAurTextureBasic*>::DelIndex; }
@@ -20,11 +22,11 @@ inline void AurTexPchSP(SafePointer<CAurTexture>* p) { delete p; }
 #include "aurconsole.h"
 
 int AurTextureCompressionAvailable();
-char* firstword(char* sLine);
-int Parse(char* sValue, int& nValue);
+char* firstword(char* sMessage);
+int Parse(char* sText, int& nValue);
 int Parse(char* sValue, float& fValue);
 void Parse(char* sValue, char* sDest);
-void Parse(char* sValue, short& nValue);
+void Parse(char* sText, short& nValue);
 int Parse(char* sValue, bool& bValue);
 
 float g_fDynamicMemoryRatio = 0.5f;
@@ -177,7 +179,7 @@ void InsertionSortTexture(CAurTextureBasic** ppTextures, int nCount)
 }
 // PC 0x0041EA20  Xbox 0x0027D510
 unsigned char* AurGetImageWrapper(char* sFileName, int* pWidth, int* pHeight, int* pBPP,
-                       int* pCompressedSize, int* pReserved6, int* pReserved7,
+                       int* pCompressedSize, int* pDataSize, int* pTxiSize,
                        Aurora::AuroraTextureFormats* pFormat, float* pAlpha,
                        bool* pProcessed, short* pNumMipMaps,
                        int bAllowCompression)
@@ -187,12 +189,12 @@ unsigned char* AurGetImageWrapper(char* sFileName, int* pWidth, int* pHeight, in
         bAllowCompression = 0;
     }
     *pCompressedSize = 0;
-    *pReserved6 = 0;
-    *pReserved7 = 0;
+    *pDataSize = 0;
+    *pTxiSize = 0;
     char cBPP;
     char cNumMipMaps;
     unsigned char* result = AurGetProcessedRaster(sFileName, pWidth, pHeight, &cBPP,
-                                       pCompressedSize, pReserved6, pReserved7,
+                                       pCompressedSize, pDataSize, pTxiSize,
                                        pAlpha, &cNumMipMaps);
     if (result != 0)
     {
@@ -281,6 +283,7 @@ void AurClearPalette()
     paletteimage = NULL;
     paletteheight = 0;
 }
+// Dead code: not in the PC executable
 // Xbox 0x0027D9A0
 TextureController* AurTextureGetController(CAurTexture* pTexture)
 {
@@ -1263,6 +1266,10 @@ unsigned char* CAurTextureBasic::LoadImagePLT()
     }
     return pImage;
 }
+// Dead code: not in the PC executable
+void CAurTextureBasic::DownSample()
+{
+}
 
 #ifdef _XBOX
 // PC 0x0041FA30  Xbox 0x0027ED10
@@ -1420,8 +1427,6 @@ void CAurTextureBasic::SetScheme(int* pScheme, int nCount)
 }
 
 #include "aurrendergl.h"
-#include "aurscenemanager.h"
-#include "aurparse.h"
 // PC 0x0063E7F0
 int AurTextureSetDim(int nWidth, int nHeight)
 {
@@ -1724,7 +1729,7 @@ template <> inline SafePointer<CAurTexture>::SafePointer()  // PC 0x004204E0  Xb
 {
 }
 #endif
-
+// Dead code: not in the PC executable
 void AurTextureFreeAll()
 {
     int i;
@@ -1916,6 +1921,7 @@ unsigned char CAurTexture::IsNull()
 inline CAurFontInfo::~CAurFontInfo()
 {
 }
+// Dead code: not in the PC executable
 // Xbox 0x002807D0
 const char* savegamesnapshot(char* sCommand)
 {
@@ -1935,6 +1941,7 @@ const char* savegamesnapshot(char* sCommand)
 }
 
 Gob* FindGob(char* sName);
+// Dead code: not in the PC executable
 // Xbox 0x0027F5B0
 const char* replacetexture(char* sCommand)
 {
@@ -2504,7 +2511,7 @@ void AurTextureSetLayered(CAurTexture* pTexture, char* sExtra, int* pTXI,
     pBasic->AddToOrderedLists();
     RefreshTextures.AddUnique(pBasic);
 }
-
+// Dead code: not in the PC executable
 void AurTextureRefreshLowEndEnvMapped()
 {
     for (int i = 0; i < CAurTextureBasic::m_StaticTextureList.m_nCount; i++)
@@ -2526,6 +2533,7 @@ void AurTextureRefreshLowEndEnvMapped()
         }
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x00281450
 void AurTextureEnableLowEndEnvMapping(Vector vColor)
 {
@@ -2553,6 +2561,7 @@ void AurTextureEnableLowEndEnvMapping(Vector vColor)
     AurTextureRefreshLowEndEnvMapped();
 #endif
 }
+// Dead code: not in the PC executable
 // Xbox 0x00281500
 void AurTextureDisableLowEndEnvMapping()
 {
@@ -2579,6 +2588,7 @@ void AurTextureDisableLowEndEnvMapping()
     AurTextureRefreshLowEndEnvMapped();
 #endif
 }
+// Dead code: not in the PC executable
 // Xbox 0x002815A0
 const char* enablelowendenvmapping(char* sCommand)
 {
@@ -2591,19 +2601,21 @@ const char* enablelowendenvmapping(char* sCommand)
     AurTextureEnableLowEndEnvMapping(vColor);
     return "Success.";
 }
+// Dead code: not in the PC executable
 // Xbox 0x00281610
 const char* disablelowendenvmapping(char* sCommand)
 {
     AurTextureDisableLowEndEnvMapping();
     return "Success.";
 }
+// Dead code: not in the PC executable
 // Xbox 0x0027F7E0
-int sorttexturelist(const void* pA, const void* pB)
+int sorttexturelist(const void* pFirstName, const void* pSecondName)
 {
 #ifdef _XBOX
-    return strcmp((const char*)pA, (const char*)pB);
+    return strcmp((const char*)pFirstName, (const char*)pSecondName);
 #else
-    int nResult = strcmp((const char*)pA, (const char*)pB);
+    int nResult = strcmp((const char*)pFirstName, (const char*)pSecondName);
     if (nResult != 0)
     {
         return nResult < 0 ? -1 : 1;
@@ -2611,6 +2623,7 @@ int sorttexturelist(const void* pA, const void* pB)
     return nResult;
 #endif
 }
+// Dead code: not in the PC executable
 // Xbox 0x00280820
 const char* listalltextures(char* sCommand)
 {
@@ -2801,6 +2814,7 @@ List<int>* AurTextureGetOrdering()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int AurTextureGetAvailableTextureMemory()
 {
     for (int i = 0; i < CAurTextureBasic::m_OrderedTextureList.m_nCount; i++)
@@ -2923,6 +2937,21 @@ int AurTextureResetAll()
         RefreshTextures[i]->Reset();
     }
     return RefreshTextures.m_nCount;
+}
+// Dead code: not in the PC executable
+void SwapTex(void* pFirst, void* pSecond)
+{
+    CAurTextureBasic* pTemp = *(CAurTextureBasic**)pFirst;
+    *(CAurTextureBasic**)pFirst = *(CAurTextureBasic**)pSecond;
+    *(CAurTextureBasic**)pSecond = pTemp;
+}
+// Dead code: not in the PC executable
+unsigned char* AurGetLayeredRasterWrapper(char* sFileName, int* pWidth, int* pHeight, int* pBPP)
+{
+    int nReserved;
+    unsigned char* pImage = AurGetLayeredRaster(sFileName, pWidth, pHeight, &nReserved);
+    *pBPP = 2;
+    return pImage;
 }
 #ifdef _XBOX  // PC 0x00421D90  Xbox 0x00281B90
 int AurTextureSetMem(int nMem)
@@ -3147,6 +3176,7 @@ void CAurTextureBasic::GetMemoryUsage(TEXTUREMEMORYSTATS* pStats)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 unsigned int AurTextureReadScreen(int nWidth, int nHeight, unsigned char* pBuffer)
 {
     unsigned int nTextureID;
@@ -4107,6 +4137,44 @@ CAurTexture* AurTextureGetReference(char* sName, char* sExtra)
 {
     CAurTexture* pTexture = AurTextureGet(sName, NULL, sExtra, NULL, 0);
     return AurTextureGet(NULL, pTexture, NULL, NULL, 0);
+}
+// Dead code: not in the PC executable
+void CAurTextureBasic::CheckAttributes()
+{
+    if (m_pImage == NULL)
+    {
+        if (m_nBumpType != 0)
+        {
+            m_nBPP = 1;
+        }
+        m_nWidth = max(2, m_nWidth);
+        m_nHeight = max(2, m_nHeight);
+    }
+}
+// Dead code: not in the PC executable
+void CAurTexture::SetReference(CAurTexture* pTexture)
+{
+    m_pReferenced = pTexture;
+}
+// Dead code: not in the PC executable
+int CAurTextureBasic::CanDownSampleFurther()
+{
+    int nShift = m_nLevel - m_nUploadedLevels;
+    if (m_nLevel < m_nMaxLevel && (m_nWidth >> nShift) > 2 && (m_nHeight >> nShift) > 2)
+    {
+        return 1;
+    }
+    return 0;
+}
+// Dead code: not in the PC executable
+void CAurTextureBasic::SetNewDownSampleLevel(int nLevels)
+{
+    m_nLevel = min(m_nLevel + nLevels, m_nMaxLevel);
+    if (m_nLevel != m_nUploadedLevels)
+    {
+        m_bMemoryDirty = 1;
+        RefreshTextures.AddUnique(this);
+    }
 }
 
 int currenttextime;

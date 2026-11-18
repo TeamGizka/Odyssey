@@ -25,6 +25,23 @@ void ImageFlipY(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
     memcpy(pImage, pBuffer, nSize);
     delete[] pBuffer;
 }
+// Dead code: not in the PC executable
+void ImageFlipRB(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
+{
+    int nSize;
+    unsigned char* pPixel;
+
+    if (nBPP >= 3)
+    {
+        nSize = nWidth * nHeight * nBPP;
+        for (pPixel = pImage; pPixel - pImage < nSize; pPixel += nBPP)
+        {
+            unsigned char nTemp = pPixel[0];
+            pPixel[0] = pPixel[2];
+            pPixel[2] = nTemp;
+        }
+    }
+}
 // PC 0x0045DA80  Xbox 0x002CB7D0
 void ImageDup(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
 {
@@ -42,6 +59,7 @@ void ImageDup(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
         }
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x002CD040
 unsigned char* ImageDup(unsigned char* pImage, int nWidth, int nHeight, int nBPP,
                         int bCompressed)
@@ -516,7 +534,7 @@ unsigned char* ImageReadPLT(char* sFileName, int* pnWidth, int* pnHeight,
     fclose(pFile);
     return pImage;
 }
-
+// Dead code: not in the PC executable
 void ImageJulia(int nWidth, int nHeight, int nBPP, unsigned char* pImage,
                 float fCReal, float fCImaginary)
 {

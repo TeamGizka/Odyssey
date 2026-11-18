@@ -23,6 +23,7 @@ public:
 
     void SetDescription(unsigned long nStrRef);
     void OnEnterSlot(CSWGuiControl* pControl);
+    void SetActiveButton(int nOption);
     void OnGameplayOpt(CSWGuiControl* pControl);
     void OnFeedbackOpt(CSWGuiControl* pControl);
     void OnAutopauseOpt(CSWGuiControl* pControl);
@@ -229,7 +230,7 @@ public:
     CSWGuiListBox m_lbResolutions;
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnBack;
-    int m_nUnknown80C;
+    int m_bResolutionChanged;
 };
 
 class CSWGuiOptionsGraphics : public CSWGuiPanel
@@ -264,7 +265,7 @@ public:
     CSWGuiButton m_btnAdvanced;
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnDefault;
-    int m_nUnknown18BC;
+    int m_bReInitPending;
 };
 
 class CSWGuiOptionsGraphicsAdvanced : public CSWGuiPanel

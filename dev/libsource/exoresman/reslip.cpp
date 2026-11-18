@@ -15,6 +15,16 @@ char* CResLIP::GetLIPDataPtr()
 {
     return m_pLIPData;
 }
+// Dead code: not in the PC executable
+unsigned long CResLIP::GetLIPSize()
+{
+    return m_nLIPSize;
+}
+// Dead code: not in the PC executable
+int CResLIP::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x00710E60
 int CResLIP::OnResourceFreed()
 {

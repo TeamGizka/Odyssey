@@ -20,6 +20,11 @@ int CResLYT::GetLYTSize()
 {
     return m_nLYTSize;
 }
+// Dead code: not in the PC executable
+int CResLYT::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x00710E60
 int CResLYT::OnResourceFreed()
 {

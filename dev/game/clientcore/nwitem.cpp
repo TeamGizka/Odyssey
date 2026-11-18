@@ -7,13 +7,13 @@
 #include "exotlktable.h"
 #include "clientexoappinternal.h"
 
-static inline void NwitemTrace1();
-#define NWITEM_TRACE() NwitemTrace1()
+static inline void TraceBaseItemLookup();
+#define NWITEM_TRACE() TraceBaseItemLookup()
 // PC 0x005B2EF0
 CSWBaseItem::CSWBaseItem()
 {
     m_nEquipableSlots = 0;
-    m_bUnknown18 = 0;
+    m_nModelType = 0;
     m_nName = -1;
     memset(m_sItemClass, 0, sizeof(m_sItemClass));
     m_nPartEnvMap = 0;
@@ -287,7 +287,7 @@ void CSWBaseItemArray::Load()
 CSWItem::CSWItem()
 {
     m_nBaseItem = DEFAULT_BASE_ITEM;
-    memset(m_aUnknown04, 0, sizeof(m_aUnknown04));
+    memset(m_anArmorModelPart, 0, sizeof(m_anArmorModelPart));
 }
 // PC 0x005B4680  Xbox 0x00067AE0
 CSWItem::~CSWItem()
@@ -318,6 +318,6 @@ CSWBaseItem* CSWItem::GetBaseItem()
     return g_pRules->m_pBaseItems->GetBaseItem(m_nBaseItem);
 }
 
-static inline void NwitemTrace1()
+static inline void TraceBaseItemLookup()
 {
 }

@@ -89,10 +89,10 @@ public:
     void RestoreDefaultColor(); void ReSetFont();
     void SetAlignment(int nAlignment); void SetColor(const Vector& vColor);
     void SetDefaultColor(const Vector& vColor);
-    const Vector& GetColor();
     void SetBaseFont(const CResRef& cFont);
     void SetFont(const CResRef& cFont);
     void SetFontRename();
+    void SetLocString(CExoLocString& lsText, int nStrRef);
     void SetTextObject(CSWGuiText* pText);
 
     CExoString m_sText;
@@ -161,7 +161,7 @@ public:
     static const unsigned long FILL_MODE_MAP = 0;
 
     CSWGuiBorderParams(const CResRef& cCorner, const CResRef& cEdge,
-                       const CResRef& cFill, int nDimension, int nUnknown,
+                       const CResRef& cFill, int nDimension, int nBorderDim,
                        float fAlpha, const Vector& vColor, int bPulsing);
     void SetPulsingAlpha(int bPulsing, int nLow, int nHigh);
     void SetCornerImage(const CResRef& cImage, int bTile);
@@ -232,11 +232,9 @@ public:
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct,
                       const CExoString& sName);
 
-    int GetHeight();
     int GetFontHeight();
 
     void WrapString();
-    CSWGuiExtent GetExtent();
     CSWGuiExtent GetIdealWidthAndHeight();
 #ifdef _XBOX
 
@@ -287,7 +285,6 @@ public:
                       const CExoString& sName);
 
     CSWGuiExtent GetInnerExtent();
-    int SetPulsingAlpha(int bPulsing, int nLow, int nHigh);
     void Initialize(const CSWGuiExtent& cExtent,
                    const CSWGuiBorderParams& cParams);
     void FillTile(int nHeight, int nWidth, int nX, int nY,

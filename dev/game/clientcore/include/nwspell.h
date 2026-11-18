@@ -71,7 +71,7 @@ public:
     unsigned long m_nDescriptionStrRef;
     CResRef m_resIcon;
     CExoString m_sRange;
-    CExoString m_sUnused28;
+    CExoString m_sComponent;
     short m_nTargetType;
     CExoString m_sImpactScript;
     unsigned char m_nGuardianLevel;
@@ -102,13 +102,13 @@ public:
     unsigned char m_nProjectileSpawnPoint;
     CResRef m_resProjectileSound;
     unsigned char m_nProjectileOrientation;
-    unsigned char m_bUnknown11E;
-    int m_nUnknown120;
+    unsigned char m_nImmunityType;
+    int m_bImmunityItem;
     int m_nCategory;
     int m_nMaxCR;
     int* m_pSubRadialSpells;
     unsigned char m_nSubRadialSpellCount;
-    int m_nUnknown134;
+    int m_bUseConcentration;
     int m_nCounter1;
     int m_nCounter2;
     unsigned char m_nUserType;
@@ -142,6 +142,7 @@ public:
                10;
     }
     int GetSubRadialSpell(unsigned char nIndex);
+    void SetSubRadialSpell(unsigned char nIndex, unsigned long nSpell);
 
     void SetLabel(const CExoString& value) { m_sLabel = value; }
     void SetIcon(const CResRef& value) { m_resIcon = value; }
@@ -198,6 +199,7 @@ public:
     ~CSWSpellArray();
 
     CSWSpell* GetSpell(int nIndex) const;
+    CSWSpell operator[](int nIndex) const;
 
     int GetNumSpells() const
     {

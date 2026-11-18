@@ -109,7 +109,7 @@ class CSWServerInfo
 public:
     unsigned char m_aUnknown00[0x104];
     unsigned long m_bPartyPicking : 1;
-    unsigned long m_nUnknown104Rest : 31;
+    unsigned long m_nPartyPickingFlagsUnused : 31;
 };
 
 class CSWCCreature;
@@ -156,8 +156,8 @@ public:
     void AttachModel();
     void RotateCharacter(int bLeft);
 #ifndef _XBOX
-    void RotateCharacterLeft(int nUnused);
-    void RotateCharacterRight(int nUnused);
+    void RotateCharacterLeft(int nControl);
+    void RotateCharacterRight(int nControl);
     void UpdatePortraits();
     void OnChangeCharacter(CSWGuiControl* pControl);
     void OnSwitchLeft(CSWGuiControl* pControl);
@@ -315,7 +315,7 @@ public:
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnAccept;
 #endif
-    int m_nUnknownC38;
+    int m_nSelectedScript;
     unsigned long m_oidCreature;
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void OnPanelAdded();

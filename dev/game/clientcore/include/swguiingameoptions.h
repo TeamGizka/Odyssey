@@ -14,14 +14,14 @@ public:
     CSWGuiButton m_aOptions[7];
 #else
     CSWGuiButton m_aOptions[8];
-    CSWGuiButton m_btnUnknown;
+    CSWGuiButton m_btnResume;
 #endif
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblDescription;
-    CSWGuiLabel m_lblUnknown12C8;
-    CSWGuiLabel m_lblUnknown1408;
-    CSWGuiLabel m_lblUnknown1548;
-    CSWGuiLabel m_lblUnknown1688;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblSelect;
+    CSWGuiLabel m_lblStart;
+    CSWGuiLabel m_lblExit;
     CSWGuiLabel m_lblScrollIcon;
     CSWGuiListBox m_lbDescription;
 #ifndef _XBOX
@@ -43,6 +43,7 @@ public:
     virtual void OnPanelAdded();
     void OnQuit(CSWGuiControl*);
     void OnEnterSlot(CSWGuiControl*);
+    void SetActiveButton(int);
     CSWGuiInGameOptions(CSWGuiManager*);
 };
 

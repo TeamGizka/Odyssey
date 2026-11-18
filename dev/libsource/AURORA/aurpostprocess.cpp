@@ -16,9 +16,8 @@
 
 #include <new>
 
-static inline void AurpostprocessTrace2();
-static inline void AurpostprocessTrace1();
-#define AURPOSTPROCESS_TRACE() AurpostprocessTrace1()
+static inline void TraceSynchronizeNodes();
+static inline void TracePostProcess();
 
 int animationfootprint = 0;
 
@@ -247,7 +246,7 @@ void MdlNode::ProcessSkinSeams()
             RenderVertexV* pPosition = (RenderVertexV*)(pBuffer +
                 lstNodes[nNode]->m_nVertexDataOffset + lstNodes[nNode]->m_nPositionOffset +
                 nVertex * lstNodes[nNode]->m_nVertexStride);
-            Vector& vMeshPosition = lstPositions[nNode];
+            Vector& vVertexPosition = lstPositions[nNode];
 #ifdef _XBOX
             vPosition.m_fX = pPosition->position.m_fX;
             vPosition.m_fY = pPosition->position.m_fY;
@@ -255,7 +254,7 @@ void MdlNode::ProcessSkinSeams()
 #else
             vPosition = pPosition->position;
 #endif
-            vPosition = lstOrientations[nNode] * vPosition + vMeshPosition;
+            vPosition = lstOrientations[nNode] * vPosition + vVertexPosition;
             lstNormals.SetSize(0);
             lstNormalNodes.SetSize(0);
             RenderVertexN* pNormal = (RenderVertexN*)(pBuffer +
@@ -357,7 +356,7 @@ void SynchronizeNodes(MdlNode* pDestination, MdlNode* pSource, int& nNodeID);
 // PC 0x00439A10  Xbox 0x0028FD90
 void SynchronizeNodes(MdlNode* pDestination, MdlNode* pSource, int& nNodeID)
 {
-    AurpostprocessTrace2();
+    TraceSynchronizeNodes();
     pDestination->m_nNodeID = pSource->m_nNodeID;
     for (int i = 0; i < pDestination->m_lChildren.m_nCount; i++)
     {
@@ -1297,9 +1296,9 @@ void MdlNodeDanglyMesh::InternalRemoveTemporaryArrays()
 void MdlNodeAnimMesh::InternalGenVertices()
 {
 
-    m_nAnimationDataCount1 = m_lAnimationVectors1.m_nCount /
+    m_nAnimVertFrames = m_lAnimVerts.m_nCount /
                             m_pPostProcess->m_lPositions.m_nCount;
-    m_nAnimationDataCount2 = m_lAnimationVectors2.m_nCount /
+    m_nAnimTVertFrames = m_lAnimTVerts.m_nCount /
                             m_pPostProcess->m_lTextureCoordinates0.m_nCount;
 
     int nFace;
@@ -1317,16 +1316,16 @@ void MdlNodeAnimMesh::InternalGenVertices()
             int nTexCoord = m_pPostProcess->m_lTextureCoordinates0.m_nCount != 0
                 ? m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner] : 0;
             int nNormal = m_pPostProcess->m_lFaces[nFace].m_pFaceRemap[nCorner];
-            for (nSample = 0; nSample < m_nAnimationDataCount1; nSample++)
+            for (nSample = 0; nSample < m_nAnimVertFrames; nSample++)
             {
-                lPositions.Add(m_lAnimationVectors1[nPosition + nSample *
+                lPositions.Add(m_lAnimVerts[nPosition + nSample *
                     m_pPostProcess->m_lPositions.m_nCount]);
-                lNormals.Add(m_lAnimationVectors3[nNormal + nSample *
+                lNormals.Add(m_lAnimNormals[nNormal + nSample *
                     m_pPostProcess->m_lNormals.m_nCount]);
             }
-            for (nSample = 0; nSample < m_nAnimationDataCount2; nSample++)
+            for (nSample = 0; nSample < m_nAnimTVertFrames; nSample++)
             {
-                lTexCoords.Add(m_lAnimationVectors2[nTexCoord + nSample *
+                lTexCoords.Add(m_lAnimTVerts[nTexCoord + nSample *
                     m_pPostProcess->m_lTextureCoordinates0.m_nCount]);
             }
 
@@ -1389,9 +1388,9 @@ void MdlNodeAnimMesh::InternalRemoveTemporaryArrays()
     }
 
     m_pPostProcess->m_lstVertices.SetSize(0);
-    m_lAnimationVectors1.SetSize(0);
-    m_lAnimationVectors2.SetSize(0);
-    m_lAnimationVectors3.SetSize(0);
+    m_lAnimVerts.SetSize(0);
+    m_lAnimTVerts.SetSize(0);
+    m_lAnimNormals.SetSize(0);
 
     MdlNodeTriMesh::InternalRemoveTemporaryArrays();
 }
@@ -1534,15 +1533,15 @@ void MdlNodeLight::InternalPostProcess()
     }
 }
 
-static inline void AurpostprocessTrace2()
+static inline void TraceSynchronizeNodes()
 {
-    AurpostprocessTrace1();
+    TracePostProcess();
 }
 
-static inline void AurpostprocessTrace1()
+static inline void TracePostProcess()
 {
 }
-
+// Dead code: not in the PC executable
 void AurPostProcessArrayListDefiners()
 {
     List<unsigned int> lstIndices;

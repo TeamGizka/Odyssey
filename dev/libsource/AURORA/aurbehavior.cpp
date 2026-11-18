@@ -14,7 +14,7 @@ extern int ParseVector(char* sText, float* pfValue);
 extern int CompareInsensitive(const char* sLeft, const char* sRight);
 char* firstword(char* sMessage);
 int Parse(char* sText, int& nValue);
-int Parse(char* sText, float& fValue);
+int Parse(char* sValue, float& fValue);
 int Parse(char* sText, Vector& vValue);
 extern char sUpdateScenes[];
 extern char sDying[];
@@ -128,6 +128,7 @@ void CAurBehaviorAttachRotate::Message(char* sMessage)
         Parse(sMessage + 11, m_vRotation);
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x002BED10
 void CAurBehaviorNavigate::Message(char* sMessage)
 {
@@ -152,7 +153,7 @@ void CAurBehaviorNavigate::Message(char* sMessage)
         Parse(sMessage + 6, m_fStrafe);
     }
 }
-
+// Dead code: not in the PC executable
 void CAurBehaviorCameraOnAStick::Message(char* sMessage)
 {
     if (stricmp("m_fDist", firstword(sMessage)) == 0)
@@ -493,6 +494,7 @@ int CAurBehaviorCameraFollow::Control(float fTimeStep)
     }
     return 1;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002BF5B0
 int CAurBehaviorNavigate::Control(float fTimeStep)
 {
@@ -520,7 +522,7 @@ int CAurBehaviorNavigate::Control(float fTimeStep)
     }
     return 1;
 }
-
+// Dead code: not in the PC executable
 int CAurBehaviorCameraOnAStick::Control(float fTimeStep)
 {
     if (currentscene)
@@ -656,6 +658,7 @@ CAurBehaviorAttachNoOrientation::CAurBehaviorAttachNoOrientation(
     : CAurBehaviorAttach(pObject, pParent, pPart)
 {
 }
+// Dead code: not in the PC executable
 // Xbox 0x002C01C0
 CAurBehaviorNavigate::CAurBehaviorNavigate(CAurObject* pObject)
     : CAurBehavior(pObject)
@@ -666,7 +669,7 @@ CAurBehaviorNavigate::CAurBehaviorNavigate(CAurObject* pObject)
     m_fRaise = 0.0f;
     m_fStrafe = 0.0f;
 }
-
+// Dead code: not in the PC executable
 CAurBehaviorCameraOnAStick::CAurBehaviorCameraOnAStick(CAurObject* pCamera,
                                                        CAurObject* pTarget)
     : CAurBehavior(pCamera)
@@ -703,7 +706,7 @@ CAurBehaviorCameraFollow::CAurBehaviorCameraFollow(CAurObject* pCamera,
 CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow()
 {
 }
-
+// Dead code: not in the PC executable
 CAurBehaviorCameraOnAStick::~CAurBehaviorCameraOnAStick()
 {
 }

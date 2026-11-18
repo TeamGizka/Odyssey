@@ -1,13 +1,13 @@
 #include "exobase.h"
 #include "exotlktable.h"
 #include "nwscriptinternal.h"
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::TokenInitialize()
 {
     m_nTokenStatus = CSCRIPTCOMPILER_TOKEN_UNKNOWN;
     m_nTokenCharacters = 0;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::PushSRStack(int nState, int nRule, int nTerm,
                                           CScriptParseTreeNode* pCurrentTree)
 {
@@ -37,7 +37,7 @@ void CScriptCompilerInternal::PushSRStack(int nState, int nRule, int nTerm,
     m_pSRStack[m_nSRStackStates].pCurrentTree = pCurrentTree;
     m_pSRStack[m_nSRStackStates].pReturnTree = NULL;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::PopSRStack(int* pnState, int* pnRule, int* pnTerm,
                                         CScriptParseTreeNode** ppCurrentTree,
                                         CScriptParseTreeNode** ppReturnTree)
@@ -55,7 +55,7 @@ int CScriptCompilerInternal::PopSRStack(int* pnState, int* pnRule, int* pnTerm,
     --m_nSRStackStates;
     return TRUE;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::ModifySRStackReturnTree(CScriptParseTreeNode* pReturnTree)
 {
     if (m_nSRStackStates >= 0)
@@ -63,7 +63,7 @@ void CScriptCompilerInternal::ModifySRStackReturnTree(CScriptParseTreeNode* pRet
         m_pSRStack[m_nSRStackStates].pReturnTree = pReturnTree;
     }
 }
-
+// Dead code: not in the PC executable
 CScriptParseTreeNode* CScriptCompilerInternal::DuplicateScriptParseTree(CScriptParseTreeNode* pNode)
 {
     CScriptParseTreeNode* pNewNode = NULL;
@@ -90,7 +90,7 @@ CScriptParseTreeNode* CScriptCompilerInternal::DuplicateScriptParseTree(CScriptP
 
     return pNewNode;
 }
-
+// Dead code: not in the PC executable
 BOOL CScriptCompilerInternal::CheckForBadLValue(CScriptParseTreeNode* pNode)
 {
     BOOL bBadLValue = TRUE;
@@ -114,7 +114,7 @@ BOOL CScriptCompilerInternal::CheckForBadLValue(CScriptParseTreeNode* pNode)
 
     return bBadLValue;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::DeleteCompileStack()
 {
     for (int nCount = 0; nCount <= m_nSRStackStates; ++nCount)
@@ -129,7 +129,7 @@ void CScriptCompilerInternal::DeleteCompileStack()
         }
     }
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::CleanUpDuringCompile(int nReturnValue)
 {
     DeleteCompileStack();
@@ -146,7 +146,7 @@ int CScriptCompilerInternal::CleanUpDuringCompile(int nReturnValue)
     ClearAllSymbolLists();
     return nReturnValue;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::PrintParseSourceError(int nChar, int nError)
 {
     STR_RES strRes;
@@ -167,7 +167,7 @@ int CScriptCompilerInternal::PrintParseSourceError(int nChar, int nError)
     OutputError(nError, sFileName, m_nLines, sErrorText);
     return CleanUpDuringCompile(nError);
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::ParseSource(char* pScript, int nScriptLength)
 {
     int i;
@@ -248,7 +248,7 @@ int CScriptCompilerInternal::ParseSource(char* pScript, int nScriptLength)
 
     return 0;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::AddUserDefinedIdentifier(CScriptParseTreeNode* pFunctionDeclaration,
                                                       BOOL bFunctionImplementation)
 {
@@ -561,7 +561,7 @@ int CScriptCompilerInternal::AddUserDefinedIdentifier(CScriptParseTreeNode* pFun
 
     return 0;
 }
-
+// Dead code: not in the PC executable
 CScriptParseTreeNode* CScriptCompilerInternal::CreateScriptParseTreeNode(int nNodeOperation,
                                                                          CScriptParseTreeNode* pNodeLeft,
                                                                          CScriptParseTreeNode* pNodeRight)
@@ -574,7 +574,7 @@ CScriptParseTreeNode* CScriptCompilerInternal::CreateScriptParseTreeNode(int nNo
     pNewNode->nChar = m_nCharacterOnLine;
     return pNewNode;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::AddToGlobalVariableList(CScriptParseTreeNode* pGlobalVariableNode)
 {
     if (m_pGlobalVariableParseTree == NULL)
@@ -593,7 +593,7 @@ int CScriptCompilerInternal::AddToGlobalVariableList(CScriptParseTreeNode* pGlob
 
     return 0;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GenerateParseTree()
 {
     int nTopStackState;

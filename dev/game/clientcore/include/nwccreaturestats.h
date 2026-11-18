@@ -39,8 +39,10 @@ public:
 
     int GetNumberKnownSpells(unsigned char nLevel) { return m_lstKnownSpells[nLevel].num; }
     unsigned long GetKnownSpell(unsigned char nLevel, unsigned char nIndex);
+    unsigned char GetSpellsPerDayLeft(unsigned char nLevel);
     void AddKnownSpell(unsigned char nLevel, unsigned long nSpell);
     float GetMinSpellRange(const CExoString& sRange);
+    int HasSpell(unsigned char nLevel, unsigned long nSpell);
     void RemoveKnownSpell(unsigned char nLevel, unsigned long nSpell);
     void GetMenuInfo(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                      unsigned long nType, unsigned long nForcePoints,
@@ -48,11 +50,11 @@ public:
                      unsigned long nItemMask, float fDistance);
 
     CExoArrayList<unsigned long> m_lstKnownSpells[SPELL_LEVEL_COUNT];
-    CExoArrayList<unsigned long> m_lstUnknown0C[1];
+    CExoArrayList<unsigned long> m_lstAdditionalSpells[1];
     unsigned char m_aSpellsPerDayLeft[SPELL_LEVEL_COUNT];
-    unsigned char m_nUnknown19;
-    unsigned char m_nUnknown1A;
-    unsigned char m_nUnknown1B;
+    unsigned char m_nSchool;
+    unsigned char m_nDomain1;
+    unsigned char m_nDomain2;
     unsigned char m_nClass;
     unsigned char m_nLevel;
     unsigned char m_aUnknown1E[2];
@@ -112,7 +114,6 @@ public:
 
     short GetBaseHitPoints() { return m_nHitPointsBase; }
     short GetCurrentHitPoints() { return m_nCurrentHitPoints; }
-    short GetHitPointBonus();
 
     unsigned char GetNumClasses()
     {
@@ -121,7 +122,6 @@ public:
 
     short GetBaseForcePoints() { return m_nForcePointsBase; }
     short GetForcePoints() { short nForcePoints = m_nCurrentForcePoints + m_nForcePointBonus; return nForcePoints; }
-    short GetForcePointBonus();
     short GetMaxForcePoints() { return m_nMaxForcePoints; }
     int GetAlignment()
     {
@@ -179,6 +179,7 @@ public:
     short GetMaxHitPoints();
     int CalculateNumAttacks();
     int CalculateAttackModifier();
+    int CalculateDamageModifier();
 
     void SetGender(unsigned char nGender) { m_nGender = nGender; }
     void SetPortraitId(unsigned short nPortraitId);
@@ -208,6 +209,7 @@ public:
     CExoString GetAttackBonusString(CSWCCreature* pCreature, int nAttack, int bOffHand);
     CExoString GetGeneralDamageBonusString(CSWCCreature* pCreature, int bOffHand);
     int GetCombatModeDamageModifier(CSWCCreature* pCreature);
+    unsigned long GetAlignmentStringRef(int nAlignment);
 
     enum { STRREF_ATTACK_BONUS_VERSUS = 0 };
     CExoString GetAlignmentString(int nAlignment);
@@ -223,6 +225,11 @@ public:
     int GetINTMod();
     int GetWISMod();
     int GetCHAMod();
+    int GetNumOnHandAttacks();
+    int GetNumOffHandAttacks();
+    unsigned short GetBonusFeat(unsigned short nFeat);
+    unsigned char GetCasterLevel(unsigned char nClass);
+    unsigned char GetFeatRemainingUses(unsigned short nFeat);
     char GetBaseINTMod();
     char GetSkillModifier(unsigned short nSkill);
     unsigned char GetSpellsPerDayLeft(unsigned char nClass,
@@ -234,6 +241,7 @@ public:
     void InitializeCombatInformation();
     unsigned char CalculateUnarmedDamageDice();
     unsigned char CalculateUnarmedDamageDie();
+    unsigned char CalculateCriticalHitRange();
     void SetCombatInformation(CCombatInformation* pInfo);
     void SetFeatRemainingUses(unsigned short nFeat, unsigned char nUses);
 
@@ -255,7 +263,7 @@ public:
     unsigned char m_nCharisma;
     unsigned char m_aAbilities[6];
     unsigned char m_nDexterityBonus;
-    unsigned char m_aUnknown41[6];
+    unsigned char m_aBaseAbilities[6];
     unsigned char m_nUnknown47;
     short m_nHitPointsBase;
 
@@ -263,16 +271,16 @@ public:
     short m_nCurrentHitPoints;
     short m_nMaxHitPoints;
     short m_nDefenseBase;
-    unsigned char m_aUnknown52[2];
-    float m_fUnknown54;
+    unsigned char m_nMovementRate[2];
+    float m_fChallengeRating;
 
     unsigned long m_nExperience;
     char m_nFortitudeSave;
     char m_nWillSave;
     char m_nReflexSave;
     unsigned char m_nUnknown5F;
-    int m_nUnknown60;
-    unsigned char m_nUnknown64;
+    int m_bUseMonkAttackTables;
+    unsigned char m_nBaseAttackBonus;
     unsigned char m_aUnknown65[3];
     CCombatInformation* m_pCombatInformation;
     int m_bOwnsCombatInformation;

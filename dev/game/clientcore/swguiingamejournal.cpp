@@ -10,8 +10,8 @@
 #include "twodimarray.h"
 #include "guiingame.h"
 
-static inline void SwguiingamejournalTrace1();
-#define SWGUIINGAMEJOURNAL_TRACE() SwguiingamejournalTrace1()
+static inline void TraceQuestEntry();
+#define SWGUIINGAMEJOURNAL_TRACE() TraceQuestEntry()
 
 int g_nJournalSortType = 0;
 int g_bOverrideJournalSortType = 0;
@@ -63,7 +63,7 @@ inline void CSWGuiJournalItemEntry::SetEncouraged(int bEncouraged)
 CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    m_pUnknownFB8 = 0;
+    m_pLastSelectedItem = 0;
     m_pQuestItemPanel = new CSWGuiQuestItem(m_pManager);
 
 #ifdef _XBOX
@@ -289,9 +289,9 @@ void CSWGuiInGameJournal::PopulateItemListBox()
     }
 
     m_lbxItems.AddControls(aControls, 1, 1, 0);
-    if (m_pUnknownFB8 != 0)
+    if (m_pLastSelectedItem != 0)
     {
-        m_pUnknownFB8->SetActive(0);
+        m_pLastSelectedItem->SetActive(0);
     }
     if (aControls.num > 0)
     {
@@ -531,6 +531,6 @@ void CSWGuiInGameJournal::OnPanelRemoved()
     MarkNewQuestsObserved();
 }
 
-static inline void SwguiingamejournalTrace1()
+static inline void TraceQuestEntry()
 {
 }

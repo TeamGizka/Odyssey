@@ -28,7 +28,7 @@ public:
                                    Vector& vClippedStart, Vector& vClippedEnd,
                                    float& fStartT, float& fEndT, int& nFace);
     int NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd,
-                             const float& fA, const float& fB, const float& fC,
+                             const float& fMinHeight, const float& fMaxHeight, const float& fRadius,
                              CWalkHitInfo* pHitInfo);
     void TransformToWorld();
     int WeldRoom(CSWSRoom& other, float fTolerance);

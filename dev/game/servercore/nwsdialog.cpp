@@ -28,7 +28,8 @@
 #include <stdio.h>
 #include "clientoptions.h"
 
-static inline void NwsdialogTrace1();
+#define NWSDIALOG_DEBUG 0
+
 // PC 0x0059F4E0  Xbox 0x00187F00
 inline CSWSDialogNode::CSWSDialogNode()
 {
@@ -192,7 +193,7 @@ void CSWSDialog::Cleanup()
     m_oidCurrentPlayer = OBJECT_INVALID;
     m_nCurrentPlayerGender = CTlkTable::GENDER_MALE;
     m_bMultiPCDialogViewOnly = 0;
-    m_n90 = 0;
+    m_nConversationType = 0;
 }
 // PC 0x0059EA40  Xbox 0x00187510
 CSWSDialogStuntModel::CSWSDialogStuntModel()
@@ -488,7 +489,10 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
                                 CResStruct& resStruct, unsigned long& nDelay,
                                 int& bSuccess)
 {
-    NwsdialogTrace1();
+    if (NWSDIALOG_DEBUG)
+    {
+        EXOLOG("CSWSDialog::LoadDialogBase() current player id %lu\n", GetCurrentPlayerId());
+    }
     int bFieldSuccess = 0;
     int bFadeTypeSuccess = 0;
     CResStruct animationStruct;
@@ -759,7 +763,7 @@ float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
     }
 
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    if (pGui->m_nC0 == 0 && nFlag == 0 && fDelay < 0.01f)
+    if (pGui->m_bAnimatedCut == 0 && nFlag == 0 && fDelay < 0.01f)
     {
         fDelay = 0.01f;
     }
@@ -770,6 +774,11 @@ float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
     }
     pObject->SetDialogDelay(fDelay);
     return fDelay;
+}
+// Dead code: not in the PC executable
+void CSWSDialog::SetDialogWaitFlags(CSWSObject* pObject, unsigned long nWaitFlags)
+{
+    pObject->m_nWaitFlags = nWaitFlags;
 }
 // PC 0x005A0080  Xbox 0x00188B10
 int CSWSDialog::SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer)
@@ -949,7 +958,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
     }
     if (m_lstPlayers.GetHeadPos() != NULL)
     {
-        m_n98 = m_oidCurrentPlayer;
+        m_oidLastReplySpeaker = m_oidCurrentPlayer;
     }
     if (!bSkip)
     {
@@ -957,7 +966,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
         {
             if (m_pReplies[nReplyIndex].m_nSoundDelay == CSWSDialogBase::DELAY_DEFAULT)
             {
-                if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 == 0)
+                if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut == 0)
                 {
                     SetDialogDelay(pOwner, m_pReplies[nReplyIndex].m_lsText,
                         (unsigned long)m_pReplies[nReplyIndex].m_lsText.GetSpokenTimeEstimate(
@@ -981,7 +990,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
                            m_pReplies[nReplyIndex].m_nDelay,
                            m_pReplies[nReplyIndex].m_nEntries != 0, 1);
         }
-        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 == 0)
+        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut == 0)
         {
             pOwner->m_nWaitFlags = m_pReplies[nReplyIndex].m_nWaitFlags;
         }
@@ -1006,7 +1015,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
         return pOwner->SendDialogEntry(m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex);
     }
     m_bEndOfDialog = 1;
-    m_n60 = 1;
+    m_bEndPending = 1;
     return 0;
 }
 // PC 0x005A0940  Xbox 0x001893D0
@@ -1063,15 +1072,15 @@ CSWSDialog::CSWSDialog()
     m_nSelectedReply = DIALOG_INDEX_INVALID;
     m_nCurrentPlayerGender = CTlkTable::GENDER_MALE;
     m_oidLastEntrySpeaker = OBJECT_INVALID;
-    m_n98 = OBJECT_INVALID;
+    m_oidLastReplySpeaker = OBJECT_INVALID;
     m_pSpeakers = NULL;
     m_nSpeakers = 0;
     m_bMultiPCDialogViewOnly = 0;
-    m_n90 = 0;
-    m_n60 = 0;
-    m_n40 = 0;
-    m_n44 = 0;
-    m_n3C = 0;
+    m_nConversationType = 0;
+    m_bEndPending = 0;
+    m_bUnequipItems = 0;
+    m_bUnequipHeadItem = 0;
+    m_bSkippable = 0;
     m_nPseudoRandomCameraAngle = 0;
     m_nPseudoRandomCameraStep = 1;
     m_bPseudoRandomCameraDirection = 0;
@@ -1094,11 +1103,11 @@ CSWSDialog::CSWSDialog()
     m_nPseudoRandomCameraAngles[16] = CAMERA_ANGLE_FIRST;
     m_nPseudoRandomCameraAngles[17] = CAMERA_ANGLE_FIRST;
     m_nPseudoRandomCameraAngles[18] = CAMERA_ANGLE_FIRST;
-    m_nF4 = 0;
-    m_nF8 = 0;
+    m_bFirstEntry = 0;
+    m_bFirstReply = 0;
     m_cAmbientTrack = "";
-    m_n10C = 0;
-    m_n110 = 0;
+    m_bEndScriptRun = 0;
+    m_bSuppressBark = 0;
     m_nAnimationRetryDelay = 0;
     m_nLastEntryDay = 0;
     m_nLastEntryTime = 0;
@@ -1111,8 +1120,8 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     int bFieldSuccess = 1;
     CResStruct resTop;
     InitializePsuedoRandomCameraAngles(pGFF);
-    m_nF4 = 1;
-    m_nF8 = 1;
+    m_bFirstEntry = 1;
+    m_bFirstReply = 1;
     Cleanup();
     pGFF->GetTopLevelStruct(&resTop);
 
@@ -1121,19 +1130,19 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     unsigned long nDelayReply = pGFF->ReadFieldDWORD(&resTop, "DelayReply", bSuccess, 0);
     m_cEndConversationScript = pGFF->ReadFieldCResRef(&resTop, "EndConversation", bFieldSuccess, "");
     m_cEndConversationAbortedScript = pGFF->ReadFieldCResRef(&resTop, "EndConverAbort", bFieldSuccess, "");
-    m_n3C = pGFF->ReadFieldBYTE(&resTop, "Skippable", bFieldSuccess, 1);
+    m_bSkippable = pGFF->ReadFieldBYTE(&resTop, "Skippable", bFieldSuccess, 1);
     int nConversationType = pGFF->ReadFieldINT(&resTop, "ConversationType", bFieldSuccess, 0);
     unsigned char nComputerType = pGFF->ReadFieldBYTE(&resTop, "ComputerType", bFieldSuccess, 0);
     m_cAmbientTrack = pGFF->ReadFieldCResRef(&resTop, "AmbientTrack", bFieldSuccess, "");
-    m_n40 = pGFF->ReadFieldBYTE(&resTop, "UnequipItems", bFieldSuccess, 0);
-    m_n44 = pGFF->ReadFieldBYTE(&resTop, "UnequipHItem", bFieldSuccess, 0);
+    m_bUnequipItems = pGFF->ReadFieldBYTE(&resTop, "UnequipItems", bFieldSuccess, 0);
+    m_bUnequipHeadItem = pGFF->ReadFieldBYTE(&resTop, "UnequipHItem", bFieldSuccess, 0);
     int bAnimatedCut = pGFF->ReadFieldBYTE(&resTop, "AnimatedCut", bFieldSuccess, 0);
     int bOldHitCheck = pGFF->ReadFieldBYTE(&resTop, "OldHitCheck", bFieldSuccess, 0);
-    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 = bAnimatedCut;
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut = bAnimatedCut;
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nDialogCameraType = bOldHitCheck;
     if (nConversationType == 2)
     {
-        m_n110 = 1;
+        m_bSuppressBark = 1;
     }
     else if (nConversationType == CONVERSATION_TYPE_COMPUTER)
     {
@@ -1287,7 +1296,7 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
         {
             continue;
         }
-        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 0 && m_n110 == 0)
+        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 0 && m_bSuppressBark == 0)
         {
             BarkOneLine(m_pStartingEntries[nStart].m_nIndex);
             RunScript(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_cScript);
@@ -1299,7 +1308,7 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
         }
         else if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 1 &&
                  m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nEntries == 0 &&
-                 m_n110 == 0)
+                 m_bSuppressBark == 0)
         {
             BarkOneLine(m_pStartingEntries[nStart].m_nIndex);
             RunScript(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_cScript);
@@ -1410,9 +1419,9 @@ void CSWSDialog::RunEndConversationScript(CSWSObject* pObject, int bAborted)
     CGameObject* pGameObject;
     int i;
 
-    if (m_bEndOfDialog != 0 && m_n10C == 0)
+    if (m_bEndOfDialog != 0 && m_bEndScriptRun == 0)
     {
-        m_n10C = 1;
+        m_bEndScriptRun = 1;
         RunScript(pObject, m_cEndConversationScript);
         pObjectArray = g_pAppManager->m_pServerExoApp->GetObjectArray();
         pObjectArray->GetGameObject(m_oidDialogOwner, &pGameObject);
@@ -1753,14 +1762,14 @@ int CSWSDialog::SendDialogEntryNode(
         m_nPseudoRandomCameraAngle = PSEUDO_RANDOM_CAMERA_COUNT - 1;
     if (entry.m_nCameraAngle == 0)
     {
-        if (m_nF4)
+        if (m_bFirstEntry)
             entry.m_nCameraAngle = CAMERA_ANGLE_SECOND;
         else
             entry.m_nCameraAngle = nCameraAngle;
     }
-    m_nF4 = 0;
+    m_bFirstEntry = 0;
     CExoString sText = GetExoStringFromLocString(entry.m_lsText, nGender);
-    if (m_n40)
+    if (m_bUnequipItems)
     {
         UnequipItemsForDialog(oidSpeaker);
         UnequipItemsForDialog(oidListener);
@@ -1769,7 +1778,7 @@ int CSWSDialog::SendDialogEntryNode(
             UnequipItemsForDialog(g_pAppManager->GetServerExoApp()
                 ->ClientToServerObjectId(pAnimationObjects[i]));
     }
-    if (m_n44)
+    if (m_bUnequipHeadItem)
     {
         UnequipHItemForDialog(oidSpeaker);
         UnequipHItemForDialog(oidListener);
@@ -1800,6 +1809,20 @@ int CSWSDialog::SendDialogEntryNode(
     if (pAnimations != NULL) delete[] pAnimations;
     if (pDependant != NULL) delete[] pDependant;
     return 1;
+}
+// Dead code: not in the PC executable
+int CSWSDialog::AssignPseudoRandomCameraAngle()
+{
+    int nCameraAngle = m_nPseudoRandomCameraAngles[m_nPseudoRandomCameraAngle];
+    if (m_bPseudoRandomCameraDirection)
+        m_nPseudoRandomCameraAngle += m_nPseudoRandomCameraStep;
+    else
+        m_nPseudoRandomCameraAngle -= m_nPseudoRandomCameraStep;
+    if (m_nPseudoRandomCameraAngle >= PSEUDO_RANDOM_CAMERA_COUNT)
+        m_nPseudoRandomCameraAngle = 0;
+    if (m_nPseudoRandomCameraAngle < 0)
+        m_nPseudoRandomCameraAngle = PSEUDO_RANDOM_CAMERA_COUNT - 1;
+    return nCameraAngle;
 }
 // PC 0x005A3820  Xbox 0x0018C3D0
 int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
@@ -2110,7 +2133,7 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
         }
         if (pReplies[i].m_nCameraAngle == 0)
         {
-            if (m_nF8)
+            if (m_bFirstReply)
                 pReplies[i].m_nCameraAngle = CAMERA_ANGLE_SECOND;
             else
                 pReplies[i].m_nCameraAngle = nCameraAngle;
@@ -2129,8 +2152,8 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
         pfFadeDelay[i] = pReplies[i].m_fFadeDelay;
         pfFadeLength[i] = pReplies[i].m_fFadeLength;
     }
-    m_nF8 = 0;
-    if (m_n40)
+    m_bFirstReply = 0;
+    if (m_bUnequipItems)
     {
         for (int i = 0; i < nReplies; ++i)
         {
@@ -2139,7 +2162,7 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
                 UnequipItemsForDialog(ppoidAnimations[i][j]);
         }
     }
-    if (m_n44)
+    if (m_bUnequipHeadItem)
     {
         for (int i = 0; i < nReplies; ++i)
         {
@@ -2458,7 +2481,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     }
     else if (m_pEntries[nEntry].m_nSoundDelay == CSWSDialogBase::DELAY_DEFAULT)
     {
-        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 == 0)
+        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut == 0)
         {
             SetDialogDelay(pOwner, m_pEntries[nEntry].m_lsText,
                 (unsigned long)m_pEntries[nEntry].m_lsText.GetSpokenTimeEstimate(
@@ -2487,8 +2510,4 @@ inline CSWSDialog::~CSWSDialog()
     ReEquipItemsForDialog();
     ReEquipHItemForDialog();
     Cleanup();
-}
-
-static inline void NwsdialogTrace1()
-{
 }

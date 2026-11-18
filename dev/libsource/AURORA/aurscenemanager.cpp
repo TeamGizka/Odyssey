@@ -16,10 +16,10 @@
 #include <string.h>
 #include "aurconsole.h"
 
-static inline void AurscenemanagerTrace3();
-static inline void AurscenemanagerTrace2();
-static inline void AurscenemanagerTrace1();
-#define AURSCENEMANAGER_TRACE() AurscenemanagerTrace1()
+static inline void TraceSceneLights();
+static inline void TraceActiveRooms();
+static inline void TraceCameraFade();
+#define AURSCENEMANAGER_TRACE() TraceCameraFade()
 
 float fadeToZeroTime = 0.25f;
 
@@ -156,6 +156,7 @@ int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
     }
     return 0;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002B8E80
 char* GetToken(char** psLine)
 {
@@ -702,7 +703,6 @@ void ClearSceneRooms(Scene* pScene)
 // PC 0x0046BC80
 template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& other)
 {
-    AURSCENEMANAGER_TRACE();
     m_nCount = 0;
     for (int i = 0; i < other.m_nCount; i++)
     {
@@ -1245,7 +1245,7 @@ void AddObjectToRooms(Scene* pScene, Gob* pGob)
 // PC 0x0046D070  Xbox 0x002BB380
 void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
 {
-    AurscenemanagerTrace2();
+    TraceActiveRooms();
     if (pScene->m_pCurrentRoom == 0)
     {
         lstRooms = pScene->m_lstRooms;
@@ -1321,7 +1321,7 @@ void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
 // PC 0x0046D2F0  Xbox 0x002BB510
 void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
 {
-    AurscenemanagerTrace3();
+    TraceSceneLights();
     if (pScene->m_pBSPRoot == 0)
     {
         return;
@@ -1567,7 +1567,7 @@ void DoStaticLightBuckets(Scene* pScene)
 // PC 0x0046DDF0  Xbox 0x002BBC50
 void AnimateStaticLight(CAurObject* pObject, char* sEvent, void* pData)
 {
-    AurscenemanagerTrace3();
+    TraceSceneLights();
     UpdateStaticLighting(((Gob*)pObject)->m_pScene, (PartLight*)pData);
 }
 // PC 0x0046DE10  Xbox 0x002BBC70
@@ -1900,17 +1900,17 @@ int SceneBSPAddPart(Scene* pScene, Part* pPart, Model* pModel)
     return 1;
 }
 
-static inline void AurscenemanagerTrace3()
+static inline void TraceSceneLights()
 {
-    AurscenemanagerTrace2();
+    TraceActiveRooms();
 }
 
-static inline void AurscenemanagerTrace2()
+static inline void TraceActiveRooms()
 {
-    AurscenemanagerTrace1();
+    TraceCameraFade();
 }
 
-static inline void AurscenemanagerTrace1()
+static inline void TraceCameraFade()
 {
 }
 

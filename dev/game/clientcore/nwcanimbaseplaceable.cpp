@@ -6,8 +6,8 @@
 #include "twodimarrays.h"
 #include "nwcanimbase.h"
 
-static inline void NwcanimbaseplaceableTrace1();
-#define NWCANIMBASEPLACEABLE_TRACE() NwcanimbaseplaceableTrace1()
+static inline void TracePlaceableAnimation();
+#define NWCANIMBASEPLACEABLE_TRACE() TracePlaceableAnimation()
 // PC 0x006E4E50  Xbox 0x0011E360
 CSWCAnimBasePlaceable::CSWCAnimBasePlaceable()
 {
@@ -236,6 +236,6 @@ unsigned short CSWCAnimBasePlaceable::ServerToClientAnimation(unsigned short nAn
     return nAnimation;
 }
 
-static inline void NwcanimbaseplaceableTrace1()
+static inline void TracePlaceableAnimation()
 {
 }

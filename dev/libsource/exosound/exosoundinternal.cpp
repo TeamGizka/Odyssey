@@ -9,8 +9,10 @@
 #include "twodimarray.h"
 
 
-static inline void ExoSoundTrace();
-#define EXOSOUND_TRACE() ExoSoundTrace()
+#define EXOSOUNDINTERNAL_DEBUG 0
+
+static inline void TraceVoicePlayback();
+#define EXOSOUND_TRACE() TraceVoicePlayback()
 
 int g_bDisableSound;
 int g_bSoundPaused;
@@ -500,6 +502,7 @@ void CExoSoundInternal::SetEnvironment(unsigned char nEnvironment)  // PC 0x005D
 
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 int ApplySpeakerSettings(int nSpeakerType, int bReleaseDevice)
 {
     CExoSoundInternal* pInternal = g_pExoSound->m_pInternal;
@@ -527,6 +530,7 @@ int ApplySpeakerSettings(int nSpeakerType, int bReleaseDevice)
 #endif
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void GetListenerFactors(float* pfRolloffFactor, float* pfDistanceFactor)
 {
     CExoSoundInternal* pInternal = g_pExoSound->m_pInternal;
@@ -946,7 +950,10 @@ void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,  /
 void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,  // PC 0x005D7480  Xbox 0x0014F9E0
                                             C2DVoice* p2DVoice)
 {
-    EXOSOUND_TRACE();
+    if (EXOSOUNDINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundInternal::PlaySourceOn2DVoice() playing %d\n", m_lstPlaying.Contains(pSource));
+    }
     int nLoopCount = pSource->m_bLooping == 0;
 
     pSource->m_p2DVoice = p2DVoice;
@@ -1861,13 +1868,13 @@ void CExoSoundInternal::LoadProviderPreferences()  // PC 0x005D9140
 
     CExoString sProvider;
     for (unsigned char nProvider = 0;
-         nProvider < m_CExoStringList_D8.GetCount(); nProvider++)
+         nProvider < m_lst3DProviderNames.GetCount(); nProvider++)
     {
         for (unsigned char nRow = 0; nRow < pTable->m_nNumRows; nRow++)
         {
             if (pTable->GetCExoStringEntry(nRow, "Provider", &sProvider))
             {
-                if (!(*m_CExoStringList_D8.GetString(nProvider) == sProvider))
+                if (!(*m_lst3DProviderNames.GetString(nProvider) == sProvider))
                 {
                     continue;
                 }
@@ -2326,8 +2333,8 @@ void CExoSoundInternal::Enumerate3DProviders()  // PC 0x005DA6D0
     char* aNames[64];
     int nProvider = 0;
 
-    m_CExoStringList_D8.m_nSortMode = 1;
-    m_CExoStringList_D8.Clear();
+    m_lst3DProviderNames.m_nSortMode = 1;
+    m_lst3DProviderNames.Clear();
 
     CExoArrayList<HPROVIDER>* pProviderList = &m_a3DProviders;
     pProviderList->num = 0;
@@ -2349,7 +2356,7 @@ void CExoSoundInternal::Enumerate3DProviders()  // PC 0x005DA6D0
             AIL_open_3D_provider(aProviders[nProvider]) == M3D_NOERR)
         {
             AIL_close_3D_provider(aProviders[nProvider]);
-            m_CExoStringList_D8.Add(new CExoString(aNames[nProvider]));
+            m_lst3DProviderNames.Add(new CExoString(aNames[nProvider]));
             pProviderList->Add(aProviders[nProvider]);
         }
         nProvider++;
@@ -2484,7 +2491,7 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x005DA8A0
                 int nIndex = m_aProviderConfigurations[nProvider]->m_nProvider;
                 m_bInitialized = 1;
                 m_h3DProvider = m_a3DProviders[nIndex];
-                m_s3DProviderName = *m_CExoStringList_D8.GetString(nIndex);
+                m_s3DProviderName = *m_lst3DProviderNames.GetString(nIndex);
                 m_nEAX = nEAXMode;
                 m_bHardware = bHardware;
                 m_f2D3DBias = m_aProviderConfigurations[nProvider]->m_f2D3DBias;
@@ -2585,7 +2592,7 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x005DA8A0
 }
 #endif
 
-static inline void ExoSoundTrace()
+static inline void TraceVoicePlayback()
 {
 }
 
@@ -2825,7 +2832,7 @@ float CExoSoundInternal::GetSliderVolume(int nSlider, int nTemporary)  // PC 0x0
 void CExoSoundInternal::ShutDown()  // PC 0x005D6D30  Xbox 0x0014F230
 {
     m_pStreamManager->ShutDown();
-    while (m_lstPlaying.GetHeadPos() != NULL)
+    while (!m_lstPlaying.IsEmpty())
     {
         CExoSoundSourceInternal* pSource = m_lstPlaying.GetHead();
         if (pSource->m_bPlayWhenFree == 0)
@@ -4092,14 +4099,16 @@ void CExoSoundInternal::OcclusionRender(unsigned long nFrameTime)
     {
         m_nOcclusionIdleFrames = 0;
     }
-    if (m_nOcclusionTime > m_nMaxOcclusionTime)
+    unsigned long nOcclusionTime = m_nOcclusionTime;
+    if (nOcclusionTime > m_nMaxOcclusionTime)
     {
-        m_nMaxOcclusionTime = m_nOcclusionTime;
+        m_nMaxOcclusionTime = nOcclusionTime;
     }
-    if (m_nOcclusionState)
+    int nOcclusionState = m_nOcclusionState;
+    if (nOcclusionState)
     {
         CExoString sStats;
-        sStats.Format("Time Play (Frame/Max): %d/%d ms", m_nOcclusionTime, m_nMaxOcclusionTime);
+        sStats.Format("Time Play (Frame/Max): %d/%d ms", nOcclusionTime, m_nMaxOcclusionTime);
         AurPostString(sStats.CStr(), 5, 27, 5.0f);
         sStats.Format("Unique Locations (Current/Max): %d/%d", m_nObstructionQueries, m_nMaxObstructionQueries);
         AurPostString(sStats.CStr(), 5, 28, 5.0f);

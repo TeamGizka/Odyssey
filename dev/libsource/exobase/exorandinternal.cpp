@@ -74,6 +74,58 @@ void CExoRandInternal::Add(unsigned char* pData, int nLength)
         m_nBufferLength = m_nBufferLength + nLength - 128;
     }
 }
+// Dead code: not in the PC executable
+void CExoRandInternal::SignalEvent()
+{
+    LARGE_INTEGER nPerformanceCount;
+    QueryPerformanceCounter(&nPerformanceCount);
+
+    switch (Rand() & 3)
+    {
+    case 0:
+    {
+        unsigned long nDelta = m_aClockSamples[0].nLow - nPerformanceCount.LowPart;
+        Add((unsigned char*)&nDelta, sizeof(nDelta));
+        m_aClockSamples[0].nLow = nPerformanceCount.LowPart;
+        m_aClockSamples[0].nHigh = nPerformanceCount.HighPart;
+        break;
+    }
+    case 1:
+    {
+        unsigned long nDelta = m_aClockSamples[1].nLow - nPerformanceCount.LowPart;
+        Add((unsigned char*)&nDelta, sizeof(nDelta));
+        m_aClockSamples[1].nLow = nPerformanceCount.LowPart;
+        m_aClockSamples[1].nHigh = nPerformanceCount.HighPart;
+        break;
+    }
+    case 2:
+    {
+        unsigned short nDelta = (unsigned short)(m_aClockSamples[2].nLow - nPerformanceCount.LowPart);
+        Add((unsigned char*)&nDelta, sizeof(nDelta));
+        m_aClockSamples[2].nLow = nPerformanceCount.LowPart;
+        m_aClockSamples[2].nHigh = nPerformanceCount.HighPart;
+        break;
+    }
+    case 3:
+    {
+        unsigned char nDelta = (unsigned char)(m_aClockSamples[3].nLow - nPerformanceCount.LowPart);
+        Add((unsigned char*)&nDelta, sizeof(nDelta));
+        m_aClockSamples[3].nLow = nPerformanceCount.LowPart;
+        m_aClockSamples[3].nHigh = nPerformanceCount.HighPart;
+        break;
+    }
+    }
+}
+// Dead code: not in the PC executable
+void CExoRandInternal::SignalEvent(unsigned long nEvent)
+{
+    unsigned short nDelta = (unsigned short)(m_nTickCount - nEvent);
+    if (nDelta != 0)
+    {
+        Add((unsigned char*)&nDelta, sizeof(nDelta));
+        m_nTickCount = nEvent;
+    }
+}
 // PC 0x005ECEA0  Xbox 0x00139910
 CExoString CExoRandInternal::GetString(unsigned short nLength)
 {

@@ -45,6 +45,7 @@ void sleep(int nMilliseconds)
         ;
 }
 #else
+// Dead code: not in the PC executable
 void sleep(unsigned long nMilliseconds)
 {
     unsigned long nEndTime = clock() + nMilliseconds;
@@ -160,6 +161,7 @@ void AurSetPauseOverlayColor(float fRed, float fGreen, float fBlue,
                               ((unsigned int)(fBlue * 255.0f) << 16) |
                               ((unsigned int)(fAlpha * 255.0f) << 24);
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A2540
 char* testsetpausecolor(char* sArguments)
 {
@@ -278,6 +280,7 @@ void AurRemoveAllDrawableSquares()
     GLRender::RemoveAllSquaresToRender();
 }
 #endif
+// Dead code: not in the PC executable
 // Xbox 0x002A2780
 char* addsquaretorender(char* sArguments)
 {
@@ -290,6 +293,7 @@ char* addsquaretorender(char* sArguments)
     sprintf(returnvalue, "%u", nSquare);
     return returnvalue;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A27D0
 char* removesquaretorender(char* sArguments)
 {
@@ -321,6 +325,11 @@ int AurQueryMaximumAnisotropy()  // PC 0x0044F090
 {
     return (int)largest_supported_anisotropy;
 }
+// Dead code: not in the PC executable
+float QueryMaxAnisotropicFilter()
+{
+    return largest_supported_anisotropy;
+}
 #endif
 // PC 0x0044F0A0  Xbox 0x002A2800
 void AurEnableSpeedBlur()
@@ -332,12 +341,14 @@ void AurDisableSpeedBlur()
 {
     GLRender::m_bSpeedBlurEnabled = false;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A2820
 char* startblur(char* sArguments)
 {
     AurEnableSpeedBlur();
     return "blah";
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A2830
 char* endblur(char* sArguments)
 {
@@ -451,13 +462,13 @@ int SetAnisotropicFilter(int nLevel)
 
     return g_nCurrentAnisotropy;
 }
-
+// Dead code: not in the PC executable
 int AurSetAnisotropy(int nLevel)
 {
     SetAnisotropicFilter(nLevel);
     return g_nCurrentAnisotropy;
 }
-
+// Dead code: not in the PC executable
 char* setanisotropy(char* sArguments)
 {
     int nLevel = atoi(sArguments);
@@ -483,7 +494,7 @@ extern "C" int AurSetAntiAliasingMode(int nMode)
     g_nAliasingMode = nMode;
     return 1;
 }
-
+// Dead code: not in the PC executable
 char* setaliasing(char* sArguments)
 {
     int nMode = atoi(sArguments);
@@ -513,11 +524,13 @@ void AurReleaseFrameTexture()
 #endif
 
 Scene* FindScene(char* sName);
+// Dead code: not in the PC executable
 // Xbox 0x002A2520
 int NodeHasTileData(BSPNode* pNode, void* pData)
 {
     return pNode->m_pData->m_pTileData != 0;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A28E0
 void AuroraSetTileFoggedByWar(Vector& vPosition, bool bFogged)
 {

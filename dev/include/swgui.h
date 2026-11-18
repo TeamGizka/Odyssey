@@ -199,7 +199,7 @@ public:
     void StartLoadFromLayout(const CResRef& cLayout);
     void StopLoadFromLayout();
     void InitControl(CSWGuiControl& cControl, const CExoString& sName,
-                     int bUnknown);
+                     int bRequired);
 
 #ifndef _XBOX
     int m_bUseFont;
@@ -311,10 +311,10 @@ public:
     CSWGuiControl* m_pLastMouseOverControl;
     CSWGuiEditbox* m_pKeyFocus;
     unsigned long m_bLeftMouseDown : 1;
-    unsigned long m_bUnknown1C1 : 1;
+    unsigned long m_bRightMouseDown : 1;
     unsigned long m_bCursorCentered : 1;
     unsigned long m_bToolTipShown : 1;
-    unsigned long m_nUnknown1CRest : 28;
+    unsigned long m_nMouseFlagsUnused : 28;
     CSWGuiScene* m_pMouseScene;
     CAurObject* m_pMouseCursor;
     CResRef m_resCursor;
@@ -357,7 +357,7 @@ public:
     void DeactivateSoftwareMouse();
 #endif
 #ifndef _XBOX
-    void SetSoftwareMouseCursor(int nCursor, int nArg2, int nArg3);
+    void SetSoftwareMouseCursor(int nCursor, int bCentered, int bForce);
 #endif
 #ifndef _XBOX
     int HandleLMouseDown(int nArg);

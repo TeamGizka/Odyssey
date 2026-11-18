@@ -7,7 +7,7 @@
 #include "guiingame.h"
 #include "clientexoappinternal.h"
 
-static inline void SwguiloadscreenTrace1();
+static inline void TraceLoadScreenHint();
 // PC 0x0067A6D0  Xbox 0x00099B70
 void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
 {
@@ -63,7 +63,7 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
 // PC 0x0067A9C0  Xbox 0x00099BC0
 void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 {
-    SwguiloadscreenTrace1();
+    TraceLoadScreenHint();
     CExoString sHint;
     if (nStrRef != 0)
     {
@@ -80,7 +80,7 @@ void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 // PC 0x0067AA80
 void CSWGuiLoadScreen::AddHintToMessageBuffer()
 {
-    SwguiloadscreenTrace1();
+    TraceLoadScreenHint();
     CExoString sSpeaker("");
     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
     ((CGuiInGame*)pClient->GetInGameGui())
@@ -90,7 +90,7 @@ void CSWGuiLoadScreen::AddHintToMessageBuffer()
 #ifndef _XBOX
 void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x0067AB00
 {
-    SwguiloadscreenTrace1();
+    TraceLoadScreenHint();
     AurGUIStartLayer();
     if (AurGUISetupViewport(0, 0, m_pManager->m_nWidth, m_pManager->m_nHeight,
                             CGuiInGame::COLOR_BLACK, false, 1.0f) != 0)
@@ -103,6 +103,6 @@ void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x0067AB00
 }
 #endif
 
-static inline void SwguiloadscreenTrace1()
+static inline void TraceLoadScreenHint()
 {
 }

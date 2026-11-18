@@ -19,8 +19,8 @@ public:
     virtual int Initialize(HWND hApplicationWindow, HWND hRenderWindow,
                            unsigned long nWidth, unsigned long nHeight,
                            unsigned char nBitsPerPixel,
-                           unsigned long nRefreshRate, int nUnknown0,
-                           int nUnknown1, int nUnknown2) = 0;
+                           unsigned long nRefreshRate, int bFullScreen,
+                           int nColorDepth, int nDepthBits) = 0;
     virtual bool GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,
                               unsigned char* pnBitsPerPixel,
                               unsigned long* pnRefreshRate, bool bSetMode) = 0;
@@ -49,8 +49,8 @@ public:
     virtual int Initialize(HWND hApplicationWindow, HWND hRenderWindow,
                            unsigned long nWidth, unsigned long nHeight,
                            unsigned char nBitsPerPixel,
-                           unsigned long nRefreshRate, int nUnknown0,
-                           int nUnknown1, int nUnknown2) = 0;
+                           unsigned long nRefreshRate, int bFullScreen,
+                           int nColorDepth, int nDepthBits) = 0;
     virtual bool GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,
                              unsigned char* pnBitsPerPixel,
                              unsigned long* pnRefreshRate, bool bSetMode);
@@ -88,7 +88,7 @@ public:
 protected:
 #ifndef _XBOX
 
-    char m_cUnknown04[156];
+    char m_cDisplayMode[156];
 #endif
     int m_nWidth;
     int m_nHeight;
@@ -108,7 +108,7 @@ public:
     int Initialize(HWND hApplicationWindow, HWND hRenderWindow,
                    unsigned long nWidth, unsigned long nHeight,
                    unsigned char nBitsPerPixel, unsigned long nRefreshRate,
-                   int nUnknown0, int nUnknown1, int nUnknown2);
+                   int bFullScreen, int nColorDepth, int nDepthBits);
     int InitEditor(HWND hApplicationWindow, HWND hRenderWindow,
                    unsigned long nWidth, unsigned long nHeight,
                    unsigned char nBitsPerPixel, unsigned long nRefreshRate,

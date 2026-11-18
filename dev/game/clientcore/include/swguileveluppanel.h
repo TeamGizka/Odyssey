@@ -65,6 +65,10 @@ public:
 #endif
     void PlayGame();
     void OnSelectAcceptButton(CSWGuiControl* pControl);
+    void ClearPowers();
+    void ClearAbilities();
+    void ClearSkills();
+    void ClearFeats();
 };
 
 #endif

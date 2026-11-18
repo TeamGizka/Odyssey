@@ -8,6 +8,7 @@
 #include "aurtexman.h"
 #include "aurmodel.h"
 #include "swmain.h"
+#include <math.h>
 
 extern void AurInitExtensions();
 extern void AurTextureRefreshAll();
@@ -123,7 +124,7 @@ void CAurInternal::RestoreAuroraDisplayMode()
 #ifndef _XBOX
     if (m_bDisplayModeChanged != 0)
     {
-        DEVMODEA* pDisplayMode = (DEVMODEA*)&m_cUnknown04[0];
+        DEVMODEA* pDisplayMode = (DEVMODEA*)&m_cDisplayMode[0];
         if (ChangeDisplaySettingsA(pDisplayMode, CDS_TEST) == DISP_CHANGE_SUCCESSFUL)
         {
             ChangeDisplaySettingsA(pDisplayMode, CDS_FULLSCREEN);
@@ -140,7 +141,7 @@ void CAurInternal::DestroyCAuroraInstance()
         AuroraInstance = NULL;
     }
 }
-
+// Dead code: not in the PC executable
 int CAurInternal::GetGLContext()
 {
     return 0;
@@ -162,8 +163,6 @@ void CAurInternalGL::MakeCurrentGLContext(HDC hDeviceContext, HGLRC hRenderConte
     wglMakeCurrent(hDeviceContext, hRenderContext);
 }
 #endif
-
-#include <math.h>
 
 #ifdef _XBOX
 
@@ -228,6 +227,7 @@ int CAurInternal::ResetGammaRamp(float fGamma, int bSaveGamma)  // PC 0x0044D990
 inline CAurora::~CAurora()
 {
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A1D60
 CAurInternal::CAurInternal()
 {
@@ -278,7 +278,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,
                                unsigned long nWidth, unsigned long nHeight,
                                unsigned char nBitsPerPixel,
                                unsigned long nRefreshRate, int nUnknown0,
-                               int nUnknown1, int nUnknown2)
+                               int nUnknown1, int nDepthBits)
 {
     GLRender::InitRenderSystem();
     m_nHeadLightEnabled = (unsigned short)-1;
@@ -382,8 +382,8 @@ int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,
 int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // PC 0x0044DAB0  Xbox 0x002A1DB0
                                unsigned long nWidth, unsigned long nHeight,
                                unsigned char nBitsPerPixel,
-                               unsigned long nRefreshRate, int nUnknown0,
-                               int nUnknown1, int nUnknown2)
+                               unsigned long nRefreshRate, int bFullScreen,
+                               int nColorDepth, int nDepthBits)
 {
     HDC hDeviceContext;
     DEVMODEA displayMode;
@@ -402,7 +402,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
         GLRender::InitializeAntiAliasing();
     }
     m_nHeadLightEnabled = (unsigned short)-1;
-    if (nUnknown0 != 0)
+    if (bFullScreen != 0)
     {
         memset(&displayMode, 0, sizeof(displayMode));
         displayMode.dmSize = sizeof(displayMode);
@@ -419,7 +419,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
                     if (ChangeDisplaySettingsA(&displayMode, CDS_TEST) !=
                         DISP_CHANGE_SUCCESSFUL)
                         return 0;
-                    memcpy(m_cUnknown04, &displayMode, sizeof(displayMode));
+                    memcpy(m_cDisplayMode, &displayMode, sizeof(displayMode));
                     ChangeDisplaySettingsA(&displayMode, CDS_FULLSCREEN);
                     m_bDisplayModeChanged = 1;
                     break;
@@ -430,9 +430,9 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
             } while (EnumDisplaySettingsA(NULL, nModeNumber, &displayMode));
         }
         if (m_bDisplayModeChanged == 0)
-            nUnknown0 = 0;
+            bFullScreen = 0;
     }
-    if (nUnknown0 != 0)
+    if (bFullScreen != 0)
     {
         nStyle = WS_POPUP | WS_CLIPCHILDREN;
         hInsertAfter = HWND_TOPMOST;
@@ -478,13 +478,13 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
             anAttributes[2] = WGL_ACCELERATION_ARB;
             anAttributes[3] = WGL_FULL_ACCELERATION_ARB;
             anAttributes[4] = WGL_COLOR_BITS_ARB;
-            anAttributes[5] = nUnknown1;
+            anAttributes[5] = nColorDepth;
             anAttributes[6] = WGL_ALPHA_BITS_ARB;
             anAttributes[7] = 8;
             anAttributes[8] = WGL_DEPTH_BITS_ARB;
             anAttributes[9] = 24;
-            if (nUnknown2 <= 24)
-                anAttributes[9] = nUnknown2;
+            if (nDepthBits <= 24)
+                anAttributes[9] = nDepthBits;
             anAttributes[10] = WGL_DOUBLE_BUFFER_ARB;
             anAttributes[11] = 1;
             anAttributes[12] = WGL_SAMPLE_BUFFERS_ARB;
@@ -504,7 +504,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
             {
                 if (!SetPixelFormat(hDeviceContext, nFormat, &multisampleFormat))
                     bAntiAliasingFailed = 1;
-                m_nColorDepth = nUnknown1;
+                m_nColorDepth = nColorDepth;
                 m_nDepthBits = 24;
             }
             else
@@ -663,7 +663,7 @@ int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // 
                     {
                         return 0;
                     }
-                    memcpy(m_cUnknown04, &displayMode, sizeof(displayMode));
+                    memcpy(m_cDisplayMode, &displayMode, sizeof(displayMode));
                     ChangeDisplaySettingsA(&displayMode, CDS_FULLSCREEN);
                     m_bDisplayModeChanged = 1;
                     break;
@@ -964,6 +964,7 @@ CAurInternalGL* CAurInternalGL::NewCAuroraInstance()
     AuroraCount++;
     return (CAurInternalGL*)AuroraInstance;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A2200
 CAurInternalGL::CAurInternalGL()
 {

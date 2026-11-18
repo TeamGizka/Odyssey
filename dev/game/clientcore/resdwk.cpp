@@ -1,5 +1,5 @@
 #include "exoresman.h"
-
+// Dead code: not in the PC executable
 CResDWK::CResDWK()
 {
     m_bServiced = 0;
@@ -7,21 +7,26 @@ CResDWK::CResDWK()
     m_pDWKData = 0;
     m_bAllocPrefix = 1;
 }
-
+// Dead code: not in the PC executable
 CResDWK::~CResDWK()
 {
 }
-
+// Dead code: not in the PC executable
 unsigned char* CResDWK::GetDWKDataPtr()
 {
     return m_pDWKData;
 }
-
+// Dead code: not in the PC executable
 unsigned long CResDWK::GetDWKSize()
 {
     return m_nDWKSize;
 }
-
+// Dead code: not in the PC executable
+int CResDWK::IsLoaded()
+{
+    return m_bServiced;
+}
+// Dead code: not in the PC executable
 int CResDWK::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -29,7 +34,7 @@ int CResDWK::OnResourceFreed()
     m_pDWKData = 0;
     return 1;
 }
-
+// Dead code: not in the PC executable
 int CResDWK::OnResourceServiced()
 {
     unsigned char* pData;

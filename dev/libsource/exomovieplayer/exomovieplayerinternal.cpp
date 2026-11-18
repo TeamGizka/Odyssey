@@ -3,20 +3,19 @@
 #include <GL/gl.h>
 #include "bink.h"
 #include "mss.h"
-
-HWND g_hMovieWnd;
-
 #include "appmanager.h"
 #include "aurinternal.h"
 #include "clientexoapp.h"
 #include "clientexoappinternal.h"
 #include "clientoptions.h"
-#include "swguifade.h"
 #include "exobase.h"
 #include "exoresman.h"
-
 #include "exomovieplayerinternal.h"
 #include "swmain.h"
+
+HWND g_hMovieWnd;
+
+#include "swguifade.h"
 
 template <class T> inline void ExoMovieListTrace(CExoArrayList<T>*)
 {
@@ -26,7 +25,7 @@ template <class T> inline void ExoArrayListReleased(CExoArrayList<T>* pList)
 {
     ExoMovieListTrace(pList);
 }
-
+// Dead code: not in the PC executable
 void MovieSetUpProjection()
 {
     glLoadIdentity();
@@ -40,7 +39,7 @@ void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
 {
     glOrtho(dLeft, dRight, dBottom, dTop, dNear, dFar);
 }
-
+// Dead code: not in the PC executable
 void MovieSetUpAlphaTest()
 {
     glAlphaFunc(GL_GREATER, 0.0f);
@@ -125,16 +124,16 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
         NULL, 0x8000,
         (LPTHREAD_START_ROUTINE)CExoMoviePlayerInternal::PlayMoviesAsync, this,
         0, (LPDWORD)&m_dwWorkerThreadId);
-    m_nUnknown34 = 0;
+    m_nCurrentMovie = 0;
     m_bCancelMovie = 0;
     m_nCancelResult = 0;
-    m_nUnknown1C = 0;
-    m_nUnknown20 = 0;
+    m_bDeactivated = 0;
+    m_bToggleFullScreen = 0;
     m_bShuttingDown = 0;
     m_pFadePanel = NULL;
     m_hBinkBuffer = NULL;
     m_hBink = NULL;
-    m_nUnknown70 = 0;
+    m_nFrameRate = 0;
     m_hMovieWnd = NULL;
 }
 // PC 0x00405A50  Xbox 0x003044B0
@@ -190,33 +189,33 @@ int CExoMoviePlayerInternal::ShutDown()
 // PC 0x00404C20
 void CExoMoviePlayerInternal::OnDeactivation(int bToggleFullScreen)
 {
-    m_nUnknown1C = 1;
-    if (m_nUnknown20 == 0 || bToggleFullScreen == 1)
-        m_nUnknown20 = bToggleFullScreen;
+    m_bDeactivated = 1;
+    if (m_bToggleFullScreen == 0 || bToggleFullScreen == 1)
+        m_bToggleFullScreen = bToggleFullScreen;
 }
 // PC 0x00404C40
-int CExoMoviePlayerInternal::CancelMovie(int nA, int nB)
+int CExoMoviePlayerInternal::CancelMovie(int nResult, int bForce)
 {
-    if (nB == 0)
+    if (bForce == 0)
     {
         if (m_bMoviePlaying == 1)
         {
             if (m_bSkippable == 0)
             {
-                m_nCancelResult = nA;
-                return nA;
+                m_nCancelResult = nResult;
+                return nResult;
             }
         }
         else
         {
-            m_nCancelResult = nA;
+            m_nCancelResult = nResult;
             return 1;
         }
     }
 
     m_bCancelMovie = 1;
-    m_nCancelResult = nA;
-    return nA;
+    m_nCancelResult = nResult;
+    return nResult;
 }
 // PC 0x00404C80
 int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
@@ -343,7 +342,7 @@ int CExoMoviePlayerInternal::RestartMoviesAsync()
     m_bMoviePlaying = 1;
     return SetEvent(m_hWakeEvent);
 }
-
+// Dead code: not in the PC executable
 double MovieGetFrameRate()
 {
     if (g_pMoviePlayer == NULL || g_pMoviePlayer->m_hBink == NULL)
@@ -417,8 +416,8 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
                  SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOCOPYBITS);
 
     m_hBink = NULL;
-    m_nUnknown60 = 0;
-    m_nUnknown64 = 0;
+    m_nCurrentFrame = 0;
+    m_bPaused = 0;
 
     pszMovie = strchr(sMovie.CStr(), '.');
     if (pszMovie == NULL)
@@ -540,7 +539,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
                 {
                     self->RunMovieLoop(1);
                     Sleep(5);
-                    if (self->m_nUnknown1C == 0)
+                    if (self->m_bDeactivated == 0)
                         self->m_lstMovies[i] = "";
                     self->FinishMovie();
                 }
@@ -557,15 +556,15 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
                     self->m_bCancelMovie = 0;
             }
         }
-        if (self->m_nUnknown1C == 0)
+        if (self->m_bDeactivated == 0)
             self->m_lstMovies.SetSize(0);
         self->m_bCancelMovie = 0;
         self->m_nCancelResult = 0;
         self->m_bMoviePlaying = 0;
-        if (self->m_nUnknown1C == 1)
+        if (self->m_bDeactivated == 1)
         {
             g_bMovieResolutionLocked = 1;
-            if (self->m_nUnknown20 == 1)
+            if (self->m_bToggleFullScreen == 1)
             {
                 if (g_pAurora->FullScreen() == 1)
                     PostMessageA(g_hRenderWnd, WM_MOVIE_MODE_ACTIVATE, 0, 0);
@@ -574,8 +573,8 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
             }
             else
                 PostMessageA(g_hRenderWnd, WM_ACTIVATEAPP, 0, 0);
-            self->m_nUnknown20 = 0;
-            self->m_nUnknown1C = 0;
+            self->m_bToggleFullScreen = 0;
+            self->m_bDeactivated = 0;
         }
         else
         {
@@ -610,7 +609,7 @@ int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& ls
     m_bMoviePlaying = 1;
     return SetEvent(m_hWakeEvent);
 }
-
+// Dead code: not in the PC executable
 void MovieDumpQueue(const char* szFileName)
 {
     if (g_pMoviePlayer == NULL)

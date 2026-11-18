@@ -92,6 +92,47 @@ void CFactionManager::DeleteFaction(int nFaction)
         }
     }
 }
+// Dead code: not in the PC executable
+int CFactionManager::GetFactionIdByName(const CExoString& sName)
+{
+    if (sName.CompareNoCase("hostile_1"))
+    {
+        return 1;
+    }
+    if (sName.CompareNoCase("friendly_1"))
+    {
+        return 2;
+    }
+    if (sName.CompareNoCase("friendly_2"))
+    {
+        return 4;
+    }
+    if (sName.CompareNoCase("hostile_2"))
+    {
+        return 3;
+    }
+    if (sName.CompareNoCase("neutral"))
+    {
+        return 5;
+    }
+    if (sName.CompareNoCase("hostile_2"))
+    {
+        return 6;
+    }
+
+    if (m_pFactions != NULL)
+    {
+        for (int i = 0; i < m_pFactions->num; i++)
+        {
+            CSWSFaction* pFaction = m_pFactions->element[i];
+            if (pFaction != NULL && pFaction->m_sName == sName)
+            {
+                return i;
+            }
+        }
+    }
+    return 0;
+}
 // PC 0x0052B830  Xbox 0x0023E020
 int CFactionManager::SaveReputations(CResGFF* pRes, CResList* pList)
 {

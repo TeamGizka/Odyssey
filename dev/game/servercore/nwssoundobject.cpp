@@ -10,14 +10,16 @@
 #include "nwcsoundobject.h"
 #include "nwssoundobject.h"
 
-static inline void NwssoundobjectTrace2();
-static inline void NwssoundobjectTrace1();
-#define NWSSOUNDOBJECT_TRACE() NwssoundobjectTrace1()
+#define NWSSOUNDOBJECT_DEBUG 0
+
 // PC 0x005C8F30  Xbox 0x002477B0
 CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
     : CSWSObject(CGameObject::OBJECT_TYPE_SOUND, oidObject, 0), m_lstSounds(0)
 {
-    NwssoundobjectTrace2();
+    if (NWSSOUNDOBJECT_DEBUG)
+    {
+        EXOLOG("CSWSSoundObject::CSWSSoundObject() oid object %lu\n", oidObject);
+    }
     m_bActive = 1;
     m_bPositional = 1;
     m_bLooping = 0;
@@ -45,7 +47,10 @@ CSWSSoundObject::~CSWSSoundObject()
 // PC 0x005C86D0  Xbox 0x00246F70
 void CSWSSoundObject::Save(CResGFF* pRes, CResStruct* pStruct)
 {
-    NWSSOUNDOBJECT_TRACE();
+    if (NWSSOUNDOBJECT_DEBUG)
+    {
+        EXOLOG("CSWSSoundObject::Save() actions count %lu\n", m_lstActions.Count());
+    }
     CResList lstSounds;
     CResStruct stSound;
     Vector vPosition = m_vPosition;
@@ -106,7 +111,10 @@ void CSWSSoundObject::AddToArea(CSWSArea* pArea, int bLoadingGame)
 // PC 0x005C89C0  Xbox 0x00247250
 void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
 {
-    NWSSOUNDOBJECT_TRACE();
+    if (NWSSOUNDOBJECT_DEBUG)
+    {
+        EXOLOG("CSWSSoundObject::PackIntoMessage() actions count %lu\n", m_lstActions.Count());
+    }
     Vector vPosition = m_vPosition;
     float fValue;
     unsigned short nSounds;
@@ -465,7 +473,7 @@ int CSWSSoundObject::LoadFromTemplate(const CResRef& resTemplate)
     delete pTemplate;
     return bSuccess;
 }
-
+// Dead code: not in the PC executable
 void CSWSSoundObject::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -474,20 +482,11 @@ void CSWSSoundObject::RemoveFromArea()
     }
     SetArea(NULL);
 }
-
+// Dead code: not in the PC executable
 CSWCSoundObject* CSWSSoundObject::GetClientSoundObject()
 {
     unsigned long oidSelf = m_nId;
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     unsigned long oidClient = pApp->ServerToClientObjectId(oidSelf);
     return g_pAppManager->m_pClientExoApp->GetSoundObjectByGameObjectID(oidClient);
-}
-
-static inline void NwssoundobjectTrace2()
-{
-    NwssoundobjectTrace1();
-}
-
-static inline void NwssoundobjectTrace1()
-{
 }

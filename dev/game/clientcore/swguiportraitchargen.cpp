@@ -191,6 +191,7 @@ void CSWGuiPortraitCharGen::HandleCancelButton()
         }
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x00131530
 void CSWGuiPortraitCharGen::HandleLeftButton()
 {

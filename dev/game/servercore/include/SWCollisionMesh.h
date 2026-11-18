@@ -12,20 +12,20 @@ public:
     enum { INTERSECTION_LINE = 1, INTERSECTION_CORNER = 2,
            INTERSECTION_TRIANGLE = 3 };
 
-    int m_nUnknown00;
+    int m_nFailureReason;
 
     Vector m_vHitPosition;
-    Vector m_vUnknown10;
-    Vector m_vUnknown1C;
-    Vector m_vUnknown28;
-    Vector m_vUnknown34;
+    Vector m_vNormal;
+    Vector m_vVertex1;
+    Vector m_vVertex2;
+    Vector m_vDirection;
     unsigned long m_oidBlocker;
-    int m_nUnknown44;
+    int m_nIntersectionType;
     // PC 0x004B14B0  Xbox 0x0003AFE0
     CWalkHitInfo()
     {
-        m_nUnknown00 = 0;
-        m_nUnknown44 = 0;
+        m_nFailureReason = 0;
+        m_nIntersectionType = 0;
         m_oidBlocker = OBJECT_INVALID;
     }
     // PC 0x004BB570  Xbox 0x00168BA0
@@ -34,13 +34,13 @@ public:
                     const Vector& vVertex2, int nIntersectionType,
                     const Vector& vDirection)
     {
-        m_nUnknown00 = nFailureReason;
+        m_nFailureReason = nFailureReason;
         m_vHitPosition = vHitPosition;
-        m_vUnknown10 = vNormal;
-        m_vUnknown1C = vVertex1;
-        m_vUnknown28 = vVertex2;
-        m_nUnknown44 = nIntersectionType;
-        m_vUnknown34 = vDirection;
+        m_vNormal = vNormal;
+        m_vVertex1 = vVertex1;
+        m_vVertex2 = vVertex2;
+        m_nIntersectionType = nIntersectionType;
+        m_vDirection = vDirection;
     }
 };
 
@@ -111,6 +111,7 @@ public:
     void SetTriangleCount(int nCount);
     void SetVertexCount(int nCount);
     Vector WorldToLocal(const Vector& vPosition);
+    float ZWorldToZLocal(float fZ);
     Vector LocalToWorld(const Vector& vPosition);
 
     Vector GetUsePoint(int nUsePoint)
@@ -122,17 +123,19 @@ public:
     int GetMeshBoundingBox(Vector& vMin, Vector& vMax);
     int GetMeshOutline(Vector& vFirst, Vector& vSecond, Vector& vThird,
                        Vector& vFourth);
+    void GetTriangleVertices(int nTriangle, int* pnFirst, int* pnSecond,
+                             int* pnThird);
     void GetVertex(int nVertex, float* pfX, float* pfY, float* pfZ);
     void GetVertex(int nVertex, Vector* pvVertex);
     void GetFaceVertex(int nIndex, int nCorner, Vector& vVertex);
     int RenderMesh(int nFlag, unsigned long nColor, unsigned long nMask);
-    int NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd, float fA,
-                             float fB, float fC, CWalkHitInfo* pHitInfo);
-    int NoNonWalkPolys(const Vector& vStart, const Vector& vEnd, float fA,
-                       float fB, float fC, CWalkHitInfo* pHitInfo);
+    int NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd, float fMinHeight,
+                             float fMaxHeight, float fRadius, CWalkHitInfo* pHitInfo);
+    int NoNonWalkPolys(const Vector& vStart, const Vector& vEnd, float fMinHeight,
+                       float fMaxHeight, float fRadius, CWalkHitInfo* pHitInfo);
 
     int m_nType;
-    int m_nField08;
+    int m_nMeshType;
     CResRef m_cResRef;
     CRes* m_pRes;
     Vector m_vWorldPosition;

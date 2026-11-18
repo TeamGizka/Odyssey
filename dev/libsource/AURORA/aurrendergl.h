@@ -783,6 +783,8 @@ public:
 #endif
     static void RenderShadowArray(int nVertices, int nEdges, int nPool);
     static void InitExtensions();
+    static void RenderGammaCorrection();
+    static void RemoveAllDrawableSquares();
     static int InitializeAntiAliasing();
     static void Shutdown(int bReleaseRenderer);
     static void DrawFromVerts(int nMode, List<Vector>& lstVertices);
@@ -795,6 +797,7 @@ public:
                               RenderVertexC* pColors, unsigned long nVertexDataOffset);
 #endif
     static void RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices);
+    static void RenderObjectsVTQuad(unsigned long nPool, int nVertices);
     static void RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
                                   RenderVertexVC* pVertices, int nVertices);
     static void RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices);
@@ -1245,7 +1248,7 @@ inline void GLRender::SetTextureCoordGenerationState(
 #define GLRender_SetClearColor glClearColor
 #define GLRender_Rotate glRotatef
 
-#define GLRender_SetFogModef(nMode, fValue) glFogf(enableTranslationTable[nMode], fValue)
+#define GLRender_SetFogf(nMode, fValue) glFogf(enableTranslationTable[nMode], fValue)
 
 #define GLRender_SetColor4f glColor4f
 #define GLRender_SetAlphaFunc(nFunc, fReference) glAlphaFunc(cmpTranslationTable[nFunc], fReference)
@@ -1268,7 +1271,7 @@ inline void GLRender::SetTextureCoordGenerationState(
 #define GLRender_EnableLight(nLight) glEnable(GL_LIGHT0 + (nLight))
 #define GLRender_DisableLight(nLight) glDisable(GL_LIGHT0 + (nLight))
 #define GLRender_SetFogMode(nFogMode) glFogi(GL_FOG_MODE, fogModeTranslationTable[nFogMode])
-#define GLRender_SetFogModev(nMode, vValue) glFogfv(enableTranslationTable[nMode], &(vValue).m_fX)
+#define GLRender_SetFogfv(nMode, vValue) glFogfv(enableTranslationTable[nMode], &(vValue).m_fX)
 #define GLRender_SetDepthFunc(nFunc) glDepthFunc(cmpTranslationTable[nFunc])
 #define GLRender_SetColorv glColor4fv
 
@@ -1565,7 +1568,6 @@ public:
     void FindNumberOfAllowedLights();
     void Enable(Part* pPart, bool bEnableLights);
 
-    void ShutDown();
     void Load(char* sProgram, unsigned int* pnProgram);
 
 #ifndef _XBOX
@@ -1585,6 +1587,7 @@ class VertexProgramManager
 public:
     static int ResetVertexPrograms();
     static void AddVertexProgram(VertexProgram* pProgram);
+    static void RemoveVertexProgram(VertexProgram* pProgram);
 
     static List<VertexProgram*> cm_listExistentVertexPrograms;
 };

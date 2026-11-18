@@ -14,6 +14,7 @@ public:
     virtual ~CSWGuiPartySelectionButton();
 
     void SetSelected(int bSelected);
+    int GetSelected();
 
     void SetPartyData(void* pData)
     {

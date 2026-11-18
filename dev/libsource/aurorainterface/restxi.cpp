@@ -21,6 +21,11 @@ unsigned long CResTXI::GetTXISize()
 {
     return m_nTXISize;
 }
+// Dead code: not in the PC executable
+int CResTXI::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x00710E60
 int CResTXI::OnResourceFreed()
 {

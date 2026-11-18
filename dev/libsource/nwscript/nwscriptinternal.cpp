@@ -2,7 +2,7 @@
 #include "exobase.h"
 #include "exoresman.h"
 #include "nwscriptinternal.h"
-
+// Dead code: not in the PC executable
 CScriptCompilerIdListEntry::CScriptCompilerIdListEntry()
 {
     m_nIdentifierType = 0;
@@ -68,7 +68,7 @@ CScriptCompilerIdListEntry::~CScriptCompilerIdListEntry()
         delete m_pfOptionalParameterVectorData;
     }
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerIdListEntry::ExpandParameterSpace()
 {
     int nNewParameterSpace;
@@ -196,12 +196,12 @@ int CScriptCompilerIdListEntry::ExpandParameterSpace()
 
     return 0;
 }
-
+// Dead code: not in the PC executable
 void CSourceScript::UnloadScript()
 {
     m_pRes->Release();
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::InitializePreDefinedStructures()
 {
 
@@ -226,7 +226,7 @@ void CScriptCompilerInternal::InitializePreDefinedStructures()
     m_pcStructFieldList[2].m_nLocation = 8;
     m_pcStructFieldList[2].m_pchType = CSCRIPTCOMPILER_TOKEN_KEYWORD_FLOAT;
 }
-
+// Dead code: not in the PC executable
 CScriptCompilerInternal::CScriptCompilerInternal()
 {
     m_nCompileSymbolicOutput = 0;
@@ -255,7 +255,7 @@ CScriptCompilerInternal::CScriptCompilerInternal()
 
     Initialize();
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::Initialize()
 {
     m_nLines = 1;
@@ -330,7 +330,7 @@ void CScriptCompilerInternal::Initialize()
 
     TokenInitialize();
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::InitializeIncludeFile(int nCompileFileLevel)
 {
 
@@ -346,7 +346,7 @@ void CScriptCompilerInternal::InitializeIncludeFile(int nCompileFileLevel)
         TokenInitialize();
     }
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::ShutdownIncludeFile(int nCompileFileLevel)
 {
 
@@ -358,7 +358,7 @@ void CScriptCompilerInternal::ShutdownIncludeFile(int nCompileFileLevel)
         m_nTokenCharacters = m_pcIncludeFileStack[nCompileFileLevel - 1].m_nTokenCharacters;
     }
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::DeleteParseTree(BOOL bStack, CScriptParseTreeNode* pNode)
 {
     if (pNode != NULL)
@@ -385,7 +385,7 @@ void CScriptCompilerInternal::DeleteParseTree(BOOL bStack, CScriptParseTreeNode*
         delete pNode;
     }
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::OutputError(int nError, const CExoString& sFileName,
                                          int nLineNumber,
                                          const CExoString& sErrorText)
@@ -423,7 +423,7 @@ int CScriptCompilerInternal::OutputError(int nError, const CExoString& sFileName
 
     return nError;
 }
-
+// Dead code: not in the PC executable
 int CSourceScript::LoadScript(const CExoString& sFileName, char** ppScript,
                               unsigned long* pnScriptLength)
 {
@@ -479,17 +479,17 @@ CScriptCompilerInternal::~CScriptCompilerInternal()
 {
     ShutDown();
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::SetCompileDebugLevel(int nValue)
 {
     m_nCompileDebugLevel = nValue;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::SetCompileSymbolicOutput(int nValue)
 {
     m_nCompileSymbolicOutput = nValue;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::SetIdentifierSpecification(const CExoString& sLanguageSource)
 {
     if (m_sLanguageSource != sLanguageSource)
@@ -519,22 +519,22 @@ void CScriptCompilerInternal::SetIdentifierSpecification(const CExoString& sLang
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::SetOutputAlias(const CExoString& sAlias)
 {
     m_sOutputAlias = sAlias;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::SetOptimizeBinaryCodeLength(BOOL bValue)
 {
     m_bOptimizeBinaryCodeLength = bValue;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::SetCompileConditionalFile(BOOL bValue)
 {
     m_bCompileConditionalFile = bValue;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::CompileFile(const CExoString& sFileName)
 {
     char* pScript;
@@ -622,7 +622,7 @@ int CScriptCompilerInternal::CompileFile(const CExoString& sFileName)
 
     return WriteFinalCodeToFile(sFileName);
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::CompileScriptChunk(const CExoString& sScriptChunk)
 {
     Initialize();
@@ -659,7 +659,7 @@ int CScriptCompilerInternal::CompileScriptChunk(const CExoString& sScriptChunk)
     FinalizeFinalCode();
     return 0;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::CompileScriptConditional(const CExoString& sScriptConditional)
 {
     Initialize();
@@ -699,14 +699,14 @@ int CScriptCompilerInternal::CompileScriptConditional(const CExoString& sScriptC
     FinalizeFinalCode();
     return 0;
 }
-
+// Dead code: not in the PC executable
 int CScriptCompilerInternal::GetCompiledScriptCode(char** ppnCode, int* pnCodeSize)
 {
     *pnCodeSize = m_nOutputCodeSize;
     *ppnCode = m_pchOutputCode;
     return 0;
 }
-
+// Dead code: not in the PC executable
 void CScriptCompilerInternal::ClearCompiledScriptCode()
 {
     m_nOutputCodeSize = 0;

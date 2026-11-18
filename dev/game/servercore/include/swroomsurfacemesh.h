@@ -48,12 +48,12 @@ public:
     int ClearOutput();
     void ClearAll(unsigned long nMask);
 
-    int m_nField00;
-    int m_nField04;
-    int m_nField08;
-    int m_nField0C;
+    int m_nMaterialMask;
+    int m_nTraversalMask;
+    int m_bHit;
+    int m_nHitFace;
     Vector m_vHitPosition;
-    int m_nField1C;
+    int m_nHitMaterialMask;
 };
 
 class CSWRoomSurfaceMesh : public CSWCollisionMesh
@@ -86,9 +86,9 @@ public:
     void ComputeTriangleAdjacency();
     void ComputeRoomBorder();
     int GetAdjacentRoom(int nEdge);
-    void GetTriangleAdjacency(int nUnused, int nTriangle, int* pnFirst,
+    void GetTriangleAdjacency(int nLevel, int nTriangle, int* pnFirst,
                               int* pnSecond, int* pnThird);
-    void GetTriangleVertices(int nUnused, int nTriangle, int* pnFirst,
+    void GetTriangleVertices(int nLevel, int nTriangle, int* pnFirst,
                              int* pnSecond, int* pnThird);
     int CheckAABBNode(int nNode, const Vector& vMinimum, Vector& vMaximum,
                       CSWRoomSurfaceMeshHitInfo& hitInfo);

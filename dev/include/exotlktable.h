@@ -111,6 +111,7 @@ public:
     void ParseStr(CExoString& sText);
     int GetLanguageVersion();
     int ExoIsDBCSLeadByte(unsigned char c);
+    char* RemapFontName(char* sFontName);
     // PC 0x005B5E90
     virtual void GetTokenValue(const CTlkTableToken&, CExoString&)
     {

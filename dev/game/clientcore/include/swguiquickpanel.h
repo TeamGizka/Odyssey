@@ -24,6 +24,7 @@ public:
     void PortraitCreationCompleted();
     void NameCreationCompleted();
     void DoQuickStats();
+    void PlayGame();
     void CancelPanel();
     void ConfirmCancel(CSWGuiControl* pControl);
     virtual void OnPanelAdded();

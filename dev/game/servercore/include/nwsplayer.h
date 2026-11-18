@@ -79,12 +79,13 @@ class CSWSPlayerContainerGUI
 public:
     CSWSPlayerContainerGUI()
     {
-        m_n04 = 0;
+        m_bOpen = 0;
         m_oidContainer = CGameObjectArray::INVALIDOBJID;
     }
 
     unsigned long m_oidContainer;
-    int m_n04;
+    int m_bOpen;
+    void SetOpen(CSWSPlayer* pPlayer, unsigned long oidContainer, int bOpen);
 };
 
 #define CHARACTER_TYPE_LOCAL 1
@@ -134,8 +135,8 @@ public:
     int SaveServerCharacter();
     int LoadCreatureData(CResRef cResRef, CSWSCreature* pCreature);
     int LoadLocalCharacter();
-    int LoadCharacterFromIFO(unsigned long nPlayerIndex, int bFlag1,
-                             int bFlag2);
+    int LoadCharacterFromIFO(unsigned long nPlayerIndex, int bLoadModuleCharacter,
+                             int bPostProcess);
     int LoadServerCharacter(CResRef cResRef);
     void ClearPlayerOnDestroyGame();
     CExoString GetPlayerName();
@@ -151,7 +152,7 @@ public:
 
     int m_bFloatyEffects;
     char m_nAreaLoadState;
-    char m_a25[3];
+    char m_aAreaLoadStateAlignment[3];
     unsigned long m_oidNWSObject;
 
 #ifdef _XBOX
@@ -170,11 +171,11 @@ public:
     CSWSPlayerInventoryGUI* m_pInventoryGUI;
     CSWSPlayerContainerGUI* m_pContainerGUI;
     CSWSPlayerLastUpdateObject* m_pLastUpdateObject;
-    int m_n60;
+    int m_bAlwaysRun;
     char m_nCharacterType;
     CResRef m_cServerCharacter;
-    char m_aUnmapped75[7];
-    int m_n7C;
+    char m_nServerCharacterState[7];
+    int m_bModuleLoaded;
     int m_nPlayerIndex;
 
 public:
@@ -219,7 +220,7 @@ public:
     };
     unsigned long m_oidCreature;
     char m_nUpdateType;
-    char m_a05[3];
+    char m_aUpdateTypeAlignment[3];
     CSWCreatureStatsUpdate* m_pStatsUpdate;
     int m_nUpdateRequired;
     CSWSPlayerCharSheetGUI()  // PC 0x00560B30  Xbox 0x001BF6A0

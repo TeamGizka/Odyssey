@@ -8,7 +8,7 @@
 #include <string.h>
 #include "swmain.h"
 
-static inline void SwguiSubCreateItemTrace1();
+static inline void TraceCreateItemSubMenu();
 // PC 0x006BD980  Xbox 0x000F5530
 void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
 {
@@ -109,7 +109,7 @@ CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
 // PC 0x006BDBA0  Xbox 0x000F5640
 void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
 {
-    SwguiSubCreateItemTrace1();
+    TraceCreateItemSubMenu();
     if (pControl->m_bSelected != 0)
     {
         ((CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui())
@@ -121,7 +121,7 @@ void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
 // PC 0x006BDBE0  Xbox 0x000F5680
 void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
 {
-    SwguiSubCreateItemTrace1();
+    TraceCreateItemSubMenu();
     CClientExoApp* pApp;
     CGuiInGame* pGui;
     if (pControl->m_bSelected != 0)
@@ -267,6 +267,6 @@ void CSWGuiCreateItemSubMenu::ClearItems()
     m_nSelection = -99;
 }
 
-static inline void SwguiSubCreateItemTrace1()
+static inline void TraceCreateItemSubMenu()
 {
 }

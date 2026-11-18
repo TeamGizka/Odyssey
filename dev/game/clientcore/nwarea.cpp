@@ -36,13 +36,13 @@ CSWArea::CSWArea()
     m_nWind = 0;
     m_nDynAmbientColor = 0;
     m_bNoRest = 0;
-    m_p1C = 0;
-    m_p20 = 0;
-    m_p24 = 0;
-    m_p28 = 0;
-    m_p18 = 0;
-    m_p34 = 0;
-    m_p40 = 0;
+    m_pStaticObjectTriangleStarts = 0;
+    m_pStaticObjectTriangleCounts = 0;
+    m_pStaticObjectVertexStarts = 0;
+    m_pStaticObjectVertexCounts = 0;
+    m_pStaticObjectIds = 0;
+    m_pStaticTriangles = 0;
+    m_pStaticVertices = 0;
     m_pBoundingBoxes = 0;
     m_pBoundingBoxIds = 0;
     m_nTurnRateRow = 0;
@@ -52,54 +52,54 @@ CSWArea::CSWArea()
 // PC 0x0058F7A0  Xbox 0x000BF550
 CSWArea::~CSWArea()
 {
-    delete m_p1C;
-    delete m_p20;
-    delete m_p24;
-    delete m_p28;
-    delete m_p18;
-    delete m_p34;
-    delete m_p40;
+    delete m_pStaticObjectTriangleStarts;
+    delete m_pStaticObjectTriangleCounts;
+    delete m_pStaticObjectVertexStarts;
+    delete m_pStaticObjectVertexCounts;
+    delete m_pStaticObjectIds;
+    delete m_pStaticTriangles;
+    delete m_pStaticVertices;
     delete m_pBoundingBoxes;
     delete m_pBoundingBoxIds;
 }
-
+// Dead code: not in the PC executable
 int CSWArea::AddStaticObject(unsigned long nId, const Vector& vOrientation,
                              const Vector& vPosition, int nVertices,
                              Vector* pVertices, int nTriangles, int* pTriangles)
 {
-    if (m_n10 == m_n14)
+    if (m_nStaticObjectAlloc == m_nStaticObjectCount)
     {
         GrowStaticObjectArray();
     }
     int nVertexStart;
     int nTriangleStart;
-    if (m_n14 == 0)
+    if (m_nStaticObjectCount == 0)
     {
         nVertexStart = 0;
         nTriangleStart = 0;
     }
     else
     {
-        nVertexStart = m_n3C;
-        nTriangleStart = m_n30;
+        nVertexStart = m_nStaticObjectVertexCount;
+        nTriangleStart = m_nStaticTriangleCount;
     }
-    if (nVertexStart + nVertices >= m_n38)
+    if (nVertexStart + nVertices >= m_nStaticVertexAlloc)
     {
         GrowStaticObjectVertices(nVertices);
     }
-    if ((nTriangleStart + nTriangles) * 3 >= m_n2C)
+    if ((nTriangleStart + nTriangles) * 3 >= m_nStaticTriangleAlloc)
     {
         GrowStaticObjectTriangles(nTriangles);
     }
-    m_p24[m_n14] = nVertexStart;
-    m_p28[m_n14] = nVertices;
-    m_p1C[m_n14] = nTriangleStart;
-    m_p20[m_n14] = nTriangles;
-    m_p18[m_n14++] = nId;
+    m_pStaticObjectVertexStarts[m_nStaticObjectCount] = nVertexStart;
+    m_pStaticObjectVertexCounts[m_nStaticObjectCount] = nVertices;
+    m_pStaticObjectTriangleStarts[m_nStaticObjectCount] = nTriangleStart;
+    m_pStaticObjectTriangleCounts[m_nStaticObjectCount] = nTriangles;
+    m_pStaticObjectIds[m_nStaticObjectCount++] = nId;
     int i;
     for (i = 0; i < nVertices; i++)
     {
-        Vector& vVertex = m_p40[nVertexStart + i];
+        Vector& vVertex = m_pStaticVertices[nVertexStart + i];
         vVertex.m_fX = vOrientation.m_fY * pVertices[i].m_fX + vOrientation.m_fX * pVertices[i].m_fY;
         vVertex.m_fY = vOrientation.m_fY * pVertices[i].m_fY - vOrientation.m_fX * pVertices[i].m_fX;
         vVertex.m_fZ = pVertices[i].m_fZ;
@@ -107,105 +107,105 @@ int CSWArea::AddStaticObject(unsigned long nId, const Vector& vOrientation,
     }
     for (i = 0; i < nTriangles * 3; i++)
     {
-        m_p34[nTriangleStart * 3 + i] = nVertexStart + pTriangles[i];
+        m_pStaticTriangles[nTriangleStart * 3 + i] = nVertexStart + pTriangles[i];
     }
-    m_n30 += nTriangles;
-    m_n3C += nVertices;
-    return m_n14 - 1;
+    m_nStaticTriangleCount += nTriangles;
+    m_nStaticObjectVertexCount += nVertices;
+    return m_nStaticObjectCount - 1;
 }
-
+// Dead code: not in the PC executable
 void CSWArea::GrowStaticObjectArray()
 {
-    if (m_n10 == 0)
+    if (m_nStaticObjectAlloc == 0)
     {
-        m_n10 = 16;
+        m_nStaticObjectAlloc = 16;
     }
     else
     {
-        m_n10 *= 2;
+        m_nStaticObjectAlloc *= 2;
     }
-    int* pTriangleStarts = new int[m_n10];
-    int* pTriangleCounts = new int[m_n10];
-    int* pVertexStarts = new int[m_n10];
-    int* pVertexCounts = new int[m_n10];
-    unsigned long* pIds = new unsigned long[m_n10];
-    for (int i = 0; i < m_n14; i++)
+    int* pTriangleStarts = new int[m_nStaticObjectAlloc];
+    int* pTriangleCounts = new int[m_nStaticObjectAlloc];
+    int* pVertexStarts = new int[m_nStaticObjectAlloc];
+    int* pVertexCounts = new int[m_nStaticObjectAlloc];
+    unsigned long* pIds = new unsigned long[m_nStaticObjectAlloc];
+    for (int i = 0; i < m_nStaticObjectCount; i++)
     {
-        pTriangleStarts[i] = m_p1C[i];
-        pTriangleCounts[i] = m_p20[i];
-        pVertexStarts[i] = m_p24[i];
-        pVertexCounts[i] = m_p28[i];
-        pIds[i] = m_p18[i];
+        pTriangleStarts[i] = m_pStaticObjectTriangleStarts[i];
+        pTriangleCounts[i] = m_pStaticObjectTriangleCounts[i];
+        pVertexStarts[i] = m_pStaticObjectVertexStarts[i];
+        pVertexCounts[i] = m_pStaticObjectVertexCounts[i];
+        pIds[i] = m_pStaticObjectIds[i];
     }
-    delete[] m_p1C;
-    delete[] m_p20;
-    delete[] m_p24;
-    delete[] m_p28;
-    delete[] m_p18;
-    m_p1C = pTriangleStarts;
-    m_p20 = pTriangleCounts;
-    m_p24 = pVertexStarts;
-    m_p28 = pVertexCounts;
-    m_p18 = pIds;
+    delete[] m_pStaticObjectTriangleStarts;
+    delete[] m_pStaticObjectTriangleCounts;
+    delete[] m_pStaticObjectVertexStarts;
+    delete[] m_pStaticObjectVertexCounts;
+    delete[] m_pStaticObjectIds;
+    m_pStaticObjectTriangleStarts = pTriangleStarts;
+    m_pStaticObjectTriangleCounts = pTriangleCounts;
+    m_pStaticObjectVertexStarts = pVertexStarts;
+    m_pStaticObjectVertexCounts = pVertexCounts;
+    m_pStaticObjectIds = pIds;
 }
-
+// Dead code: not in the PC executable
 void CSWArea::GrowStaticObjectVertices(int nAdditional)
 {
-    int nNewAlloc = m_n38;
+    int nNewAlloc = m_nStaticVertexAlloc;
     if (nNewAlloc == 0)
     {
         nNewAlloc = 16;
     }
-    while (nNewAlloc <= m_n3C + nAdditional)
+    while (nNewAlloc <= m_nStaticObjectVertexCount + nAdditional)
     {
         nNewAlloc *= 2;
     }
     Vector* pVertices = new Vector[nNewAlloc];
-    for (int i = 0; i < m_n3C; i++)
+    for (int i = 0; i < m_nStaticObjectVertexCount; i++)
     {
-        pVertices[i] = m_p40[i];
+        pVertices[i] = m_pStaticVertices[i];
     }
-    delete[] m_p40;
-    m_n38 = nNewAlloc;
-    m_p40 = pVertices;
+    delete[] m_pStaticVertices;
+    m_nStaticVertexAlloc = nNewAlloc;
+    m_pStaticVertices = pVertices;
 }
-
+// Dead code: not in the PC executable
 void CSWArea::GrowStaticObjectTriangles(int nAdditional)
 {
-    int nNewAlloc = m_n2C;
+    int nNewAlloc = m_nStaticTriangleAlloc;
     if (nNewAlloc == 0)
     {
         nNewAlloc = 48;
     }
-    while (nNewAlloc <= (m_n30 + nAdditional) * 3)
+    while (nNewAlloc <= (m_nStaticTriangleCount + nAdditional) * 3)
     {
         nNewAlloc *= 2;
     }
     int* pTriangles = new int[nNewAlloc];
-    for (int i = 0; i < m_n30 * 3; i++)
+    for (int i = 0; i < m_nStaticTriangleCount * 3; i++)
     {
-        pTriangles[i] = m_p34[i];
+        pTriangles[i] = m_pStaticTriangles[i];
     }
-    delete[] m_p34;
-    m_n2C = nNewAlloc;
-    m_p34 = pTriangles;
+    delete[] m_pStaticTriangles;
+    m_nStaticTriangleAlloc = nNewAlloc;
+    m_pStaticTriangles = pTriangles;
 }
 // PC 0x0058F800  Xbox 0x000BF5B0
 int CSWArea::InitializeStaticObjects()
 {
-    m_n3C = 0;
-    m_p34 = 0;
-    m_n30 = 0;
-    m_p40 = 0;
-    m_n10 = 0;
-    m_n14 = 0;
-    m_p1C = 0;
-    m_p20 = 0;
-    m_p24 = 0;
-    m_p28 = 0;
-    m_p18 = 0;
-    m_n38 = 0;
-    m_n2C = 0;
+    m_nStaticObjectVertexCount = 0;
+    m_pStaticTriangles = 0;
+    m_nStaticTriangleCount = 0;
+    m_pStaticVertices = 0;
+    m_nStaticObjectAlloc = 0;
+    m_nStaticObjectCount = 0;
+    m_pStaticObjectTriangleStarts = 0;
+    m_pStaticObjectTriangleCounts = 0;
+    m_pStaticObjectVertexStarts = 0;
+    m_pStaticObjectVertexCounts = 0;
+    m_pStaticObjectIds = 0;
+    m_nStaticVertexAlloc = 0;
+    m_nStaticTriangleAlloc = 0;
     m_nBoundingBoxAlloc = 0;
     m_nBoundingBoxCount = 0;
     m_pBoundingBoxes = 0;
@@ -333,40 +333,40 @@ int CSWArea::IntersectLineSegments(float fX1, float fY1, float fX2, float fY2,
     }
     return bHit;
 }
-
+// Dead code: not in the PC executable
 void CSWArea::RemoveStaticObject(int nIndex)
 {
-    if (nIndex == -1 || nIndex >= m_n14)
+    if (nIndex == -1 || nIndex >= m_nStaticObjectCount)
     {
         return;
     }
-    int nVertexStart = m_p24[nIndex];
-    int nVertices = m_p28[nIndex];
-    int nTriangleStart = m_p1C[nIndex];
-    int nTriangles = m_p20[nIndex];
-    m_p24[nIndex] = 0;
-    m_p28[nIndex] = 0;
-    m_p1C[nIndex] = 0;
-    m_p20[nIndex] = 0;
-    m_p18[nIndex] = AREA_INVALID_OBJECT_ID;
+    int nVertexStart = m_pStaticObjectVertexStarts[nIndex];
+    int nVertices = m_pStaticObjectVertexCounts[nIndex];
+    int nTriangleStart = m_pStaticObjectTriangleStarts[nIndex];
+    int nTriangles = m_pStaticObjectTriangleCounts[nIndex];
+    m_pStaticObjectVertexStarts[nIndex] = 0;
+    m_pStaticObjectVertexCounts[nIndex] = 0;
+    m_pStaticObjectTriangleStarts[nIndex] = 0;
+    m_pStaticObjectTriangleCounts[nIndex] = 0;
+    m_pStaticObjectIds[nIndex] = AREA_INVALID_OBJECT_ID;
     int i;
-    for (i = nVertexStart + nVertices; i < m_n3C; i++)
+    for (i = nVertexStart + nVertices; i < m_nStaticObjectVertexCount; i++)
     {
-        m_p40[i - nVertices] = m_p40[i];
+        m_pStaticVertices[i - nVertices] = m_pStaticVertices[i];
     }
-    for (i = (nTriangleStart + nTriangles) * 3; i < m_n30 * 3; i++)
+    for (i = (nTriangleStart + nTriangles) * 3; i < m_nStaticTriangleCount * 3; i++)
     {
-        m_p34[i - nTriangles * 3] = m_p34[i] - nVertices;
+        m_pStaticTriangles[i - nTriangles * 3] = m_pStaticTriangles[i] - nVertices;
     }
-    m_n30 -= nTriangles;
-    m_n3C -= nVertices;
-    for (i = nIndex + 1; i < m_n14; i++)
+    m_nStaticTriangleCount -= nTriangles;
+    m_nStaticObjectVertexCount -= nVertices;
+    for (i = nIndex + 1; i < m_nStaticObjectCount; i++)
     {
-        m_p24[i] -= nVertices;
-        m_p1C[i] -= nTriangles;
+        m_pStaticObjectVertexStarts[i] -= nVertices;
+        m_pStaticObjectTriangleStarts[i] -= nTriangles;
     }
 }
-
+// Dead code: not in the PC executable
 int CSWArea::GetIsNight()
 {
     return m_bIsNight;

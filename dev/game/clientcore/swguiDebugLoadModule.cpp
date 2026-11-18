@@ -7,9 +7,9 @@
 #include "exotlktable.h"
 #include "swmain.h"
 
-static inline void SwguiDebugLoadModuleTrace2();
-static inline void SwguiDebugLoadModuleTrace1();
-#define SWGUIDEBUGLOADMODULE_TRACE() SwguiDebugLoadModuleTrace2()
+static inline void TraceLoadModuleInput();
+static inline void TraceLoadModuleMenu();
+#define SWGUIDEBUGLOADMODULE_TRACE() TraceLoadModuleInput()
 // PC 0x006CF890  Xbox 0x000F6E80
 CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
@@ -48,7 +48,7 @@ CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
 // PC 0x006CF9A0  Xbox 0x000F6CD0
 void CSWGuiLoadModuleDebugMenu::Back()
 {
-    SwguiDebugLoadModuleTrace1();
+    TraceLoadModuleMenu();
     g_pAppManager->m_pClientExoApp->GetInGameGui()
         ->HideLoadModuleDebugMenu();
     g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -57,7 +57,7 @@ void CSWGuiLoadModuleDebugMenu::Back()
 // PC 0x006CF9D0  Xbox 0x000F6D00
 void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
 {
-    SwguiDebugLoadModuleTrace1();
+    TraceLoadModuleMenu();
     if (pControl->m_bSelected)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -75,14 +75,14 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
 {
     m_nSelection = 0;
     StartLoadFromLayout("debug");
-    InitControl(m_CSWGuiListBox_64, "LB_OPTIONS", 1);
+    InitControl(m_lbOptions, "LB_OPTIONS", 1);
     InitControl(m_lblBuild, "LBL_BUILD", 1);
     StopLoadFromLayout();
     CExoString sBuild = CExoString("Build: ") + g_sBuildNumber;
     m_lblBuild.m_cText.m_cParams.SetText(sBuild);
 
     CExoArrayList<CSWGuiControl*> aControls;
-    CSWGuiControl* pProto = m_CSWGuiListBox_64.m_pProtoItem;
+    CSWGuiControl* pProto = m_lbOptions.m_pProtoItem;
     CExoString sModule;
     CExoString sRim;
     CExoString sMod;
@@ -159,7 +159,7 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
                                              (CSWGuiButton*)pProto);
         aControls.Add(pOption);
     }
-    CSWGuiListBox* pList = &m_CSWGuiListBox_64;
+    CSWGuiListBox* pList = &m_lbOptions;
     pList->AddControls(aControls, 1, 0, 0);
     pList->m_bLooping = 1;
     SetActiveControl(pList, 0);
@@ -221,11 +221,11 @@ void CSWGuiLoadModuleDebugMenu::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 
-static inline void SwguiDebugLoadModuleTrace2()
+static inline void TraceLoadModuleInput()
 {
-    SwguiDebugLoadModuleTrace1();
+    TraceLoadModuleMenu();
 }
 
-static inline void SwguiDebugLoadModuleTrace1()
+static inline void TraceLoadModuleMenu()
 {
 }

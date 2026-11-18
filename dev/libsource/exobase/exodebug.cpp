@@ -20,6 +20,18 @@ CExoDebug::CExoDebug()
     m_pInternal = new CExoDebugInternal;
     m_bEnabled = 0;
 }
+// Dead code: not in the PC executable
+void CExoDebug::CloseLogFiles()
+{
+}
+// Dead code: not in the PC executable
+void CExoDebug::FlushErrorFile()
+{
+}
+// Dead code: not in the PC executable
+void CExoDebug::FlushLogFile()
+{
+}
 // PC 0x005E93E0  Xbox 0x00134E00
 void CExoDebug::FlushScriptLogFile()
 {
@@ -27,6 +39,34 @@ void CExoDebug::FlushScriptLogFile()
     {
         m_pInternal->FlushScriptLogFile();
     }
+}
+// Dead code: not in the PC executable
+void CExoDebug::FlushResourcesLogFile()
+{
+    if (m_pInternal)
+    {
+        m_pInternal->FlushResourcesLogFile();
+    }
+}
+// Dead code: not in the PC executable
+unsigned long CExoDebug::GetCurrentAllocatedMemory()
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+unsigned long CExoDebug::GetMaxAllocatedMemory()
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+unsigned long CExoDebug::GetTotalMemoryAllocations()
+{
+    return 0;
+}
+// Dead code: not in the PC executable
+unsigned long CExoDebug::GetCurrentMemoryAllocations()
+{
+    return 0;
 }
 // PC 0x005E93F0  Xbox 0x00134E10
 void CExoDebug::OpenLogFiles(const CExoString& path)
@@ -44,7 +84,44 @@ void CExoDebug::Warning(int line, char* file, const char* message)
         m_pInternal->Warning(line, file, message);
     }
 }
-
+// Dead code: not in the PC executable
+void CExoDebug::WriteToErrorFile(const CExoString& text)
+{
+}
+// Dead code: not in the PC executable
+void CExoDebug::WriteToLogFile(const CExoString& text)
+{
+}
+// Dead code: not in the PC executable
+void CExoDebug::WriteToResourcesLogFile(const CExoString& text)
+{
+    if (m_pInternal)
+    {
+        m_pInternal->WriteToResourcesLogFile(text);
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebug::WriteToSoundLogFile(const CExoString& text)
+{
+}
+// Dead code: not in the PC executable
+void CExoDebug::WriteToResourceTrackingFile(const CExoString& text)
+{
+    if (m_pInternal)
+    {
+        m_pInternal->WriteToResourceTrackingFile(text);
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebug::WriteResourceToScreen(const CExoString& text, int nColumn,
+                                      int nRow, float fDuration)
+{
+    if (m_pInternal)
+    {
+        m_pInternal->WriteResourceToScreen(text, nColumn, nRow, fDuration);
+    }
+}
+// Dead code: not in the PC executable
 void CExoDebug::Assert(int line, char* file, const char* message)
 {
     CExoString sAssert;

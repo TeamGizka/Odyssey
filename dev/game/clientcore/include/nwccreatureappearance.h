@@ -20,25 +20,25 @@ public:
     unsigned short m_anArmorModelPart[6];
     unsigned char m_bUnknown0E;
     unsigned char m_bUnknown0F;
-    unsigned long m_nUnmapped10;
+    unsigned long m_oidHeadItem;
 
     unsigned long m_bUseBodyVariation;
     unsigned short m_nAppearance;
     unsigned char m_nHead;
     unsigned char m_nGender;
     unsigned char m_nHeadVariation;
-    unsigned char m_nUnknown1D;
-    unsigned char m_nUnknown1E;
-    unsigned char m_nUnknown1F;
-    unsigned char m_nUnknown20;
+    unsigned char m_nColorSkin;
+    unsigned char m_nColorHair;
+    unsigned char m_nColorTattoo1;
+    unsigned char m_nColorTattoo2;
     unsigned char m_nTail;
     unsigned char m_nWing;
     unsigned char m_bUnknown23;
     float m_fCameraHeight;
     float m_fDefaultHeight;
     short m_nAlignment;
-    unsigned long m_nUnknown30;
-    unsigned char m_nUnknown34;
+    unsigned long m_bUseBackupHead;
+    unsigned char m_nHeadOverride;
 
     int m_bGroundTilt;
 };
@@ -75,7 +75,9 @@ public:
     void ForceAnimate();
     int CreateHeadAppearance(CCAppearanceInfo* pAppearance);
     int CreateTailAppearance(CCAppearanceInfo* pAppearance);
+    int CreateTail(unsigned char nType, CCAppearanceInfo* pAppearance);
     int CreateWingAppearance(CCAppearanceInfo* pAppearance);
+    int CreateWing(unsigned char nType, CCAppearanceInfo* pAppearance);
     int RequestBType(CCAppearanceInfo* pAppearance);
     int CreateBTypeBody(unsigned char nType, CCAppearanceInfo* pAppearance);
     void SetAppearanceAlignment(short nAlignment);
@@ -84,12 +86,12 @@ public:
     int CreateBodyAppearance(CCAppearanceInfo* pAppearance);
 
     CSWCCreature* m_pCreature;
-    unsigned long m_nUnknown40;
-    unsigned long m_nUnknown44;
-    unsigned long m_nUnknown48;
-    unsigned long m_nUnknown4C;
-    unsigned long m_nUnknown50;
-    unsigned long m_nUnknown54;
+    unsigned long m_bHeadDirty;
+    unsigned long m_bTailDirty;
+    unsigned long m_bWingDirty;
+    unsigned long m_bBodyDirty;
+    unsigned long m_bAlignmentDirty;
+    unsigned long m_bTextureDirty;
 
     float m_fDriveAcceleration;
     float m_fDriveMaxSpeed;

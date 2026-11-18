@@ -175,7 +175,7 @@ public:
     float m_fAngleCycleSpeed;
     unsigned char* m_pWaterImage;
     unsigned char* m_pDistortImage;
-    int m_nUnknown64;
+    int m_nUpdateCount;
     int m_nWaveType;
 };
 

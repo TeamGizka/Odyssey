@@ -229,15 +229,15 @@ void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
         m_cExtent = cExtent;
         CSWGuiExtent cIconExtent(m_cExtent.m_nLeft, m_cExtent.m_nTop,
                                 ENTRY_HEIGHT, ENTRY_HEIGHT);
-        m_CSWGuiBorder_1D8.SetExtent(cIconExtent);
-        m_CSWGuiBorder_24C.SetExtent(cIconExtent);
-        m_CSWGuiBorder_2C0.SetExtent(cIconExtent);
+        m_cIconBorder.SetExtent(cIconExtent);
+        m_cIconHilite.SetExtent(cIconExtent);
+        m_cIcon.SetExtent(cIconExtent);
 
         CSWGuiExtent cCountExtent = cIconExtent;
-        cCountExtent.m_nWidth = m_CSWGuiText_334.m_cParams.m_sText.GetLength() > 2 ? 42 : 21;
+        cCountExtent.m_nWidth = m_cCountText.m_cParams.m_sText.GetLength() > 2 ? 42 : 21;
         cCountExtent.m_nHeight = ENTRY_HEIGHT;
         cCountExtent.m_nLeft += ENTRY_HEIGHT - cCountExtent.m_nWidth;
-        m_CSWGuiText_334.SetExtent(cCountExtent);
+        m_cCountText.SetExtent(cCountExtent);
 
         cIconExtent.m_nLeft += ENTRY_HEIGHT;
         cIconExtent.m_nWidth = m_cExtent.m_nWidth - ENTRY_HEIGHT;
@@ -253,16 +253,16 @@ void CSWUpgradeItemEntry::Draw(float fElapsed)
     if (m_bActive)
     {
         m_cHilite.Draw(fElapsed);
-        m_CSWGuiBorder_24C.Draw(fElapsed);
+        m_cIconHilite.Draw(fElapsed);
     }
     else
     {
         m_cBorder.Draw(fElapsed);
-        m_CSWGuiBorder_1D8.Draw(fElapsed);
+        m_cIconBorder.Draw(fElapsed);
     }
-    m_CSWGuiBorder_2C0.Draw(fElapsed);
+    m_cIcon.Draw(fElapsed);
     m_cText.Draw(fElapsed);
-    m_CSWGuiText_334.Draw(fElapsed);
+    m_cCountText.Draw(fElapsed);
 }
 // PC 0x006C2830  Xbox 0x000FBD20
 void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
@@ -276,7 +276,7 @@ void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
     *pParams = cHilite.m_cParams;
     pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
     pParams->SetPulsingAlpha(1, 1, 0);
-    pParams = &m_CSWGuiBorder_1D8.m_cParams;
+    pParams = &m_cIconBorder.m_cParams;
     {
 #ifndef _XBOX
         CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
@@ -285,7 +285,7 @@ void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
 #endif
         pParams->m_vColor = CGuiInGame::COLOR_BLUE;
     }
-    pParams = &m_CSWGuiBorder_24C.m_cParams;
+    pParams = &m_cIconHilite.m_cParams;
     {
 #ifndef _XBOX
         CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
@@ -604,45 +604,45 @@ void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
             {
                 if (nCount >= 100)
                 {
-                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_7", 0);
-                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_7", 0);
+                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_7", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_7", 0);
                 }
                 else
                 {
-                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_6", 0);
-                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_6", 0);
+                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_6", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_6", 0);
                 }
                 sCount.Format("%d", nCount);
             }
             else
             {
-                m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_3", 0);
-                m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_3", 0);
+                m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
+                m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
             }
-            m_CSWGuiText_334.m_cParams = CSWGuiTextParams(sCount, "fnt_d16x16",
+            m_cCountText.m_cParams = CSWGuiTextParams(sCount, "fnt_d16x16",
                 CGuiInGame::COLOR_BLUE, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
             cIcon = pItem->GetIcon();
         }
         else
         {
-            m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_3", 0);
-            m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_3", 0);
+            m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
+            m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
             m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRREF_NONE));
-            m_CSWGuiText_334.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
+            m_cCountText.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
                 CGuiInGame::COLOR_BLUE, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
             cIcon = "inone";
         }
     }
     else
     {
-        m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_3", 0);
-        m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_3", 0);
+        m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
+        m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
         m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRREF_NONE));
-        m_CSWGuiText_334.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
+        m_cCountText.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
             CGuiInGame::COLOR_BLUE, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
         cIcon = "inone";
     }
-    CSWGuiBorderParams* pParams = &m_CSWGuiBorder_2C0.m_cParams;
+    CSWGuiBorderParams* pParams = &m_cIcon.m_cParams;
     pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
     pParams->SetFillImage(cIcon, 0);
 }
@@ -762,7 +762,7 @@ void CSWGuiUpgradeSelection::GetUpgradableItems(CSWSCreature* pCreature,
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CSWGuiUpgradeSelection::AutoUpgradeDone()
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->HideUpgradeScreen();
@@ -1248,9 +1248,9 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x006C6B60  Xbox 0x
     m_cProperty.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
     m_lbItems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
 #ifndef _XBOX
-    m_CSWGuiLabel_1F60.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem, 1.0f);
+    m_cDescription.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem, 1.0f);
 #else
-    m_CSWGuiLabel_1F60.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem);
+    m_cDescription.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem);
 #endif
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
     pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
@@ -1291,6 +1291,25 @@ CSWGuiUpgrade::~CSWGuiUpgrade()
         delete m_pCrystalTable;
         m_pCrystalTable = 0;
     }
+}
+// Dead code: not in the PC executable
+unsigned char CSWGuiUpgrade::GetNumUpgrades()
+{
+    unsigned char nSlots = 0;
+    switch (m_nItemListMode)
+    {
+    case ITEMLIST_LIGHTSABER:
+        nSlots = 6;
+        break;
+    case ITEMLIST_BLASTER:
+    case ITEMLIST_MELEE:
+        nSlots = 3;
+        break;
+    case ITEMLIST_ARMOR:
+        nSlots = 2;
+        break;
+    }
+    return nSlots;
 }
 // PC 0x006C4D30  Xbox 0x000FCD10
 void CSWGuiUpgrade::CloseItems()
@@ -1790,7 +1809,7 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
     int nHeight;
     CSWGuiControl* pControl;
 
-    m_CSWGuiLabel_1F60.m_cText.m_cParams.SetText(sDescription);
+    m_cDescription.m_cText.m_cParams.SetText(sDescription);
     pListBox = &m_lbDesc;
 #ifdef _XBOX
     CSWGuiLabel* pRanalog = &m_lblRanalog;
@@ -1803,20 +1822,20 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
 #endif
     }
     pListBox->ClearItems();
-    CSWGuiExtent cExtent = m_CSWGuiLabel_1F60.m_cExtent;
+    CSWGuiExtent cExtent = m_cDescription.m_cExtent;
     if (sDescription.GetLength() > 0)
     {
-        nHeight = m_CSWGuiLabel_1F60.m_cText.GetIdealHeight();
+        nHeight = m_cDescription.m_cText.GetIdealHeight();
     }
     else
     {
-        nHeight = m_CSWGuiLabel_1F60.m_cText.GetFontHeight();
+        nHeight = m_cDescription.m_cText.GetFontHeight();
     }
     cExtent.m_nHeight = nHeight;
-    m_CSWGuiLabel_1F60.SetExtent(cExtent);
-    pControl = &m_CSWGuiLabel_1F60;
+    m_cDescription.SetExtent(cExtent);
+    pControl = &m_cDescription;
     pListBox->AddControls(&pControl, 1, 0, 0, 0);
-    pListBox->SetSelectedControl(&m_CSWGuiLabel_1F60, 0);
+    pListBox->SetSelectedControl(&m_cDescription, 0);
 #ifdef _XBOX
     pRanalog->SetEnabledFlag(pListBox->IsOversized());
 #endif

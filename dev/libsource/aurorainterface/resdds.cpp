@@ -12,6 +12,16 @@ CResDDS::CResDDS()
 CResDDS::~CResDDS()
 {
 }
+// Dead code: not in the PC executable
+int CResDDS::CopyDDSData(unsigned char* pDDSData)
+{
+    if (m_bServiced == 0)
+    {
+        return 0;
+    }
+    memcpy(pDDSData, m_pData, m_nReserved);
+    return 1;
+}
 // PC 0x00404DD0
 unsigned char* CResDDS::GetDDSDataPtr()
 {
@@ -39,6 +49,21 @@ int CResDDS::GetDDSAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsig
     *pnSize = m_pHeader[3];
     *pfAlpha = ((float*)m_pHeader)[4];
     return 1;
+}
+// Dead code: not in the PC executable
+unsigned long* CResDDS::GetDDSHeaderPtr()
+{
+    return m_pHeader;
+}
+// Dead code: not in the PC executable
+int CResDDS::GetDDSSize()
+{
+    return m_nReserved;
+}
+// Dead code: not in the PC executable
+int CResDDS::IsLoaded()
+{
+    return m_bServiced;
 }
 // PC 0x00710F30  Xbox 0x002FB180
 int CResDDS::OnResourceServiced()

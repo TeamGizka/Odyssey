@@ -10,7 +10,7 @@ static FILE* g_pFileInfoLog;
 static long g_nFileInfoSize;
 static long g_nFileInfoTime;
 static int g_nFileInfoCount = 0;
-
+// Dead code: not in the PC executable
 long ExoResFileInfoSize(const char* szFileName)
 {
     FILE* pFile = fopen(szFileName, "rb");
@@ -23,7 +23,7 @@ long ExoResFileInfoSize(const char* szFileName)
     fclose(pFile);
     return g_nFileInfoSize;
 }
-
+// Dead code: not in the PC executable
 struct tm* ExoResFileInfoStamp()
 {
     time(&g_nFileInfoTime);
@@ -31,7 +31,7 @@ struct tm* ExoResFileInfoStamp()
     g_szFileInfoLine[EXORESFILEINFO_LINE - 1] = 0;
     return localtime(&g_nFileInfoTime);
 }
-
+// Dead code: not in the PC executable
 long ExoResFileInfo(const char* szFileName)
 {
     struct tm* pTime;

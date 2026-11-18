@@ -740,7 +740,7 @@ int CSWGuiSkillsCharGen::IsClassSkill(unsigned short nSkill)
     }
     return 0;
 }
-
+// Dead code: not in the PC executable
 void CSWGuiSkillsCharGen::CompletePanel()
 {
     m_pManager->PopModalPanel();

@@ -14,11 +14,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-static inline void AurModelTrace4();
-static inline void AurModelTrace3();
-static inline void AurModelTrace2();
-static inline void AurModelTrace1();
-#define AURMODEL_TRACE() AurModelTrace1()
+#define AURMODEL_DEBUG 0
+
 
 int PartTriMesh::m_nNextPartID = 1;
 
@@ -340,7 +337,10 @@ inline char* MdlNode::TranslateNodeName()
 // PC 0x0043F710
 MaxFace::MaxFace()
 {
-    AURMODEL_TRACE();
+    if (AURMODEL_DEBUG)
+    {
+        AurPrintf("MaxFace::MaxFace() part has material %d\n", PartHasMaterial(NULL));
+    }
     ++countmaxfaces;
     m_nSurfaceType = 0;
 }
@@ -418,7 +418,7 @@ void MdlNode::ControlDispatch(Part* pPart, float fTime,
         break;
     }
 }
-
+// Dead code: not in the PC executable
 int MdlNodeAffectedByWind(MdlNode* pNode)
 {
     MdlNodeEmitter* pEmitter = pNode->AsMdlNodeEmitter();
@@ -534,6 +534,11 @@ void MdlNode::InternalDestructor()
     while (i != 0)
         m_lChildren[--i]->DestructorDispatch();
     --countnode;
+}
+// Dead code: not in the PC executable
+void MaxTree::AddToFreeList(MdlNode* pNode)
+{
+    m_lFreeNodes.Add(pNode);
 }
 // PC 0x00445190  Xbox 0x0029A110
 void MaxTree::AddToFreeTokenList(unsigned long nPool)
@@ -696,7 +701,10 @@ static void findallmaterials(Part* pPart, List<Material*>& lMaterials);
 // PC 0x004480C0  Xbox 0x0029BEC0
 Part* MdlNodeLightsaber::InternalCreateInstance(Gob*)
 {
-    AurModelTrace4();
+    if (AURMODEL_DEBUG)
+    {
+        AurPrintf("MdlNodeLightsaber::InternalCreateInstance() has tangent bases %d\n", HasTangentBases());
+    }
     return new PartLightsaber(this);
 }
 // PC 0x00448130  Xbox 0x0029BF30
@@ -918,8 +926,8 @@ MdlNodeAnimMesh::~MdlNodeAnimMesh()
         DestructorDispatch();
     m_nNodeType = 0;
     DestructorDispatch();
-    delete[] m_pAnimationData1;
-    delete[] m_pAnimationData2;
+    delete[] m_pAnimVertData;
+    delete[] m_pAnimTVertData;
 }
 // PC 0x00448E60  Xbox 0x0029CA20
 MdlNodeSkin::~MdlNodeSkin()
@@ -1331,6 +1339,7 @@ Gob* FindGob(char* sName)
 
     return 0;
 }
+// Dead code: not in the PC executable
 // Xbox 0x00296540
 const char* setmirrorimage(char* sCommand)
 {
@@ -1387,7 +1396,10 @@ const char* setmirrorimage(char* sCommand)
 // PC 0x004404B0  Xbox 0x00296620
 void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
 {
-    AURMODEL_TRACE();
+    if (AURMODEL_DEBUG)
+    {
+        AurPrintf("Gob::SetUpImposters() gob %p\n", FindGob(NULL));
+    }
     m_nImposterType = nImposterType;
 #ifdef _XBOX
     m_nImposters = 0;
@@ -1520,6 +1532,7 @@ void Gob::EnableFog()
 {
     PartSetFog(m_pRootPart, true);
 }
+// Dead code: not in the PC executable
 // Xbox 0x002967A0
 const char* loadaddin(char* sCommand)
 {
@@ -1607,6 +1620,7 @@ void Part::GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum, float fScal
     for (int i = 0; i < m_lstChildren.m_nCount; i++)
         m_lstChildren[i]->GetMinimumBoundingBox(vMinimum, vMaximum, fLocalScale);
 }
+// Dead code: not in the PC executable
 // Xbox 0x00297440
 const char* setillumination(char* sCommand)
 {
@@ -2410,9 +2424,9 @@ CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
     if (!pInfo)
         pInfo = &DefaultHitInfo;
     if (!m_pModel || IsAllRooms() ||
-        (pInfo->m_bResult2 && m_bIgnoreHitCheck))
+        (pInfo->m_bUseIgnoreHitCheck && m_bIgnoreHitCheck))
         return 0;
-    if (pInfo->m_bResult1)
+    if (pInfo->m_bIgnoreFaded)
     {
         if (bool(m_pModel->m_Classification.m_bDoor))
         {
@@ -2447,10 +2461,10 @@ CAurObject* Gob::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
     if (!pInfo)
         pInfo = &DefaultHitInfo;
     if (!m_pModel || IsAllRooms() ||
-        (pInfo->m_bResult2 && m_bIgnoreHitCheck))
+        (pInfo->m_bUseIgnoreHitCheck && m_bIgnoreHitCheck))
         return 0;
 
-    if (pInfo->m_bResult1)
+    if (pInfo->m_bIgnoreFaded)
     {
         if (bool(m_pModel->m_Classification.m_bDoor))
         {
@@ -2956,6 +2970,7 @@ void CreateReferenceObjects(Gob* pGob, Part* pPart)
         CreateReferenceObjects(pGob, pChild);
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x00299690
 const char* append(char* sCommand)
 {
@@ -2993,6 +3008,7 @@ const char* append(char* sCommand)
     pGob->Append(sModel, sPart);
     return "OK";
 }
+// Dead code: not in the PC executable
 // Xbox 0x00299760
 const char* amputate(char* sCommand)
 {
@@ -3057,6 +3073,7 @@ TileData::~TileData()
 {
     delete m_pStaticObject;
 }
+// Dead code: not in the PC executable
 // Xbox 0x00299D40
 const char* setgobwind(char* sCommand)
 {
@@ -3118,7 +3135,10 @@ float Gob::GetMaximumLightRadius()
 // PC 0x00447FA0  Xbox 0x00064C20
 template <> inline SafePointer<CAurObject>& SafePointer<CAurObject>::operator=(CAurObject* pObject)
 {
-    AurModelTrace3();
+    if (AURMODEL_DEBUG)
+    {
+        AurPrintf("Gob::GetMaximumLightRadius() find part %p\n", FindPart(NULL, NULL));
+    }
     SetPointer(pObject);
     return *this;
 }
@@ -3452,11 +3472,11 @@ Gob::Gob(char* sName)
     m_fPersonalSpaceRadius = 0.0f;
     m_fPersonalSpaceRadius2 = 0.0f;
     m_bSingleTexture = 0;
-    m_bUnused = 0;
+    m_bSingleMaterial = 0;
     m_bHasGeometry = 0;
     m_bDistortion = 0;
     m_pSingleTexture = 0;
-    m_nUnused1 = 0;
+    m_nSingleTextureID = 0;
     m_bRenderBumpedOut = 0;
     m_bHasTransparency = 0;
     m_bIgnoreHitCheck = false;
@@ -3488,7 +3508,7 @@ Gob::Gob(char* sName)
 #ifdef _XBOX
     m_nVisiblePixels = 1;
 #else
-    m_nUnused2 = 1;
+    m_bSkipHierarchyAnimation = 1;
 #endif
     gobs.Insert(this, FindGobIdx(m_sName));
 }
@@ -3577,6 +3597,7 @@ int Gob::Append(char* sModel, char* sPart)
     DoEvent("_EmitterTarget", 0);
     return 1;
 }
+// Dead code: not in the PC executable
 // Xbox 0x0029DB00
 const char* spinmodels(char* sCommand)
 {
@@ -3827,9 +3848,9 @@ MdlNodeTriMesh::MdlNodeTriMesh(char* sName)
     m_nTexCoord2Offset = -1;
     m_nTexCoord3Offset = -1;
     m_TangentBases = -1;
-    m_nUnusedVertexOffset1 = -1;
-    m_nUnusedVertexOffset2 = -1;
-    m_nUnusedVertexOffset3 = -1;
+    m_TangentBases1 = -1;
+    m_TangentBases2 = -1;
+    m_TangentBases3 = -1;
     m_fSurfaceArea = 0.0f;
 #ifdef _XBOX
     m_fXboxUnmapped190 = 0.0f;
@@ -3882,6 +3903,7 @@ void MaxTreeDestructor(void* pTree)
 {
     ((MaxTree*)pTree)->InternalDestructor();
 }
+// Dead code: not in the PC executable
 // Xbox 0x0029DA10
 void MaxTree::InternalDestructor()
 {
@@ -3951,17 +3973,17 @@ Model::Model(char* sName) : MaxTree(sName)
 // PC 0x0044ABC0  Xbox 0x0029EB80
 MdlNodeAnimMesh::MdlNodeAnimMesh(char* sName)
     : MdlNodeTriMesh(sName),
-      m_lAnimationVectors1(0),
-      m_lAnimationVectors2(0),
-      m_lAnimationVectors3(0)
+      m_lAnimVerts(0),
+      m_lAnimTVerts(0),
+      m_lAnimNormals(0)
 {
     m_fSamplePeriod = 0.0f;
     m_sTexture0[0] = 0;
     m_sTexture1[0] = 0;
-    m_nAnimationDataCount1 = 0;
-    m_nAnimationDataCount2 = 0;
-    m_pAnimationData1 = 0;
-    m_pAnimationData2 = 0;
+    m_nAnimVertFrames = 0;
+    m_nAnimTVertFrames = 0;
+    m_pAnimVertData = 0;
+    m_pAnimTVertData = 0;
     m_pfnGenVertices = MdlNodeAnimMeshGenVertices;
     m_pfnRemoveTemporaryArrays = MdlNodeAnimMeshRemoveTemporaryArrays;
     m_nNodeType = MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH;
@@ -4038,7 +4060,7 @@ int Gob::Amputate(char* sPart)
 #endif
     return 1;
 }
-
+// Dead code: not in the PC executable
 int Model::DelRef(Gob* pGob)
 {
     if (removedelref)
@@ -4127,6 +4149,7 @@ MdlNode* MdlNode::ConJoinDispatch()
     }
     return 0;
 }
+// Dead code: not in the PC executable
 // Xbox 0x0029D880
 const char* spawn(char* sCommand)
 {
@@ -4152,25 +4175,6 @@ const char* spawn(char* sCommand)
 
 Vector defaultdiffuse(0.8f, 0.8f, 0.8f);
 Vector defaultambient(0.2f, 0.2f, 0.2f);
-
-static inline void AurModelTrace4()
-{
-    AurModelTrace3();
-}
-
-static inline void AurModelTrace3()
-{
-    AurModelTrace2();
-}
-
-static inline void AurModelTrace2()
-{
-    AurModelTrace1();
-}
-
-static inline void AurModelTrace1()
-{
-}
 
 #ifdef _XBOX
 // Xbox 0x002998C0
@@ -4723,3 +4727,19 @@ void MdlNodeAABB::InternalDestructor()
     MdlNodeTriMesh::InternalDestructor();
 }
 #endif
+// Dead code: not in the PC executable
+int Gob::ShouldWeCheckVisibilityHACK()
+{
+    if (IsInCutscene())
+    {
+        return 0;
+    }
+    if (m_pModel != 0)
+    {
+        if (m_pModel->m_Classification.m_bAlternateShadowCaster || m_pModel->m_Classification.m_bAllRooms)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}

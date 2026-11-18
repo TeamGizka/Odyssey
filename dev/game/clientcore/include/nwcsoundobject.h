@@ -100,6 +100,7 @@ public:
         }
     }
     void UpdateTimeOfDay();
+    void UpdateRandomPosition();
     unsigned long GetTimeDiff();
     void UpdateVolumeVariation();
     void UpdateIntervalVariation();

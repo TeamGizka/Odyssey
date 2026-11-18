@@ -13,9 +13,9 @@
 
 #include <stdlib.h>
 
-static inline void NwcsoundobjectTrace3();
-static inline void NwcsoundobjectTrace2();
-static inline void NwcsoundobjectTrace1();
+static inline void TraceNextSound();
+static inline void TraceSoundList();
+static inline void TraceSoundObject();
 
 const int CSWCSoundObject::MAX_VOLUME = 127;
 // PC 0x0066B200  Xbox 0x000BAE10
@@ -274,7 +274,7 @@ void CSWCSoundObject::UpdateTimeOfDay()
 
         m_bActiveNow =
             (nHourMask &
-             (1 << g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeB0)) !=
+             (1 << g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeHour)) !=
             0;
     }
 }
@@ -319,6 +319,10 @@ void CSWCSoundObject::UpdateVolumeVariation()
         }
     }
 }
+// Dead code: not in the PC executable
+void CSWCSoundObject::UpdateRandomPosition()
+{
+}
 // PC 0x0066B000  Xbox 0x000BABB0
 void CSWCSoundObject::UpdateIntervalVariation()
 {
@@ -339,7 +343,7 @@ void CSWCSoundObject::UpdateIntervalVariation()
         m_nIntervalTimer = nInterval;
     }
 }
-
+// Dead code: not in the PC executable
 void CSWCSoundObject::ResetLastUpdate()
 {
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(
@@ -455,7 +459,7 @@ void CSWCSoundObject::ShuffleList()
 // PC 0x0066BAD0  Xbox 0x000BB6E0
 CResRef CSWCSoundObject::GetNextSound()
 {
-    NwcsoundobjectTrace3();
+    TraceNextSound();
     CResRef cResRef;
 
     if (m_bFirstSound != 0)
@@ -636,16 +640,16 @@ void CSWCSoundObject::AIUpdate()
     }
 }
 
-static inline void NwcsoundobjectTrace3()
+static inline void TraceNextSound()
 {
-    NwcsoundobjectTrace2();
+    TraceSoundList();
 }
 
-static inline void NwcsoundobjectTrace2()
+static inline void TraceSoundList()
 {
-    NwcsoundobjectTrace1();
+    TraceSoundObject();
 }
 
-static inline void NwcsoundobjectTrace1()
+static inline void TraceSoundObject()
 {
 }

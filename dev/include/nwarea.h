@@ -84,22 +84,22 @@ public:
 
     int m_nWidth;
     int m_nHeight;
-    int m_n10;
-    int m_n14;
-    unsigned long* m_p18;
+    int m_nStaticObjectAlloc;
+    int m_nStaticObjectCount;
+    unsigned long* m_pStaticObjectIds;
 
 
 
-    int* m_p1C;
-    int* m_p20;
-    int* m_p24;
-    int* m_p28;
-    int m_n2C;
-    int m_n30;
-    int* m_p34;
-    int m_n38;
-    int m_n3C;
-    Vector* m_p40;
+    int* m_pStaticObjectTriangleStarts;
+    int* m_pStaticObjectTriangleCounts;
+    int* m_pStaticObjectVertexStarts;
+    int* m_pStaticObjectVertexCounts;
+    int m_nStaticTriangleAlloc;
+    int m_nStaticTriangleCount;
+    int* m_pStaticTriangles;
+    int m_nStaticVertexAlloc;
+    int m_nStaticObjectVertexCount;
+    Vector* m_pStaticVertices;
     int m_nBoundingBoxAlloc;
     int m_nBoundingBoxCount;
     Vector* m_pBoundingBoxes;

@@ -1,6 +1,15 @@
 #include "resgff.h"
 #include "math3d.h"
+#include <stdio.h>
 #include <string.h>
+
+inline void ByteSwap(unsigned long* pValue)
+{
+}
+
+inline void ByteSwap(unsigned __int64* pValue)
+{
+}
 
 char* CResGFF::VERSION = "V3.2";
 
@@ -347,7 +356,7 @@ inline CResGFFField* CResGFF::GetField(CResGFFStruct* pStruct, unsigned long nIn
     }
     return NULL;
 }
-
+// Dead code: not in the PC executable
 CResGFFStruct* CResGFF::GetStruct(CResStruct* pStructure)
 {
     if (pStructure != NULL && m_pHeader != NULL && m_pStructs != NULL &&
@@ -714,6 +723,72 @@ unsigned char* CResGFF::AddDataLayoutList(unsigned long nOldOffset,
     }
     return NULL;
 }
+// Dead code: not in the PC executable
+int CResGFF::GetFileData(char* szFileName)
+{
+    if (m_pHeader != NULL)
+    {
+        return 0;
+    }
+
+    FILE* pFile = fopen(szFileName, "rb");
+    if (pFile == NULL)
+    {
+        return 0;
+    }
+
+    fseek(pFile, 0, SEEK_END);
+    unsigned long nSize = ftell(pFile);
+    unsigned char* pData = new unsigned char[nSize];
+    fseek(pFile, 0, SEEK_SET);
+    if (fread(pData, nSize, 1, pFile) != 1)
+    {
+        delete[] pData;
+        return 0;
+    }
+    fclose(pFile);
+
+    m_pHeader = (CResGFFHeader*)pData;
+    if (m_pHeader->m_nVersion != ((unsigned char)VERSION[0] |
+             ((unsigned char)VERSION[1] << 8) |
+             ((unsigned char)VERSION[2] << 16) |
+             ((unsigned char)VERSION[3] << 24)))
+    {
+        m_pHeader = NULL;
+        delete[] pData;
+        return 0;
+    }
+
+    if (m_pHeader->m_nStructCount != 0)
+    {
+        m_pStructs = (CResGFFStruct*)(pData + m_pHeader->m_nStructOffset);
+    }
+    if (m_pHeader->m_nFieldCount != 0)
+    {
+        m_pFields = (CResGFFField*)(pData + m_pHeader->m_nFieldOffset);
+    }
+    if (m_pHeader->m_nLabelCount != 0)
+    {
+        m_pLabels = (CResGFFLabel*)(pData + m_pHeader->m_nLabelOffset);
+    }
+    if (m_pHeader->m_nFieldDataCount != 0)
+    {
+        m_pFieldData = pData + m_pHeader->m_nFieldDataOffset;
+    }
+    if (m_pHeader->m_nFieldIndicesCount != 0)
+    {
+        m_pFieldIndices = pData + m_pHeader->m_nFieldIndicesOffset;
+    }
+    if (m_pHeader->m_nListIndicesCount != 0)
+    {
+        m_pListIndices = pData + m_pHeader->m_nListIndicesOffset;
+    }
+
+    m_bInResource = 1;
+    InitializeForWriting();
+    delete[] pData;
+    return 1;
+}
 // PC 0x004111C0  Xbox 0x00146BA0
 int CResGFF::GetElementType(CResStruct* pStructure)
 {
@@ -1009,7 +1084,7 @@ int CResGFF::GetFieldType(CResStruct* pStructure, char* szLabel,
     }
     return pField->m_nType;
 }
-
+// Dead code: not in the PC executable
 unsigned long CResGFF::GetFieldSize(CResStruct* pStructure, char* szLabel,
                                     unsigned long nIndex)
 {
@@ -1312,6 +1387,31 @@ int CResGFF::ReadFieldINT(CResStruct* pStructure, char* szLabel, int& bSuccess,
     {
         bSuccess = 0;
         return nDefault;
+    }
+}
+// Dead code: not in the PC executable
+int CResGFF::SetFieldINT(CResStruct* pStructure, char* szLabel, int& bSuccess, int nValue)
+{
+    if (pStructure != NULL && szLabel != NULL)
+    {
+        unsigned long nField = GetFieldByLabel(pStructure, szLabel);
+        CResGFFField* pField = GetField(pStructure, nField);
+        if (pField != NULL && pField->m_nType == 5)
+        {
+            bSuccess = 1;
+            pField->m_nDataOrDataOffset = nValue;
+            return pField->m_nDataOrDataOffset;
+        }
+        else
+        {
+            bSuccess = 0;
+            return nValue;
+        }
+    }
+    else
+    {
+        bSuccess = 0;
+        return nValue;
     }
 }
 // PC 0x00411D00  Xbox 0x001476F0
@@ -2180,5 +2280,238 @@ int CResGFF::WriteGFFFile(const CExoString& sFileName, unsigned short nResType)
 
     Pack(0, 0);
     return WriteGFFData(file, (unsigned long&)nResType);
+}
+// Dead code: not in the PC executable
+unsigned long CResGFF::ByteSwap(unsigned long nValue)
+{
+    ::ByteSwap(&nValue);
+    return nValue;
+}
+// Dead code: not in the PC executable
+unsigned __int64 CResGFF::ByteSwap64(unsigned __int64 nValue)
+{
+    ::ByteSwap(&nValue);
+    return nValue;
+}
+// Dead code: not in the PC executable
+char* CResGFF::GetLabel(CResStruct* pStructure, unsigned long nIndex)
+{
+    CResGFFField* pField = GetField(pStructure, nIndex);
+    if (pField == NULL || m_pLabels == NULL)
+    {
+        return NULL;
+    }
+    if (pField->m_nLabelIndex >= m_pHeader->m_nLabelCount)
+    {
+        return NULL;
+    }
+    return (char*)m_pLabels[pField->m_nLabelIndex].m_anName;
+}
+// Dead code: not in the PC executable
+void* CResGFF::GetDataLayoutField(CResGFFField* pField, unsigned long& nSize)
+{
+    if (pField == NULL)
+    {
+        return NULL;
+    }
+    if (m_pFieldIndices == NULL)
+    {
+        return NULL;
+    }
+
+    unsigned long nOffset = pField->m_nDataOrDataOffset;
+    unsigned long nCount = m_pHeader->m_nFieldIndicesCount;
+    if (nOffset < nCount)
+    {
+        nSize = nCount - nOffset;
+        return m_pFieldIndices + pField->m_nDataOrDataOffset;
+    }
+    return NULL;
+}
+// Dead code: not in the PC executable
+int CResGFF::IsDataInPlace(unsigned long nType)
+{
+    switch (nType)
+    {
+    case 6:
+    case 7:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 15:
+        return 0;
+    }
+    return 1;
+}
+// Dead code: not in the PC executable
+void CResGFF::GetGFFFileInfo(CExoString* psFileType, CExoString* psFileVersion)
+{
+    if (psFileVersion != NULL && psFileType != NULL && m_pHeader != NULL)
+    {
+        psFileType->Format("%.4s", &m_pHeader->m_nFileType);
+        psFileVersion->Format("%.4s", &m_pHeader->m_nVersion);
+    }
+}
+// Dead code: not in the PC executable
+void CResGFF::SetFileType(char* szFileType)
+{
+    strncpy(m_szFileType, szFileType, 4);
+}
+// Dead code: not in the PC executable
+char* CResGFF::GetFieldLabel(CResStruct* pStructure, unsigned long nIndex)
+{
+    CResGFFField* pField = GetField(pStructure, nIndex);
+    if (pField == NULL || m_pLabels == NULL)
+    {
+        return NULL;
+    }
+    if (pField->m_nLabelIndex >= m_pHeader->m_nLabelCount)
+    {
+        return NULL;
+    }
+    return (char*)m_pLabels[pField->m_nLabelIndex].m_anName;
+}
+// Dead code: not in the PC executable
+char* CResGFF::GetFieldStringID(CResStruct* pStructure, unsigned long nIndex)
+{
+    char* szLabel = GetFieldLabel(pStructure, nIndex);
+    if (szLabel == NULL)
+    {
+        return NULL;
+    }
+    memcpy(m_aLabelBuffer, szLabel, 16);
+    return (char*)m_aLabelBuffer;
+}
+// Dead code: not in the PC executable
+__int64 CResGFF::ReadFieldINT64(CResStruct* pStructure, char* szLabel,
+                                int& bSuccess, __int64 nDefault)
+{
+    if (pStructure != NULL && szLabel != NULL)
+    {
+        unsigned long nField = GetFieldByLabel(pStructure, szLabel);
+        CResGFFField* pField = GetField(pStructure, nField);
+        if (pField != NULL && pField->m_nType == 7)
+        {
+            unsigned long nSize;
+            __int64* pData = (__int64*)GetDataField(pField, nSize);
+            if (pData != NULL && nSize >= 8)
+            {
+                bSuccess = 1;
+                return *pData;
+            }
+            else
+            {
+                bSuccess = 0;
+                return nDefault;
+            }
+        }
+        else
+        {
+            bSuccess = 0;
+            return nDefault;
+        }
+    }
+    else
+    {
+        bSuccess = 0;
+        return nDefault;
+    }
+}
+// Dead code: not in the PC executable
+double CResGFF::ReadFieldDOUBLE(CResStruct* pStructure, char* szLabel,
+                                int& bSuccess, double fDefault)
+{
+    if (pStructure != NULL && szLabel != NULL)
+    {
+        unsigned long nField = GetFieldByLabel(pStructure, szLabel);
+        CResGFFField* pField = GetField(pStructure, nField);
+        if (pField != NULL && pField->m_nType == 9)
+        {
+            unsigned long nSize;
+            double* pData = (double*)GetDataField(pField, nSize);
+            if (pData != NULL && nSize >= 8)
+            {
+                bSuccess = 1;
+                return *pData;
+            }
+            else
+            {
+                bSuccess = 0;
+                return fDefault;
+            }
+        }
+        else
+        {
+            bSuccess = 0;
+            return fDefault;
+        }
+    }
+    else
+    {
+        bSuccess = 0;
+        return fDefault;
+    }
+}
+// Dead code: not in the PC executable
+BOOL CResGFF::WriteFieldINT64(CResStruct* pStructure, __int64 nValue,
+                              char* szLabel)
+{
+    if (pStructure == NULL || szLabel == NULL)
+    {
+        return 0;
+    }
+
+    if (m_bInResource)
+    {
+        InitializeForWriting();
+    }
+
+    CResGFFField* pField = AddField(pStructure, szLabel, 7);
+    if (pField == NULL)
+    {
+        return 0;
+    }
+
+    __int64* pData = (__int64*)AddDataField(0xFFFFFFFF, 0, 8);
+    if (pData == NULL)
+    {
+        return 0;
+    }
+
+    pField->m_nDataOrDataOffset = (unsigned char*)pData - m_pFieldData;
+    *pData = nValue;
+    return 1;
+}
+// Dead code: not in the PC executable
+BOOL CResGFF::WriteFieldDOUBLE(CResStruct* pStructure, double fValue,
+                               char* szLabel)
+{
+    if (pStructure == NULL || szLabel == NULL)
+    {
+        return 0;
+    }
+
+    if (m_bInResource)
+    {
+        InitializeForWriting();
+    }
+
+    CResGFFField* pField = AddField(pStructure, szLabel, 9);
+    if (pField == NULL)
+    {
+        return 0;
+    }
+
+    double* pData = (double*)AddDataField(0xFFFFFFFF, 0, 8);
+    if (pData == NULL)
+    {
+        return 0;
+    }
+
+    pField->m_nDataOrDataOffset = (unsigned char*)pData - m_pFieldData;
+    *pData = fValue;
+    return 1;
 }
 

@@ -6,12 +6,14 @@
 #include <math.h>
 #include <stdlib.h>
 
-static inline void ExosoundsourceinternalTrace2();
-static inline void ExosoundsourceinternalTrace1();
-#define EXOSOUNDSOURCEINTERNAL_TRACE() ExosoundsourceinternalTrace2()
+#define EXOSOUNDSOURCEINTERNAL_DEBUG 0
 
-static inline void ExoSoundSourceTrace();
-#define EXOSOUNDSOURCE_TRACE() ExoSoundSourceTrace()
+static inline void TraceSourceVolume();
+static inline void TraceSourceSettings();
+#define EXOSOUNDSOURCEINTERNAL_TRACE() TraceSourceVolume()
+
+static inline void TraceSoundSource();
+#define EXOSOUNDSOURCE_TRACE() TraceSoundSource()
 
 #ifndef _XBOX
 int CExoSoundSourceInternal::IsPaused()  // PC 0x0063E7F0  Xbox 0x00154870
@@ -33,6 +35,16 @@ int CExoSoundSourceInternal::Demand()
     int bResult = m_pRes->Demand() != 0;
     m_bDemanded = bResult;
     return bResult;
+}
+// Dead code: not in the PC executable
+int CExoSoundSourceInternal::Release()
+{
+    if (m_bDemanded != 0)
+    {
+        m_bDemanded = 0;
+        return m_pRes->Release() != 0;
+    }
+    return 0;
 }
 
 #ifdef _XBOX
@@ -109,7 +121,7 @@ CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // 
     m_fFixedVariance = 0.0f;
     int nSourceId = pSound->m_nNextSourceId++;
     m_nSourceId = nSourceId;
-    m_nUnknown20 = 0;
+    m_bStreaming = 0;
     m_nDataSize = 0;
     m_pData = 0;
     ZeroMemory(&m_wfxFormat, sizeof(m_wfxFormat));
@@ -204,7 +216,10 @@ int CExoSoundSourceInternal::IsPlaying()  // PC 0x005DB0E0  Xbox 0x00154510
 #else
 int CExoSoundSourceInternal::IsPlaying()  // PC 0x005DB0E0  Xbox 0x00154510
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::IsPlaying() in range %d\n", GetWithinRangeOfListener());
+    }
     if (m_pSound->m_bInitialized != 0)
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
@@ -222,7 +237,10 @@ int CExoSoundSourceInternal::IsPlaying()  // PC 0x005DB0E0  Xbox 0x00154510
 // PC 0x005DB130  Xbox 0x00154570
 void CExoSoundSourceInternal::SetLooping(int bLooping)
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::SetLooping() playing %d\n", IsPlaying());
+    }
     if (m_nListType == LIST_NONE)
     {
         m_bLooping = bLooping;
@@ -312,7 +330,10 @@ void CExoSoundSourceInternal::Resume()  // PC 0x005DB1C0  Xbox 0x00154600
 #else
 void CExoSoundSourceInternal::Resume()  // PC 0x005DB1C0  Xbox 0x00154600
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::Resume() is paused %d\n", IsPaused());
+    }
     if (m_pSound->m_bInitialized != 0)
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
@@ -405,7 +426,10 @@ void CExoSoundSourceInternal::ShutDownSource()
 #else
 void CExoSoundSourceInternal::ShutDownSource()  // PC 0x005DB210  Xbox 0x001546C0
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::ShutDownSource() playing %d\n", IsPlaying());
+    }
     if (m_nListType == 1)
     {
         m_pSound->RemoveFromPlayingList(this);
@@ -478,7 +502,10 @@ void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // PC 0x005D
 // PC 0x005DB320  Xbox 0x00154850
 void CExoSoundSourceInternal::Set3D(int b3D)
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::Set3D() playing %d\n", IsPlaying());
+    }
     if (m_nListType != 1 && m_p3DVoice == 0 && m_p2DVoice == 0)
     {
         m_b3D = b3D;
@@ -523,7 +550,10 @@ int CExoSoundSourceInternal::IsPaused()
 #endif
 void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x005DB340  Xbox 0x001548E0
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::SetOneShotDelay() playing %d\n", IsPlaying());
+    }
     if (m_pSound->m_bInitialized != 0)
     {
         m_nOneShotDelay = nDelay;
@@ -535,7 +565,10 @@ void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x005
 #ifndef _XBOX
 void CExoSoundSourceInternal::StoreRestartSoundPosition()  // PC 0x005DB380
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::StoreRestartSoundPosition() playing %d\n", IsPlaying());
+    }
     if (m_pSound->m_bInitialized != 0)
     {
         if (m_b3D != 0)
@@ -1010,7 +1043,10 @@ void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode, 
 void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,  // PC 0x005DB800  Xbox 0x00154AD0
                                         float fScale)
 {
-    EXOSOUNDSOURCEINTERNAL_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        CalculatePitchVarianceFrequency();
+    }
     int nMode = nSliderMode;
     int nSliderType = m_pSound->GetSliderType(this);
     if (nSliderMode == 0)
@@ -1054,7 +1090,7 @@ void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode, 
     }
 }
 #endif
-
+// Dead code: not in the PC executable
 int CExoSoundSourceInternal::IsScalable()
 {
     return m_nPriorityGroup == 4 || (m_nPriorityGroup == 21 && m_p2DVoice != 0);
@@ -1228,7 +1264,10 @@ void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // PC 0x005DBA4
 // PC 0x005DB3D0  Xbox 0x00154920
 void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::CalculatePitchVarianceFrequency() playing %d\n", IsPlaying());
+    }
     if (rand() % 2 != 0)
     {
         float fVariance = m_fPitchVariance;
@@ -1259,21 +1298,24 @@ void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // PC 0x005DB45
 #else
 void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // PC 0x005DB450  Xbox 0x001549A0
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCEINTERNAL_DEBUG)
+    {
+        EXOLOG("CExoSoundSourceInternal::CalculateFixedVarianceFrequency() within range of listener %d\n", GetWithinRangeOfListener());
+    }
     double dVariance = m_fFixedVariance;
     m_nFixedRate = (unsigned long)(dVariance * (float)m_nSampleRate);
 }
 #endif
 
-static inline void ExoSoundSourceTrace()
+static inline void TraceSoundSource()
 {
 }
 
-static inline void ExosoundsourceinternalTrace2()
+static inline void TraceSourceVolume()
 {
-    ExosoundsourceinternalTrace1();
+    TraceSourceSettings();
 }
 
-static inline void ExosoundsourceinternalTrace1()
+static inline void TraceSourceSettings()
 {
 }

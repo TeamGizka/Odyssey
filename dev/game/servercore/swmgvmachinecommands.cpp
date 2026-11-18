@@ -42,7 +42,7 @@ int CSWTrackFollower::GetIsInvulnerable()
 // PC 0x005CB460
 void CSWMGGunBank::SetBankModel(const CResRef& sBank)
 {
-    m_resBank = sBank;
+    m_resBulletModel = sBank;
 }
 // PC 0x005CB480  Xbox 0x00274860
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,
@@ -819,10 +819,10 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankStringInfo(
             switch (nCommand)
             {
             case 625:
-                pGunBank->m_resBank.CopyToString(sModel);
+                pGunBank->m_resBulletModel.CopyToString(sModel);
                 break;
             case 626:
-                pGunBank->m_resGun.CopyToString(sModel);
+                pGunBank->m_resGunModel.CopyToString(sModel);
                 break;
             }
         }

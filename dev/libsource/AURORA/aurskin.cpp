@@ -1622,8 +1622,8 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     {
                         float afBlack[3] = {0.0f, 0.0f, 0.0f};
                         glFogfv(enableTranslationTable[FOG_COLOR], afBlack);
-                        GLRender_SetFogModef(FOG_START, 1000.0f);
-                        GLRender_SetFogModef(FOG_END, 2000.0f);
+                        GLRender_SetFogf(FOG_START, 1000.0f);
+                        GLRender_SetFogf(FOG_END, 2000.0f);
                     }
                     GLRender_Disable(ENABLE_FOG);
                     float afFog[4] = {

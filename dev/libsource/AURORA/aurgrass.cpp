@@ -5,14 +5,17 @@
 #include "aurtexman.h"
 #include "aurwindmanager.h"
 #include "aurscene.h"
+#include "aurora.h"
+#include "aurmaterial.h"
+#include "aurmodel.h"
+#include <stdlib.h>
 
 void AurTextureRelease(CAurTexture* pTexture);
 #include "aurgrass.h"
-#include "aurora.h"
 
-static inline void AurgrassTrace2();
-static inline void AurgrassTrace1();
-#define AURGRASS_TRACE() AurgrassTrace2()
+static inline void TraceGrassTriangles();
+static inline void TraceGrass();
+#define AURGRASS_TRACE() TraceGrassTriangles()
 
 float CAurTriangleBin::m_fNearRadiusSquared = 225.0f;
 float CAurTriangleBin::m_fFarRadiusSquared = 900.0f;
@@ -39,7 +42,7 @@ void CAurTriangleBin::FinishGeometry()
 // PC 0x004A6840  Xbox 0x002B61A0
 char AurGrassMaterialInUse(int nMaterial)
 {
-    AurgrassTrace1();
+    TraceGrass();
     if (nMaterial > g_GrassInfo.m_nCount - 1)
     {
         return 0;
@@ -124,7 +127,7 @@ int maxgrass = 0;
 void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
                                       WindManager* pWindManager)
 {
-    AurgrassTrace2();
+    TraceGrassTriangles();
 #ifndef _XBOX
     if (!AurNV1xLevelShadersAvailable() && !AurMultiTextureAvailable())
         return;
@@ -297,7 +300,7 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
 // PC 0x004A7220  Xbox 0x002B6A40
 CAurTriangleListElem::CAurTriangleListElem()
 {
-    AurgrassTrace2();
+    TraceGrassTriangles();
     m_pFace = 0;
     m_pTriMesh = 0;
     m_nTriangle = 0;
@@ -372,14 +375,6 @@ int GrassSortTris(const void* pFirst, const void* pSecond)
         return 1;
     return 0;
 }
-
-#include "aurmaterial.h"
-
-#include "aurmodel.h"
-
-#include "aurrendergl.h"
-
-#include <stdlib.h>
 
 extern int enablelightmap;
 // PC 0x004A7860  Xbox 0x002B7060
@@ -859,12 +854,12 @@ void CAurTriangleBin::BuildGrassPolys()  // PC 0x004A9630  Xbox 0x002B8DC0
     }
 }
 
-static inline void AurgrassTrace2()
+static inline void TraceGrassTriangles()
 {
-    AurgrassTrace1();
+    TraceGrass();
 }
 
-static inline void AurgrassTrace1()
+static inline void TraceGrass()
 {
 }
 

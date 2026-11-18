@@ -262,6 +262,26 @@ void CSWGuiLevelUpPanel::PowersSelectionCompleted()
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
+// Dead code: not in the PC executable
+void CSWGuiLevelUpPanel::ClearPowers()
+{
+    m_pParent->ClearPowers();
+}
+// Dead code: not in the PC executable
+void CSWGuiLevelUpPanel::ClearAbilities()
+{
+    m_pParent->ClearAbilities();
+}
+// Dead code: not in the PC executable
+void CSWGuiLevelUpPanel::ClearSkills()
+{
+    m_pParent->ClearSkills();
+}
+// Dead code: not in the PC executable
+void CSWGuiLevelUpPanel::ClearFeats()
+{
+    m_pParent->ClearFeats();
+}
 
 #ifndef _XBOX
 void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x006EE5F0
@@ -328,7 +348,7 @@ void CSWGuiLevelUpPanel::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-
+// Dead code: not in the PC executable
 void CSWGuiLevelUpPanel::PlayGame()
 {
     if (m_anStateUsed[2] == 0)

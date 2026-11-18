@@ -42,7 +42,7 @@ public:
                           unsigned char nFlags);
     virtual void UnloadModel();
     virtual void UnloadModel(unsigned char nModel);
-    virtual int SetAnimation(unsigned short nAnimation, int nA, int nB);
+    virtual int SetAnimation(unsigned short nAnimation, int nFlags, int nParam);
     virtual int ApplyShadowBlob();
     virtual int IsHostile();
     virtual unsigned char GetReticlePoint(Vector& vPoint);
@@ -67,19 +67,19 @@ public:
     unsigned char m_nAppearance;
 
     int m_bPlotObject;
-    int m_nUnknown114;
+    int m_bLockable;
     int m_bLocked;
 
     int m_bTrap;
-    int m_nUnknown120;
+    int m_bHasDescription;
     int m_bTrapDetected;
     int m_bUseable;
-    int m_nUnknown12C;
-    int m_nUnknown130;
-    int m_nUnknown134;
-    int m_nUnknown138;
-    int m_nUnknown13C;
-    int m_nUnknown140;
+    int m_bSelectable;
+    int m_bTrapDisarmable;
+    int m_nTrapType;
+    int m_nTrapDisarmDC;
+    int m_bHilighted;
+    int m_nHilightTime;
     CExoString m_sModel;
     Gob* m_pLight;
 #ifdef _XBOX

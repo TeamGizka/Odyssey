@@ -98,15 +98,17 @@ public:
     unsigned long GetObject(const CExoString& sName);
     CScriptLocation GetLocation(const CExoString& sName);
 
-    void SetInt(const CExoString& sName, int nValue, int nFlag);
+    void SetInt(const CExoString& sName, int nValue, int bLoading);
     void SetFloat(const CExoString& sName, float fValue);
     void SetString(const CExoString& sName, CExoString& sValue);
     void SetObject(const CExoString& sName, unsigned long oidValue);
     void SetLocation(const CExoString& sName, CScriptLocation lLocation);
+    void DestroyInt(const CExoString& sName);
 
     void DestroyFloat(const CExoString& sName);
     void DestroyString(const CExoString& sName);
     void DestroyObject(const CExoString& sName);
+    void DestroyLocation(const CExoString& sName);
 
     void LoadVarTable(CResGFF* pRes, CResStruct* pStruct);
     void SaveVarTable(CResGFF* pRes, CResStruct* pStruct);
@@ -151,6 +153,7 @@ public:
     int AddIdentifierLocation(const CExoString& sIdentifier);
     int AddIdentifierString(const CExoString& sIdentifier);
     int FindIdentifierIndex(const CExoString& sIdentifier);
+    int GetBit(unsigned char* pValues, int nIndex);
     void SetBit(unsigned char* pValues, int nIndex, int bValue);
     void GetValueBoolean(const CExoString& sIdentifier, int& bValue);
     void GetValueNumber(const CExoString& sIdentifier, char& cValue);

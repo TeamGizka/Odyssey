@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "twodimarray.h"
+#include "swmain.h"
 
 template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Allocate(int);
 template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Add(CSWRoomSurfaceMeshAABBNode);
@@ -11,11 +13,9 @@ template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Add(CSWRoomSurfaceMeshA
 #include "ResBWM.h"
 #include "nwrules.h"
 #include "twodimarrays.h"
-#include "twodimarray.h"
-#include "swmain.h"
 
-static inline void RoomSurfaceMeshTrace1();
-#define SWROOMSURFACEMESH_TRACE() RoomSurfaceMeshTrace1()
+static inline void TraceRoomSurfaceMesh();
+#define SWROOMSURFACEMESH_TRACE() TraceRoomSurfaceMesh()
 
 int g_bRenderClipWalkable = 0;
 
@@ -39,7 +39,7 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& v
         int nTriangle = m_lstAABBNodes[nNode].m_nTriangle;
         int nMaterialMask = 1 << m_pFaceMaterials[nTriangle];
         int nHits = 0;
-        if (!(hitInfo.m_nField00 & nMaterialMask))
+        if (!(hitInfo.m_nMaterialMask & nMaterialMask))
         {
             return 0;
         }
@@ -53,15 +53,15 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& v
 
         if (polyhit(avVertices, 3, vStart, vEnd, &vEnd, &vNormal))
         {
-            hitInfo.m_nField0C = nTriangle;
+            hitInfo.m_nHitFace = nTriangle;
             nHits = 1;
-            hitInfo.m_nField1C = nMaterialMask;
+            hitInfo.m_nHitMaterialMask = nMaterialMask;
         }
         return nHits;
     }
     else
     {
-        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nField04)
+        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nTraversalMask)
         {
             return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
         }
@@ -163,7 +163,7 @@ float CSWRoomSurfaceMesh::ComputeHeight(int nFace, Vector vPosition)
                               vPoint);
 }
 // PC 0x00580620  Xbox 0x001E1420
-void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nUnused, int nTriangle,
+void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nLevel, int nTriangle,
                                               int* pnFirst, int* pnSecond,
                                               int* pnThird)
 {
@@ -182,7 +182,7 @@ void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nUnused, int nTriangle,
     }
 }
 // PC 0x005806C0  Xbox 0x001E14C0
-void CSWRoomSurfaceMesh::GetTriangleVertices(int nUnused, int nTriangle,
+void CSWRoomSurfaceMesh::GetTriangleVertices(int nLevel, int nTriangle,
                                              int* pnFirst, int* pnSecond,
                                              int* pnThird)
 {
@@ -229,19 +229,19 @@ inline CSWRoomSurfaceMeshAABBNode::CSWRoomSurfaceMeshAABBNode()
 // PC 0x00580750  Xbox 0x001E15B0
 int CSWRoomSurfaceMeshHitInfo::ClearOutput()
 {
-    m_nField08 = 0;
-    m_nField1C = 0;
+    m_bHit = 0;
+    m_nHitMaterialMask = 0;
     m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
 // PC 0x00580780  Xbox 0x001E15F0
 void CSWRoomSurfaceMeshHitInfo::ClearAll(unsigned long nMask)
 {
-    m_nField0C = -1;
-    m_nField00 = nMask;
-    m_nField04 = 0;
-    m_nField08 = 0;
-    m_nField1C = 0;
+    m_nHitFace = -1;
+    m_nMaterialMask = nMask;
+    m_nTraversalMask = 0;
+    m_bHit = 0;
+    m_nHitMaterialMask = 0;
     m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
 }
 // PC 0x005807C0  Xbox 0x001E1640
@@ -342,7 +342,7 @@ int CSWRoomSurfaceMesh::GetEdgeVertices(int nEdge, Vector& vFirst,
     vSecond = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
-
+// Dead code: not in the PC executable
 int CSWRoomSurfaceMesh::SetEdgeVertex(int nEdge, Vector& vVertex)
 {
     if (nEdge < m_lstExternalEdges.num)
@@ -847,7 +847,7 @@ int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
 // PC 0x00581320  Xbox 0x001E22A0
 CSWRoomSurfaceMeshHitInfo::CSWRoomSurfaceMeshHitInfo(unsigned long nMask)
 {
-    RoomSurfaceMeshTrace1();
+    TraceRoomSurfaceMesh();
     ClearAll(nMask);
 }
 // PC 0x00581370  Xbox 0x001E2300
@@ -892,14 +892,14 @@ int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
         return 0;
     }
 
-    hitInfo.m_nField00 = m_nLOSMaterialMask;
+    hitInfo.m_nMaterialMask = m_nLOSMaterialMask;
     if (CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo) > 0)
     {
-        hitInfo.m_nField08 = 1;
+        hitInfo.m_bHit = 1;
         hitInfo.m_vHitPosition = vEnd;
     }
 
-    return hitInfo.m_nField08;
+    return hitInfo.m_bHit;
 }
 // PC 0x00581530  Xbox 0x001E2510
 int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
@@ -910,11 +910,11 @@ int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
         return 0;
     }
 
-    hitInfo.m_nField00 = m_nWalkCheckMaterialMask;
+    hitInfo.m_nMaterialMask = m_nWalkCheckMaterialMask;
 
     int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
 
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
 
@@ -926,11 +926,11 @@ int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
 
     if (nHits > 0)
     {
-        hitInfo.m_nField08 = 1;
+        hitInfo.m_bHit = 1;
         hitInfo.m_vHitPosition = vEnd;
     }
 
-    return hitInfo.m_nField08;
+    return hitInfo.m_bHit;
 }
 // PC 0x00581610  Xbox 0x001E2600
 int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
@@ -943,11 +943,11 @@ int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
 
     __int64 nStartTime = QueryTimer();
 
-    hitInfo.m_nField00 = m_nAllMaterialsMask;
+    hitInfo.m_nMaterialMask = m_nAllMaterialsMask;
 
     int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
 
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
 
@@ -959,12 +959,12 @@ int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
 
     if (nHits > 0)
     {
-        hitInfo.m_nField08 = 1;
+        hitInfo.m_bHit = 1;
         hitInfo.m_vHitPosition = vEnd;
     }
 
     checkaabbtime = (float)(QueryTimer() - nStartTime);
-    return hitInfo.m_nField08;
+    return hitInfo.m_bHit;
 }
 // PC 0x00581720  Xbox 0x001E2710
 int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
@@ -984,7 +984,7 @@ int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
         CheckAABBAll(vTop, vBottom, hitInfo);
     }
 
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         Vector vOffset = normalize(vDirection);
 
@@ -1001,7 +1001,7 @@ int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
         }
     }
 
-    return hitInfo.m_nField0C;
+    return hitInfo.m_nHitFace;
 }
 // PC 0x00581930  Xbox 0x001E2930
 int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
@@ -1012,12 +1012,12 @@ int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
     Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
 
     CheckAABBAll(vStart, vEnd, hitInfo);
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         return 0;
     }
 
-    return m_pFaceMaterials[hitInfo.m_nField0C];
+    return m_pFaceMaterials[hitInfo.m_nHitFace];
 }
 // PC 0x00581A10  Xbox 0x001E2A30
 int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
@@ -1028,12 +1028,12 @@ int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
     Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
 
     CheckAABBWalkable(vStart, vEnd, hitInfo);
-    if (hitInfo.m_nField0C == -1)
+    if (hitInfo.m_nHitFace == -1)
     {
         return 0;
     }
 
-    return m_pFaceMaterials[hitInfo.m_nField0C];
+    return m_pFaceMaterials[hitInfo.m_nHitFace];
 }
 // PC 0x00581AF0  Xbox 0x001E2B30
 void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
@@ -1516,7 +1516,7 @@ void CSWRoomSurfaceMesh::AddCrossing(const Vector& vStart,
     nCrossings++;
 }
 
-static inline void RoomSurfaceMeshTrace1()
+static inline void TraceRoomSurfaceMesh()
 {
 }
 

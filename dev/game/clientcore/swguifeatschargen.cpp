@@ -8,10 +8,10 @@
 #include "swguifeatschargen.h"
 #include "nwccreature.h"
 
-static inline void SwguifeatschargenTrace1();
+#define SWGUIFEATSCHARGEN_DEBUG 0
 
-static inline void SWGuiFeatsCharGenTrace();
-#define SWGUIFEATSCHARGEN_TRACE() SWGuiFeatsCharGenTrace()
+static inline void TraceFeatsCharGen();
+#define SWGUIFEATSCHARGEN_TRACE() TraceFeatsCharGen()
 // PC 0x006F3D60  Xbox 0x0012BB00
 CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
                                      CSWCCreature* pCreature,
@@ -727,7 +727,10 @@ inline int CSWGuiListBox::IsOversized()
 // PC 0x006F2DF0  Xbox 0x0012AC80
 void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 {
-    SwguifeatschargenTrace1();
+    if (SWGUIFEATSCHARGEN_DEBUG)
+    {
+        EXOLOG("CSWGuiFeatsCharGen::SetDescription() chosen index %d\n", m_lChosen.IndexOf((unsigned short)nStrRef));
+    }
     STR_RES strRes;
 
     g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
@@ -751,10 +754,6 @@ void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 #endif
 }
 
-static inline void SWGuiFeatsCharGenTrace()
-{
-}
-
-static inline void SwguifeatschargenTrace1()
+static inline void TraceFeatsCharGen()
 {
 }

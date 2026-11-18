@@ -75,6 +75,7 @@ void CExoRawInputInternal::ClearMouseBuffer()
         } while (nResult == DIERR_INPUTLOST);
     }
 }
+// Dead code: not in the PC executable
 // Xbox 0x0013BFE0
 void CExoRawInputInternal::ClearJoystickBuffer(int nJoystick)
 {
@@ -602,7 +603,7 @@ CExoString CExoRawInputInternal::GetDisplayCharacterDirectInputValue(
     }
     return CExoString("N/A");
 }
-
+// Dead code: not in the PC executable
 void CExoRawInputInternal::ShutDownDirectInputMouse()
 {
     if (m_pMouse != NULL)

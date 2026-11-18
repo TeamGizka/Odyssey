@@ -27,9 +27,7 @@
 #include "nwsarea.h"
 #include "nwsplaceable.h"
 
-static inline void SwguiingameequipTrace2();
-static inline void SwguiingameequipTrace1();
-#define SWGUIINGAMEEQUIP_TRACE() SwguiingameequipTrace1()
+#define SWGUIINGAMEEQUIP_DEBUG 0
 
 static inline CServerExoApp* GetServerExoApp();
 
@@ -394,7 +392,10 @@ void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
 // PC 0x006B7EE0  Xbox 0x000ED010
 CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
 {
-    SwguiingameequipTrace2();
+    if (SWGUIINGAMEEQUIP_DEBUG)
+    {
+        EXOLOG("CSWGuiInGameItemEntry::CSWGuiInGameItemEntry() server exo app %p\n", GetServerExoApp());
+    }
     m_bPulsing = 0;
     m_bEquipped = 0;
     m_bUnavailable = 0;
@@ -790,9 +791,9 @@ void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
 #ifdef _XBOX
 
 #define STRREF_XBOX_GIVE_ITEM_LABEL 47885
-void CSWGuiContainer::SetupGiveMode()  // PC 0x006B8410  Xbox 0x000ED4D0
+void CSWGuiContainer::SetupGiveMode()  // Xbox 0x000ED4D0
 #else
-void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
+void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)  // PC 0x006B8410
 #endif
 {
     CExoArrayList<CSWGuiInGameItemEntry*> lItems;
@@ -1185,7 +1186,7 @@ int CSWGuiInGameEquip::EquipItem(unsigned long oidItem, int nSlot,
             if (pCreature->m_bCombatState != 0)
             {
                 unsigned long oidTarget =
-                    pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                    pCreature->m_pcCombatRound->m_oidRoundTarget;
                 if (oidTarget != OBJECT_INVALID)
                 {
                     pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0, 0, 1,
@@ -1199,7 +1200,7 @@ int CSWGuiInGameEquip::EquipItem(unsigned long oidItem, int nSlot,
     return 0;
 }
 // PC 0x006B5890
-int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int bFlag1, int bFlag2)
+int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int nSlot, int bClearActions)
 {
     CSWSCreature* pCreature = m_pCreature->GetServerCreature();
     if (pCreature != 0)
@@ -1211,7 +1212,7 @@ int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int bFlag1, int bFlag2)
             if (pItem->CompareItem(pOther) != 0)
             {
                 unsigned long oidItem = pOther->m_nId;
-                return EquipItem(oidItem, bFlag1, bFlag2);
+                return EquipItem(oidItem, nSlot, bClearActions);
             }
         }
     }
@@ -1244,7 +1245,7 @@ void CSWGuiInGameEquip::UnequipItem(unsigned long oidItem, int bClearActions)
             if (pCreature->m_bCombatState != 0)
             {
                 unsigned long oidTarget =
-                    pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                    pCreature->m_pcCombatRound->m_oidRoundTarget;
                 if (oidTarget != OBJECT_INVALID)
                 {
                     pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0, 0, 1,
@@ -1748,6 +1749,14 @@ void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
             m_pComparedCopy = 0;
         }
         CloseDescription();
+    }
+}
+// Dead code: not in the PC executable
+void CSWGuiInGameEquip::SetActiveSlot(int nSlot)
+{
+    if (nSlot > 0 && nSlot < NUM_EQUIPMENT_SLOTS)
+    {
+        SetActiveControl(&m_aSlotButtons[nSlot], 0);
     }
 }
 // PC 0x006B7E30  Xbox 0x000ECF70
@@ -2486,19 +2495,27 @@ void CSWGuiInGameEquip::OnChangeCharacter(CSWGuiControl* pControl)
         UpdatePortraits(1);
     }
 }
+// Dead code: not in the PC executable
+int CSWGuiInGameEquip::MapGlobalSlotToGuiSlot(int nSlot)
+{
+    switch (nSlot)
+    {
+    case INVENTORY_SLOT_LEFTHAND: return 0;
+    case INVENTORY_SLOT_RIGHTHAND: return 1;
+    case INVENTORY_SLOT_HEAD: return 2;
+    case INVENTORY_SLOT_RIGHTRING: return 3;
+    case INVENTORY_SLOT_NECK: return 4;
+    case INVENTORY_SLOT_ARMOUR: return 5;
+    case INVENTORY_SLOT_HANDS: return 6;
+    case INVENTORY_SLOT_BELT: return 7;
+    case INVENTORY_SLOT_ARMS: return 8;
+    default: return INVALID_SLOT_ITEM_INDEX;
+    }
+}
 #endif
 static inline CServerExoApp* GetServerExoApp()
 {
     return g_pAppManager->m_pServerExoApp;
-}
-
-static inline void SwguiingameequipTrace2()
-{
-    SwguiingameequipTrace1();
-}
-
-static inline void SwguiingameequipTrace1()
-{
 }
 
 #ifdef _XBOX

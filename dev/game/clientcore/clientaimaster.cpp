@@ -78,9 +78,9 @@ CSWCObject* CClientAIList::GetNextObject()
     CClientExoAppInternal* pInternal =
         g_pAppManager->m_pClientExoApp->m_pcExoAppInternal;
     CGameObject* pGameObject = pInternal->GetGameObject(nId);
-    CSWCObject* pSWCObject =
+    CSWCObject* pObject =
         pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
-    return pSWCObject;
+    return pObject;
 }
 // PC 0x006048C0  Xbox 0x000348A0
 int CClientAIMaster::UpdateState()

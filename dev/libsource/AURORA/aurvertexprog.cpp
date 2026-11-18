@@ -282,6 +282,11 @@ void VertexProgramManager::AddVertexProgram(VertexProgram* pProgram)
 {
     cm_listExistentVertexPrograms.Add(pProgram);
 }
+// Dead code: not in the PC executable
+void VertexProgramManager::RemoveVertexProgram(VertexProgram* pProgram)
+{
+    cm_listExistentVertexPrograms.Remove(pProgram);
+}
 #endif
 // PC 0x004A27D0  Xbox 0x002F26C0
 VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)

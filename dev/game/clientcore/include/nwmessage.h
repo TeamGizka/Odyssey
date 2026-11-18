@@ -323,23 +323,32 @@ public:
     void WriteBits(unsigned __int64 nValue, int nBits);
     void WriteSigned(__int64 nValue, int nBits);
     void WriteUnsigned(unsigned __int64 nValue, int nBits);
+    __int64 ReadINT64(int nBits);
+    unsigned __int64 ReadDWORD64(int nBits);
+    double ReadDOUBLE(double fDefault, int nBits);
+    double ReadDOUBLE(double fLowerRange, double fUpperRange, int nBits);
+    void WriteDWORD64(unsigned __int64 nValue, int nBits);
+    void WriteINT64(__int64 nValue, int nBits);
+    void WriteDOUBLE(double fValue, double fDefault, int nBits);
+    void WriteDOUBLE(double fValue, double fLowerRange, double fUpperRange, int nBits);
+    void ExtendWriteFragmentsBuffer(unsigned long nExtraBytes);
     unsigned char* m_pWriteBuffer;
     unsigned long m_nWriteBufferSize;
     unsigned long m_nWriteIndex;
-    unsigned char* m_pUnknown10;
-    unsigned long m_nUnknown14;
-    unsigned long m_nUnknown18;
+    unsigned char* m_pWriteFragmentsBuffer;
+    unsigned long m_nWriteFragmentsBufferSize;
+    unsigned long m_nWriteFragmentsIndex;
     unsigned long m_nTotalBytesWritten;
-    unsigned long m_nUnknown20;
+    unsigned long m_nWriteFragmentsBitPos;
     int m_bWritingMessage;
     unsigned char* m_pReadBuffer;
     unsigned long m_nReadBufferSize;
     unsigned long m_nReadIndex;
-    unsigned long m_nUnknown34;
-    unsigned long m_nUnknown38;
-    unsigned long m_nUnknown3C;
-    unsigned long m_nUnknown40;
-    unsigned char m_bUnknown44; unsigned char m_bUnknown45;
+    unsigned long m_pReadFragmentsBuffer;
+    unsigned long m_nReadFragmentsBufferSize;
+    unsigned long m_nReadFragmentsIndex;
+    unsigned long m_nReadFragmentsOffset;
+    unsigned char m_nReadFragmentsBitPos; unsigned char m_nLastByteBits;
 #ifndef _XBOX
     unsigned char m_aUnknown46[2];
 #endif
@@ -533,6 +542,7 @@ public:
     void SetInteger(int nIndex, int nValue);
     void SetFloat(int nIndex, float fValue);
     void SetObjectID(int nIndex, unsigned long oidValue);
+    void ClearData();
 
     unsigned char m_nType;
     CExoArrayList<int> m_lstIntegers;
@@ -1284,9 +1294,9 @@ public:
                                          CExoLocString& lsJournalEntry);
     int SendServerToPlayerModuleUpdate_Time(
         CSWSPlayer* pPlayer, unsigned char nUpdateMask,
-        unsigned long nTimeOfDay, unsigned long nDayOfMonth,
-        unsigned long nMonth, unsigned long nYear, unsigned char nCalendar,
-        unsigned long nCalendarDay);
+        unsigned long nYear, unsigned long nDayOfMonth,
+        unsigned long nMonth, unsigned long nHour, unsigned char nTimeOfDayState,
+        unsigned long nTimeOfDayTime);
     int SendServerToPlayerMapPinEnabled(CSWSPlayer* pPlayer,
                                         unsigned long oidMapPin, int bEnabled);
     int SendServerToPlayerGuiTimingEvent(CSWSPlayer* pPlayer, int bStarted,
@@ -1314,11 +1324,26 @@ public:
     int HasValidString(CExoLocString& lsString, unsigned char nGender);
 
     void WriteGameObjUpdate_WorkRemaining(CSWSObject* pObject, CSWSArea* pArea,
-                                          int nValue, int nValue2);
+                                          int nStagesCompleted, int nCompleteStage);
     void WriteRepositoryUpdate(CSWSPlayer* pPlayer, CSWSObject* pObject,
                                 CItemRepository* pRepository,
                                 CSWSPlayerLUOInventory* pLastUpdateInventory,
                                 unsigned char nList, char nGUI);
+    int HandlePlayerToServerServerChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor);
+    int HandlePlayerToServerGroupInputWalkToWaypoint(CSWSPlayer* pPlayer, CSWSCreature* pCreature, unsigned long oidArea, float fPositionX, float fPositionY, float fPositionZ, unsigned char nMovementRate, int bRun, int bUsePath, unsigned long oidTarget);
+    int ParseGetBool(unsigned char* pString, unsigned long nLength, int& bValue);
+    int ComputeLastUpdate_GuiMemorizedSpells(CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pPlayerLastUpdateObject);
+    int ComputeGameObjectUpdateForYourself(CSWSPlayer* pPlayer, CSWSObject* pObject, CGameObjectArray* pGameObjectArray, unsigned long oidObject);
+    int SendServerToPlayerModule_EndGame(unsigned long oidObject, const CExoString& sString);
+    int ComputeRepositoryUpdateRequired(CSWSPlayer* pPlayer, CExoLinkedListNode* pRepositoryNode, CExoLinkedListNode* pLastUpdateNode);
+    int ComputeLastUpdate_GuiNumberMemorizedSpells(CSWSCreature* pCreature, CSWSPlayerLastUpdateObject* pPlayerLastUpdateObject);
+    int SendServerToPlayerDialogClose(unsigned long oidObject);
+    int SendServerToPlayerInventory_Equip(unsigned long nPlayerId, unsigned long oidObject, unsigned long nInventorySlot, int bInstant);
+    int SendServerToPlayerLogin_Fail(unsigned long oidObject, unsigned long oidTarget);
+    int SendServerToPlayerParty_Invite(unsigned long oidObject, unsigned long oidTarget);
+    int SendServerToPlayerCheatPonyRide(unsigned long oidObject, unsigned long oidTarget);
+    int SendServerToPlayerCheatRainOfCows(unsigned long oidObject, unsigned long oidTarget);
+    int SendServerToPlayerCombatRoundStarted(CSWSPlayer* pPlayer);
 };
 
 class CResRef;
@@ -1347,7 +1372,7 @@ public:
         CREATURE_UPDATE_PORTRAIT = 0x00020,
         CREATURE_UPDATE_COMBAT_STATE = 0x00040,
         CREATURE_UPDATE_SPEED = 0x00100,
-        CREATURE_UPDATE_UNUSED_200 = 0x00200,
+        CREATURE_UPDATE_COARSE_POSITION = 0x00200,
         CREATURE_UPDATE_HIT_POINTS = 0x00400,
         CREATURE_UPDATE_STATS_BYTE = 0x00800,
         CREATURE_UPDATE_CLASSES = 0x01000,
@@ -1356,7 +1381,7 @@ public:
         CREATURE_UPDATE_PERCEPTION = 0x08000,
         CREATURE_UPDATE_NAMES = 0x10000,
         CREATURE_UPDATE_STATES = 0x20000,
-        CREATURE_UPDATE_UNUSED_OBJECT = 0x40000,
+        CREATURE_UPDATE_AREA = 0x40000,
         CREATURE_UPDATE_FORCE_POINTS = 0x80000
     };
 
@@ -1634,6 +1659,19 @@ public:
                                                     int bNewCharacter);
     int SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
                                    CSWCLevelUpStats* pNewStats);
+    int HandleServerToPlayerQuickChat(unsigned char nMinor);
+    int HandleServerToPlayerExamineGui_CreatureData();
+    int HandleServerToPlayerExamineGui_ItemData();
+    int HandleServerToPlayerExamineGui_PlaceableData();
+    int HandleServerToPlayerExamineGui_MineData();
+    int HandleServerToPlayerExamineGui_DoorData();
+    int HandleServerToPlayerDialog(unsigned char nMinor);
+    int HandleServerToPlayerCharacterList(unsigned char nMinor);
+    int HandleInventoryFindSourceAndUnghost(CSWCItem* pItem);
+    int HandleInventoryUnghostSourceItem(CSWCItem* pItem);
+    int HandleServerToPlayerDebugInfo_Area(unsigned long oidObject);
+    int HandleServerToPlayerPlayModuleCharacterList(unsigned char nMinor);
+    int SendPlayerToServerCheat_ShowServerMem();
 #ifdef _XBOX
 
     int SendPlayerToServerCheat_DebugMode(int bDebugMode);

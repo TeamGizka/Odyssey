@@ -19,6 +19,7 @@ int g_bShowCheatResult = 1;
 CExoString g_returnCode;
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 char* dm_setrace(char* szArgs)  // Xbox 0x00050A00
 {
     unsigned short nRace;
@@ -68,6 +69,7 @@ char* dm_setrace(char* szArgs)  // Xbox 0x00050A00
 }
 #endif
 #ifndef _XBOX
+// Dead code: not in the PC executable
 char* setvideomode(char* szArgs)
 {
     int nWidth = 800;
@@ -315,6 +317,11 @@ int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x00677940  Xbox 0x0
     g_pExoSound->PlayOneShotSound(cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
     return SendPlayerToServerMessage(15, 2, NULL, 0);
 }
+// Dead code: not in the PC executable
+int CSWCMessage::SendPlayerToServerCheat_ShowServerMem()
+{
+    return SendPlayerToServerMessage(15, 17, NULL, 0);
+}
 #endif
 int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006779D0
 {
@@ -435,7 +442,7 @@ int CSWCMessage::SendPlayerToServerInput_UseObject(unsigned long oidObject)
     }
     return SendPlayerToServerMessage(6, 11, pBuffer, nSize);
 }
-
+// Dead code: not in the PC executable
 int CSWCMessage::SendPlayerToServerParty_Action(unsigned long oidTarget,
                                                 int nAction)
 {
@@ -1068,10 +1075,10 @@ char* dm_gettime(char* szArgs)
     if (g_pAppManager->m_pClientExoApp->GetModule() != NULL)
     {
         unsigned char nMinutesPerHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeOfDayHour;
-        int nYear = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeA4;
-        int nMonth = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeA8;
-        int nDay = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeAC;
-        int nHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeB0;
+        int nYear = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeYear;
+        int nMonth = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeMonth;
+        int nDay = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeDay;
+        int nHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeHour;
         unsigned char nState = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeOfDayState;
 
         sprintf(szLine, "MinutesPerHour: %i", nMinutesPerHour);

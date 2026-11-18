@@ -152,6 +152,7 @@ public:
     void OnSwitchLeft(CSWGuiControl*);
     CSWSItem* CopyItem(unsigned long);
     int ItemExists(unsigned long);
+    int MapGlobalSlotToGuiSlot(int nSlot);
 
     int GetSlotItemIdIndex(int nSlot);
     void SetCharacter(CSWCCreature*);
@@ -162,6 +163,7 @@ public:
     virtual void OnPanelRemoved();
     void OnSelectSlot(CSWGuiControl*);
     void OnOKPressed(CSWGuiControl*);
+    void SetActiveSlot(int nSlot);
     CSWGuiInGameItemEntry* AddItemEntryToList(int);
     void OnEnterSlot(CSWGuiControl*);
 

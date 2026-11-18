@@ -8,12 +8,17 @@
 #include "clientexoapp.h"
 #include "swsareamap.h"
 #include "nwseffectlist.h"
+#include "exoinput.h"
+#include "exoresman.h"
+#include "resgff.h"
+#include "twodimarray.h"
+#include "pathfindinfo.h"
+#include "nwseffect.h"
+#include "factionmanager.h"
+#include "nwerffile.h"
 
 template CExoLinkedList<unsigned long>::CExoLinkedList();
 #include "nwsscriptevent.h"
-#include "swmain.h"
-#include "exoinput.h"
-#include "exoinput.h"
 #include "nwmessage.h"
 #include "nwsarea.h"
 #include "nwsitem.h"
@@ -21,10 +26,8 @@ template CExoLinkedList<unsigned long>::CExoLinkedList();
 #include "nwsobject.h"
 #include "nwsplayer.h"
 #include "appmanager.h"
-#include "exoresman.h"
 #include "serverinfo.h"
 #include "nwreentrantserver.h"
-#include "resgff.h"
 #include "serverexoappinternal.h"
 #ifdef _XBOX
 #include "LaunchData.h"
@@ -85,7 +88,6 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 
 #include "nwrules.h"
 #include "nwscript.h"
-#include "twodimarray.h"
 #include "clientoptions.h"
 #include "swparty.h"
 #include "nwccreature.h"
@@ -95,8 +97,6 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 #include "nwsplaceable.h"
 #include "nwstrigger.h"
 #include "nwscreaturestats.h"
-#include "appmanager.h"
-#include "pathfindinfo.h"
 #include "nwswaypoint.h"
 #include "guiingame.h"
 #include "nwcmodule.h"
@@ -104,19 +104,15 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 #include "swbehaviorcamera.h"
 #include "swgui.h"
 #include "nwcarea.h"
-#include "nwseffect.h"
 #include "serveraimaster.h"
-#include "factionmanager.h"
 #include "nwvmachinecommands.h"
 #include "exotlktable.h"
 #include "twodimarrays.h"
 #include "clientexoappinternal.h"
-#include "nwerffile.h"
-#include "nwerffile.h"
 
-static inline void ServerExoAppInternalTrace2();
+#define SERVEREXOAPPINTERNAL_DEBUG 0
+
 static inline void ServerExoAppTrace(CServerExoApp*);
-#define SERVEREXOAPPINTERNAL_HOOK() ServerExoAppInternalTrace2()
 
 inline void ServerExoAppInternalReserve(CExoArrayList<unsigned long>* pIds, int nSize, CExoString* pStrings,
     CExoLinkedList<CSWSClient>* pClients, CExoLinkedList<unsigned long>* pExclusions)
@@ -396,7 +392,7 @@ int CServerExoAppInternal::StorePlayerCharacters()
     m_partyTable.UpdateInventory(1);
     return nStored > 0;
 }
-
+// Dead code: not in the PC executable
 int CServerExoAppInternal::ValidateCreateServerCharacter(CSWSPlayer* pPlayer, void* pData,
                                                           unsigned long nSize)
 {
@@ -567,8 +563,8 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004B3110  Xbox 0x00216
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
     CExoString sDirectory;
     CExoString sSaveFile;
-    sDirectory = pStats->m_sUnknown24;
-    sSaveFile = pStats->m_sUnknown32;
+    sDirectory = pStats->m_sName;
+    sSaveFile = pStats->m_sSourcePath;
 
     g_pAppManager->GetServerExoApp()->GetSWSMessage()
         ->SendServerToPlayerModule_SaveGameStatus(CSWSMessage::SAVEGAME_STATUS_STARTED);
@@ -822,44 +818,44 @@ void CServerExoAppInternal::MovePlayerToArea(void* pData)
         m_bLoadFromSaveGame = 0;
     }
 }
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnCDChange()
 {
 }
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnExit()
 {
 }
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnGainFocus()
 {
 }
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnLostFocus()
 {
 }
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::OnVideoChange()
 {
 }
 // PC 0x004B3EC0  Xbox 0x00218480
 void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
-    CSWSPlayer* pPlayer, int bFlag, unsigned __int64 nTime)
+    CSWSPlayer* pPlayer, int bForce, unsigned __int64 nTime)
 {
     unsigned __int64 nUpdateTime = nTime;
     CSWSCreature* pCreature;
-    if (bFlag == 1 && nTime == 0)
+    if (bForce == 1 && nTime == 0)
     {
         nUpdateTime = GetHighResolutionTimer();
     }
 
     if (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_COMPLETE ||
         (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_PENDING &&
-         pPlayer->m_n7C == 1 && pPlayer->GetGameObject() != NULL &&
+         pPlayer->m_bModuleLoaded == 1 && pPlayer->GetGameObject() != NULL &&
          (pCreature = pPlayer->GetGameObject()->AsSWSCreature()) != NULL &&
          pCreature->m_oidDisappearTarget != OBJECT_INVALID))
     {
-        if (bFlag == 1 || nTime - *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime >=
+        if (bForce == 1 || nTime - *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime >=
                           CSWSPlayer::GAME_OBJECT_UPDATE_INTERVAL)
         {
             m_pSWSMessage->SendServerToPlayerGameObjUpdate(pPlayer);
@@ -896,7 +892,10 @@ int CServerExoAppInternal::ContinueMessageProcessing()
 // PC 0x004B69C0  Xbox 0x0021CC90
 void CServerExoAppInternal::Shutdown(int bExit, int bSave)
 {
-    SERVEREXOAPPINTERNAL_HOOK();
+    if (SERVEREXOAPPINTERNAL_DEBUG)
+    {
+        EXOLOG("CServerExoAppInternal::Shutdown() player language %d\n", GetPlayerLanguage(0));
+    }
     int nPVP = m_pServerInfo->m_nPVP;
     m_lstPendingPlayers.SetSize(0);
     CExoLinkedListNode* pPosition = m_pPlayerList->GetHeadPos();
@@ -1655,7 +1654,7 @@ CServerExoAppInternal::CServerExoAppInternal()
     m_sSaveGameName = "";
 #endif
 }
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::SendStartStallEvent(unsigned long nEvent)
 {
     CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
@@ -1700,9 +1699,9 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004B58A0  Xbox
     g_pAppManager->m_pReentrantServerStats->StartStallEvent(
         CSWReentrantServerStats::OPERATION_SAVE_GAME);
     CSWReentrantServerStats* pDirectoryStats = g_pAppManager->m_pReentrantServerStats;
-    pDirectoryStats->m_sUnknown24 = sDirectory;
+    pDirectoryStats->m_sName = sDirectory;
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-    pStats->m_sUnknown32 = sSaveFile;
+    pStats->m_sSourcePath = sSaveFile;
     CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
     pCompletedStats->m_nProgress = 0;
     CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
@@ -1895,6 +1894,10 @@ inline void CServerExoAppInternal::SetEstimatedSaveSize(
     }
 #endif
 }
+// Dead code: not in the PC executable
+void CServerExoAppInternal::UpdateWindowTitle()
+{
+}
 
 inline void CServerExoAppInternal::SendExitingStartNewModuleMessage(
     int bSuccess)
@@ -1954,7 +1957,10 @@ void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
                                                    const Vector& vFrom,
                                                    const Vector& vTo)
 {
-    SERVEREXOAPPINTERNAL_HOOK();
+    if (SERVEREXOAPPINTERNAL_DEBUG)
+    {
+        EXOLOG("CServerExoAppInternal::UpdateSubareasOnMoveTo() is on exclusion list %d\n", IsOnExclusionList(0));
+    }
     unsigned long oidNormalized;
     CGameObject* pObject;
     CSWSCreature* pCreature;
@@ -1990,7 +1996,10 @@ void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
 // PC 0x004B6DA0  Xbox 0x0021D2A0
 void CServerExoAppInternal::TempDeathUpdate()
 {
-    SERVEREXOAPPINTERNAL_HOOK();
+    if (SERVEREXOAPPINTERNAL_DEBUG)
+    {
+        EXOLOG("CServerExoAppInternal::TempDeathUpdate() is on exclusion list %d\n", IsOnExclusionList(0));
+    }
     if (g_pAppManager->GetClientExoApp()->GetGameOver() ||
         g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
     {
@@ -2091,7 +2100,7 @@ void CServerExoAppInternal::TempDeathUpdate()
                     pEffect->m_nSubType = CGameEffect::DURATION_TYPE_INSTANTANEOUS |
                         (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
                     pMember->ApplyEffect(pEffect, 0, 0);
-                    pMember->m_nF0 = 1;
+                    pMember->m_bRaiseable = 1;
                 }
                 if (g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bSoloMode == 0)
                 {
@@ -2324,7 +2333,7 @@ int CServerExoAppInternal::UnloadModule()
             }
             pPlayer->ClearPlayerOnDestroyGame();
             pPlayer->m_nAreaLoadState = 0;
-            pPlayer->m_n7C = 0;
+            pPlayer->m_bModuleLoaded = 0;
             pPlayer->m_oidLastControlledObject = OBJECT_INVALID;
             m_pSWSMessage->SendServerToPlayerGameObjUpdate_ObjControl(
                 pPlayer->GetPlayerId(), OBJECT_INVALID);
@@ -2443,7 +2452,7 @@ void CServerExoAppInternal::StartServices(int nServices)
     m_bAutoSaveTimerExpired = 0;
 }
 // PC 0x004B6950  Xbox 0x0021CC20
-void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
+void CServerExoAppInternal::UpdateClientGameObjects(int bForce)
 {
     unsigned __int64 nTime;
     CExoLinkedListNode* pNode;
@@ -2454,7 +2463,7 @@ void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
     while (pNode != NULL)
     {
         pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-        UpdateClientGameObjectsForPlayer(pPlayer, bFlag, nTime);
+        UpdateClientGameObjectsForPlayer(pPlayer, bForce, nTime);
         m_pPlayerList->GetNext(pNode);
     }
 }
@@ -2499,12 +2508,29 @@ CSWSCreature* CServerExoAppInternal::GetCreatureByGameObjectID(
     }
     return NULL;
 }
+// Dead code: not in the PC executable
+CSWSModule* CServerExoAppInternal::GetModuleByGameObjectID(unsigned long oidObject)
+{
+    CGameObject* pObject = NULL;
+
+    if (m_pObjectArray->GetGameObject(oidObject, &pObject) ==
+            CGameObjectArray::SUCCESS &&
+        pObject != NULL &&
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_MODULE)
+    {
+        return pObject->AsSWSModule();
+    }
+    return NULL;
+}
 // PC 0x004B7470  Xbox 0x0021D960
 int CServerExoAppInternal::LoadCharacterStart(
     unsigned char nType, CSWSPlayer* pPlayer, CResRef cResRef,
     void* pData, unsigned long nSize)
 {
-    SERVEREXOAPPINTERNAL_HOOK();
+    if (SERVEREXOAPPINTERNAL_DEBUG)
+    {
+        EXOLOG("CServerExoAppInternal::LoadCharacterStart() is on exclusion list %d\n", IsOnExclusionList(0));
+    }
     CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
     CExoString sPlayerName;
     CExoArrayList<CExoString> lstDirectories;
@@ -2808,6 +2834,25 @@ void CServerExoAppInternal::StopServices()
         m_pFactionManager = NULL;
     }
 }
+// Dead code: not in the PC executable
+void CServerExoAppInternal::MarkUpdateClientsForObject(unsigned long oidObject)
+{
+    unsigned __int64 nTime;
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+
+    nTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        if (pPlayer->GetLastUpdateObject(oidObject) != NULL)
+        {
+            UpdateClientGameObjectsForPlayer(pPlayer, 1, nTime);
+        }
+        m_pPlayerList->GetNext(pNode);
+    }
+}
 // PC 0x004B8020  Xbox 0x0021E510
 void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseType)
 {
@@ -3049,11 +3094,11 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
         }
 
         CSWReentrantServerStats* pModuleNameStats = g_pAppManager->m_pReentrantServerStats;
-        pModuleNameStats->m_sUnknown24 = sModuleName;
+        pModuleNameStats->m_sName = sModuleName;
         CSWReentrantServerStats* pSourceStats = g_pAppManager->m_pReentrantServerStats;
-        pSourceStats->m_sUnknown32 = sSourcePath;
+        pSourceStats->m_sSourcePath = sSourcePath;
         CSWReentrantServerStats* pDestinationStats = g_pAppManager->m_pReentrantServerStats;
-        pDestinationStats->m_sUnknown40 = sDestinationPath;
+        pDestinationStats->m_sDestinationPath = sDestinationPath;
         CSWReentrantServerStats* pTypeStats = g_pAppManager->m_pReentrantServerStats;
         pTypeStats->m_nResourceType = nModuleType;
         if (nModuleType == RESTYPE_SAV || nModuleType == RESTYPE_RSV)
@@ -3073,7 +3118,7 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
         CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
         pProgressStats->m_nProgressTotal = 0;
         CSWReentrantServerStats* pFinalNameStats = g_pAppManager->m_pReentrantServerStats;
-        pFinalNameStats->m_sUnknown24 = sModuleName;
+        pFinalNameStats->m_sName = sModuleName;
     }
     return 1;
 
@@ -3081,12 +3126,12 @@ LoadModuleFailed:
     return 0;
 }
 // PC 0x004BA5B0  Xbox 0x0021FD90
-void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
+void CServerExoAppInternal::DealWithLoadGameError(unsigned long nLoadErr)
 {
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
 
     UnloadModule();
-    pStats->m_nUnknown56 = nValue;
+    pStats->m_nError = nLoadErr;
     pStats->m_bOperationEndPending = 1;
     if (g_nClientServerMode == 2)
     {
@@ -3097,7 +3142,7 @@ void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
     m_nServerMode = 0;
     m_bLoadingModule = 0;
     g_pAppManager->m_pServerExoApp->GetSWSMessage()
-        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, nValue);
+        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, nLoadErr);
 }
 // PC 0x004BA610  Xbox 0x0021FDF0
 void CServerExoAppInternal::TogglePauseState(unsigned char nPauseType)
@@ -3180,7 +3225,7 @@ int CServerExoAppInternal::LoadGame(unsigned long nSlot,
     CExoString sDirectory;
     CExoString sGameName;
 
-    CExoString sUnused1;
+    CExoString sSaveModulePath;
     CExoString sUnused2;
 
 #ifdef _XBOX
@@ -3221,7 +3266,7 @@ int CServerExoAppInternal::LoadGame(unsigned long nSlot,
 
     return LoadModule(sModule, pPlayer);
 }
-
+// Dead code: not in the PC executable
 int CServerExoAppInternal::SendEnteringStartNewModuleMessage()
 {
     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerModule_StartStartNewModule();
@@ -3595,21 +3640,21 @@ int CServerExoAppInternal::MainLoop()
         m_pNetLayer->ProcessReceivedFrames(0);
         m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_SERVER);
         CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-        if (pStats->m_nUnknown56 == 0)
+        if (pStats->m_nError == 0)
         {
             if (pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_MODULE ||
                 pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME)
             {
-                CExoString sModule(pStats->m_sUnknown24);
+                CExoString sModule(pStats->m_sName);
                 CSWSModule* pModule = GetModule();
                 int bLoadingSaveGame = 0;
                 if (g_pAppManager->GetClientExoApp()->GetLoadingSaveGame() == 1)
                     bLoadingSaveGame = 1;
                 if (pStats->m_nProgressTotal == 0)
                 {
-                    CExoString sModuleName(pStats->m_sUnknown24);
-                    CExoString sSource(pStats->m_sUnknown32);
-                    CExoString sDestination(pStats->m_sUnknown40);
+                    CExoString sModuleName(pStats->m_sName);
+                    CExoString sSource(pStats->m_sSourcePath);
+                    CExoString sDestination(pStats->m_sDestinationPath);
                     unsigned long nType = pStats->m_nResourceType;
                     if (!CopyModuleToCurrentGame(sSource, sDestination, nType))
                         DealWithLoadGameError(LOAD_GAME_ERROR_COPY_MODULE);
@@ -3886,11 +3931,11 @@ void CServerExoAppInternal::GetServerInfoFromIniFile()
     bFound = cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", sSection, "Game Type");
     if (bFound == 1)
     {
-        m_pServerInfo->m_nXboxUnmapped114 = sValue.AsINT();
+        m_pServerInfo->m_nGameType = sValue.AsINT();
     }
     else
     {
-        sEntry.Format("%d", m_pServerInfo->m_nXboxUnmapped114);
+        sEntry.Format("%d", m_pServerInfo->m_nGameType);
         cIni.WriteIniEntry(sEntry, "d:\\swplayer.ini", sSection, "Game Type");
     }
 
@@ -3923,15 +3968,15 @@ void CServerExoAppInternal::GetServerInfoFromIniFile()
     m_nAutoSaveElapsedTime = 0;
     m_pServerInfo->m_nPVP = 1;
 
-    m_pServerInfo->m_nXboxUnmapped0D4 = 1;
+    m_pServerInfo->m_bEnforceLegalCharacters = 1;
     bFound = cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Single Player Enforce Legal Characters");
     if (bFound)
     {
-        m_pServerInfo->m_nXboxUnmapped0D4 = sValue.AsINT();
+        m_pServerInfo->m_bEnforceLegalCharacters = sValue.AsINT();
     }
     else
     {
-        sEntry.Format("%d", m_pServerInfo->m_nXboxUnmapped0D4);
+        sEntry.Format("%d", m_pServerInfo->m_bEnforceLegalCharacters);
         cIni.WriteIniEntry(sEntry, "d:\\swplayer.ini", "Game Options", "Single Player Enforce Legal Characters");
     }
     m_pServerInfo->m_bItemLevelRestrictions = 1;
@@ -4040,6 +4085,27 @@ int CServerExoAppInternal::GetDifficultyOption(int nOption)
     int nDifficulty = m_pServerInfo->m_nDifficultyLevel;
 
     return g_pRules->GetDifficultyOption(nOption, nDifficulty);
+}
+// Dead code: not in the PC executable
+int CServerExoAppInternal::UpdateLogHeartbeatTimer(unsigned __int64 nTime)
+{
+    if (m_nLastMainLoopTime == 0)
+    {
+        m_nLastMainLoopTime = nTime;
+        m_nMainLoopTimeBudget = 10000000;
+        return 0;
+    }
+
+    if (nTime - m_nLastMainLoopTime >= m_nMainLoopTimeBudget)
+    {
+        m_nMainLoopTimeBudget = 10000000;
+        m_nLastMainLoopTime = nTime;
+        return 1;
+    }
+
+    m_nMainLoopTimeBudget = m_nLastMainLoopTime + m_nMainLoopTimeBudget - nTime;
+    m_nLastMainLoopTime = nTime;
+    return 0;
 }
 // PC 0x004B1E10  Xbox 0x002159F0
 int CServerExoAppInternal::UpdateMainLoopTimeBudget(unsigned __int64 nTime)
@@ -4419,16 +4485,47 @@ int CServerExoAppInternal::GetModuleLanguage()
 {
     return 0;
 }
+// Dead code: not in the PC executable
+int CServerExoAppInternal::AddPendingAuthorization(unsigned long nPlayerId)
+{
+    unsigned long nIndex;
+
+    for (nIndex = 0; nIndex < 16; nIndex++)
+    {
+        if (m_pServerOptions[nIndex] == CNetLayer::PLAYERID_INVALIDID)
+        {
+            m_pServerOptions[nIndex] = nPlayerId;
+            return 1;
+        }
+    }
+    return 0;
+}
+// Dead code: not in the PC executable
+int CServerExoAppInternal::RemovePendingAuthorization(unsigned long nPlayerId)
+{
+    unsigned long nIndex;
+
+    for (nIndex = 0; nIndex < 16; nIndex++)
+    {
+        if (m_pServerOptions[nIndex] == nPlayerId)
+        {
+            m_pServerOptions[nIndex] = CNetLayer::PLAYERID_INVALIDID;
+            return 1;
+        }
+    }
+    return 0;
+}
 // PC 0x004015A0
 void CServerExoAppInternal::Uninitialize()
 {
 }
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::InitializeNetLayer()
 {
     m_pNetLayer->Initialize(g_pAppManager->GetServerExoApp());
 }
 #ifndef _XBOX
+// Dead code: not in the PC executable
 // Xbox 0x0021CF90
 int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
                                              int bTempWayPoints)
@@ -4464,7 +4561,7 @@ int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
     }
     else
     {
-        nCount = pPathfind->m_nField_94;
+        nCount = pPathfind->m_nWayPointTempCount;
         pfPoints = pPathfind->m_pWayPointsTemp;
     }
     if (nCount == 0 || pfPoints == NULL)
@@ -4491,7 +4588,7 @@ int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
     pArea->m_pPathfindInformation = pPathfind;
     return bValid;
 }
-
+// Dead code: not in the PC executable
 int CServerExoAppInternal::DebugValidatePath_Point(CSWSArea* pArea,
                                                    const Vector& vPoint)
 {
@@ -4499,7 +4596,7 @@ int CServerExoAppInternal::DebugValidatePath_Point(CSWSArea* pArea,
     int bWalkable = pArea->PositionWalkable(vPoint) != 0;
     return bInRoom & bWalkable;
 }
-
+// Dead code: not in the PC executable
 int CServerExoAppInternal::DebugValidatePath_Segment(
     CSWSArea* pArea, CPathfindInformation* pPathfind, const Vector& vStart,
     const Vector& vEnd)
@@ -4545,7 +4642,7 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
     return bValid;
 }
 #endif
-
+// Dead code: not in the PC executable
 void CServerExoAppInternal::RunDeathSequence()
 {
     g_pAppManager->GetClientExoApp()->RunDeathSequence();
@@ -4569,11 +4666,6 @@ static inline CSWReentrantServerStats* GetReentrantServerStats()
 static inline unsigned __int64 GetHighResolutionTimer()
 {
     return g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-}
-
-static inline void ServerExoAppInternalTrace2()
-{
-    ServerExoAppTrace();
 }
 
 static inline void ServerExoAppTrace(CServerExoApp*)
@@ -4933,8 +5025,8 @@ void CServerExoAppInternal::StallEventSaveGame()
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
     CExoString sDirectory;
     CExoString sSaveFile;
-    sDirectory = pStats->m_sUnknown24;
-    sSaveFile = pStats->m_sUnknown32;
+    sDirectory = pStats->m_sName;
+    sSaveFile = pStats->m_sSourcePath;
     sSaveDirectory = sDirectory + "\\";
 
     g_pAppManager->GetServerExoApp()->GetSWSMessage()
@@ -5128,9 +5220,9 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot,
     g_pAppManager->m_pReentrantServerStats->StartStallEvent(
         CSWReentrantServerStats::OPERATION_SAVE_GAME);
     CSWReentrantServerStats* pDirectoryStats = g_pAppManager->m_pReentrantServerStats;
-    pDirectoryStats->m_sUnknown24 = sDirectory;
+    pDirectoryStats->m_sName = sDirectory;
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-    pStats->m_sUnknown32 = sSaveFile;
+    pStats->m_sSourcePath = sSaveFile;
     CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
     pCompletedStats->m_nProgress = 0;
     CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
@@ -5182,7 +5274,7 @@ int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess
     }
     if (bSuccess != 0 && pPlayer->m_nModulePlayerIndex != -1)
     {
-        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_nXboxUnmapped0D0 == 1 &&
+        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_bOnePartyOnly == 1 &&
             pPlayer->GetGameObject() != NULL)
         {
             CSWSCreature* pOldCreature = pPlayer->GetGameObject()->AsSWSCreature();
@@ -5408,7 +5500,7 @@ int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
         float* pfPoints;
         if (bTempWayPoints != 0)
         {
-            nCount = pPathfind->m_nField_94;
+            nCount = pPathfind->m_nWayPointTempCount;
             pfPoints = pPathfind->m_pWayPointsTemp;
         }
         else
@@ -5501,3 +5593,74 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
     return bValid;
 }
 #endif
+// Dead code: not in the PC executable
+void CServerExoAppInternal::UpdateClientsForObject(unsigned long oidObject)
+{
+    unsigned __int64 nTime;
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+
+    nTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        if (pPlayer->GetLastUpdateObject(oidObject) != NULL)
+        {
+            m_pSWSMessage->SendServerToPlayerGameObjUpdate(pPlayer, oidObject);
+        }
+        m_pPlayerList->GetNext(pNode);
+    }
+}
+// Dead code: not in the PC executable
+int CServerExoAppInternal::StartShutdownTimer(unsigned __int64 nTime,
+                                               unsigned __int64 nDelay)
+{
+    m_nShutdownStartTime = nTime;
+    m_nShutdownTimeout = nDelay;
+    return 0;
+}
+// Dead code: not in the PC executable
+int CServerExoAppInternal::IsOnExclusionList(unsigned long oidObject)
+{
+    CExoLinkedListNode* pNode;
+
+    if (GetActivePauseState() == PAUSE_STATE_PAUSED)
+    {
+        pNode = m_pPauseExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pPauseExclusionList->GetAtPos(pNode) == oidObject)
+            {
+                return 1;
+            }
+            m_pPauseExclusionList->GetNext(pNode);
+        }
+        return 0;
+    }
+    else if (GetActivePauseState() == PAUSE_STATE_COMBAT)
+    {
+        pNode = m_pTimestopExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pTimestopExclusionList->GetAtPos(pNode) == oidObject)
+            {
+                return 1;
+            }
+            m_pTimestopExclusionList->GetNext(pNode);
+        }
+        return 0;
+    }
+    return 1;
+}
+// Dead code: not in the PC executable
+unsigned long CServerExoAppInternal::GetPlayerIDByGameObjectID(unsigned long oidObject)
+{
+    CSWSPlayer* pPlayer = GetClientObjectByObjectId(oidObject);
+
+    if (pPlayer == NULL)
+    {
+        return CNetLayer::PLAYERID_INVALIDID;
+    }
+    return pPlayer->m_nPlayerId;
+}

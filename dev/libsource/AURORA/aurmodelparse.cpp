@@ -5,24 +5,27 @@
 #include "aurlightmanager.h"
 #include "aurconsole.h"
 #include "aurmodel.h"
+#include "aurparse.h"
 
-static inline void AurModelParseTrace3();
-static inline void AurModelParseTrace2();
-static inline void AurModelParseTrace1();
-#define AURMODELPARSE_TRACE() AurModelParseTrace3()
+#define AURMODELPARSE_DEBUG 0
+
+static inline void TraceInsertModel();
+static inline void TraceModelList();
+static inline void TraceModelParse();
+#define AURMODELPARSE_TRACE() TraceInsertModel()
 
 MdlNode* ParseNode(char* sField, MaxTree* pTree);
 char* AurResGetNextLine();
 void* AurResGetData(int nBytes);
 Model* currentmodel;
 char* skipspace(char* sText);
-char* firstword(char* sLine);
-int Parse(char* sText, Vector& vVector);
-void Parse(char* sText, char* sValue);
-int Parse(char* sText, float& fValue);
+char* firstword(char* sMessage);
+int Parse(char* sText, Vector& vValue);
+void Parse(char* sValue, char* sDest);
+int Parse(char* sValue, float& fValue);
 int Parse(char* sText, int& nValue);
 void Parse(char* sText, short& nValue);
-int Parse(char* sText, bool& bValue);
+int Parse(char* sValue, bool& bValue);
 int Parse(char* sText, MaxFace_PostProcess& face);
 int Parse(char* sText, SkinVertexWeight& weight);
 int Parse(char* sText, unsigned int* pValues);
@@ -42,7 +45,6 @@ inline void Parse(char* sText, unsigned int& nValue)  // Xbox 0x002C0620
 void Parse(char* sText, Quaternion& qOrientation);
 template <class T> void Parse(char* sText, AurKey<T>& key);
 template <class T> void Parse(char* sText, List<T>& lstValues);
-#include "aurparse.h"
 
 Model* BinarySearchModel(char* sName, int nFirst, int nLast);
 void BinaryInsertModel(Model* pModel, int nFirst, int nLast);
@@ -142,7 +144,7 @@ void Parse(char* sText, char* sValue)
 {
     if (sscanf(sText, "%s", sValue) == 0)
     {
-        strcpy(sValue, (char*)0);
+        strcpy(sValue, NULL);
     }
 }
 // PC 0x004635C0  Xbox 0x002C0590
@@ -260,6 +262,7 @@ int Parse(char* sText, SkinVertexWeight& weight)
     weight.m_nWeights = nWeights;
     return nWeights;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002C12A0
 void classification(char* sType)
 {
@@ -329,6 +332,7 @@ void classification(char* sType)
     }
 #endif
 }
+// Dead code: not in the PC executable
 // Xbox 0x002C0920
 const char* setanimationscale(char* sCommand)
 {
@@ -2224,11 +2228,11 @@ void MdlNodeAnimMesh::InternalParseField(char* sField)
         }
         if (stricmp("animverts", firstword(sField)) == 0)
         {
-            Parse<Vector>(sField + 9, m_lAnimationVectors1);
+            Parse<Vector>(sField + 9, m_lAnimVerts);
         }
         if (stricmp("animtverts", firstword(sField)) == 0)
         {
-            Parse<Vector>(sField + 10, m_lAnimationVectors2);
+            Parse<Vector>(sField + 10, m_lAnimTVerts);
         }
     }
 
@@ -2334,17 +2338,17 @@ void BinaryInsertModel(Model* pModel, int nFirst, int nLast)
     return Models.Insert(pModel, nFirst);
 }
 
-static inline void AurModelParseTrace3()
+static inline void TraceInsertModel()
 {
-    AurModelParseTrace2();
+    TraceModelList();
 }
 
-static inline void AurModelParseTrace2()
+static inline void TraceModelList()
 {
-    AurModelParseTrace1();
+    TraceModelParse();
 }
 
-static inline void AurModelParseTrace1()
+static inline void TraceModelParse()
 {
 }
 
@@ -2358,7 +2362,10 @@ template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nInd
     for (; nLast > nIndex; nLast--)
         m_pList[nLast] = m_pList[nLast - 1];
     m_pList[nIndex] = item;
-    AurModelParseTrace3();
+    if (AURMODELPARSE_DEBUG)
+    {
+        AurPrintf("Parse() find mdl node %p\n", FindMdlNode(NULL, NULL));
+    }
 }
 #endif
 

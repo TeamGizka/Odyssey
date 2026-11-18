@@ -19,7 +19,7 @@ public:
     CExoInputEventDesc()
     {
         m_nValue = 0;
-        m_nUnknown8 = 0;
+        m_nInputClassCount = 0;
         m_nCoolDown = 0;
     }
 
@@ -30,7 +30,7 @@ public:
         m_nType = desc.m_nType;
         m_nClass = desc.m_nClass;
         m_nControl = desc.m_nControl;
-        m_nUnknown8 = desc.m_nUnknown8;
+        m_nInputClassCount = desc.m_nInputClassCount;
         m_nCoolDown = desc.m_nCoolDown;
     }
     // PC 0x0063E7F0
@@ -45,7 +45,7 @@ public:
     }
 
     int m_nValue;
-    int m_nUnknown8;
+    int m_nInputClassCount;
     unsigned long m_nCoolDown;
     unsigned long m_nEvent;
     int m_nType;
@@ -151,28 +151,28 @@ public:
     CExoString GetDisplayCharacterForKey(int nKey);
 #endif
 
-    int CreateNewEvent(unsigned long nArg1, int nArg2, int nArg3,
-                       unsigned long nArg4, unsigned long nArg5);
+    int CreateNewEvent(unsigned long nEvent, int nType, int nClass,
+                       unsigned long nControl, unsigned long nControl2);
     int AddEvent(unsigned long nEvent, unsigned long nInputClass);
-    int ScaleEvent(unsigned long nArg1, float fArg2, float fArg3);
-    int SetEventRepeatable(unsigned long nArg1, unsigned long nArg2,
-                           unsigned long nArg3);
-    void ClearEventRepeat(unsigned long nArg1);
-    void CoolDownEvent(unsigned long nArg1, unsigned long nArg2);
+    int ScaleEvent(unsigned long nEvent, float fScale, float fExponent);
+    int SetEventRepeatable(unsigned long nEvent, unsigned long nDelay,
+                           unsigned long nRate);
+    void ClearEventRepeat(unsigned long nEvent);
+    void CoolDownEvent(unsigned long nEvent, unsigned long nCoolDown);
     void KeyboardModeOn();
     void KeyboardModeOff();
 #ifndef _XBOX
-    int BufferEvent(void* pArg1);
-    int SetMouseMode(unsigned char cArg1);
-    void RefreshMouseCursor(int nArg1);
-    int SetMouseCursor(int nArg1, int nArg2, int nArg3);
+    int BufferEvent(void* pEvent);
+    int SetMouseMode(unsigned char nMode);
+    void RefreshMouseCursor(int bMouseDown);
+    int SetMouseCursor(int nCursor, int bCentered, int bMouseDown);
     void HideMouse();
     void ShowMouse();
 #endif
     void ClearAllInputEventDescriptions();
 #ifndef _XBOX
-    void GetMouseDelta(float* fArg1, float* fArg2);
-    void UpdateMouseDelta(float fArg1);
+    void GetMouseDelta(float* pfX, float* pfY);
+    void UpdateMouseDelta(float fElapsed);
     int IsModalKeyDown_Shift();
     int IsModalKeyDown_Ctrl();
     int IsModalKeyDown_Alt();
@@ -187,7 +187,7 @@ public:
     int GetCheatCombo(unsigned char nCombo);
     int GetDebugOption();
 #endif
-    int SetRumble(int nArg1, float fArg2, float fArg3, unsigned long nArg4);
+    int SetRumble(int nJoystick, float fLeft, float fRight, unsigned long nDuration);
     int GetMainDeviceLost();
     void PauseRumble();
     void UnpauseRumble();
@@ -214,7 +214,7 @@ public:
     int m_bActive;
     int m_nDevices;
     CExoCriticalSection m_csInput;
-    int m_nUnknown160;
+    int m_nCheatCombos;
 #ifdef _XBOX
     unsigned long m_aControlMap[109];
 #else
@@ -224,12 +224,12 @@ public:
     int m_nMouseX;
     int m_nMouseY;
     int m_bMouseWarped;
-    int m_nUnknown388;
-    int m_nUnknown38C;
-    int m_nUnknown390;
-    int m_nUnknown394;
+    int m_nMouseMinX;
+    int m_nMouseMinY;
+    int m_nMouseMaxX;
+    int m_nMouseMaxY;
     int m_nCursor;
-    int m_nUnknown39C;
+    int m_bCursorCentered;
     float m_fMouseDeltaX;
     float m_fMouseDeltaY;
     int m_bCaptureKeyboardKeys;

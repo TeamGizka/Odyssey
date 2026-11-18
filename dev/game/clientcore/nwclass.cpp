@@ -510,6 +510,13 @@ int CSWClass::IsSkillUseable(unsigned short nSkill)
     }
     return 0;
 }
+// Dead code: not in the PC executable
+CExoString CSWClass::GetDescriptionText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nDescriptionStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
 // PC 0x005BE0E0  Xbox 0x001031D0
 CExoString CSWClass::GetNameText()
 {
@@ -522,6 +529,13 @@ CExoString CSWClass::GetNameLowerText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameLowerStrRef, strRes, CTlkTable::GENDER_MALE);
+    return strRes.m_sString;
+}
+// Dead code: not in the PC executable
+CExoString CSWClass::GetNamePluralText()
+{
+    STR_RES strRes;
+    g_pTlkTable->Fetch(m_nNamePluralStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
 // PC 0x005BE220  Xbox 0x00103330
@@ -639,6 +653,11 @@ int CSWClass::GetRecommendedSkill(int nIndex)
 int CSWClass::IsJedi(int nClass)
 {
     return (nClass == CCLASS_JEDIGUARDIAN) || ((nClass == CCLASS_JEDICONSULAR) || (nClass == CCLASS_JEDISENTINEL));
+}
+// Dead code: not in the PC executable
+int CSWClass::IsDroid(int nRace)
+{
+    return nRace == CCLASS_COMBATDROID || nRace == CCLASS_EXPERTDROID;
 }
 // PC 0x005BE4C0  Xbox 0x001035D0
 void CSWClass::LoadSpellsTable()

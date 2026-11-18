@@ -35,19 +35,35 @@ repository and the toolchain.
 
 ```
 set VS2002_ROOT=C:\path\to\Microsoft Visual Studio .NET 2002
-cmake --preset tier-b
-cmake --build --preset tier-b
+cmake --preset tier-a
+cmake --build --preset tier-a
 ```
 
-The executable is written to `build/tier-b/release/swkotor.exe`
-(SHA-256 `0290889e0cea6ebc00021c1bdb945704fc4c45afaf7fcebabb0e82ba674437e6`).
+The executable is written to `build/<preset>/release/swkotor.exe`. The three PC presets compile the same sources
+with the same options; they differ only in how the linker lays out the functions:
 
 | Preset | |
 |---|---|
-| `tier-b` | recommended: byte-identical `swkotor.exe` (`KOTOR_KEEPER_FILL=ON`) |
-| `tier-a` | the same build without the generated filler block (`KOTOR_KEEPER_FILL=OFF`), see `cmake/keeperfill/README.md` |
-| `vc70` | the plain toolchain preset the two above inherit; default options |
+| `tier-a` | the default: byte-identical `swkotor.exe` (SHA-256 `0290889e0cea6ebc00021c1bdb945704fc4c45afaf7fcebabb0e82ba674437e6`). No order file; a generated block of unreferenced functions is compiled into `swmain` (`KOTOR_KEEPER_FILL=ON`, `cmake/keeperfill/README.md`). |
+| `tier-b` | no filler block. The linker places the functions in the order of the shipped file, listed in `cmake/order/swkotor.txt` (`/ORDER`, `KOTOR_LINK_ORDER=ON`). The file as a whole is not identical (see below). |
+| `tier-c` | the source tree alone: no order file, no filler block, the linker's default order. |
+| `vc70` | the toolchain preset the three above inherit; its default options build the same as `tier-a` |
 | `xbox` | Xbox configuration, see below |
+
+The linker folds identical functions into one copy and keeps one of them. Which copy it keeps depends on every
+function in the link, including unreferenced ones that it discards afterwards; those of the original build are not
+known. In `tier-c` some kept copies therefore sit elsewhere than in the shipped file. The `tier-a` filler block is
+never referenced and leaves no byte in the image: its only effect is that every folded group keeps the same copy
+as the original, which puts every function and every exception-handling funclet at its original address. It is not
+game code and exists only for that purpose. `tier-b` places the kept copies with the order file instead, but an order
+file can only name functions with external linkage: the static functions follow the listed ones, the import thunk of
+`DirectInput8Create` (which sits among the game functions in the shipped file) follows them too, the C runtime comes
+behind them, and the exception-handling funclets keep the layout of `tier-c`. After a change to the sources, write
+the order file again from the map of a `tier-a` build:
+
+```
+python cmake/order/order_file.py from-map build/tier-a/dev/game/swmain/swkotor.map cmake/order/swkotor.txt
+```
 
 Targets: `swmain` links `dev/game/swmain/swkotor.exe` in the build directory; `swkotor_release` (part of the default
 build) writes `release/swkotor.exe` from it, setting the link time stamp and checksum fields of the shipped file

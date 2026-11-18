@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 template List<unsigned long>::List(int);
 
@@ -19,7 +20,6 @@ template List<unsigned long>::List(int);
 
 int g_bPazaakShowNPCSideDeck = 0;
 
-#include <math.h>
 // PC 0x0067CA80  Xbox 0x00099F80
 void CSWGuiPazaakCard::Draw(float fElapsed)
 {
@@ -69,6 +69,12 @@ inline void CSWGuiWagerPopup::HandleButtonMore(CSWGuiControl* pControl)
 inline void CSWGuiWagerPopup::HandleButtonWager(CSWGuiControl* pControl)
 {
     HandleInputEvent(45, 1);
+}
+// Dead code: not in the PC executable
+inline void CSWGuiActivatedButton::ActivateLabel(const Vector& vColor)
+{
+    m_fFlashTimer = 0.8f;
+    m_vFlashColor = vColor;
 }
 // PC 0x0067CB70  Xbox 0x0009A080
 void CSWGuiActivatedButton::Draw(float fElapsed)
@@ -409,6 +415,15 @@ void CSWGuiTutorial::PlaceAbove(CSWGuiControl* pControl)
     cExtent.m_nTop = nTop - cExtent.m_nHeight;
     SetExtent(cExtent);
 }
+// Dead code: not in the PC executable
+unsigned long CSWGuiTutorial::GetHelpText()
+{
+    if (m_nHelpIndex < m_lHelp.m_nCount)
+    {
+        return m_lHelp[m_nHelpIndex];
+    }
+    return 0;
+}
 // PC 0x0067D260  Xbox 0x0009A4B0
 void CSWGuiTutorial::HandleInputEvent(int nEvent, int nState)
 {
@@ -533,9 +548,9 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
             }
             break;
         case 43:
-            if (m_bUnknown86DC0 == 0)
+            if (m_bShownFlipCardHelp == 0)
             {
-                m_bUnknown86DC0 = 1;
+                m_bShownFlipCardHelp = 1;
                 unsigned long aHelp[2];
                 aHelp[0] = 38643;
                 aHelp[1] = 38644;
@@ -884,7 +899,7 @@ void CSWGuiPazaakGame::HandleHandCardDoubleClick(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
-
+// Dead code: not in the PC executable
 CSWGuiActivatedButton::CSWGuiActivatedButton()
 {
     m_fFlashTimer = -1.0f;
@@ -969,6 +984,11 @@ void CSWGuiTutorial::ShowHelp(unsigned long nHelpStrRef,
         SetMessage(nHelpStrRef);
         m_pManager->AddPanel(this, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
+}
+// Dead code: not in the PC executable
+void CSWGuiTutorial::SetBButtonEnabled(int bEnabled)
+{
+    SetAllowCancel(bEnabled);
 }
 // PC 0x0067E0B0  Xbox 0x0009B000
 void CSWGuiTutorial::ShowMultipleHelp(const unsigned long* pStrRefs, int nCount)
@@ -1061,6 +1081,26 @@ void CSWGuiPazaakStart::HandleQuitDialog(CSWGuiControl* pControl)  // PC 0x0067D
         g_pAppManager->m_pClientExoApp->EndPazaakGame(0, 0, 0,
                                                       pPazaak->m_oidOpponent);
     }
+}
+// Dead code: not in the PC executable
+int CSWGuiPazaakStart::IsLeftSideActive()
+{
+    int nIndex = m_pActiveControl->m_nID;
+    if (nIndex >= 0 && nIndex < 18)
+    {
+        return m_pActiveControl == &m_cAvail[nIndex];
+    }
+    return 0;
+}
+// Dead code: not in the PC executable
+int CSWGuiPazaakStart::IsRightSideActive()
+{
+    int nIndex = m_pActiveControl->m_nID;
+    if (nIndex >= 0 && nIndex < 10)
+    {
+        return m_pActiveControl == &m_cChosen[nIndex];
+    }
+    return 0;
 }
 // PC 0x0067D450
 int CSWGuiPazaakStart::IsAvailCardActive()
@@ -1525,7 +1565,7 @@ void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x0067E400  Xbox 0x0009A6C0
     }
 }
 #endif
-
+// Dead code: not in the PC executable
 void CSWGuiPazaakStart::OnChosenCardEntered(CSWGuiControl* pControl)
 {
     ShowDisabledButtons();
@@ -1614,12 +1654,12 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
 #endif
     m_nState = STATE_START_GAME;
     m_fTimer = -1.0f;
-    m_bUnknown86DC0 = 0;
+    m_bShownFlipCardHelp = 0;
     m_bShownFirstCardHelp = 0;
     m_bShownOpponentTurnHelp = 0;
     m_bShownGameStartHelp = 0;
     m_bShownTwentyHelp = 0;
-    m_nUnknown86DC5 = 0;
+    m_nShownHelpFlags = 0;
 #ifndef _XBOX
     m_nPlayedCard = -1;
 #endif
@@ -2379,9 +2419,9 @@ int CSWGuiPazaakStart::ClearSideDeck()
 
 inline CSWPazaak* CSWGuiPazaakGame::GetPazaak() { return m_pPazaak; }
 
-static inline int PazaakCardsDiffer(CPazaakCard cA, CPazaakCard cB)
+static inline int PazaakCardsDiffer(CPazaakCard cShown, CPazaakCard cCard)
 {
-    return cA.m_nType != cB.m_nType || cA.m_bFlipped != cB.m_bFlipped;
+    return cShown.m_nType != cCard.m_nType || cShown.m_bFlipped != cCard.m_bFlipped;
 }
 
 #define PAZAAK_REFRESH_DISABLED 0

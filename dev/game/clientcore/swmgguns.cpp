@@ -120,7 +120,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
         sprintf(sHook, "bullethook%d", nHook);
         if (pGun->GetPartPosition(sHook, &vPosition, &qOrientation))
         {
-            CResRef resBullet = pBank->m_resBank;
+            CResRef resBullet = pBank->m_resBulletModel;
             char sModel[20];
             resBullet.CopyToString(sModel);
             Gob* pBullet = static_cast<Gob*>(NewCAurObject(sModel, "", 0, 0));
@@ -265,7 +265,7 @@ void CSWMGGunBank::Fire()
 // PC 0x006740D0  Xbox 0x0011D630
 void CSWMGGunBank::SetGunModel(const CResRef& sGun)
 {
-    m_resGun = sGun;
+    m_resGunModel = sGun;
     int nGuns = m_lstGuns.num;
     Gob* pNewGun;
     for (int i = 0; i < nGuns; i++)
@@ -287,7 +287,7 @@ void CSWMGGunBank::SetGunModel(const CResRef& sGun)
                 if (pParent != 0 && pPart != 0)
                 {
                     char sModel[20];
-                    m_resGun.CopyToString(sModel);
+                    m_resGunModel.CopyToString(sModel);
                     pNewGun =
                         static_cast<Gob*>(NewCAurObject(sModel, "", 0, 0));
                     switch (pOld->GetType())
@@ -338,12 +338,12 @@ void CSWMGGunBank::SetGunModel(const CResRef& sGun)
 // PC 0x006743B0  Xbox 0x0011D910
 CAurObject* CSWMGGunBank::AddGun(CAurObject* pObject, CAurPart* pPart)
 {
-    if (!m_resGun.IsValid() || pObject == 0 || pPart == 0)
+    if (!m_resGunModel.IsValid() || pObject == 0 || pPart == 0)
     {
         return 0;
     }
     char sModel[20];
-    m_resGun.CopyToString(sModel);
+    m_resGunModel.CopyToString(sModel);
     Gob* pGun = static_cast<Gob*>(NewCAurObject(sModel, "", 0, 0));
     if (pGun == 0)
     {
@@ -374,12 +374,12 @@ int CSWMGGunBank::ClearGuns()
 // PC 0x00674530  Xbox 0x0011DAA0
 CAurObject* CSWMGTargettingGunBank::AddGun(CAurObject* pObject, CAurPart* pPart)
 {
-    if (!m_resGun.IsValid() || pObject == 0 || pPart == 0)
+    if (!m_resGunModel.IsValid() || pObject == 0 || pPart == 0)
     {
         return 0;
     }
     char sModel[20];
-    m_resGun.CopyToString(sModel);
+    m_resGunModel.CopyToString(sModel);
     Gob* pGun = static_cast<Gob*>(NewCAurObject(sModel, "", 0, 0));
     if (pGun == 0)
     {
@@ -406,7 +406,7 @@ CAurObject* CSWMGTargettingGunBank::AddGun(CAurObject* pObject, CAurPart* pPart)
 CSWMGGunBank::CSWMGGunBank(CSWTrackFollower* pFollower, const CResRef& sBank,
                            const CResRef& sGun, const CSWMGBullet& bullet)
 {
-    m_resBank = sBank;
+    m_resBulletModel = sBank;
     SetGunModel(sGun);
     m_bullet.m_nDamage = bullet.m_nDamage;
     SetBulletSpeed(bullet.m_fSpeed);

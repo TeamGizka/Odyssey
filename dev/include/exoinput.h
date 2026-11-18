@@ -27,7 +27,7 @@ public:
 
     virtual void Configure();
     void UpdateJoysticks();
-    int SetRumble(int nArg1, float fArg2, float fArg3, unsigned long nArg4);
+    int SetRumble(int nJoystick, float fLeft, float fRight, unsigned long nDuration);
     int GetMainDeviceLost();
     void PauseRumble();
     void UnpauseRumble();
@@ -54,8 +54,8 @@ public:
     CExoArrayList<CExoInputEvent> GetEvents(int& nEvents, int nEventClass);
     void SetCaptureKeyboardKeys(int bCapture);
 
-    int CreateNewEvent(unsigned long nArg1, int nArg2, int nArg3,
-                       unsigned long nArg4, unsigned long nArg5);
+    int CreateNewEvent(unsigned long nEvent, int nType, int nClass,
+                       unsigned long nControl, unsigned long nControl2);
 
     enum EventType
     {
@@ -72,24 +72,24 @@ public:
 #endif
 
     enum { INPUT_CONTROL_INDEX_MASK = 0xFF };
-    void AddEvent(unsigned long nArg1, unsigned long nArg2);
-    int ScaleEvent(unsigned long nArg1, float fArg2, float fArg3);
-    int SetEventRepeatable(unsigned long nArg1, unsigned long nArg2,
-                           unsigned long nArg3);
-    void ClearEventRepeat(unsigned long nArg1);
-    void CoolDownEvent(unsigned long nArg1, unsigned long nArg2);
+    void AddEvent(unsigned long nEvent, unsigned long nInputClass);
+    int ScaleEvent(unsigned long nEvent, float fScale, float fExponent);
+    int SetEventRepeatable(unsigned long nEvent, unsigned long nDelay,
+                           unsigned long nRate);
+    void ClearEventRepeat(unsigned long nEvent);
+    void CoolDownEvent(unsigned long nEvent, unsigned long nCoolDown);
     int GetKeyboardMode();
     void KeyboardModeOn();
     void KeyboardModeOff();
-    void BufferEvent(void* pArg1);
-    int SetMouseMode(unsigned char cArg1);
-    void RefreshMouseCursor(int nArg1);
-    int SetMouseCursor(int nArg1, int nArg2, int nArg3);
+    void BufferEvent(void* pEvent);
+    int SetMouseMode(unsigned char nMode);
+    void RefreshMouseCursor(int bMouseDown);
+    int SetMouseCursor(int nCursor, int bCentered, int bMouseDown);
     void HideMouse();
     void ShowMouse();
     void ClearAllInputEventDescriptions();
-    void GetMouseDelta(float* fArg1, float* fArg2);
-    void UpdateMouseDelta(float fArg1);
+    void GetMouseDelta(float* pfX, float* pfY);
+    void UpdateMouseDelta(float fElapsed);
     int IsModalKeyDown_Shift();
     int IsModalKeyDown_Ctrl();
     int IsModalKeyDown_Alt();

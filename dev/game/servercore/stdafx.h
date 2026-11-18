@@ -8,7 +8,7 @@ typedef CExoArrayList<unsigned long> SCPchArrayULong;
 typedef CExoArrayList<CResRef> SCPchArrayResRef;
 typedef CExoArrayList<unsigned short> SCPchArrayUShort;
 
-inline SCPchArrayResRef* SCPchArrayResRef_Construct(int a0) { return new SCPchArrayResRef(a0); }
+inline SCPchArrayResRef* SCPchArrayResRef_Construct(int nSize) { return new SCPchArrayResRef(nSize); }
 inline void SCPchArrayULong_Destroy(SCPchArrayULong* p) { p->~SCPchArrayULong(); }
 inline void SCPchArrayULong_Index() { unsigned long & (SCPchArrayULong::*p)(int) = &SCPchArrayULong::operator[]; (void)p; }
 inline void SCPchArrayULong_Contains() { int (SCPchArrayULong::*p)(unsigned long) const = &SCPchArrayULong::Contains; (void)p; }

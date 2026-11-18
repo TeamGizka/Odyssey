@@ -69,6 +69,7 @@ public:
     void AnimationUpdate();
     void UpdateAreaTransitionDisplay();
     void HilightDoor(int bHilight);
+    unsigned char GetState();
     // PC 0x006C7D20  Xbox 0x000F4780
     CExoString GetTransitionDestination()
     {

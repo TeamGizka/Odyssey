@@ -18,6 +18,7 @@ bool g_bKeepHistory = false;
 void* (*AurGetResource)(char*, char*, int*) = 0;
 void (*AurReleaseResource)(void*, int) = 0;
 List<char*> g_listHistory;
+// Dead code: not in the PC executable
 // Xbox 0x002A0040
 funcholderbase::~funcholderbase()
 {
@@ -447,6 +448,7 @@ char* CommandCompletion(char* sLine, List<char*>& lstCompletions)
 
     return returnvalue;
 }
+// Dead code: not in the PC executable
 // Xbox 0x002A0F20
 char* AurResGetNextLine(void* pResource)
 {
@@ -858,7 +860,8 @@ void AurResFree(void* pResource, int nSize)
 Model* FindModel(char* sName);
 
 #ifndef _XBOX
-char* converttobinary(char* sArguments)  // Xbox 0x002A0B90
+// Dead code: not in the PC executable
+char* converttobinary(char* sArguments)
 {
     char sPattern[MAX_PATH];
     char sDirectory[MAX_PATH];
@@ -885,7 +888,7 @@ char* converttobinary(char* sArguments)  // Xbox 0x002A0B90
         Model* pModel = FindModel(sModelName);
         if (pModel != 0)
         {
-            IODispatcher::GetRef()->WriteSync(pModel, NULL);
+            IODispatcher::GetRef()->Write(pModel, NULL);
         }
         SetCurrentDirectory(sCurrentDirectory);
     } while (FindNextFile(hFind, &cFindData));

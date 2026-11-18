@@ -221,7 +221,7 @@ inline CExoImeUI::CExoImeUI()
       m_sCandidate()
 {
     m_nCompositionActive = 0;
-    m_nUnknown104 = 0;
+    m_nPreviousKeyboardLayout = 0;
 }
 // PC 0x005EE480  Xbox 0x0001C4B0
 void CSWCPlayer::SetPrimaryPCPortrait(CResRef cPortrait)
@@ -301,15 +301,15 @@ CAurCamera* CClientExoAppInternal::GetModuleCamera()
 // Xbox 0x0001C840
 void CClientExoAppInternal::ShutDownLegalScreen()
 {
-    if (m_pUnknown27C != NULL)
+    if (m_pLegalScreen != NULL)
     {
-        ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("");
-        m_pSWGuiManager->RemovePanel(m_pUnknown27C);
-        if (m_pUnknown27C != NULL)
+        ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("");
+        m_pSWGuiManager->RemovePanel(m_pLegalScreen);
+        if (m_pLegalScreen != NULL)
         {
-            delete m_pUnknown27C;
+            delete m_pLegalScreen;
         }
-        m_pUnknown27C = NULL;
+        m_pLegalScreen = NULL;
     }
 }
 #endif
@@ -344,7 +344,7 @@ int CClientExoAppInternal::HandleMessage(unsigned long nPlayerId,
         }
         if (*pMessage == 'S')
         {
-            m_pUnknown1C0->HandleServerToSysAdminMessage(pMessage, nSize);
+            m_pClientMsgSysAdmin->HandleServerToSysAdminMessage(pMessage, nSize);
         }
     }
     return 1;
@@ -421,7 +421,7 @@ void CClientExoAppInternal::CreateWorldJournal()
         m_pWorldJournal = new CSWCWorldJournal;
     }
 }
-
+// Dead code: not in the PC executable
 void CClientExoAppInternal::DestroyWorldJournal()
 {
     if (m_pWorldJournal != NULL)
@@ -840,6 +840,15 @@ void CClientExoAppInternal::LoadItemDropSoundList()
     }
     delete pInventorySounds;
 }
+// Dead code: not in the PC executable
+CResRef CClientExoAppInternal::GetItemDropSound(unsigned char nType)
+{
+    if (m_pItemDropSounds != NULL)
+    {
+        return m_pItemDropSounds[nType];
+    }
+    return CResRef("");
+}
 #ifndef _XBOX
 // PC 0x005F5370  Xbox 0x00023C00
 void CClientExoAppInternal::UpdateSoundEngine()
@@ -1072,6 +1081,7 @@ void CClientExoAppInternal::SetCaptureEventPlayBack(const CExoString& sFileName)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 unsigned long CClientExoAppInternal::GetNearestVideoMode(unsigned long nWidth, unsigned long nHeight,
                                                          unsigned char nBitsPerPixel,
                                                          unsigned long nRefreshRate)
@@ -1097,6 +1107,13 @@ unsigned long CClientExoAppInternal::GetNearestVideoMode(unsigned long nWidth, u
         return -1;
     }
     return nNearestMode;
+}
+// Dead code: not in the PC executable
+unsigned long CClientExoAppInternal::GetVideoMode(unsigned long nWidth, unsigned long nHeight,
+                                                  unsigned char nBitsPerPixel,
+                                                  unsigned long nRefreshRate)
+{
+    return CAuroraInterface::GetExactVideoMode(nWidth, nHeight, nBitsPerPixel, nRefreshRate);
 }
 #endif
 
@@ -1232,11 +1249,11 @@ void CClientExoAppInternal::StopServices()  // PC 0x00604130  Xbox 0x00034000
         delete m_pServerInfo;
         m_pServerInfo = NULL;
     }
-    if (m_pUnknown10 != NULL)
+    if (m_pNetLayer != NULL)
     {
-        m_pUnknown10->ShutDown();
-        delete m_pUnknown10;
-        m_pUnknown10 = NULL;
+        m_pNetLayer->ShutDown();
+        delete m_pNetLayer;
+        m_pNetLayer = NULL;
     }
     if (g_pExoInput != NULL)
     {
@@ -1327,10 +1344,10 @@ void CClientExoAppInternal::StopServices()  // PC 0x00604130  Xbox 0x00034000
         delete m_pClientOptions;
         m_pClientOptions = NULL;
     }
-    if (m_pUnknown1C0 != NULL)
+    if (m_pClientMsgSysAdmin != NULL)
     {
-        delete m_pUnknown1C0;
-        m_pUnknown1C0 = NULL;
+        delete m_pClientMsgSysAdmin;
+        m_pClientMsgSysAdmin = NULL;
     }
     if (m_pPlayerControl != NULL)
         delete m_pPlayerControl;
@@ -1477,7 +1494,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
     if (m_fCameraZoom != 0.0f)
     {
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved104 = 1;
+        pModule->m_bCameraZoomChanged = 1;
     }
     if (pCamera != NULL)
     {
@@ -1504,7 +1521,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
         m_pModule->ZoomCamera(m_fCameraZoom);
 
     if (g_pAppManager->GetClientExoApp()->GetCaptureEvents() == CAPTURE_EVENTS_RECORD &&
-        m_pModule->m_nReserved80 == 1)
+        m_pModule->m_bCameraMoved == 1)
     {
         float fDistance = pCamera->GetDist();
         float fPitch = pCamera->GetPitch();
@@ -1516,12 +1533,12 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
             CPlayBackEventNode::CAMERA, fDistance, fPitch, fYaw);
         g_pAppManager->GetClientExoApp()->GetCaptureEventFile()->Write(sEvent);
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved80 = 0;
+        pModule->m_bCameraMoved = 0;
     }
     m_fCameraZoom = 0.0f;
     m_fCameraTilt = 0.0f;
     m_fCameraTurn = 0.0f;
-    m_pModule->m_nReserved80 = 0;
+    m_pModule->m_bCameraMoved = 0;
 }
 #endif
 void CClientExoAppInternal::AddObjectToHitcheckIgnoreList(  // PC 0x005F6340  Xbox 0x00024D20
@@ -1709,7 +1726,7 @@ void CClientExoAppInternal::SetPauseState(unsigned char nPauseState, int bPause,
         }
     }
 }
-
+// Dead code: not in the PC executable
 void CClientExoAppInternal::CleanUpModuleServices()
 {
     m_bModuleServicesActive = 0;
@@ -1794,10 +1811,10 @@ int CClientExoAppInternal::Uninitialize()
         delete m_pGuiLoadScreen;
         m_pGuiLoadScreen = NULL;
     }
-    if (m_pUnknown27C != NULL)
+    if (m_pLegalScreen != NULL)
     {
-        delete m_pUnknown27C;
-        m_pUnknown27C = NULL;
+        delete m_pLegalScreen;
+        m_pLegalScreen = NULL;
     }
 
     return SetTexturePack(0xFF, 1);
@@ -1829,7 +1846,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550
     CExoString sValue;
     CExoString sDialogFile;
 
-    m_pUnknown1C0 = new CClientMsgSysAdmin;
+    m_pClientMsgSysAdmin = new CClientMsgSysAdmin;
     m_pWorldTimer = new CWorldTimer;
     m_pCombatTimer = new CWorldTimer;
     m_pPauseTimer = new CWorldTimer;
@@ -1842,7 +1859,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550
         g_bAllowWindowedMode = sValue.AsINT() != 0;
     g_pAurora = NewCAurora();
     CreateWorldJournal();
-    m_pUnknown10 = new CNetLayer;
+    m_pNetLayer = new CNetLayer;
     if (m_pServerInfo == NULL)
         m_pServerInfo = new CServerInfo;
     m_pSWCMessage = new CSWCMessage;
@@ -1885,7 +1902,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550
     sDialogFile = g_pExoResMan->CacheResource("HD0:DIALOG", RESTYPE_TLK);
     g_pTlkTable->OpenFile(sDialogFile);
     AddDownloadedResources();
-    m_pUnknown10->Initialize(g_pAppManager->GetClientExoApp());
+    m_pNetLayer->Initialize(g_pAppManager->GetClientExoApp());
     srand(GetTickCount());
     m_pModule = new CSWCModule;
     if (m_pModule != NULL)
@@ -1965,6 +1982,10 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550
     }
     return 0;
 }
+// Dead code: not in the PC executable
+void CClientExoAppInternal::DoDownloadedResourceDirectories(DoDLResDirParam nParam, int bFlag)
+{
+}
 #endif
 // PC 0x005F94D0
 void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList)
@@ -1995,7 +2016,7 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
                         if (pCreature->GetAppearance() != NULL)
                         {
                             pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                pCreature->GetAppearance()->m_nUnmapped10);
+                                pCreature->GetAppearance()->m_oidHeadItem);
                             if (pItem != NULL &&
                                 pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1) != NULL)
                             {
@@ -2397,7 +2418,7 @@ void CClientExoAppInternal::QueryExitProgram()  // PC 0x005F6960
 {
     if (g_pAppManager->GetClientExoApp() == NULL
         || g_pAppManager->GetClientExoApp()->GetInGameGui() == NULL
-        || g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 != 0)
+        || g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bAnimatedCut != 0)
     {
         return;
     }
@@ -2470,25 +2491,25 @@ void CClientExoAppInternal::QueryExitProgram()  // PC 0x005F6960
 }
 #endif
 // PC 0x005F6B10  Xbox 0x000252D0
-void CClientExoAppInternal::SetInputActive(int nA, int nB)
+void CClientExoAppInternal::SetInputActive(int bActive, int bClearEvents)
 {
     if (g_pExoInput != NULL)
     {
-        g_pExoInput->SetActive(nA);
+        g_pExoInput->SetActive(bActive);
     }
 
-    if (nA == 0)
+    if (bActive == 0)
     {
         TurnOffKeyboardModal();
     }
 
-    if (nB != 0)
+    if (bClearEvents != 0)
     {
         g_pExoInput->ClearEvents();
     }
 
 #ifndef _XBOX
-    if (nA != 0)
+    if (bActive != 0)
     {
         ShowMouse(0);
     }
@@ -2507,7 +2528,7 @@ void CClientExoAppInternal::ChangeCharacter(int nCharacter, int bPlaySound)
         CSWSCreature* pServerCreature = pCharacter->GetServerCreature();
         if (pServerCreature != NULL)
         {
-            pServerCreature->m_pPathfindInformation->m_nField_34 = OBJECT_INVALID;
+            pServerCreature->m_pPathfindInformation->m_oidIgnoreCreature = OBJECT_INVALID;
             pServerCreature->RemoveAction(CSWSObject::ACTION_FOLLOW_LEADER);
             if (pServerCreature->GetDead() || pServerCreature->GetDeadTemp())
             {
@@ -2551,7 +2572,7 @@ static inline int ClientexoappinternalHiliteCount(CExoArrayList<CHostileHilite>*
 }
 // PC 0x005F9C60  Xbox 0x00027910
 void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
-                                      int bMoveCamera, int bUnused)
+                                      int bMoveCamera, int bUserAction)
 {
     IndicateObject(pObject, 0);
     if (pObject == NULL)
@@ -3548,34 +3569,34 @@ template <> inline CExoArrayList<CSWGuiInterfaceAction>::~CExoArrayList()
 CClientExoAppInternal::CClientExoAppInternal()
 {
     m_bStartMenuMusicOnMovieEnd = 1;
-    m_nUnknown1D4 = 1;
+    m_bViewTriggers = 1;
 #ifndef _XBOX
     m_bAllowHighMonitorFrequency = 0;
 #endif
-    m_nUnknown26C = 0;
+    m_bAreaSoundsHeld = 0;
     m_bClientInitialized = 0;
     m_nDebugMode = 0;
-    m_nUnknown19C = 0;
+    m_nDebugTarget = 0;
     m_nPlayerCreatureId = OBJECT_INVALID;
     m_oidReattachedCreature = OBJECT_INVALID;
-    m_nUnknown44 = 0;
+    m_nMainMenuPanel = 0;
     m_pMainMenu = NULL;
     m_pStartupPanel = NULL;
-    m_nUnknown48 = 0;
-    m_nUnknown4C = 0;
+    m_nLoadGamePanel = 0;
+    m_nSaveGamePanel = 0;
     m_nPlayModulePanel = 0;
     m_pModule = NULL;
-    m_nUnknown54 = 0;
-    m_nUnknown68 = 0;
+    m_nLoadModulePanel = 0;
+    m_nSplashPanel = 0;
     m_pSWCMessage = NULL;
     m_pQuestJournal = NULL;
     m_pWorldJournal = NULL;
-    m_nUnknown6C = 0;
-    m_nUnknown188 = 0;
+    m_nCharGenPanel = 0;
+    m_bSuppressLoadBar = 0;
     m_nLoadBarState = 0;
     m_pSWGuiManager = NULL;
     m_pGuiLoadScreen = NULL;
-    m_pUnknown27C = NULL;
+    m_pLegalScreen = NULL;
     m_pServerInfo = NULL;
     m_nInputClass = 0;
     m_bPlayBackInputEnd = 0;
@@ -3588,22 +3609,22 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nInputHistoryCount = 0;
     m_nHitCheckMaterialMask = 0;
     memset(m_anKeyboardModal, 0, sizeof(m_anKeyboardModal));
-    m_nUnknownEC = 0;
-    m_nUnknownF0 = 0;
-    m_nUnknownE4 = 0;
-    m_nUnknownE8 = 0;
-    m_nUnknownF4 = 0;
-    m_nUnknownF8 = 0;
+    m_nDriveTimeLow = 0;
+    m_nDriveTimeHigh = 0;
+    m_nDriveStopTimeLow = 0;
+    m_nDriveStopTimeHigh = 0;
+    m_nDriveInputTimeLow = 0;
+    m_nDriveInputTimeHigh = 0;
 #ifdef _XBOX
-    m_fXboxUnmapped120 = 0.0f;
-    m_fXboxUnmapped124 = 0.0f;
-    m_fXboxUnmapped128 = 0.0f;
-    m_fXboxUnmapped12C = 0.0f;
+    m_fLeftX = 0.0f;
+    m_fLeftY = 0.0f;
+    m_fRightX = 0.0f;
+    m_fRightY = 0.0f;
 #else
-    m_nUnknown11C = 0;
-    m_nUnknown120 = 0;
-    m_nUnknown124 = 0;
-    m_nUnknown128 = 0;
+    m_nLeftX = 0;
+    m_nLeftY = 0;
+    m_nRightX = 0;
+    m_nRightY = 0;
 #endif
     m_nCameraScrollX = 0;
     m_nCameraScrollY = 0;
@@ -3616,11 +3637,11 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nCaptureEventPlayBack = 0;
     m_nCaptureEventPlayBackRate = CAPTURE_PLAYBACK_DEFAULT_RATE;
     m_pGuiInGame = NULL;
-    m_oidUnknown58 = CGameObjectArray::INVALIDOBJID;
-    m_oidUnknown170 = CGameObjectArray::INVALIDOBJID;
-    m_nUnknown174 = 0;
-    m_nUnknown178 = 0;
-    m_nUnknown17C = 0;
+    m_oidContainerOpened = CGameObjectArray::INVALIDOBJID;
+    m_oidPlayerAnimationTarget = CGameObjectArray::INVALIDOBJID;
+    m_nPlayerAnimation = 0;
+    m_nPlayerAnimationFlags = 0;
+    m_nPlayerAnimationState = 0;
     m_fPlayerAnimationTime = 0.0f;
     m_nVideoMode = VIDEO_MODE_UNSET;
     m_nTexturePack = TEXTURE_PACK_UNSET;
@@ -3637,38 +3658,38 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_pAnimationTimer = NULL;
     m_pMoviePlayer = NULL;
     m_bEnableMouseAtEndOfLoadModuleMovie = 0;
-    m_nUnknown60 = 0;
+    m_nPageInternet = 0;
     m_bApplicationIdsMatch = 0;
     m_bInStartNewModule = 0;
-    m_nUnknown1F0 = 0;
+    m_bSendAreaLoadedMessageAfterMovie = 0;
     m_fCameraZoom = 0.0f;
     m_fCameraTilt = 0.0f;
     m_fCameraTurn = 0.0f;
-    m_oidUnknown224 = CGameObjectArray::INVALIDOBJID;
+    m_oidLastDialogSpeaker = CGameObjectArray::INVALIDOBJID;
     m_pMenuMusic = NULL;
     m_pLoadMusic = NULL;
-    m_nUnknown244 = 0;
-    m_nUnknown240 = 0;
+    m_bRenderTilePathNodes = 0;
+    m_bSaveStallEventSuppressed = 0;
     m_bModuleServicesActive = 0;
-    m_nUnknown24C = 0;
+    m_bModuleServicesPending = 0;
     m_bExitGame = 0;
     m_bExitGamePending = 0;
-    m_nUnknown258 = 0;
-    m_nUnknown25C = 0;
+    m_bReachedMainMenu = 0;
+    m_bShowWalkToRingVFX = 0;
 #ifdef _XBOX
-    m_nXboxUnmapped264 = 0;
+    m_nCodeWord = 0;
 #endif
     m_bEndGamePending = 0;
-    m_nEndGamePendingUnknown = 1;
+    m_bShowEndGameDeathMessage = 1;
     m_nCharacterExportState = CHARACTER_EXPORT_IDLE;
     m_bShutDownToMainMenuPending = 0;
-    m_nUnknown268 = 0;
+    m_bOptionsPanelOpen = 0;
     m_pMiniGameObjectArray = new CSWMiniGameObjectArray;
     m_pSWParty = new CSWParty;
     m_nAreaNotReadyToDisplay = 1;
     m_fDriveActionDelay = -1.0f;
     m_pPlayerControl = NULL;
-    m_nUnknown29C = 1;
+    m_nControlType = 1;
     m_nGameOver = 0;
     m_bGameOverPending = 1;
     m_nDeathSequenceLastTime = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
@@ -3687,13 +3708,13 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_bShowLoadScreen = 0;
     m_nLoadFromIFO = 0;
     m_bRunScript = 0;
-    m_nUnknown1B0 = 0;
+    m_bGuiGameSlow = 0;
 #ifdef _XBOX
     m_bMinGlobalRim = 0;
 #endif
     m_nLoadingSaveGame = 0;
     m_oidFutureLeader = OBJECT_INVALID;
-    m_oidUnknown364 = OBJECT_INVALID;
+    m_oidInvisibleTarget = OBJECT_INVALID;
     m_fTargetInvisibleTime = 0;
     m_fMovingTargetTime = 0.0f;
     m_fStatusSummaryDelay = 0.0f;
@@ -3715,7 +3736,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nDelayedAutoPauseType = AUTO_PAUSE_TYPE_UNSET;
 #endif
     m_fEnemyAutoPauseCooldown = 0.0f;
-    m_nUnknown3A4 = 0;
+    m_nEnemyAutoPauseCount = 0;
     m_nVideoEffect = CLIENT_VIDEO_EFFECT_DISABLED;
     m_nTutorialX = OBJECT_INVALID;
     m_nTutorialY = OBJECT_INVALID;
@@ -3724,8 +3745,8 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_oidCachedCreature = OBJECT_INVALID;
     m_pCachedCreature = NULL;
 #ifndef _XBOX
-    m_nUnknown3D4 = 0;
-    m_nUnknown3D0 = 0;
+    m_nLastMouseY = 0;
+    m_nLastMouseX = 0;
     m_nMouseY = 0;
     m_nMouseX = 0;
     m_nMouseHidden = 0;
@@ -3740,12 +3761,12 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nStoryHint = 0;
     m_bMainMenuTransition = 0;
     m_PauseFlags.m_Bits.m_bLastTargetChanged = 0;
-    m_PauseFlags.m_Bits.m_nUnused1 = 0;
+    m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = 0;
     m_fTargetChanging = 0.0f;
     m_pClientOptions = new CClientOptions;
     m_nModuleResourcesLoaded = 0;
-    m_nUnknown49C = 0;
-    m_nUnknown4A0 = 0;
+    m_bEndGameInputLocked = 0;
+    m_nEndGameInputLockTime = 0;
     m_pEvilEndingHackSound = NULL;
 #ifndef _XBOX
     m_oidMouseOverTarget = OBJECT_INVALID;
@@ -3779,7 +3800,7 @@ CClientExoAppInternal::~CClientExoAppInternal()
     }
 }
 #ifndef _XBOX
-void CClientExoAppInternal::DisplayMainMenu(int bUnknown)  // PC 0x005FCA30  Xbox 0x0002ABE0
+void CClientExoAppInternal::DisplayMainMenu(int bScanContent)  // PC 0x005FCA30  Xbox 0x0002ABE0
 {
     if (m_pMainMenu != NULL && m_pSWGuiManager->PanelExists(m_pMainMenu))
     {
@@ -3824,15 +3845,15 @@ void CClientExoAppInternal::DisplayStartScreen()
         m_pStartupPanel = new CSWGuiStartScreen(m_pSWGuiManager);
     }
 
-    if (m_pUnknown27C != NULL)
+    if (m_pLegalScreen != NULL)
     {
-        ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("");
-        m_pSWGuiManager->RemovePanel(m_pUnknown27C);
-        if (m_pUnknown27C != NULL)
+        ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("");
+        m_pSWGuiManager->RemovePanel(m_pLegalScreen);
+        if (m_pLegalScreen != NULL)
         {
-            delete m_pUnknown27C;
+            delete m_pLegalScreen;
         }
-        m_pUnknown27C = NULL;
+        m_pLegalScreen = NULL;
         g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:LEGAL");
         g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:LEGALDX");
     }
@@ -3921,6 +3942,14 @@ void CClientExoAppInternal::ShutDownToMainMenu()
         }
     }
 }
+// Dead code: not in the PC executable
+void CClientExoAppInternal::ShowServerMem()
+{
+    if (m_pSWCMessage != NULL)
+    {
+        m_pSWCMessage->SendPlayerToServerCheat_ShowServerMem();
+    }
+}
 // PC 0x005FCC90  Xbox 0x0002B1F0
 void CClientExoAppInternal::AddObjectModelDirectlyToIgnoreList(
     unsigned long oidObject, List<CAurObject*>* pIgnoreList)
@@ -3967,17 +3996,17 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x59Cu, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_002:
+        case CSWSCreature::FEEDBACK_SKILL_ANIMALEMPATHY_VALID_TARGETS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_003:
+        case CSWSCreature::FEEDBACK_SKILL_TAUNT_VALID_TARGETS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_223:
+        case CSWSCreature::FEEDBACK_SKILL_TAUNT_TARGET_IMMUNE:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4013,7 +4042,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_OBJECT_COUNT:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(1, sObjectName);
             else
@@ -4021,11 +4050,11 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(1, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(0, CExoString(nValue2));
+            g_pTlkTable->SetCustomToken(0, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_046:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_ATTEMPTING_TO_STEAL:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4038,12 +4067,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_150:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_ATTEMPT_DETECTED:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_048:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_STOLE_GOLD_TARGET:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4056,7 +4085,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_057:
+        case CSWSCreature::FEEDBACK_SKILL_PICKPOCKET_TARGET_BROKE:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4096,12 +4125,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5ECu);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_008:
+        case CSWSCreature::FEEDBACK_WEIGHT_TOO_ENCUMBERED_TO_RUN:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_009:
+        case CSWSCreature::FEEDBACK_WEIGHT_TOO_ENCUMBERED_WALK_SLOW:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4111,7 +4140,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x59Eu);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_012:
+        case CSWSCreature::FEEDBACK_INVENTORY_FULL:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4136,8 +4165,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            int nValue2 = pMessageData->GetInteger(0);
-            g_pTlkTable->SetCustomToken(1, nValue2);
+            int nTokenValue = pMessageData->GetInteger(0);
+            g_pTlkTable->SetCustomToken(1, nTokenValue);
             sFeedback = g_pSWTlkTable->Fetch(0x5D7u, NULL, 0, 0);
             break;
         }
@@ -4151,8 +4180,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            int nValue2 = pMessageData->GetInteger(0);
-            g_pTlkTable->SetCustomToken(1, nValue2);
+            int nTokenValue = pMessageData->GetInteger(0);
+            g_pTlkTable->SetCustomToken(1, nTokenValue);
             sFeedback = g_pSWTlkTable->Fetch(0x407u, NULL, 0, 0);
             break;
         }
@@ -4237,37 +4266,37 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x598u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_017:
+        case CSWSCreature::FEEDBACK_REST_EXCITED_CANT_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_018:
+        case CSWSCreature::FEEDBACK_REST_BEGINNING_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_019:
+        case CSWSCreature::FEEDBACK_REST_FINISHED_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_020:
+        case CSWSCreature::FEEDBACK_REST_CANCEL_REST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_054:
+        case CSWSCreature::FEEDBACK_REST_NOT_ALLOWED_IN_AREA:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_186:
+        case CSWSCreature::FEEDBACK_REST_NOT_ALLOWED_ENEMIES:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_213:
+        case CSWSCreature::FEEDBACK_REST_CANT_UNDER_THIS_EFFECT:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4277,37 +4306,37 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x599u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_052:
+        case CSWSCreature::FEEDBACK_CAST_CNTRSPELL_TARGET_LOST_TARGET:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_118:
+        case CSWSCreature::FEEDBACK_CAST_CNTRSPELL_TARGET_ARCANE_SPELL_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_022:
+        case CSWSCreature::FEEDBACK_CAST_CANT_CAST:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_061:
+        case CSWSCreature::FEEDBACK_CAST_ARCANE_SPELL_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_065:
+        case CSWSCreature::FEEDBACK_CAST_ENTANGLE_CONCENTRATION_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_147:
+        case CSWSCreature::FEEDBACK_CAST_CNTRSPELL_TARGET_ENTANGLE_CONCENTRATION_FAILURE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_072:
+        case CSWSCreature::FEEDBACK_CAST_SPELL_INTERRUPTED:
         {
             if (pCreature != NULL)
             {
@@ -4322,12 +4351,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_210:
+        case CSWSCreature::FEEDBACK_CAST_USE_HANDS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_211:
+        case CSWSCreature::FEEDBACK_CAST_USE_MOUTH:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4347,17 +4376,17 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x593u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_152:
+        case CSWSCreature::FEEDBACK_CONVERSATION_IN_COMBAT:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_074:
+        case CSWSCreature::FEEDBACK_CHARACTER_INTRANSIT:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_075:
+        case CSWSCreature::FEEDBACK_CHARACTER_OUTTRANSIT:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4365,18 +4394,18 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_COUNTER_PAIR:
         {
             int nValue = pMessageData->GetInteger(0);
-            int nValue2 = pMessageData->GetInteger(1);
-            g_pTlkTable->SetCustomToken(0, nValue2);
+            int nTokenValue = pMessageData->GetInteger(1);
+            g_pTlkTable->SetCustomToken(0, nTokenValue);
             g_pTlkTable->SetCustomToken(1, nValue);
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_076:
+        case CSWSCreature::FEEDBACK_EQUIP_UNIDENTIFIED:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_077:
+        case CSWSCreature::FEEDBACK_EQUIP_MONK_ABILITIES:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4391,7 +4420,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5C3u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_120:
+        case CSWSCreature::FEEDBACK_EQUIP_WEAPON_TOO_LARGE:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4431,7 +4460,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5C6u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_124:
+        case CSWSCreature::FEEDBACK_EQUIP_ONE_CHAIN_WEAPON:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4461,7 +4490,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5E2u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_200:
+        case CSWSCreature::FEEDBACK_EQUIP_RANGER_ABILITIES:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4471,27 +4500,27 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5E3u);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_100:
+        case CSWSCreature::FEEDBACK_CANNOT_SELL_CONTAINER:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_099:
+        case CSWSCreature::FEEDBACK_CANNOT_SELL_PLOT_ITEM:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_101:
+        case CSWSCreature::FEEDBACK_CANNOT_SELL_ITEM:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_102:
+        case CSWSCreature::FEEDBACK_NOT_ENOUGH_GOLD:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_103:
+        case CSWSCreature::FEEDBACK_TRANSACTION_SUCCEEDED:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -4578,7 +4607,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_DAMAGE_RESISTED:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4586,15 +4615,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0x5AEu, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_RESISTANCE_REMAINING:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
-            int nValue3 = pMessageData->GetInteger(1);
+            int nTokenValue = pMessageData->GetInteger(0);
+            int nTokenValue2 = pMessageData->GetInteger(1);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4602,15 +4631,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
-            g_pTlkTable->SetCustomToken(2, CExoString(nValue3));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
+            g_pTlkTable->SetCustomToken(2, CExoString(nTokenValue2));
             sFeedback = g_pSWTlkTable->Fetch(0x5B0u, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_REDUCTION:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4618,15 +4647,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0x5AFu, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_DAMAGE_REDUCTION_REMAINING:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
-            int nValue3 = pMessageData->GetInteger(1);
+            int nTokenValue = pMessageData->GetInteger(0);
+            int nTokenValue2 = pMessageData->GetInteger(1);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4634,8 +4663,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
-            g_pTlkTable->SetCustomToken(2, CExoString(nValue3));
+            g_pTlkTable->SetCustomToken(1, CExoString(nTokenValue));
+            g_pTlkTable->SetCustomToken(2, CExoString(nTokenValue2));
             sFeedback = g_pSWTlkTable->Fetch(0x5B1u, NULL, 0, 0);
             break;
         }
@@ -4687,7 +4716,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_OBJECT_COUNTER:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
+            int nTokenValue = pMessageData->GetInteger(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4695,15 +4724,15 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pSWTlkTable->SetCustomToken(1, CExoString(nValue2));
+            g_pSWTlkTable->SetCustomToken(1, CExoString(nTokenValue));
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
         case CSWSCreature::FEEDBACK_OBJECT_COUNTER_REMAINING:
         {
             oidObject = pMessageData->GetObjectID(0);
-            int nValue2 = pMessageData->GetInteger(0);
-            int nValue3 = pMessageData->GetInteger(1);
+            int nTokenValue = pMessageData->GetInteger(0);
+            int nTokenValue2 = pMessageData->GetInteger(1);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
@@ -4711,8 +4740,8 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 sObjectName = GetGUIString(0);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
-            g_pSWTlkTable->SetCustomToken(1, CExoString(nValue2));
-            g_pSWTlkTable->SetCustomToken(2, CExoString(nValue3));
+            g_pSWTlkTable->SetCustomToken(1, CExoString(nTokenValue));
+            g_pSWTlkTable->SetCustomToken(2, CExoString(nTokenValue2));
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
@@ -4739,7 +4768,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x592u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_032:
+        case CSWSCreature::FEEDBACK_PARTY_MEMBER_KICKED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4752,12 +4781,12 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_033:
+        case CSWSCreature::FEEDBACK_PARTY_KICKED_YOU:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_034:
+        case CSWSCreature::FEEDBACK_PARTY_ALREADY_CONSIDERING:
         {
             oidObject = pMessageData->GetObjectID(0);
             if ( GetObjectName(oidObject, sObjectName) != 0 )
@@ -4771,7 +4800,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_035:
+        case CSWSCreature::FEEDBACK_PARTY_ALREADY_INVOLVED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4784,7 +4813,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_036:
+        case CSWSCreature::FEEDBACK_PARTY_SENT_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4797,7 +4826,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_037:
+        case CSWSCreature::FEEDBACK_PARTY_RECEIVED_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4823,7 +4852,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x591u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_039:
+        case CSWSCreature::FEEDBACK_PARTY_INVITATION_IGNORED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4836,7 +4865,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_040:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_IGNORED_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4849,7 +4878,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_041:
+        case CSWSCreature::FEEDBACK_PARTY_INVITATION_REJECTED:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4862,7 +4891,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_042:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_REJECTED_INVITATION:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4901,22 +4930,22 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x590u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_045:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_LEFT:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_196:
+        case CSWSCreature::FEEDBACK_PARTY_CANNOT_LEAVE_THE_ONE_PARTY:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_197:
+        case CSWSCreature::FEEDBACK_PARTY_CANNOT_KICK_FROM_THE_ONE_PARTY:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_202:
+        case CSWSCreature::FEEDBACK_PARTY_YOU_INVITED_NON_SINGLETON:
         {
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
@@ -4929,42 +4958,42 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_078:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_NOT_SCROLL:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_079:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_CLASS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_224:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_DIVINE:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_080:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_LEVEL:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_081:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_ABILITY:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_219:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_OPPOSITION:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_220:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_POSSESS:
         {
             sFeedback = GetGUIString(0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_221:
+        case CSWSCreature::FEEDBACK_LEARN_SCROLL_CANT_LEARN_KNOWN:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -5002,7 +5031,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0xA5C6u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_106:
+        case CSWSCreature::FEEDBACK_CHAT_TELL_PLAYER_NOT_FOUND:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -5024,7 +5053,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0x5BCu);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_097:
+        case CSWSCreature::FEEDBACK_ITEM_USE_UNIDENTIFIED:
         {
             sFeedback = GetGUIString(0);
             break;
@@ -5419,7 +5448,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback.CStr();
             goto FeedbackDone;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_201:
+        case CSWSCreature::FEEDBACK_GUI_ONLY_PARTY_LEADER_MAY_CLICK:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
@@ -5434,22 +5463,22 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x5E5u, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_225:
+        case CSWSCreature::FEEDBACK_SAVE_GAME_STARTED:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_226:
+        case CSWSCreature::FEEDBACK_SAVE_GAME_FINISHED:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_214:
+        case CSWSCreature::FEEDBACK_REST_YOU_MAY_NOT_AT_THIS_TIME:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
         }
-        case CSWSCreature::FEEDBACK_UNKNOWN_215:
+        case CSWSCreature::FEEDBACK_GUI_CHAR_EXPORT_REQUEST_SENT:
         {
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
@@ -5738,7 +5767,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
                                      int bAnyButtonSkips, int bNoMusic)
 {
 
-    m_PauseFlags.m_Bits.m_nUnused1 = bAnyButtonSkips;
+    m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = bAnyButtonSkips;
     int bPlayMusic = 0;
 
     if (!bNoMusic && sMovie.CompareNoCase("55"))
@@ -5811,13 +5840,13 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     }
     m_pClientOptions->SetMovieShown(sMovie, 1);
-    m_PauseFlags.m_Bits.m_nUnused1 = 0;
+    m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie = 0;
     return 1;
 }
 
 #else
-int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB,  // PC 0x00602CF0  Xbox 0x00027580
-                                     int nC)
+int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips,  // PC 0x00602CF0  Xbox 0x00027580
+                                     int bNoMusic)
 {
     if (m_bMovieDisabled != 0)
     {
@@ -5829,7 +5858,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB, 
         return 0;
     }
 
-    return PlayMoviesInExoArrayList(m_aMoveToModuleMovies, nA, 1, 0, NULL);
+    return PlayMoviesInExoArrayList(m_aMoveToModuleMovies, nResult, 1, 0, NULL);
 }
 
 #ifndef _XBOX
@@ -6057,7 +6086,7 @@ void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x005F7330  Xbox 0x0003
             m_pGuiInGame->StopGlobalFade();
             m_bEndGamePending = 1;
             m_fEndGamePendingDelay = 0.0f;
-            m_nEndGamePendingUnknown = 1;
+            m_bShowEndGameDeathMessage = 1;
             CSWGuiPanel* pPanel = m_pGuiInGame->m_pMessageBox;
             g_pGuiMan->PopModalPanel();
             g_pGuiMan->RemovePanel(pPanel);
@@ -6311,7 +6340,7 @@ int CClientExoAppInternal::SetDebugMode(int nDebugMode)
 }
 
 #ifndef _XBOX
-int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnknown)  // PC 0x005F14A0  Xbox 0x0001E000
+int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int bApplyNow)  // PC 0x005F14A0  Xbox 0x0001E000
 {
     CExoString sTexture;
     CExoString sTexturePath;
@@ -6639,9 +6668,9 @@ void CClientExoAppInternal::TurnOffKeyboardModal()  // PC 0x005F2980  Xbox 0x000
         if (m_anKeyboardModal[i] != 0)
         {
             memset(m_anKeyboardModal, 0, sizeof(m_anKeyboardModal));
-            m_nUnknownFC = 1;
-            m_nUnknownF4 = 0;
-            m_nUnknownF8 = 0;
+            m_bDriveAborted = 1;
+            m_nDriveInputTimeLow = 0;
+            m_nDriveInputTimeHigh = 0;
             m_pSWCMessage->SendPlayerToServerInput_AbortDriveControl();
             break;
         }
@@ -6768,6 +6797,10 @@ void CClientExoAppInternal::InitializeMoviePlayer()
 #else
     m_pMoviePlayer->Initialize(NULL);
 #endif
+}
+// Dead code: not in the PC executable
+void CClientExoAppInternal::UpdateMoviePlayer()
+{
 }
 // PC 0x005F2C60  Xbox 0x00021020
 void CClientExoAppInternal::IndicateObject(CSWCObject* pObject, int nFlags)
@@ -7099,13 +7132,13 @@ int CClientExoAppInternal::GetClientMeleeAnimation(
     return nResult;
 }
 // PC 0x005F33F0  Xbox 0x00021710
-int CClientExoAppInternal::GetClientRangedAnimation(unsigned long nA, int nB,
-                                                    int nC, int nD)
+int CClientExoAppInternal::GetClientRangedAnimation(unsigned long oidAttacker, int nAttackType,
+                                                    int bOverride, int nOverrideAnimation)
 {
     unsigned long oidObject;
-    if (nA != OBJECT_INVALID)
+    if (oidAttacker != OBJECT_INVALID)
     {
-        oidObject = nA | 0x80000000;
+        oidObject = oidAttacker | 0x80000000;
     }
     else
     {
@@ -7130,15 +7163,15 @@ int CClientExoAppInternal::GetClientRangedAnimation(unsigned long nA, int nB,
     int nResult = 0;
     if (pCreature != NULL)
     {
-        if (nC != 0)
+        if (bOverride != 0)
         {
-            nResult = nD;
-            pCreature->m_nAttackAnimationOverride = nD;
+            nResult = nOverrideAnimation;
+            pCreature->m_nAttackAnimationOverride = nOverrideAnimation;
         }
         else
         {
             CSWCAnimBase* pAnimBase = pCreature->GetAnimationBase();
-            return pCreature->UpdateRangedAttackData(nB,
+            return pCreature->UpdateRangedAttackData(nAttackType,
                                                      pAnimBase->m_nWieldClass);
         }
     }
@@ -7238,7 +7271,7 @@ void CClientExoAppInternal::SetLoadScreenHint(unsigned long nHint)  // PC 0x005F
         m_pGuiLoadScreen->SetHint(nHint);
     }
 }
-
+// Dead code: not in the PC executable
 unsigned long CClientExoAppInternal::GetLoadScreenHint()
 {
     if (m_pGuiLoadScreen != NULL)
@@ -7265,7 +7298,7 @@ void CClientExoAppInternal::StartPazaakGame(int nSideDeck, const CExoString& sEn
         nWager = nWager < nGold ? nWager : nGold;
     }
     m_PazaakState.m_nResult = 0;
-    m_PazaakState.m_nResultUnused = nWager;
+    m_PazaakState.m_nWager = nWager;
     m_PazaakState.m_sEndScript = sEndScript;
     m_PazaakState.m_nSideDeck = nSideDeck;
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
@@ -7281,7 +7314,7 @@ void CClientExoAppInternal::EndPazaakGame(int nResult, int nWager,
                                         int bPlayAgain, unsigned long oidOpponent)
 {
     m_PazaakState.m_nResult = nResult;
-    m_PazaakState.m_nResultUnused = nWager;
+    m_PazaakState.m_nWager = nWager;
     SetInputClass(INPUT_CLASS_GAME, 1);
     m_PazaakState.m_bIsRunning = 0;
 
@@ -7657,6 +7690,11 @@ void CClientExoAppInternal::AddDownloadedResources()  // PC 0x005F4180  Xbox 0x0
         }
     }
 }
+// Dead code: not in the PC executable
+int CClientExoAppInternal::AttachPatchFiles(int bAttach)
+{
+    return 1;
+}
 #endif
 // PC 0x005F4460  Xbox 0x00022620
 void CClientExoAppInternal::PlayerFlourishWeapons()
@@ -7904,6 +7942,10 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
     }
     return 0;
 }
+// Dead code: not in the PC executable
+void CClientExoAppInternal::DisplayOptionsLoadError()
+{
+}
 // PC 0x005F7B20  Xbox 0x00025E00
 void CClientExoAppInternal::UpdateLoadingScreenHint()
 {
@@ -8038,6 +8080,12 @@ void CClientExoAppInternal::SetLastTarget(unsigned long oidObject, int bChanged)
     m_PauseFlags.m_Bits.m_bLastTargetChanged =
         (m_nLastTarget == oidObject) ? 0 : bChanged;
     m_nLastTarget = oidObject;
+}
+// Dead code: not in the PC executable
+void CClientExoAppInternal::SetRunScript(const CExoString& sScript)
+{
+    m_bRunScript = 1;
+    m_sRunScript = sScript;
 }
 // PC 0x005F4A60  Xbox 0x000234B0
 void CClientExoAppInternal::BusyWaitMenuMusic()
@@ -8281,7 +8329,7 @@ void CClientExoAppInternal::BeginIntro()  // PC 0x00602DC0
 #endif
 
 const unsigned long LEGAL_SCREEN_MIN_SHOW_TIME = 3000;
-
+// Dead code: not in the PC executable
 void ShowLegalScreen(CSWGuiManager* pGuiManager, const CResRef& cImage)
 {
     CSWGuiLegalScreen* pLegalScreen = new CSWGuiLegalScreen(pGuiManager, LEGAL_SCREEN_MIN_SHOW_TIME);
@@ -8289,7 +8337,7 @@ void ShowLegalScreen(CSWGuiManager* pGuiManager, const CResRef& cImage)
     pLegalScreen->SetImage(CResRef());
     delete pLegalScreen;
 }
-
+// Dead code: not in the PC executable
 void CClientExoAppInternal::ClearCameraInput()
 {
     m_pModule->TurnCamera(0.0f, 0.0f);
@@ -8420,8 +8468,8 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
     {
         if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
         {
-            m_pUnknown10->ProcessReceivedFrames(1);
-            m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+            m_pNetLayer->ProcessReceivedFrames(1);
+            m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
         }
         StallServerCode();
         pStats = g_pAppManager->m_pReentrantServerStats;
@@ -8431,7 +8479,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
         {
             m_nAreaNotReadyToDisplay = 1;
             UpdateScreen(1.0f / 30.0f, 0, 1);
-            if (g_pAppManager->m_pReentrantServerStats->m_nUnknown56 == 4)
+            if (g_pAppManager->m_pReentrantServerStats->m_nError == 4)
             {
                 DeltaT = (int)m_pWorldTimer->GetSnapshotTimeDifference() / 1000000.0f;
                 ProcessInput(DeltaT);
@@ -8452,7 +8500,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
         if (m_fEndGamePendingDelay > 0.0f)
         {
             if (m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pMessageBox) ||
-                !m_nEndGamePendingUnknown)
+                !m_bShowEndGameDeathMessage)
                 m_fEndGamePendingDelay -= DeltaT;
             else
             {
@@ -8472,22 +8520,22 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
             m_pGuiInGame->ShutDown();
             m_bEndGamePending = 0;
             m_fEndGamePendingDelay = 0.0f;
-            m_nEndGamePendingUnknown = 1;
+            m_bShowEndGameDeathMessage = 1;
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
             m_bStartMenuMusicOnMovieEnd = 1;
             StartMenuMusic(1, MENU_MUSIC_VOLUME, MENU_MUSIC_PRIORITY_GROUP);
             m_pGuiInGame->SetSWGuiStatus(CGuiInGame::GUISTATUS_DIALOG, 1);
         }
     }
-    int bSlowMotion = m_nUnknown1B0;
+    int bSlowMotion = m_bGuiGameSlow;
     if (bSlowMotion || SlowGame)
         SetGameSpeed(0.25f);
     else
         SetGameSpeed(1.0f);
     if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
     {
-        m_pUnknown10->ProcessReceivedFrames(1);
-        m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+        m_pNetLayer->ProcessReceivedFrames(1);
+        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
     }
     if (m_bRunScript)
     {
@@ -8576,12 +8624,12 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
     if (pModule != NULL && pModule->m_pInfo != NULL)
     {
         CSWCArea* pArea = pModule->m_pInfo;
-        if (!m_nUnknown26C && m_nUnknown188)
-            m_nUnknown26C = 1;
-        else if (m_nUnknown26C && !m_nUnknown188)
+        if (!m_bAreaSoundsHeld && m_bSuppressLoadBar)
+            m_bAreaSoundsHeld = 1;
+        else if (m_bAreaSoundsHeld && !m_bSuppressLoadBar)
         {
             pArea->StartSounds();
-            m_nUnknown26C = 0;
+            m_bAreaSoundsHeld = 0;
         }
         CAurScene* pScene = pArea->m_pScene;
         if (pScene != NULL && pCharacter != NULL)
@@ -8770,6 +8818,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
     return m_bExitGame && m_bExitGamePending;
 }
 #endif
+// Dead code: not in the PC executable
 void CClientExoAppInternal::DestroyQuestJournal()
 {
     if (m_pQuestJournal != NULL)
@@ -8780,6 +8829,7 @@ void CClientExoAppInternal::DestroyQuestJournal()
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* playcredits(char* sCommand)
 {
 
@@ -8879,7 +8929,7 @@ int CClientExoAppInternal::WaitForMovie()
                     unsigned long nEvent = aEvents[i].m_pDesc->m_nEvent;
                     if (aEvents[i].m_nValue &&
                         (nEvent == MOVIE_SKIP_EVENT_FIRST || nEvent == MOVIE_SKIP_EVENT_SECOND ||
-                         (m_PauseFlags.m_Bits.m_nUnused1 &&
+                         (m_PauseFlags.m_Bits.m_bAnyButtonSkipsMovie &&
                           (nEvent == MOVIE_SKIP_EVENT_THIRD || nEvent == MOVIE_SKIP_EVENT_FOURTH))))
                     {
                         m_pMoviePlayer->SetFadeMsg(STRREF_MOVIE_SKIPPING);
@@ -8947,7 +8997,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     CExoString sFileName;
     int nLegalDisplayMinimum = 0;
 
-    m_pUnknown1C0 = new CClientMsgSysAdmin();
+    m_pClientMsgSysAdmin = new CClientMsgSysAdmin();
     m_pWorldTimer = new CWorldTimer;
     m_pCombatTimer = new CWorldTimer;
     m_pPauseTimer = new CWorldTimer;
@@ -8961,7 +9011,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     g_pAurora = NewCAurora();
     g_pExoInput = new CExoInput;
     CreateWorldJournal();
-    m_pUnknown10 = new CNetLayer;
+    m_pNetLayer = new CNetLayer;
     if (m_pServerInfo == NULL)
         m_pServerInfo = new CServerInfo;
     m_pSWCMessage = new CSWCMessage;
@@ -9011,7 +9061,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
         g_pAppManager->m_pClientExoApp->GetClientOptions()->SetDefaults();
         g_pAppManager->m_pClientExoApp->LoadOptions();
     }
-    int nMissing = m_nXboxUnmapped468;
+    int nMissing = m_bMissingFilePending;
     if (nMissing == 1)
         g_pExoResMan->ReportMissingFile("", 0xffff, 1);
     m_pSWGuiManager = new CSWGuiManager;
@@ -9022,9 +9072,9 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             g_pExoResMan->AddResourceImageFile("RIMSXBOX:LEGAL");
         if (g_pExoResMan->Exists("LEGALDX", RESTYPE_RIM, (unsigned long*)NULL))
             g_pExoResMan->AddResourceImageFile("RIMSXBOX:LEGALDX");
-        m_pUnknown27C = new CSWGuiLegalScreen(m_pSWGuiManager, nLegalDisplayMinimum);
-        m_pSWGuiManager->AddPanel(m_pUnknown27C, 1, 1);
-        ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("leclogo");
+        m_pLegalScreen = new CSWGuiLegalScreen(m_pSWGuiManager, nLegalDisplayMinimum);
+        m_pSWGuiManager->AddPanel(m_pLegalScreen, 1, 1);
+        ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("leclogo");
     }
     InitializeMoviePlayer();
     sFileName = g_pExoResMan->CacheResource("HD0:DIALOG", RESTYPE_TLK);
@@ -9080,7 +9130,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             g_pExoResMan->AddResourceImageFile(sFileName);
         }
         if (!bPlayLoadMusic)
-            ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("biowarelogo");
+            ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("biowarelogo");
         if (g_pExoResMan->Exists("GLOBALDX", RESTYPE_RIM, (unsigned long*)NULL))
         {
             sFileName = g_pExoResMan->CacheResource("RIMSXBOX:GLOBALDX", RESTYPE_RIM);
@@ -9109,7 +9159,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
         SetLoadBarProgress(50, 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
     }
-    m_pUnknown10->Initialize(g_pAppManager->GetClientExoApp());
+    m_pNetLayer->Initialize(g_pAppManager->GetClientExoApp());
     srand(GetTickCount());
     m_pModule = new CSWCModule;
     if (m_pModule != NULL)
@@ -9146,7 +9196,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             m_bSkipIntro = sValue.AsINT();
         else
             m_bSkipIntro = 0;
-        m_nXboxUnmapped264 = g_pAppManager->GetCodeWord();
+        m_nCodeWord = g_pAppManager->GetCodeWord();
         if (sLoadScreen == "" && sModule != "")
         {
             SetLoadBarProgress(70, 1);
@@ -10234,9 +10284,9 @@ void CClientExoAppInternal::TurnOffKeyboardModal()
         {
             for (unsigned int j = 0; j < 7; j++)
                 m_anKeyboardModal[j] = 0;
-            m_nUnknownFC = 1;
-            m_nUnknownF4 = 0;
-            m_nUnknownF8 = 0;
+            m_bDriveAborted = 1;
+            m_nDriveInputTimeLow = 0;
+            m_nDriveInputTimeHigh = 0;
             m_pSWCMessage->SendPlayerToServerInput_AbortDriveControl();
             break;
         }
@@ -10348,8 +10398,8 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
     {
         if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
         {
-            m_pUnknown10->ProcessReceivedFrames(1);
-            m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+            m_pNetLayer->ProcessReceivedFrames(1);
+            m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
         }
         StallServerCode();
         pStats = g_pAppManager->m_pReentrantServerStats;
@@ -10358,7 +10408,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
              pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME))
         {
             m_nAreaNotReadyToDisplay = 1;
-            if (g_pAppManager->m_pReentrantServerStats->m_nUnknown56 == 4)
+            if (g_pAppManager->m_pReentrantServerStats->m_nError == 4)
             {
                 DeltaT = (int)m_pWorldTimer->GetSnapshotTimeDifference() / 1000000.0f;
                 ProcessInput(DeltaT);
@@ -10376,18 +10426,18 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
     int bEndGameReady = 1;
     if (m_bEndGamePending && m_fEndGamePendingDelay <= 0.0f)
     {
-        if (!m_nUnknown49C)
+        if (!m_bEndGameInputLocked)
         {
-            m_nUnknown49C = 1;
+            m_bEndGameInputLocked = 1;
             g_pExoInput->SetActive(0);
             bEndGameReady = 0;
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_MUTE);
-            m_nUnknown4A0 = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
+            m_nEndGameInputLockTime = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
         }
         else
         {
             bEndGameReady = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) -
-                            m_nUnknown4A0 > XBOX_END_GAME_INPUT_LOCK_MS;
+                            m_nEndGameInputLockTime > XBOX_END_GAME_INPUT_LOCK_MS;
             g_pExoInput->UpdateJoysticks();
             g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
         }
@@ -10398,7 +10448,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
         if (m_fEndGamePendingDelay > 0.0f)
         {
             if (m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pMessageBox) ||
-                !m_nEndGamePendingUnknown)
+                !m_bShowEndGameDeathMessage)
                 m_fEndGamePendingDelay -= DeltaT;
             else
             {
@@ -10434,15 +10484,15 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
             ExoXboxLaunch(&cParams, g_pAppManager->m_pServerExoApp->GetModuleName().CStr());
         }
     }
-    int bSlowMotion = m_nUnknown1B0;
+    int bSlowMotion = m_bGuiGameSlow;
     if (bSlowMotion || SlowGame)
         SetGameSpeed(0.25f);
     else
         SetGameSpeed(1.0f);
     if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
     {
-        m_pUnknown10->ProcessReceivedFrames(1);
-        m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+        m_pNetLayer->ProcessReceivedFrames(1);
+        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
     }
     if (m_bRunScript)
     {
@@ -10538,12 +10588,12 @@ int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
     if (pModule != NULL && pModule->m_pInfo != NULL)
     {
         CSWCArea* pArea = pModule->m_pInfo;
-        if (!m_nUnknown26C && m_nUnknown188)
-            m_nUnknown26C = 1;
-        else if (m_nUnknown26C && !m_nUnknown188)
+        if (!m_bAreaSoundsHeld && m_bSuppressLoadBar)
+            m_bAreaSoundsHeld = 1;
+        else if (m_bAreaSoundsHeld && !m_bSuppressLoadBar)
         {
             pArea->StartSounds();
-            m_nUnknown26C = 0;
+            m_bAreaSoundsHeld = 0;
         }
         CAurScene* pScene = pArea->m_pScene;
         if (pScene != NULL && pCharacter != NULL)
@@ -10696,7 +10746,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // PC 0x005F5E10  Xb
     if (m_fCameraZoom != 0.0f)
     {
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved104 = 1;
+        pModule->m_bCameraZoomChanged = 1;
     }
     if (pCamera != NULL)
     {
@@ -10723,7 +10773,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // PC 0x005F5E10  Xb
         m_pModule->ZoomCamera(m_fCameraZoom);
 
     if (g_pAppManager->GetClientExoApp()->GetCaptureEvents() == CAPTURE_EVENTS_RECORD &&
-        m_pModule->m_nReserved80 == 1)
+        m_pModule->m_bCameraMoved == 1)
     {
         float fDistance = pCamera->GetDist();
         float fPitch = pCamera->GetPitch();
@@ -10735,12 +10785,12 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // PC 0x005F5E10  Xb
             CPlayBackEventNode::CAMERA, fDistance, fPitch, fYaw);
         g_pAppManager->GetClientExoApp()->GetCaptureEventFile()->Write(sEvent);
         CSWCModule* pModule = m_pModule;
-        pModule->m_nReserved80 = 0;
+        pModule->m_bCameraMoved = 0;
     }
     m_fCameraZoom = 0.0f;
     m_fCameraTilt = 0.0f;
     m_fCameraTurn = 0.0f;
-    m_pModule->m_nReserved80 = 0;
+    m_pModule->m_bCameraMoved = 0;
 }
 #endif
 #ifdef _XBOX
@@ -10847,11 +10897,11 @@ void CClientExoAppInternal::StopServices()
         delete m_pServerInfo;
         m_pServerInfo = NULL;
     }
-    if (m_pUnknown10 != NULL)
+    if (m_pNetLayer != NULL)
     {
-        m_pUnknown10->ShutDown();
-        delete m_pUnknown10;
-        m_pUnknown10 = NULL;
+        m_pNetLayer->ShutDown();
+        delete m_pNetLayer;
+        m_pNetLayer = NULL;
     }
     if (g_pExoInput != NULL)
     {
@@ -10949,10 +10999,10 @@ void CClientExoAppInternal::StopServices()
         delete m_pClientOptions;
         m_pClientOptions = NULL;
     }
-    if (m_pUnknown1C0 != NULL)
+    if (m_pClientMsgSysAdmin != NULL)
     {
-        delete m_pUnknown1C0;
-        m_pUnknown1C0 = NULL;
+        delete m_pClientMsgSysAdmin;
+        m_pClientMsgSysAdmin = NULL;
     }
     if (m_pPlayerControl != NULL)
         delete m_pPlayerControl;

@@ -21,7 +21,7 @@ CExoDebugInternal::CExoDebugInternal()
     m_pAuxiliaryLogFileTwo = 0;
     m_bLogFilesOpen = 0;
 }
-
+// Dead code: not in the PC executable
 void CExoDebugInternal::Assert(int line, char* file, const char* message)
 {
     CExoString sAssert;
@@ -46,7 +46,74 @@ void CExoDebugInternal::Assert(int line, char* file, const char* message)
         fclose(pFile);
     }
 }
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushErrorFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileOne->Flush();
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushLogFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pLogFile->Flush();
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushResourcesLogFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileTwo->Flush();
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushSoundLogFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileThree->Flush();
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::FlushResourceTrackingFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileFour->Flush();
+    }
+}
+// Dead code: not in the PC executable
+CExoFile* CExoDebugInternal::OpenLogFile(const CExoString& path, CExoString name)
+{
+    CExoString sFileName;
+    CExoString sMode;
+    CExoFile* pFile;
 
+    sFileName.Format("LOGS:%s%s", path.CStr(), name.CStr());
+
+    if (name == CExoString("Tracking"))
+    {
+        if (g_bExtendedResourceTracking)
+        {
+            pFile = new CExoFile(sFileName, 10, "a");
+        }
+        else
+        {
+            pFile = new CExoFile(sFileName, 10, "w");
+        }
+    }
+    else
+    {
+        pFile = new CExoFile(sFileName, 10, "w");
+    }
+
+    return pFile;
+}
+// Dead code: not in the PC executable
 void CExoDebugInternal::InitializeWarningFile()
 {
     time_t tNow;
@@ -67,6 +134,81 @@ void CExoDebugInternal::InitializeWarningFile()
     {
         fprintf(pFile, sHeader.CStr());
         fclose(pFile);
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::InitializeAssertFile()
+{
+    time_t tNow;
+    char szHeader[256];
+
+    time(&tNow);
+    sprintf(szHeader,
+            "\n--------------------------------------\n"
+            "Messages for: %s"
+            "--------------------------------------\n",
+            ctime(&tNow));
+
+    CExoString sHeader(szHeader);
+
+    FILE* pFile = fopen("Logs\\swcAsserts.txt", "at");
+
+    if (pFile)
+    {
+        fprintf(pFile, sHeader.CStr());
+        fclose(pFile);
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToErrorFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileOne->Write(text);
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToLogFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pLogFile->Write(text);
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToResourcesLogFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileTwo->Write(text);
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToSoundLogFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileThree->Write(text);
+        FlushSoundLogFile();
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteToResourceTrackingFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pAuxiliaryLogFileFour->Write(text);
+        FlushResourceTrackingFile();
+    }
+}
+// Dead code: not in the PC executable
+void CExoDebugInternal::WriteResourceToScreen(const CExoString& text,
+                                              int nColumn, int nRow,
+                                              float fDuration)
+{
+    if (g_bDisplayServicedResources)
+    {
+        text.CStr();
     }
 }
 // PC 0x005EC2B0  Xbox 0x00135850
@@ -239,7 +381,7 @@ CExoDebugInternal::~CExoDebugInternal()
 {
     CloseLogFiles();
 }
-
+// Dead code: not in the PC executable
 static void ExoTranslateStructuredException(unsigned int nCode, EXCEPTION_POINTERS* pExceptionPointers)
 {
     if (std::uncaught_exception())
@@ -248,12 +390,12 @@ static void ExoTranslateStructuredException(unsigned int nCode, EXCEPTION_POINTE
     }
     throw nCode;
 }
-
+// Dead code: not in the PC executable
 static void ExoTerminate()
 {
     abort();
 }
-
+// Dead code: not in the PC executable
 void ExoInstallExceptionHandlers()
 {
     _set_se_translator(ExoTranslateStructuredException);

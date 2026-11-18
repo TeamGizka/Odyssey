@@ -3,7 +3,6 @@
 #include <string.h>
 
 int nSpawnMode = _P_OVERLAY;
-// PC 0x004041F0
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
 {

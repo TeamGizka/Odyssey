@@ -184,6 +184,7 @@ const int XBOX_LEVEL_MEMORY_CAP = 0xd00000;
 #include "keeperfill_main.inc"
 #endif
 #ifndef _XBOX
+// Dead code: not in the PC executable
 const char* Buffers(char* sBuffer)
 {
     sprintf(sBuffer, "VB[%d][%d] IB[%d][%d]",
@@ -191,26 +192,26 @@ const char* Buffers(char* sBuffer)
             totalindexpool / BYTES_PER_KB, totalindexpool4 / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* C_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "tot[%06.1f] snd[%06.1f] AI:[%06.1f] gui:[%06.1f]",
             g_ClientUpdateTime, g_SndUpdateTime, g_AIUpdateTime, g_GuiUpdateTime);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* S_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "tot[%07.2f]", g_ServerUpdateTime);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* AI_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "Mod[%05.2f] Obj[%05.2f]", g_AIModuleTime, g_AIObjectTime);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* TexMem(char* sBuffer)
 {
     int nUncompressed = usedtexturememory - usedcomptexmemory - usedlightmapmemory -
@@ -222,7 +223,7 @@ const char* TexMem(char* sBuffer)
             usedbumpmapmemory / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* GfxMemOld(char* sBuffer)
 {
     sprintf(sBuffer, "(kB) Textures %d Verts %d Anims %d",
@@ -230,7 +231,7 @@ const char* GfxMemOld(char* sBuffer)
             animationfootprint / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* XbxMem(char* sBuffer)
 {
     int nTotalMem = XBOX_TOTAL_MEMORY;
@@ -257,14 +258,14 @@ const char* XbxMem(char* sBuffer)
             nTotalMem / BYTES_PER_KB, nLevelMem / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* GuiMem(char* sBuffer)
 {
     sprintf(sBuffer, "Tex %d Part %d", RyanStartTextureSize / BYTES_PER_KB,
             RyanStartParts);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* LevMem(char* sBuffer)
 {
     sprintf(sBuffer, "Tot %d Tex %d Part %d Vert %d-%d",
@@ -273,7 +274,7 @@ const char* LevMem(char* sBuffer)
             RyanLevelVertices, RyanLevelVertSize / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* DynMem(char* sBuffer)
 {
     int nTextures = usedtexturememory - RyanEndTextureSize;
@@ -285,7 +286,7 @@ const char* DynMem(char* sBuffer)
             nVertSize / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* GfxMem(char* sBuffer)
 {
     int nResources;
@@ -304,7 +305,7 @@ const char* GfxMem(char* sBuffer)
             nTextureSize / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* ResMem(char* sBuffer)
 {
     int nResources;
@@ -322,7 +323,7 @@ const char* ResMem(char* sBuffer)
             nImageSize / BYTES_PER_KB);
     return sBuffer;
 }
-
+// Dead code: not in the PC executable
 const char* ClearLogCounters(char* sBuffer)
 {
     return "NOT ENABLED";
@@ -332,7 +333,7 @@ const char* DumpLogCounters(char* sBuffer)
 {
     return "NOT ENABLED";
 }
-
+// Dead code: not in the PC executable
 void LogLevelStats()
 {
     FILE* pFile = fopen("D:\\Logs\\Levelstats.txt", "a");
@@ -357,7 +358,7 @@ void LogLevelStats()
     fprintf(pFile, "\n");
     fclose(pFile);
 }
-
+// Dead code: not in the PC executable
 const char* tc(char* sBuffer)
 {
     int nLevelVertices = RyanTotalLevelVertices;
@@ -395,6 +396,7 @@ void ExoXboxRestart()
     XLaunchNewImage("d:\\default.xbe", NULL);
 }
 #endif
+// Dead code: not in the PC executable
 // Xbox 0x000126C0
 void SaveCreature(char* sName)
 {
@@ -440,7 +442,7 @@ void HandleLoadError(unsigned long nError)  // PC 0x004015A0  Xbox 0x00012730
 {
 }
 #endif
-
+// Dead code: not in the PC executable
 void ReportFatalError(const char* szError)
 {
     char szMessage[512];
@@ -652,6 +654,7 @@ inline DWORD ProcessorMask(unsigned int nProcessor)
 }
 
 #ifndef _XBOX
+// Dead code: not in the PC executable
 void SetProcessorAffinity(unsigned int nProcessor)
 {
     if (nProcessor < 32)
@@ -2077,11 +2080,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004041
     else
     {
         sDisableSound.Format("%d", 0);
-        CExoString sKey2("Disable Sound");
-        CExoString sSection2("Sound Options");
-        CExoString sFileName2(".\\swkotor.ini");
+        CExoString sKey("Disable Sound");
+        CExoString sSection("Sound Options");
+        CExoString sFileName(".\\swkotor.ini");
 
-        cIni.WriteIniEntry(sDisableSound, sFileName2, sSection2, sKey2);
+        cIni.WriteIniEntry(sDisableSound, sFileName, sSection, sKey);
     }
 
     ProcessCommandLine(__argc, __argv);
@@ -2089,13 +2092,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004041
 
     int bStartFailed;
     {
-        CExoString sArg1("");
-        CExoString sArg2("");
-        CExoString sArg3("");
+        CExoString sLoadScreen("");
+        CExoString sLoadMusic("");
+        CExoString sModule("");
 
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
 
-        bStartFailed = pClientExoApp->StartServices(0, sArg3, sArg2, sArg1, 0);
+        bStartFailed = pClientExoApp->StartServices(0, sModule, sLoadMusic, sLoadScreen, 0);
     }
     if (bStartFailed != 0)
     {
@@ -2892,7 +2895,7 @@ int main()
             else
             {
                 g_pAppManager->m_pReentrantServerStats->StartStallEvent(1);
-                g_pAppManager->m_pReentrantServerStats->m_nUnknown56 = 4;
+                g_pAppManager->m_pReentrantServerStats->m_nError = 4;
             }
         }
     }

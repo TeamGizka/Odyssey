@@ -25,8 +25,11 @@ if(NOT KOTOR_PLATFORM IN_LIST KOTOR_PLATFORMS)
 endif()
 include(cmake/platform/${KOTOR_PLATFORM}.cmake)
 
-# ON: swkotor.exe is byte-identical to the 1.03 release (adds generated, unreferenced filler functions to swmain).
-# OFF: swkotor.exe is built from the source tree alone. See cmake/keeperfill/README.md.
+# How the functions of swkotor.exe are laid out (README.md, "Build"):
+#   KOTOR_LINK_ORDER   the linker places them in the order listed in cmake/order/swkotor.txt (/ORDER)
+#   KOTOR_KEEPER_FILL  the generated filler block decides which copy of identical functions is kept
+#                      (cmake/keeperfill/README.md); with it swkotor.exe is byte-identical to the 1.03 release
+option(KOTOR_LINK_ORDER "Link the functions of swkotor.exe in the order of cmake/order/swkotor.txt" OFF)
 option(KOTOR_KEEPER_FILL "Generate the linker filler block for swmain" ON)
 option(KOTOR_BUILD_SWSERVER "Build the experimental dedicated server (dev/game/swserver)" OFF)
 

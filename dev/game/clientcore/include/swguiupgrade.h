@@ -57,8 +57,8 @@ public:
     CSWGuiListBox m_lbDesc;
     CSWGuiListBox m_lbDescLs;
     CSWGuiLabel m_cTitle;
-    CSWGuiLabel m_CSWGuiLabel_1F60;
-    CSWGuiLabel m_cLabel20A0;
+    CSWGuiLabel m_cDescription;
+    CSWGuiLabel m_cLightsaberDescription;
     CSWGuiLabel m_cDescriptionBackground;
     CSWGuiLabel m_cLightsaberDescriptionBackground;
     CSWGuiLabel m_cProperty;
@@ -81,9 +81,9 @@ public:
     CSWGuiButton m_btnBack;
 #endif
     unsigned long m_bItemListShown : 1;
-    unsigned long m_nPanelFlagsUnused : 31;
+    unsigned long m_nFlagsUnused : 31;
     unsigned char m_nItemListMode;
-    char gap_2F4D[7];
+    char m_nPreviousItemListMode[7];
 
     CSWSItem* m_pSelectedItem;
 
@@ -108,6 +108,7 @@ public:
     void UpdateItems();
     void OnEnterSlot(CSWGuiControl*);
     ~CSWGuiUpgrade();
+    unsigned char GetNumUpgrades();
     void CloseItems();
     virtual void OnPanelAdded();
     void OnControlEntered(CSWGuiControl*);
@@ -235,10 +236,10 @@ public:
     unsigned int m_bShowItemSuffix : 1;
     char m_nUpgradeIndex;
     char gap_1D5[3];
-    CSWGuiBorder m_CSWGuiBorder_1D8;
-    CSWGuiBorder m_CSWGuiBorder_24C;
-    CSWGuiBorder m_CSWGuiBorder_2C0;
-    CSWGuiText m_CSWGuiText_334;
+    CSWGuiBorder m_cIconBorder;
+    CSWGuiBorder m_cIconHilite;
+    CSWGuiBorder m_cIcon;
+    CSWGuiText m_cCountText;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
     virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x005B5E90
     {

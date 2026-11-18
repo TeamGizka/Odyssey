@@ -78,6 +78,7 @@ public:
     }
 
     int m_nCurrent;
+    BOOL AddObject(unsigned long oidObject);
 };
 
 class CServerAIMaster
@@ -179,10 +180,10 @@ public:
     CSWSItemPropertyHandler* m_pItemPropertyHandler;
     CExoString m_sLastEvent;
     int m_nLastEvent[6];
-    CExoArrayList<unsigned long>* m_pUnused80;
-    CExoArrayList<unsigned long>* m_pUnused84;
-    CExoArrayList<unsigned long>* m_pUnused88;
-    CExoArrayList<unsigned long>* m_pUnused8C;
+    CExoArrayList<unsigned long>* m_pAttackRepAdjustments;
+    CExoArrayList<unsigned long>* m_pTheftRepAdjustments;
+    CExoArrayList<unsigned long>* m_pKillRepAdjustments;
+    CExoArrayList<unsigned long>* m_pHelpRepAdjustments;
 };
 
 #endif

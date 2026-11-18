@@ -157,6 +157,7 @@ public:
     CGameObjectArray* GetObjectArray() { return m_pObjectArray; }
     CSWSItem* GetItemByGameObjectID(unsigned long oidObject);
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oidObject);
+    CSWSModule* GetModuleByGameObjectID(unsigned long oidObject);
     CSWSArea* GetAreaByGameObjectID(unsigned long oidObject);
     CSWSTrigger* GetTriggerByGameObjectID(unsigned long oidObject);
     CSWSPlaceable* GetPlaceableByGameObjectID(unsigned long oidObject);
@@ -169,6 +170,8 @@ public:
     CSWSSoundObject* GetSoundObjectByGameObjectID(unsigned long oidObject);
     int GetPlayerLanguage(unsigned long nPlayerId);
     int GetModuleLanguage();
+    int AddPendingAuthorization(unsigned long nPlayerId);
+    int RemovePendingAuthorization(unsigned long nPlayerId);
     CWorldTimer* GetActiveTimer(unsigned long nTimer);
     int HandleMessage(unsigned long nPlayerId, unsigned char* pMessage,
                       unsigned long nSize, int bGuaranteed);
@@ -177,6 +180,7 @@ public:
                                 const CExoString& sDestination,
                                 unsigned short nFlags);
     void Uninitialize();
+    void UpdateWindowTitle();
     int MainLoop();
     void TempDeathUpdate();
     void PlayerListChange(unsigned long nPlayerId, int bAdded, int bGuaranteed);
@@ -211,9 +215,11 @@ public:
     int StorePlayerCharacters();
     int ValidateCreateServerCharacter(CSWSPlayer* pPlayer, void* pData, unsigned long nSize);
     int StoreCurrentModule();
-    void UpdateClientGameObjects(int bFlag);
-    void UpdateClientGameObjectsForPlayer(CSWSPlayer* pPlayer, int bFlag,
+    void UpdateClientGameObjects(int bForce);
+    void MarkUpdateClientsForObject(unsigned long oidObject);
+    void UpdateClientGameObjectsForPlayer(CSWSPlayer* pPlayer, int bForce,
                                           unsigned __int64 nTime);
+    void UpdateClientsForObject(unsigned long oidObject);
     int SendCharacterQuery(CSWSPlayer* pPlayer);
     CSWSPlayer* GetClientObjectByObjectId(unsigned long oidObject);
     CSWSPlayer* GetClientObjectByPlayerId(unsigned long nPlayerId,
@@ -238,7 +244,9 @@ public:
     void RemoveFromExclusionList(unsigned long oidObject, unsigned char nType);
     CExoLinkedList<unsigned long>* GetActiveExclusionList();
     int IsOnActiveExclusionList(unsigned long oidObject);
+    int IsOnExclusionList(unsigned long oidObject);
     int ResolvePlayerByFirstName(const CExoString& sFirstName);
+    unsigned long GetPlayerIDByGameObjectID(unsigned long oidObject);
     int GetDifficultyOption(int nOption);
     void AddCharListRequest(unsigned long nPlayerId);
     int GetFirstPCObject();
@@ -288,6 +296,8 @@ public:
     int IsInjured(unsigned long oidObject);
     int UpdateAutoSaveTimer();
     int AutoSaveOnEnteringModule(const CExoString& sModule, C2DA* p2DA);
+    int StartShutdownTimer(unsigned __int64 nTime, unsigned __int64 nDelay);
+    int UpdateLogHeartbeatTimer(unsigned __int64 nTime);
     int UpdateMainLoopTimeBudget(unsigned __int64 nTime);
     int UpdateShutdownTimer(unsigned __int64 nTime);
     void UpdateMapData();
@@ -296,7 +306,7 @@ public:
 
     void GetServerInfoFromIniFile();
 
-    void DealWithLoadGameError(unsigned long nValue);
+    void DealWithLoadGameError(unsigned long nLoadErr);
 
     enum { LOAD_GAME_ERROR_COPY_MODULE = 5 };
     unsigned char m_aUnmapped0[0x10004];

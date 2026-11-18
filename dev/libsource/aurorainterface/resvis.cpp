@@ -21,6 +21,11 @@ unsigned long CResVIS::GetVISSize()
 {
     return m_nVISSize;
 }
+// Dead code: not in the PC executable
+int CResVIS::IsLoaded()
+{
+    return m_bServiced;
+}
 // PC 0x00710E60  Xbox 0x002FB020
 int CResVIS::OnResourceFreed()
 {

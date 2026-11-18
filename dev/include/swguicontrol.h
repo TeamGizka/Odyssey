@@ -59,7 +59,7 @@ public:
     {
         m_cExtent = cExtent;
     }
-    virtual void SetActiveControl(CSWGuiControl* pControl, int bUnknown)  // PC 0x005B5E90  Xbox 0x0015C270
+    virtual void SetActiveControl(CSWGuiControl* pControl, int bPlaySound)  // PC 0x005B5E90  Xbox 0x0015C270
     {
     }
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver)  // PC 0x0060E760
@@ -240,6 +240,7 @@ public:
     }
 
     void AddEvent(int nEvent, CSWGuiObject* pObject, CSWGuiHandler pHandler);
+    int GetEvent(int nEvent, CSWGuiObject** ppObject, CSWGuiHandler* ppHandler);
     void Load(CSWGuiObject* pParent, CResGFF* pGFF, CResStruct& cStruct,
               const CExoString& sName);
     void Load(CSWGuiObject* pParent, CResGFF* pGFF, CResList& lControls,
@@ -521,7 +522,7 @@ public:
 
     int m_nToggleEvent;
     unsigned long m_bToggled : 1;
-    unsigned long m_nUnknown1C8Rest : 31;
+    unsigned long m_nToggleFlagsUnused : 31;
     CSWGuiBorder m_cToggleBorder;
     CSWGuiBorder m_cToggleHilite;
 };
@@ -579,7 +580,7 @@ public:
     int m_nCurValue;
     int m_nVisibleValue;
 #ifdef _XBOX
-    int m_nXboxUnmapped48;
+    int m_nTopValue;
 #endif
     unsigned long m_bDrawMode : 1;
     unsigned long m_bExtendedRange : 1;

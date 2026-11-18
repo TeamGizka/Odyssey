@@ -286,6 +286,14 @@ void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
     }
 #endif
 }
+// Dead code: not in the PC executable
+void CSWGuiInGameOptions::SetActiveButton(int nOption)
+{
+    if (nOption >= 0 && nOption < 8)
+    {
+        SetActiveControl(&m_aOptions[nOption], 0);
+    }
+}
 // PC 0x006AB2F0  Xbox 0x000DDEC0
 CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -300,10 +308,10 @@ CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     InitControl(m_aOptions[5], "BTN_GRAPHICSSOUND", 1);
     InitControl(m_aOptions[6], "BTN_QUIT", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lblUnknown12C8, "LBL_A", 1);
-    InitControl(m_lblUnknown1408, "LBL_SELECT", 1);
-    InitControl(m_lblUnknown1548, "LBL_START", 1);
-    InitControl(m_lblUnknown1688, "LBL_EXIT", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblStart, "LBL_START", 1);
+    InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblScrollIcon, "LBL_RANALOG", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;

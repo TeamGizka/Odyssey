@@ -19,12 +19,11 @@
 #include "nwcanimbase.h"
 #include "aurscene.h"
 
-static inline void SwguimainmenuTrace3();
-static inline void SwguimainmenuTrace2();
-static inline void SwguimainmenuTrace1();
-#define SWGUIMAINMENU_TRACE() SwguimainmenuTrace3()
+#define SWGUIMAINMENU_DEBUG 0
 
-#define SWGUIMAINMENU_HOLD() SwguimainmenuTrace1()
+static inline void TraceMainMenu();
+
+#define SWGUIMAINMENU_HOLD() TraceMainMenu()
 
 #ifndef _XBOX
 void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x0067AC10
@@ -338,6 +337,11 @@ CSWGuiMainMenu::~CSWGuiMainMenu()
         g_pExoResMan->m_bMainMenuImageLoaded = 1;
     }
 }
+// Dead code: not in the PC executable
+void CSWGuiMainMenu::ClearListBox()
+{
+    m_lbModules.ClearItems();
+}
 
 #ifdef _XBOX
 
@@ -359,8 +363,8 @@ inline void CSWGuiMainMenu::OnPanelAdded()
         }
         cMessage.m_sMessage = g_pTlkTable->GetSimpleString(42141);
         g_pTlkTable->ParseStr(cMessage.m_sMessage);
-        cMessage.m_nUnknown08 = 1;
-        cMessage.m_nUnknown0C = 1;
+        cMessage.m_bHideButtons = 1;
+        cMessage.m_bAllowCancel = 1;
         cMessage.m_pCallbackObject = this;
         cMessage.m_pfnCallback = (CSWGuiHandler)&CSWGuiMainMenu::LaunchDashboard;
         AddErrorMessage(cMessage);
@@ -450,7 +454,10 @@ void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
 // PC 0x0067B930
 void CSWGuiMainMenu::DeleteModuleList()
 {
-    SWGUIMAINMENU_TRACE();
+    if (SWGUIMAINMENU_DEBUG)
+    {
+        CErrorMessageData cMessage;
+    }
     while (m_lstModules.num > 0)
     {
         m_lstModules.DelIndex(0);
@@ -466,8 +473,8 @@ void CSWGuiMainMenu::PopulateModules()
     CExoString sMod;
     CExoArrayList<CExoString> lstRims;
     CExoArrayList<CExoString> lstMods;
-    CExoArrayList<CExoString> lstUnused1;
-    CExoArrayList<CExoString> lstUnused2;
+    CExoArrayList<CExoString> lstUnusedRims;
+    CExoArrayList<CExoString> lstUnusedMods;
     CExoArrayList<CSWGuiControl*> lstControls;
     int nRim = 0;
     int nMod = 0;
@@ -727,17 +734,7 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
 #endif
 }
 
-static inline void SwguimainmenuTrace3()
-{
-    SwguimainmenuTrace2();
-}
-
-static inline void SwguimainmenuTrace2()
-{
-    SwguimainmenuTrace1();
-}
-
-static inline void SwguimainmenuTrace1()
+static inline void TraceMainMenu()
 {
 }
 
@@ -762,8 +759,8 @@ void CSWGuiMainMenu::ShowErrorMessage()
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
     CErrorMessageData* pMessage = &m_lstErrorMessages[0];
     CSWGuiMessageBox* pMessageBox = pInGame->m_pMessageBox;
-    pMessageBox->SetAllowCancel(pMessage->m_nUnknown0C);
-    if (pMessage->m_nUnknown08 != 0)
+    pMessageBox->SetAllowCancel(pMessage->m_bAllowCancel);
+    if (pMessage->m_bHideButtons != 0)
     {
         pMessageBox->HideButtons();
     }

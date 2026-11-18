@@ -14,8 +14,8 @@
 
 #include "aurparse.h"
 
-char* firstword(char* sLine);
-int Parse(char* sValue, int& nValue);
+char* firstword(char* sMessage);
+int Parse(char* sText, int& nValue);
 int Parse(char* sValue, float& fValue);
 int rint(float fValue);
 int enablerandomimpulses = 1;
@@ -189,7 +189,7 @@ void WaterTextureController::Init()
     int i;
     int j;
 
-    m_nUnknown64 = 0;
+    m_nUpdateCount = 0;
     if (m_bDistort != 0)
     {
         SetImage();
@@ -735,13 +735,13 @@ void WaterTextureController::Control()
     m_nLastUpdate = texcurrentframe;
     if (lowqualityblur == 0)
     {
-        if (m_nUnknown64 % 2 == 0)
+        if (m_nUpdateCount % 2 == 0)
         {
-            m_nUnknown64 = 0;
+            m_nUpdateCount = 0;
         }
         else
         {
-            ++m_nUnknown64;
+            ++m_nUpdateCount;
             return;
         }
     }
@@ -900,7 +900,7 @@ void WaterTextureController::Control()
         {
             delete[] pResult;
         }
-        ++m_nUnknown64;
+        ++m_nUpdateCount;
     }
 }
 // PC 0x00462030  Xbox 0x002CF4C0

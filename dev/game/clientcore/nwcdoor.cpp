@@ -315,6 +315,11 @@ void CSWCDoor::AnimationUpdate()
         }
     }
 }
+// Dead code: not in the PC executable
+unsigned char CSWCDoor::GetState()
+{
+    return m_nState;
+}
 // PC 0x006842E0  Xbox 0x000C03F0
 int CSWCDoor::LoadModel(const CResRef& cModel, unsigned char nModel,
                         unsigned char nFlags)

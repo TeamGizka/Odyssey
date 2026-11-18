@@ -12,8 +12,7 @@
 #define m_fScale 1.0f
 #endif
 
-static inline void AurguiTrace2();
-static inline void AurguiTrace1();
+#define AURGUI_DEBUG 0
 
 #ifdef _XBOX
 
@@ -24,6 +23,7 @@ inline void AurGUIColor(unsigned int nColor)
     g_pD3DDevice->SetVertexDataColor(D3DVSDE_DIFFUSE, nColor);
 }
 #else
+// Dead code: not in the PC executable
 static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
                             float fX, float fY, float fZ, float fW)
 {
@@ -180,7 +180,7 @@ void CAurGUIStringInternal::WrapStrings(int nWidth)
         }
     }
 }
-
+// Dead code: not in the PC executable
 void AurGUIDumpWrappedLines(CAurGUIStringInternal* pString)
 {
     List<int> lstLineStart;
@@ -879,7 +879,11 @@ CAurGUIImageInternal::CAurGUIImageInternal()
 // PC 0x0045B200  Xbox 0x002CAC00
 CAurGUIImageInternal::~CAurGUIImageInternal()
 {
-    AurguiTrace2();
+    if (AURGUI_DEBUG)
+    {
+        List<int>* pTextureTIDs = NULL;
+        pTextureTIDs->Add(m_pMaterial->GetTextureTID());
+    }
     if (CAurGUIImage::cm_nGUITID == m_pMaterial->GetTextureTID())
     {
         CAurGUIImage::FlushBuffer(CAurGUIImage::cm_fAlpha);
@@ -895,7 +899,11 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
                                         float fRotation, const Vector& vColor,
                                         float fAlpha)
 {
-    AurguiTrace2();
+    if (AURGUI_DEBUG)
+    {
+        List<int> lstTextureTIDs;
+        lstTextureTIDs.Add(m_pMaterial->GetTextureTID());
+    }
     if (noguirender != 0)
         return;
 
@@ -1624,15 +1632,6 @@ CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // PC 0x004
     return new CAurGUIStringInternal(sString, sFont, vColor, fScale);
 }
 #endif
-
-static inline void AurguiTrace2()
-{
-    AurguiTrace1();
-}
-
-static inline void AurguiTrace1()
-{
-}
 
 #ifdef _XBOX
 CAurGUIDraw::~CAurGUIDraw()  // Xbox 0x002C8710

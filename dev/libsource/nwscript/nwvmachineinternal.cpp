@@ -4,8 +4,7 @@
 #include <string.h>
 
 
-static inline void VirtualMachineTrace();
-#define VIRTUALMACHINE_TRACE() VirtualMachineTrace()
+#define NWVMACHINEINTERNAL_DEBUG 0
 
 
 #define VM_CODE_INTEGER(p) ((((p)[0] << 24) & 0xff000000) + (((p)[1] << 16) & 0x00ff0000) + \
@@ -15,7 +14,6 @@ static inline void VirtualMachineTrace();
 // PC 0x005D1C40  Xbox 0x001587C0
 void CVirtualMachineStack::AssignLocationToLocation(int nSource, int nDestination)
 {
-    VIRTUALMACHINE_TRACE();
     CExoString* pSourceString;
     CExoString* pString;
 
@@ -58,7 +56,10 @@ void CVirtualMachineStack::AssignLocationToLocation(int nSource, int nDestinatio
 // PC 0x005D1D80  Xbox 0x00158900
 int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 {
-    VIRTUALMACHINE_TRACE();
+    if (NWVMACHINEINTERNAL_DEBUG)
+    {
+        EXOLOG("CVirtualMachineStack::SaveStack: stack pointer %d\n", GetStackPointer());
+    }
     CResList cStackList;
     CResStruct cElement;
     int nLocation;
@@ -105,7 +106,10 @@ int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 // PC 0x005D1EF0  Xbox 0x00158A70
 int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 {
-    VIRTUALMACHINE_TRACE();
+    if (NWVMACHINEINTERNAL_DEBUG)
+    {
+        EXOLOG("CVirtualMachineStack::LoadStack: saved %d\n", SaveStack(pGFF, pStruct));
+    }
     CResList cStackList;
     CResStruct cElement;
     int bSuccess;
@@ -163,7 +167,10 @@ int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 // PC 0x005D2140  Xbox 0x00158CC0
 void CVirtualMachineStack::ClearStack()
 {
-    VIRTUALMACHINE_TRACE();
+    if (NWVMACHINEINTERNAL_DEBUG)
+    {
+        EXOLOG("CVirtualMachineStack::ClearStack: base pointer %d\n", GetBasePointer());
+    }
     int nLocation;
 
     if (m_pTypes != 0 && m_pValues != 0)
@@ -424,7 +431,10 @@ void CVirtualMachineInternal::SetCommandImplementer(
 // PC 0x005D21F0  Xbox 0x00158D70
 void CVirtualMachineStack::SetStackPointer(int nStackPointer)
 {
-    VIRTUALMACHINE_TRACE();
+    if (NWVMACHINEINTERNAL_DEBUG)
+    {
+        ClearStack();
+    }
     int nLocation;
 
     if (nStackPointer < m_nStackPointer)
@@ -1848,10 +1858,6 @@ CVirtualMachineInternal::~CVirtualMachineInternal()
     }
 }
 
-static inline void VirtualMachineTrace()
-{
-}
-
 #ifdef _XBOX
 // Xbox 0x001581F0
 void CVirtualMachineInternal::InitializeCRCTable()
@@ -2131,3 +2137,23 @@ int CVirtualMachineInternal::RunScriptSituation(
     return 0;
 }
 #endif
+// Dead code: not in the PC executable
+void CVirtualMachineStack::InitializeStack()
+{
+    ClearStack();
+}
+// Dead code: not in the PC executable
+int CVirtualMachineStack::GetBasePointer()
+{
+    return m_nBasePointer;
+}
+// Dead code: not in the PC executable
+void CVirtualMachineStack::SetBasePointer(int nBasePointer)
+{
+    m_nBasePointer = nBasePointer;
+}
+// Dead code: not in the PC executable
+int CVirtualMachineStack::GetStackPointer()
+{
+    return m_nStackPointer;
+}

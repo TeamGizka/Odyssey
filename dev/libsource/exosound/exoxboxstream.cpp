@@ -212,7 +212,7 @@ void CExoXboxStream::Set3D(int b3D)
 CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
 {
     m_bLooping = 0;
-    m_nUnknown5C = 0;
+    m_nPausePosition = 0;
     m_nFadeDuration = 0;
     m_nFadeStartTime = 0;
     m_b3D = 0;
@@ -224,7 +224,7 @@ CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
     m_pStream = NULL;
     m_pBuffer = NULL;
     m_nFileLength = 0;
-    m_nUnknownB0 = 0;
+    m_nFilePosition = 0;
     m_bPaused = 0;
     m_hFile = NULL;
     m_nPriorityVolume = nPriorityVolume;
@@ -235,7 +235,7 @@ CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
     m_bPlayFailed = 0;
     m_bStarting = 0;
     m_bDeleted = 0;
-    m_nUnknown14 = 0;
+    m_nStartTime = 0;
     m_bHasStartedStreaming = 0;
     m_nSourceId = nSourceId;
     m_bStopped = 1;
@@ -425,7 +425,7 @@ void CExoXboxStream::Stop(int bKeepPlaying)
     m_nResourceType = RESTYPE_INVALID;
     m_nFadeDuration = 0;
     m_nFadeStartTime = 0;
-    m_nUnknown5C = 0;
+    m_nPausePosition = 0;
     m_bFinished = 1;
     m_bEndOfFile = 1;
     if (bKeepPlaying == 0)
@@ -433,7 +433,7 @@ void CExoXboxStream::Stop(int bKeepPlaying)
         m_bPlaying = 0;
     }
     m_bStarting = 0;
-    m_nUnknown14 = 0;
+    m_nStartTime = 0;
     m_bHasStartedStreaming = 0;
     m_bStopped = 1;
 }
@@ -648,11 +648,11 @@ int CExoXboxStream::Play(const CExoString& sFileName, unsigned short nResourceTy
     m_nResourceType = RESTYPE_INVALID;
     m_nFadeDuration = 0;
     m_nFadeStartTime = 0;
-    m_nUnknown5C = 0;
+    m_nPausePosition = 0;
     m_bFinished = 1;
     m_bEndOfFile = 1;
     m_bStarting = 0;
-    m_nUnknown14 = 0;
+    m_nStartTime = 0;
     m_bStopped = 1;
     m_bHasStartedStreaming = 0;
     if (m_hFile != NULL)
