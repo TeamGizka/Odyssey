@@ -7,8 +7,10 @@
 #include "aurinternal.h"
 #include "aurgui.h"
 #include "aurconsole.h"
+#ifndef _XBOX
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 #include "swmain.h"
 #include "aurscene.h"
 #include "aurscenemanager.h"

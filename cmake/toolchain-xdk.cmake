@@ -28,10 +28,9 @@ set(CMAKE_LINKER       "${XDK_VC_BIN}/link.exe")
 set(CMAKE_AR           "${XDK_VC_BIN}/lib.exe")
 set(CMAKE_MT           "")
 
-# Headers: the XDK's CRT, STL and Xbox API headers only. Libraries are found through LIB (CMakePresets.json).
-# KOTOR_XBOX_COMPAT_INCLUDE (optional): a directory searched before the XDK headers, for the system headers the shared
-# sources still name (<windows.h>, <GL/gl.h>) while their Xbox side is not reconstructed.
-set(XDK_INCLUDES ${KOTOR_XBOX_COMPAT_INCLUDE} "${XDK_ROOT}/xbox/include")
+# Headers: the XDK's CRT, STL and Xbox API headers only (the sources reach <xtl.h> through dev/include/platform.h on
+# Xbox). Libraries are found through LIB (CMakePresets.json).
+set(XDK_INCLUDES "${XDK_ROOT}/xbox/include")
 set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES   ${XDK_INCLUDES})
 set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${XDK_INCLUDES})
 

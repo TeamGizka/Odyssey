@@ -1,7 +1,11 @@
 #define NWSAREA_SOURCE
 #define NWSAREA_EXOARRAYLIST_REMOVE
 #include "exobase.h"
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 #include "resgff.h"
 #include "nwerffile.h"
 #include "appmanager.h"

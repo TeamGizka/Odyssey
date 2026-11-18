@@ -1,7 +1,11 @@
 #define WIN32_LEAN_AND_MEAN
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#else
+#include "platform.h"
+#endif
 #include <math.h>
 #include <string.h>
 #include "aurcamera.h"

@@ -1,5 +1,9 @@
 #include "exobase.h"
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 #include <string.h>
 // PC 0x00637E70 GOG 0x00637D60
 CExoRandInternal::~CExoRandInternal()

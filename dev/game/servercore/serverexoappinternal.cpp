@@ -1,4 +1,8 @@
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 #include "swmain.h"
 #include "exobase.h"
 #include "netlayer.h"

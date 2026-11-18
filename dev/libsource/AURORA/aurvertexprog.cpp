@@ -1,9 +1,15 @@
 #include <string.h>
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
 #include <GL/gl.h>
+#else
+#include "platform.h"
+#endif
 
 #include "aurrendergl.h"
+#ifndef _XBOX
 #include "aurglext.h"
+#endif
 #include "auremitter.h"
 #include "aurinternal.h"
 #include "aurlightmanager.h"

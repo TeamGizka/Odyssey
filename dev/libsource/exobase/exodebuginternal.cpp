@@ -8,7 +8,11 @@
 #include <exception>
 #include <new.h>
 #include <stdlib.h>
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 
 #define EXODEBUGINTERNAL_DEBUG 0
 

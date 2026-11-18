@@ -13,5 +13,6 @@ and build files are tracked.
 | `Miles/6.1c/` | Miles Sound System 6.1c | older import library (swkotor.exe); not used by the build |
 | `Bink/1.6b/` | Bink 1.6b | headers and `binkw32.lib` the game links (release library of the Bink 1.6b reconstruction) |
 | `Bink/1.5v/` | Bink 1.5v | older SDK; not used by the build |
+| `Bink/xbox-1.5t/` | Bink 1.5t for Xbox (TeamGizka BinkSDK, branch `xbox-1.5t`) | Xbox build: headers and `binkxbox.lib` |
 | `DirectX/8.1/` | DirectX 8.1 SDK | `dinput8.lib` |
 | `NvTriStrip/original/` | NVIDIA NvTriStrip | built from source as `NvTriStrip.lib` |

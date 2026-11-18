@@ -2,7 +2,11 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 // PC 0x00634D50 GOG 0x00634C40
 void CExoStringList::Introduce(CExoString* pString, int nPosition)
 {

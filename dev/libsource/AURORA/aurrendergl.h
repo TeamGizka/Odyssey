@@ -34,7 +34,23 @@ extern "C" void(__stdcall* glVertexAttribPointerNV)(unsigned int nIndex, int nSi
 #else
 #include "platform.h"
 #endif
+#ifndef _XBOX
 #include <GL/gl.h>
+#else
+typedef unsigned int GLenum;
+typedef unsigned char GLboolean;
+typedef unsigned int GLbitfield;
+typedef int GLint;
+typedef unsigned int GLuint;
+typedef float GLfloat;
+typedef float GLclampf;
+#define GL_FALSE 0
+#define GL_TRUE 1
+#define GL_LINE_STRIP 0x0003
+#define GL_TRIANGLES 0x0004
+#define GL_LIGHTING_BIT 0x00000040
+#define GL_TEXTURE_BIT 0x00040000
+#endif
 #include <aurlist.h>
 
 #define AUR_SPHERE_BOUND_DIAGONAL_FACTOR 0.717f

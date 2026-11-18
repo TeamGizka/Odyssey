@@ -1,7 +1,11 @@
 #define WIN32_LEAN_AND_MEAN
 #include "auremitter.h"
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
 #include <GL/gl.h>
+#else
+#include "platform.h"
+#endif
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>

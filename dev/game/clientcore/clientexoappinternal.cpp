@@ -27,7 +27,11 @@
 #include "serverinfo.h"
 #include <stdlib.h>
 #include <math.h>
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 #include "aurora.h"
 #include "aurinternal.h"
 #include "exoinput.h"

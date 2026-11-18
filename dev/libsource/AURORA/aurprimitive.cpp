@@ -1,6 +1,12 @@
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 #include "aurrendergl.h"
+#ifndef _XBOX
 #include <GL/gl.h>
+#endif
 #include "aurprimitive.h"
 #include "aurmodel.h"
 #include "aurrendergl.h"

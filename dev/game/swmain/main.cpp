@@ -1,5 +1,9 @@
 #define _WIN32_WINNT 0x0400
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 #ifndef _XBOX
 #include <zmouse.h>
 #endif
@@ -7,7 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/timeb.h>
+#ifndef _XBOX
 #include <GL/gl.h>
+#endif
 #include "exobase.h"
 #include "appmanager.h"
 #include "clientexoapp.h"

@@ -1,5 +1,9 @@
 #define MATH3D_NO_INLINE
+#if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#else
+#include "platform.h"
+#endif
 #include "exobase.h"
 #include "swmain.h"
 
