@@ -726,7 +726,11 @@ public:
     void LookUpAndPerformRumbleWithCutOff(int nEntry, unsigned char nTable,
                                           const Vector& vPosition);
     int SaveOptions();
+#ifdef _XBOX
+    int LoadOptions();
+#else
     int LoadOptions(int bSetAntiAliasing);
+#endif
     void DoQuickSave();
     int ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound,
                                                unsigned char nPartyMembers);

@@ -1575,7 +1575,6 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
     return nDamage - nResistance > 0 ? nDamage - nResistance : 0;
 }
 
-#ifndef _XBOX
 int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // PC 0x004FB4F0 GOG 0x0050ACE0
 {
     if (pCaster != NULL && pCaster->AsSWSCreature() != NULL &&
@@ -1626,7 +1625,6 @@ int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // PC 0x004FB4F0 GO
     }
     return SPELL_RESISTANCE_UNRESOLVED;
 }
-#endif
 void CSWSObject::ApplyEffect(CGameEffect* pEffect, int bLoadingGame,  // PC 0x004FB640 GOG 0x0050AE30 Xbox 0x001A99E0
                            int bLoadingModule)
 {
@@ -4339,57 +4337,4 @@ void CSWSObject::RemoveGroup(unsigned short nGroupId)  // Xbox 0x001A4660
     }
 }
 
-int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // Xbox 0x001A9880
-{
-    if (pCaster == NULL || pCaster->AsSWSCreature() == NULL ||
-        m_lstEffects.num <= 0)
-    {
-        return SPELL_RESISTANCE_UNRESOLVED;
-    }
-    {
-        int nSpellId = pCaster->m_nLastSpellId;
-        CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpellId);
-        if (pSpell != NULL)
-        {
-            int bFromItem = pCaster->AsSWSCreature()->m_bCasterLevelOverride;
-            int nClass = CSWClass::CCLASS_INVALID;
-            if (bFromItem != 1)
-            {
-                unsigned char nMultiClass = pCaster->m_nLastSpellCastMultiClass;
-                CSWSCreatureStats* pStats = pCaster->AsSWSCreature()->m_pStats;
-                nClass = pStats->GetClass(nMultiClass);
-            }
-            if (bFromItem != 1 && nClass != CSWClass::CCLASS_INVALID)
-                pSpell->GetSpellLevel(nClass);
-            if (pSpell->m_nUserType != CSWSpell::USER_TYPE_FORCE_POWER)
-                return SPELL_RESISTANCE_UNRESOLVED;
-
-            int nAbsorbIndex = -1;
-            CSWSCreature* pCreature = AsSWSCreature();
-            CSWSCreatureStats* pStats = pCreature->m_pStats;
-            int i = pStats->m_nSpellLevelAbsorptionEffectIndex;
-            while (i < m_lstEffects.num)
-            {
-                if (m_lstEffects[i]->GetEffectType() >
-                    CSWSEffectListHandler::EFFECT_SPELL_LEVEL_ABSORPTION)
-                    break;
-                ++i;
-            }
-            if (nAbsorbIndex != -1 && pStats != NULL)
-                RemoveEffectById(m_lstEffects[nAbsorbIndex]->m_nID);
-            pStats = AsSWSCreature()->m_pStats;
-            i = pStats->m_nSpellLevelAbsorptionEffectIndex;
-            while (i < m_lstEffects.num)
-            {
-                if (m_lstEffects[i]->GetEffectType() >
-                    CSWSEffectListHandler::EFFECT_SPELL_LEVEL_ABSORPTION)
-                    break;
-                ++i;
-            }
-            if (AsSWSCreature() != NULL)
-                pCaster->AsSWSCreature();
-        }
-    }
-    return SPELL_RESISTANCE_UNRESOLVED;
-}
 #endif

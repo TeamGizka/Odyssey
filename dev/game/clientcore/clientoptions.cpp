@@ -1296,6 +1296,7 @@ void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)  // Xbox 0
     pData->m_bAutoCentre = m_bMouseLook;
     pData->m_bAutoSave = m_bAutoSave;
     pData->m_bReverse = m_bReverseMinigameYAxis;
+    pData->m_bReverseIngame = m_bReverseIngame;
     pData->m_bCombatMove = m_bCombatMovement;
     pData->m_bHideUnequippable = m_bHideUnequippable;
     pData->m_bShowTutorial = m_bTutorialPopups;
@@ -1306,6 +1307,7 @@ void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)  // Xbox 0
     pData->m_bShowSummary = m_bStatusSummary;
     pData->m_bEndRound = m_bAutopauseEndOfCombatRound;
     pData->m_bEnemySighted = m_bAutopauseEnemySighted;
+    pData->m_bMineSighted = m_bAutopauseMineSighted;
     pData->m_bPartyKilled = m_bAutopausePartyKilled;
     pData->m_bUseHorzMenu = m_bAutopauseActionMenu;
     pData->m_bUseVertMenu = m_bPauseVertMenu;
@@ -1315,6 +1317,13 @@ void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)  // Xbox 0
     pData->m_nVolumeVO = m_nVoiceVolume;
     pData->m_nVolumeFX = m_nSoundEffectsVolume;
     pData->m_nVolumeMovie = m_nMovieVolume;
+    pData->m_nCurSithLord = m_nCurSithLord;
+    pData->m_bGameCompleted = m_bGameCompleted;
+    pData->m_nUnlockedSongs = m_nUnlockedSongs;
+    pData->m_nPCGender = m_nPCGender;
+    pData->m_nAppearanceType = m_nAppearanceType;
+    pData->m_nBodyVariation = m_nBodyVariation;
+    pData->m_nTextureVariation = m_nTextureVariation;
     memcpy(pData->m_aMoviesShown, m_aMoviesShown, sizeof(m_aMoviesShown));
 }
 
@@ -1325,6 +1334,7 @@ void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)
     m_bMouseLook = pData->m_bAutoCentre;
     m_bAutoSave = pData->m_bAutoSave;
     m_bReverseMinigameYAxis = pData->m_bReverse;
+    m_bReverseIngame = pData->m_bReverseIngame;
     m_bCombatMovement = pData->m_bCombatMove;
     m_bHideUnequippable = pData->m_bHideUnequippable;
     m_bTutorialPopups = pData->m_bShowTutorial;
@@ -1335,6 +1345,7 @@ void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)
     m_bStatusSummary = pData->m_bShowSummary;
     m_bAutopauseEndOfCombatRound = pData->m_bEndRound;
     m_bAutopauseEnemySighted = pData->m_bEnemySighted;
+    m_bAutopauseMineSighted = pData->m_bMineSighted;
     m_bAutopausePartyKilled = pData->m_bPartyKilled;
     m_bAutopauseActionMenu = pData->m_bUseHorzMenu;
     m_bPauseVertMenu = pData->m_bUseVertMenu;
@@ -1344,6 +1355,13 @@ void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)
     m_nVoiceVolume = pData->m_nVolumeVO;
     m_nSoundEffectsVolume = pData->m_nVolumeFX;
     m_nMovieVolume = pData->m_nVolumeMovie;
+    m_nCurSithLord = pData->m_nCurSithLord;
+    m_bGameCompleted = pData->m_bGameCompleted;
+    m_nUnlockedSongs = pData->m_nUnlockedSongs;
+    m_nPCGender = pData->m_nPCGender;
+    m_nAppearanceType = pData->m_nAppearanceType;
+    m_nBodyVariation = pData->m_nBodyVariation;
+    m_nTextureVariation = pData->m_nTextureVariation;
     if (g_pExoSound != NULL)
     {
         g_pExoSound->SetMusicVolume(m_nMusicVolume * 0.01f, 0);

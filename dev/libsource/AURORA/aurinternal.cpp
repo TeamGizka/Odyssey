@@ -857,13 +857,56 @@ void CAurInternalGL::Reshape(int nWidth, int nHeight)  // PC 0x00462AA0 GOG 0x00
     }
 }
 #endif
+#ifdef _XBOX
+void AurSkinFreeVertexPrograms();
+#endif
 #ifdef _XBOX  // PC 0x00462AF0 GOG 0x00462C00
-void CAurInternalGL::ShutDown(int bReleaseRenderer)  // Xbox 0x002CF220
+void CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)  // Xbox 0x002CF220
 #else
 int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
 #endif
 {
-#ifndef _XBOX
+#ifdef _XBOX
+    if (g_pBumpyShinySkinPass1 != NULL)
+    {
+        delete g_pBumpyShinySkinPass1;
+    }
+    if (g_pBumpyShinySkinPass2 != NULL)
+    {
+        delete g_pBumpyShinySkinPass2;
+    }
+    if (g_pBumpyShinySkinPass2_3bone != NULL)
+    {
+        delete g_pBumpyShinySkinPass2_3bone;
+    }
+    if (g_pBumpyShinyPass1 != NULL)
+    {
+        delete g_pBumpyShinyPass1;
+    }
+    if (g_pBumpyShinyPass2 != NULL)
+    {
+        delete g_pBumpyShinyPass2;
+    }
+    if (g_pBumpyShinyPass3 != NULL)
+    {
+        delete g_pBumpyShinyPass3;
+    }
+    if (g_pBumpyShinyPass4 != NULL)
+    {
+        delete g_pBumpyShinyPass4;
+    }
+    if (g_pBumpyShinyPass5 != NULL)
+    {
+        delete g_pBumpyShinyPass5;
+    }
+    AurSkinFreeVertexPrograms();
+    if (bReleaseRenderer != 0)
+    {
+        AurTextureFreeAll();
+        ResetGammaRamp(1.0f, 0);
+    }
+    GLRender::Shutdown(bReleaseRenderer);
+#else
     VertexProgramManager::ResetVertexPrograms();
     if (g_pBumpyShinySkinPass1 != NULL)
     {
@@ -920,13 +963,11 @@ int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
         delete g_pBumpedOutVP;
         g_pBumpedOutVP = NULL;
     }
-#endif
     if (bReleaseRenderer != 0)
     {
         AurTextureClearAll();
     }
     GLRender::Shutdown(bReleaseRenderer);
-#ifndef _XBOX
     if (szBumpyShinyVPARB != NULL) {
         delete szBumpyShinyVPARB;
         szBumpyShinyVPARB = NULL;
@@ -951,12 +992,10 @@ int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
         m_bDisplayModeChanged = 0;
         m_bFullScreen = 0;
     }
-#endif
     if (bReleaseRenderer != 0)
     {
         ResetGammaRamp(1.0f, 0);
     }
-#ifndef _XBOX
     int nResult = (int)g_hRenderWnd;
     if (g_hRenderWnd != NULL && bDestroyWindow != 0)
     {
@@ -988,9 +1027,5 @@ CAurInternalGL::CAurInternalGL()
 CAurInternalGL::~CAurInternalGL()
 {
     untrace(NULL); AurStringsFree(); AurFreeFont(); AurDeleteAllFonts();
-#ifdef _XBOX
-    ShutDown(1);
-#else
     ShutDown(1, 1);
-#endif
 }

@@ -119,7 +119,6 @@ public:
     void OnExit(CSWGuiControl*)
     {
     }
-    void OnDoneEnter(CSWGuiControl* pControl);
 #else
     void OnExit(CSWGuiControl* pControl);
 #endif
@@ -132,20 +131,25 @@ public:
     CExoString m_sRunScript;
     CSWGuiPartySelectionData m_aPartyMembers[12];
     CSWGuiLabel m_lblCount;
+#ifndef _XBOX
+    CSWGuiButton m_btnDone;
+#endif
+    CSWGuiLabel m_lblNPCName;
+    CSWGuiLabel m_lblNPCLevel;
+    CSWGui3DSceneView m_lbl3D;
+    CSWGuiLabel m_aLabels[7];
 #ifdef _XBOX
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblB;
-#endif
-    CSWGuiButton m_btnDone;
-    CSWGuiLabel m_lblNPCName;
-    CSWGuiLabel m_lblNPCLevel;
-#ifdef _XBOX
-    CSWGuiLabel m_lbl3D;
+    CSWGuiLabel m_alblBar[6];
+    Vector m_avLabelColors[3];
+    CSWGuiLabel m_lblStart;
+    CSWGuiLabel m_lblExit;
+    int m_bCanChangeParty;
+    unsigned long m_nCannotChangeStrRef;
+    CSWGuiPartySelectionData* m_pSelectedData;
+    int m_bSelectedDataPending;
 #else
-    CSWGui3DSceneView m_lbl3D;
-#endif
-    CSWGuiLabel m_aLabels[7];
-#ifndef _XBOX
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnAccept;
     CSWGuiPartySelectionData* m_pSelectedData;

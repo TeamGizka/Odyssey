@@ -36,6 +36,18 @@ public:
 #endif
 };
 
+#ifdef _XBOX
+struct SServerDescription
+{
+    SServerDescription()
+        : nGameType(0), bSuppressBaseServerVault(0) {}
+
+    CExoString sDescription;
+    short nGameType;
+    int bSuppressBaseServerVault;
+};
+#endif
+
 class CServerInfo
 {
 public:
@@ -114,9 +126,7 @@ public:
     CPersistantWorldOptions m_PersistantWorldOptions;
 
 #ifdef _XBOX
-    CExoString m_sServerDescription;
-    short m_nGameType;
-    int m_bSuppressBaseServerVault;
+    SServerDescription m_cServerDescription;
 #endif
     int m_bPartyPicking;
     int m_bConversationMultiPlayer;

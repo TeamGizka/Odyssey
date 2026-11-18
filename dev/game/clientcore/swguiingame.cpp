@@ -327,7 +327,11 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     cExtent.m_nLeft = cExtent.m_nTop =
         cExtent.m_nWidth = cExtent.m_nHeight = 0;
 
+#ifdef _XBOX
+    StartLoadFromLayout("messages_x");
+#else
     StartLoadFromLayout("messages_p");
+#endif
     CSWGuiListBox* pMessages = &m_lbMessages;
     InitControl(*pMessages, "LB_MESSAGES", 1);
     InitControl(m_lblTitle, "LBL_MESSAGES", 1);
@@ -337,19 +341,40 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     InitControl(m_lbEffectsBad, "LB_EFFECTS_BAD", 1);
     InitControl(m_lblEffectsGood, "LBL_EFFECTS_GOOD", 1);
     InitControl(m_lblEffectsBad, "LBL_EFFECTS_BAD", 1);
+#ifdef _XBOX
+    InitControl(m_lblStart, "LBL_START", 1);
+    InitControl(m_lblExit, "LBL_EXIT", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
+#else
     InitControl(m_btnBack, "BTN_EXIT", 1);
+#endif
     InitControl(m_alblBar[0], "LBL_BAR1", 1);
     InitControl(m_alblBar[1], "LBL_BAR2", 1);
     InitControl(m_alblBar[2], "LBL_BAR3", 1);
     InitControl(m_alblBar[3], "LBL_BAR4", 1);
     InitControl(m_alblBar[4], "LBL_BAR5", 1);
     InitControl(m_alblBar[5], "LBL_BAR6", 1);
+#ifdef _XBOX
+    InitControl(m_lblBorder, "LBL_BORDER", 1);
+    InitControl(m_lblRanalog, "LBL_RANALOG", 1);
+    InitControl(m_lblFilter, "LBL_FILTER", 1);
+    InitControl(m_lblDialog, "LBL_DIALOG", 1);
+    InitControl(m_lblCombat, "LBL_COMBAT", 1);
+    InitControl(m_lblEffects, "LBL_EFFECTS", 1);
+    InitControl(m_lblFeedback, "LBL_FEEDBACK", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblXText, "LBL_XTEXT", 1);
+    StopLoadFromLayout();
+    m_vTabColor = m_lblDialog.m_cText.m_cParams.m_vColor;
+    m_lblRanalog.SetEnabledFlag(0);
+#else
     InitControl(m_btnDialog, "BTN_DIALOG", 1);
     InitControl(m_btnFeedback, "BTN_FEEDBACK", 1);
     InitControl(m_btnCombat, "BTN_COMBAT", 1);
     InitControl(m_btnEffects, "BTN_EFFECTS", 1);
     InitControl(m_lblFilter, "LBL_FILTER", 1);
     StopLoadFromLayout();
+#endif
 
     CSWGuiLabelHilight* pProto =
         (CSWGuiLabelHilight*)m_lbMessages.m_pProtoItem;
@@ -378,6 +403,9 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
         m_pCombatLabels[k].Initialize(cExtent, pProto);
     }
 
+#ifdef _XBOX
+    SetActiveControl(pMessages, 0);
+#else
     CSWGuiButton* pExit = &m_btnBack;
     pExit->AddEvent(CSWGuiControl::EVENT_SELECT, this,
                     (PFNGUIEVENT)&CSWGuiPanel::OnBButtonPressed);
@@ -402,6 +430,7 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     m_lbDialog.SetSelectOnLeftClick(1);
     m_lbCombat.SetSelectOnLeftClick(1);
     SetActiveControl(pMessages, 0);
+#endif
 }
 // PC 0x00677240 GOG 0x00676FE0
 CSWGuiInGameMessages::~CSWGuiInGameMessages()
@@ -602,10 +631,21 @@ void CSWGuiInGameMessages::ShowEffects()
     m_lblEffectsGood.SetEnabledFlag(1);
     m_lblEffectsBad.SetEnabledFlag(1);
 
+#ifdef _XBOX
+    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblDialog.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblCombat.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    m_lblEffects.m_cText.m_cParams.m_bHilightText = 1;
+#else
     m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+#endif
     pGood->ClearItems();
     pBad->ClearItems();
     CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
@@ -1247,10 +1287,26 @@ void CSWGuiInGameMessages::ShowDialogMessages()
     m_lblEffectsGood.SetEnabledFlag(0);
     m_lblEffectsBad.SetEnabledFlag(0);
 
+#ifdef _XBOX
+    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    m_lblDialog.m_cText.m_cParams.m_bHilightText = 1;
+    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblCombat.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblEffects.m_cText.m_cParams.m_bHilightText = 0;
+    if (m_lbDialog.m_nBottomVisibleItem - m_lbMessages.m_nTopVisibleItem + 1 < m_lbDialog.m_lItems.num &&
+        m_lbDialog.m_nTopVisibleItem >= 1)
+        m_lblRanalog.SetEnabledFlag(1);
+    else
+        m_lblRanalog.SetEnabledFlag(0);
+#else
     m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
     SetActiveControl(pDialog, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_DIALOG;
@@ -1338,10 +1394,26 @@ void CSWGuiInGameMessages::ShowFeedbackMessages()
     m_lbEffectsBad.SetEnabledFlag(0);
     m_lblEffectsGood.SetEnabledFlag(0);
     m_lblEffectsBad.SetEnabledFlag(0);
+#ifdef _XBOX
+    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 1;
+    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblDialog.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblCombat.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblEffects.m_cText.m_cParams.m_bHilightText = 0;
+    if (m_lbMessages.m_nBottomVisibleItem - m_lbMessages.m_nTopVisibleItem + 1 < m_lbMessages.m_lItems.num &&
+        m_lbMessages.m_nTopVisibleItem >= 1)
+        m_lblRanalog.SetEnabledFlag(1);
+    else
+        m_lblRanalog.SetEnabledFlag(0);
+#else
     m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
     SetActiveControl(pMessages, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_FEEDBACK;
@@ -1358,10 +1430,26 @@ void CSWGuiInGameMessages::ShowCombatMessages()
     m_lblEffectsGood.SetEnabledFlag(0);
     m_lblEffectsBad.SetEnabledFlag(0);
 
+#ifdef _XBOX
+    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblDialog.m_cText.m_cParams.m_bHilightText = 0;
+    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    m_lblCombat.m_cText.m_cParams.m_bHilightText = 1;
+    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_lblEffects.m_cText.m_cParams.m_bHilightText = 0;
+    if (m_lbCombat.m_nBottomVisibleItem - m_lbCombat.m_nTopVisibleItem + 1 < m_lbCombat.m_lItems.num &&
+        m_lbCombat.m_nTopVisibleItem >= 1)
+        m_lblRanalog.SetEnabledFlag(1);
+    else
+        m_lblRanalog.SetEnabledFlag(0);
+#else
     m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
     SetActiveControl(pCombat, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_COMBAT;
@@ -1800,10 +1888,16 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x00675AC
 void CSWGuiMessageBox::SetMessageColors(Vector vBorderColor, Vector vTextColor)
 {
     m_pBorder->m_cParams.m_vColor = vBorderColor;
+#ifdef _XBOX
+    m_lblOk.m_cBorder.m_cParams.m_vColor = vBorderColor;
+    m_lblCancel.m_cBorder.m_cParams.m_vColor = vBorderColor;
+    m_lblRAnalog.m_cBorder.m_cParams.m_vColor = vBorderColor;
+#else
     m_btnOk.m_cBorder.m_cParams.m_vColor = vBorderColor;
     m_btnOk.m_cText.m_cParams.SetDefaultColor(vTextColor);
     m_btnCancel.m_cBorder.m_cParams.m_vColor = vBorderColor;
     m_btnCancel.m_cText.m_cParams.SetDefaultColor(vTextColor);
+#endif
     m_lblMessage.m_cText.m_cParams.SetColor(vTextColor);
 }
 // PC 0x00675C70 GOG 0x00675A10
@@ -2558,15 +2652,18 @@ void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
 #endif
             if (!m_bWasPaused)
                 g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);
+#ifndef _XBOX
             if (SWGUIINGAME_DEBUG)
             {
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessagesPanel->ChangeMessageDisplay(0);
             }
+#endif
             break;
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+#ifndef _XBOX
 // PC 0x0067C0F0 GOG 0x0067BEC0
 void CSWGuiInGameMessages::ChangeMessageDisplay(CSWGuiControl* pControl)
 {
@@ -2580,3 +2677,4 @@ void CSWGuiInGameMessages::ChangeMessageDisplay(CSWGuiControl* pControl)
     else if (nIndex == MESSAGE_DISPLAY_EFFECTS)
         ShowEffects();
 }
+#endif

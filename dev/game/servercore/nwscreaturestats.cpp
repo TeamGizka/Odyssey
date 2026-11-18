@@ -4223,27 +4223,12 @@ void CSWSCreatureStats::LevelDown(CSWLevelStats* pLevelStats)
     }
 
     unsigned char nNumClasses = GetNumClasses();
-#ifdef _XBOX
-    if (GetClassLevel(nClass, 0) < 1)
-    {
-        if (nClass == CLASS_TYPE_INVALID)
-        {
-            --m_nClassCount;
-            SetClass(nClass, 0);
-        }
-        else
-        {
-            EXOXBOXASSERT(0);
-        }
-    }
-#else
     if ((GetClassLevel(nClass, 0) < 1 && nClass == CLASS_TYPE_INVALID) ||
         GetNumClasses() != nNumClasses)
     {
         --m_nClassCount;
         SetClass(nClass, 0);
     }
-#endif
     m_pCreature->m_nMaxHitPoints =
         (short)m_pCreature->m_nMaxHitPoints - pLevelStats->m_nHitDie;
 

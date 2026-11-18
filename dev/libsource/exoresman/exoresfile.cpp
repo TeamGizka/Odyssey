@@ -531,9 +531,7 @@ unsigned long CExoResFile::GetResourceSize(unsigned long nId)
 // PC 0x0040DF60 GOG 0x0040DFD0
 int CExoResFile::Initialize()
 {
-#ifndef _XBOX
     m_sFileName.CStr();
-#endif
     m_pFile = NULL;
     m_pAsyncFile = NULL;
     m_nResourceType = 0;
@@ -567,9 +565,7 @@ int CExoResFile::OpenFile()
         m_pFile = NULL;
         return 0;
     }
-#ifndef _XBOX
     m_sFileName.CStr();
-#endif
     m_bFileOpened = 1;
     return 1;
 }
@@ -611,9 +607,7 @@ int CExoResFile::LoadHeader(unsigned char nType)
             m_nRefCount--;
             return 0;
         }
-#ifndef _XBOX
         m_sFileName.CStr();
-#endif
         m_nFileSize = m_pFile->GetSize();
         m_pHeader = new CExoResFileHeader;
 
@@ -2085,11 +2079,21 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
 
     return 1;
 }
+#ifdef _XBOX
+extern unsigned long g_nMainThreadId;
+extern int g_bMissingFileDeferred;
+extern CExoString g_sMissingFileDeferred;
+#endif
+
 // PC 0x00411340 GOG 0x004112F0 Xbox 0x00160EC0
 int CExoKeyTable::BuildNewTable(unsigned long nTableType,
                                 const CExoString& sName, unsigned long nId,
                                 int bFlag)
 {
+#ifdef _XBOX
+    bool bMainThread = GetCurrentThreadId() == g_nMainThreadId;
+#endif
+
     if (sName == "")
     {
         return 0;
@@ -2109,7 +2113,12 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
         bResult = AddKeyTableContents(bFlag);
         if (!bResult)
         {
-            g_pExoResMan->ReportMissingFile(sName, 9999, 0);
+            if (bMainThread)
+            {
+                g_pExoResMan->ReportMissingFile(sName, 9999, 0);
+            }
+            g_bMissingFileDeferred = 1;
+            g_sMissingFileDeferred = sName;
         }
         return bResult;
     case 2:
@@ -2122,7 +2131,12 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
         bResult = AddEncapsulatedContents(bFlag);
         if (!bResult)
         {
-            g_pExoResMan->ReportMissingFile(sName, 9997, 0);
+            if (bMainThread)
+            {
+                g_pExoResMan->ReportMissingFile(sName, 9997, 0);
+            }
+            g_bMissingFileDeferred = 1;
+            g_sMissingFileDeferred = sName;
         }
         return bResult;
     case 4:
@@ -2131,7 +2145,12 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
         bResult = AddResourceImageContents(bFlag);
         if (!bResult)
         {
-            g_pExoResMan->ReportMissingFile(sName, RESTYPE_RIM, 0);
+            if (bMainThread)
+            {
+                g_pExoResMan->ReportMissingFile(sName, RESTYPE_RIM, 0);
+            }
+            g_bMissingFileDeferred = 1;
+            g_sMissingFileDeferred = sName;
         }
         return bResult;
     }
@@ -2177,7 +2196,6 @@ void CExoKeyTable::RebuildTable()
     {
         CKeyTableEntry* pOldTable = m_pKeyTable;
         unsigned long nOldTableSize = m_nTableSize;
-#ifndef _XBOX
         if (m_nTableType == 4)
         {
             if (m_pPackedFiles != NULL)
@@ -2185,7 +2203,6 @@ void CExoKeyTable::RebuildTable()
                 m_pPackedFiles[0]->CloseFile();
             }
         }
-#endif
         m_nTableSize = 0;
         m_pKeyTable = NULL;
         BuildNewTable(m_nTableType, m_sResourceName, m_nId, 0);

@@ -70,9 +70,6 @@ CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace,
     {
         for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
         {
-#ifdef _XBOX
-            if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
-#endif
             if (nRoom != nLastRoom &&
                 m_pRooms[nRoom].CheckAABBWalkable(vTop, vBottom, hitInfo))
             {
@@ -608,9 +605,6 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
     Vector vFrom = vStart;
     Vector vClippedStart;
     Vector vClippedEnd;
-#ifdef _XBOX
-    if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
-#endif
     CSWSRoom* pRoom = GetRoom(vFrom, NULL);
     if (DumpRoomBBox)
     {

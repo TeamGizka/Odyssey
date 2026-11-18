@@ -3032,7 +3032,11 @@ int nWieldClass)
             nAttackType == CSWFeat::FEAT_CRITICAL_STRIKE;
         if (bCriticalStrike)
         {
+#ifdef _XBOX
+            int nVariant = g_pAppManager->GetClientExoApp()->GetSuperModelSet() - 1;
+#else
             int nVariant = rand() % 3;
+#endif
             switch (nWieldClass)
             {
             case CSWCAnimBase::WIELD_CLASS_1:
@@ -3059,7 +3063,11 @@ int nWieldClass)
                 nAttackType == CSWFeat::FEAT_FLURRY;
             if (bFlurry)
             {
+#ifdef _XBOX
+                int nVariant = g_pAppManager->GetClientExoApp()->GetSuperModelSet() - 1;
+#else
                 int nVariant = rand() % 3;
+#endif
                 switch (nWieldClass)
                 {
                 case CSWCAnimBase::WIELD_CLASS_1:
@@ -3086,7 +3094,11 @@ int nWieldClass)
                     nAttackType == CSWFeat::FEAT_POWER_ATTACK;
                 if (bPowerAttack)
                 {
+#ifdef _XBOX
+                    int nVariant = g_pAppManager->GetClientExoApp()->GetSuperModelSet() - 1;
+#else
                     int nVariant = rand() % 3;
+#endif
                     switch (nWieldClass)
                     {
                     case CSWCAnimBase::WIELD_CLASS_1:

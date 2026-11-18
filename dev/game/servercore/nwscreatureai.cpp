@@ -3543,7 +3543,7 @@ int CSWSCreature::AIActionHeal(CSWSObjectActionNode* pAction)
 
     int i = 0;
     CGameEffect* pAffliction = NULL;
-    for (; i < pTarget->m_lstEffects.num; ++i)
+    while (i < pTarget->m_lstEffects.num)
     {
         if (pTarget->m_lstEffects[i]->GetEffectType() > CSWSEffectListHandler::EFFECT_POISON)
             break;
@@ -3557,6 +3557,7 @@ int CSWSCreature::AIActionHeal(CSWSObjectActionNode* pAction)
             pAffliction = pTarget->m_lstEffects[i];
             break;
         }
+        ++i;
     }
     int nSaveDC = 0;
     if (pAffliction != NULL)
@@ -3565,12 +3566,8 @@ int CSWSCreature::AIActionHeal(CSWSObjectActionNode* pAction)
         {
             int nPoison = pAffliction->GetInteger(0);
             CExoString sColumn("Save_DC");
-#ifdef _XBOX
-            g_pRules->Get2DArrays()->GetPoison()->GetINTEntry(nPoison, sColumn, &nSaveDC);
-#else
             C2DA* pPoison = g_pRules->Get2DArrays()->m_pPoison;
             pPoison->GetINTEntry(nPoison, sColumn, &nSaveDC);
-#endif
         }
         else if (pAffliction->GetEffectType() == CSWSEffectListHandler::EFFECT_DISEASE)
         {
@@ -7555,11 +7552,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
         int nMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetIndex(oidClient);
         if (nMember != -1)
         {
-#ifdef _XBOX
-            CSWParty* pCurrentParty = g_pAppManager->GetClientExoApp()->GetSWParty(); CSWPartyMemberData* pMember = pCurrentParty->GetMemberData(nMember);
-#else
             CSWParty* pCurrentParty = g_pAppManager->GetClientExoApp()->GetSWParty(); CSWPartyMemberData* pMember = &pCurrentParty->m_aPartyMemberData[nMember];
-#endif
             if (pMember != NULL)
                 pMember->m_vLastPosition = vPosition;
         }

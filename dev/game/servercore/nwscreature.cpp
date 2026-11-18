@@ -5049,14 +5049,8 @@ float CSWSCreature::CalculateDeathExperience()
         {
             nColumn = 31;
         }
-#ifdef _XBOX
-        CTwoDimArrays* pArraysForXpBase = g_pRules->Get2DArrays();
-        EXOXBOXASSERT(pArraysForXpBase->m_pXpBase);
-        pArraysForXpBase->m_pXpBase->GetFLOATEntry(
-#else
         C2DA* pXpBase = g_pRules->Get2DArrays()->m_pXpBase;
         pXpBase->GetFLOATEntry(
-#endif
             nRow, nColumn, &fExperience);
         float fPercentXP = 0.0f;
         {
@@ -12618,7 +12612,6 @@ int CSWSCreature::UpdateSpecialAttacks()
 {
     return 0;
 }
-#ifndef _XBOX
 CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x0050FFD0 GOG 0x00510030
 {
     int nOverride =
@@ -12630,7 +12623,6 @@ CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x0050FFD0 G
 
     return m_pcItemRepository;
 }
-#endif
 // PC 0x00510030 GOG 0x00510090 Xbox 0x00185320
 void CSWSCreature::SetIsPuppet(int bIsPuppet)
 {
@@ -13079,12 +13071,6 @@ void CSWSCreature::SetMovementRateFactor(float fMovementRateFactor)  // Xbox 0x0
     m_fMovementRateFactor = fMovementRateFactor;
 }
 
-CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // Xbox 0x001852C0
-{
-    if (m_bInParty != 0 && bParty)
-        return g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems();
-    return m_pcItemRepository;
-}
 
 void CSWSCreature::AddPrerequisiteSpells(unsigned long nSpell)
 {

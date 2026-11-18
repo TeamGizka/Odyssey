@@ -620,9 +620,7 @@ int CERFFile::WriteHeader()
         time_t tTime = time(NULL);
         struct tm* pTime = localtime(&tTime);
 
-#ifndef _XBOX
         if (pTime != NULL)
-#endif
         {
             m_nBuildYear = pTime->tm_year;
             m_nBuildDay = pTime->tm_yday;

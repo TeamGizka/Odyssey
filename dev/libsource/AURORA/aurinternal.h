@@ -32,7 +32,7 @@ public:
     virtual void RestoreDesktopDisplayMode() = 0;
     virtual void RestoreAuroraDisplayMode() = 0;
 #ifdef _XBOX
-    virtual void ShutDown(int bReleaseRenderer) = 0;
+    virtual void ShutDown(int bReleaseRenderer, int bDestroyWindow) = 0;
 #else
     virtual int ShutDown(int bReleaseRenderer, int bDestroyWindow) = 0;
 #endif
@@ -62,7 +62,7 @@ public:
     virtual void RestoreDesktopDisplayMode();
     virtual void RestoreAuroraDisplayMode();
 #ifdef _XBOX
-    virtual void ShutDown(int bReleaseRenderer) = 0;
+    virtual void ShutDown(int bReleaseRenderer, int bDestroyWindow) = 0;
 #else
     virtual int ShutDown(int bReleaseRenderer, int bDestroyWindow) = 0;
 #endif
@@ -115,7 +115,7 @@ public:
                    int bFullScreen);
     void Reshape(int nWidth, int nHeight);
 #ifdef _XBOX
-    void ShutDown(int bReleaseRenderer);
+    void ShutDown(int bReleaseRenderer, int bDestroyWindow);
 #else
     int ShutDown(int bReleaseRenderer, int bDestroyWindow);
 #endif

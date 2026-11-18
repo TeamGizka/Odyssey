@@ -1299,10 +1299,17 @@ int CClientExoApp::SaveOptions()
 }
 
 // PC 0x00639230 GOG 0x00639130 Xbox 0x0001AD70
+#ifdef _XBOX
+int CClientExoApp::LoadOptions()
+{
+    return m_pcExoAppInternal->LoadOptions();
+}
+#else
 int CClientExoApp::LoadOptions(int bSetAntiAliasing)
 {
     return m_pcExoAppInternal->LoadOptions(bSetAntiAliasing);
 }
+#endif
 // PC 0x00639230 GOG 0x00639130 Xbox 0x0001AD80
 int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound,
                                                           unsigned char nPartyMembers)
@@ -1623,6 +1630,25 @@ void CClientExoApp::EnableMainMenuIdleTimer()
         m_pcExoAppInternal->m_pMainMenu->m_bIdleTimerDisabled = 0;
     }
 }
+#ifdef _XBOX
+// Xbox 0x0001B040
+unsigned char CClientExoApp::GetSuperModelSet()
+{
+    if (m_pcExoAppInternal != NULL)
+    {
+        return m_pcExoAppInternal->m_nSuperModelSet;
+    }
+    return 1;
+}
+// Xbox 0x0001B060
+void CClientExoApp::SetSuperModelSet(unsigned char nSuperModelSet)
+{
+    if (m_pcExoAppInternal != NULL)
+    {
+        m_pcExoAppInternal->m_nSuperModelSet = nSuperModelSet;
+    }
+}
+#endif
 // Dead code: not in the PC executable
 int CClientExoApp::DontUseThisSetPlayerCreature(unsigned long oidObject)
 {

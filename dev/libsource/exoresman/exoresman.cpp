@@ -341,7 +341,6 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
         {
             if (pTable->m_sResourceName == sFileName)
             {
-#ifndef _XBOX
                 CExoString sMessage;
 
                 if (nType == 4)
@@ -350,7 +349,6 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
                         "Table being rebuilt, this RIM is being leaked: %s",
                         sFileName);
                 }
-#endif
 
                 pTable->RebuildTable();
 
@@ -531,7 +529,6 @@ void* CExoResMan::Demand(CRes* pRes)
 
         if ((nFlags & 0x4) && pRes->m_pResource != NULL)
         {
-#ifndef _XBOX
             if (pRes->m_nDemandCount == 0 && (nFlags & 0x100))
             {
                 pPos = m_lstReleased.GetHeadPos();
@@ -549,7 +546,6 @@ void* CExoResMan::Demand(CRes* pRes)
                     pCurrent = m_lstReleased.GetNext(pPos);
                 }
             }
-#endif
 
             pRes->m_nDemandCount++;
             return pRes->m_pResource;
@@ -726,13 +722,11 @@ int CExoResMan::Release(CRes* pRes)
     if (nFlags & 0x100)
     {
         Dump(pRes, 0);
-#ifndef _XBOX
         if (pRes->m_pResource != NULL)
         {
             m_lstReleased.AddHead(pRes);
             Dump(pRes, 0);
         }
-#endif
         pRes->m_nFlags &= ~0x100;
 
         return 0;
@@ -941,7 +935,6 @@ int CExoResMan::NukeDirectory(const CExoString& sPath, int bDeleteFiles,
 {
     return WipeDirectory(sPath, bDeleteFiles, 1, 0, bRecurse);
 }
-#ifndef _XBOX
 void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0
 {
     CExoCriticalSection* pCriticalSection = &m_csAsync;
@@ -1119,7 +1112,6 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0
     pCriticalSection->LeaveCriticalSection();
 
 }
-#endif
 
 // Dead code: not in the PC executable
 int CExoResMan::GetNewResRef(const CResRef& cResRef, unsigned short nType,
@@ -1760,17 +1752,10 @@ CRes* CExoResMan::GetResObject(const CResRef& cResRef, unsigned short nType)
                 sExtension = g_pExoBase->GetResourceExtension(pEntry->m_nType);
                 cResRef.CopyToString(sResRef);
 
-#ifdef _XBOX
-                pTable->m_sResourceName.CStr();
-                sTableType.CStr();
-                sExtension.CStr();
-                sResRef.CStr();
-#else
                 sResRef.CStr();
                 sExtension.CStr();
                 sTableType.CStr();
                 pTable->m_sResourceName.CStr();
-#endif
             }
         }
 
@@ -2291,15 +2276,9 @@ int CExoResMan::ServiceFromResFile(CRes* pRes, int bAsync)
             {
 
                 pRes->m_pKeyEntry->m_resRef.GetResRefStr();
-#ifdef _XBOX
-                pTable->m_pPackedFiles[nFile]->m_sFileName.CStr();
-                g_pExoBase->GetResourceExtension(pRes->m_pKeyEntry->m_nType)
-                    .CStr();
-#else
                 g_pExoBase->GetResourceExtension(pRes->m_pKeyEntry->m_nType)
                     .CStr();
                 pTable->m_pPackedFiles[nFile]->m_sFileName.CStr();
-#endif
                 pRes->m_pKeyEntry->m_resRef.GetResRefStr();
             }
 
@@ -2729,19 +2708,32 @@ int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
 #include "aurora.h"
 #include "aurgui.h"
 
+#include <d3dx8.h>
+#include "../AURORA/aurrenderdx.h"
+
+int g_bMissingFileDeferred = 0;
+CExoString g_sMissingFileDeferred;
+
 void CExoResMan::ReportMissingFile(const CExoString& sFileName,
                                    unsigned short nType, int bFatal)
 {
+    g_bMissingFileDeferred = 0;
+
     bool bReport =
         bFatal || nType == 9998 || nType == 3002 ||
-        (nType == 9999 ? sFileName.Right(6).CompareNoCase("chitin")
-                       : nType == 9997 ? sFileName.Right(7).CompareNoCase("players")
-                                       : 0);
+        (nType == 9999 && sFileName.Right(6).CompareNoCase("chitin")) ||
+        (nType == 9997 && (sFileName.Right(7).CompareNoCase("players") ||
+                           sFileName.Right(6).Left(5).CompareNoCase("smset")));
 
     if (bReport)
     {
+        LPDIRECT3DTEXTURE8 pTexture;
         bool bOptional = sFileName.Right(5).CompareNoCase("legal") ||
-                         sFileName.Left(4).CompareNoCase("live");
+                         sFileName.Left(4).CompareNoCase("live") ||
+                         sFileName.Left(8).CompareNoCase("Override") ||
+                         sFileName.Left(4).CompareNoCase("Lips") ||
+                         sFileName.Right(4).CompareNoCase("_loc") ||
+                         sFileName.Right(4).CompareNoCase("_dlg");
 
         if (!bOptional)
         {
@@ -2752,15 +2744,52 @@ void CExoResMan::ReportMissingFile(const CExoString& sFileName,
             else
             {
                 g_pAppManager->m_pClientExoApp->ShutDownLegalScreen();
-                AurGUIStartLayer();
-                AurGUISetupViewport(0, 0, 640, 480, Vector(0.0f, 0.0f, 0.0f),
-                                    false, 1.0f);
-                CAurGUIImageInternal* pImage = NewCAurGUIImage("lbl_warning");
-                AurMakeCurrent();
-                pImage->Draw(0, 0, 640, 480, 0, 0.0f,
-                             Vector(-1.0f, -1.0f, -1.0f), 1.0f);
-                AurGUICloseViewport();
-                AurGUIStopLayer();
+                AurReleaseFrameTexture();
+
+                pTexture = NULL;
+                HANDLE hSection = XGetSectionHandle("ERRTEX");
+                DWORD nSectionSize = XGetSectionSize(hSection);
+                void* pSection = XLoadSectionByHandle(hSection);
+                if (D3DXCreateTextureFromFileInMemoryEx(g_pD3DDevice, pSection, nSectionSize,
+                        D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT,
+                        D3DX_FILTER_NONE, D3DX_FILTER_NONE, 0, NULL, NULL, &pTexture) == D3D_OK)
+                {
+                    D3DVIEWPORT8 vp;
+                    vp.Y = 0;
+                    vp.X = 0;
+                    vp.Width = 640;
+                    vp.Height = 480;
+                    vp.MinZ = 0.0f;
+                    vp.MaxZ = 1.0f;
+                    g_pD3DDevice->SetViewport(&vp);
+
+                    D3DXMATRIX m;
+                    D3DXMatrixIdentity(&m);
+                    g_pD3DDevice->SetTransform(D3DTS_VIEW, &m);
+                    g_pD3DDevice->SetTransform(D3DTS_WORLD, &m);
+                    D3DXMatrixOrthoOffCenterLH(&m, -1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f);
+                    g_pD3DDevice->SetTransform(D3DTS_PROJECTION, &m);
+
+                    g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+                    g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+                    g_pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+                    g_pD3DDevice->SetVertexShader(0);
+                    g_pD3DDevice->SetPixelShader(0);
+                    g_pD3DDevice->SetTexture(0, pTexture);
+                    g_pD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+                    g_pD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+
+                    g_pD3DDevice->Begin(D3DPT_QUADLIST);
+                    g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, 0.0f, 0.0f);
+                    g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, -1.0f, 1.0f, 0.0f, 1.0f);
+                    g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, 0.0f, 1.0f);
+                    g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, -1.0f, -1.0f, 0.0f, 1.0f);
+                    g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, 1.0f, 1.0f);
+                    g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, 1.0f, -1.0f, 0.0f, 1.0f);
+                    g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, 1.0f, 0.0f);
+                    g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, 1.0f, 1.0f, 0.0f, 1.0f);
+                    g_pD3DDevice->End();
+                }
 
                 AurFlushPostedStrings();
 
@@ -3584,168 +3613,4 @@ int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)  // Xbox 
 
 #ifdef _XBOX
 
-void CExoResMan::AsyncLoad()  // Xbox 0x00155020
-{
-    CExoCriticalSection* pCriticalSection = &m_csAsync;
-    pCriticalSection->EnterCriticalSection();
-
-    int bResult = 1;
-    int bSaveGame = 0;
-    CExoString sPath;
-    CExoString sDirectory;
-
-    if (m_bAsyncIsModule == 0)
-    {
-        sPath = CExoString("RIMS:") + m_sAsyncModuleName;
-        bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-    }
-    else
-    {
-        int nDownloadedPackage = FindModuleDownloadedPkg(m_sAsyncModuleName);
-
-        sPath = m_sAsyncModuleName + CExoString("_a");
-        if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
-        {
-            if (nDownloadedPackage == 0)
-            {
-                sPath = CExoString("RIMSXBOX:") + sPath;
-                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-            }
-            else
-            {
-                sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
-                sPath = sDirectory + sPath;
-                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-            }
-
-            if (bResult)
-            {
-                m_nAsyncLoadedFlags |= LOADED_MODULE_AREA_RIM;
-            }
-        }
-
-        if (bResult)
-        {
-            sPath = m_sAsyncModuleName + CExoString("_adx");
-            if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
-            {
-                if (nDownloadedPackage == 0)
-                {
-                    sPath = CExoString("RIMSXBOX:") + sPath;
-                    bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-                }
-                else
-                {
-                    sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
-                    sPath = sDirectory + sPath;
-                    bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-                }
-
-                if (bResult)
-                {
-                    m_nAsyncLoadedFlags |= LOADED_MODULE_ADX_RIM;
-                }
-            }
-
-            if (bResult)
-            {
-                AddKeyTable("MODULES:", TABLE_DIRECTORY, 0);
-                if (nDownloadedPackage != 0)
-                {
-                    sDirectory.Format("LIVE%d:MODULES", nDownloadedPackage);
-                    AddKeyTable(sDirectory, TABLE_DIRECTORY, 0);
-                }
-                if (!Exists(m_sAsyncModuleName, RESTYPE_MOD, (unsigned long*)NULL))
-                {
-                    sPath = m_sAsyncModuleName + CExoString("_s");
-                    if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
-                    {
-                        if (nDownloadedPackage == 0)
-                        {
-                            sPath = CExoString("MODULES:") + sPath;
-                            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-                        }
-                        else
-                        {
-                            sDirectory = sDirectory + "\\";
-                            sPath = sDirectory + sPath;
-                            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-                        }
-
-                        if (bResult)
-                        {
-                            bSaveGame = 1;
-                            m_nAsyncLoadedFlags |= LOADED_SAVE_GAME_RIM;
-                        }
-                    }
-                }
-                else
-                {
-                    if (nDownloadedPackage == 0)
-                    {
-                        sPath = CExoString("MODULES:") + m_sAsyncModuleName;
-                    }
-                    else
-                    {
-                        sDirectory = sDirectory + "\\";
-                        sPath = sDirectory + m_sAsyncModuleName;
-                    }
-                    bResult = AddKeyTable(sPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
-
-                    if (bResult)
-                    {
-                        m_nAsyncLoadedFlags |= LOADED_MODULE_RIM;
-                    }
-                }
-
-                RemoveKeyTable("MODULES:", TABLE_DIRECTORY);
-                if (nDownloadedPackage != 0)
-                {
-                    sDirectory.Format("LIVE%d:MODULES", nDownloadedPackage);
-                    RemoveKeyTable(sDirectory, TABLE_DIRECTORY);
-                }
-            }
-        }
-
-        if (!m_bAsyncFromCurrentGame && bResult)
-        {
-            sPath = CExoString("CURRENTGAME:") + m_sAsyncModuleName;
-
-            AddKeyTable("CURRENTGAME:", TABLE_DIRECTORY, 0);
-            if (Exists(m_sAsyncModuleName, RESTYPE_RSV, (unsigned long*)NULL) ||
-                Exists(m_sAsyncModuleName, RESTYPE_RIM, (unsigned long*)NULL))
-            {
-                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
-
-                if (bResult)
-                {
-                    m_nAsyncLoadedFlags |= LOADED_CURRENT_GAME_RIM;
-                }
-            }
-
-            RemoveKeyTable("CURRENTGAME:", TABLE_DIRECTORY);
-        }
-        else
-        {
-            sPath = CExoString("CURRENTGAME:") + m_sAsyncModuleName;
-            bResult = AddKeyTable(sPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
-
-            if (bResult)
-            {
-                m_nAsyncLoadedFlags |= LOADED_CURRENT_GAME_KEY;
-            }
-        }
-    }
-
-    if (bResult)
-    {
-        m_nAsyncState = (bSaveGame == 0) + ASYNC_MODULE_LOADED;
-    }
-    else
-    {
-        m_nAsyncState = ASYNC_LOAD_FAILED;
-    }
-
-    pCriticalSection->LeaveCriticalSection();
-}
 #endif

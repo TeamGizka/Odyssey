@@ -818,7 +818,11 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     if (g_bDo3DGUIs != 0)
     {
         pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+#ifdef _XBOX
+        g_pAppManager->m_pClientExoApp->LoadOptions();
+#else
         g_pAppManager->m_pClientExoApp->LoadOptions(1);
+#endif
         int nSithLord = g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCurSithLord;
         CExoString sModel;
         switch (nSithLord)

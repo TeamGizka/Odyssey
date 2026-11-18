@@ -420,9 +420,6 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& v
 {
     const Vector& vMinimum = m_lstAABBNodes[nNode].m_vMin;
     const Vector& vMaximum = m_lstAABBNodes[nNode].m_vMax;
-#ifdef _XBOX
-    extern int DumpRoomBBox; if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
-#endif
     if (!BoxIntersect(vStart, vEnd, vMinimum, vMaximum))
     {
         return 0;
@@ -776,9 +773,6 @@ int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
         {
             CExoString sResRef; m_cResRef.CopyToString(sResRef);
             EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr()); EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr());
-#ifdef _XBOX
-            g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile();
-#endif
             return 0;
         }
     }

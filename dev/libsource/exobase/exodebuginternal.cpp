@@ -369,13 +369,7 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
         szFileName = szFileName + 1;
     }
     sLine.Format("WARNING: %s(%d) Comment:", szFileName, line);
-#ifdef _XBOX
-    void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
-    AurPostString(sLine.CStr(), 7, 10, 5.0f);
-    int nRow = 11;
-#else
     sLine.CStr();
-#endif
     if (message)
     {
         sComment = message;
@@ -413,12 +407,7 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
                 sComment = sComment.Right(nLength - nBreak);
             }
 
-#ifdef _XBOX
-            AurPostString(sLine.CStr(), 7, nRow, 15.0f);
-            nRow++;
-#else
             sLine.CStr();
-#endif
         }
     }
 

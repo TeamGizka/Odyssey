@@ -4133,7 +4133,7 @@ void CClientExoAppInternal::DisplayMainMenu(int bScanContent)  // PC 0x00648720 
 
 void CClientExoAppInternal::DisplayStartScreen()  // Xbox 0x00028BC0
 {
-    int bSkipped = 0;
+    int nMovieResult;
 
     if (m_pStartupPanel == NULL)
     {
@@ -4153,18 +4153,11 @@ void CClientExoAppInternal::DisplayStartScreen()  // Xbox 0x00028BC0
         g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:LEGALDX");
     }
 
-    PlayMovie("sizzle2", bSkipped, 1, 0);
-    if (!bSkipped)
-    {
-        m_pSWGuiManager->AddPanel(m_pStartupPanel,
-                                  CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
-        SetInputClass(INPUT_CLASS_GUI, 1);
-        StartMenuMusic(1, MENU_MUSIC_VOLUME, MENU_MUSIC_PRIORITY_GROUP);
-    }
-    else
-    {
-        DisplayMainMenu(1);
-    }
+    PlayMovie("Trailer", nMovieResult, 1, 0);
+    m_pSWGuiManager->AddPanel(m_pStartupPanel,
+                              CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
+    SetInputClass(INPUT_CLASS_GUI, 1);
+    StartMenuMusic(1, MENU_MUSIC_VOLUME, MENU_MUSIC_PRIORITY_GROUP);
 }
 #endif
 
@@ -8273,7 +8266,7 @@ int CClientExoAppInternal::SaveOptions()  // Xbox 0x00020E40
     return 1;
 }
 
-int CClientExoAppInternal::LoadOptions(int bSetAntiAliasing)  // Xbox 0x00021070
+int CClientExoAppInternal::LoadOptions()
 {
     unsigned char aSignature[OPTIONS_SIGNATURE_SIZE];
     CResStruct cStruct;
@@ -9460,7 +9453,7 @@ int CClientExoAppInternal::WaitForMovie()  // Xbox 0x00023440
     {
         if (nPumpCount == 500 && !bCancelled)
         {
-            Sleep(2);
+            Sleep(0);
             int nEvents;
             CExoArrayList<CExoInputEvent> aEvents = g_pExoInput->GetEvents(nEvents, INPUT_CLASS_MOVIE);
             if (nEvents)
@@ -9474,10 +9467,10 @@ int CClientExoAppInternal::WaitForMovie()  // Xbox 0x00023440
                           (nEvent == MOVIE_SKIP_EVENT_THIRD || nEvent == MOVIE_SKIP_EVENT_FOURTH))))
                     {
                         m_pMoviePlayer->SetFadeMsg(STRREF_MOVIE_SKIPPING);
-                        m_pMoviePlayer->CancelMovie();
                         while (m_pMoviePlayer->IsMoviePlaying())
                         {
-                            Sleep(2);
+                            m_pMoviePlayer->CancelMovie();
+                            Sleep(0);
                         }
                         g_pExoInput->ClearEvents();
                         bCancelled = 1;
@@ -9600,7 +9593,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA
     else
     {
         g_pAppManager->m_pClientExoApp->GetClientOptions()->SetDefaults();
-        g_pAppManager->m_pClientExoApp->LoadOptions(1);
+        g_pAppManager->m_pClientExoApp->LoadOptions();
     }
     int nMissing = m_bMissingFilePending;
     if (nMissing == 1)

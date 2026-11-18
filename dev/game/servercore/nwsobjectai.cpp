@@ -1308,7 +1308,6 @@ int CSWSObject::AddUseObjectAction(unsigned long oidObject)
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-#ifndef _XBOX
 int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD420 GOG 0x005DD490
                                   int nQuantity, int bAddToQueue)
 {
@@ -1353,7 +1352,6 @@ int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarge
     }
     return 0;
 }
-#endif
 int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD530 GOG 0x005DD5A0 Xbox 0x00200430
                                   int bAddToQueue)
 {
@@ -3357,47 +3355,4 @@ int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // Xbox 0x00200F2
     return ACTION_FAILED;
 }
 
-int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // Xbox 0x00200320
-                                  int nQuantity, int bAddToQueue)
-{
-    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
-    if (pGameObject == NULL)
-    {
-        return 0;
-    }
-    if (pGameObject->AsSWSObject() == NULL)
-    {
-        return 0;
-    }
-
-    CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
-    if (pItem != NULL)
-    {
-        CSWSCreature* pCreature = AsSWSCreature();
-        unsigned long oidPossessor = pItem->m_oidPossessor;
-        CSWSCreature* pPossessor =
-            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidPossessor);
-        if ((pPossessor->m_bInParty == 0 || pCreature->m_bInParty == 0) &&
-            pItem->m_oidPossessor != GetId())
-        {
-            return 0;
-        }
-
-        if (m_bCommandable != 0)
-        {
-            int nStackSize = pItem->m_nStackSize;
-            if (nQuantity > nStackSize)
-            {
-                nQuantity = nStackSize;
-            }
-            AddAction(ACTION_GIVE_ITEM, ACTION_GROUP_LAST,
-                      ACTION_PARAM_OBJECT, &oidItem, ACTION_PARAM_OBJECT, &oidTarget,
-                      ACTION_PARAM_INTEGER, &nQuantity, ACTION_PARAM_INTEGER, &bAddToQueue,
-                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            return 1;
-        }
-        return 0;
-    }
-    return 0;
-}
 #endif

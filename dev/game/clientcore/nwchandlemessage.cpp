@@ -8754,6 +8754,49 @@ int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
         if (!pModule)
             pModule = g_pAppManager->GetClientExoApp()->CreateModule();
         pModule->UnloadModule();
+#ifdef _XBOX
+        {
+            char nPCLevel;
+            unsigned char nSuperModelSet;
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
+                "G_PC_LEVEL", nPCLevel);
+            if (nPCLevel <= 8)
+                nSuperModelSet = 1;
+            else if (nPCLevel <= 17)
+                nSuperModelSet = 2;
+            else
+                nSuperModelSet = 3;
+            unsigned char nCurrentSet = g_pAppManager->GetClientExoApp()->GetSuperModelSet();
+            if (g_pAppManager->GetClientExoApp()->GetSuperModelSet() != nSuperModelSet)
+            {
+                switch (nCurrentSet)
+                {
+                case 1:
+                    g_pExoResMan->RemoveEncapsulatedResourceFile("SUPERMODELS:smseta");
+                    break;
+                case 2:
+                    g_pExoResMan->RemoveEncapsulatedResourceFile("SUPERMODELS:smsetb");
+                    break;
+                case 3:
+                    g_pExoResMan->RemoveEncapsulatedResourceFile("SUPERMODELS:smsetc");
+                    break;
+                }
+                switch (nSuperModelSet)
+                {
+                case 1:
+                    g_pExoResMan->AddEncapsulatedResourceFile("SUPERMODELS:smseta", 1);
+                    break;
+                case 2:
+                    g_pExoResMan->AddEncapsulatedResourceFile("SUPERMODELS:smsetb", 1);
+                    break;
+                case 3:
+                    g_pExoResMan->AddEncapsulatedResourceFile("SUPERMODELS:smsetc", 1);
+                    break;
+                }
+                g_pAppManager->GetClientExoApp()->SetSuperModelSet(nSuperModelSet);
+            }
+        }
+#endif
         if (!pModule->LoadModule())
             break;
         g_pAppManager->GetClientExoApp()->InitializeInGameGUI();

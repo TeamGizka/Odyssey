@@ -188,11 +188,7 @@ public:
     int ContinueMessageProcessing();
     void Shutdown(int bExit, int bSave);
     int UnloadModule();
-#ifdef _XBOX
-    int LoadModule(CExoString sModule, CSWSPlayer* pPlayer);
-#else
     int LoadModule(const CExoString& sModule, CSWSPlayer* pPlayer);
-#endif
     int RunModule();
 
 
@@ -265,11 +261,7 @@ public:
                                 const Vector& vTo);
     int IsActionsPending(unsigned long oidObject);
     int CreatureAcquireItem(unsigned long oidObject, const CResRef& cResRef);
-#ifdef _XBOX
-    int TestSafeLocation(unsigned long oidObject, Vector vPosition); int ComputeSafeLocation(Vector vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(Vector vPosition);
-#else
     int TestSafeLocation(unsigned long oidObject, const Vector& vPosition); int ComputeSafeLocation(const Vector& vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(const Vector& vPosition);
-#endif
     void ClearLastModuleFound();
     void ClearAreaCache();
     int ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,

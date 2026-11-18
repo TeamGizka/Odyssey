@@ -755,7 +755,6 @@ void CServerExoApp::RunDeathSequence()
 {
     m_pcExoAppInternal->RunDeathSequence();
 }
-#ifndef _XBOX
 int CServerExoApp::TestSafeLocation(unsigned long oidObject,  // PC 0x004DC6A0 GOG 0x004DC400
                                     const Vector& vPosition)
 {
@@ -769,7 +768,6 @@ int CServerExoApp::ComputeSafeLocation(const Vector& vPosition, float fRadius,
     return m_pcExoAppInternal->ComputeSafeLocation(vPosition, fRadius,
                                                    oidObject, nFlags, pvSafe);
 }
-#endif
 // PC 0x004DC6C0 GOG 0x004DC970 Xbox 0x00171ED0
 int CServerExoApp::GetLoadFromSaveGame()
 {
@@ -795,13 +793,11 @@ void CServerExoApp::SetDoingStartNewModule(int bDoingStartNewModule)
 {
     m_pcExoAppInternal->m_bDoingStartNewModule = bDoingStartNewModule;
 }
-#ifndef _XBOX
 // PC 0x004DC710 GOG 0x004DC420
 Vector CServerExoApp::GetNormalOfPoint(const Vector& vPosition)
 {
     return m_pcExoAppInternal->GetNormalOfPoint(vPosition);
 }
-#endif
 void CServerExoApp::ClearLastModuleFound()  // PC 0x004DC730 GOG 0x004DC440 Xbox 0x00171A00
 {
     m_pcExoAppInternal->ClearLastModuleFound();
@@ -960,24 +956,6 @@ CExoString CServerExoAppInternal::GetLastConversation()
 CExoString CServerExoApp::GetLastConversation()  // Xbox 0x00171E80
 {
     return m_pcExoAppInternal->GetLastConversation();
-}
-
-int CServerExoApp::TestSafeLocation(unsigned long oidObject, Vector vPosition)
-{
-    return m_pcExoAppInternal->TestSafeLocation(oidObject, vPosition);
-}
-
-int CServerExoApp::ComputeSafeLocation(Vector vPosition, float fRadius,  // Xbox 0x001719D0
-                                       unsigned long oidObject, int nFlags,
-                                       Vector* pvSafe)
-{
-    return m_pcExoAppInternal->ComputeSafeLocation(vPosition, fRadius,
-                                                   oidObject, nFlags, pvSafe);
-}
-
-Vector CServerExoApp::GetNormalOfPoint(Vector vPosition)  // Xbox 0x001719E0
-{
-    return m_pcExoAppInternal->GetNormalOfPoint(vPosition);
 }
 
 int CServerExoApp::DebugValidatePath(unsigned long oidCreature, int bTempWayPoints)

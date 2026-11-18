@@ -19776,7 +19776,9 @@ int CSWVirtualMachineCommands::ExecuteCommandQueueMovie(int nCommand, int nArgs)
         return -2001;
     }
     pClientExoApp = g_pAppManager->m_pClientExoApp;
-#ifndef _XBOX
+#ifdef _XBOX
+    pClientExoApp->AddMoveToModuleMovie(sMovie);
+#else
     pClientExoApp->AddMovieToMovieQueue(sMovie, nSkippable);
 #endif
     nResult = -1;
@@ -19793,8 +19795,14 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayMovieQueue(int nCommand,
     {
         return -2001;
     }
+#ifdef _XBOX
+    int nMovieResult = 0;
+    CExoString sMovie("XXX_PLAYMOVIEQUEUE");
+#endif
     pClientExoApp = g_pAppManager->m_pClientExoApp;
-#ifndef _XBOX
+#ifdef _XBOX
+    pClientExoApp->PlayMovie(sMovie, nMovieResult, 0, 0);
+#else
     pClientExoApp->PlayMovieQueue(nAllowSeparateSkips);
 #endif
     return 0;

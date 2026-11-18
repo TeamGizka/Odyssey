@@ -167,11 +167,7 @@ const int CSWSEffectListHandler::EFFECT_FORCESIGHT = 114;
 const int CSWSEffectListHandler::EFFECT_FACTIONMODIFIER = 115;
 const int CSWSEffectListHandler::EFFECT_DESTROYSHIELDS = 116;
 const int CSWSEffectListHandler::EFFECT_ASSASSINATE = 117;
-#ifdef _XBOX
-const int CSWSEffectListHandler::MAX_EFFECTS = 108;
-#else
 const int CSWSEffectListHandler::MAX_EFFECTS = 118;
-#endif
 const int CSWSEffectListHandler::EFFECT_ABILITY_INVALID = -1;
 const int CSWSEffectListHandler::EFFECT_ABILITY_STRENGTH = 0;
 const int CSWSEffectListHandler::EFFECT_ABILITY_DEXTERITY = 1;
@@ -7874,7 +7870,6 @@ void CSWSEffectListHandler::InitializeEffects()
     m_pEffectApplied[EFFECT_FORCEFIZZLE] = &CSWSEffectListHandler::OnApplyForceFizzle;
     m_pEffectApplied[EFFECT_FORCESHIELD] = &CSWSEffectListHandler::OnApplyForceShield;
     m_pEffectRemoved[EFFECT_FORCESHIELD] = &CSWSEffectListHandler::OnRemoveForceShield;
-#ifndef _XBOX
     m_pEffectApplied[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnApplyPureGoodPowers; m_pEffectRemoved[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnRemovePureGoodPowers;
     m_pEffectApplied[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnApplyPureEvilPowers; m_pEffectRemoved[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnRemovePureEvilPowers;
     m_pEffectApplied[EFFECT_FORCEBODY] = &CSWSEffectListHandler::OnApplyForceBody;
@@ -7891,7 +7886,6 @@ void CSWSEffectListHandler::InitializeEffects()
     m_pEffectRemoved[EFFECT_FACTIONMODIFIER] = &CSWSEffectListHandler::OnRemoveFactionModifier;
     m_pEffectApplied[EFFECT_DESTROYSHIELDS] = &CSWSEffectListHandler::OnApplyDestroyShields;
     m_pEffectApplied[EFFECT_ASSASSINATE] = &CSWSEffectListHandler::OnApplyAssassinate;
-#endif
 }
 // PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemoveWhirlWind(CSWSObject* pObject,

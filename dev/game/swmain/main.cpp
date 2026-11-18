@@ -706,7 +706,12 @@ DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A50 GOG 0x00401A50
 // PC 0x00401BD0 GOG 0x00401BD0
 void SetupOpenGL()
 {
+#ifdef _XBOX
+    float fClearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    GLRender_SetClearColor(fClearColor[0], fClearColor[1], fClearColor[2], fClearColor[3]);
+#else
     GLRender_SetClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+#endif
     GLRender_Enable(ENABLE_CULL_FACE);
     GLRender_Enable(ENABLE_DEPTH_TEST);
     GLRender_Enable(ENABLE_LIGHTING);
@@ -718,6 +723,7 @@ void SetupOpenGL()
 
 #ifdef _XBOX
 extern void AurSetFrameBufferMode(int nMode);
+extern int visibilitytestindex;
 
 void messagepump(int nUnused)  // Xbox 0x00011CA0
 {
@@ -730,6 +736,7 @@ void messagepump(int nUnused)  // Xbox 0x00011CA0
             ;
     }
     g_lstVisibilityTests.m_nCount = 0;
+    visibilitytestindex = 0;
     g_nStreamBufferIndex = -1;
     g_pD3DDevice->SetStreamSource(0, NULL, 0);
     if ((float)(unsigned __int64)(AurGetHighResolutionTime() -
@@ -2317,6 +2324,9 @@ int HandleWMCharMessage(unsigned short nChar)  // Xbox 0x000123C0
     case 2:
         nCheatChar = 176;
         break;
+    case 5:
+        nCheatChar = 3;
+        break;
     default:
         nCheatChar = 96;
         break;
@@ -2352,9 +2362,9 @@ int HandleWMCharMessage(unsigned short nChar)  // Xbox 0x000123C0
         {
         case '\n':
         case '\r':
+            g_cConsole.m_bActive = 1;
             g_cConsole.m_szLine[0] = 0;
             g_cConsole.m_nCursorPos = 0;
-            g_cConsole.m_bActive = 1;
             return 1;
         }
     }
@@ -2610,6 +2620,7 @@ int g_nOldFrameBufferMode = antialiasmode;
 
 int g_bLowDiskMode = 0;
 unsigned char g_nBootFlags = 0;
+unsigned long g_nMainThreadId;
 
 void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName)  // Xbox 0x00011490
 {
@@ -2636,7 +2647,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,
         fClearColor[2] = (float)((unsigned char*)&g_nClearColor)[2] * (1.0f / 255.0f);
         fClearColor[3] = (float)((unsigned char*)&g_nClearColor)[3] * (1.0f / 255.0f);
 
-        g_pAurora->ShutDown(0);
+        g_pAurora->ShutDown(0, 1);
         g_pAurora->Initialize(g_hWnd, g_hWnd, nWidth, nHeight, nBitsPerPixel,
                               g_nDesiredFullScreenRefreshRate, 0,
                               nBitsPerPixel, nBitsPerPixel);
@@ -2651,14 +2662,14 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,
 
 int main()
 {
-    KOTOR_LAUNCH_DATA cParams;
     LAUNCH_DATA cLaunchData;
-    DWORD nLaunchType;
     DWORD bNoLaunchData;
 
+    g_nMainThreadId = GetCurrentThreadId();
     XSetFileCacheSize(0x80000);
 
-    bNoLaunchData = XGetLaunchInfo(&nLaunchType, &cLaunchData);
+    KOTOR_LAUNCH_DATA cParams;
+    XGetLaunchInfo(&bNoLaunchData, &cLaunchData);
     if (bNoLaunchData == 0)
     {
         if (((KOTOR_LAUNCH_DATA*)&cLaunchData)->m_nMagic ==
@@ -2725,7 +2736,10 @@ int main()
         g_pAppManager->m_pClientExoApp->SetLoadScreenHintUpdateTimer(
             cParams.m_nLoadScreenHintUpdateTimer);
         g_pAppManager->m_pClientExoApp->SetGamePlayHint(cParams.m_nGamePlayHint);
-        g_pAppManager->m_pClientExoApp->SetStoryHint(cParams.m_nStoryHint);
+        for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+        {
+            g_pAppManager->m_pClientExoApp->SetStoryHint(cParams.m_anStoryHint[nArea], nArea);
+        }
     }
 
     if (cParams.m_bLoadingSave)
@@ -2766,7 +2780,7 @@ int main()
     else
     {
         if (cParams.m_bOptionsDataValid == 0)
-            g_pAppManager->m_pClientExoApp->LoadOptions(1);
+            g_pAppManager->m_pClientExoApp->LoadOptions();
         g_pAppManager->m_pClientExoApp->GetClientOptions()->ApplySoundOptions();
         g_pAurora->ResetGammaRamp(
             g_pAppManager->m_pClientExoApp->GetClientOptions()->GetGammaSetting(),

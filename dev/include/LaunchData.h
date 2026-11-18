@@ -10,7 +10,9 @@ struct KOTOR_LAUNCH_OPTIONS_DATA
     unsigned int m_bAutoCentre : 1;
     unsigned int m_bAutoSave : 1;
     unsigned int m_bReverse : 1;
+    unsigned int m_bReverseIngame : 1;
     unsigned int m_bCombatMove : 1;
+    unsigned int m_bGuiFade : 1;
     unsigned int m_bHideUnequippable : 1;
     unsigned int m_bShowTutorial : 1;
     unsigned int m_bShowSubtitles : 1;
@@ -19,6 +21,7 @@ struct KOTOR_LAUNCH_OPTIONS_DATA
     unsigned int m_bShowFloaty : 1;
     unsigned int m_bEndRound : 1;
     unsigned int m_bEnemySighted : 1;
+    unsigned int m_bMineSighted : 1;
     unsigned int m_bPartyKilled : 1;
     unsigned int m_bUseHorzMenu : 1;
     unsigned int m_bUseVertMenu : 1;
@@ -34,6 +37,13 @@ struct KOTOR_LAUNCH_OPTIONS_DATA
     unsigned char m_nVolumeMovie;
     unsigned char m_nNumMovies;
     unsigned char m_aMoviesShown[11];
+    unsigned char m_nCurSithLord;
+    unsigned char m_bGameCompleted;
+    unsigned long m_nUnlockedSongs;
+    unsigned char m_nPCGender;
+    unsigned short m_nAppearanceType;
+    unsigned char m_nBodyVariation;
+    unsigned char m_nTextureVariation;
 
     void SaveToGFF(class CResGFF* pRes, class CResStruct& stStruct);
     void LoadFromGFF(class CResGFF* pRes, class CResStruct& stStruct);
@@ -50,7 +60,11 @@ public:
         MODULETRANS_LOADGAME = 2
     };
 
-    KOTOR_LAUNCH_DATA();
+    KOTOR_LAUNCH_DATA()
+    {
+        Clear();
+    }
+    void Clear();
 
     void SetLoadScreen(const CExoString& sLoadScreen)  // Xbox 0x0001B520
     {
@@ -187,7 +201,8 @@ public:
     CStatusSummary m_cStatusSummary;
     unsigned long m_nLoadScreenHint;
     unsigned char m_nGamePlayHint;
-    unsigned char m_nStoryHint;
+    enum { STORY_HINT_AREAS = 10 };
+    unsigned char m_anStoryHint[STORY_HINT_AREAS];
     unsigned long m_nHintTimer1;
     unsigned long m_nHintTimer2;
     unsigned long m_nLoadScreenHintUpdateTimer;
@@ -198,7 +213,7 @@ extern int g_bLowDiskMode;
 extern unsigned char g_nBootFlags;
 extern __int64 g_nCurrentSessionStartFILETIME;
 
-inline KOTOR_LAUNCH_DATA::KOTOR_LAUNCH_DATA()  // Xbox 0x00011990
+inline void KOTOR_LAUNCH_DATA::Clear()
 {
     m_nMagic = MAGIC;
     m_bRenderQA = 0;
@@ -234,7 +249,16 @@ inline KOTOR_LAUNCH_DATA::KOTOR_LAUNCH_DATA()  // Xbox 0x00011990
     memset(&m_cStatusSummary, 0, sizeof(m_cStatusSummary));
     m_nLoadScreenHint = 0;
     m_nGamePlayHint = 0;
-    m_nStoryHint = 0;
+    m_anStoryHint[0] = 0;
+    m_anStoryHint[1] = 0;
+    m_anStoryHint[2] = 0;
+    m_anStoryHint[3] = 0;
+    m_anStoryHint[4] = 0;
+    m_anStoryHint[5] = 0;
+    m_anStoryHint[6] = 0;
+    m_anStoryHint[7] = 0;
+    m_anStoryHint[8] = 0;
+    m_anStoryHint[9] = 0;
     m_nHintTimer1 = 0;
     m_nHintTimer2 = 0;
     m_bOptionsDataValid = 0;

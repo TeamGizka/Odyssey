@@ -2209,9 +2209,7 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
     unsigned short nMinute, nSecond, nMillisecond;
     unsigned long nPauseTime, nPauseDay;
 
-#ifndef _XBOX
     g_pExoResMan->FreeChunk();
-#endif
     CGameObjectArray* pObjectArray =
         g_pAppManager->GetServerExoApp()->GetObjectArray();
     sModuleName = CExoString("CURRENTGAME:") + sModule;

@@ -111,24 +111,37 @@ public:
     CSWGuiListBox m_lbEffectsGood;
     CSWGuiListBox m_lbEffectsBad;
     CSWGuiLabel m_lblTitle;
-#ifdef _XBOX
-    CSWGuiLabel m_lblStart; CSWGuiLabel m_lblExit;
-    CSWGuiLabel m_lblX; CSWGuiLabel m_lblXDesc;
-#endif
     CSWGuiLabelHilight* m_pMessageLabels;
     CSWGuiLabelHilight* m_pDialogLabels;
     CSWGuiLabelHilight* m_pCombatLabels;
     CSWGuiLabel m_lblEffectsGood;
     CSWGuiLabel m_lblEffectsBad;
-#ifndef _XBOX
+#ifdef _XBOX
+    CSWGuiLabel m_lblStart;
+    CSWGuiLabel m_lblExit;
+#else
     CSWGuiButton m_btnBack;
 #endif
     CSWGuiLabel m_alblBar[6];
+#ifdef _XBOX
+    CSWGuiLabel m_lblBorder;
+    CSWGuiLabel m_lblRanalog;
+    CSWGuiLabel m_lblFilter;
+    CSWGuiLabel m_lblDialog;
+    CSWGuiLabel m_lblCombat;
+    CSWGuiLabel m_lblEffects;
+    CSWGuiLabel m_lblFeedback;
+    Vector m_vTabColor;
+    CSWGuiLabel m_lblY;
+    CSWGuiLabel m_lblX;
+    CSWGuiLabel m_lblXText;
+#else
     CSWGuiButton m_btnDialog;
     CSWGuiButton m_btnFeedback;
     CSWGuiButton m_btnCombat;
     CSWGuiButton m_btnEffects;
     CSWGuiLabel m_lblFilter;
+#endif
     void ToggleMessages();
     void ShowDialogMessages();
 
@@ -150,7 +163,9 @@ public:
     void ShowCombatMessages();
     void ShowEffects();
     void AddCombatMessages(CGuiInGameMessage*, unsigned long);
+#ifndef _XBOX
     void ChangeMessageDisplay(CSWGuiControl* pControl);
+#endif
 
     enum
     {

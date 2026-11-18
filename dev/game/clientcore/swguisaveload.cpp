@@ -288,7 +288,10 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
                 cLaunchData.SetStartWaypoint(pEntry->m_sGameName);
                 cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
                 cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-                cLaunchData.m_nStoryHint = g_pAppManager->GetClientExoApp()->GetStoryHint();
+                for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+                {
+                    cLaunchData.m_anStoryHint[nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
+                }
                 cLaunchData.m_nLoadScreenHintUpdateTimer =
                     g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
                 AurPersistDisplay();
@@ -363,7 +366,10 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
                 cLaunchData.SetStartWaypoint(pEntry->m_sGameName);
                 cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
                 cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-                cLaunchData.m_nStoryHint = g_pAppManager->GetClientExoApp()->GetStoryHint();
+                for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+                {
+                    cLaunchData.m_anStoryHint[nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
+                }
                 cLaunchData.m_nLoadScreenHintUpdateTimer =
                     g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
                 AurPersistDisplay();
@@ -1035,7 +1041,10 @@ int CSWGuiSaveLoad::LoadPCAutoSave()  // Xbox 0x000E2610
         cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
         cLaunchData.SetLoadMusic(CExoString(""));
         cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-        cLaunchData.m_nStoryHint = g_pAppManager->GetClientExoApp()->GetStoryHint();
+        for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+        {
+            cLaunchData.m_anStoryHint[nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
+        }
         cLaunchData.m_nLoadScreenHintUpdateTimer =
             g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
         cLaunchData.m_bLoadAutoSave = 1;
@@ -1271,8 +1280,26 @@ void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)  // Xbo
     }
     unsigned char nDefault = m_nGamePlayHint;
     m_nGamePlayHint = pRes->ReadFieldBYTE(&stStruct, "GAMEPLAYHINT", bSuccess, nDefault);
-    nDefault = m_nStoryHint;
-    m_nStoryHint = pRes->ReadFieldBYTE(&stStruct, "STORYHINT", bSuccess, nDefault);
+    nDefault = m_anStoryHint[0];
+    m_anStoryHint[0] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT0", bSuccess, nDefault);
+    nDefault = m_anStoryHint[1];
+    m_anStoryHint[1] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT1", bSuccess, nDefault);
+    nDefault = m_anStoryHint[2];
+    m_anStoryHint[2] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT2", bSuccess, nDefault);
+    nDefault = m_anStoryHint[3];
+    m_anStoryHint[3] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT3", bSuccess, nDefault);
+    nDefault = m_anStoryHint[4];
+    m_anStoryHint[4] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT4", bSuccess, nDefault);
+    nDefault = m_anStoryHint[5];
+    m_anStoryHint[5] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT5", bSuccess, nDefault);
+    nDefault = m_anStoryHint[6];
+    m_anStoryHint[6] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT6", bSuccess, nDefault);
+    nDefault = m_anStoryHint[7];
+    m_anStoryHint[7] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT7", bSuccess, nDefault);
+    nDefault = m_anStoryHint[8];
+    m_anStoryHint[8] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT8", bSuccess, nDefault);
+    nDefault = m_anStoryHint[9];
+    m_anStoryHint[9] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT9", bSuccess, nDefault);
 }
 #endif
 int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0 GOG 0x007070C0 Xbox 0x000DFC30

@@ -272,7 +272,11 @@ public:
     int ShowTutorialWindow(unsigned char nTutorial, unsigned long nX,
                            unsigned long nY, unsigned long nActionParam);
     int SaveOptions();
+#ifdef _XBOX
+    int LoadOptions();
+#else
     int LoadOptions(int bSetAntiAliasing);
+#endif
 #ifdef _XBOX
 
     void SetMinGlobalRim(int bMinGlobalRim);
@@ -527,6 +531,10 @@ public:
     void SetSoundPausedByCombat(int nPaused);
     void ClearMainMenuPointer();
     void EnableMainMenuIdleTimer();
+#ifdef _XBOX
+    unsigned char GetSuperModelSet();
+    void SetSuperModelSet(unsigned char nSuperModelSet);
+#endif
     int DontUseThisSetPlayerCreature(unsigned long oidObject);
     void HandleExitGameButton();
     void RemoveMoveToModuleMovies();

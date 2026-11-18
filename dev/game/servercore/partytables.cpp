@@ -65,23 +65,17 @@ int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
                                            m_bNewQuestSound);
     m_bCompleteSound = pGFF->ReadFieldBYTE(&cStruct, "COMPLETESOUND", bSuccess,
                                            m_bCompleteSound);
-#ifndef _XBOX
     m_bDarkAlignSound = pGFF->ReadFieldBYTE(&cStruct, "DARKALIGNSOUND", bSuccess,
                                             m_bDarkAlignSound);
     m_bLightAlignSound = pGFF->ReadFieldBYTE(&cStruct, "LIGHTALIGNSOUND", bSuccess,
                                              m_bLightAlignSound);
-#endif
     m_nSuppressed =
         pGFF->ReadFieldINT(&cStruct, "SUPPRESSED", bSuccess, m_nSuppressed);
-#ifndef _XBOX
     m_nInfluenceGain = pGFF->ReadFieldINT(&cStruct, "INFGAIN", bSuccess, 0);
     m_nInfluenceLost = pGFF->ReadFieldINT(&cStruct, "INFLOST", bSuccess, 0);
     m_nMaxForcePointsGain = pGFF->ReadFieldINT(&cStruct, "MAXFPGAIN", bSuccess, 0);
     m_nMaxForcePointsLost = pGFF->ReadFieldINT(&cStruct, "MAXFPLOST", bSuccess, 0);
     return m_nMaxForcePointsLost;
-#else
-    return m_nSuppressed;
-#endif
 }
 
 // PC 0x0057C840 GOG 0x0057C8C0 Xbox 0x001798A0
@@ -341,7 +335,47 @@ void CSWPartyTable::UpdateMembers(int bClearActions)
         SavePuppet(j, bClearActions);
     }
 }
-#ifndef _XBOX
+#ifdef _XBOX
+// Xbox 0x0017BAD0
+int CSWPartyTable::RemoveMember(int nNPC)
+{
+    if (m_nNumMembers > 0 && nNPC >= 0 && nNPC < 12 &&
+        m_abNPCAvailable[nNPC] != 0)
+    {
+        unsigned long oidNPC = GetNPCObject(nNPC, 0, 1);
+        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+        CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidNPC);
+        if (pCreature != NULL)
+        {
+            pCreature->ClearAllEffects(0);
+            int nPUP = pCreature->m_nAssignedPup;
+            if (nPUP != -1 && GetIsPuppet(nPUP) != 0)
+            {
+                RemovePuppet(nPUP);
+                KillPUPObject(nPUP, 1);
+            }
+            SaveMember(nNPC, 0);
+        }
+
+        for (int i = 0; i < m_nNumMembers; i++)
+        {
+            if (nNPC == m_anMembers[i])
+            {
+                for (int j = i + 1; j < m_nNumMembers; j++)
+                {
+                    m_anMembers[j - 1] = m_anMembers[j];
+                }
+                if (--m_nNumMembers == 0 && m_bSoloMode != 0)
+                {
+                    m_bSoloMode = 0;
+                }
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+#else
 int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80 GOG 0x0057EC00
 {
     if (m_nNumMembers <= 0 || nNPC < 0 || nNPC >= 12 ||
@@ -382,8 +416,8 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80 GOG 0x0057EC00
     }
     return 0;
 }
-
 #endif
+
 // PC 0x0057CF50 GOG 0x0057CFD0 Xbox 0x00179F90
 int CSWPartyTable::RemovePuppet(int nPUP)
 {
@@ -1021,7 +1055,6 @@ void CSWPartyTable::Save(const CExoString& sAlias, int bSaveMembers)
 // PC 0x005795E0 GOG 0x00579660 Xbox 0x00176CC0
 void CSWPartyTable::ClearTable()
 {
-#ifndef _XBOX
     m_nGold = 0;
     m_nItemChemical = 0;
     m_nItemComponent = 0;
@@ -1052,7 +1085,6 @@ void CSWPartyTable::ClearTable()
         delete m_pPartyItems;
         m_pPartyItems = NULL;
     }
-#endif
 
     m_nNumMembers = 0;
     m_nNumPuppets = 0;
@@ -1079,16 +1111,6 @@ void CSWPartyTable::ClearTable()
         m_anPuppets[i] = -1;
     }
 
-#ifdef _XBOX
-    for (int i = 0; i < 5; i++)
-    {
-        m_anPazaakCards[i] = 2;
-    }
-    for (int i = 5; i < 18; i++)
-    {
-        m_anPazaakCards[i] = 0;
-    }
-#else
     for (int i = 0; i < 10; i++)
     {
         m_anPazaakCards[i] = 1;
@@ -1097,7 +1119,6 @@ void CSWPartyTable::ClearTable()
     {
         m_anPazaakCards[i] = 0;
     }
-#endif
     for (int i = 0; i < 10; i++)
     {
         m_anPazaakSideDeck[i] = -1;
@@ -1716,26 +1737,6 @@ CSWPartyTable::CSWPartyTable()
 {
     m_pPartyItems = NULL;
     m_pPartyJournal = NULL;
-#ifdef _XBOX
-    m_nGold = 0;
-    m_nGameInProgress = 0;
-    m_nControlledNPC = -1;
-    m_nXPPool = 0;
-    m_nReturnFlag = 1;
-    m_nReturnStrref = 32179;
-    m_nReturnTitleStrref = 42120;
-    m_nPlayedSeconds = 0;
-    m_bSkipPartyPositioning = 0;
-
-    for (int i = 0; i < 16; i++)
-    {
-        m_abPlanetAvailable[i] = 0;
-        m_abPlanetSelectable[i] = 0;
-    }
-
-    m_nSelectedPlanet = -1;
-    m_bSoloMode = 0;
-#endif
     ClearTable();
 }
 // PC 0x0057A610 GOG 0x0057A690 Xbox 0x00177C10
@@ -2010,9 +2011,14 @@ int CSWPartyTable::AddPuppet(int nPUP, unsigned long oidPuppet)
     }
     return 0;
 }
-#ifndef _XBOX
 int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260 GOG 0x0057B2E0
 {
+#ifdef _XBOX
+    if (nNPC < 0 || nNPC >= MAX_NPCS || pCreature == NULL || m_abNPCAvailable[nNPC] != 0)
+    {
+        return 0;
+    }
+#else
     if (nNPC < 0 || nNPC >= MAX_NPCS)
     {
         return 0;
@@ -2021,6 +2027,7 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260 G
     {
         return 0;
     }
+#endif
 
     m_abNPCAvailable[nNPC] = 1;
     TransferInventory(pCreature);
@@ -2085,7 +2092,6 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260 G
     delete pGFF;
     return bResult;
 }
-#endif
 // PC 0x0057B560 GOG 0x0057B5E0 Xbox 0x001788B0
 int CSWPartyTable::AddPUP(int nPUP, CSWSCreature* pCreature)
 {
@@ -2662,37 +2668,6 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
 
 #ifdef _XBOX
 
-int CSWPartyTable::RemoveMember(int nNPC)  // Xbox 0x0017BAD0
-{
-    if (m_nControlledNPC == -1 && m_nNumMembers > 0 && nNPC >= 0 && nNPC < 12 &&
-        m_abNPCAvailable[nNPC] != 0)
-    {
-        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-        unsigned long oidNPC = GetNPCObject(nNPC, 0, 1);
-        CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidNPC);
-        if (pCreature != NULL)
-        {
-            pCreature->ClearAllEffects(0);
-        }
-
-        for (int i = 0; i < m_nNumMembers; i++)
-        {
-            if (nNPC == m_anMembers[i])
-            {
-                for (int j = i + 1; j < m_nNumMembers; j++)
-                {
-                    m_anMembers[j - 1] = m_anMembers[j];
-                }
-                if (--m_nNumMembers == 0 && m_bSoloMode != 0)
-                {
-                    m_bSoloMode = 0;
-                }
-                return 1;
-            }
-        }
-    }
-    return 0;
-}
 
 int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // Xbox 0x00177470
 {
@@ -2727,69 +2702,4 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // Xbox 0x00177470
     return 0;
 }
 
-int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // Xbox 0x00178610
-{
-    if (nNPC < 0 || nNPC >= MAX_NPCS || pCreature == NULL || m_abNPCAvailable[nNPC] != 0)
-    {
-        return 0;
-    }
-
-    m_abNPCAvailable[nNPC] = 1;
-    TransferInventory(pCreature);
-
-    int nBaseXP = 0;
-    float fPercent = 1.0f;
-    int nPercentXP;
-    int bFound;
-    {
-        CExoString sColumn("PercentXP");
-        CTwoDimArrays* p2DArrays = g_pRules->Get2DArrays();
-        EXOXBOXASSERT(p2DArrays->m_pNPC);
-        C2DA* pNPCTable = p2DArrays->m_pNPC;
-        bFound = pNPCTable->GetINTEntry(nNPC, sColumn, &nPercentXP);
-    }
-    if (bFound != 0 && nPercentXP != 0)
-    {
-        fPercent = nPercentXP * 0.01f;
-    }
-    int nXPPool = m_nXPPool;
-    int nPoolXP = (int)(nXPPool * fPercent);
-
-    int nLevel = 1;
-    if (pCreature->GetStats()->GetLevel(0) >= 1)
-    {
-        int nNextLevelXP = 1000;
-        do
-        {
-            nBaseXP = nBaseXP + nNextLevelXP - 1000;
-            nLevel++;
-            nNextLevelXP += 1000;
-        } while (nLevel <= pCreature->GetStats()->GetLevel(0));
-    }
-    if (nBaseXP <= nPoolXP)
-    {
-        pCreature->m_nJoiningXP = 0;
-    }
-    else
-    {
-        pCreature->m_nJoiningXP = nBaseXP - nPoolXP;
-    }
-
-    CServerExoApp* pServerExoApp = g_pAppManager->GetServerExoApp();
-    CSWSCreature* pPlayer = pServerExoApp->GetCreatureByGameObjectID(
-        pServerExoApp->GetPlayerCreatureId());
-    if (pPlayer != NULL && pPlayer->GetFaction() != NULL)
-    {
-        pPlayer->GetFaction()->AddMember(pCreature->GetId(), 0);
-    }
-    pCreature->GetStats()->SetMovementRate(0);
-
-    CExoString sPath;
-    sPath.Format("GAMEINPROGRESS:%s", GetFilename(nNPC));
-    CResGFF* pGFF = new CResGFF;
-    CResStruct stTop;
-    pGFF->CreateGFFFile(&stTop, "UTC ", "V2.0");
-    pCreature->SaveCreature(pGFF, &stTop);
-    return pGFF->WriteGFFFile(sPath.CStr(), RESTYPE_UTC);
-}
 #endif
