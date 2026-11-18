@@ -146,7 +146,7 @@ public:
     bool GetRenderQA() { return m_bRenderQA; }
     unsigned long GetAutoCalInfo() { return m_nAutoCalInfo; }
     unsigned long GetPortBinding() { return m_nPortBinding; }
-    int GetSaveSlot() { return m_nSaveSlot; }  // Xbox 0x00278D90
+    int GetSaveSlot() { return m_nSaveSlot; }
     CExoString GetXboxSavePath() { return CExoString(m_szXboxSavePath); }
     CExoString GetModuleName() { return CExoString(m_szModuleName); }
     CExoString GetLoadScreen() { return CExoString(m_szLoadScreen); }

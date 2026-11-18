@@ -2390,7 +2390,7 @@ void CClientExoAppInternal::StartMenuMusic(int bCultTheme, int nVolume,
 
 #define RESTYPE_XBOX_STREAM 11
             CExoString sFileName;
-            sFileName.Format("HD0:STREAMMUSIC\%s", sMusic.CStr());
+            sFileName.Format("HD0:STREAMMUSIC\\%s", sMusic.CStr());
             g_pExoResMan->CacheResource(sFileName, RESTYPE_XBOX_STREAM);
             m_pMenuMusic->Play(sMusic, RESTYPE_XBOX_STREAM, 0, 1, 1);
         }
@@ -10974,7 +10974,10 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
             bEndGameReady = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) -
                             m_nEndGameInputLockTime > XBOX_END_GAME_INPUT_LOCK_MS;
             g_pExoInput->UpdateJoysticks();
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
+            if ((g_pAppManager->GetServerExoApp() != NULL &&
+                 !g_pAppManager->GetServerExoApp()->GetMoveToModulePending()) ||
+                g_pAppManager->GetServerExoApp() == NULL)
+                g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
         }
     }
     if (m_bEndGamePending && bEndGameReady == 1 &&
@@ -10982,13 +10985,11 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
     {
         if (m_fEndGamePendingDelay > 0.0f)
         {
-            if (m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pMessageBox) ||
-                !m_bShowEndGameDeathMessage)
-                m_fEndGamePendingDelay -= DeltaT;
-            else
+            if (!m_pSWGuiManager->PanelExists(m_pGuiInGame->GetDeathDisplay()) &&
+                m_bShowEndGameDeathMessage)
             {
                 CGuiInGame* pGui = m_pGuiInGame;
-                pGui->m_pMessageBox->DisplayDeathMessage();
+                pGui->DisplayDeathMessage();
             }
         }
         else
@@ -11158,7 +11159,8 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
                 UpdateRoom(m_pGuiInGame->GetDialogCameraPosition(0));
         }
     }
-    if (m_pGuiInGame != NULL && m_pGuiInGame->m_oidCameraAnimationObject != OBJECT_INVALID)
+    if (m_pGuiInGame != NULL && m_pGuiInGame->m_oidCameraAnimationObject != OBJECT_INVALID &&
+        g_pAppManager->GetServerExoApp() != NULL)
     {
         unsigned long oidServerObject =
             g_pAppManager->GetServerExoApp()->ClientToServerObjectId(m_pGuiInGame->m_oidCameraAnimationObject);
@@ -11202,15 +11204,21 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
     else if (m_fStatusSummaryDelay != 0.0f)
         m_fStatusSummaryDelay = 0.0f;
     m_pSWGuiManager->Update(DeltaT);
+    bool bForceSight = g_ForceSight;
+    g_ForceSight = false;
     m_pSWGuiManager->SetGuiScale(DeltaT);
     DeltaT = (__int64)g_pAppManager->GetClientExoApp()->GetExoAppInternal()->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f;
     m_pSWGuiManager->Draw(DeltaT);
     DeltaT = m_pSWGuiManager->m_fGuiScale;
+    g_ForceSight = bForceSight;
     g_endtime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
     g_GuiUpdateTime = (int)(g_endtime - g_starttime) * 0.001f;
     g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
     UpdateRumble(DeltaT);
-    m_pGuiInGame->UpdateControllerPauseState();
+    if ((g_pAppManager->GetServerExoApp() != NULL &&
+         !g_pAppManager->GetServerExoApp()->GetMoveToModulePending()) ||
+        g_pAppManager->GetServerExoApp() == NULL)
+        m_pGuiInGame->UpdateControllerPauseState();
     if (m_nAttackMashTutorialTimer > 0)
     {
         unsigned long nElapsed = (unsigned long)(DeltaT * 1000.0f);
@@ -11235,7 +11243,11 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
     {
         m_fEnemyAutoPauseTimer -= DeltaT;
         if (m_fEnemyAutoPauseTimer <= 0.0f && !m_nCombatMode)
-            SetAutoPaused(1, CClientExoApp::AUTOPAUSE_ENEMY_SIGHTED);
+        {
+            SetAutoPaused(1, 1);
+            SetAutoPaused(1, m_nDelayedAutoPauseType);
+            m_nDelayedAutoPauseType = AUTO_PAUSE_TYPE_UNSET;
+        }
     }
     else if (m_fEnemyAutoPauseDelay > 0.0f)
         m_fEnemyAutoPauseDelay -= DeltaT;

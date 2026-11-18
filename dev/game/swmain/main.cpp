@@ -2660,23 +2660,27 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // Xbox 0x000121
     }
 }
 
+static void NoRenderCallback()
+{
+}
+
 int main()  // Xbox 0x00012560
 {
     LAUNCH_DATA cLaunchData;
-    DWORD bNoLaunchData;
 
     g_nMainThreadId = GetCurrentThreadId();
     XSetFileCacheSize(0x80000);
 
     KOTOR_LAUNCH_DATA cParams;
+    DWORD bNoLaunchData = 1;
     XGetLaunchInfo(&bNoLaunchData, &cLaunchData);
     if (bNoLaunchData == 0)
     {
-        if (((KOTOR_LAUNCH_DATA*)&cLaunchData)->m_nMagic ==
+        if (((KOTOR_LAUNCH_DATA*)&cLaunchData)->m_nMagic !=
             KOTOR_LAUNCH_DATA::MAGIC)
-            memcpy(&cParams, &cLaunchData, sizeof(cParams));
-        else
             bNoLaunchData = 1;
+        else
+            memcpy(&cParams, &cLaunchData, sizeof(cParams));
     }
 
     CSWPartyTable::ResetCurrentSessionStartTime();
@@ -2721,150 +2725,128 @@ int main()  // Xbox 0x00012560
 
     if (bNoLaunchData == 0)
     {
-        g_pAppManager->m_pClientExoApp->GetClientOptions()->SetDefaults();
-        if (cParams.m_bOptionsDataValid == 1)
-            g_pAppManager->m_pClientExoApp->GetClientOptions()
+        g_pAppManager->GetClientExoApp()->GetClientOptions()->SetDefaults();
+        if ((unsigned char)cParams.m_bOptionsDataValid == 1)
+            g_pAppManager->GetClientExoApp()->GetClientOptions()
                 ->SetOptionsData(&cParams.m_cOptionsData);
 
-        g_pAppManager->m_pClientExoApp->AddMoveToModuleMovie(cParams.GetMovie1());
-        g_pAppManager->m_pClientExoApp->AddMoveToModuleMovie(cParams.GetMovie2());
-        g_pAppManager->m_pClientExoApp->AddMoveToModuleMovie(cParams.GetMovie3());
-        g_pAppManager->m_pClientExoApp->AddMoveToModuleMovie(cParams.GetMovie4());
-        g_pAppManager->m_pClientExoApp->AddMoveToModuleMovie(cParams.GetMovie5());
-        g_pAppManager->m_pClientExoApp->AddMoveToModuleMovie(cParams.GetMovie6());
-        g_pAppManager->m_pClientExoApp->SetMinGlobalRim(cParams.m_bMinGlobalRim);
-        g_pAppManager->m_pClientExoApp->SetLoadScreenHintUpdateTimer(
+        g_pAppManager->GetClientExoApp()->AddMoveToModuleMovie(cParams.GetMovie1());
+        g_pAppManager->GetClientExoApp()->AddMoveToModuleMovie(cParams.GetMovie2());
+        g_pAppManager->GetClientExoApp()->AddMoveToModuleMovie(cParams.GetMovie3());
+        g_pAppManager->GetClientExoApp()->AddMoveToModuleMovie(cParams.GetMovie4());
+        g_pAppManager->GetClientExoApp()->AddMoveToModuleMovie(cParams.GetMovie5());
+        g_pAppManager->GetClientExoApp()->AddMoveToModuleMovie(cParams.GetMovie6());
+        g_pAppManager->GetClientExoApp()->SetMinGlobalRim(cParams.m_bMinGlobalRim);
+        g_pAppManager->GetClientExoApp()->SetLoadScreenHintUpdateTimer(
             cParams.m_nLoadScreenHintUpdateTimer);
-        g_pAppManager->m_pClientExoApp->SetGamePlayHint(cParams.m_nGamePlayHint);
-        for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+        g_pAppManager->GetClientExoApp()->SetGamePlayHint(cParams.m_nGamePlayHint);
+        for (int nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
         {
-            g_pAppManager->m_pClientExoApp->SetStoryHint(cParams.m_anStoryHint[nArea], nArea);
+            g_pAppManager->GetClientExoApp()->SetStoryHint(
+                cParams.m_anStoryHint[(unsigned char)nArea], (unsigned char)nArea);
         }
     }
 
-    if (cParams.m_bLoadingSave)
-        g_pAppManager->m_pClientExoApp->SetLoadingSaveGame(1);
+    if ((bool)cParams.m_bLoadingSave)
+        g_pAppManager->GetClientExoApp()->SetLoadingSaveGame(1);
 
     if (bNoLaunchData == 0 &&
         (cParams.m_nModuleTrans == KOTOR_LAUNCH_DATA::MODULETRANS_LOADGAME ||
-         cParams.m_bLoadAutoSave))
+         (bool)cParams.m_bLoadAutoSave))
     {
-        g_pAppManager->m_pClientExoApp->SetLoadStep(0, 50);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(1, 10);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(2, 13);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(3, 13);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(4, 13);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(0, 10);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(1, 20);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(2, 23);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(3, 23);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(4, 23);
     }
     else
     {
-        g_pAppManager->m_pClientExoApp->SetLoadStep(0, 10);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(1, 30);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(2, 20);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(3, 20);
-        g_pAppManager->m_pClientExoApp->SetLoadStep(4, 20);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(0, 10);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(1, 30);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(2, 20);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(3, 20);
+        g_pAppManager->GetClientExoApp()->SetLoadStep(4, 20);
     }
 
-    g_pAppManager->m_pClientExoApp->StartServices(
+    unsigned long nLoadScreenHint = cParams.m_nLoadScreenHint;
+    AurRenderCallback = NoRenderCallback;
+    g_pAppManager->GetClientExoApp()->StartServices(
         bNoLaunchData == 0, cParams.GetLoadScreen(), cParams.GetLoadMusic(),
-        cParams.GetModuleName(), cParams.m_nLoadScreenHint);
-    g_pAppManager->m_pClientExoApp->Initialize();
-    g_pAppManager->m_pClientExoApp->GetClientOptions()->ApplySoundOptions();
+        cParams.GetModuleName(), nLoadScreenHint);
+    g_pAppManager->GetClientExoApp()->Initialize();
+    g_pAppManager->GetClientExoApp()->GetClientOptions()->ApplySoundOptions();
     g_bExitProgram = 0;
-    g_pAppManager->m_pClientExoApp->SetInputActive(1, 0);
-    g_sBuildNumber = "385632";
+    g_pAppManager->GetClientExoApp()->SetInputActive(1, 0);
 
-    if (bNoLaunchData != 0)
+    if (bNoLaunchData == 0)
     {
-        g_pAppManager->m_pClientExoApp->DisplayStartScreen();
-    }
-    else
-    {
-        if (cParams.m_bOptionsDataValid == 0)
-            g_pAppManager->m_pClientExoApp->LoadOptions();
-        g_pAppManager->m_pClientExoApp->GetClientOptions()->ApplySoundOptions();
+        if ((unsigned char)cParams.m_bOptionsDataValid == 0)
+            g_pAppManager->GetClientExoApp()->LoadOptions();
+        g_pAppManager->GetClientExoApp()->GetClientOptions()->ApplySoundOptions();
         g_pAurora->ResetGammaRamp(
-            g_pAppManager->m_pClientExoApp->GetClientOptions()->GetGammaSetting(),
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->GetGammaSetting(),
             0);
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetStatusSummary(
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->SetStatusSummary(
             cParams.m_cStatusSummary);
         g_pExoInput->SetAutoCalInfo(cParams.m_nAutoCalInfo);
         g_pExoInput->SetPortBinding(cParams.m_nPortBinding);
 
-        if (cParams.m_nModuleTrans == KOTOR_LAUNCH_DATA::MODULETRANS_NONE)
+        switch (cParams.m_nModuleTrans)
         {
-            g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 1);
-            g_pAppManager->m_pClientExoApp->DisplayMainMenu(0);
-        }
-        else if (cParams.m_nModuleTrans ==
-                 KOTOR_LAUNCH_DATA::MODULETRANS_LOADGAME)
+        case KOTOR_LAUNCH_DATA::MODULETRANS_NONE:
         {
-            g_pExoBase->m_pExoAliasList->ChangePath("SAVES",
-                                                cParams.GetXboxSavePath());
-
-            CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-            pClientExoApp->SetLoadScreenByModuleName(cParams.GetModuleName());
-            pClientExoApp->SetLoadScreenHint(cParams.m_nLoadScreenHint);
-            pClientExoApp->ShowLoadScreen(1, 1, 0);
-            g_pAppManager->CreateServer(0);
-            g_pAppManager->m_pClientExoApp->GetWorldTimer()->PauseWorldTimer();
-            g_pAppManager->m_pServerExoApp->GetWorldTimer()->PauseWorldTimer();
-            pClientExoApp->GetNetLayer()->StartConnectToSession(
-                0, pClientExoApp->GetClientName(), "", 10, 16);
-            pClientExoApp->GetSWCMessage()
-                ->SendPlayerToServerStatus_RequestStatus();
-            pClientExoApp->SetPlayerCharacterName("test");
-            pClientExoApp->SetInputClass(0, 1);
-            pClientExoApp->DisableInput();
-            g_pAppManager->m_pServerExoApp->SetLoadFromSaveGame(1);
-            g_pAppManager->m_pClientExoApp->SetLoadingSaveGame(1);
-            g_pAppManager->m_pClientExoApp->SendLoadGameRequest(
-                cParams.m_nSaveSlot, cParams.GetStartWaypoint(),
-                cParams.GetModuleName());
+            g_pAppManager->GetClientExoApp()->HideLoadScreen(1, 1);
+            g_pAppManager->GetClientExoApp()->DisplayMainMenu(0);
         }
-        else if (cParams.m_nModuleTrans ==
-                 KOTOR_LAUNCH_DATA::MODULETRANS_MODULE)
+        break;
+        case KOTOR_LAUNCH_DATA::MODULETRANS_MODULE:
         {
             CExoString sMessage;
-            CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+            CClientExoApp* pClientExoApp = g_pAppManager->GetClientExoApp();
 
             pClientExoApp->SetLoadScreenByModuleName(cParams.GetModuleName());
             if (pClientExoApp->GetMoveToModuleMovies()->num == 0)
                 pClientExoApp->ShowLoadScreen(1, 1, 0);
+            pClientExoApp->SetLoadScreenHint(cParams.m_nLoadScreenHint);
             g_pAppManager->CreateServer(1);
-            g_pAppManager->m_pClientExoApp->GetWorldTimer()->PauseWorldTimer();
-            g_pAppManager->m_pServerExoApp->GetWorldTimer()->PauseWorldTimer();
-            g_pAppManager->m_pServerExoApp->SetDoingStartNewModule(1);
+            g_pAppManager->GetClientExoApp()->GetWorldTimer()->PauseWorldTimer();
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()->PauseWorldTimer();
+            g_pAppManager->GetServerExoApp()->SetDoingStartNewModule(1);
             g_pExoResMan->AddResourceDirectory("REBOOTDATA:");
-            if (g_pAppManager->m_pServerExoApp->GetPartyTable()->LoadTableInfo() &&
-                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->Load())
+            if (g_pAppManager->GetServerExoApp()->GetPartyTable()->LoadTableInfo() &&
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->Load())
             {
                 g_pExoResMan->RemoveResourceDirectory("REBOOTDATA:");
                 g_pExoResMan->NukeDirectory("REBOOTDATA:", 0, 0);
-                g_pAppManager->m_pClientExoApp->SetLoadFromIFO(1);
+                g_pAppManager->GetClientExoApp()->SetLoadFromIFO(1);
                 pClientExoApp->GetNetLayer()->StartConnectToSession(
-                    0, pClientExoApp->GetClientName(), "", 10, 16);
+                    0, pClientExoApp->GetClientName(), "",
+                CNetLayer::LOCAL_SESSION_PORT, CNetLayer::CONNECTTYPE_PLAYER);
                 pClientExoApp->GetSWCMessage()
                     ->SendPlayerToServerStatus_RequestStatus();
                 sMessage.Format("%c%s.%s %s", 's', "Module", "Load",
                                 cParams.GetModuleName().CStr());
                 pClientExoApp->GetNetLayer()->SendMessageToPlayer(
-                    0xFFFFFFFD, (unsigned char*)sMessage.CStr(),
+                    CNetLayer::PLAYERID_SERVER, (unsigned char*)sMessage.CStr(),
                     sMessage.GetLength(), 0);
                 if (cParams.GetStartWaypoint() != "*")
-                    g_pAppManager->m_pServerExoApp->SetMoveToModuleStartWaypoint(
+                    g_pAppManager->GetServerExoApp()->SetMoveToModuleStartWaypoint(
                         cParams.GetStartWaypoint());
                 else
-                    g_pAppManager->m_pServerExoApp->SetMoveToModuleStartWaypoint(
+                    g_pAppManager->GetServerExoApp()->SetMoveToModuleStartWaypoint(
                         "");
-                g_pAppManager->m_pServerExoApp->SetMoveToWorldTime(
+                g_pAppManager->GetServerExoApp()->SetMoveToWorldTime(
                     cParams.m_nTimeYear, cParams.m_nTimeMonth,
                     cParams.m_nTimeDay, cParams.m_nTimeHour,
                     cParams.m_nTimeMinute, cParams.m_nTimeSecond,
                     cParams.m_nTimeMillisecond);
-                g_pAppManager->m_pServerExoApp->SetMoveToPausedTimeOfDay(
+                g_pAppManager->GetServerExoApp()->SetMoveToPausedTimeOfDay(
                     cParams.m_nTimePauseTime);
-                g_pAppManager->m_pServerExoApp->SetMoveToPausedCalendarDay(
+                g_pAppManager->GetServerExoApp()->SetMoveToPausedCalendarDay(
                     cParams.m_nTimePauseDay);
+                g_pAppManager->GetServerExoApp()->SetHintTimers(
+                    cParams.m_nHintTimer1, cParams.m_nHintTimer2);
                 pClientExoApp->SetPlayerCharacterName("test");
                 pClientExoApp->SetInputClass(0, 1);
             }
@@ -2874,6 +2856,39 @@ int main()  // Xbox 0x00012560
                 g_pAppManager->m_pReentrantServerStats->m_nError = 4;
             }
         }
+        break;
+        case KOTOR_LAUNCH_DATA::MODULETRANS_LOADGAME:
+        {
+            g_pExoBase->m_pExoAliasList->ChangePath("SAVES",
+                                                cParams.GetXboxSavePath());
+
+            CClientExoApp* pClientExoApp = g_pAppManager->GetClientExoApp();
+            pClientExoApp->SetLoadScreenByModuleName(cParams.GetModuleName());
+            pClientExoApp->ShowLoadScreen(1, 1, 0);
+            pClientExoApp->SetLoadScreenHint(cParams.m_nLoadScreenHint);
+            g_pAppManager->CreateServer(0);
+            g_pAppManager->GetClientExoApp()->GetWorldTimer()->PauseWorldTimer();
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()->PauseWorldTimer();
+            pClientExoApp->GetNetLayer()->StartConnectToSession(
+                0, pClientExoApp->GetClientName(), "",
+                CNetLayer::LOCAL_SESSION_PORT, CNetLayer::CONNECTTYPE_PLAYER);
+            pClientExoApp->GetSWCMessage()
+                ->SendPlayerToServerStatus_RequestStatus();
+            pClientExoApp->SetPlayerCharacterName("test");
+            pClientExoApp->SetInputClass(0, 1);
+            pClientExoApp->DisableInput();
+            g_pAppManager->GetServerExoApp()->SetLoadFromSaveGame(1);
+            g_pAppManager->GetClientExoApp()->SetLoadingSaveGame(1);
+            g_pAppManager->GetClientExoApp()->SendLoadGameRequest(
+                cParams.m_nSaveSlot, cParams.GetStartWaypoint(),
+                cParams.GetModuleName());
+        }
+        break;
+        }
+    }
+    else
+    {
+        g_pAppManager->GetClientExoApp()->DisplayStartScreen();
     }
 
     while (g_bExitProgram == 0)
@@ -2899,20 +2914,20 @@ int main()  // Xbox 0x00012560
             AurDisableHeadLight();
 
         g_nStartTimer = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-        g_bExitProgram |= g_pAppManager->m_pClientExoApp->MainLoop();
+        g_bExitProgram |= g_pAppManager->GetClientExoApp()->MainLoop();
         g_nEndTimer = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
         g_ClientUpdateTime = (float)(g_nEndTimer - g_nStartTimer) * 0.001f;
 
         g_nStartTimer = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
         for (int i = 0; i < 1; ++i)
         {
-            if (g_pAppManager->m_pServerExoApp != NULL)
+            if (g_pAppManager->GetServerExoApp() != NULL)
             {
-                g_bExitProgram |= g_pAppManager->m_pServerExoApp->MainLoop();
+                g_bExitProgram |= g_pAppManager->GetServerExoApp()->MainLoop();
                 if (g_pAppManager->m_pReentrantServerStats->m_bOperationActive ==
                     1)
                 {
-                    g_pAppManager->m_pClientExoApp->GetSWGuiManager()->Draw(
+                    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(
                         1.0f / 30.0f);
                     break;
                 }
@@ -2968,8 +2983,8 @@ int main()  // Xbox 0x00012560
     }
 
     g_pAppManager->DestroyServer();
-    g_pAppManager->m_pClientExoApp->Uninitialize();
-    g_pAppManager->m_pClientExoApp->StopServices();
+    g_pAppManager->GetClientExoApp()->Uninitialize();
+    g_pAppManager->GetClientExoApp()->StopServices();
 
     delete g_pAppManager;
     g_pAppManager = NULL;

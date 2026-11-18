@@ -136,7 +136,11 @@ template <class T> int List<T>::IndexOf(T item)  // Xbox 0x0010CCE0
     return -1;
 }
 #endif
+#ifdef _XBOX
+template <class T> inline List<T>::List(int nAllocated)
+#else
 template <class T> List<T>::List(int nAllocated)
+#endif
 {
     m_nCount = 0;
     m_nAllocated = 0;
@@ -147,7 +151,11 @@ template <class T> List<T>::List(int nAllocated)
     }
 }
 
-template <class T> List<T>::~List()  // Xbox 0x0033FCF0
+#ifdef _XBOX
+template <class T> inline List<T>::~List()
+#else
+template <class T> List<T>::~List()
+#endif
 {
     if (m_pList != 0)
     {

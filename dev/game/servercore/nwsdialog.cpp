@@ -802,11 +802,19 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
     if (dialogBase.m_nFadeType == CSWSDialogBase::FADE_TYPE_NONE ||
         bFadeTypeSuccess == 0)
     {
+#ifdef _XBOX
+        dialogBase.m_nFadeType = CSWSDialogBase::FADE_TYPE_NONE;
+        dialogBase.m_fFadeDelay = 0.0f;
+        dialogBase.m_fFadeLength = 0.0f;
+        Vector vBlack(0.0f, 0.0f, 0.0f);
+        dialogBase.m_vFadeColor = vBlack;
+#else
         dialogBase.m_fFadeDelay = 0.0f;
         dialogBase.m_fFadeLength = 0.0f;
         Vector vBlack(0.0f, 0.0f, 0.0f);
         dialogBase.m_nFadeType = CSWSDialogBase::FADE_TYPE_NONE;
         dialogBase.m_vFadeColor = vBlack;
+#endif
     }
     CResList animationList;
     pGFF->GetList(&animationList, &resStruct, "AnimList");

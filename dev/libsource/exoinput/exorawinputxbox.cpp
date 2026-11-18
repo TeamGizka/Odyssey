@@ -46,17 +46,17 @@ void CExoRawInputInternal::ClearMouseBuffer()  // Xbox 0x001A2B40
 {
 }
 
-int CExoRawInputInternal::GetKeyboardBuffer(CExoDeviceBuffer& buffer)
+int CExoRawInputInternal::GetKeyboardBuffer(CExoDeviceBuffer& buffer)  // Xbox 0x001500F0
 {
     return 1;
 }
 
-int CExoRawInputInternal::GetMouseBuffer(CExoDeviceBuffer& buffer)
+int CExoRawInputInternal::GetMouseBuffer(CExoDeviceBuffer& buffer)  // Xbox 0x001500F0
 {
     return 1;
 }
 
-int CExoRawInputInternal::GetMainDeviceLost()
+int CExoRawInputInternal::GetMainDeviceLost()  // Xbox 0x0015C390
 {
     return m_bMainDeviceLost;
 }

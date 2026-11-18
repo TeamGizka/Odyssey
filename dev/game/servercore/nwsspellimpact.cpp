@@ -127,8 +127,12 @@ void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
     CExoString sLabel;
     pAreaEffects->GetCExoStringEntry(m_nAreaEffectId, "LABEL", &sLabel);
     SetTag(sLabel);
+#ifdef _XBOX
+    g_pAppManager->m_pServerExoApp->GetModule()->AddObjectToLookupTable(m_sTag, GetId());
+#else
     g_pAppManager->m_pServerExoApp->GetModule()->AddObjectToLookupTable(
         m_sTag, m_nId);
+#endif
 }
 // PC 0x00571F70 GOG 0x005720A0 Xbox 0x002786C0
 int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)

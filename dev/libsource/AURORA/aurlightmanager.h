@@ -52,11 +52,7 @@ public:
     virtual void EnableHighestPriorityLightsFade(
         int nMaxLights, CAurObjectLightContainer* pContainer);
 
-#ifdef _XBOX
-    virtual void DebugPrintLightInfo(int nMaxLights, Vector vPosition);
-#else
-    virtual void DebugPrintLightInfo(int nMaxLights, Vector vPosition) {}  // PC 0x00693D50 GOG 0x00693AC0
-#endif
+    virtual void DebugPrintLightInfo(int nMaxLights, Vector vPosition) {}  // PC 0x00693D50 GOG 0x00693AC0 Xbox 0x00092890
 
     virtual void DisableBumpMapLights();
     virtual void EnableBumpMapLights();

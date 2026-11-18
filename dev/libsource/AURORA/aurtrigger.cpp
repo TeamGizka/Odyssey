@@ -34,13 +34,9 @@ void AurPartTriggerSetColor(PartTrigger* pTrigger, float* pfColor)
 {
     memcpy(&pTrigger->m_fColorRed, pfColor, 4 * sizeof(float));
 }
-// PC 0x004CA9C0 GOG 0x004CAAD0
-#ifdef _XBOX
-void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger)  // Xbox 0x00310DB0
-#else
+// PC 0x004CA9C0 GOG 0x004CAAD0 Xbox 0x00310DB0
 void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger,
                           bool bDelete)
-#endif
 {
     if (((Scene*)pScene)->m_pBSPRoot != 0)
     {
@@ -51,12 +47,10 @@ void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger,
         SceneRemovePartFromRooms((Scene*)pScene, pTrigger);
     }
 
-#ifndef _XBOX
     if (bDelete && pTrigger != 0)
     {
         delete pTrigger;
     }
-#endif
 }
 // PC 0x006C56E0 GOG 0x006C53F0 Xbox 0x000BA2D0
 void AurPartTriggerReleaseMemory(PartTrigger* pTrigger)

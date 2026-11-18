@@ -840,23 +840,43 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
     m_bUpdateItems = 0;
     m_oidSelectedItem = OBJECT_INVALID;
     StartLoadFromLayout("inventory_x");
-    InitControl(m_lbxDescription, "LB_DESCRIPTION", 1);
     InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblX, "LBL_X", 1);
-    InitControl(m_lblInv, "LBL_INV", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
+    InitControl(m_lblSideways, "LBL_SIDEWAYS", 1);
     InitControl(m_lblUseItem, "LBL_USEITEM", 1);
-    InitControl(m_lblFilter, "LBL_FILTER", 1);
-    InitControl(m_lblCredits, "LBL_CREDITS", 1);
-    InitControl(m_lblCreditsValue, "LBL_CREDITS_VALUE", 1);
-    InitControl(m_lblVit, "LBL_VIT", 1);
-    InitControl(m_lblDef, "LBL_DEF", 1);
-    InitControl(m_lblBgStats, "LBL_BGSTATS", 1);
-    InitControl(m_lblBgPort, "LBL_BGPORT", 1);
-    InitControl(m_lblPort, "LBL_PORT", 1);
     InitControl(m_lblStart, "LBL_START", 1);
     InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblBlack, "LBL_BLACK", 1);
     InitControl(m_lblRanalog, "LBL_RANALOG", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_lbxDescription, "LB_DESCRIPTION", 1);
+    InitControl(m_lblCredits, "LBL_CREDITS", 1);
+    InitControl(m_lblCreditsValue, "LBL_CREDITS_VALUE", 1);
+    InitControl(m_btnFilter, "BTN_FILTER", 1);
+    InitControl(m_btnAll, "BTN_FILTER_ALL", 1);
+    InitControl(m_btnDatapads, "BTN_FILTER_DATAPADS", 1);
+    InitControl(m_btnWeapons, "BTN_FILTER_WEAPONS", 1);
+    InitControl(m_btnArmor, "BTN_FILTER_ARMOR", 1);
+    InitControl(m_btnUseable, "BTN_FILTER_USEABLE", 1);
+    InitControl(m_btnQuests, "BTN_FILTER_QUESTS", 1);
+    InitControl(m_btnMisc, "BTN_FILTER_MISC", 1);
+    m_apFilterButtons[FILTER_ALL] = &m_btnAll;
+    for (int nFilter = FILTER_ALL + 1; nFilter < FILTER_DATAPADS; nFilter++)
+    {
+        m_apFilterButtons[nFilter] = NULL;
+    }
+    m_apFilterButtons[FILTER_DATAPADS] = &m_btnDatapads;
+    m_apFilterButtons[FILTER_WEAPONS] = &m_btnWeapons;
+    m_apFilterButtons[FILTER_ARMOR] = &m_btnArmor;
+    m_apFilterButtons[FILTER_USEABLE] = &m_btnUseable;
+    m_apFilterButtons[FILTER_MISC] = &m_btnMisc;
+    m_vFilterTextColor = m_btnAll.m_cText.m_cParams.m_vColor;
     for (int nRow = 0; nRow < NUM_ITEM_ROWS; nRow++)
     {
         InitControl(btnItem, CExoString("BTN_ITEM") + CExoString(nRow + 1), 0);
@@ -873,34 +893,41 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
         m_aItemRows[nRow].SetExtent(btnItem.m_cExtent);
         m_aItemRows[nRow].AddEvent(GUIEVENT_MOUSE_ENTER, this,
             (CSWGuiHandler)&CSWGuiInGameInventory::OnControlEntered);
+        m_aItemRows[nRow].AddEvent(CSWGuiControl::EVENT_EXIT, this,
+            (CSWGuiHandler)&CSWGuiInGameInventory::OnControlExited);
         AddControl(&m_aItemRows[nRow]);
     }
     StopLoadFromLayout();
     for (int nItemRow = 0; nItemRow < NUM_ITEM_ROWS; nItemRow++)
     {
-        for (int nDirection = 0; nDirection < 4; nDirection++)
+        for (int nDirection = 0; nDirection < NUM_ROW_DIRECTIONS; nDirection++)
         {
             m_aItemRows[nItemRow].SetMoveToControl(nDirection, NULL);
         }
     }
+    m_nSelectedItem = 0;
+    m_nPreviousSelectedItem = -1;
     m_lblDescription.Initialize(m_lbxDescription.m_pProtoItem->m_cExtent,
                               (CSWGuiLabel*)m_lbxDescription.m_pProtoItem);
 
-    int nNextFilter =
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nInventoryFilter + 1;
-    if (nNextFilter >= 6)
+    int nCurrentFilter =
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nInventoryFilter;
+    for (int nButton = 0; nButton < NUM_FILTERS; nButton++)
     {
-        nNextFilter = 0;
+        CSWGuiButton* pButton = m_apFilterButtons[nButton];
+        if (pButton != NULL)
+        {
+            if (nButton == nCurrentFilter)
+            {
+                pButton->m_cText.m_cParams.SetColor(m_vItemHilightColor);
+                pButton->m_cText.m_cParams.m_bHilightText = 1;
+            }
+            else
+            {
+                pButton->m_cText.m_cParams.SetColor(m_vFilterTextColor);
+            }
+        }
     }
-
-    CExoString sText = g_pTlkTable->GetSimpleString(42359) + " " +
-                       g_pTlkTable->GetSimpleString(m_nFilterName[nNextFilter]);
-    m_lblFilter.m_cText.m_cParams.SetText(sText);
-
-    sText = g_pTlkTable->GetSimpleString(32171) + " - " +
-            g_pTlkTable->GetSimpleString(m_nFilterName[
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nInventoryFilter]);
-    m_lblInv.m_cText.m_cParams.SetText(sText);
 }
 
 CSWGuiInGameInventory::~CSWGuiInGameInventory()
@@ -915,7 +942,6 @@ void CSWGuiInGameInventory::Draw(float fElapsed)  // Xbox 0x000FB200
     {
         PopulateItemListBox();
     }
-    UpdatePlayerStats();
     CSWGuiPanel::Draw(fElapsed);
 }
 
@@ -962,9 +988,9 @@ void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
                 g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
             }
             break;
-        case GUIEVENT_TOGGLE_MODE:
-            SetNextFilter();
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+        case GUIEVENT_RECOMMEND:
+            SetNextFilter(0);
+            m_lblRanalog.SetShown(0);
             m_bUpdateItems = 1;
             break;
         case GUIEVENT_DOWN:
@@ -1089,61 +1115,55 @@ void CSWGuiInGameInventory::CreateItemEntry(CSWCCreature* pCreature, CSWSItem* p
     }
 }
 
-void CSWGuiInGameInventory::SetNextFilter()
+// Xbox 0x000F9120
+void CSWGuiInGameInventory::SetNextFilter(int bPrevious)
 {
-    int nFilter =
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nInventoryFilter + 1;
-    if (nFilter >= 6)
+    int nFilter = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nInventoryFilter;
+    if (!bPrevious)
     {
-        nFilter = 0;
-    }
-    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nInventoryFilter =
-        nFilter;
-
-    int nNextFilter = nFilter + 1;
-    if (nNextFilter >= 6)
-    {
-        nNextFilter = 0;
-    }
-
-    CExoString sText = g_pTlkTable->GetSimpleString(0xA577) + " " +
-                       g_pTlkTable->GetSimpleString(m_nFilterName[nNextFilter]);
-    m_lblFilter.m_cText.m_cParams.SetText(sText);
-
-    sText = g_pTlkTable->GetSimpleString(0x7DAB) + " - " +
-            g_pTlkTable->GetSimpleString(m_nFilterName[nFilter]);
-    m_lblInv.m_cText.m_cParams.SetText(sText);
-}
-
-void CSWGuiInGameInventory::UpdatePlayerStats()
-{
-    CSWCCreature* pCreature =
-        g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
-
-    if (pCreature != 0)
-    {
-        CResRef* pPortrait = &pCreature->GetPortrait(1);
-        m_lblPort.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+        nFilter++;
+        if (nFilter >= NUM_FILTERS)
         {
-            CExoString sDefense(pCreature->GetStats()->GetArmorClass(0));
-            m_lblDef.m_cText.m_cParams.SetText(sDefense);
+            nFilter = FILTER_ALL;
         }
-
-        CExoString sVitality;
-        short nCurrentHitPoints = pCreature->GetStats()->m_nCurrentHitPoints;
-        sVitality.Format("%d/%d", nCurrentHitPoints,
-                         pCreature->GetStats()->GetMaxHitPoints());
-        m_lblVit.m_cText.m_cParams.SetText(sVitality);
-        if (m_lblVit.m_cText.GetIdealHeight() > m_lblVit.m_cText.GetFontHeight())
+        else if (nFilter == 1 || nFilter == 2 || nFilter == 3 || nFilter == 4 || nFilter == 5)
         {
-            short nCurrentHitPoints = pCreature->GetStats()->m_nCurrentHitPoints;
-            sVitality.Format("%d/ %d", nCurrentHitPoints,
-                             pCreature->GetStats()->GetMaxHitPoints());
-            m_lblVit.m_cText.m_cParams.SetText(sVitality);
+            nFilter = FILTER_DATAPADS;
+        }
+    }
+    else
+    {
+        nFilter--;
+        if (nFilter < 0)
+        {
+            nFilter = NUM_FILTERS - 1;
+        }
+        else if (nFilter == 1 || nFilter == 2 || nFilter == 3 || nFilter == 4 || nFilter == 5)
+        {
+            nFilter = FILTER_ALL;
+        }
+    }
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nInventoryFilter = nFilter;
+    for (int nButton = 0; nButton < NUM_FILTERS; nButton++)
+    {
+        if (m_apFilterButtons[nButton] != NULL)
+        {
+            CSWGuiTextParams* pParams = &m_apFilterButtons[nButton]->m_cText.m_cParams;
+            if (nButton == nFilter)
+            {
+                pParams->SetColor(m_vItemHilightColor);
+                pParams->m_bHilightText = 1;
+            }
+            else
+            {
+                pParams->SetColor(m_vFilterTextColor);
+                pParams->m_bHilightText = 0;
+            }
         }
     }
 }
 
+// Xbox 0x000F9210
 int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
                                        int nSlot)
 {
@@ -1186,8 +1206,8 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
     case 5:
         if (pCreature->GetClientCreature() != 0)
         {
-            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem,
-                                                                   nSlot) != 0 &&
+            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot,
+                                                                   0xFF) != 0 &&
                 pCreature->CanUseItem(pItem, 0) != 0)
             {
                 bResult = 1;
@@ -1198,29 +1218,109 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
             }
         }
         break;
+    case FILTER_DATAPADS:
+        if (pItem->GetBaseItem() != 0)
+        {
+            bResult = pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_DATAPAD;
+        }
+        break;
+    case FILTER_WEAPONS:
+        if (pItem->GetBaseItem() != 0)
+        {
+            bResult = (pItem->GetBaseItem()->m_nEquipableSlots &
+                       (INVENTORY_SLOT_RIGHTHAND | INVENTORY_SLOT_LEFTHAND)) != 0;
+            if (bResult == 0 &&
+                (pItem->GetBaseItem()->m_nEquipableSlots &
+                 (INVENTORY_SLOT_RIGHTRING | INVENTORY_SLOT_NECK)) != 0 &&
+                pItem->GetBaseItem()->m_nDroidOrHuman == CSWBaseItem::DROID_OR_HUMAN_DROID)
+            {
+                bResult = 1;
+            }
+        }
+        break;
+    case FILTER_ARMOR:
+        if (pItem->GetBaseItem() != 0)
+        {
+            bResult = (pItem->GetBaseItem()->m_nEquipableSlots &
+                       (INVENTORY_SLOT_HEAD | INVENTORY_SLOT_ARMOUR | INVENTORY_SLOT_HANDS |
+                        INVENTORY_SLOT_RIGHTRING | INVENTORY_SLOT_NECK | INVENTORY_SLOT_BELT |
+                        INVENTORY_SLOT_ARMS)) != 0;
+            if (bResult != 0 &&
+                (pItem->GetBaseItem()->m_nEquipableSlots &
+                 (INVENTORY_SLOT_RIGHTRING | INVENTORY_SLOT_NECK)) != 0 &&
+                pItem->GetBaseItem()->m_nDroidOrHuman == CSWBaseItem::DROID_OR_HUMAN_DROID)
+            {
+                bResult = 0;
+            }
+        }
+        break;
+    case FILTER_USEABLE:
+        if (pCreature->GetClientCreature() != 0)
+        {
+            if (pItem->m_nBaseItem >= BASE_ITEM_ADRENALINE &&
+                pItem->m_nBaseItem <= BASE_ITEM_DROID_REPAIR_EQUIPMENT)
+            {
+                bResult = 1;
+            }
+            else
+            {
+                bResult = 0;
+            }
+        }
+        break;
+    case FILTER_MISC:
+        bResult = 1;
+        if (pItem->GetBaseItem() != 0)
+        {
+            if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_DATAPAD)
+            {
+                bResult = 0;
+            }
+            if (pItem->GetBaseItem()->m_nEquipableSlots != 0)
+            {
+                bResult = 0;
+            }
+        }
+        if (pCreature->GetClientCreature() != 0)
+        {
+            if (pItem->m_nBaseItem >= BASE_ITEM_ADRENALINE &&
+                pItem->m_nBaseItem <= BASE_ITEM_DROID_REPAIR_EQUIPMENT)
+            {
+                bResult = 0;
+            }
+        }
+        break;
     }
     return bResult;
 }
 
 
+// Xbox 0x000F9730
 void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
 {
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
+    if (pControl->m_bSelected != 0)
     {
-        int bUseItem = 0;
         unsigned long oidItem = static_cast<CSWGuiInGameItemEntry*>(pControl)->m_oidItem;
         if (oidItem != OBJECT_INVALID)
         {
             CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
             CExoString sDescription = pItem->GetPropertyDescription();
+            int nTokenStart = sDescription.Find('<', 0);
+            int nBraceStart = sDescription.Find('{', 0);
+            if (nTokenStart != -1 || nBraceStart != -1)
+            {
+                g_pSWTlkTable->ParseStr(sDescription,
+                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter(),
+                    0, 1);
+            }
             m_lblDescription.m_cText.m_cParams.SetText(sDescription);
-            bUseItem = pControl->m_nIndex;
+            m_bSelectedUsable = pControl->m_nIndex;
             if (pItem->m_bNewItem)
                 m_aNewItems.AddUnique(oidItem);
         }
         else
         {
+            m_bSelectedUsable = 0;
             CExoString sDescription("Error: Invalid item");
             m_lblDescription.m_cText.m_cParams.SetText(sDescription);
         }
@@ -1231,10 +1331,10 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         else
             cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
         m_lblDescription.SetExtent(cExtent);
-        if (bUseItem)
+        if (m_bSelectedUsable)
         {
             if (g_pAppManager->m_pServerExoApp->GetPlayerCreature()->m_nUseItemTimer == 0)
-                m_lblUseItem.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                m_lblUseItem.m_cText.m_cParams.SetColor(m_vItemTextColor);
             else
                 m_lblUseItem.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
         }
@@ -1246,6 +1346,27 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         m_lbxDescription.AddControls(&pDescription, 1, 0, 0, 0);
         m_lbxDescription.SetSelectedControl(&m_lblDescription, 0);
         m_lblRanalog.SetShown(m_lbxDescription.IsOversized());
+    }
+}
+
+// Xbox 0x000F8DE0
+void CSWGuiInGameInventory::OnControlExited(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CSWGuiInGameItemEntry* pEntry = static_cast<CSWGuiInGameItemEntry*>(pControl);
+        CSWSItem* pItem =
+            g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
+        if (pItem != 0 && pItem->m_bNewItem)
+        {
+            pItem->m_bNewItem = 0;
+            pEntry->m_bUnavailable = 0;
+            if (m_nPreviousSelectedItem >= 0 && m_nPreviousSelectedItem < m_lItems.num)
+            {
+                m_lItems[m_nPreviousSelectedItem].m_bNewItem = 0;
+            }
+            pEntry->UpdateItem();
+        }
     }
 }
 

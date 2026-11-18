@@ -21760,8 +21760,13 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNearestMine(int nCommand, int nA
                 fDistanceSquared += fY * fY;
                 if (fDistanceSquared < fNearestDistanceSquared)
                 {
+#ifdef _XBOX
+                    oidNearest = (*pTrapList)[nTrap];
+                    fNearestDistanceSquared = fDistanceSquared;
+#else
                     fNearestDistanceSquared = fDistanceSquared;
                     oidNearest = (*pTrapList)[nTrap];
+#endif
                 }
             }
         }

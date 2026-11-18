@@ -2725,7 +2725,9 @@ int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition,
 {
     CExoArrayList<unsigned long> lstNewSubAreas;
     CGameObjectArray* pObjectArray;
+#ifndef _XBOX
     CGameObject* pObject;
+#endif
     CSWSArea* pArea;
     CSWSAreaOfEffectObject* pAreaOfEffect;
     int bReturn;
@@ -2740,6 +2742,9 @@ int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition,
 
     if (oidArea != CGameObjectArray::INVALIDOBJID)
     {
+#ifdef _XBOX
+        CGameObject* pObject;
+#endif
         pObjectArray->GetGameObject(oidArea, &pObject);
         pArea = pObject->AsSWSArea();
     }
@@ -4742,6 +4747,15 @@ int CSWSCreature::AIActionForceFollowObject(CSWSObjectActionNode* pAction)
 // PC 0x005480C0 GOG 0x005481E0 Xbox 0x001D1070
 int CSWSCreature::AIActionCheckForceFollowObject(CSWSObjectActionNode* pAction)
 {
+#ifdef _XBOX
+    Vector vPosition = m_vPosition;
+    unsigned long oidTarget = (unsigned long)pAction->m_apParam[0];
+    Vector vDestination;
+    int bRun = (int)pAction->m_apParam[1];
+    int bStarted = 0;
+    memcpy(&vDestination.m_fX, &pAction->m_apParam[2], sizeof(float));
+    memcpy(&vDestination.m_fY, &pAction->m_apParam[3], sizeof(float));
+#else
     Vector vPosition = m_vPosition;
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[0];
     int bRun = (int)pAction->m_apParam[1];
@@ -4749,6 +4763,7 @@ int CSWSCreature::AIActionCheckForceFollowObject(CSWSObjectActionNode* pAction)
     memcpy(&vDestination.m_fX, &pAction->m_apParam[2], sizeof(float));
     memcpy(&vDestination.m_fY, &pAction->m_apParam[3], sizeof(float));
     int bStarted = 0;
+#endif
 
     EXOXBOXASSERT(vDestination.m_fX <= 100000.0f && vDestination.m_fX >= -100000.0f && vDestination.m_fY <= 100000.0f && vDestination.m_fY >= -100000.0f);
     AddActionToFront(ACTION_CHECK_FORCE_FOLLOW_OBJECT, ACTION_GROUP_NEW,
@@ -6577,7 +6592,38 @@ void CSWSCreature::SurrenderToEnemies(int bKeepOwnEffects)
     float fDistance = CSWSArea::MAX_OBJECT_VISIBLE_DISTANCE;
     float fMaxX = vPosition.m_fX + fDistance;
     CSWSArea* pArea = GetArea();
+#ifndef _XBOX
     int nIndex;
+#endif
+#ifdef _XBOX
+    if (pArea != NULL)
+    {
+        int nIndex;
+        if (pArea->GetFirstObjectIndiceByX(&nIndex, vPosition.m_fX - fDistance) == 1)
+        {
+            int nObjectCount = pArea->m_lstObjectIds.num;
+            while (nIndex < nObjectCount)
+            {
+                CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->
+                    GetCreatureByGameObjectID(pArea->m_lstObjectIds[nIndex]);
+                if (pCreature != NULL && m_nId != pCreature->m_nId)
+                {
+                    if (pCreature->m_vPosition.m_fX > fMaxX)
+                        break;
+                    Vector vDifference = pCreature->m_vPosition - vPosition;
+                    if (vDifference * vDifference <= fDistance * fDistance &&
+                        GetReputation(pCreature->m_nId, 0) <= MAX_HOSTILE_REPUTATION)
+                    {
+                        pCreature->CancelCombat(0);
+                        pCreature->ClearAllEffects(bKeepOwnEffects);
+                    }
+                }
+                nObjectCount = pArea->m_lstObjectIds.num;
+                ++nIndex;
+            }
+        }
+    }
+#else
     if (pArea != NULL &&
         pArea->GetFirstObjectIndiceByX(&nIndex, vPosition.m_fX - fDistance) == 1)
     {
@@ -6602,6 +6648,7 @@ void CSWSCreature::SurrenderToEnemies(int bKeepOwnEffects)
             ++nIndex;
         }
     }
+#endif
 
     if (g_pAppManager->GetServerExoApp()->GetFactionManager() != NULL &&
         g_pAppManager->GetServerExoApp()->GetFactionManager()->m_pNeutral != NULL)

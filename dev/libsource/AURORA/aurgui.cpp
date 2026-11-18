@@ -1202,7 +1202,7 @@ static inline int TextureCellHeight(CAurTexture* pTexture)
     return nHeight / pTexture->GetNumY();
 }
 #endif
-// PC 0x0046EC40 GOG 0x0046ED80
+// PC 0x0046EC40 GOG 0x0046ED80 Xbox 0x00312B80
 void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
                                 float fHeight, unsigned char nFlags,
                                 float fRotation, const Vector& vColor,

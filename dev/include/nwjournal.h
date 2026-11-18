@@ -41,6 +41,15 @@ public:
           m_nState(-1),
           m_nPriority(-1)
     {
+#ifdef _XBOX
+        m_nPicture = -1;
+        m_bCompleted = 0;
+        m_bChanged = 0;
+        m_bNew = 0;
+        m_nPlotIndex = 0;
+        m_nPlanetID = -1;
+        m_nXP = 0;
+#else
         m_bCompleted = 0;
         m_bChanged = 0;
         m_bNew = 0;
@@ -48,6 +57,7 @@ public:
         m_nPicture = -1;
         m_nPlotIndex = 0;
         m_nXP = 0;
+#endif
     }
     SJournalEntry* operator=(const SJournalEntry& entry)  // PC 0x00600820 GOG 0x00600800
     {

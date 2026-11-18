@@ -231,11 +231,6 @@ Camera::Camera(char* sName)
 // PC 0x00471560 GOG 0x004716C0
 Camera::~Camera()
 {
-#ifdef _XBOX
-    strcpy(g_sObjectFuncName, m_sName);
-    strcat(g_sObjectFuncName, ".");
-    DeleteFuncWithPrefix(g_sObjectFuncName);
-#endif
 }
 // PC 0x00471780 GOG 0x00471910 Xbox 0x00307A40
 void Camera::RenderScene()

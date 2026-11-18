@@ -583,7 +583,6 @@ public:
     unsigned long : 27;
 #ifdef _XBOX
     unsigned char m_bRevertActionBar;
-    int m_nStackSize;
 #else
     int m_nStackSize;
     unsigned char m_bRevertActionBar;

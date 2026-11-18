@@ -378,7 +378,11 @@ CSWCCombatAttackData::CSWCCombatAttackData()
     m_vImpactPosition = Vector();
     m_nAttackIndex = -1;
     m_nWeaponIndex = 0;
+#ifdef _XBOX
+    m_fAnimationSpeed = 0.0f;
+#else
     m_nAttackSequence = 0;
+#endif
     m_nImpactVisual = 0;
     m_nImpactX = 0;
     m_nImpactY = 0;
@@ -5165,8 +5169,10 @@ void CSWCCreature::CreateHostileItemEntry(
             static_cast<PFNMENUACTION>(&CSWCCreature::PartyMenuUseHostileItem);
         lstActions[nEntry].m_oidTarget = pTarget->GetId();
         lstActions[nEntry].m_resIcon = pItem->GetIcon();
+#ifndef _XBOX
         int nStackSize = pItem->m_nStackSize;
         lstActions[nEntry].m_nStackSize = nStackSize;
+#endif
     }
 }
 // PC 0x00665A60 GOG 0x00665800 Xbox 0x00044890
@@ -5429,6 +5435,17 @@ void CSWCCreature::RemoveShadowBlob()
 // PC 0x0065A7F0 GOG 0x0065A6A0 Xbox 0x00039F20
 void CSWCCreature::TurnOnShadows()
 {
+#ifdef _XBOX
+    CSWCItem* pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+        GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
+    if (pItem != NULL)
+    {
+        pItem->TurnOnShadows();
+    }
+
+    pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+        GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+#else
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(
         GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
@@ -5440,14 +5457,20 @@ void CSWCCreature::TurnOnShadows()
     pClientExoApp = g_pAppManager->m_pClientExoApp;
     pItem = pClientExoApp->GetItemByGameObjectID(
         GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+#endif
     if (pItem != NULL)
     {
         pItem->TurnOnShadows();
     }
 
+#ifdef _XBOX
+    pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+        GetEquippedItemID(INVENTORY_SLOT_HEAD));
+#else
     pClientExoApp = g_pAppManager->m_pClientExoApp;
     pItem = pClientExoApp->GetItemByGameObjectID(
         GetEquippedItemID(INVENTORY_SLOT_HEAD));
+#endif
     if (pItem != NULL)
     {
         pItem->TurnOnShadows();
@@ -5458,6 +5481,17 @@ void CSWCCreature::TurnOnShadows()
 // PC 0x0065A880 GOG 0x0065A730 Xbox 0x00039FB0
 void CSWCCreature::TurnOffShadows()
 {
+#ifdef _XBOX
+    CSWCItem* pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+        GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
+    if (pItem != NULL)
+    {
+        pItem->TurnOffShadows();
+    }
+
+    pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+        GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+#else
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(
         GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
@@ -5469,14 +5503,20 @@ void CSWCCreature::TurnOffShadows()
     pClientExoApp = g_pAppManager->m_pClientExoApp;
     pItem = pClientExoApp->GetItemByGameObjectID(
         GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+#endif
     if (pItem != NULL)
     {
         pItem->TurnOffShadows();
     }
 
+#ifdef _XBOX
+    pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+        GetEquippedItemID(INVENTORY_SLOT_HEAD));
+#else
     pClientExoApp = g_pAppManager->m_pClientExoApp;
     pItem = pClientExoApp->GetItemByGameObjectID(
         GetEquippedItemID(INVENTORY_SLOT_HEAD));
+#endif
     if (pItem != NULL)
     {
         pItem->TurnOffShadows();
@@ -5526,12 +5566,21 @@ void CSWCCreature::UpdateShadowBlob()
 void CSWCCreature::ReAttachCamera()
 {
     CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+#ifdef _XBOX
+    if (m_nCameraFollowDelay == 0 &&
+        this == g_pAppManager->m_pClientExoApp->GetPlayerCreature() &&
+        m_bCameraFollowPending != 0 && pModule != NULL &&
+        pModule->GetCamera() != NULL &&
+        pModule->GetCamera()->GetBehavior(4205) == 0 &&
+        pModule->GetCamera()->GetBehavior(4206) == 0)
+#else
     if (m_nCameraFollowDelay == 0 &&
         this == g_pAppManager->m_pClientExoApp->GetPlayerCreature() &&
         m_bCameraFollowPending != 0 && pModule != NULL &&
         pModule->m_pModuleCamera != NULL &&
         pModule->m_pModuleCamera->GetBehavior(4205) == 0 &&
         pModule->m_pModuleCamera->GetBehavior(4206) == 0)
+#endif
     {
         pModule->SetCameraFollow(m_nId, m_bCameraFollowSnap);
         m_bCameraFollowPending = 0;
@@ -6990,7 +7039,11 @@ void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* p
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_oidUseItemPending = oidItem;
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 1;
     }
+#ifdef _XBOX
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_nUseItemTargetMember = 0;
+#else
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_nUseItemTargetMember = -1;
+#endif
 }
 void CSWCCreature::PerformUseHostileItem(unsigned long nItem,  // PC 0x00663F70 GOG 0x00663D80 Xbox 0x000430B0
                                         CSWCCreature* pTarget)
@@ -7397,6 +7450,15 @@ void CSWCCreature::SetOverrideLightsaberState(int bOverride, int bPowered,
 {
     if (bOverride != 0)
     {
+#ifdef _XBOX
+        CSWCItem* pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+            GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
+        if (pItem != NULL)
+            pItem->PowerItem(bPowered, 1, bShowTransition, 0);
+
+        pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+            GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+#else
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
         CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(
             GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
@@ -7406,6 +7468,7 @@ void CSWCCreature::SetOverrideLightsaberState(int bOverride, int bPowered,
         pClientExoApp = g_pAppManager->m_pClientExoApp;
         pItem = pClientExoApp->GetItemByGameObjectID(
             GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+#endif
         if (pItem != NULL)
             pItem->PowerItem(bPowered, 1, bShowTransition, 0);
     }

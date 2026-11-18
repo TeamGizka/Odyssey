@@ -1,5 +1,8 @@
 #include "math3d.h"
 #include <math.h>
+#ifdef _XBOX
+#include <stdlib.h>
+#endif
 
 int quaternionidentityoptimization = 1;
 
@@ -110,20 +113,40 @@ float Yaw(const Quaternion& quaternion)
                                        quaternion.m_fX * quaternion.m_fX),
                         2.0f * (quaternion.m_fY * quaternion.m_fZ +
                                 quaternion.m_fW * quaternion.m_fX));
+#ifdef _XBOX
+    return Yaw(v);
+#else
     if (v.m_fY == 0.0 && v.m_fX == 0.0)
     {
         return 0.0f;
     }
     return (float)atan2(-v.m_fX, v.m_fY) * RAD_TO_DEG;
+#endif
 }
 // PC 0x004D6B50 GOG 0x004D6C90 Xbox 0x0028E7C0
+#ifdef _XBOX
+inline
+#endif
 float Yaw(const Vector& vector)
 {
+#ifdef _XBOX
+    float fYaw;
+    if (vector.m_fY == 0.0 && vector.m_fX == 0.0)
+    {
+        fYaw = 0.0f;
+    }
+    else
+    {
+        fYaw = (float)atan2(-vector.m_fX, vector.m_fY) * RAD_TO_DEG;
+    }
+    return fYaw;
+#else
     if (vector.m_fY == 0.0 && vector.m_fX == 0.0)
     {
         return 0.0f;
     }
     return (float)atan2(-vector.m_fX, vector.m_fY) * RAD_TO_DEG;
+#endif
 }
 // PC 0x004D6B90 GOG 0x004D6CD0 Xbox 0x0028E810
 int polyhit(const Vector* pVertices, int nVertices, const Vector& vNormal,
@@ -164,6 +187,9 @@ int BoxInside(const Vector& vPoint, const Vector& vMinimum, const Vector& vMaxim
            vPoint.m_fZ >= vMinimum.m_fZ && vPoint.m_fZ <= vMaximum.m_fZ;
 }
 // PC 0x004D6E10 GOG 0x004D6F50
+#ifdef _XBOX
+inline
+#endif
 void SetOpCode(const Vector& vPoint, const Vector& vMinimum,
                const Vector& vMaximum, unsigned char& nOutCode)
 {
@@ -370,12 +396,15 @@ int BoxIntersect(Vector const& vStart, Vector const& vEnd,
     return 0;
 }
 // PC 0x004D7630 GOG 0x004D7770 Xbox 0x0028F2C0
+#ifdef _XBOX
+inline
+#endif
 int equal(const Vector& vFirst, const Vector& vSecond)
 {
     return vFirst.m_fX == vSecond.m_fX && vFirst.m_fY == vSecond.m_fY &&
            vFirst.m_fZ == vSecond.m_fZ;
 }
-// PC 0x004D7670 GOG 0x004D77B0
+// PC 0x004D7670 GOG 0x004D77B0 Xbox 0x0028F300
 float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vFirstEnd,
                                      const Vector& vSecondStart, const Vector& vSecondEnd)
 {
@@ -383,11 +412,19 @@ float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vF
     Vector u = vFirstEnd - vFirstStart;
     Vector v = vSecondEnd - vSecondStart;
     Vector w = vFirstStart - vSecondStart;
+#ifdef _XBOX
+    float a = u * u;
+    float b = u * v;
+    float c = v * v;
+    float d = u * w;
+    float e = v * w;
+#else
     float a = SEGMENT_DOT(u, u);
     float b = SEGMENT_DOT(u, v);
     float c = SEGMENT_DOT(v, v);
     float d = SEGMENT_DOT(u, w);
     float e = SEGMENT_DOT(v, w);
+#endif
     float D = a * c - b * b;
     float sN, sD = D;
     float tc, tN, tD = D;
@@ -511,6 +548,20 @@ void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,
     float fYW = quaternion.m_fY * quaternion.m_fW;
     float fZW = quaternion.m_fZ * quaternion.m_fW;
 
+#ifdef _XBOX
+    pMatrix[0] = 1.0f - 2.0f * (fZZ + fYY);
+    pMatrix[1] = 2.0f * (fZW + fXY);
+    pMatrix[2] = 2.0f * (fXZ - fYW);
+    pMatrix[3] = 0.0f;
+    pMatrix[4] = 2.0f * (fXY - fZW);
+    pMatrix[5] = 1.0f - 2.0f * (fZZ + fXX);
+    pMatrix[6] = 2.0f * (fYZ + fXW);
+    pMatrix[7] = 0.0f;
+    pMatrix[8] = 2.0f * (fYW + fXZ);
+    pMatrix[9] = 2.0f * (fYZ - fXW);
+    pMatrix[10] = 1.0f - 2.0f * (fYY + fXX);
+    pMatrix[11] = 0.0f;
+#else
     pMatrix[3] = 0.0f;
     pMatrix[7] = 0.0f;
     pMatrix[11] = 0.0f;
@@ -523,6 +574,7 @@ void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,
     pMatrix[8] = 2.0f * (fYW + fXZ);
     pMatrix[9] = 2.0f * (fYZ - fXW);
     pMatrix[10] = 1.0f - 2.0f * (fYY + fXX);
+#endif
     pMatrix[12] = vTranslation.m_fX;
     pMatrix[13] = vTranslation.m_fY;
     pMatrix[14] = vTranslation.m_fZ;
@@ -532,9 +584,13 @@ void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,
 float* Homogenize(const Vector& vector, const float& fW)
 {
     static float a[4];
+#ifdef _XBOX
+    *(Vector*)a = vector;
+#else
     a[0] = vector.m_fX;
     a[1] = vector.m_fY;
     a[2] = vector.m_fZ;
+#endif
     a[3] = fW;
     return a;
 }
@@ -1029,6 +1085,9 @@ void Vector::Normalize()
     m_fZ *= fReciprocal;
 }
 // PC 0x004D8250 GOG 0x004D8390 Xbox 0x00290330
+#ifdef _XBOX
+inline
+#endif
 Vector normalize(const Vector& vector)
 {
     float fMagnitude = magnitude(vector);
@@ -1071,6 +1130,14 @@ Vector planelineintersection(const Vector& vNormal, float fDistance,
 
     static Vector dif(0.0f, 0.0f, 0.0f);
     dif = vEnd - vStart;
+#ifdef _XBOX
+    float fDenominator = dif * vNormal;
+    float fProjection = 0.0f;
+    if (fDenominator != 0.0f)
+    {
+        fProjection = -(vStart * vNormal + fDistance) / fDenominator;
+    }
+#else
     float fDenominator = dif.m_fX * vNormal.m_fX;
     fDenominator += dif.m_fZ * vNormal.m_fZ;
     fDenominator += dif.m_fY * vNormal.m_fY;
@@ -1082,6 +1149,7 @@ Vector planelineintersection(const Vector& vNormal, float fDistance,
               vStart.m_fZ * vNormal.m_fZ + fDistance) /
             fDenominator;
     }
+#endif
     return vStart + dif * fProjection;
 }
 
@@ -1120,6 +1188,13 @@ Vector lineproject(const Vector& vStart, const Vector& vEnd,
 
     static Vector w(0.0f, 0.0f, 0.0f);
     w = vEnd - vStart;
+#ifdef _XBOX
+    float fProjection = w * w;
+    if (fProjection != 0.0f)
+    {
+        fProjection = ((vPoint - vStart) * w) / fProjection;
+    }
+#else
     float fProjection = w.m_fX * w.m_fX;
     fProjection += w.m_fZ * w.m_fZ;
     fProjection += w.m_fY * w.m_fY;
@@ -1131,6 +1206,7 @@ Vector lineproject(const Vector& vStart, const Vector& vEnd,
         fDot += vOffset.m_fY * w.m_fY;
         fProjection = fDot / fProjection;
     }
+#endif
     return vStart + w * fProjection;
 }
 // PC 0x004D84C0 GOG 0x004D8600 Xbox 0x00290630
@@ -1144,6 +1220,21 @@ Vector segmentproject(const Vector& vStart, const Vector& vEnd,
 
     static Vector w(0.0f, 0.0f, 0.0f);
     w = vEnd - vStart;
+#ifdef _XBOX
+    float fProjection = w * w;
+    if (fProjection != 0.0f)
+    {
+        fProjection = ((vPoint - vStart) * w) / fProjection;
+    }
+    if (1.0f < fProjection)
+    {
+        fProjection = 1.0f;
+    }
+    else if (0.0f > fProjection)
+    {
+        fProjection = 0.0f;
+    }
+#else
     float fProjection = w.m_fX * w.m_fX;
     fProjection += w.m_fZ * w.m_fZ;
     fProjection += w.m_fY * w.m_fY;
@@ -1163,6 +1254,7 @@ Vector segmentproject(const Vector& vStart, const Vector& vEnd,
     {
         fProjection = 0.0f;
     }
+#endif
     return vStart + w * fProjection;
 }
 
@@ -1502,6 +1594,9 @@ int SphereIntersect(const Vector& vStart, const Vector& vEnd,
     }
 
     float fPosition = ((vCenter - vStart) * vDirection) / fLengthSquared;
+#ifdef _XBOX
+    fPosition = __min(1.0f, __max(0.0f, fPosition));
+#else
     if (!(0.0f > fPosition))
     {
         if (1.0f < fPosition)
@@ -1513,6 +1608,7 @@ int SphereIntersect(const Vector& vStart, const Vector& vEnd,
     {
         fPosition = 0.0f;
     }
+#endif
 
     Vector vClosest = vStart + vDirection * fPosition;
     if (magnitude(vClosest - vCenter) < fRadius)

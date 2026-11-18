@@ -75,6 +75,8 @@ extern int g_bMaterialDirty;
 extern D3DMATERIAL8 g_Material;
 
 extern int counttrans;
+extern int g_Letterbox_top;
+extern int g_Letterbox_bottom;
 
 bool g_bColorMaterial;
 int g_nColorMaterialMode = 4;
@@ -113,6 +115,7 @@ CAurTexture* GLRender::cm_pForceDistortionTexture;
 float GLRender::m_ForceSightColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 float GLRender::m_PerInstanceIllumination[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 CAurTexture* GLRender::m_pDreamDistortTexture = 0;
+unsigned int GLRender::cm_pDreamDistortionVertexProg;
 bool GLRender::m_bDreamDistortEnabled = 0;
 bool GLRender::m_bDreamDistortLetterbox = 0;
 CAurTexture* GLRender::m_pHologramFilterTexture = 0;
@@ -3079,6 +3082,10 @@ void GLRender::RenderOverlayConvolution(D3DTexture* pTexture)  // Xbox 0x0029E59
             fWeight[1] = g_afConvolutionWeights[nTap + j];
             fWeight[2] = g_afConvolutionWeights[nTap + j];
             fWeight[3] = g_afConvolutionWeights[nTap + j];
+            if (j == 2)
+            {
+                fWeight[0] = fWeight[1] = fWeight[2] = fWeight[3] = 0.0f;
+            }
             g_pD3DDevice->SetPixelShaderConstant(j, fWeight, 1);
         }
         g_pD3DDevice->Begin(D3DPT_QUADLIST);
@@ -6627,6 +6634,200 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)  // Xbox 0x002A7D10
     SetTextureStageFlag(3, 0);
 }
 
+static DWORD g_dwDreamDistortionVertexShader[] =
+{
+    0x00082078,
+    0x00000000, 0x0020001b, 0x0836106c, 0x2070f800,
+    0x00000000, 0x0020061b, 0x0836106c, 0x2070f818,
+    0x00000000, 0x0020121b, 0x0836106c, 0x2070f848,
+    0x00000000, 0x0020141b, 0x0836106c, 0x2070f850,
+    0x00000000, 0x0020161b, 0x0836106c, 0x2070f858,
+    0x00000000, 0x0020181b, 0x0836106c, 0x2070f860,
+    0x00000000, 0x0647401b, 0xc4361bff, 0x1078e800,
+    0x00000000, 0x0087601b, 0xc400286c, 0x3070e801
+};
+static unsigned long g_adwDreamDistortionDeclaration[] =
+{
+    D3DVSD_STREAM(0),
+    D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3),
+    D3DVSD_REG(D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR),
+    D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2),
+    D3DVSD_REG(D3DVSDE_TEXCOORD1, D3DVSDT_FLOAT3),
+    D3DVSD_REG(D3DVSDE_TEXCOORD2, D3DVSDT_FLOAT3),
+    D3DVSD_REG(D3DVSDE_TEXCOORD3, D3DVSDT_FLOAT2),
+    D3DVSD_END()
+};
+static unsigned long g_adwFuryDeclaration[] =
+{
+    D3DVSD_STREAM(0),
+    D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3),
+    D3DVSD_REG(D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR),
+    D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2),
+    D3DVSD_REG(D3DVSDE_TEXCOORD1, D3DVSDT_FLOAT3),
+    D3DVSD_REG(D3DVSDE_TEXCOORD2, D3DVSDT_FLOAT3),
+    D3DVSD_REG(D3DVSDE_TEXCOORD3, D3DVSDT_FLOAT2),
+    D3DVSD_END()
+};
+float distortionalpha = 0.75f;
+
+void GLRender::RenderDreamDistortion(D3DTexture* pFrame, D3DTexture* pTarget)  // Xbox 0x002A8090
+{
+    if (!IsProgramNV(cm_pDreamDistortionVertexProg))
+    {
+        GenPrograms(1, &cm_pDreamDistortionVertexProg);
+        DrawElementsInShadow(cm_pDreamDistortionVertexProg, g_dwDreamDistortionVertexShader,
+                             g_adwDreamDistortionDeclaration);
+    }
+    g_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+    g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    SetBlendFunc(Aurora::BLEND_SRC_ALPHA, Aurora::BLEND_ONE_MINUS_SRC_ALPHA);
+    BindVertexProgram(cm_pDreamDistortionVertexProg);
+    SetActiveTexture(0);
+    cm_pForceDistortionTexture->Bind();
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTexture(2, pTarget);
+    SetTextureStageFlag(2, 0);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    SetActiveTexture(3);
+    m_pDreamDistortTexture->Bind();
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DISTORTION_DEPTH_TEST]);
+    float fSize = (float)cm_pForceDistortionTexture->GetWidth();
+    float fTop = 1.0f;
+    float fBottom = -1.0f;
+    if (m_bDreamDistortLetterbox)
+    {
+        int nHalfHeight = g_nScreenHeight >> 1;
+        fTop = (float)(nHalfHeight - g_Letterbox_top) / (float)nHalfHeight;
+        fBottom = (float)(nHalfHeight - g_Letterbox_bottom) / (float)nHalfHeight;
+    }
+    g_pD3DDevice->Begin(D3DPT_QUADLIST);
+    for (int i = 0; i < 4; i++)
+    {
+        g_pD3DDevice->SetVertexDataColor(D3DVSDE_DIFFUSE, D3DCOLOR_COLORVALUE(1.0f, 1.0f, 1.0f, distortionalpha));
+        float t = (i == 0 || i == 3) ? 0.0f : fSize;
+        float s = (i == 0 || i == 1) ? 0.0f : fSize;
+        g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, s, t);
+        g_pD3DDevice->SetVertexData4f(D3DVSDE_TEXCOORD1, 0.15625f, 0.0f, (i == 0 || i == 1) ? 0.0f : 1.0f, 0.0f);
+        g_pD3DDevice->SetVertexData4f(D3DVSDE_TEXCOORD2, 0.0f, 0.15625f, (i == 0 || i == 3) ? 0.0f : 1.0f, 0.0f);
+        float fDistortT = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float fDistortS = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD3, fDistortS, fDistortT);
+        if (m_bDreamDistortLetterbox)
+        {
+            float y = (i == 0 || i == 3) ? fTop : fBottom;
+            float x = (i == 0 || i == 1) ? -1.0f : 1.0f;
+            g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, x, y, 0.0f, 1.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? 1.0f : -1.0f;
+            float x = (i == 0 || i == 1) ? -1.0f : 1.0f;
+            g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, x, y, 0.0f, 1.0f);
+        }
+    }
+    g_pD3DDevice->End();
+    g_pD3DDevice->SetVertexShader(0);
+    g_pD3DDevice->SetPixelShader(0);
+    SetActiveTexture(0);
+    g_pD3DDevice->SetTexture(0, NULL);
+    g_pD3DDevice->SetTexture(1, NULL);
+    g_pD3DDevice->SetTexture(2, NULL);
+    g_pD3DDevice->SetTexture(3, NULL);
+    SetTextureStageFlag(0, 0);
+    SetTextureStageFlag(1, 0);
+    SetTextureStageFlag(2, 0);
+    SetTextureStageFlag(3, 0);
+}
+
+void GLRender::RenderFury(D3DTexture* pTarget)  // Xbox 0x002A8490
+{
+    if (!IsProgramNV(cm_pDreamDistortionVertexProg))
+    {
+        GenPrograms(1, &cm_pDreamDistortionVertexProg);
+        DrawElementsInShadow(cm_pDreamDistortionVertexProg, g_dwDreamDistortionVertexShader,
+                             g_adwFuryDeclaration);
+    }
+    g_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+    g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    SetBlendFunc(Aurora::BLEND_SRC_ALPHA, Aurora::BLEND_ONE_MINUS_SRC_ALPHA);
+    BindVertexProgram(cm_pDreamDistortionVertexProg);
+    SetActiveTexture(0);
+    cm_pForceDistortionTexture->Bind();
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTexture(2, pTarget);
+    SetTextureStageFlag(2, 0);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    SetActiveTexture(3);
+    m_pFuryTexture->Bind();
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DISTORTION_DEPTH_TEST_BIAS]);
+    float fSize = (float)cm_pForceDistortionTexture->GetWidth();
+    float fTop = 1.0f;
+    float fBottom = -1.0f;
+    if (m_bDreamDistortLetterbox)
+    {
+        int nHalfHeight = g_nScreenHeight >> 1;
+        fTop = (float)(nHalfHeight - g_Letterbox_top) / (float)nHalfHeight;
+        fBottom = (float)(nHalfHeight - g_Letterbox_bottom) / (float)nHalfHeight;
+    }
+    g_pD3DDevice->Begin(D3DPT_QUADLIST);
+    for (int i = 0; i < 4; i++)
+    {
+        g_pD3DDevice->SetVertexDataColor(D3DVSDE_DIFFUSE, 0xffffffff);
+        float t = (i == 0 || i == 3) ? 0.0f : fSize;
+        float s = (i == 0 || i == 1) ? 0.0f : fSize;
+        g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, s, t);
+        g_pD3DDevice->SetVertexData4f(D3DVSDE_TEXCOORD1, 0.15625f, 0.0f, (i == 0 || i == 1) ? 0.0f : 1.0f, 0.0f);
+        g_pD3DDevice->SetVertexData4f(D3DVSDE_TEXCOORD2, 0.0f, 0.15625f, (i == 0 || i == 3) ? 0.0f : 1.0f, 0.0f);
+        float fDistortT = (i == 0 || i == 3) ? 1.0f : 0.0f;
+        float fDistortS = (i == 0 || i == 1) ? 0.0f : 1.0f;
+        g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD3, fDistortS, fDistortT);
+        if (m_bDreamDistortLetterbox)
+        {
+            float y = (i == 0 || i == 3) ? fTop : fBottom;
+            float x = (i == 0 || i == 1) ? -1.0f : 1.0f;
+            g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, x, y, 0.0f, 1.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? 1.0f : -1.0f;
+            float x = (i == 0 || i == 1) ? -1.0f : 1.0f;
+            g_pD3DDevice->SetVertexData4f(D3DVSDE_POSITION, x, y, 0.0f, 1.0f);
+        }
+    }
+    g_pD3DDevice->End();
+    g_pD3DDevice->SetVertexShader(0);
+    g_pD3DDevice->SetPixelShader(0);
+    SetActiveTexture(0);
+    g_pD3DDevice->SetTexture(0, NULL);
+    g_pD3DDevice->SetTexture(1, NULL);
+    g_pD3DDevice->SetTexture(2, NULL);
+    g_pD3DDevice->SetTexture(3, NULL);
+    SetTextureStageFlag(0, 0);
+    SetTextureStageFlag(1, 0);
+    SetTextureStageFlag(2, 0);
+    SetTextureStageFlag(3, 0);
+}
+
 void GLRender::ResetViewPort(int nX, int nY, int nWidth, int nHeight)  // Xbox 0x002A88A0
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
@@ -7226,6 +7427,18 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)  // Xbox 0x002AA07
         RenderOverlayOverbrightenATI((unsigned long)g_pFrameTexture);
         static unsigned long nShader = TranslatePoolFormat(RequestPoolManager::POOL_FORMAT_VTC);
         g_pD3DDevice->SetVertexShader(nShader);
+    }
+    if (m_bDreamDistortEnabled)
+    {
+        g_pD3DDevice->CopyRects(pBackBuffer, NULL, 0, pSurface, NULL);
+        CopyFrameBufferTexture(g_pFrameTexture, pAccumulationTexture);
+        RenderDreamDistortion(g_pFrameTexture, pAccumulationTexture);
+    }
+    if (m_FuryLevel)
+    {
+        g_pD3DDevice->CopyRects(pBackBuffer, NULL, 0, pSurface, NULL);
+        CopyFrameBufferTexture(g_pFrameTexture, pAccumulationTexture);
+        RenderFury(pAccumulationTexture);
     }
     SetBlendFunc(Aurora::BLEND_SRC_ALPHA, Aurora::BLEND_ONE_MINUS_SRC_ALPHA);
     pSurface->Release();

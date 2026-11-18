@@ -160,6 +160,9 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_pScheduledActions = new CExoLinkedList<CSWSCombatRoundAction>;
     m_nNumAOOs = 1;
     m_nNumCleaves = 1;
+#ifdef _XBOX
+    m_oidNewAttackTarget = OBJECT_INVALID;
+#endif
     m_pBaseCreature = pCreature;
     m_nNumActionsTaken = 0;
     m_nCurrentAttack = 0;
@@ -179,7 +182,9 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_nBleedTimer = 0;
     m_nOverlapAmount = 0;
     m_nParryActions = 0;
+#ifndef _XBOX
     m_oidNewAttackTarget = OBJECT_INVALID;
+#endif
     m_nAttackId = 0;
     m_oidDodgeTarget = OBJECT_INVALID;
     m_bEngaged = 0;
@@ -1102,9 +1107,14 @@ void CSWSCombatAttackData::ClearAttackData()
     m_EffectBreakdown.m_nSavingThrowBonus = 0;
     m_EffectBreakdown.m_nSavingThrowTotal = 0;
     m_EffectBreakdown.m_nSavingThrowDC = 0;
+#ifndef _XBOX
     m_EffectBreakdown.m_nSavingThrowResult = 0xFF;
+#endif
     m_EffectBreakdown.m_bStateImmune = 0;
     m_EffectBreakdown.m_bEffectApplied = 0;
+#ifdef _XBOX
+    m_EffectBreakdown.m_nSavingThrowResult = 0xFF;
+#endif
     m_DeflectBreakdown.Clear();
 }
 // PC 0x00528670 GOG 0x005286F0 Xbox 0x0022B800

@@ -36,9 +36,7 @@ public:
     CSWGuiMainMenu(CSWGuiManager* pManager);
     virtual ~CSWGuiMainMenu();
 
-#ifndef _XBOX
     virtual void Draw(float fElapsed);
-#endif
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void OnPanelAdded();
 
@@ -65,7 +63,11 @@ public:
     void OnLoadGamePicked();
     void OnWarpButtonPressed(CSWGuiControl* pControl);
 
+#ifdef _XBOX
+    float m_fIdleTime;
+#else
     int m_nSelectedModule;
+#endif
     CSWGuiListBox m_lbModules;
     CExoArrayList<CExoString> m_lstModules;
     int m_nMenuState;
@@ -83,13 +85,19 @@ public:
 #endif
     CSWGuiLabel m_lblNewContent;
     CSWGuiLabel m_alblBackdrop[2];
+#ifdef _XBOX
+    CSWGuiLabel m_lblObsidianLogo;
+    CSWGuiLabel m_lblObsidianBuild;
+#else
     CSWGuiLabel m_lblBioWare;
     CSWGuiLabel m_lblLucasArts;
-#ifndef _XBOX
     CSWGuiButton m_btnExit;
     CSWGuiButton m_btnWarp;
+#endif
     int m_bReady;
     int m_nDrawCount;
+#ifdef _XBOX
+    Vector m_vButtonTextColor;
 #endif
     CSWCCreature* m_pCreature;
     int m_bIdleTimerDisabled;

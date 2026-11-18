@@ -552,7 +552,7 @@ void PartAnimMesh::Draw(bool bRenderChildren)
 
 void Transform(const Vector& vPosition, const Quaternion& qOrientation,
                int nForce);
-// PC 0x00489B70 GOG 0x00489C40
+// PC 0x00489B70 GOG 0x00489C40 Xbox 0x002DCF00
 void PartAABB::Draw(bool bRenderChildren)
 {
     if (renderaabb != 0)

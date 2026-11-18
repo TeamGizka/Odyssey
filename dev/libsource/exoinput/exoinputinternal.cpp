@@ -26,7 +26,7 @@ void CExoInputInternal::UpdateJoysticks()
 void CExoInputInternal::Configure()
 {
 }
-// PC 0x00401590 GOG 0x00401590
+// PC 0x00401590 GOG 0x00401590 Xbox 0x0014DC50
 int CExoInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,
                                unsigned long nDuration)
 {
@@ -179,12 +179,12 @@ void CExoInputInternal::SetActive(int bActive)
         m_pRawInput->SetActive(bActive);
     }
 }
-// PC 0x0062C2E0 GOG 0x0062C1D0
+// PC 0x0062C2E0 GOG 0x0062C1D0 Xbox 0x0014DCA0
 int CExoInputInternal::GetMainDeviceLost()
 {
     return m_pRawInput->GetMainDeviceLost();
 }
-// PC 0x0062C2F0 GOG 0x0062C1E0
+// PC 0x0062C2F0 GOG 0x0062C1E0 Xbox 0x0014DCC0
 void CExoInputInternal::PauseRumble()
 {
 #ifdef _XBOX
@@ -193,7 +193,7 @@ void CExoInputInternal::PauseRumble()
     m_pRawInput->m_nLastKey = 1;
 #endif
 }
-// PC 0x0062C300 GOG 0x0062C1F0
+// PC 0x0062C300 GOG 0x0062C1F0 Xbox 0x0014DCD0
 void CExoInputInternal::UnpauseRumble()
 {
 #ifdef _XBOX
@@ -1797,27 +1797,27 @@ void CExoInputInternal::ClearAllInputEventDescriptions()
 
 #ifdef _XBOX
 
-int CExoInputInternal::GetAutoCalInfo()
+int CExoInputInternal::GetAutoCalInfo()  // Xbox 0x0014DC60
 {
     return m_pRawInput->GetAutoCalInfo();
 }
 
-int CExoInputInternal::GetPortBinding()
+int CExoInputInternal::GetPortBinding()  // Xbox 0x0014DC70
 {
     return m_pRawInput->GetPortBinding();
 }
 
-int CExoInputInternal::SetAutoCalInfo(unsigned long nFlags)
+int CExoInputInternal::SetAutoCalInfo(unsigned long nFlags)  // Xbox 0x0014DC80
 {
     return m_pRawInput->SetAutoCalInfo(nFlags);
 }
 
-int CExoInputInternal::SetPortBinding(unsigned long nBinding)
+int CExoInputInternal::SetPortBinding(unsigned long nBinding)  // Xbox 0x0014DC90
 {
     return m_pRawInput->SetPortBinding(nBinding);
 }
 
-void CExoInputInternal::UpdateJoysticks()
+void CExoInputInternal::UpdateJoysticks()  // Xbox 0x0014DCB0
 {
     m_pRawInput->UpdateJoysticks();
 }

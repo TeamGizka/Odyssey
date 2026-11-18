@@ -1292,56 +1292,6 @@ void LightManager::DisablePhongLights()
 }
 
 #ifdef _XBOX
-void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
-
-static inline float FastAbs(float fValue)
-{
-    if (fValue < 0.0f)
-        return 0.0f - fValue;
-    return fValue;
-}
-
-void LightManager::DebugPrintLightInfo(int nMaxLights, Vector vPosition)
-{
-    if (m_lstEnabledLights.m_nCount == 0)
-    {
-        AurPostString("<No active dynamic lights>", 2, 8, 0.25f);
-        return;
-    }
-    AurPostString("        Name   Prior  Rad     Dist(x,y)     Height", 2, 8, 0.25f);
-    bool bShadowCasterFound = false;
-    for (int i = 0; i < m_lstEnabledLights.m_nCount; i++)
-    {
-        char sColor[4];
-        char sLine[64];
-        if (i == 0)
-            sprintf(sColor, "R");
-        else if (i == 1)
-            sprintf(sColor, "G");
-        else if (i == 2)
-            sprintf(sColor, "B");
-        else if (i == 3)
-            sprintf(sColor, "Y");
-        float fDistanceX = FastAbs(m_lstEnabledLights[i]->m_vWorldPosition.m_fX - vPosition.m_fX);
-        float fDistanceY = FastAbs(m_lstEnabledLights[i]->m_vWorldPosition.m_fY - vPosition.m_fY);
-        MdlNodeLight* pNode = (MdlNodeLight*)m_lstEnabledLights[i]->m_pNode;
-        float fHeight = m_lstEnabledLights[i]->m_vWorldPosition.m_fZ - (vPosition.m_fZ + 1.75f);
-        int nIndex = pNode->m_nIndex;
-        Model* pModel = pNode->m_pModel->AsModel() ? pNode->m_pModel->AsModel()
-                                                   : (Model*)pNode->m_pModel->AsAnimation()->m_pBinaryData;
-        sprintf(sLine, "%s:%s  %d  %6.2f (%6.2f, %6.2f) %6.2f", sColor, pModel->m_lNames[nIndex],
-                pNode->m_nPriority, m_lstEnabledLights[i]->m_fRadius, fDistanceX, fDistanceY, fHeight);
-        if (!bShadowCasterFound && fHeight >= 0.0f && pNode->m_bShadow)
-        {
-            strcat(sLine, " Casts shdw");
-            bShadowCasterFound = true;
-        }
-        AurPostString(sLine, 2, i + 9, 0.25f);
-    }
-}
-#endif
-
-#ifdef _XBOX
 
 void AurSetHeadLightProperties(Vector vDiffuse, Vector vAmbient)
 {

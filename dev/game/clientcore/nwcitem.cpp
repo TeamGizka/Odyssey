@@ -437,6 +437,15 @@ void CSWCItem::SpawnVisualEffect(const CExoString& sModel,
 inline void CSWCItem::ComputeZValue(Vector* pPosition, float fOffset,
                                         Vector* pNormal)
 {
+#ifdef _XBOX
+    pPosition->m_fZ = 0.0f;
+    if (m_pArea != NULL)
+    {
+        pPosition->m_fZ = g_pAppManager->GetServerExoApp()->ComputeHeight(
+            m_pArea->m_cAreaResRef, *pPosition, 1);
+    }
+    pPosition->m_fZ += fOffset;
+#else
     float fZ = 0.0f;
     if (m_pArea != NULL)
     {
@@ -444,6 +453,7 @@ inline void CSWCItem::ComputeZValue(Vector* pPosition, float fOffset,
             m_pArea->m_cAreaResRef, *pPosition, 1);
     }
     pPosition->m_fZ = fZ + fOffset;
+#endif
 }
 // PC 0x0069D230 GOG 0x0069D010 Xbox 0x0009F520
 void CSWCItem::SetArea(CSWCArea* pArea)

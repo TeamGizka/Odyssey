@@ -36,6 +36,8 @@ kotor_automatic_pch_order(swmain)
 if(KOTOR_PLATFORM STREQUAL "xbox")
   # The XBE records d:\KotOR2\Code\game\swmain\Xbox_Release_DVD_SHIP\swmain.exe: the linked image is swmain.exe.
   set_target_properties(swmain PROPERTIES OUTPUT_NAME swmain)
+  # /GS for main.cpp only
+  set_source_files_properties(main.cpp PROPERTIES COMPILE_OPTIONS "/GS")
   target_link_options(swmain PRIVATE /NODEFAULTLIB "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swmain.map")
   # The movie player links Bink for Xbox, not XMV. KOTOR_XBOX_BINK_LIB: its library; the default is the 1.6b one next to
   # the headers the movie player compiles against (3rdparty/Bink/xbox-1.6b/README.md). It is native code like the game

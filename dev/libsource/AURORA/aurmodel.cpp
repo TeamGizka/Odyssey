@@ -4705,13 +4705,16 @@ void Gob::ReattachReference(CAurObject* pObject, char* sPart)  // Xbox 0x002BD9D
 #endif
 
 #ifdef _XBOX
-void MdlNodeLightsaber::InternalDestructor()
+void MdlNodeLightsaber::InternalDestructor()  // Xbox 0x002B3F80
 {
     GLRender::DeletePool(m_nBladePool);
     m_nBladePool = RequestPoolManager::INVALID_POOL;
     GLRender::DeletePool(m_nGlowPool);
     m_nGlowPool = RequestPoolManager::INVALID_POOL;
-    MdlNodeTriMesh::InternalDestructor();
+    int i = m_lChildren.m_nCount;
+    while (i != 0)
+        m_lChildren[--i]->DestructorDispatch();
+    --countnode;
 }
 
 void MdlNodeTriMesh::InternalDestructor()  // Xbox 0x002B3FE0

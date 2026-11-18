@@ -2192,7 +2192,9 @@ int CSWSEffectListHandler::OnApplyForceResistanceIncrease(CSWSObject* pObject,
         {
             pStats->SetForceResistance(nResistance);
         }
+#ifndef _XBOX
         return 0;
+#endif
     }
     return 0;
 }
@@ -2215,6 +2217,29 @@ int CSWSEffectListHandler::OnApplyForceResistanceDecrease(CSWSObject* pObject,
         pCreator =
             g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
                 oidCreator);
+#ifdef _XBOX
+        if (pStats->GetEffectImmunity(IMMUNITY_TYPE_FORCE_RESISTANCE_DECREASE, pCreator) != 0)
+        {
+            return 1;
+        }
+        nPenalty = pEffect->GetInteger(0);
+        if (nPenalty < 0 || pObject->m_bPlotObject != 0)
+        {
+            return 1;
+        }
+        if (nPenalty > 128)
+        {
+            nPenalty = 128;
+        }
+        if (pObject->AsSWSCreature() != NULL)
+        {
+            pObject->AsSWSCreature()->m_bUpdateCombatInformation = 1;
+        }
+        if (pStats->m_nForceResistancePenalty <= nPenalty)
+        {
+            pStats->SetForceResistancePenalty(nPenalty);
+        }
+#else
         if (pStats->GetEffectImmunity(IMMUNITY_TYPE_FORCE_RESISTANCE_DECREASE, pCreator) == 0)
         {
             nPenalty = pEffect->GetInteger(0);
@@ -2236,6 +2261,7 @@ int CSWSEffectListHandler::OnApplyForceResistanceDecrease(CSWSObject* pObject,
             }
         }
         return 1;
+#endif
     }
     return 0;
 }

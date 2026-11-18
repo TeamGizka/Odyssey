@@ -3876,7 +3876,7 @@ void PartEmitter::RenderFunc()
         GLRender_Disable(ENABLE_STENCIL_TEST);
     }
 }
-// PC 0x004C9C90 GOG 0x004C9DA0
+// PC 0x004C9C90 GOG 0x004C9DA0 Xbox 0x002FFE30
 void PartEmitter::Initialize()
 {
     MdlNodeEmitter* pNode = (MdlNodeEmitter*)m_pNode;

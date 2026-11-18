@@ -4,6 +4,9 @@
 #include "swguidrawable.h"
 #include "swguicontrol.h"
 #include "swgui.h"
+#ifdef _XBOX
+#include "swguiingameequip.h"
+#endif
 class C2DA;
 class CSWGuiControl;
 class CSWGuiExtent;
@@ -199,8 +202,10 @@ public:
     CSWGuiLabel m_lblRanalog;
     CSWGuiLabel m_lblRanalogLs;
     CSWGuiButton m_cAssemble;
+#ifndef _XBOX
     CSWGuiButton m_btnOk;
     CSWGuiButton m_btnBack;
+#endif
     CSWGui3DSceneView m_3dModel;
     CSWGui3DSceneView m_3dModelLs;
     unsigned long m_bItemListShown : 1;
@@ -304,9 +309,21 @@ class CSWGuiUpgradeSelection : public CSWGuiPanel
 public:
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblTitle2;
+#ifdef _XBOX
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblUpgradeItems;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblBack;
+    CSWGuiLabel m_lblY;
+    CSWGuiLabel m_lblX;
+    CSWGuiLabel m_lblCreateItem;
+    CSWGuiLabel m_lblRanalog;
+    CSWGuiLabel m_alblBar[3];
+#else
     CSWGuiButton m_btnUpgradeitems;
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnCreateitems;
+#endif
     CSWGuiCreateItem* m_pCreateItems;
     CSWGuiButton m_aTypeButtons[5];
     CSWGuiListBox m_lbUpgradelist;
@@ -317,7 +334,9 @@ public:
     int m_anUpgradable[4];
     int m_nFilter;
     CSWGuiUpgradeItemSelect* m_pItemSelect;
+#ifndef _XBOX
     CSWGuiControl* m_pSelectedType;
+#endif
     int m_bDisableItemCreation;
     int m_bDisableUpgrade;
     CExoString m_sOverride2DA;
@@ -332,7 +351,12 @@ public:
     }
     void AutoUpgradeDone();
     virtual void HandleInputEvent(int, int);
+#ifdef _XBOX
+    void OnCreateItem();
+    void NextFilter();
+#else
     void OnCreateItem(CSWGuiControl*);
+#endif
     void UpdateFilterButtons();
     void SetDescription(CExoString);
     void OnItemSelected(CSWGuiControl*);
@@ -344,6 +368,17 @@ public:
     void OnFilterPicked(CSWGuiControl*);
     CSWGuiUpgradeSelection(CSWGuiManager*, unsigned long oidCharacter);
 };
+
+#ifdef _XBOX
+#define CREATEITEM_NUM_ITEM_SLOTS 8
+#define CREATEITEM_SLOT_TEXT_ALIGNMENT 0x11
+
+struct CItemSlotData
+{
+    unsigned long m_oidItem;
+    CSWGuiHandler m_pfnHandler;
+};
+#endif
 
 class CSWGuiCreateItem : public CSWGuiPanel
 {
@@ -370,7 +405,11 @@ public:
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblCancel;
+#ifdef _XBOX
+    CSWGuiLabel m_lblUnused;
+#else
     CSWGuiLabel m_lblY;
+#endif
     CSWGuiLabel m_lblExamine;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
@@ -378,12 +417,19 @@ public:
     CSWGuiLabel m_lblCostValue;
     CSWGuiLabel m_lblStock;
     CSWGuiLabel m_lblStockValue;
+#ifdef _XBOX
+    CSWGuiLabel m_alblBars[6];
+    CSWGuiLabel m_alblCreateFilters[5];
+    CSWGuiLabel m_alblBreakdownFilters[5];
+    CSWGuiLabel m_lblY;
+#else
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnCancel;
     CSWGuiButton m_btnExamine;
     CSWGuiButton m_abtnCreateFilters[5];
     CSWGuiButton m_abtnBreakdownFilters[5];
     CSWGuiLabel m_alblBars[3];
+#endif
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblTitle2;
     CSWGuiLabel m_lblRelatedSkill;
@@ -392,7 +438,9 @@ public:
     CSWGuiLabel m_lblCredits;
     CSWGuiLabel m_lblCreditsValue;
     CSWGuiListBox m_lbxStoreItems;
+#ifndef _XBOX
     CSWGuiListBox m_lbxInventoryItems;
+#endif
     CSWGuiListBox m_lbxDescription;
     int m_nItemCount;
     int m_nPreviousComponents;
@@ -408,6 +456,13 @@ public:
     int m_nBreakdownFilter;
     CSWGuiUpgradeSelection* m_pUpgradeSelection;
     CExoString m_sCreateTable;
+#ifdef _XBOX
+    CExoArrayList<CItemSlotData> m_lItemSlots;
+    CSWGuiStoreItemEntry m_aItemButtons[CREATEITEM_NUM_ITEM_SLOTS];
+    int m_nTopItem;
+    int m_nSelectedItem;
+    int m_nPreviousSelectedItem;
+#endif
     void SetCreateTable(CExoString sTable);
 
     void PopulateStore();
@@ -440,6 +495,9 @@ public:
     void OnCreateFilterPicked(CSWGuiControl*);
     void OnControlXButton(CSWGuiControl*);
     void InitializeStoreType();
+#ifdef _XBOX
+    void UpdateItemSlots(int nTopItem, int nSelectedItem);
+#endif
     CSWGuiCreateItem(CSWGuiManager*, unsigned long);
     virtual void OnPanelAdded();
 };
@@ -468,7 +526,11 @@ public:
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblCancel;
+#ifdef _XBOX
+    CSWGuiLabel m_lblUnused;
+#else
     CSWGuiLabel m_lblY;
+#endif
     CSWGuiLabel m_lblExamine;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblDescription;
@@ -476,11 +538,17 @@ public:
     CSWGuiLabel m_lblTitle2;
     CSWGuiLabel m_lblRelatedSkill;
     CSWGuiListBox m_lbxDescriptionInv;
+#ifdef _XBOX
+    CSWGuiLabel m_alblBars[6];
+    CSWGuiLabel m_alblCreateFilters[4];
+    CSWGuiLabel m_lblY;
+#else
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnCancel;
     CSWGuiButton m_btnExamine;
     CSWGuiLabel m_alblBars[3];
     CSWGuiButton m_abtnCreateFilters[4];
+#endif
     CSWGuiLabel m_lblCost;
     CSWGuiLabel m_lblCostValue;
     CSWGuiLabel m_lblStock;

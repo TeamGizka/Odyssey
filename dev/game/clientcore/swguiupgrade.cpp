@@ -112,7 +112,11 @@ void CSWGuiSwoopUpgrade::CancelPanel()
 CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned long oidCharacter)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    StartLoadFromLayout("upgradesel_x");
+#else
     StartLoadFromLayout("upgradesel_p");
+#endif
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lblTitle2, "LBL_TITLE2", 1);
     InitControl(m_aTypeButtons[0], "BTN_ALL", 1);
@@ -122,6 +126,22 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned
     InitControl(m_aTypeButtons[4], "BTN_ARMOR", 1);
     InitControl(m_lbUpgradelist, "LB_UPGRADELIST", 1);
     InitControl(m_lbDescription, "LB_DESCRIPTION", 1);
+#ifdef _XBOX
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblUpgradeItems, "LBL_UPGRADEITEMS", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblCreateItem, "LBL_CREATE_ITEM", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_lblRanalog, "LBL_RANALOG", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
+    StopLoadFromLayout();
+    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent,
+                                (CSWGuiLabel*)m_lbDescription.m_pProtoItem);
+#else
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnUpgradeitems, "BTN_UPGRADEITEMS", 1);
     InitControl(m_btnCreateitems, "BTN_CREATEITEMS", 1);
@@ -129,6 +149,7 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned
     m_lbUpgradelist.SetSelectOnLeftClick(1);
     m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent,
                                 (CSWGuiLabel*)m_lbDescription.m_pProtoItem, 1.0f);
+#endif
 
     m_oidCharacter = oidCharacter;
     m_oidItem = OBJECT_INVALID;
@@ -139,10 +160,13 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned
     for (int i = 0; i < 5; i++)
     {
         m_aTypeButtons[i].m_nIndex = i;
+#ifndef _XBOX
         m_aTypeButtons[i].AddEvent(GUIEVENT_ACTIVATE, this,
                                    (CSWGuiHandler)&CSWGuiUpgradeSelection::OnFilterPicked);
         m_aTypeButtons[i].SetFocusable(0);
+#endif
     }
+#ifndef _XBOX
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
                        (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
@@ -153,6 +177,7 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned
     m_btnCreateitems.AddEvent(GUIEVENT_ACTIVATE, this,
                               (CSWGuiHandler)&CSWGuiUpgradeSelection::OnCreateItem);
     m_pSelectedType = 0;
+#endif
     m_nFilter = 0;
     UpdateFilterButtons();
     m_bDisableItemCreation = 0;
@@ -216,6 +241,40 @@ void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
 {
     CGuiInGame* pInGame;
 
+#ifdef _XBOX
+    if (nState != 0)
+    {
+        if (nEvent == GUIEVENT_CANCEL || nEvent == GUIEVENT_CANCEL_ALTERNATE)
+        {
+            if (m_bDisableUpgrade == 0)
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            pInGame = (CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui();
+            pInGame->HideUpgradeScreen();
+        }
+        else if (nEvent == GUIEVENT_TOGGLE_MODE)
+        {
+            if (m_bDisableItemCreation == 0)
+                OnCreateItem();
+        }
+        else if (nEvent == GUIEVENT_RECOMMEND)
+        {
+            NextFilter();
+        }
+        else if (nEvent == GUIEVENT_ACTIVATE)
+        {
+            if (m_lbUpgradelist.m_lItems.num > 0 && m_lbUpgradelist.GetSelectedControl() != 0)
+                OnItemSelected(m_lbUpgradelist.GetSelectedControl());
+        }
+        else if (nEvent == 57)
+        {
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+        }
+        else if (nEvent == 58)
+        {
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+        }
+    }
+#else
     if (nState != 0 && (nEvent == 40 || nEvent == 46))
     {
         if (m_bDisableUpgrade == 0)
@@ -223,6 +282,7 @@ void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
         pInGame = (CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui();
         pInGame->HideUpgradeScreen();
     }
+#endif
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 // PC 0x00731BF0 GOG 0x00731900 Xbox 0x0011ADB0
@@ -239,6 +299,15 @@ void CSWGuiCreateMedicalItem::ShowBuyGUI()
     m_lblTitle.m_cText.m_cParams.SetStrRef(111574);
     m_lbxDescription.SetEnabledFlag(1);
     m_lbxDescriptionInv.SetEnabledFlag(0);
+#ifdef _XBOX
+    for (int i = 0; i < 4; i++)
+        m_alblCreateFilters[i].SetEnabledFlag(1);
+    m_alblBars[4].SetEnabledFlag(1);
+    m_alblBars[5].SetEnabledFlag(1);
+    m_lblY.SetEnabledFlag(1);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48379);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(48373);
+#else
     m_btnAccept.m_cText.m_cParams.SetStrRef(48379);
     m_btnExamine.m_cText.m_cParams.SetStrRef(48373);
     for (int i = 0; i < 4; i++)
@@ -247,6 +316,7 @@ void CSWGuiCreateMedicalItem::ShowBuyGUI()
     m_alblBars[2].SetEnabledFlag(1);
     m_lblAccept.m_cText.m_cParams.SetStrRef(48379);
     m_btnExamine.m_cText.m_cParams.SetStrRef(48373);
+#endif
     m_lblCost.m_cText.m_cParams.SetStrRef(48434);
     SetActiveControl(pActiveList, 0);
     PopulateStoreItemListBox();
@@ -288,7 +358,11 @@ void CSWGuiUpgradeSelection::GetPlayerItems(CSWSCreature* pCreature,
     }
 }
 // PC 0x00723D50 GOG 0x00723A60 Xbox 0x0010CDB0
+#ifdef _XBOX
+void CSWGuiUpgradeSelection::OnCreateItem()
+#else
 void CSWGuiUpgradeSelection::OnCreateItem(CSWGuiControl* pControl)
+#endif
 {
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     m_pManager->AddPanel(m_pCreateItems, CSWGuiManager::PANEL_MODE_MODAL, 1);
@@ -352,6 +426,18 @@ void CSWGuiUpgradeSelection::UpdateFilterButtons()
 {
     for (int i = 0; i < 5; i++)
     {
+#ifdef _XBOX
+        if (i == m_nFilter)
+        {
+            m_aTypeButtons[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_aTypeButtons[i].m_cText.m_cParams.m_bHilightText = 1;
+        }
+        else
+        {
+            m_aTypeButtons[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+            m_aTypeButtons[i].m_cText.m_cParams.m_bHilightText = 0;
+        }
+#else
         if (i == m_nFilter)
         {
             m_aTypeButtons[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
@@ -360,6 +446,7 @@ void CSWGuiUpgradeSelection::UpdateFilterButtons()
         {
             m_aTypeButtons[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
         }
+#endif
     }
 }
 // PC 0x00723DC0 GOG 0x00723AD0 Xbox 0x0010F910
@@ -415,10 +502,12 @@ void CSWGuiUpgradeItemSelect::BuildItemList(CSWSCreature* pCreature,
 // PC 0x00723EC0 GOG 0x00723BD0 Xbox 0x0010CE30
 void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
 {
+#ifndef _XBOX
     if (pControl == &m_btnUpgradeitems)
     {
         pControl = m_lbUpgradelist.GetSelectedControl();
     }
+#endif
     if (pControl != 0)
     {
         C2DA* pTable = new C2DA("upgrade", 0);
@@ -1015,6 +1104,9 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
     CItemRepository* pRepository;
     C2DA* pTable;
 
+#ifdef _XBOX
+    m_lItemSlots.RemoveAll();
+#endif
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
     if (m_sCreateTable.IsEmpty())
@@ -1049,10 +1141,29 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
         if (pItem != 0 && pItem->m_bPlotObject == 0 && bComponent == 0 &&
             CheckBreakdownFilter(pItem, pCreature, 0))
         {
+#ifdef _XBOX
+            CItemSlotData cSlot;
+            cSlot.m_oidItem = pItem->GetId();
+            cSlot.m_pfnHandler = (CSWGuiHandler)&CSWGuiCreateItem::OnControlInvAButton;
+            m_lItemSlots.Add(cSlot);
+#else
             CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 1, "");
+#endif
         }
     }
 
+#ifdef _XBOX
+    if (m_bBuyMode == 0)
+    {
+        UpdateItemSlots(m_nTopItem, m_nSelectedItem);
+        if (m_lItemSlots.num <= 0)
+        {
+            m_lblCostValue.m_cText.m_cParams.SetText("");
+            m_lblStockValue.m_cText.m_cParams.SetText("");
+            m_lblDescription.m_cText.m_cParams.SetText("");
+        }
+    }
+#else
     m_lbxInventoryItems.AddControls(lControls, 0, 1, 0);
     if (m_lbxInventoryItems.m_bEnabled != 0)
     {
@@ -1068,6 +1179,7 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
             m_lblDescription.m_cText.m_cParams.SetText("");
         }
     }
+#endif
     if (!m_sCreateTable.IsEmpty())
     {
         pTable->Unload2DArray();
@@ -1075,6 +1187,44 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
     }
     m_nSelectedEntry = 0;
 }
+#ifdef _XBOX
+
+// Xbox 0x0010EA40
+void CSWGuiCreateItem::UpdateItemSlots(int nTopItem, int nSelectedItem)
+{
+    if (nSelectedItem >= m_lItemSlots.num)
+    {
+        nSelectedItem = m_lItemSlots.num - 1;
+        nTopItem = m_nSelectedItem - CREATEITEM_NUM_ITEM_SLOTS;
+        nTopItem = nTopItem < 0 ? 0 : nTopItem;
+    }
+    if (nTopItem + CREATEITEM_NUM_ITEM_SLOTS - 1 >= m_lItemSlots.num)
+    {
+        nTopItem = m_lItemSlots.num - CREATEITEM_NUM_ITEM_SLOTS;
+        nTopItem = nTopItem < 0 ? 0 : nTopItem;
+    }
+    int nShown = m_lItemSlots.num > CREATEITEM_NUM_ITEM_SLOTS ? CREATEITEM_NUM_ITEM_SLOTS : m_lItemSlots.num;
+    m_nTopItem = nTopItem;
+    m_nPreviousSelectedItem = m_nSelectedItem;
+    m_nSelectedItem = nSelectedItem;
+    SetActiveControl(0, 0);
+    for (int i = 0; i < nShown; i++)
+    {
+        CItemSlotData cSlot = m_lItemSlots[nTopItem + i];
+        m_aItemButtons[i].SetItem(cSlot.m_oidItem, 0, -1);
+        m_aItemButtons[i].AddEvent(GUIEVENT_ACTIVATE, this, cSlot.m_pfnHandler);
+        m_aItemButtons[i].SetEnabledFlag(1);
+    }
+    for (int j = nShown; j < CREATEITEM_NUM_ITEM_SLOTS; j++)
+    {
+        m_aItemButtons[j].SetEnabledFlag(0);
+    }
+    if (m_bBuyMode == 0 && m_lItemSlots.num > 0)
+    {
+        SetActiveControl(&m_aItemButtons[nSelectedItem - nTopItem], 1);
+    }
+}
+#endif
 // PC 0x00729E20 GOG 0x00729B30
 void CSWGuiCreateItem::OnBreakdownFilterPicked(CSWGuiControl* pControl)
 {
@@ -1367,11 +1517,15 @@ void CSWGuiCreateItem::SellItem(CSWSItem* pItem)
                 pItem->SplitItem(1);
             else
                 pInventory->RemoveItem(pItem);
+#ifdef _XBOX
+            PopulateInventoryItemListBox();
+#else
             int nSelectedItem = m_lbxInventoryItems.m_nSelectedItem;
             PopulateInventoryItemListBox();
             if (nSelectedItem >= m_lbxInventoryItems.m_lItems.num)
                 nSelectedItem = m_lbxInventoryItems.m_lItems.num - 1;
             m_lbxInventoryItems.SetSelectedControl(nSelectedItem, 0);
+#endif
             m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(m_nComponents));
         }
     }
@@ -1465,6 +1619,27 @@ void CSWGuiCreateItem::SellItemCallback(CSWGuiControl* pControl)
 // PC 0x0072ACB0 GOG 0x0072A9C0
 void CSWGuiCreateItem::ShowSellGUI()
 {
+#ifdef _XBOX
+    m_bBuyMode = 0;
+    m_lbxStoreItems.SetEnabledFlag(0);
+    m_lblRelatedSkill.SetEnabledFlag(0);
+    m_lblTitle.m_cText.m_cParams.SetStrRef(115425);
+    m_lbxDescriptionInv.SetEnabledFlag(1);
+    m_lbxDescription.SetEnabledFlag(0);
+    for (int i = 0; i < 5; i++)
+        m_alblCreateFilters[i].SetEnabledFlag(0);
+    for (int i = 0; i < 5; i++)
+        m_alblBreakdownFilters[i].SetEnabledFlag(1);
+    m_alblBars[4].SetEnabledFlag(0);
+    m_alblBars[5].SetEnabledFlag(0);
+    for (int i = 0; i < CREATEITEM_NUM_ITEM_SLOTS; i++)
+        m_aItemButtons[i].SetEnabledFlag(1);
+    m_lblCost.m_cText.m_cParams.SetStrRef(115427);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48380);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(48375);
+    m_lblCost.m_cText.m_cParams.SetStrRef(115427);
+    PopulateInventoryItemListBox();
+#else
     CSWGuiListBox* pActiveList;
 
     m_bBuyMode = 0;
@@ -1489,12 +1664,104 @@ void CSWGuiCreateItem::ShowSellGUI()
     m_lblCost.m_cText.m_cParams.SetStrRef(115427);
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
+#endif
 }
 // PC 0x00732880 GOG 0x00732590
 CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
                                    unsigned long oidCreature)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    m_nItemCount = 0;
+    m_nTopItem = 0;
+    m_nSelectedItem = 0;
+    m_nPreviousSelectedItem = 0;
+
+    StartLoadFromLayout("component_x");
+    InitControl(m_lbxStoreItems, "LB_SHOPITEMS", 1);
+    InitControl(m_lblCredits, "LBL_CREDITS", 1);
+    InitControl(m_lblCreditsValue, "LBL_CREDITS_VALUE", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblAccept, "LBL_Accept", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblCancel, "LBL_Cancel", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblExamine, "LBL_Examine", 1);
+    InitControl(m_alblBars[0], "LBL_BAR1", 1);
+    InitControl(m_alblBars[1], "LBL_BAR2", 1);
+    InitControl(m_alblBars[2], "LBL_BAR3", 1);
+    InitControl(m_alblBars[3], "LBL_BAR4", 1);
+    InitControl(m_alblBars[4], "LBL_BAR5", 1);
+    InitControl(m_alblBars[5], "LBL_BAR6", 1);
+    InitControl(m_alblCreateFilters[0], "LBL_CREATE_ARMOR", 1);
+    InitControl(m_alblCreateFilters[1], "LBL_CREATE_RANGED", 1);
+    InitControl(m_alblCreateFilters[2], "LBL_CREATE_MELEE", 1);
+    InitControl(m_alblCreateFilters[3], "LBL_CREATE_LIGHTSABER", 1);
+    InitControl(m_alblCreateFilters[4], "LBL_CREATE_MISC", 1);
+    InitControl(m_alblBreakdownFilters[0], "LBL_BREAK_ALL", 1);
+    InitControl(m_alblBreakdownFilters[1], "LBL_BREAK_WEAPONS", 1);
+    InitControl(m_alblBreakdownFilters[2], "LBL_BREAK_ARMOR", 1);
+    InitControl(m_alblBreakdownFilters[3], "LBL_BREAK_USEABLE", 1);
+    InitControl(m_alblBreakdownFilters[4], "LBL_BREAK_MISC", 1);
+    for (int i = 0; i < CREATEITEM_NUM_ITEM_SLOTS; i++)
+    {
+        InitControl(m_aItemButtons[i], CExoString("BTN_ITEM") + CExoString(i + 1), 1, 0);
+        m_aItemButtons[i].AddEvent(CSWGuiControl::EVENT_ENTER, this,
+                                   (CSWGuiHandler)&CSWGuiCreateItem::OnControlEntered);
+        m_aItemButtons[i].AddEvent(GUIEVENT_ACTIVATE, this,
+                                   (CSWGuiHandler)&CSWGuiCreateItem::OnControlInvAButton);
+        m_aItemButtons[i].SetColors(CGuiInGame::COLOR_UPGRADE_BORDER, CGuiInGame::COLOR_UPGRADE_TEXT,
+                                    CGuiInGame::COLOR_NEW_HIGHLIGHT, CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        m_aItemButtons[i].m_cText.m_cParams.SetAlignment(CREATEITEM_SLOT_TEXT_ALIGNMENT);
+    }
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblTitle2, "LBL_TITLE2", 1);
+    InitControl(m_lblRelatedSkill, "LBL_RELATEDSKILL", 1);
+    InitControl(m_lbxDescriptionInv, "LB_DESCRIPTIONINV", 1);
+    InitControl(m_lbxDescription, "LB_DESCRIPTION", 1);
+    m_lbxDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_lblCost, "LBL_COST", 1);
+    InitControl(m_lblCostValue, "LBL_COST_VALUE", 1);
+    InitControl(m_lblStock, "LBL_STOCK", 1);
+    InitControl(m_lblStockValue, "LBL_STOCK_VALUE", 1);
+    InitControl(m_lblRanalog, "LBL_RANALOG", 1);
+    StopLoadFromLayout();
+
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbxDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel);
+    CSWGuiListBox* pStoreItems = &m_lbxStoreItems;
+    pStoreItems->m_bShowScrollBar = 1;
+    SetActiveControl(pStoreItems, 0);
+
+    m_nPendingAction = 0;
+    m_nSelectedEntry = 0;
+    m_nPreviousComponents = 0;
+    m_nComponents = 0;
+    m_pStore = new CSWSStore(OBJECT_INVALID);
+    m_nCreateFilter = 0;
+
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature;
+    if (oidCreature == OBJECT_INVALID)
+    {
+        unsigned long oidPC =
+            pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidPCObject;
+        pCreature = pServer->GetCreatureByGameObjectID(oidPC);
+    }
+    else
+        pCreature = pServer->GetCreatureByGameObjectID(oidCreature);
+    m_nCreatureId = pCreature->m_nId;
+    float fFactor =
+        pCreature->GetStats()->GetSkillRank(CSWRules::SKILL_REPAIR, 0, 0) * 0.05f;
+    if (fFactor >= 1.0f)
+        fFactor = 1.0f;
+    m_fRepairFactor = fFactor;
+    m_bAlternateList = 0;
+    m_nBreakdownFilter = 0;
+    UpdateCreateFilters();
+    UpdateBreakdownFilters();
+#else
     m_nItemCount = 0;
 
     StartLoadFromLayout("component_p");
@@ -1605,6 +1872,7 @@ CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
     m_btnCancel.SetFocusable(0);
     m_nBreakdownFilter = 0;
     UpdateBreakdownFilters();
+#endif
 }
 // PC 0x00724730 GOG 0x00724440 Xbox 0x0010D4B0
 void CSWGuiUpgrade::Draw(float fElapsed)
@@ -2167,6 +2435,15 @@ void CSWGuiCreateMedicalItem::ShowSellGUI()
     m_lbxDescription.SetEnabledFlag(0);
     m_lbxDescriptionInv.SetEnabledFlag(1);
     m_lblTitle.m_cText.m_cParams.SetStrRef(115425);
+#ifdef _XBOX
+    for (int i = 0; i < 4; i++)
+        m_alblCreateFilters[i].SetEnabledFlag(0);
+    m_alblBars[4].SetEnabledFlag(0);
+    m_alblBars[5].SetEnabledFlag(0);
+    m_lblY.SetEnabledFlag(0);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48380);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(48375);
+#else
     m_btnAccept.m_cText.m_cParams.SetStrRef(115426);
     m_btnExamine.m_cText.m_cParams.SetStrRef(48375);
     for (int i = 0; i < 4; i++)
@@ -2175,6 +2452,7 @@ void CSWGuiCreateMedicalItem::ShowSellGUI()
     m_alblBars[2].SetEnabledFlag(0);
     m_lblAccept.m_cText.m_cParams.SetStrRef(48380);
     m_btnExamine.m_cText.m_cParams.SetStrRef(48375);
+#endif
     m_lblCost.m_cText.m_cParams.SetStrRef(115432);
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
@@ -2891,15 +3169,23 @@ void CSWGuiCreateItem::OnPanelAdded()
     if (g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nItemComponent < 0)
         g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nItemComponent = 0;
     if (m_pUpgradeSelection != 0 && m_pUpgradeSelection->m_bDisableUpgrade != 0)
+#ifdef _XBOX
+        m_lblCancel.m_cText.m_cParams.SetStrRef(1582);
+    else
+        m_lblCancel.m_cText.m_cParams.SetStrRef(219);
+#else
         m_btnCancel.m_cText.m_cParams.SetStrRef(1582);
     else
         m_btnCancel.m_cText.m_cParams.SetStrRef(219);
+#endif
     m_nCreateFilter = 4;
     UpdateCreateFilters();
     InitializeStoreType();
     SetItemList();
     PopulateStore();
+#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
+#endif
     ShowBuyGUI();
 }
 // PC 0x0072C130 GOG 0x0072BE40 Xbox 0x00111F10
@@ -3111,12 +3397,14 @@ void CSWGuiCreateItem::OnAcceptPicked(CSWGuiControl* pControl)
         if (pSelected != 0)
             OnControlStoreAButton(pSelected);
     }
+#ifndef _XBOX
     else
     {
         CSWGuiControl* pSelected = m_lbxInventoryItems.GetSelectedControl();
         if (pSelected != 0)
             OnControlInvAButton(pSelected);
     }
+#endif
 }
 // PC 0x00726180 GOG 0x00725E90 Xbox 0x0010EBB0
 void CSWGuiCreateItem::CloseCreateItem(CSWGuiControl* pControl)
@@ -3137,12 +3425,25 @@ void CSWGuiCreateItem::UpdateBreakdownFilters()
 {
     for (int i = 0; i < 5; i++)
     {
+#ifdef _XBOX
+        if (i == m_nBreakdownFilter)
+        {
+            m_alblBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_alblBreakdownFilters[i].m_cText.m_cParams.m_bHilightText = 1;
+        }
+        else
+        {
+            m_alblBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+            m_alblBreakdownFilters[i].m_cText.m_cParams.m_bHilightText = 0;
+        }
+#else
         if (m_abtnBreakdownFilters[i].m_nIndex == m_nBreakdownFilter)
             m_abtnBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_NEW_HIGHLIGHT);
         else
             m_abtnBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_UPGRADE_TEXT);
+#endif
     }
 }
 // PC 0x00732500 GOG 0x00732210 Xbox 0x0011B9E0
@@ -3193,12 +3494,25 @@ void CSWGuiCreateItem::UpdateCreateFilters()
 {
     for (int i = 0; i < 5; i++)
     {
+#ifdef _XBOX
+        if (i == m_nCreateFilter)
+        {
+            m_alblCreateFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_alblCreateFilters[i].m_cText.m_cParams.m_bHilightText = 1;
+        }
+        else
+        {
+            m_alblCreateFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+            m_alblCreateFilters[i].m_cText.m_cParams.m_bHilightText = 0;
+        }
+#else
         if (m_abtnCreateFilters[i].m_nIndex == m_nCreateFilter)
             m_abtnCreateFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_NEW_HIGHLIGHT);
         else
             m_abtnCreateFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_UPGRADE_TEXT);
+#endif
     }
 }
 // PC 0x00726260 GOG 0x00725F70 Xbox 0x0010C850
@@ -3277,6 +3591,18 @@ void CSWGuiUpgradeSelection::PopulateItemList()
     delete pTable;
     CSWGuiListBox* pListBox = &m_lbUpgradelist;
     pListBox->AddControls(aItems, 1, 1, 0);
+#ifdef _XBOX
+    if (m_lbUpgradelist.m_lItems.num > 0)
+    {
+        pListBox->SetSelectedControl(pListBox->GetControl(0), 0);
+        SetActiveControl(pListBox, 0);
+        m_lblUpgradeItems.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    }
+    else
+    {
+        m_lblUpgradeItems.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_DARK_TAN);
+    }
+#else
     if (m_lbUpgradelist.m_lItems.num > 0)
     {
         pListBox->SetSelectedControl(pListBox->GetControl(0), 0);
@@ -3294,6 +3620,7 @@ void CSWGuiUpgradeSelection::PopulateItemList()
         pParams->SetDefaultColor(CGuiInGame::COLOR_DARK_TAN);
         m_btnUpgradeitems.SetEnabled(0);
     }
+#endif
 }
 // PC 0x0072C990 GOG 0x0072C6A0 Xbox 0x00115850
 void CSWGuiUpgradeItemSelect::BuildUpgradeList()
@@ -3376,12 +3703,25 @@ void CSWGuiCreateMedicalItem::UpdateCreateFilters()
 {
     for (int i = 0; i < 4; i++)
     {
+#ifdef _XBOX
+        if (i == m_nCreateFilter)
+        {
+            m_alblCreateFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_alblCreateFilters[i].m_cText.m_cParams.m_bHilightText = 1;
+        }
+        else
+        {
+            m_alblCreateFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+            m_alblCreateFilters[i].m_cText.m_cParams.m_bHilightText = 0;
+        }
+#else
         if (m_abtnCreateFilters[i].m_nIndex == m_nCreateFilter)
             m_abtnCreateFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_NEW_HIGHLIGHT);
         else
             m_abtnCreateFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_UPGRADE_TEXT);
+#endif
     }
 }
 // PC 0x00726390 GOG 0x007260A0 Xbox 0x0010C8A0
@@ -3535,7 +3875,9 @@ void CSWGuiCreateItem::OnPanelRemoved()
     }
     if (m_pUpgradeSelection != 0)
         m_pUpgradeSelection->PopulateItemList();
+#ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 
 // PC 0x007263D0 GOG 0x007260E0 Xbox 0x0010C8E0
@@ -3655,7 +3997,9 @@ void CSWGuiSwoopUpgrade::OnPanelRemoved()
         }
     }
     m_aItemsTaken.num = 0; m_aItemsAdded.num = 0;
+#ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 // PC 0x007266C0 GOG 0x007263D0 Xbox 0x0010F000
 void CSWGuiSwoopUpgrade::UpdateItems()
@@ -3870,6 +4214,17 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
         pEntry = pNewEntry;
         pEntries->Add(pNewEntry);
         pNewEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+#ifdef _XBOX
+        {
+            CSWGuiButton* pProto = m_lbxStoreItems.m_pProtoItem->AsButton();
+            int nWidth = m_lbxStoreItems.m_cItemExtent.m_nWidth -
+                         2 * m_lbxStoreItems.m_nPadding;
+            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                               pProto->m_cHilite, nWidth);
+            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiCreateItem::OnControlStoreAButton);
+        }
+#else
         if (bInventory)
         {
             CSWGuiButton* pProto = m_lbxInventoryItems.m_pProtoItem->AsButton();
@@ -3890,6 +4245,7 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiCreateItem::OnControlStoreAButton);
         }
+#endif
         pNewEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
                         (CSWGuiHandler)&CSWGuiCreateItem::OnControlEntered);
     }
@@ -3979,10 +4335,8 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
 // PC 0x00726EE0 GOG 0x00726BF0
 CSWGuiUpgradeSelection::~CSWGuiUpgradeSelection()
 {
-#ifndef _XBOX
     m_lbDescription.ClearItems();
     m_lbUpgradelist.ClearItems();
-#endif
     if (m_pItemSelect != 0)
     {
         delete m_pItemSelect;
@@ -4169,6 +4523,32 @@ void CSWGuiUpgrade::CloseItems()
 // PC 0x00731870 GOG 0x00731580
 void CSWGuiCreateItem::ShowBuyGUI()
 {
+#ifdef _XBOX
+    CSWGuiListBox* pActiveList;
+
+    m_bBuyMode = 1;
+    pActiveList = &m_lbxStoreItems;
+    pActiveList->m_bEnabled = 1;
+    m_lblRelatedSkill.SetEnabledFlag(1);
+    m_lblRelatedSkill.m_cText.m_cParams.SetText("");
+    m_lblTitle.m_cText.m_cParams.SetStrRef(111574);
+    m_lbxDescriptionInv.SetEnabledFlag(0);
+    m_lbxDescription.SetEnabledFlag(1);
+    for (int i = 0; i < 5; i++)
+        m_alblCreateFilters[i].SetEnabledFlag(1);
+    for (int i = 0; i < 5; i++)
+        m_alblBreakdownFilters[i].SetEnabledFlag(0);
+    m_alblBars[4].SetEnabledFlag(1);
+    m_alblBars[5].SetEnabledFlag(1);
+    for (int i = 0; i < CREATEITEM_NUM_ITEM_SLOTS; i++)
+        m_aItemButtons[i].SetEnabledFlag(0);
+    m_lblCost.m_cText.m_cParams.SetStrRef(48376);
+    m_lblAccept.m_cText.m_cParams.SetStrRef(48379);
+    m_lblExamine.m_cText.m_cParams.SetStrRef(48373);
+    m_lblCost.m_cText.m_cParams.SetStrRef(48376);
+    SetActiveControl(pActiveList, 0);
+    PopulateStoreItemListBox();
+#else
     CSWGuiListBox* pActiveList;
 
     m_bBuyMode = 1;
@@ -4195,12 +4575,89 @@ void CSWGuiCreateItem::ShowBuyGUI()
     m_lblCost.m_cText.m_cParams.SetStrRef(48376);
     SetActiveControl(pActiveList, 0);
     PopulateStoreItemListBox();
+#endif
 }
 // PC 0x00733480 GOG 0x00733190 Xbox 0x0011C770
 CSWGuiCreateMedicalItem::CSWGuiCreateMedicalItem(CSWGuiManager* pManager,
                                                  unsigned long oidCreature)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    m_nItemCount = 0;
+
+    StartLoadFromLayout("chemical_x");
+    InitControl(m_lbxStoreItems, "LB_SHOPITEMS", 1);
+    InitControl(m_lbxInventoryItems, "LB_INVITEMS", 1);
+    InitControl(m_lblCredits, "LBL_CREDITS", 1);
+    InitControl(m_lblCreditsValue, "LBL_CREDITS_VALUE", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblTitle2, "LBL_TITLE2", 1);
+    InitControl(m_lblRelatedSkill, "LBL_RELATEDSKILL", 1);
+    InitControl(m_lbxDescriptionInv, "LB_DESCRIPTIONINV", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblAccept, "LBL_Accept", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblCancel, "LBL_Cancel", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblExamine, "LBL_Examine", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
+    InitControl(m_alblBars[0], "LBL_BAR1", 1);
+    InitControl(m_alblBars[1], "LBL_BAR2", 1);
+    InitControl(m_alblBars[2], "LBL_BAR3", 1);
+    InitControl(m_alblBars[3], "LBL_BAR4", 1);
+    InitControl(m_alblBars[4], "LBL_BAR5", 1);
+    InitControl(m_alblBars[5], "LBL_BAR6", 1);
+    InitControl(m_alblCreateFilters[0], "LBL_CREATE_HEALTH", 1);
+    InitControl(m_alblCreateFilters[1], "LBL_CREATE_STIMS", 1);
+    InitControl(m_alblCreateFilters[3], "LBL_CREATE_GRENADES", 1);
+    InitControl(m_alblCreateFilters[2], "LBL_CREATE_MINES", 1);
+    InitControl(m_lbxDescription, "LB_DESCRIPTION", 1);
+    m_lbxDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_lblCost, "LBL_COST", 1);
+    InitControl(m_lblCostValue, "LBL_COST_VALUE", 1);
+    InitControl(m_lblStock, "LBL_STOCK", 1);
+    InitControl(m_lblStockValue, "LBL_STOCK_VALUE", 1);
+    InitControl(m_lblRanalog, "LBL_RANALOG", 1);
+    StopLoadFromLayout();
+
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbxDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel);
+    CSWGuiListBox* pStoreItems = &m_lbxStoreItems;
+    CSWGuiListBox* pInventoryItems = &m_lbxInventoryItems;
+    pStoreItems->m_bShowScrollBar = 1;
+    pInventoryItems->m_bShowScrollBar = 1;
+    SetActiveControl(&m_lbxStoreItems, 0);
+    pInventoryItems->m_bEnabled = 0;
+
+    m_nPendingAction = 0;
+    m_nSelectedEntry = 0;
+    m_nPreviousChemicals = 0;
+    m_nChemicals = 0;
+    m_pStore = new CSWSStore(OBJECT_INVALID);
+    m_nCreateFilter = 0;
+    SetItemList();
+    m_oidCreature = oidCreature;
+
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature;
+    if (oidCreature == OBJECT_INVALID)
+    {
+        unsigned long oidPC =
+            pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidPCObject;
+        pCreature = pServer->GetCreatureByGameObjectID(oidPC);
+    }
+    else
+        pCreature = pServer->GetCreatureByGameObjectID(oidCreature);
+    m_nCreatureId = pCreature->m_nId;
+    float fFactor =
+        pCreature->GetStats()->GetSkillRank(CSWRules::SKILL_TREAT_INJURY, 0, 0) * 0.05f;
+    if (fFactor >= 1.0f)
+        fFactor = 1.0f;
+    m_fRepairFactor = fFactor;
+    m_bAlternateList = 0;
+    m_nCreateFilter = 0;
+    UpdateCreateFilters();
+#else
     m_nItemCount = 0;
 
     StartLoadFromLayout("chemical_p");
@@ -4296,6 +4753,7 @@ CSWGuiCreateMedicalItem::CSWGuiCreateMedicalItem(CSWGuiManager* pManager,
 #ifndef _XBOX
     m_nBackground = 1;
 #endif
+#endif
 }
 // PC 0x0072F8A0 GOG 0x0072F5B0
 void CSWGuiCreateMedicalItem::OnAcceptPicked(CSWGuiControl* pControl)
@@ -4318,7 +4776,9 @@ void CSWGuiCreateItem::DeleteItemEntries()
 {
     CExoArrayList<CSWGuiStoreItemEntry*>& lStoreEntries = m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*>& lInventoryEntries = m_lInventoryEntries;
+#ifndef _XBOX
     m_lbxInventoryItems.ClearItems();
+#endif
     m_lbxStoreItems.ClearItems();
     for (int i = 0; i < lStoreEntries.num; i++)
     {
@@ -4742,7 +5202,9 @@ void CSWGuiCreateMedicalItem::OnPanelRemoved()
         if (pItem != 0)
             delete pItem;
     }
+#ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 // PC 0x007283A0 GOG 0x007280B0 Xbox 0x0011D250
 void CSWGuiCreateMedicalItem::HandleInputEvent(int nEvent, int nState)
@@ -5010,10 +5472,14 @@ CSWGuiSwoopUpgrade::CSWGuiSwoopUpgrade(CSWGuiManager* pManager)
     CExoString sControl;
     m_pUpgradeTable = new C2DA("swoopupgrade", 0);
     m_pUpgradeTable->Load2DArray();
+#ifdef _XBOX
+    StartLoadFromLayout("swoopup_x");
+#else
     {
         CResRef cLayout("swoopup_p");
         StartLoadFromLayout(cLayout);
     }
+#endif
     InitControl(m_cTitle, "LBL_TITLE", 1);
     InitControl(m_lbItems, "LB_ITEMS", 1);
     InitControl(m_lbDesc, "LB_DESC", 1);
@@ -5036,8 +5502,10 @@ CSWGuiSwoopUpgrade::CSWGuiSwoopUpgrade(CSWGuiManager* pManager)
     InitControl(m_lblRanalog, "LBL_RANALOG", 1);
     InitControl(m_lblRanalogLs, "LBL_RANALOG_LS", 1);
     InitControl(m_cAssemble, "BTN_ASSEMBLE", 1);
+#ifndef _XBOX
     InitControl(m_btnBack, "BTN_BACK", 1);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::CloseItems);
+#endif
     m_cAssemble.m_nClickSound = CSWGuiManager::GUISOUND_ASSEMBLE;
     m_cAssemble.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnAssemble);
     m_cAssemble.AddEvent(GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnAssemble);
@@ -5302,7 +5770,9 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
     }
     UpdateItems();
     SetActiveControl(&m_cAssemble, 0);
+#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
+#endif
 }
 // PC 0x0072E0B0 GOG 0x0072DDC0
 void CSWGuiUpgradeSelection::OnPanelAdded()
@@ -5331,9 +5801,16 @@ void CSWGuiUpgradeSelection::OnPanelAdded()
     delete pTable;
     if (m_bDisableItemCreation)
     {
+#ifdef _XBOX
+        m_lblX.SetEnabledFlag(0);
+        m_lblCreateItem.SetEnabledFlag(0);
+#else
         m_btnCreateitems.SetEnabledFlag(0);
+#endif
     }
+#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
+#endif
 }
 // PC 0x0072E200 GOG 0x0072DF10
 void CSWGuiUpgradeSelection::OnFilterPicked(CSWGuiControl* pControl)
@@ -5342,6 +5819,21 @@ void CSWGuiUpgradeSelection::OnFilterPicked(CSWGuiControl* pControl)
     UpdateFilterButtons();
     PopulateItemList();
 }
+#ifdef _XBOX
+
+// Xbox 0x0011AFC0
+void CSWGuiUpgradeSelection::NextFilter()
+{
+    int nFilter = m_nFilter + 1;
+    if (nFilter >= 5)
+    {
+        nFilter = 0;
+    }
+    m_nFilter = nFilter;
+    UpdateFilterButtons();
+    PopulateItemList();
+}
+#endif
 // PC 0x00732780 GOG 0x00732490
 void CSWGuiCreateMedicalItem::OnCreateFilterPicked(CSWGuiControl* pControl)
 {
@@ -5397,6 +5889,8 @@ void CSWGuiCreateMedicalItem::OnPanelAdded()
         g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nItemChemical = 0;
     InitializeStoreType();
     PopulateStore();
+#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
+#endif
     ShowBuyGUI();
 }

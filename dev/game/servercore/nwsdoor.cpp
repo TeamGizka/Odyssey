@@ -928,6 +928,13 @@ void CSWSDoor::SetOpenState(unsigned char nOpenState, int bImmediate)
 {
     unsigned char nState;
 
+#ifdef _XBOX
+    if (m_bAnimatable == 0)
+    {
+        nOpenState = 3;
+    }
+    nState = nOpenState;
+#else
     if (m_bAnimatable == 0)
     {
         nState = 3;
@@ -936,6 +943,7 @@ void CSWSDoor::SetOpenState(unsigned char nOpenState, int bImmediate)
     {
         nState = nOpenState;
     }
+#endif
     m_nTargetOpenState = nState;
     if (bImmediate == 0)
     {

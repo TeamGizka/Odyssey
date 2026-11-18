@@ -394,6 +394,9 @@ public:
 
     C2DA* GetPoison() { EXOXBOXASSERT(m_pPoison); return m_pPoison; }  // Xbox 0x001808D0
     C2DA* GetDisease() { EXOXBOXASSERT(m_pDisease); return m_pDisease; }  // Xbox 0x001808F0
+    C2DA* GetWeaponSounds() { EXOXBOXASSERT(m_pWeaponSounds); return m_pWeaponSounds; }
+    C2DA* GetPlaceableSounds() { EXOXBOXASSERT(m_pPlaceableSounds); return m_pPlaceableSounds; }
+    C2DA* GetForcePointAdjust() { EXOXBOXASSERT(m_pForcePointAdjust); return m_pForcePointAdjust; }
 #endif
 };
 

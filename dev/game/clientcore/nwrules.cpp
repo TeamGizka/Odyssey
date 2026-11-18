@@ -362,7 +362,11 @@ void CSWRules::LoadClassInfo()
     int nValue;
 
     C2DA* p2DA = new C2DA("CLASSES", 0);
+#ifdef _XBOX
+    EXOXBOXASSERT(p2DA->Load2DArray());
+#else
     p2DA->Load2DArray();
+#endif
 
     int nNumRows = p2DA->m_nNumRows;
     m_nNumClasses = nNumRows;
@@ -510,7 +514,11 @@ void CSWRules::LoadClassInfo()
 void CSWRules::LoadRaceInfo()
 {
     C2DA* p2DA = new C2DA("RacialTypes", 0);
+#ifdef _XBOX
+    EXOXBOXASSERT(p2DA->Load2DArray());
+#else
     p2DA->Load2DArray();
+#endif
 
     int nNumRows = p2DA->m_nNumRows;
     m_nNumRaces = nNumRows;
@@ -642,7 +650,11 @@ CSWRules::~CSWRules()
 void CSWRules::LoadSkillInfo()
 {
     C2DA* p2DA = new C2DA("Skills", 0);
+#ifdef _XBOX
+    EXOXBOXASSERT(p2DA->Load2DArray());
+#else
     p2DA->Load2DArray();
+#endif
 
     int nNumRows = p2DA->m_nNumRows;
     m_nNumSkills = nNumRows;
@@ -814,7 +826,11 @@ void CSWRules::LoadFeatInfo()
 #ifdef _XBOX
     EXOXBOXASSERT(p2DA->Load2DArray());
 #else
+#ifdef _XBOX
+    EXOXBOXASSERT(p2DA->Load2DArray());
+#else
     p2DA->Load2DArray();
+#endif
 #endif
 
     int nNumRows = p2DA->m_nNumRows;
@@ -1018,11 +1034,7 @@ int CSWRules::GetWeightedDamageAmount(int nMinimum, int nMaximum, int nCritical,
     if (nChance < 100)
     {
         nResult = nMinimum - nMaximum * (100 - nChance) / 100;
-        if (nResult >= 1)
-        {
-            return nResult;
-        }
-        return 1;
+        return (nResult >= 1) ? nResult : 1;
     }
     if (nChance == 100)
     {

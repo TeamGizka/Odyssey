@@ -1251,13 +1251,25 @@ void CSWSCreature::HandleHPRegeneration()
         }
 #ifdef _XBOX
         float fRate = max(0.0001f, 1.0f / fTimePerHP);
+
+        fRate = fRate * (m_nElapsedTime * 0.001f) * fHPBase;
+        if (fRate != 0.0)
+        {
+            int nAdjustment = (short)GetStats()->AdjustHPAccumulatorBy(fRate);
+            nAdjustment += GetCurrentHitPoints(1);
+            int nNewHitPoints = (int)min(GetMaxHitPoints(1), (float)nAdjustment);
+            if (nNewHitPoints < 1)
+            {
+                nNewHitPoints = 1;
+            }
+            SetCurrentHitPoints(nNewHitPoints);
+        }
 #else
         float fRate = 1.0f / fTimePerHP;
         if (0.0001f > fRate)
         {
             fRate = 0.0001f;
         }
-#endif
 
         float fAdjustment = fRate * (m_nElapsedTime * 0.001f) * fHPBase;
         if (fAdjustment != 0.0)
@@ -1272,6 +1284,7 @@ void CSWSCreature::HandleHPRegeneration()
             }
             SetCurrentHitPoints(nNewHitPoints);
         }
+#endif
     }
 }
 // PC 0x00511CC0 GOG 0x00511D20 Xbox 0x00186DA0
@@ -8279,9 +8292,14 @@ void CSWSCreature::DoDamage(int nDamage, int bSuppressFeedback)
 {
     int nDamageAmount;
     CSWPartyTable* pParty = g_pAppManager->GetServerExoApp()->GetPartyTable();
+#ifndef _XBOX
     float fMultiplier;
+#endif
     if ((pParty != NULL && pParty->GetIsMember(GetId())) || GetIsPC())
     {
+#ifdef _XBOX
+        float fMultiplier;
+#endif
         int nDifficulty = g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nDifficulty;
         int bFound;
         {
@@ -8313,9 +8331,15 @@ void CSWSCreature::DoDamage(int nDamage, int bSuppressFeedback)
     short nTemporaryHitPoints = m_nTemporaryHitPoints;
     if (nTemporaryHitPoints > 0)
     {
+#ifdef _XBOX
+        int nRemainingHitPoints = 0;
+        int i;
+        CExoArrayList<CGameEffect*>* pEffects = &AsSWSCreature()->m_lstEffects;
+#else
         int nRemainingHitPoints = 0;
         int i = 0;
         CExoArrayList<CGameEffect*>* pEffects = &AsSWSCreature()->m_lstEffects;
+#endif
         if (pEffects->num > 0)
         {
             for (i = m_pStats->m_nTemporaryHitPointsEffectIndex;

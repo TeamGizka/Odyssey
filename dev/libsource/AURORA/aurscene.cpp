@@ -4249,7 +4249,7 @@ char* deletetrigger(char* sArguments)
 {
     if (!g_pConsoleTrigger)
         return "Trigger does not exist";
-    AurPartTriggerDelete(Scenes.m_pList[0], g_pConsoleTrigger);
+    AurPartTriggerDelete(Scenes.m_pList[0], g_pConsoleTrigger, true);
     g_pConsoleTrigger = 0;
     return "OK, deleted the trigger from the scene";
 }

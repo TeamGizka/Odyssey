@@ -97,10 +97,15 @@ int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
         p2DArrays->m_pIPRPMelee
             ->GetINTEntry(nCostValue, sColumn, &nAmount);
     }
+#ifdef _XBOX
+    if (nAmount != 0)
+    {
+#else
     if (nAmount == 0)
     {
         return 0;
     }
+#endif
     pAttackEffect->m_nType = CSWSEffectListHandler::EFFECT_ATTACK_INCREASE;
     pAttackEffect->m_nSubType = CGameEffect::DURATION_TYPE_EQUIPPED |
         (pAttackEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
@@ -268,6 +273,9 @@ int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
     }
     pCreature->ApplyEffect(pDamageEffect, bLoading, 0);
 
+#ifdef _XBOX
+    }
+#endif
     return 0;
 }
 // PC 0x00539860 GOG 0x0053B5C0 Xbox 0x0025ECE0

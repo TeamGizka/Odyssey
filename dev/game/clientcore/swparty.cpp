@@ -254,6 +254,22 @@ float CSWParty::GetFollowRange()
         nFollowState = FollowMode;
     }
 
+#ifdef _XBOX
+    switch (nFollowState)
+    {
+        case 0:
+            g_pRules->Get2DArrays()->GetRanges()->GetFLOATEntry(
+                14, "PrimaryRange", &fRange);
+            break;
+
+        case 1:
+            g_pRules->Get2DArrays()->GetRanges()->GetFLOATEntry(
+                15, "PrimaryRange", &fRange);
+            break;
+    }
+
+    return fRange;
+#else
     switch (nFollowState)
     {
         case 0:
@@ -278,6 +294,7 @@ float CSWParty::GetFollowRange()
     }
 
     return fRange;
+#endif
 }
 // PC 0x0068A4E0 GOG 0x0068A250 Xbox 0x0006B240
 int CSWParty::PartyHasRace(unsigned short nRace)

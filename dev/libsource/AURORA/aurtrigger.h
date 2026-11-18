@@ -73,17 +73,8 @@ extern MdlNodeTrigger global_nodetrigger;
 
 void AurPartTriggerSetColor(PartTrigger* pTrigger, float* pfColor);
 void AurPartTriggerReleaseMemory(PartTrigger* pTrigger);
-#ifdef _XBOX
-
-void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger);
-inline void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger, bool bDelete)
-{
-    AurPartTriggerDelete(pScene, pTrigger);
-}
-#else
 void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger,
                           bool bDelete);
-#endif
 #ifdef _XBOX
 void AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,
                                       const Vector& vColor,

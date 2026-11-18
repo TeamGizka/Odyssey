@@ -675,7 +675,22 @@ public:
 
     enum { STRREF_ITEM_USED_THIS_ROUND = 42409 };
 
-    enum { NUM_ITEM_ROWS = 8 };
+    enum { NUM_ITEM_ROWS = 8, NUM_ROW_DIRECTIONS = 7 };
+
+    enum { BASE_ITEM_ADRENALINE = 53 };
+
+    enum { BASE_ITEM_DROID_REPAIR_EQUIPMENT = 56 };
+
+    enum
+    {
+        FILTER_ALL = 0,
+        FILTER_DATAPADS = 6,
+        FILTER_WEAPONS = 7,
+        FILTER_ARMOR = 8,
+        FILTER_USEABLE = 9,
+        FILTER_MISC = 10,
+        NUM_FILTERS = 11
+    };
 
     struct ItemListEntry
     {
@@ -695,9 +710,9 @@ public:
 
     int CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature, int nSlot);
     void PopulateItemListBox();
-    void SetNextFilter();
-    void UpdatePlayerStats();
+    void SetNextFilter(int bPrevious);
     void OnControlSelected(CSWGuiControl* pControl);
+    void OnControlExited(CSWGuiControl* pControl);
     void OnControlEntered(CSWGuiControl* pControl);
     void CreateItemEntry(CSWCCreature* pCreature, CSWSItem* pItem, ItemListEntry* pEntry,
                         int bSquadItem, int bEquipped);
@@ -712,23 +727,29 @@ public:
     static const int m_nFilterName[6];
 
     CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblInv;
+    CSWGuiLabel m_lblCredits;
+    CSWGuiLabel m_lblCreditsValue;
+    CSWGuiListBox m_lbxDescription;
     CSWGuiLabel m_lblA;
-    CSWGuiLabel m_lblX;
+    CSWGuiLabel m_lblY;
+    CSWGuiLabel m_lblSideways;
     CSWGuiLabel m_lblStart;
     CSWGuiLabel m_lblExit;
     CSWGuiLabel m_lblBlack;
     CSWGuiLabel m_lblUseItem;
-    CSWGuiLabel m_lblFilter;
-    CSWGuiLabel m_lblInv;
-    CSWGuiLabel m_lblCredits;
-    CSWGuiLabel m_lblCreditsValue;
     CSWGuiLabel m_lblRanalog;
-    CSWGuiListBox m_lbxDescription;
-    CSWGuiLabel m_lblBgPort;
-    CSWGuiLabel m_lblBgStats;
-    CSWGuiLabel m_lblPort;
-    CSWGuiLabel m_lblVit;
-    CSWGuiLabel m_lblDef;
+    CSWGuiButton m_btnFilter;
+    CSWGuiButton m_btnAll;
+    CSWGuiButton m_btnDatapads;
+    CSWGuiButton m_btnWeapons;
+    CSWGuiButton m_btnArmor;
+    CSWGuiButton m_btnUseable;
+    CSWGuiButton m_btnQuests;
+    CSWGuiButton m_btnMisc;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_alblBar[6];
+    CSWGuiButton* m_apFilterButtons[NUM_FILTERS];
     CSWGuiInGameItemEntry m_aItemRows[NUM_ITEM_ROWS];
     CExoArrayList<ItemListEntry> m_lItems;
     CExoArrayList<unsigned long> m_aNewItems;
@@ -736,9 +757,11 @@ public:
     short m_nTopItem;
     short m_nSelectedItem;
     short m_nPreviousSelectedItem;
+    unsigned long m_bSelectedUsable : 1;
     unsigned long m_bUpdateItems : 1;
     Vector m_vItemTextColor;
     Vector m_vItemBorderColor;
+    Vector m_vFilterTextColor;
     Vector m_vItemHilightColor;
 };
 #endif

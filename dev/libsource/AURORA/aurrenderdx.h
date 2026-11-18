@@ -227,6 +227,7 @@ public:
     static CAurTexture* cm_pFilmNoiseTexture;
     static CAurTexture* cm_pForceDistortionTexture;
     static unsigned int cm_pHeatDistortionVertexProg;
+    static unsigned int cm_pDreamDistortionVertexProg;
     static unsigned int cm_nBufferRegionTexture;
     static unsigned int cm_tidAttenuationTexture;
 
@@ -491,7 +492,7 @@ public:
     static void DisableDreamDistortion();
     static void EnableFury(short nLevel);
     static void RenderDreamDistortion(D3DTexture* pFrame, D3DTexture* pTarget);
-    static void RenderFury(D3DTexture* pFrame, D3DTexture* pTarget);
+    static void RenderFury(D3DTexture* pTarget);
     static CAurTexture* m_pDreamDistortTexture;
     static bool m_bDreamDistortEnabled;
     static bool m_bDreamDistortLetterbox;

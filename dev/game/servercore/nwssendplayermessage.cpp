@@ -2389,9 +2389,15 @@ int CSWSMessage::SendServerToPlayerArea_ClientArea(
     int nTransition = pPlayer->GetAreaTransitionBMP();
     if (nTransition == CSWSPlayer::AREA_TRANSITION_RANDOM)
     {
+#ifdef _XBOX
+        CExoString sAreaTileSet;
+        int nImage = 0;
+        int nRows = g_pRules->Get2DArrays()->GetAreaTransition()->m_nNumRows;
+#else
         CExoString sAreaTileSet;
         int nRows = g_pRules->Get2DArrays()->GetAreaTransition()->m_nNumRows;
         int nImage = 0;
+#endif
         CExoString sTileSet;
         int nMatches = 0;
         for (int nRow = CTwoDimArrays::AREA_TRANSITION_FIRST_IMAGE;

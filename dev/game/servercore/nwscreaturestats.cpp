@@ -4226,6 +4226,21 @@ void CSWSCreatureStats::LevelDown(CSWLevelStats* pLevelStats)
         }
     }
 
+#ifdef _XBOX
+    unsigned char nNumClasses = GetNumClasses();
+    if (GetClassLevel(nClass, 0) < 1)
+    {
+        if (nClass == CLASS_TYPE_INVALID || GetNumClasses() != nNumClasses)
+        {
+            --m_nClassCount;
+            SetClass(nClass, 0);
+        }
+        else
+        {
+            ExoXboxRestart();
+        }
+    }
+#else
     unsigned char nNumClasses = GetNumClasses();
     if ((GetClassLevel(nClass, 0) < 1 && nClass == CLASS_TYPE_INVALID) ||
         GetNumClasses() != nNumClasses)
@@ -4233,6 +4248,7 @@ void CSWSCreatureStats::LevelDown(CSWLevelStats* pLevelStats)
         --m_nClassCount;
         SetClass(nClass, 0);
     }
+#endif
     m_pCreature->m_nMaxHitPoints =
         (short)m_pCreature->m_nMaxHitPoints - pLevelStats->m_nHitDie;
 

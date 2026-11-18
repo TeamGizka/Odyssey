@@ -780,17 +780,15 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
     nPool = m_pModel->AsModel()->m_nVertexPool;
     GLRender::UnlockPool(nPool);
 }
-// PC 0x0044D030 GOG 0x0044D170
+// PC 0x0044D030 GOG 0x0044D170 Xbox 0x002AF0B0
 void MdlNodeSkin::InternalPostProcess()
 {
     if (m_nVertexCount <= 0)
     {
         ProcessVerts();
-#ifndef _XBOX
         MaxFace_PostProcess::texindices1.m_nCount = 0;
         MaxFace_PostProcess::texindices2.m_nCount = 0;
         MaxFace_PostProcess::texindices3.m_nCount = 0;
-#endif
     }
 }
 // PC 0x0044E030 GOG 0x0044E170 Xbox 0x002AFF80

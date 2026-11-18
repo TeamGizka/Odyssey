@@ -456,6 +456,17 @@ void CSWCJournal::JournalUpdated(int bFromServer, int bActive,
             g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(101, 0);
         }
         g_bOverrideJournalSortType = 1;
+#ifdef _XBOX
+        CExoIni cIni;
+        CExoString sJournalPage;
+        sJournalPage.Format("%d", bActive);
+        {
+            CExoString sKey("JournalPage");
+            CExoString sSection("Profile");
+            CExoString sFileName("d:\\swplayer.ini");
+            cIni.WriteIniEntry(sJournalPage, sFileName, sSection, sKey);
+        }
+#endif
     }
 }
 

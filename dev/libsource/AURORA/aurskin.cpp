@@ -167,15 +167,9 @@ inline MdlNodeTriMesh* VertexPrimitive::GetNode() { return m_pNode; }
 
 #define DEBUG_SKINPOOLS 0
 // PC 0x004A0900 GOG 0x004A09C0
-#ifdef _XBOX
 void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,  // Xbox 0x002CFAB0
                            List<Matrix>& rbones,
-                           VertexPrimitiveSkinned* pPrimitive)
-#else
-void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
-                           List<Matrix>& rbones,
                            VertexPrimitiveSkinned* pPrimitive, bool bBumpedOut)
-#endif
 {
 
     static unsigned long currSizePoolCoords = pNode->m_nVertexCount;
@@ -341,12 +335,10 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
                 newnormal += fWeight * (rbones[nBone] * normal);
             }
         }
-#ifndef _XBOX
         if (bBumpedOut)
         {
             newcoord += newnormal * pPrimitive->m_pPart->m_pAurObject->m_fBumpedOutShellHeight;
         }
-#endif
         pCoords[nVertex].m_fX = newcoord.m_fX;
         pCoords[nVertex].m_fY = newcoord.m_fY;
         pCoords[nVertex].m_fZ = newcoord.m_fZ;
@@ -584,7 +576,7 @@ void GatherBones(Part* pPart, List<Vector>& tbones, List<Quaternion>& qbones,
                     vTranslation, qRotation);
     }
 }
-// PC 0x004A31D0 GOG 0x004A3290
+// PC 0x004A31D0 GOG 0x004A3290 Xbox 0x002D2150
 void PartSkin::PostProcess(Part* pRoot)
 {
     MdlNodeSkin* pNode = (MdlNodeSkin*)m_pNode;
@@ -949,12 +941,8 @@ void PartSkin::PostProcess(Part* pRoot)
 
     pNode->m_pfnRemoveTemporaryArrays(pNode);
 }
-// PC 0x004A4680 GOG 0x004A4740
-#ifdef _XBOX
-void RenderSkinned(VertexPrimitiveSkinned* pPrimitive)
-#else
+// PC 0x004A4680 GOG 0x004A4740 Xbox 0x002D3710
 void RenderSkinned(VertexPrimitiveSkinned* pPrimitive, bool bBumpedOut)
-#endif
 {
     Part* pPart = pPrimitive->m_pPart;
     MdlNodeSkin* pNode = (MdlNodeSkin*)pPart->m_pNode;
@@ -988,11 +976,7 @@ void RenderSkinned(VertexPrimitiveSkinned* pPrimitive, bool bBumpedOut)
 
     static Vector coord;
     static Vector normal;
-#ifdef _XBOX
-    return ExecuteSkinTransforms(pNode, tbones, rbones, pPrimitive);
-#else
     return ExecuteSkinTransforms(pNode, tbones, rbones, pPrimitive, bBumpedOut);
-#endif
 }
 static inline void SkinDebugSetup()
 {
@@ -1023,7 +1007,7 @@ static inline void SkinDebugBone()
 {
     int nDebug1 = 0;
 }
-// PC 0x004A50A0 GOG 0x004A5160
+// PC 0x004A50A0 GOG 0x004A5160 Xbox 0x002D4490
 void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
 {
     PartSkin* pSkin = pPrimitive->m_pPart->AsPartSkin();
@@ -2044,7 +2028,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
 #endif
     }
 }
-// PC 0x004A8DE0 GOG 0x004A8EA0
+// PC 0x004A8DE0 GOG 0x004A8EA0 Xbox 0x002D77A0
 void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
 {
     PartSkin* pSkin = pPrimitive->m_pPart->AsPartSkin();
@@ -2293,7 +2277,110 @@ void PartSkin::DrawBumpedOutShell()  // PC 0x004AB160 GOG 0x004AB220
         true);
 }
 #endif
-// PC 0x004AB190 GOG 0x004AB250
+#ifdef _XBOX
+void PartSkin::DrawBumpedOutShell()  // Xbox 0x002D93A0
+{
+    GLRender::SetActiveTexture(0);
+    ((CAurTexture*)m_pMaterial->m_pTexture3.m_pObject)->Bind();
+    if (m_pMaterial->m_lstBlendSrc.m_nCount > 1)
+    {
+        m_pMaterial->SetBlendingMode(1);
+    }
+
+    VertexPrimitiveSkinned* pPrimitive =
+        m_pVertexPrimitive->AsVertexPrimitiveSkinned();
+    PartSkin* pSkin = pPrimitive->m_pPart->AsPartSkin();
+    MdlNodeSkin* pNode = (MdlNodeSkin*)pSkin->m_pNode;
+    if (pNode->m_nTextureCount != 0)
+    {
+        PartTriMesh* pMeshPart = pSkin->AsPartTriMesh();
+        MdlNodeTriMesh* pTriMesh = 0;
+        if (pMeshPart != 0)
+        {
+            pTriMesh = (MdlNodeTriMesh*)pSkin->m_pNode;
+        }
+        pPrimitive->SetupVertexArraysStandard();
+        static List<Quaternion> qbones(0);
+        static List<Vector> tbones(0);
+        qbones.m_nCount = 0;
+        tbones.m_nCount = 0;
+        Matrix mRotation;
+
+        GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+        GLRender_EnableClientState(CLIENT_STATE_SKIN_WEIGHT);
+        GLRender_EnableClientState(CLIENT_STATE_BONE_INDEX);
+        AurSetVertexProgramParameter4f(SKIN_VP_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
+        AurSetVertexProgramParameter4f(SKIN_VP_FOG, currentscene->m_fFogNear,
+            currentscene->m_fFogFar, currentscene->m_bFog ? 1.0f : 0.0f, 0.5f);
+
+        Part* pPart = pSkin;
+        Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
+        Quaternion qRotation = -pPart->m_qOrientation;
+        while (pPart->m_pParent != 0)
+        {
+            pPart = pPart->m_pParent;
+            vTranslation = vTranslation + qRotation *
+                (-pPart->m_qOrientation * -pPart->m_vPosition);
+            qRotation = qRotation * -pPart->m_qOrientation;
+        }
+        GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
+        for (int i = 0; i < pNode->m_nBoneMap; i++)
+        {
+            int nBone = (int)pNode->m_pfBoneMap[i];
+            if (nBone != -1)
+            {
+                tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
+                qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
+                mRotation = qbones[i].getmatrix();
+                Vector& vBoneTranslation = tbones[i];
+                int nRegister = SKIN_VP_BONES + 3 * nBone;
+                AurSetVertexProgramParameter4f(nRegister,
+                    mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
+                    mRotation.m_vThird.m_fX, vBoneTranslation.m_fX);
+                AurSetVertexProgramParameter4f(++nRegister,
+                    mRotation.m_vFirst.m_fY, mRotation.m_vSecond.m_fY,
+                    mRotation.m_vThird.m_fY, vBoneTranslation.m_fY);
+                AurSetVertexProgramParameter4f(++nRegister,
+                    mRotation.m_vFirst.m_fZ, mRotation.m_vSecond.m_fZ,
+                    mRotation.m_vThird.m_fZ, vBoneTranslation.m_fZ);
+            }
+        }
+        AurSetVertexProgramParameter4f(SKIN_VP_SHELL_HEIGHT,
+            m_pAurObject->m_fBumpedOutShellHeight, 0.0f, 0.0f, 1.0f);
+
+#ifdef _XBOX
+        static VertexProgram* skinBumpedOutVP = new VertexProgram(
+            dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
+            cSkinBumpedOutVPDeclaration);
+        static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
+            dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
+            cBumpyShinySkinVPDeclaration);
+#else
+        static VertexProgram* skinBumpedOutVP = new VertexProgram(
+            usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
+            cSkinBumpedOutVPDeclaration);
+        static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
+            usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
+            cBumpyShinySkinVPDeclaration);
+#endif
+        VertexProgram* pProgram;
+        if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
+        {
+            pProgram = skinBumpedOutWithTangentVP;
+        }
+        else
+        {
+            pProgram = skinBumpedOutVP;
+        }
+        pProgram->Enable(pSkin, false);
+        RenderFlat(pPrimitive);
+        GLRender_DisableClientState(CLIENT_STATE_SKIN_WEIGHT);
+        GLRender_DisableClientState(CLIENT_STATE_BONE_INDEX);
+        GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+    }
+}
+#endif
+// PC 0x004AB190 GOG 0x004AB250 Xbox 0x002DA460
 void PartSkin::Draw(bool bRenderLast)
 {
 #ifdef _XBOX
@@ -2302,8 +2389,6 @@ void PartSkin::Draw(bool bRenderLast)
     {
         if (usevertexprograms != 0)
         {
-            GLRender_EnableClientState(CLIENT_STATE_SKIN_WEIGHT);
-            GLRender_EnableClientState(CLIENT_STATE_BONE_INDEX);
             if (!bRenderLast)
             {
                 RenderSkinnedVP((VertexPrimitiveSkinned*)
@@ -2314,118 +2399,18 @@ void PartSkin::Draw(bool bRenderLast)
                 RenderSkinnedVPBlur((VertexPrimitiveSkinned*)
                     m_pVertexPrimitive->AsVertexPrimitiveSkinned());
             }
-            GLRender_DisableClientState(CLIENT_STATE_SKIN_WEIGHT);
-            GLRender_DisableClientState(CLIENT_STATE_BONE_INDEX);
         }
         else
         {
             GLRender_DisableClientState(CLIENT_STATE_COLOR);
             RenderSkinned((VertexPrimitiveSkinned*)
-                m_pVertexPrimitive->AsVertexPrimitiveSkinned());
+                m_pVertexPrimitive->AsVertexPrimitiveSkinned(), false);
         }
 
         if (m_pAurObject != 0 && m_pAurObject->m_fBumpedOutShellHeight != 0.0f &&
             currentscene != 0)
         {
-
-            GLRender::SetActiveTexture(0);
-            ((CAurTexture*)m_pMaterial->m_pTexture3.m_pObject)->Bind();
-            if (m_pMaterial->m_lstBlendSrc.m_nCount > 1)
-            {
-                m_pMaterial->SetBlendingMode(1);
-            }
-
-            VertexPrimitiveSkinned* pPrimitive =
-                m_pVertexPrimitive->AsVertexPrimitiveSkinned();
-            PartSkin* pSkin = pPrimitive->m_pPart->AsPartSkin();
-            MdlNodeSkin* pNode = (MdlNodeSkin*)pSkin->m_pNode;
-            if (pNode->m_nTextureCount != 0)
-            {
-                PartTriMesh* pMeshPart = pSkin->AsPartTriMesh();
-                MdlNodeTriMesh* pTriMesh = 0;
-                if (pMeshPart != 0)
-                {
-                    pTriMesh = (MdlNodeTriMesh*)pSkin->m_pNode;
-                }
-                pPrimitive->SetupVertexArraysStandard();
-                static List<Quaternion> qbones(0);
-                static List<Vector> tbones(0);
-                qbones.m_nCount = 0;
-                tbones.m_nCount = 0;
-                Matrix mRotation;
-
-                GLRender_Enable(ENABLE_VERTEX_PROGRAM);
-                GLRender_EnableClientState(CLIENT_STATE_SKIN_WEIGHT);
-                GLRender_EnableClientState(CLIENT_STATE_BONE_INDEX);
-                AurSetVertexProgramParameter4f(SKIN_VP_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
-                AurSetVertexProgramParameter4f(SKIN_VP_FOG, currentscene->m_fFogNear,
-                    currentscene->m_fFogFar, currentscene->m_bFog ? 1.0f : 0.0f, 0.5f);
-
-                Part* pPart = pSkin;
-                Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
-                Quaternion qRotation = -pPart->m_qOrientation;
-                while (pPart->m_pParent != 0)
-                {
-                    pPart = pPart->m_pParent;
-                    vTranslation = vTranslation + qRotation *
-                        (-pPart->m_qOrientation * -pPart->m_vPosition);
-                    qRotation = qRotation * -pPart->m_qOrientation;
-                }
-                GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
-                for (int i = 0; i < pNode->m_nBoneMap; i++)
-                {
-                    int nBone = (int)pNode->m_pfBoneMap[i];
-                    if (nBone != -1)
-                    {
-                        tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
-                        qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
-                        mRotation = qbones[i].getmatrix();
-                        Vector& vBoneTranslation = tbones[i];
-                        int nRegister = SKIN_VP_BONES + 3 * nBone;
-                        AurSetVertexProgramParameter4f(nRegister,
-                            mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
-                            mRotation.m_vThird.m_fX, vBoneTranslation.m_fX);
-                        AurSetVertexProgramParameter4f(++nRegister,
-                            mRotation.m_vFirst.m_fY, mRotation.m_vSecond.m_fY,
-                            mRotation.m_vThird.m_fY, vBoneTranslation.m_fY);
-                        AurSetVertexProgramParameter4f(++nRegister,
-                            mRotation.m_vFirst.m_fZ, mRotation.m_vSecond.m_fZ,
-                            mRotation.m_vThird.m_fZ, vBoneTranslation.m_fZ);
-                    }
-                }
-                AurSetVertexProgramParameter4f(SKIN_VP_SHELL_HEIGHT,
-                    m_pAurObject->m_fBumpedOutShellHeight, 0.0f, 0.0f, 1.0f);
-
-#ifdef _XBOX
-                static VertexProgram* skinBumpedOutVP = new VertexProgram(
-                    dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
-                    cSkinBumpedOutVPDeclaration);
-                static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
-                    dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
-                    cBumpyShinySkinVPDeclaration);
-#else
-                static VertexProgram* skinBumpedOutVP = new VertexProgram(
-                    usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
-                    cSkinBumpedOutVPDeclaration);
-                static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
-                    usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
-                    cBumpyShinySkinVPDeclaration);
-#endif
-                VertexProgram* pProgram;
-                if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
-                {
-                    pProgram = skinBumpedOutWithTangentVP;
-                }
-                else
-                {
-                    pProgram = skinBumpedOutVP;
-                }
-                pProgram->Enable(pSkin, false);
-                RenderFlat(pPrimitive);
-                GLRender_DisableClientState(CLIENT_STATE_SKIN_WEIGHT);
-                GLRender_DisableClientState(CLIENT_STATE_BONE_INDEX);
-                GLRender_Disable(ENABLE_VERTEX_PROGRAM);
-            }
+            DrawBumpedOutShell();
         }
     }
 #else

@@ -59,8 +59,13 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_bTrapDetectable = 1;
     m_bTrapDisarmable = 1;
     m_bTrapOneShot = 1;
+#ifdef _XBOX
+    m_nOpenLockDC = 0;
+    m_nOpenLockDiff = 1;
+#else
     m_nOpenLockDiff = 1;
     m_nOpenLockDC = 0;
+#endif
     m_nOpenLockDiffMod = 0;
     m_nOwnerDemolitionsSkill = 0;
     m_bUseTweakColor = 0;

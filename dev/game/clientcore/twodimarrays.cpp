@@ -700,6 +700,14 @@ int CTwoDimArrays::Load2DArrays_CreatureSpeed()
         return 0;
     }
 
+#ifdef _XBOX
+    COL2DA_CREATURESPEED_RUNRATE =
+        GetCreatureSpeedTable()->GetColumnIndex("RUNRATE");
+    EXOXBOXASSERT(COL2DA_CREATURESPEED_RUNRATE != -1);
+    COL2DA_CREATURESPEED_WALKRATE =
+        GetCreatureSpeedTable()->GetColumnIndex("WALKRATE");
+    EXOXBOXASSERT(COL2DA_CREATURESPEED_WALKRATE != -1);
+#else
     COL2DA_CREATURESPEED_RUNRATE = m_pCreatureSpeed->GetColumnIndex("RUNRATE");
     EXOXBOXASSERT(COL2DA_CREATURESPEED_RUNRATE != -1);
     {
@@ -708,6 +716,7 @@ int CTwoDimArrays::Load2DArrays_CreatureSpeed()
         COL2DA_CREATURESPEED_WALKRATE = p2DA->GetColumnIndex(sColumn);
     }
     EXOXBOXASSERT(COL2DA_CREATURESPEED_WALKRATE != -1);
+#endif
     return 1;
 }
 // PC 0x006100F0 GOG 0x0060FA50 Xbox 0x000AC050
@@ -776,6 +785,23 @@ int CTwoDimArrays::Load2DArrays_PlaceableSounds()
         return 0;
     }
 
+#ifdef _XBOX
+    COL2DA_PLACEABLESOUNDS_ARMORTYPE =
+        GetPlaceableSounds()->GetColumnIndex("ArmorType");
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_ARMORTYPE != -1);
+    COL2DA_PLACEABLESOUNDS_LOCKED =
+        GetPlaceableSounds()->GetColumnIndex("Locked");
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_LOCKED != -1);
+    COL2DA_PLACEABLESOUNDS_OPENED =
+        GetPlaceableSounds()->GetColumnIndex("Opened");
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_OPENED != -1);
+    COL2DA_PLACEABLESOUNDS_CLOSED =
+        GetPlaceableSounds()->GetColumnIndex("Closed");
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_CLOSED != -1);
+    COL2DA_PLACEABLESOUNDS_DESTROYED =
+        GetPlaceableSounds()->GetColumnIndex("Destroyed");
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_DESTROYED != -1);
+#else
     COL2DA_PLACEABLESOUNDS_ARMORTYPE =
         m_pPlaceableSounds->GetColumnIndex("ArmorType");
     EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_ARMORTYPE != -1);
@@ -803,6 +829,7 @@ int CTwoDimArrays::Load2DArrays_PlaceableSounds()
         COL2DA_PLACEABLESOUNDS_DESTROYED = p2DA->GetColumnIndex(sColumn);
     }
     EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_DESTROYED != -1);
+#endif
     return 1;
 }
 // PC 0x006106E0 GOG 0x00610040 Xbox 0x000A9520
@@ -874,6 +901,14 @@ int CTwoDimArrays::Load2DArrays_FootstepSounds()
         return 0;
     }
 
+#ifdef _XBOX
+    COL2DA_FOOTSTEPSOUNDS_PITCHOFFSET =
+        GetFootstepSounds()->GetColumnIndex("PitchOffset");
+    EXOXBOXASSERT(COL2DA_FOOTSTEPSOUNDS_PITCHOFFSET != -1);
+    COL2DA_FOOTSTEPSOUNDS_ROLLING =
+        GetFootstepSounds()->GetColumnIndex("Rolling");
+    EXOXBOXASSERT(COL2DA_FOOTSTEPSOUNDS_ROLLING != -1);
+#else
     COL2DA_FOOTSTEPSOUNDS_PITCHOFFSET =
         m_pFootstepSounds->GetColumnIndex("PitchOffset");
     EXOXBOXASSERT(COL2DA_FOOTSTEPSOUNDS_PITCHOFFSET != -1);
@@ -883,6 +918,7 @@ int CTwoDimArrays::Load2DArrays_FootstepSounds()
         COL2DA_FOOTSTEPSOUNDS_ROLLING = p2DA->GetColumnIndex(sColumn);
     }
     EXOXBOXASSERT(COL2DA_FOOTSTEPSOUNDS_ROLLING != -1);
+#endif
     return 1;
 }
 // PC 0x00610CF0 GOG 0x00610650 Xbox 0x000AC530
@@ -894,9 +930,15 @@ int CTwoDimArrays::Load2DArrays_WeaponSounds()
         return 0;
     }
 
+#ifdef _XBOX
+    COL2DA_WEAPONSOUNDS_PITCHOFFSET =
+        GetWeaponSounds()->GetColumnIndex("PitchOffset");
+    EXOXBOXASSERT(COL2DA_WEAPONSOUNDS_PITCHOFFSET != -1);
+#else
     COL2DA_WEAPONSOUNDS_PITCHOFFSET =
         m_pWeaponSounds->GetColumnIndex("PitchOffset");
     EXOXBOXASSERT(COL2DA_WEAPONSOUNDS_PITCHOFFSET != -1);
+#endif
     return 1;
 }
 
@@ -1158,6 +1200,14 @@ int CTwoDimArrays::Load2DArrays_ForceAdjust()
         return 0;
     }
 
+#ifdef _XBOX
+    COL2DA_FORCEADJUST_EVILCOST =
+        GetForcePointAdjust()->GetColumnIndex("EvilCost");
+    EXOXBOXASSERT(COL2DA_FORCEADJUST_EVILCOST != -1);
+    COL2DA_FORCEADJUST_GOODCOST =
+        GetForcePointAdjust()->GetColumnIndex("GoodCost");
+    EXOXBOXASSERT(COL2DA_FORCEADJUST_GOODCOST != -1);
+#else
     COL2DA_FORCEADJUST_EVILCOST = m_pForcePointAdjust->GetColumnIndex("EvilCost");
     EXOXBOXASSERT(COL2DA_FORCEADJUST_EVILCOST != -1);
     {
@@ -1166,6 +1216,7 @@ int CTwoDimArrays::Load2DArrays_ForceAdjust()
         COL2DA_FORCEADJUST_GOODCOST = p2DA->GetColumnIndex(sColumn);
     }
     EXOXBOXASSERT(COL2DA_FORCEADJUST_GOODCOST != -1);
+#endif
     return 1;
 }
 // PC 0x006122E0 GOG 0x00611C40 Xbox 0x000AA090
@@ -1541,9 +1592,14 @@ C2DA* CTwoDimArrays::GetIPRPCostTable(unsigned char nTable)
         if (m_ppIPRPCostTables != 0)
         {
             pResult = m_ppIPRPCostTables[nTable];
-        EXOXBOXASSERT(pResult);
+#ifndef _XBOX
+            EXOXBOXASSERT(pResult);
+#endif
         }
     }
+#ifdef _XBOX
+    EXOXBOXASSERT(pResult);
+#endif
     return pResult;
 }
 // PC 0x00613AC0 GOG 0x00613420 Xbox 0x000AD820
@@ -1607,9 +1663,14 @@ C2DA* CTwoDimArrays::GetIPRPParamTable(unsigned char nTable)
         if (m_ppIPRPParamTables != 0)
         {
             pResult = m_ppIPRPParamTables[nTable];
-        EXOXBOXASSERT(pResult);
+#ifndef _XBOX
+            EXOXBOXASSERT(pResult);
+#endif
         }
     }
+#ifdef _XBOX
+    EXOXBOXASSERT(pResult);
+#endif
     return pResult;
 }
 // PC 0x00613D20 GOG 0x00614830 Xbox 0x000AD980

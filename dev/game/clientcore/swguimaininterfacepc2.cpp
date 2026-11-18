@@ -4330,11 +4330,11 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000
 
     CExoIni cIni;
     CExoString sValue;
-    if (cIni.ReadIniEntry(sValue, "d:\swkotor2.ini", "Video Options", "ActionBarIdleTime"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "ActionBarIdleTime"))
         m_fActionBarIdleTime = sValue.AsFLOAT();
     else
         m_fActionBarIdleTime = 7.0f;
-    if (cIni.ReadIniEntry(sValue, "d:\swkotor2.ini", "Video Options", "ActionBarFadeTime"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "ActionBarFadeTime"))
         m_fActionBarFadeTime = sValue.AsFLOAT();
     else
         m_fActionBarFadeTime = 3.0f;
@@ -4342,7 +4342,7 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000
     m_fActionBarFadeTimer = -1.0f;
     m_bActionBarHidden = 0;
     m_fActionBarTargetAlpha = 1.0f;
-    if (cIni.ReadIniEntry(sValue, "d:\swkotor2.ini", "Game Options", "EnableActionBarFade"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Game Options", "EnableActionBarFade"))
         m_bActionBarFadeEnabled = sValue.AsINT() != 0;
     else
         m_bActionBarFadeEnabled = 1;
