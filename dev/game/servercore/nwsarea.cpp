@@ -2322,7 +2322,12 @@ void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
         {
             if (pGameObject->AsSWSCreature() != NULL)
             {
+#ifdef _XBOX
+                CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+                if (pCreature->m_pStats->GetIsPC())
+#else
                 if (pGameObject->AsSWSCreature()->m_pStats->GetIsPC())
+#endif
                     lstPlayers.Add(m_lstObjectIds[i]);
                 else
                     lstCreatures.Add(m_lstObjectIds[i]);

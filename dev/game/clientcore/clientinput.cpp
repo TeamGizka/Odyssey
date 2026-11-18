@@ -44,7 +44,11 @@
 
 #define MOUSE_LOOK_THRESHOLD 0.05f
 #define FREE_LOOK_TILT_SPEED 300.0f
+#ifdef _XBOX
+#define FREE_LOOK_RETURN_STEP 0.5f
+#else
 #define FREE_LOOK_RETURN_STEP 3.0f
+#endif
 #define HOSTILE_TARGET_RANGE 30.0f
 #define TARGET_RANGE 10.0f
 
@@ -2672,7 +2676,6 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x
 
 void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
 {
-    int nEvents;
     if (m_bInputDisabled)
         return;
 
@@ -2682,16 +2685,18 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
         return;
     }
 
+    float fMouseTime = (int)m_pPauseTimer->GetSnapshotTimeDifference() * 0.000001f;
     if (g_pExoInput->GetActive())
     {
         int i;
+        int nEvents;
         CExoArrayList<CExoInputEvent> aEvents =
             g_pExoInput->GetEvents(nEvents, m_nInputClass);
         if (m_pGuiInGame->m_bShowPauseGui == CGuiInGame::GUISTATE_MAIN_INTERFACE ||
             m_nInputClass == INPUT_CLASS_GUI || m_nInputClass == INPUT_CLASS_DIALOG)
         {
             int bDirection = 0;
-            for (int i = 0; i < nEvents; i++)
+            for (i = 0; i < nEvents; i++)
             {
                 int nValue = aEvents[i].m_nValue;
                 if (nValue)
@@ -2814,6 +2819,38 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
         {
             fUpDown = g_pExoInput->PollInput(7, INPUT_CLASS_GAME);
             fLeftRight = g_pExoInput->PollInput(8, INPUT_CLASS_GAME);
+            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetGlobalFadeActive())
+            {
+                fUpDown = 0.0f;
+                fLeftRight = 0.0f;
+            }
+            CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
+                g_pAppManager->GetClientExoApp()->GetModule()->
+                    GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+            if (pCamera != NULL)
+            {
+                if (m_bCameraTiltActive)
+                {
+                    C2DA* pCameraStyle = g_pRules->Get2DArrays()->GetCameraStyle();
+                    pCameraStyle->GetFLOATEntry(0, "FL_LOOKUP", &CameraLookUp);
+                    pCameraStyle->GetFLOATEntry(0, "FL_LOOKDOWN", &CameraLookDown);
+                }
+                else
+                {
+                    if (CameraLookUp > 0.0f)
+                    {
+                        CameraLookUp -= FREE_LOOK_RETURN_STEP;
+                        if (CameraLookUp < 0.0f)
+                            CameraLookUp = 0.0f;
+                    }
+                    if (CameraLookDown > 0.0f)
+                    {
+                        CameraLookDown -= FREE_LOOK_RETURN_STEP;
+                        if (CameraLookDown < 0.0f)
+                            CameraLookDown = 0.0f;
+                    }
+                }
+            }
             if (pCharacter != NULL)
             {
                 if (pCharacter->IsDriveAnimationBlocked() == 1)
@@ -2900,6 +2937,11 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
             {
                 fUpDown = g_pExoInput->PollInput(7, INPUT_CLASS_GAME);
                 fLeftRight = g_pExoInput->PollInput(8, INPUT_CLASS_GAME);
+                if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetGlobalFadeActive())
+                {
+                    fUpDown = 0.0f;
+                    fLeftRight = 0.0f;
+                }
                 float fTilt = g_pExoInput->PollInput(12, INPUT_CLASS_GAME);
                 float fTurn = g_pExoInput->PollInput(13, INPUT_CLASS_GAME);
                 CSWCameraNavigate* pCamera = (CSWCameraNavigate*)

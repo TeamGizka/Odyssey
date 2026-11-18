@@ -40,7 +40,9 @@ void CSWGuiQuickPanel::CancelPanel()
 void CSWGuiQuickPanel::SetState(int nState)
 {
     m_nState = nState;
-#ifndef _XBOX
+#ifdef _XBOX
+    SetActiveControl(&m_btnStep[m_nState], 0);
+#else
     if (nState == 0)
     {
         m_btnBack.SetEnabled(0);
@@ -61,16 +63,10 @@ void CSWGuiQuickPanel::SetState(int nState)
             m_lblNumber[i].SetEnabled(1);
             m_btnStep[i].SetEnabled(1);
 #endif
-#ifdef _XBOX
-            m_lblNumber[i].m_cText.m_cParams.SetColor(
-                CGuiInGame::COLOR_YELLOW);
-            m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
             m_lblNumber[i].m_cText.m_cParams.SetColor(
                 CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_btnStep[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-#endif
             CSWGuiTextParams* pParams = &m_lblNumber[i].m_cText.m_cParams;
             pParams->m_bHilightText = 1;
             pParams = &m_btnStep[i].m_cText.m_cParams;
@@ -85,33 +81,29 @@ void CSWGuiQuickPanel::SetState(int nState)
             pParams->m_bHilightText = 0;
             if (i < m_nState)
             {
-#ifdef _XBOX
-                m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-                m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
                 m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
                 m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
                 m_btnStep[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+#ifndef _XBOX
                 m_lblNumber[i].SetEnabled(0);
                 m_btnStep[i].SetEnabled(0);
 #endif
             }
             else
             {
-#ifdef _XBOX
-                m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-                m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-#else
                 m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
                 m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
                 m_btnStep[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
+#ifndef _XBOX
                 m_lblNumber[i].SetEnabled(0);
                 m_btnStep[i].SetEnabled(0);
 #endif
             }
         }
     }
+#ifndef _XBOX
     SetActiveControl(&m_btnStep[m_nState], 0);
+#endif
 }
 // PC 0x00760F30 GOG 0x00760DA0 Xbox 0x0013BA70
 void CSWGuiQuickPanel::OnSelectNameButton(CSWGuiControl* pControl)
@@ -265,9 +257,7 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->SetCHABase(pClass->GetCharisma());
     CExoArrayList<unsigned short> lstFeats;
     m_pCreature->GetStats()->AddGrantedFeats(0, true);
-#ifndef _XBOX
     m_pCreature->GetStats()->AddGrantedPowers(0);
-#endif
     m_pCreature->GetStats()->AddDefaultPackageFeats(nClass, &lstFeats, 1, 1);
     for (int i = 0; i < lstFeats.num; i++)
     {
@@ -315,7 +305,7 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
 
     m_pCreature = pCreature;
 #ifdef _XBOX
-    StartLoadFromLayout("QUICKPNL_x");
+    StartLoadFromLayout("QUICKPNL_x", 0);
 #else
     StartLoadFromLayout("QUICKPNL_p", 0);
 #endif

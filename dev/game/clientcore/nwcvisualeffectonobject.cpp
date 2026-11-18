@@ -2476,8 +2476,7 @@ void CSWCVisualEffectOnObject::ReAttachVisualEffect()
         ApplyDistortion(nVisualEffect);
     }
 }
-#ifndef _XBOX
-// PC 0x007058A0 GOG 0x007017C0
+// PC 0x007058A0 GOG 0x007017C0 Xbox 0x000D1E40
 inline void CSWCArea::AddToBeDeletedEmitter(CAurObject* pEmitter)
 {
     if (pEmitter != NULL)
@@ -2485,7 +2484,6 @@ inline void CSWCArea::AddToBeDeletedEmitter(CAurObject* pEmitter)
         m_lstToBeDeletedEmitters.Add(pEmitter);
     }
 }
-#endif
 // PC 0x007058E0 GOG 0x00701800 Xbox 0x000D1E80
 CSWCVisualEffectOnObject::~CSWCVisualEffectOnObject()
 {

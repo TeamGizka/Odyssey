@@ -2502,8 +2502,7 @@ CExoString CSWCCreature::GetSaveCreatureFilename(const CExoString& sFirstName,
 
     while (1)
     {
-        CResRef cFilename((char*)sFilename.CStr());
-        if (!g_pExoResMan->Exists(cFilename, RESTYPE_BIC, (unsigned long*)NULL))
+        if (!g_pExoResMan->Exists((char*)sFilename.CStr(), RESTYPE_BIC, (unsigned long*)NULL))
             break;
         sSuffix = CExoString(nSuffix);
         sBaseName = sBaseName.SubString(0, 16 - sSuffix.GetLength());
@@ -5047,8 +5046,7 @@ enum
 {
     XBOX_STRREF_STEALTH = 325,
     XBOX_STRREF_SET_MINE = 38008,
-    XBOX_STRREF_CANNOT_SET_MINE = 47861,
-    XBOX_ACTION_STEALTH = 1021
+    XBOX_STRREF_CANNOT_SET_MINE = 47861
 };
 
 // Dead code: not in the PC executable
@@ -8571,8 +8569,7 @@ void CSWCCreature::PlayFootstep()
             {
                 if (!bSilentMove)
                 {
-                    CResRef cSound((char*)sSound.CStr());
-                    g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 0.0f,
+                    g_pExoSound->Play3DOneShotSound((char*)sSound.CStr(), m_vPosition, 0.0f,
                         nPriorityGroup, 0, 0, 0.0f, fPitchOffset);
                 }
                 if (nFootstepType != CTwoDimArrays::FOOTSTEP_TYPE_NO_VISUAL_6 &&
@@ -9297,7 +9294,7 @@ void CSWCCreature::CreateUsableItemEntry(  // Xbox 0x00046C50
         lstActions.SetSize(nNum + 1);
         lstActions[nEntry].m_sName = sName;
         lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
-        lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::PartyMenuUseItem;
+        lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::PartyMenuUseItemSelect;
         lstActions[nEntry].m_oidTarget = (unsigned long)this;
         lstActions[nEntry].m_resIcon = pItem->GetIcon();
 

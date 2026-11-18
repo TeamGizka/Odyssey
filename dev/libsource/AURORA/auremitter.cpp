@@ -4165,6 +4165,7 @@ void PartEmitter::RenderLinked()  // Xbox 0x002F9330
 
     for (i = 0; i < m_lstActive.m_nCount; i++)
     {
+        Vector vSegment;
         Vector vColor;
         float fAlpha;
         float fXSize;
@@ -4266,7 +4267,7 @@ void PartEmitter::RenderLinked()  // Xbox 0x002F9330
         }
         if (i < m_lstActive.m_nCount - 1)
         {
-            Vector vSegment = lstPositions[i + 1] - lstPositions[i];
+            vSegment = lstPositions[i + 1] - lstPositions[i];
             float fX = vCameraX * vSegment;
             float fY = vSegment * vCameraY;
             float fLength = (float)sqrt(fX * fX + fY * fY);

@@ -4554,8 +4554,7 @@ void CGuiInGame::ShowDemoScreen(CExoString sImage, int nMinShowTime, int nStrRef
         }
         m_pDemoScreen = new CSWDemoScreen(m_pGuiManager, nMinShowTime, nStrRef, nLeft, nTop);
         m_pGuiManager->AddPanel(m_pDemoScreen, 3, 1);
-        CResRef cImage(sImage.CStr());
-        m_pDemoScreen->SetImage(cImage);
+        m_pDemoScreen->SetImage(sImage.CStr());
         g_pAppManager->m_pClientExoApp->SetInputClass(2, 1);
     }
 }
@@ -4622,6 +4621,7 @@ void CGuiInGame::RemoveDeathMessage(bool bLoading)
         m_pDeathDisplay = NULL;
     }
 }
+#ifndef _XBOX
 // PC 0x00682D40 GOG 0x00682B20
 void CGuiInGame::EnableCharacterChangeButtons(int bEnable)
 {
@@ -4630,6 +4630,7 @@ void CGuiInGame::EnableCharacterChangeButtons(int bEnable)
         m_pInGameMenu->m_bCharacterChangeDisabled = bEnable == 0;
     }
 }
+#endif
 // PC 0x00682D60 GOG 0x00682B40
 void CGuiInGame::ResetTutorialWindowTracker()
 {
@@ -5097,10 +5098,12 @@ void CGuiInGame::ShutDown()
         }
         for (int nScreen = 0; nScreen < IN_GAME_SCREEN_COUNT; ++nScreen)
         {
+#ifndef _XBOX
             if (nScreen == SCREEN_EQUIP)
             {
                 ((CSWGuiInGameEquip*)m_apScreenPanels[SCREEN_EQUIP])->ShutdownCleanup();
             }
+#endif
             if (m_apScreenPanels[nScreen] != 0)
             {
                 delete m_apScreenPanels[nScreen];
@@ -6516,14 +6519,10 @@ int CGuiInGame::CloseDialog()
         m_nDialogSpanningTextCount = 0;
         if (g_pAppManager->GetClientExoApp()->GetInputClass() == INPUT_CLASS_DIALOG)
         {
-#ifdef _XBOX
-            g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME);
-#else
             if (g_pAppManager->GetClientExoApp()->GetMiniGame() != 0)
                 g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_MINIGAME, 1);
             else
                 g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME, 1);
-#endif
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
         }
         g_pAppManager->GetClientExoApp()->ResetDriveAcceleration();

@@ -4085,8 +4085,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
             if (pDummy == NULL)
                 return 0;
             pDummy->m_nCameraFollowDelay = 0;
-            CResRef cDummy("c_dummy");
-            if (pDummy->LoadModel(cDummy, CSWCObject::MODEL_SLOT_DEFAULT, 0))
+            if (pDummy->LoadModel("c_dummy", CSWCObject::MODEL_SLOT_DEFAULT, 0))
             {
                 CSWCArea* pArea = g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo;
                 if (pArea != NULL)
@@ -6264,8 +6263,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
         }
         else
         {
-            CResRef resModel(sModelName);
-            pPlaceable->LoadModel(resModel,
+            pPlaceable->LoadModel(sModelName,
                 CSWCObject::MODEL_SLOT_DEFAULT,
                 CSWCPlaceable::LOAD_MODEL_FLAGS_PLACEABLE);
         }
@@ -6319,8 +6317,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
             ->AddObjectToHitcheckIgnoreList(pPlaceable->GetId());
     }
     {
-        CResRef resEnvMap("DEFAULT");
-        pPlaceable->SetEnvMap(1, 1, resEnvMap);
+        pPlaceable->SetEnvMap(1, 1, "DEFAULT");
     }
     CSWSPlaceable* pServerPlaceable = pPlaceable->GetServerPlaceable();
     if (pServerPlaceable != NULL && pServerPlaceable->m_bUseTweakColor)
@@ -7335,9 +7332,8 @@ int CSWCMessage::HandleServerToPlayerServerStatus(unsigned char nMinor)
         }
         else if (g_pAppManager->m_pClientExoApp->GetPlayerCharacterSet())
         {
-            CResRef cCharacter(
-                g_pAppManager->m_pClientExoApp->GetPlayerCharacterName());
-            SendPlayerToServerLogin_LoginLocalCharacter(cCharacter, 0);
+            SendPlayerToServerLogin_LoginLocalCharacter(
+                g_pAppManager->m_pClientExoApp->GetPlayerCharacterName(), 0);
         }
         return 1;
     default:
@@ -7519,8 +7515,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Delete()
             }
             if (bFound)
             {
-                CResRef cSound(sExplosionSound);
-                g_pExoSound->Play3DOneShotSound(cSound, pTrigger->m_vPosition,
+                g_pExoSound->Play3DOneShotSound(sExplosionSound, pTrigger->m_vPosition,
                     0.0f, CExoSound::PRIORITY_GROUP_TRIGGER, 0, 0, 0.0f, 0.0f);
             }
         }
@@ -10817,8 +10812,7 @@ int CSWCMessage::HandleServerToPlayerItemScript_Add()
     int nBaseItemType = pItem->m_nBaseItem;
     if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItemType)->m_nPartEnvMap)
     {
-        CResRef cEnvMap("default");
-        pItem->SetEnvMap(CSWCAnimBase::MODEL_SLOT_MAIN, 1, cEnvMap);
+        pItem->SetEnvMap(CSWCAnimBase::MODEL_SLOT_MAIN, 1, "default");
     }
     return 1;
 }

@@ -49,6 +49,7 @@ public:
 #else
     CSWGuiLabel m_lblLeftArrow;
     CSWGuiLabel m_lblRightArrow;
+    CSWGuiLabel m_alblBar[1];
 #endif
     CSWGuiLabel m_lblTopClass1;
     CSWGuiLabel m_lblTopClass2;
@@ -56,6 +57,7 @@ public:
     CSWGuiLabel m_lblTopClass2Level;
     CSWGuiLabel m_lblCharName;
     CSWGuiMainInterfaceChar m_cChar1;
+#ifndef _XBOX
     CSWGuiLabel m_lblChar2;
     CSWGuiLabel m_lblLevelUp2;
     CSWGuiLabel m_lblBack2;
@@ -66,6 +68,7 @@ public:
     CSWGuiButton m_btnChange3;
     CSWGuiLabel m_lblSecTitle;
     int m_bCharacterChangeDisabled;
+#endif
     int m_nTopMenuOverrideCharacter;
     virtual void HandleInputEvent(int, int);
     void SetActiveControlID(int nControl, int bActive);

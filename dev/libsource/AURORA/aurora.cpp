@@ -478,16 +478,25 @@ int AurQueryAntiAliasingMode(int nMode)  // PC 0x00463290 GOG 0x004633A0
     }
     return 0;
 }
-// PC 0x00463410 GOG 0x00463520
+#endif
+// PC 0x00463410 GOG 0x00463520 Xbox 0x002CF860
 void AurSetClearColor(float fRed, float fGreen, float fBlue, float fAlpha)
 {
-    glClearColor(fRed, fGreen, fBlue, fAlpha);
+    GLRender_SetClearColor(fRed, fGreen, fBlue, fAlpha);
 }
-// PC 0x00463430 GOG 0x00463540
+// PC 0x00463430 GOG 0x00463540 Xbox 0x002CF870
 void AurGetClearColor(float* pColor)
 {
+#ifdef _XBOX
+    pColor[0] = (float)(g_nClearColor & 0xff) * (1.0f / 255.0f);
+    pColor[1] = (float)((g_nClearColor >> 8) & 0xff) * (1.0f / 255.0f);
+    pColor[2] = (float)((g_nClearColor >> 16) & 0xff) * (1.0f / 255.0f);
+    pColor[3] = (float)((g_nClearColor >> 24) & 0xff) * (1.0f / 255.0f);
+#else
     glGetFloatv(GL_COLOR_CLEAR_VALUE, pColor);
+#endif
 }
+#ifndef _XBOX
 
 // Dead code: not in the PC executable
 void GLRender::GetClearColor(float* pfColor)

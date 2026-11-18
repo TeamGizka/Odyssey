@@ -59,7 +59,9 @@ public:
     CSWGuiLabel m_lblNewFortitude;
     CSWGuiLabel m_lblPortrait;
     CSWGuiLabel m_lblBevelLeft;
+#ifndef _XBOX
     CSWGuiLabel m_lblBevelMiddle;
+#endif
     CSWGuiLabel m_lblBevelRight;
     CSWGuiLabel m_lblFortitude;
     CSWGuiLabel m_lblReflex;
@@ -77,6 +79,12 @@ public:
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblAccept;
+    CSWGuiLabel m_lblPortBorder;
+    CSWGuiLabel m_lblBar[1];
+    CSWGuiLabel m_lblStatsBorder;
+    CSWGuiLabel m_lblStatsBack;
+    CSWGuiLabel m_lblVitName;
+    CSWGuiLabel m_lblDefName;
     virtual void HandleInputEvent(int nEvent, int nState);
 #endif
     CSWGui3DSceneView m_viewModel;

@@ -1474,7 +1474,11 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
         InitControl(m_cChosen[i].m_lblCard, szChosenLabel, 1);
         m_cChosen[i].m_nID = i;
         m_cChosen[i].AddEvent(
+#ifdef _XBOX
+            GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnAvailCardEntered);
+#else
             GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnChosenCardEntered);
+#endif
 #ifndef _XBOX
         m_cChosen[i].AddEvent(
             CSWGuiPazaakCard::EVENT_CARD_DROP, this,
@@ -1611,7 +1615,7 @@ void CSWGuiPazaakStart::UpdateHelpText(int nCardType)
         m_lblHelp.m_cText.m_cParams.SetText("");
 #endif
 }
-// PC 0x006D4E50 GOG 0x006D4D40 Xbox 0x00096370
+// PC 0x006D4E50 GOG 0x006D4D40
 void CSWGuiPazaakStart::OnChosenCardEntered(CSWGuiControl* pControl)
 {
 #ifndef _XBOX

@@ -195,8 +195,7 @@ int CSWCAnimBase::RestoreTexture()
     }
     if (m_bPaletteReplaced != 0)
     {
-        CResRef sTexture("");
-        ReplaceTexture(MODEL_SLOT_MAIN, sTexture, m_resLoadedModel,
+        ReplaceTexture(MODEL_SLOT_MAIN, "", m_resLoadedModel,
                        m_nPaletteCount, m_anPalette, 0, m_nPaletteOffset);
     }
     return 1;
@@ -210,8 +209,7 @@ int CSWCAnimBase::RestoreTexture(unsigned char nModel)
     }
     if (m_bPaletteReplaced != 0)
     {
-        CResRef sTexture("");
-        ReplaceTexture(MODEL_SLOT_MAIN, sTexture, m_resLoadedModel,
+        ReplaceTexture(MODEL_SLOT_MAIN, "", m_resLoadedModel,
                        m_nPaletteCount, m_anPalette, 0, m_nPaletteOffset);
         return 1;
     }

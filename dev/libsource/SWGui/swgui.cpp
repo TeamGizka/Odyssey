@@ -1452,7 +1452,12 @@ int CSWGuiManager::RemovePanel(CSWGuiPanel* pPanel)
     {
         return 0;
     }
+#ifdef _XBOX
+    int nPos = GetPosInPanelList(pPanel);
+    if (nPos == -1)
+#else
     if (GetPosInPanelList(pPanel) == -1)
+#endif
     {
         return 0;
     }
@@ -1470,12 +1475,14 @@ int CSWGuiManager::RemovePanel(CSWGuiPanel* pPanel)
         }
     }
     pPanel->OnPanelRemoved();
+#ifndef _XBOX
     int nPos = GetPosInPanelList(pPanel);
 
     if (nPos == -1)
     {
         return 0;
     }
+#endif
     m_lPanels.DelIndex(nPos);
     if (pPanel->m_bModal)
     {
@@ -2472,9 +2479,9 @@ void CSWGuiManager::Draw(float fElapsed)
         AurGUIStopLayer();
     }
 #endif
+#ifndef _XBOX
     if (g_pAppManager->m_pClientExoApp->GetInFreeLook() == 0)
     {
-#ifndef _XBOX
         if (m_bToolTipShown)
         {
             m_pToolTipPanel->Draw(fElapsed);
@@ -2493,9 +2500,7 @@ void CSWGuiManager::Draw(float fElapsed)
                 m_fToolTipTimer = -1.0f;
             }
         }
-#endif
     }
-#ifndef _XBOX
     if (m_pMouseScene != NULL)
     {
         AurGUIStartLayer();

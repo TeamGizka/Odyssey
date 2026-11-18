@@ -354,7 +354,9 @@ void CSWGuiPartySelection::OnPanelRemoved()
             m_aPartyMembers[nNPC].m_pCreature = 0;
         }
     }
+#ifndef _XBOX
     g_pAppManager->m_pClientExoApp->GetInGameGui()->EnableCharacterChangeButtons(1);
+#endif
     m_bPlaySound = 0;
     m_bAllowCancel = 0;
     CSWGuiPanel::OnPanelRemoved();
@@ -534,7 +536,11 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
         m_aPartyMembers[nNPC].m_bForced = 0;
     pServer->m_pcExoAppInternal->UpdateClientGameObjects(1);
     m_bForcedNPC = 0;
+#ifdef _XBOX
+    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->HideSWInGameGui())
+#else
     if (g_pAppManager->GetClientExoApp()->GetInGameGui()->HideSWInGameGui(0))
+#endif
         g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME, 1);
     if (m_sRunScript != "")
     {
@@ -995,14 +1001,14 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 {
     CExoString sName;
     m_bForcedNPC = 0;
-    {
 #ifdef _XBOX
-        CResRef cLayout("partyselect_x");
+    StartLoadFromLayout("partyselect_x");
 #else
+    {
         CResRef cLayout("partyselect_p");
-#endif
         StartLoadFromLayout(cLayout);
     }
+#endif
     for (int nNPC = 0; nNPC < 12; ++nNPC)
     {
         sName.Format("LBL_NA%d", nNPC);

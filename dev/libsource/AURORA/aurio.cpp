@@ -536,6 +536,16 @@ void Input::InputBinary::ResetSkin(MdlNodeSkin* pNode,  // Xbox 0x0032CB50
     }
 }
 
+#ifdef _XBOX
+void Input::InputBinary::ResetTriMesh(MdlNodeTriMesh* pNode, unsigned char* pModelData,  // Xbox 0x0032CBE0
+                                      unsigned char* pVertexData)
+{
+    pNode->m_pfnGenVertices = MdlNodeTriMeshGenVertices;
+    pNode->m_pfnRemoveTemporaryArrays = MdlNodeTriMeshRemoveTemporaryArrays;
+    ResetTriMeshParts(pNode, pModelData, pVertexData);
+}
+#endif
+
 // Dead code: not in the PC executable
 void Input::InputBinary::ResetAABB(MdlNodeAABB* pNode,
                                    unsigned char* pModelData,
@@ -552,22 +562,8 @@ void Input::InputBinary::ResetAABB(MdlNodeAABB* pNode,
 }
 
 // Dead code: not in the PC executable
-void Input::InputBinary::ResetAABBTree(AABB* pNode, unsigned char* pModelData,
+void Input::InputBinary::ResetAABBTree(AABB* pNode, unsigned char* pModelData,  // Xbox 0x0032CC00
                                        unsigned char* pVertexData)
-#ifdef _XBOX
-{
-    if (pNode->m_pLeftChild)
-    {
-        pNode->m_pLeftChild = (AABB*)(pModelData + (unsigned int)pNode->m_pLeftChild);
-        ResetAABBTree(pNode->m_pLeftChild, pModelData, pVertexData);
-    }
-    if (pNode->m_pRightChild)
-    {
-        pNode->m_pRightChild = (AABB*)(pModelData + (unsigned int)pNode->m_pRightChild);
-        ResetAABBTree(pNode->m_pRightChild, pModelData, pVertexData);
-    }
-}
-#else
 {
     if (pNode->m_pLeftChild)
     {
@@ -717,7 +713,6 @@ void Input::InputBinary::ResetAABBTree(AABB* pNode, unsigned char* pModelData,
         }
     }
 }
-#endif
 
 // Dead code: not in the PC executable
 void Input::InputBinary::ResetLightsaber(MdlNodeLightsaber* pNode,  // Xbox 0x0032CE00
@@ -1496,14 +1491,6 @@ void Input::InputBinary::ResetReference(MdlNode* pNode, unsigned char* pModelDat
 void Input::InputBinary::ResetTrigger(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
 {
     ResetMdlNodeParts(pNode, pModelData, pVertexData);
-}
-
-void Input::InputBinary::ResetTriMesh(MdlNodeTriMesh* pNode, unsigned char* pModelData,  // Xbox 0x0032CBE0
-                                      unsigned char* pVertexData)
-{
-    pNode->m_pfnGenVertices = MdlNodeTriMeshGenVertices;
-    pNode->m_pfnRemoveTemporaryArrays = MdlNodeTriMeshRemoveTemporaryArrays;
-    ResetTriMeshParts(pNode, pModelData, pVertexData);
 }
 
 void Input::InputBinary::ResetAABBLite(MdlNodeAABB* pNode, unsigned char* pModelData,

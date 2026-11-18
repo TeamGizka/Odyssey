@@ -68,13 +68,20 @@ void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
 
 #ifdef _XBOX
 
+
+#define DOWNLOAD_DEMO_TIMEOUT 180000
+
 void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
 {
-    LAUNCH_DATA cLaunchData;
+    LD_DEMO cDemo;
 
-    g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
-    memset(&cLaunchData, 0, sizeof(cLaunchData));
-    XLaunchNewImage("d:\\downloader.xbe", &cLaunchData);
+    memset(&cDemo, 0, sizeof(cDemo));
+    cDemo.dwID = LAUNCH_DATA_DEMO_ID;
+    cDemo.dwRunmode = XLDEMO_RUNMODE_USERSELECTED;
+    cDemo.dwTimeout = DOWNLOAD_DEMO_TIMEOUT;
+    strcpy(cDemo.szLaunchedXBE, "d:\\SWRC\\default.xbe");
+    strcpy(cDemo.szLauncherXBE, "d:\\default.xbe");
+    XLaunchNewImage("d:\\SWRC\\default.xbe", (PLAUNCH_DATA)&cDemo);
 }
 
 CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
@@ -1678,8 +1685,8 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
 #ifdef _XBOX
     StartLoadFromLayout("optfeedback_x");
     InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_lbDescription, "LB_DESC", 1);
     InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
     InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
     InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);

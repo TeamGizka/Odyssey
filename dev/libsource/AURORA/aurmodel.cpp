@@ -2137,6 +2137,9 @@ int PartTriMesh::HitCheckGeom(const Vector& vStart, Vector& vEnd,
         pInfo->m_vOutputVector = vEnd;
         *pHit = vEnd;
     }
+#ifdef _XBOX
+    GLRender::UnlockPool(pMesh->m_pModel->AsModel()->m_nVertexPool);
+#endif
     return nHit;
 }
 // PC 0x00454680 GOG 0x004547C0 Xbox 0x002B6EC0

@@ -151,6 +151,13 @@ void GetCreatureRadius(CAurObject* pObject, char* sEvent, void* pData);
 
 #define __SWCCREATURE_CLASS_DEFINED__
 
+#ifdef _XBOX
+enum
+{
+    XBOX_ACTION_STEALTH = 1021
+};
+#endif
+
 class CSWCCreature : public CSWCObject
 {
 public:

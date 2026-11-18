@@ -1285,13 +1285,11 @@ void CClientExoApp::LookUpAndPerformRumbleWithCutOff(int nEntry,
     m_pcExoAppInternal->LookUpAndPerformRumbleWithCutOff(nEntry, nTable,
                                                          vPosition);
 }
-#ifndef _XBOX
-// PC 0x006391D0 GOG 0x006390D0
+// PC 0x006391D0 GOG 0x006390D0 Xbox 0x0001AD10
 int CClientExoApp::GetPlayerMovementInput()
 {
     return m_pcExoAppInternal->GetPlayerMovementInput();
 }
-#endif
 // PC 0x00639220 GOG 0x00639120 Xbox 0x0001AD60
 int CClientExoApp::SaveOptions()
 {

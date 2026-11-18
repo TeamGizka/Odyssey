@@ -337,8 +337,7 @@ void CSWCDoor::AnimationUpdate()
                         nSoundAppearance, CTwoDimArrays::COL2DA_PLACEABLESOUNDS_DESTROYED,
                         &sSound);
                 }
-                CResRef cSound(sSound);
-                g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 1.5f,
+                g_pExoSound->Play3DOneShotSound(sSound, m_vPosition, 1.5f,
                     CExoSound::PRIORITY_GROUP_DOOR, 0, 0, 0.0f, 0.0f);
             }
         }

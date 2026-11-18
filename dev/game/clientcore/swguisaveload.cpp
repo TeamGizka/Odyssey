@@ -20,8 +20,7 @@
 
 #define SWGUISAVELOAD_DEBUG 0
 
-#ifndef _XBOX
-// PC 0x0070C480 GOG 0x0070C1D0
+// PC 0x0070C480 GOG 0x0070C1D0 Xbox 0x000E7520
 int CSWGuiSaveLoad::LaunchMostRecentSave()
 {
     CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)m_lbSaveGames.GetControl(0);
@@ -45,7 +44,6 @@ int CSWGuiSaveLoad::LaunchMostRecentSave()
     }
     return 0;
 }
-#endif
 
 #ifndef _XBOX
 static void ConstructSaveNameEditBox()
@@ -715,8 +713,6 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
     {
         m_bDataLoaded = 1;
         m_bBadSave = 1;
-        g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
-        g_pExoBase->m_pExoDebug->FlushScriptLogFile();
         g_pExoResMan->RemoveResourceDirectory(sDirectory);
         return;
     }
@@ -943,8 +939,6 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // Xbox 0x000
     pERF->Read(sFileName, aHeaderSignature);
     if (!g_pExoResMan->VerifySignatureFile(sSavePath + "\\" + "SAVE_HEADER", aHeaderSignature))
     {
-        g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
-        g_pExoBase->m_pExoDebug->FlushScriptLogFile();
         delete pERF;
         return 0;
     }
@@ -960,22 +954,16 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // Xbox 0x000
     XCalculateSignatureEnd(hSignature, &cDataSignature);
     if (!g_pExoResMan->VerifySignatureFile(sSavePath + "\\" + "SAVE_DATA", (unsigned char*)&cDataSignature))
     {
-        g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
-        g_pExoBase->m_pExoDebug->FlushScriptLogFile();
         return 0;
     }
     g_pExoResMan->CreateSignatureFile(sSavePath + "\\" + "GLOBALVARS", 0, 0, aGlobalsSignature, 0);
     if (!g_pExoResMan->VerifySignatureFile(sSavePath + "\\" + "SAVE_VARS", aGlobalsSignature))
     {
-        g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
-        g_pExoBase->m_pExoDebug->FlushScriptLogFile();
         return 0;
     }
     g_pExoResMan->CreateSignatureFile(sSavePath + "\\" + "PARTYTABLE", 0, 0, aPartySignature, 0);
     if (!g_pExoResMan->VerifySignatureFile(sSavePath + "\\" + "SAVE_PARTY", aPartySignature))
     {
-        g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
-        g_pExoBase->m_pExoDebug->FlushScriptLogFile();
         return 0;
     }
     delete pERF;
@@ -1656,11 +1644,7 @@ void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
         if (pSelected != NULL)
 #endif
         {
-#ifndef _XBOX
             if (m_bExitToMainMenu || m_bEndGameMode)
-#else
-            if (m_bExitToMainMenu)
-#endif
             {
                 LoadGame(pSelected);
             }
@@ -2021,12 +2005,10 @@ void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
 // PC 0x0070A8C0 GOG 0x0070A600
 CSWGuiSaveLoad::~CSWGuiSaveLoad()
 {
-#ifndef _XBOX
     for (int i = 0; i < m_lEntries.num; i++)
     {
         delete m_lEntries[i];
     }
-#endif
     g_pExoResMan->RemoveResourceDirectory("TEMP:");
 #ifdef _XBOX
     g_pExoResMan->CleanDirectory("TEMP:", 0, 0);

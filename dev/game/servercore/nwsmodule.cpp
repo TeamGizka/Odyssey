@@ -2763,8 +2763,7 @@ void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
         {
             if (nDownloadedPackage == 0)
             {
-                g_pExoResMan->RemoveResourceImageFile(
-                    CExoString("RIMSXBOX:scripts"));
+                g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:scripts");
             }
             else
             {

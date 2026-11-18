@@ -92,11 +92,13 @@ inline int CStatusSummary::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
     pRes->WriteFieldINT(&stStruct, m_nMaxForcePointsGain, "MAXFPGAIN");
     return pRes->WriteFieldINT(&stStruct, m_nMaxForcePointsLost, "MAXFPLOST");
 }
+#ifndef _XBOX
 // PC 0x004EA0C0 GOG 0x004EAE20
 inline CExoString CSWPartyTable::GetPCName()
 {
     return m_sPCName;
 }
+#endif
 
 #include "serverexoapp.h"
 #include "swguisaveload.h"
@@ -2684,11 +2686,10 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
     UpdateScreen(1.0f / 30.0f, 0, 0);
     unsigned long nStartTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
 
-    CExoString sSaveRoot("U:\\");
     WCHAR wszSaveName[256];
     char szSavePath[256];
     mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE_NAME).CStr(), 255);
-    XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
+    XCreateSaveGame(CExoString("U:\\").CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
     {
         CExoString sAlias("SAVES");
         g_pExoBase->m_pExoAliasList->ChangePath(sAlias, szSavePath);

@@ -455,7 +455,8 @@ void CAurTriangleBin::AddTriangle(const MaxFace& face, PartTriMesh* pTriMesh,
     v2.m_fX = pSource2[0];
     v2.m_fY = pSource2[1];
     v2.m_fZ = pSource2[2];
-    GLRender::UnlockPool(pNode->m_pModel->AsModel()->m_nVertexPool);
+    nVertexPool = pNode->m_pModel->AsModel()->m_nVertexPool;
+    GLRender::UnlockPool(nVertexPool);
 #else
     const Vector& vSource0 = pVertices[face.m_anVertexIndices[0]];
     v0 = vSource0;

@@ -272,11 +272,11 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                 }
                 else if (pPlayer->m_pJournalGUI->m_bUpdateRequired == 0)
                 {
+                    int bQueued = 0;
                     CExoArrayList<CSWSPlayerJournalQuestUpdates>* pUpdates =
                         &pPlayer->m_pJournalGUI->m_lstQuestUpdates;
                     if (pUpdates != NULL)
                     {
-                        int bQueued = 0;
                         int nCount = pUpdates->num;
                         int nUpdate = 0;
                         for (; nUpdate < nCount; nUpdate++)

@@ -570,20 +570,18 @@ void CSWGuiControl::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_cExtent.Load(pGFF, cStruct);
     SetExtent(m_cExtent);
     m_nID = pGFF->ReadFieldINT(&cStruct, "ID", bSuccess, -1);
+#ifndef _XBOX
     int nParentID = pGFF->ReadFieldINT(&cStruct, "Obj_ParentID", bSuccess, -1);
     if (nParentID != -1)
     {
         CSWGuiPanel* pPanel = m_pOwner->AsSWGuiPanel();
         if (pPanel != NULL)
         {
-#ifndef _XBOX
             m_pParent = pPanel->GetControl(nParentID);
-#endif
-#ifndef _XBOX
             m_pParent->AddChildControl(this);
-#endif
         }
     }
+#endif
 }
 // PC 0x0041B350 GOG 0x0041B340 Xbox 0x003334E0
 void CSWGuiLabel::Load(CResGFF* pGFF, CResStruct& cStruct)
@@ -1845,8 +1843,7 @@ void CSWGuiEditbox::ReSetFont()
 {
     m_cText.m_cParams.ReSetFont();
 }
-#ifndef _XBOX
-// PC 0x00417E90 GOG 0x00417EC0
+// PC 0x00417E90 GOG 0x00417EC0 Xbox 0x00334000
 int CSWGuiControl::GetEvent(int nEvent, CSWGuiObject** ppObject, CSWGuiHandler* ppHandler)
 {
     for (int i = 0; i < m_lEvents.num; i++)
@@ -1876,7 +1873,6 @@ int CSWGuiControl::GetEvent(int nEvent, CSWGuiObject** ppObject, CSWGuiHandler* 
     }
     return 0;
 }
-#endif
 
 #ifndef _XBOX
 template <> inline void CExoArrayList<CSWGuiControlEvent>::Allocate(int nSize)  // PC 0x00640950 GOG 0x006407B0
@@ -3602,8 +3598,8 @@ void CSWGuiListBox::OrganizeUnequal()  // Xbox 0x00335410
     int nInner = m_cItemExtent.m_nWidth - 2 * nPadding;
     CSWGuiExtent cExtent;
     cExtent.m_nLeft = nPadding;
-    cExtent.m_nWidth = nInner;
     cExtent.m_nTop = 0;
+    cExtent.m_nWidth = nInner;
     cExtent.m_nHeight = 0;
     if (m_bTopAnchored)
     {

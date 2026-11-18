@@ -1435,8 +1435,7 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
     }
 }
 #endif
-#ifndef _XBOX
-// PC 0x007162B0 GOG 0x00715FA0
+// PC 0x007162B0 GOG 0x00715FA0 Xbox 0x000FD280
 void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -1448,10 +1447,15 @@ void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
         {
             pItem->m_bNewItem = 0;
             pEntry->m_bUnavailable = 0;
+#ifdef _XBOX
+            pEntry->UpdateItem();
+#else
             pEntry->SetItem(pEntry->m_oidItem, pEntry->m_bEquipped, pEntry->m_bUnavailable);
+#endif
         }
     }
 }
+#ifndef _XBOX
 
 // Dead code: not in the PC executable
 void CSWGuiInGameEquip::OnChangeCharacter(CSWGuiControl* pControl)

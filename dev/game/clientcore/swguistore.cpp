@@ -843,8 +843,8 @@ void CSWGuiStore::PopulateInventoryItemListBox()
                     {
                         ItemListEntry cEntry;
                         cEntry.m_oidItem = pItem->GetId();
-                        cEntry.m_pHandler = (CSWGuiHandler)&CSWGuiStore::OnControlInvAButton;
                         cEntry.m_nCharacter = -1;
+                        cEntry.m_pHandler = (CSWGuiHandler)&CSWGuiStore::OnControlInvAButton;
                         m_lInventoryItems.Add(cEntry);
                     }
                     nEntries++;

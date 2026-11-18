@@ -195,8 +195,7 @@ int CSWCAnimBaseHead::RestoreTexture()
     {
         if (m_bTextureReplaced != 0)
         {
-            CResRef sTexture("");
-            ReplaceTexture(ANIM_MODEL_HEAD, sTexture, m_cReplacedTexture,
+            ReplaceTexture(ANIM_MODEL_HEAD, "", m_cReplacedTexture,
                            m_nPartCount, m_aParts, 0, m_nPartStart);
         }
         else
@@ -215,8 +214,7 @@ int CSWCAnimBaseHead::RestoreTexture(unsigned char nModel)
         {
             if (m_bTextureReplaced != 0)
             {
-                CResRef sTexture("");
-                ReplaceTexture(ANIM_MODEL_HEAD, sTexture, m_cReplacedTexture,
+                ReplaceTexture(ANIM_MODEL_HEAD, "", m_cReplacedTexture,
                                m_nPartCount, m_aParts, 0, m_nPartStart);
                 return 1;
             }

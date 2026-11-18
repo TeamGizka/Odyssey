@@ -110,7 +110,7 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
 {
     m_pCreature = pCreature;
 #ifdef _XBOX
-    StartLoadFromLayout("QORCPNL_x");
+    StartLoadFromLayout("QORCPNL_x", 0, 1);
 #else
     StartLoadFromLayout("QORCPNL_p", 0, 1);
 #endif

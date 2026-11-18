@@ -380,6 +380,9 @@ public:
     C2DA* GetEffectIcon() { EXOXBOXASSERT(m_pEffectIcon); return m_pEffectIcon; }  // Xbox 0x0020F630
     C2DA* GetStateScripts() { EXOXBOXASSERT(m_pStateScripts); return m_pStateScripts; }  // Xbox 0x001808B0
     C2DA* GetFormations() { EXOXBOXASSERT(m_pFormations); return m_pFormations; }
+#ifdef _XBOX
+    C2DA* GetCameraStyle() { EXOXBOXASSERT(m_pCameraStyle); return m_pCameraStyle; }  // Xbox 0x0005FF30
+#endif
     C2DA* GetTraps() { return m_pTraps; }
     C2DA* GetIPRPPC() { return m_pIPRPPC; }
 

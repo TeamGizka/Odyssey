@@ -35,12 +35,10 @@ void CSWGuiMessageBox::OnDeath(CSWGuiControl* pControl)
 {
     g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
 }
-#ifndef _XBOX
 static inline void SetBorderFillImage(CSWGuiBorderParams& cParams, const CResRef& cImage, int bTile)
 {
     cParams.SetFillImage(cImage, bTile);
 }
-#endif
 
 // Dead code: not in the PC executable
 void CSWGuiMessageBox::DisplayDeathMessage()  // Xbox 0x0005A310
@@ -305,12 +303,21 @@ void CSWGuiInGameMenu::Update(float fElapsed)
 
     if (g_pAppManager->m_pClientExoApp->GetQuestJournal()->HasNewEntries())
     {
+#ifdef _XBOX
+        if (!m_LblhMap.m_cBorder.m_cParams.m_bPulsing)
+            m_LblhMap.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
+#else
         if (!m_LblhJou.m_cBorder.m_cParams.m_bPulsing)
             m_LblhJou.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
+#endif
     }
     else
     {
+#ifdef _XBOX
+        m_LblhMap.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
+#else
         m_LblhJou.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
+#endif
     }
 }
 // PC 0x00675520 GOG 0x006752C0
@@ -723,16 +730,17 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     m_bHideButtons = 0;
     m_bHasIcon = 0;
     m_nStyle = 0;
-    StartLoadFromLayout("confirm_p");
 #ifdef _XBOX
+    StartLoadFromLayout("confirm_x");
     InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblOk, "LBL_OK", 1);
     InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblOk, "LBL_OK", 1);
     InitControl(m_lblCancel, "LBL_CANCEL", 1);
-    InitControl(m_lbMessage, "LB_MESSAGE", 1);
     InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
     StopLoadFromLayout();
 #else
+    StartLoadFromLayout("confirm_p");
     CSWGuiButton* pOk = &m_btnOk;
     InitControl(*pOk, "BTN_OK", 1);
     InitControl(m_btnCancel, "BTN_CANCEL", 1);
@@ -776,8 +784,7 @@ void CSWGuiInGameMenu::OnInvButtonPressed(CSWGuiControl* pControl)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_INVENTORY);
 }
-#ifndef _XBOX
-// PC 0x00677700 GOG 0x006774A0
+// PC 0x00677700 GOG 0x006774A0 Xbox 0x0004CC70
 CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
     : CSWGuiPanel(pManager)
 {
@@ -791,6 +798,20 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
     m_bHideButtons = 0;
     m_bHasIcon = 0;
     m_nStyle = nStyle;
+#ifdef _XBOX
+    StartLoadFromLayout("datapad_x");
+    SetBorderFillImage(m_pBorder->m_cParams, "", 0);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblOk, "LBL_OK", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblCancel, "LBL_CANCEL", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
+    StopLoadFromLayout();
+    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    m_lblIcon.SetExtent(CSWGuiExtent(0, 10, 32, 32));
+    CSWGuiLabel* pIcon = &m_lblIcon;
+#else
     StartLoadFromLayout("datapad_p");
     SetBorderFillImage(m_pBorder->m_cParams, "", 0);
     InitControl(m_btnOk, "BTN_OK", 1);
@@ -804,6 +825,7 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
                          (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
     CSWGuiLabel* pIcon = &m_lblIcon;
     pIcon->SetExtent(CSWGuiExtent(0, 10, 32, 32));
+#endif
     pIcon->m_bEnabled = 0;
     AddControl(pIcon);
     CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
@@ -812,15 +834,21 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
     CenterPanel();
     m_cPanelExtent = m_cExtent;
     m_cMessageExtent = m_lbMessage.m_cExtent;
+#ifdef _XBOX
+    m_nLblABottomOffset = m_cExtent.m_nHeight - m_lblA.m_cExtent.m_nTop;
+    m_nLblBBottomOffset = m_cExtent.m_nHeight - m_lblB.m_cExtent.m_nTop;
+    m_nLblRAnalogRightOffset = m_cExtent.m_nWidth - m_lblRAnalog.m_cExtent.m_nLeft;
+#endif
     m_bAccepted = 0;
     m_pCallback = 0;
     m_pCallbackObject = 0;
     m_pCallbackControl = 0;
     m_nPreviousInputClass = 0;
     m_nOpenSound = 15;
+#ifndef _XBOX
     m_bFocusOk = 0;
-}
 #endif
+}
 // PC 0x00675560 GOG 0x00675300
 void CSWGuiInGameMenu::OnCharButtonPressed(CSWGuiControl* pControl)
 {
@@ -1908,7 +1936,7 @@ void CSWGuiMessageBox::UpdateControls()
     CSWGuiLabel* pA = &m_lblA;
     pA->m_bEnabled = m_bShowButtons;
     CSWGuiLabel* pOk = &m_lblOk;
-    pOk->m_bEnabled = m_bShowButtons;
+    pOk->SetEnabledFlag(m_bShowButtons);
     CSWGuiLabel* pB = &m_lblB;
     CSWGuiLabel* pCancel = &m_lblCancel;
     pB->m_bEnabled = m_bAllowCancel && m_bShowButtons;
@@ -2444,17 +2472,22 @@ CSWGuiDeathDisplay::CSWGuiDeathDisplay(CSWGuiManager* pManager)
     m_btnQuit.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
     m_fFadeTime = 0.5f;
 }
+#endif
 #ifndef _XBOX
 static inline void DestroyInGameMenu(CSWGuiInGameMenu* pMenu)
 {
     pMenu->CSWGuiInGameMenu::~CSWGuiInGameMenu();
 }
 #endif
-// PC 0x0067B240 GOG 0x0067B010
+// PC 0x0067B240 GOG 0x0067B010 Xbox 0x00050040
 CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    StartLoadFromLayout("top_x");
+#else
     StartLoadFromLayout("top_p");
+#endif
     InitControl(m_LblhEqu, "LBLH_EQU", 1);
     InitControl(m_LblhInv, "LBLH_INV", 1);
     InitControl(m_LblhCha, "LBLH_CHA", 1);
@@ -2468,12 +2501,17 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     InitControl(m_btnChar, "BTN_CHAR", 1); InitControl(m_btnMap, "BTN_MAP", 1);
     InitControl(m_btnAbi, "BTN_ABI", 1); InitControl(m_btnJou, "BTN_JOU", 1);
     InitControl(m_btnOpt, "BTN_OPT", 1); InitControl(m_btnMsg, "BTN_MSG", 1);
+#else
+    InitControl(m_lblLeftArrow, "LBL_LEFT_ARROW", 1); InitControl(m_lblRightArrow, "LBL_RIGHT_ARROW", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+#endif
     InitControl(m_lblTopClass1, "LBL_TOP_CLASS1", 1);
     InitControl(m_lblTopClass2, "LBL_TOP_CLASS2", 1);
     InitControl(m_lblTopClass1Level, "LBL_TOP_CLASS1LEVEL", 1);
     InitControl(m_lblTopClass2Level, "LBL_TOP_CLASS2LEVEL", 1);
     InitControl(m_lblCharName, "LBL_CHARNAME", 1);
     m_cChar1.Initialize((CSWGuiMainInterface*)this, 1);
+#ifndef _XBOX
     InitControl(m_lblChar2, "LBL_CHAR2", 1);
     InitControl(m_lblLevelUp2, "LBL_LEVELUP2", 1);
     InitControl(m_lblBack2, "LBL_BACK2", 1);
@@ -2483,8 +2521,6 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     InitControl(m_lblBack3, "LBL_BACK3", 1);
     InitControl(m_btnChange3, "BTN_CHANGE3", 1);
     InitControl(m_lblSecTitle, "LBL_SECTITLE", 1);
-#else
-    InitControl(m_lblLeftArrow, "LBL_LEFT_ARROW", 1); InitControl(m_lblRightArrow, "LBL_RIGHT_ARROW", 1);
 #endif
     StopLoadFromLayout();
 #ifndef _XBOX
@@ -2554,8 +2590,6 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     SetActiveControl(&m_btnEqu, 0);
 #else
     SetActiveControl(&m_LblhEqu, 0);
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
 #endif
 #ifndef _XBOX
     m_btnEqu.SetToolTip(STRREF_TOOLTIP_EQUIP, GUIEVENT_MENU_EQUIPMENT);
@@ -2566,9 +2600,10 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     m_btnJou.SetToolTip(STRREF_TOOLTIP_JOURNAL, GUIEVENT_MENU_JOURNAL);
     m_btnOpt.SetToolTip(STRREF_TOOLTIP_OPTIONS, GUIEVENT_MENU_OPTIONS);
     m_btnMsg.SetToolTip(STRREF_TOOLTIP_PARTY_SELECTION, GUIEVENT_MENU_MESSAGES);
-    m_nTopMenuOverrideCharacter = -1;
 #endif
+    m_nTopMenuOverrideCharacter = -1;
 }
+#ifndef _XBOX
 // PC 0x00679A70 GOG 0x00679810
 void CSWGuiInGameMenu::OnChangeCharacter(CSWGuiControl* pControl)
 {
@@ -2691,16 +2726,14 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
 #endif
     }
 }
-#ifndef _XBOX
-// PC 0x00679DC0 GOG 0x00679B90
+// PC 0x00679DC0 GOG 0x00679B90 Xbox 0x0004EBD0
 CSWGuiMainInterfaceChar::CSWGuiMainInterfaceChar()
 {
 }
-// PC 0x00679E80 GOG 0x00679C50
+// PC 0x00679E80 GOG 0x00679C50 Xbox 0x0004ECC0
 CSWGuiMainInterfaceChar::~CSWGuiMainInterfaceChar()
 {
 }
-#endif
 // PC 0x0067CA30 GOG 0x0067C800 Xbox 0x00050CA0
 void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
 {

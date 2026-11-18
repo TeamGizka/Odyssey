@@ -204,8 +204,7 @@ int CSWCVisualEffect::LoadEffect(unsigned long nEffect)
     }
     if (bModelFound != 0)
     {
-        CResRef cModel(sModel);
-        if (LoadModel(cModel, CSWCAnimBase::MODEL_SLOT_MAIN,
+        if (LoadModel(sModel, CSWCAnimBase::MODEL_SLOT_MAIN,
                       LOAD_MODEL_FLAG_VISUAL_EFFECT) == 0)
         {
             return 0;
@@ -316,8 +315,7 @@ void CSWCVisualEffect::SetAnimation(unsigned short nAnimation)
             sSound = "";
         }
         {
-            CResRef cSound(sSound);
-            g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 1.5f, 13, 0, 0,
+            g_pExoSound->Play3DOneShotSound(sSound, m_vPosition, 1.5f, 13, 0, 0,
                                             0.0f, 0.0f);
         }
         if (m_pAnimBase != NULL)
@@ -350,8 +348,7 @@ void CSWCVisualEffect::SetAnimation(unsigned short nAnimation)
             sSound = "";
         }
         {
-            CResRef cSound(sSound);
-            g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 1.5f, 13, 0, 0,
+            g_pExoSound->Play3DOneShotSound(sSound, m_vPosition, 1.5f, 13, 0, 0,
                                             0.0f, 0.0f);
         }
         if (m_pSoundSource != NULL)

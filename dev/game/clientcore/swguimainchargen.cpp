@@ -21,47 +21,39 @@
 void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x0075B210 GOG 0x0075B100 Xbox 0x00137230
 {
     m_pManager->PopModalPanel();
-#ifndef _XBOX
     if (m_pManager->PanelExists(m_pCustom) != 0)
-#endif
     {
         CSWGuiPanel* pPanel = m_pCustom;
         pPanel->m_bDeferredRemoval = 0;
         pPanel->m_nExitState = EXITSTATE_DELETE;
     }
-#ifndef _XBOX
     else
     {
         delete m_pCustom;
         m_pCustom = 0;
     }
     if (m_pManager->PanelExists(m_pQuickOrCustom) != 0)
-#endif
     {
         CSWGuiPanel* pPanel = m_pQuickOrCustom;
         pPanel->m_bDeferredRemoval = 0;
         pPanel->m_nExitState = EXITSTATE_DELETE;
     }
-#ifndef _XBOX
     else
     {
         delete m_pQuickOrCustom;
         m_pQuickOrCustom = 0;
     }
     if (m_pManager->PanelExists(m_pQuick) != 0)
-#endif
     {
         CSWGuiPanel* pPanel = m_pQuick;
         pPanel->m_bDeferredRemoval = 0;
         pPanel->m_nExitState = EXITSTATE_DELETE;
     }
-#ifndef _XBOX
     else
     {
         delete m_pQuick;
         m_pQuick = 0;
     }
-#endif
     m_pManager->PopModalPanel();
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
@@ -268,13 +260,11 @@ void CSWGuiMainCharGen::ClearAbilities()
     m_lblNewWill.m_cText.m_cParams.SetText("");
     m_pCreature->m_pStats->ClearPackage();
 }
-#ifndef _XBOX
 // PC 0x0075BDB0 GOG 0x0075BBF0
 void CSWGuiMainCharGen::ClearFeats()
 {
     m_pCreature->m_pStats->ClearFeats();
 }
-#endif
 // PC 0x0075BDC0 GOG 0x0075BC00 Xbox 0x00137B70
 void CSWGuiMainCharGen::BeginPlayGame()
 {
@@ -345,21 +335,15 @@ CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
     InitControl(m_lblNewReflex, "NEW_REFL_LBL", 1);
     InitControl(m_lblNewFortitude, "NEW_FORT_LBL", 1);
     InitControl(m_lblBevelLeft, "LBL_BEVEL_L", 1);
+#ifndef _XBOX
     InitControl(m_lblBevelMiddle, "LBL_BEVEL_M", 1);
+#endif
     InitControl(m_lblBevelRight, "LBL_BEVEL_R", 1);
     InitControl(m_lblFortitude, "LBL_FORTITUDE", 1);
     InitControl(m_lblReflex, "LBL_REFLEX", 1);
     InitControl(m_lblWill, "LBL_WILL", 1);
-#ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-#endif
     InitControl(m_lblVitality, "LBL_VIT", 1);
     InitControl(m_lblDefense, "LBL_DEF", 1);
-#ifdef _XBOX
-    InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
-#endif
     InitControl(m_viewModel, "MODEL_LBL", 1);
     InitControl(m_lblPortrait, "PORTRAIT_LBL", 1);
 #ifndef _XBOX
@@ -369,6 +353,17 @@ CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
     InitControl(m_lblVitName, "LBL_VIT_NAME", 1);
     InitControl(m_lblDefName, "LBL_DEF_NAME", 1);
     InitControl(m_lblBar, "LBL_BAR1", 1);
+#else
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
+    InitControl(m_lblPortBorder, "LBL_PORTBORDER", 1);
+    InitControl(m_lblBar[0], "LBL_BAR1", 1);
+    InitControl(m_lblStatsBorder, "LBL_STATSBORDER", 1);
+    InitControl(m_lblStatsBack, "LBL_STATSBACK", 1);
+    InitControl(m_lblVitName, "LBL_VIT_NAME", 1);
+    InitControl(m_lblDefName, "LBL_DEF_NAME", 1);
 #endif
     StopLoadFromLayout();
     m_pQuickOrCustom = new CSWGuiQuickOrCustomPanel(m_pManager, m_pCreature);
@@ -380,12 +375,13 @@ CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
     m_nVisiblePanel = 1;
     SetNameString("");
     SetPortraitImage(&m_lblPortrait, m_pCreature->GetPortrait(0));
-    CAurScene* pScene = m_viewModel.m_cScene.m_pScene;
-    CAurCamera* pCamera = m_viewModel.m_cScene.m_pCamera;
+    CSWGuiScene* pGuiScene = &m_viewModel.m_cScene;
+    CAurScene* pScene = pGuiScene->m_pScene;
+    CAurCamera* pCamera = pGuiScene->m_pCamera;
     if (g_bDo3DGUIs != 0)
     {
         pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
-        m_viewModel.m_cScene.AddModel("charrec_light", -1);
+        pGuiScene->AddModel("charrec_light", -1);
         m_pCreature->Setup3DScene(m_viewModel, 0, 0, 0);
         m_pCreature->AttachToScene(pScene);
         m_pCreature->SetPosition(Vector());

@@ -201,31 +201,16 @@ void CSWMiniGameObject::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
 {
     int bSuccess;
 
-    {
-        CResRef resDefault("");
-        SetScriptName(0, pGFF->ReadFieldCResRef(&structScripts, "OnCreate",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(1, pGFF->ReadFieldCResRef(&structScripts, "OnHitBullet",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(2, pGFF->ReadFieldCResRef(&structScripts, "OnHitFollower",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(3, pGFF->ReadFieldCResRef(&structScripts, "OnAnimEvent",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(4, pGFF->ReadFieldCResRef(&structScripts, "OnHeartbeat",
-                                                bSuccess, resDefault));
-    }
+    SetScriptName(0, pGFF->ReadFieldCResRef(&structScripts, "OnCreate",
+                                            bSuccess, ""));
+    SetScriptName(1, pGFF->ReadFieldCResRef(&structScripts, "OnHitBullet",
+                                            bSuccess, ""));
+    SetScriptName(2, pGFF->ReadFieldCResRef(&structScripts, "OnHitFollower",
+                                            bSuccess, ""));
+    SetScriptName(3, pGFF->ReadFieldCResRef(&structScripts, "OnAnimEvent",
+                                            bSuccess, ""));
+    SetScriptName(4, pGFF->ReadFieldCResRef(&structScripts, "OnHeartbeat",
+                                            bSuccess, ""));
 }
 // PC 0x006C16C0 GOG 0x006C14A0 Xbox 0x000B49A0
 CSWMiniGameObject::CSWMiniGameObject(unsigned long nType)

@@ -473,8 +473,8 @@ void CSWGlobalVariableTable::WriteTable(const CExoString& sFileName,
                     int nBit = nIndex - 8 * nByte;
                     int bValue = (m_aBooleanValues[nByte] >> (7 - nBit)) & 1;
                     SetBit(aBooleanValues, nBoolean, bValue);
-                    ++nBoolean;
                     pCatalogue = &lBooleans;
+                    ++nBoolean;
                 }
                 break;
             case CSWGlobalVariable::TYPE_NUMBER:

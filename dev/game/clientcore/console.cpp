@@ -783,9 +783,12 @@ int lockcamera(char* szValue)
     return bLockcamera;
 }
 
+#ifdef _XBOX
+int g_bMovieNotification;
+#endif
+
 #if defined(_XBOX) && defined(_DEBUG)
 
-int g_bMovieNotification;
 int g_bLiveContentIgnore;
 
 void ToggleMovieNotification()

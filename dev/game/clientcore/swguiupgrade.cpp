@@ -1611,8 +1611,7 @@ void CSWGuiCreateItem::SetItemList()
         {
             CSWSItem* pItem = new CSWSItem(OBJECT_INVALID);
             pTable->GetCExoStringEntry(nRow, "label", &sLabel);
-            CResRef cTemplate(sLabel.CStr());
-            if (pItem->LoadFromTemplate(cTemplate))
+            if (pItem->LoadFromTemplate(sLabel.CStr()))
                 m_pStore->AcquireItem(pItem, 1);
         }
     }
@@ -3174,8 +3173,12 @@ int CSWGuiCreateItem::CheckBreakdownFilter(CSWSItem* pItem,
     case 3:
         if (pCreature->GetClientCreature() != 0)
         {
+#ifdef _XBOX
+            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot) &&
+#else
             if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot,
                                                                   0xFF) &&
+#endif
                 pCreature->CanUseItem(pItem, 0, 1))
                 bResult = 1;
             else
@@ -3193,8 +3196,12 @@ int CSWGuiCreateItem::CheckBreakdownFilter(CSWSItem* pItem,
         }
         if (pCreature->GetClientCreature() != 0)
         {
+#ifdef _XBOX
+            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot) &&
+#else
             if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot,
                                                                   0xFF) &&
+#endif
                 pCreature->CanUseItem(pItem, 0, 1))
                 bResult = 0;
         }
@@ -3484,12 +3491,12 @@ void CSWGuiCreateItem::UpdateBreakdownFilters()
 #ifdef _XBOX
         if (i == m_nBreakdownFilter)
         {
-            m_alblBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_alblBreakdownFilters[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_alblBreakdownFilters[i].m_cText.m_cParams.m_bHilightText = 1;
         }
         else
         {
-            m_alblBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+            m_alblBreakdownFilters[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_UPGRADE_TEXT);
             m_alblBreakdownFilters[i].m_cText.m_cParams.m_bHilightText = 0;
         }
 #else
@@ -3538,8 +3545,7 @@ void CSWGuiCreateMedicalItem::SetItemList()
         {
             CSWSItem* pItem = new CSWSItem(OBJECT_INVALID);
             pTable->GetCExoStringEntry(nRow, "label", &sLabel);
-            CResRef cResRef(sLabel.CStr());
-            pItem->LoadFromTemplate(cResRef);
+            pItem->LoadFromTemplate(sLabel.CStr());
             m_pStore->AcquireItem(pItem, 1);
         }
     }
@@ -3762,12 +3768,12 @@ void CSWGuiCreateMedicalItem::UpdateCreateFilters()
 #ifdef _XBOX
         if (i == m_nCreateFilter)
         {
-            m_alblCreateFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_alblCreateFilters[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_alblCreateFilters[i].m_cText.m_cParams.m_bHilightText = 1;
         }
         else
         {
-            m_alblCreateFilters[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+            m_alblCreateFilters[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_UPGRADE_TEXT);
             m_alblCreateFilters[i].m_cText.m_cParams.m_bHilightText = 0;
         }
 #else
@@ -5025,6 +5031,7 @@ void CSWGuiUpgrade::OnPanelAdded()
                 {
                     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidItem);
                     CSWSItem* pItem = pObject != 0 ? pObject->AsSWSItem() : 0;
+                    EXOXBOXASSERT(pItem);
                     int nUpgradeLevel = pObject->AsSWSItem()->m_nUpgradeLevel;
                     if (nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
                     {

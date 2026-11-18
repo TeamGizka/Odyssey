@@ -51,46 +51,22 @@ void CSWTrackFollower::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
     int bSuccess;
 
     CSWMiniGameObject::LoadScripts(pGFF, pStruct, structScripts);
-    {
-        CResRef resDefault("");
-        SetScriptName(5, pGFF->ReadFieldCResRef(&structScripts, "OnDamage",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(6, pGFF->ReadFieldCResRef(&structScripts, "OnDeath",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(7, pGFF->ReadFieldCResRef(&structScripts, "OnFire",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(8, pGFF->ReadFieldCResRef(&structScripts, "OnHitObstacle",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(9, pGFF->ReadFieldCResRef(&structScripts, "OnTrackLoop",
-                                                bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(10, pGFF->ReadFieldCResRef(&structScripts, "OnAccelerate",
-                                                 bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(11, pGFF->ReadFieldCResRef(&structScripts, "OnBrake",
-                                                 bSuccess, resDefault));
-    }
-    {
-        CResRef resDefault("");
-        SetScriptName(12, pGFF->ReadFieldCResRef(&structScripts, "OnHitWorld",
-                                                 bSuccess, resDefault));
-    }
+    SetScriptName(5, pGFF->ReadFieldCResRef(&structScripts, "OnDamage",
+                                            bSuccess, ""));
+    SetScriptName(6, pGFF->ReadFieldCResRef(&structScripts, "OnDeath",
+                                            bSuccess, ""));
+    SetScriptName(7, pGFF->ReadFieldCResRef(&structScripts, "OnFire",
+                                            bSuccess, ""));
+    SetScriptName(8, pGFF->ReadFieldCResRef(&structScripts, "OnHitObstacle",
+                                            bSuccess, ""));
+    SetScriptName(9, pGFF->ReadFieldCResRef(&structScripts, "OnTrackLoop",
+                                            bSuccess, ""));
+    SetScriptName(10, pGFF->ReadFieldCResRef(&structScripts, "OnAccelerate",
+                                             bSuccess, ""));
+    SetScriptName(11, pGFF->ReadFieldCResRef(&structScripts, "OnBrake",
+                                             bSuccess, ""));
+    SetScriptName(12, pGFF->ReadFieldCResRef(&structScripts, "OnHitWorld",
+                                             bSuccess, ""));
 }
 // PC 0x006C1A90 GOG 0x006C1870 Xbox 0x000A5BA0
 float CSWTrackFollower::SetSpeed(float fSpeed)
@@ -585,34 +561,6 @@ Gob* CSWTrackFollower::GetModel(int nIndex)
 
 void OnReportKey(CAurObject* pObject, char* sEvent, void* pUserData)
 {
-#ifdef _XBOX
-    CSWMiniGame* pMiniGame = g_pAppManager->m_pClientExoApp->GetMiniGame();
-    if (pMiniGame->m_bUseInertia)
-    {
-        SWMGReportKeyData* pData = (SWMGReportKeyData*)pUserData;
-        CSWMiniPlayer* pPlayer = pMiniGame->m_pPlayer;
-        SWMGKeyInfo key;
-        key.m_fTime = pData->m_fTime;
-        key.m_bPosition = pData->m_pPosition != 0;
-        key.m_bOrientation = pData->m_pOrientation != 0;
-        if (pData->m_pOrientation != 0)
-        {
-            key.m_qOrientation = *pData->m_pOrientation;
-        }
-        if (pData->m_pPosition != 0)
-        {
-            key.m_vPosition = *pData->m_pPosition;
-        }
-        if (pData->m_bPositionKey)
-        {
-            pPlayer->m_lstPositionKeys.Add(key);
-        }
-        else
-        {
-            pPlayer->m_lstOrientationKeys.Add(key);
-        }
-    }
-#endif
 }
 
 // Dead code: not in the PC executable
@@ -1173,20 +1121,16 @@ void CSWTrackFollower::LoadSounds(CResGFF* pGFF, CResStruct* pStruct,
     int bSuccess;
 
     {
-        CResRef resDefault("");
         CExoSoundSource* pSource =
             SetSoundName(SOUND_ENGINE, pGFF->ReadFieldCResRef(&structSounds, "Engine",
-                                                   bSuccess, resDefault));
+                                                   bSuccess, ""));
         if (pSource != 0)
         {
             pSource->SetLooping(1);
         }
     }
-    {
-        CResRef resDefault("");
-        SetSoundName(SOUND_DEATH, pGFF->ReadFieldCResRef(&structSounds, "Death", bSuccess,
-                                               resDefault));
-    }
+    SetSoundName(SOUND_DEATH, pGFF->ReadFieldCResRef(&structSounds, "Death", bSuccess,
+                                           ""));
 }
 // PC 0x006C35E0 GOG 0x006C3410 Xbox 0x000A7710
 CExoSoundSource* CSWTrackFollower::SetSoundName(int nSound,

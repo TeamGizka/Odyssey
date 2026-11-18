@@ -263,14 +263,12 @@ int CSWCAnimBaseTW::RestoreTexture()
 
     if (m_pTail != 0 && m_bTailTextureChanged != 0)
     {
-        CResRef sTexture("");
-        ReplaceTexture(253, sTexture, m_sTailTexture, m_nTailColor,
+        ReplaceTexture(253, "", m_sTailTexture, m_nTailColor,
                        m_aTailPalette, 0, m_nTailPaletteStart);
     }
     if (m_pWings != 0 && m_bWingsTextureChanged != 0)
     {
-        CResRef sTexture("");
-        ReplaceTexture(252, sTexture, m_sWingsTexture, m_nWingsColor,
+        ReplaceTexture(252, "", m_sWingsTexture, m_nWingsColor,
                        m_aWingsPalette, 0, m_nWingsPaletteStart);
     }
     return CSWCAnimBase::RestoreTexture();
@@ -287,8 +285,7 @@ int CSWCAnimBaseTW::RestoreTexture(unsigned char nModel)
         {
             if (m_bTailTextureChanged != 0)
             {
-                CResRef sTexture("");
-                ReplaceTexture(MODEL_TAIL, sTexture, m_sTailTexture, m_nTailColor,
+                ReplaceTexture(MODEL_TAIL, "", m_sTailTexture, m_nTailColor,
                                m_aTailPalette, 0, m_nTailPaletteStart);
                 return 1;
             }
@@ -304,8 +301,7 @@ int CSWCAnimBaseTW::RestoreTexture(unsigned char nModel)
         {
             if (m_bWingsTextureChanged != 0)
             {
-                CResRef sTexture("");
-                ReplaceTexture(MODEL_WINGS, sTexture, m_sWingsTexture, m_nWingsColor,
+                ReplaceTexture(MODEL_WINGS, "", m_sWingsTexture, m_nWingsColor,
                                m_aWingsPalette, 0, m_nWingsPaletteStart);
                 return 1;
             }

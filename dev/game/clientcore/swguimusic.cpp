@@ -496,6 +496,7 @@ void CSWGuiTitleMusic::HandleInputEvent(int nEvent, int nState)
 // Xbox 0x0012C450
 void CSWGuiTitleMusic::OnNextPicked(CSWGuiControl* pControl)
 {
+    int bNoRefresh = 0;
     if (m_lMusic.num >= 1 && pControl->m_bSelected)
     {
         if (!m_sCurrentSong.IsEmpty())
@@ -508,15 +509,15 @@ void CSWGuiTitleMusic::OnNextPicked(CSWGuiControl* pControl)
                     break;
                 }
             }
+            SelectNextSong(bNoRefresh);
         }
-        SelectNextSong(0);
         if (m_pStreamingSound->IsPlaying())
         {
             StopMusic();
         }
         CMusicItemInfo* pInfo = (CMusicItemInfo*)m_pSelectedSong->m_nIndex;
         m_pStreamingSound->SetLooping(m_bLooping);
-        m_pStreamingSound->Play(CResRef(pInfo->m_sFileName), m_nMusicResType, 0, 1, 0);
+        m_pStreamingSound->Play(pInfo->m_sFileName, m_nMusicResType, 0, 1, 0);
         m_sCurrentSong = pInfo->m_sFileName;
     }
 }

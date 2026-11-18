@@ -4359,6 +4359,18 @@ void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // Xbox 0x00
         return;
     }
 
+    if (AURDXCORE_DEBUG)
+    {
+        Vector vMin = lstVertices.m_pList[0];
+        Vector vMax = lstVertices.m_pList[0];
+        for (int n = 1; n < lstVertices.m_nCount; n++)
+        {
+            vMin = Vector((vMin.m_fX < lstVertices.m_pList[n].m_fX ? vMin.m_fX : lstVertices.m_pList[n].m_fX), (vMin.m_fY < lstVertices.m_pList[n].m_fY ? vMin.m_fY : lstVertices.m_pList[n].m_fY), (vMin.m_fZ < lstVertices.m_pList[n].m_fZ ? vMin.m_fZ : lstVertices.m_pList[n].m_fZ));
+            vMax = Vector((vMax.m_fX > lstVertices.m_pList[n].m_fX ? vMax.m_fX : lstVertices.m_pList[n].m_fX), (vMax.m_fY > lstVertices.m_pList[n].m_fY ? vMax.m_fY : lstVertices.m_pList[n].m_fY), (vMax.m_fZ > lstVertices.m_pList[n].m_fZ ? vMax.m_fZ : lstVertices.m_pList[n].m_fZ));
+        }
+        AurPrintf("GLRender::DrawFromVerts() min %f %f %f\n", vMin.m_fX, vMin.m_fY, vMin.m_fZ);
+        AurPrintf("GLRender::DrawFromVerts() max %f %f %f\n", vMax.m_fX, vMax.m_fY, vMax.m_fZ);
+    }
     D3DCOLORVALUE color = g_Material.Diffuse;
     unsigned long nColor = D3DCOLOR_COLORVALUE(color.r, color.g, color.b, color.a);
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -4379,6 +4391,17 @@ void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // Xbox 0x00
             pVertices[i].position[1] = lstVertices.m_pList[i].m_fY;
             pVertices[i].position[2] = lstVertices.m_pList[i].m_fZ;
             *(unsigned long*)pVertices[i].color = nColor;
+            if (AURDXCORE_DEBUG)
+            {
+                Vector vVertex = lstVertices.m_pList[i];
+                Vector vNext = lstVertices.m_pList[(i + 1) % lstVertices.m_nCount];
+                Vector vEdge = vNext - vVertex;
+                Vector vCenter = (vNext + vVertex) * 0.5f;
+                float fLength = sqrtf(vEdge * vEdge);
+                Vector vDir = vEdge / fLength;
+                Vector vNormal = cross(vDir, vCenter);
+                AurPrintf("GLRender::DrawFromVerts() edge %d normal %f %f %f\n", i, vNormal.m_fX, vNormal.m_fY, vNormal.m_fZ);
+            }
         }
     }
     else

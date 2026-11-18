@@ -1572,8 +1572,7 @@ int CSWCProjectile::UpdateCurrentBehavior()
             if (pGrenadeSound->GetCExoStringEntry(
                     m_pCurrentBehavior->m_nSoundRow, "SOUND", &sSOUND))
             {
-                CResRef cSound(sSOUND);
-                g_pExoSound->Play3DOneShotSound(cSound, m_vPosition,
+                g_pExoSound->Play3DOneShotSound(sSOUND, m_vPosition,
                                                0.0f, 15, 0, 255, 0.0f, 0.0f);
             }
         }

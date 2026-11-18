@@ -2511,6 +2511,11 @@ void CSWGuiMainInterface::Update(float fElapsed)
 }
 
 #ifdef _XBOX
+enum
+{
+    XBOX_STRREF_STEALTH_ACTIVE = 48058
+};
+
 void CSWGuiMainInterface::UpdateActionDescription(CSWGuiControl* pControl)  // Xbox 0x000D9760
 {
     CExoString sDescription;
@@ -2526,13 +2531,39 @@ void CSWGuiMainInterface::UpdateActionDescription(CSWGuiControl* pControl)  // X
         sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(
             m_nActionDescription);
     }
+    else if (m_aPersonalActionLists[m_aSelectedMenu[m_nTargetType]]
+                 .element[m_nSelectedAction].m_nAction == XBOX_ACTION_STEALTH)
+    {
+        CSWCCreature* pPlayer =
+            g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+        if (pPlayer != NULL)
+        {
+            CSWSCreature* pCreature = pPlayer->GetServerCreature();
+            if (pCreature != NULL)
+            {
+                if (pCreature->m_nStealthMode == 1)
+                {
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(
+                        XBOX_STRREF_STEALTH_ACTIVE);
+                }
+                else
+                {
+                    sDescription = m_aPersonalActionLists[m_aSelectedMenu[m_nTargetType]]
+                                       .element[m_nSelectedAction].m_sName;
+                }
+            }
+        }
+    }
     else
     {
         sDescription = m_aPersonalActionLists[m_aSelectedMenu[m_nTargetType]]
                            .element[m_nSelectedAction].m_sName;
     }
     m_cActionText.m_cText.m_cParams.SetText(sDescription);
-    m_cActionText.m_cText.m_cParams.m_fAlpha = fAlpha;
+    if (!m_bActionBarHidden)
+    {
+        m_cActionText.m_cText.m_cParams.m_fAlpha = fAlpha;
+    }
 }
 #else
 void CSWGuiMainInterface::UpdateActionDescription()  // PC 0x006E0D90 GOG 0x006DEF00
@@ -5184,8 +5215,10 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // Xbox 0x000DAC90
                                 bFriendly = 0;
                         }
                     }
-                    Vector vOffset = pPlayer->m_vPosition - pTarget->m_vPosition;
-                    float fDistanceSquared = vOffset * vOffset;
+                    float fX = pPlayer->m_vPosition.m_fX - pTarget->m_vPosition.m_fX;
+                    float fY = pPlayer->m_vPosition.m_fY - pTarget->m_vPosition.m_fY;
+                    float fZ = pPlayer->m_vPosition.m_fZ - pTarget->m_vPosition.m_fZ;
+                    float fDistanceSquared = fX * fX + fY * fY + fZ * fZ;
                     if (fDistanceSquared >= XBOX_RETICLE_OBJECT_FAR_RANGE * XBOX_RETICLE_OBJECT_FAR_RANGE)
                         nSize = STICKY_RETICLE_OBJECT_MIN_SIZE;
                     else if (fDistanceSquared > STICKY_RETICLE_NEAR_RANGE * STICKY_RETICLE_NEAR_RANGE)
@@ -5700,7 +5733,8 @@ void CSWGuiMainInterface::HandleInputEvent(int nEvent, int nState)  // Xbox 0x00
                     m_fActionDescriptionTimer = -1.0f;
                 }
                 m_pManager->PlayGuiSound(1);
-                if (pClientApp->GetClientOptions()->m_bAutopauseActionMenu &&
+                CClientOptions* pClientOptions = pClientApp->GetClientOptions();
+                if (pClientOptions->m_bAutopauseActionMenu &&
                     m_nTargetType == 4)
                 {
                     pClientApp->SetAutoPaused(1, 7);

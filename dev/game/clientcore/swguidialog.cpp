@@ -1005,13 +1005,14 @@ CExoString CSWGuiDialogComputer::GetFullScreenBG()
 #endif
     return sBackground;
 }
-#ifndef _XBOX
-// PC 0x0070E270 GOG 0x0070E8E0
+// PC 0x0070E270 GOG 0x0070E8E0 Xbox 0x000E8500
 void CSWGuiDialogComputerCamera::SetLiveFeedMessageVisible(int bVisible)
 {
+#ifdef _XBOX
+    m_lblCameraTitle.SetEnabledFlag(bVisible);
+#endif
     m_lblReturn.SetEnabledFlag(bVisible);
 }
-#endif
 
 // PC 0x0070EDD0 GOG 0x0070E570
 CSWGuiDialogComputer::~CSWGuiDialogComputer()

@@ -5190,8 +5190,7 @@ float CSWSCreature::GetRunRate()
     fRunRate = fRunRate * fFactor * 1000.0f;
     return max(1000.0f, fRunRate);
 }
-#ifndef _XBOX
-// PC 0x0050C900 GOG 0x0050C960
+// PC 0x0050C900 GOG 0x0050C960 Xbox 0x00181F10
 int CSWSCreature::IsWieldingLightsaber()
 {
     CSWSItem* pItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
@@ -5201,9 +5200,33 @@ int CSWSCreature::IsWieldingLightsaber()
     }
     return 0;
 }
-// PC 0x0050C930 GOG 0x0050C990
+// PC 0x0050C930 GOG 0x0050C990 Xbox 0x00181F40
 int CSWSCreature::ConvertGrenadeSpellID(int nSpellID)
 {
+    enum
+    {
+        ITEM_ABILITY_GRENADE_FRAGMENTATION = 87,
+        ITEM_ABILITY_GRENADE_STUN = 88,
+        ITEM_ABILITY_GRENADE_THERMAL_DETONATOR = 89,
+        ITEM_ABILITY_GRENADE_POISON = 90,
+        ITEM_ABILITY_GRENADE_SONIC = 91,
+        ITEM_ABILITY_GRENADE_ADHESIVE = 92,
+        ITEM_ABILITY_GRENADE_CRYOBAN = 93,
+        ITEM_ABILITY_GRENADE_FIRE = 94,
+        ITEM_ABILITY_GRENADE_ION = 95,
+        ITEM_ABILITY_GRENADE_SONIC_2 = 186,
+        ITEM_ABILITY_GRENADE_SONIC_3 = 187,
+        ITEM_ABILITY_GRENADE_LAUNCHED_STUN = 247,
+        ITEM_ABILITY_GRENADE_LAUNCHED_THERMAL_DETONATOR = 248,
+        ITEM_ABILITY_GRENADE_LAUNCHED_POISON = 249,
+        ITEM_ABILITY_GRENADE_LAUNCHED_SONIC = 250,
+        ITEM_ABILITY_GRENADE_LAUNCHED_ADHESIVE = 251,
+        ITEM_ABILITY_GRENADE_LAUNCHED_CRYOBAN = 252,
+        ITEM_ABILITY_GRENADE_LAUNCHED_FIRE = 253,
+        ITEM_ABILITY_GRENADE_LAUNCHED_ION = 254,
+        ITEM_ABILITY_GRENADE_LAUNCHED_SONIC_2 = 255,
+        ITEM_ABILITY_GRENADE_LAUNCHED_SONIC_3 = 256
+    };
     int nNewSpellID = nSpellID;
     CSWSItem* pItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_NECK);
     if (pItem == NULL ||
@@ -5219,44 +5242,42 @@ int CSWSCreature::ConvertGrenadeSpellID(int nSpellID)
 
     switch (nNewSpellID)
     {
-    case 87:
-        nNewSpellID = 246;
+    case ITEM_ABILITY_GRENADE_FRAGMENTATION:
+        nNewSpellID = CSWSpell::ITEM_ABILITY_GRENADE_LAUNCHED_FRAGMENTATION;
         break;
-    case 88:
-        nNewSpellID = 247;
+    case ITEM_ABILITY_GRENADE_STUN:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_STUN;
         break;
-    case 89:
-        nNewSpellID = 248;
+    case ITEM_ABILITY_GRENADE_THERMAL_DETONATOR:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_THERMAL_DETONATOR;
         break;
-    case 90:
-        nNewSpellID = 249;
+    case ITEM_ABILITY_GRENADE_POISON:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_POISON;
         break;
-    case 91:
-        nNewSpellID = 250;
+    case ITEM_ABILITY_GRENADE_SONIC:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_SONIC;
         break;
-    case 92:
-        nNewSpellID = 251;
+    case ITEM_ABILITY_GRENADE_ADHESIVE:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_ADHESIVE;
         break;
-    case 93:
-        nNewSpellID = 252;
+    case ITEM_ABILITY_GRENADE_CRYOBAN:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_CRYOBAN;
         break;
-    case 94:
-        nNewSpellID = 253;
+    case ITEM_ABILITY_GRENADE_FIRE:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_FIRE;
         break;
-    case 95:
-        nNewSpellID = 254;
+    case ITEM_ABILITY_GRENADE_ION:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_ION;
         break;
-    case 186:
-        nNewSpellID = 255;
+    case ITEM_ABILITY_GRENADE_SONIC_2:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_SONIC_2;
         break;
-    case 187:
-        nNewSpellID = 256;
+    case ITEM_ABILITY_GRENADE_SONIC_3:
+        nNewSpellID = ITEM_ABILITY_GRENADE_LAUNCHED_SONIC_3;
         break;
     }
     return nNewSpellID;
 }
-
-#endif
 float CSWSCreature::GetMovementRateFactor(int bIncludeFeats)  // PC 0x0050CAC0 GOG 0x0050CB20 Xbox 0x001820D0
 {
     float fMovementRateFactor;

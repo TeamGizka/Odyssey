@@ -419,8 +419,7 @@ void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
     pParams->SetPulsingAlpha(1, 1, 0);
     pParams = &m_cNormal.m_cParams;
     {
-        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
-        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        *pParams = CSWGuiBorderParams("", "", "UIBIT_EQP_ITM1", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #ifdef _XBOX
         pParams->m_vColor = vColor;
 #else
@@ -429,8 +428,7 @@ void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
     }
     pParams = &m_cHilite.m_cParams;
     {
-        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
-        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        *pParams = CSWGuiBorderParams("", "", "UIBIT_EQP_ITM1", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #ifdef _XBOX
         pParams->m_vColor = vHiliteColor;
 #endif

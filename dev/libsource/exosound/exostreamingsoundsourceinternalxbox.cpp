@@ -441,6 +441,11 @@ int CExoStreamingSoundSourceInternal::GetPlayFailed()  // Xbox 0x00168B90
     return m_pStream->m_bPlayFailed;
 }
 
+int CExoStreamingSoundSourceInternal::IsDone()  // Xbox 0x00168B90
+{
+    return m_pStream->m_bPlayFailed;
+}
+
 int CExoStreamingSoundSourceInternal::GetHasStartedStreaming()  // Xbox 0x00168BA0
 {
     if (m_pStream != NULL)

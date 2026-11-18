@@ -26,13 +26,15 @@ void CSWGuiCustomPanel::SetState(int nState)
 {
     m_nState = nState;
 #ifdef _XBOX
+    SetActiveControl(&m_aSteps[m_nState], 0);
     for (int i = 0; i < 6; i++)
     {
         if (i == m_nState)
         {
             m_aHilights[i].SetActive(1);
-            m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-            m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+            m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_aSteps[i].m_cBorder.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             CSWGuiTextParams* pParams = &m_aNumbers[i].m_cText.m_cParams;
             pParams->m_bHilightText = 1;
             pParams = &m_aSteps[i].m_cText.m_cParams;
@@ -47,13 +49,15 @@ void CSWGuiCustomPanel::SetState(int nState)
             pParams->m_bHilightText = 0;
             if (i < m_nState)
             {
-                m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-                m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                m_aSteps[i].m_cBorder.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
             }
             else
             {
-                m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-                m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+                m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+                m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+                m_aSteps[i].m_cBorder.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
             }
         }
     }
@@ -111,8 +115,8 @@ void CSWGuiCustomPanel::SetState(int nState)
             }
         }
     }
-#endif
     SetActiveControl(&m_aSteps[m_nState], 0);
+#endif
 }
 // PC 0x00760240 GOG 0x0075FDB0 Xbox 0x002CD320
 void CSWGuiCustomPanel::SetParentPanel(CSWGuiPanel* pPanel)
@@ -122,9 +126,7 @@ void CSWGuiCustomPanel::SetParentPanel(CSWGuiPanel* pPanel)
 // PC 0x00760250 GOG 0x00760070
 void CSWGuiCustomPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
 {
-#ifndef _XBOX
     if (m_nState >= 0)
-#endif
     {
 #ifdef _XBOX
         int nResult = pControl->m_bSelected;
@@ -153,9 +155,7 @@ void CSWGuiCustomPanel::OnSelectNameButton(CSWGuiControl* pControl)
     CSWGuiNameChargen* pPanel;
     CSWGuiNameChargen* pNew;
 
-#ifndef _XBOX
     if (m_nState >= 4)
-#endif
     {
         int nResult = pControl->m_bSelected;
         pPanel = NULL;
@@ -173,9 +173,7 @@ void CSWGuiCustomPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
 {
     CSWGuiFeatsCharGen* pNew;
 
-#ifndef _XBOX
     if (m_nState >= 3)
-#endif
     {
         int nResult = pControl->m_bSelected;
         if (nResult != 0)
@@ -191,9 +189,7 @@ void CSWGuiCustomPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
 {
     CSWGuiSkillsCharGen* pNew;
 
-#ifndef _XBOX
     if (m_nState >= 2)
-#endif
     {
         int nResult = pControl->m_bSelected;
         if (nResult != 0)
@@ -209,9 +205,7 @@ void CSWGuiCustomPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
 {
     CSWGuiAbilitiesCharGen* pNew;
 
-#ifndef _XBOX
     if (m_nState >= 1)
-#endif
     {
         int nResult = pControl->m_bSelected;
         if (nResult != 0)
@@ -407,7 +401,7 @@ CSWGuiCustomPanel::CSWGuiCustomPanel(CSWGuiManager* pManager,
     m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     m_pCreature = pCreature;
 #ifdef _XBOX
-    StartLoadFromLayout("CUSTPNL_x");
+    StartLoadFromLayout("CUSTPNL_x", 0, 1);
 #else
     StartLoadFromLayout("CUSTPNL_p", 0, 1);
 #endif

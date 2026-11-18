@@ -2143,6 +2143,9 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
             int nBone = (int)pNode->m_pfBoneMap[i];
             if (nBone != -1)
             {
+#ifdef _XBOX
+                tbones[i] = tbones[i];  // Dead code: not in the PC executable
+#endif
                 tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
                 qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
                 mRotation = qbones[i].getmatrix();

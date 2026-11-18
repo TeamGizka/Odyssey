@@ -140,7 +140,9 @@ public:
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_alblBar[6];
-    Vector m_avLabelColors[3];
+    Vector m_vLabelColor0;
+    Vector m_vLabelColor1;
+    Vector m_vLabelColor2;
     CSWGuiLabel m_lblStart;
     CSWGuiLabel m_lblExit;
     int m_bCanChangeParty;

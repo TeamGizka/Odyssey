@@ -2799,124 +2799,124 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
     int nDcSave;
     int nPeriod;
     CSWSCreature* pCreature = pObject->AsSWSCreature();
-    if (pCreature != NULL)
+    if (pCreature == NULL)
     {
-        if (pCreature->m_bPlotObject != 0 || pCreature->GetDead() != 0 ||
-            pCreature->GetDeadTemp() != 0)
+        return 0;
+    }
+    if (pCreature->m_bPlotObject != 0 || pCreature->GetDead() != 0 ||
+        pCreature->GetDeadTemp() != 0)
+    {
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, pEffect->GetCreator(), pCreature->GetId(),
+            CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
+        return 0;
+    }
+    if (pCreature->GetPoisoned() == 1)
+    {
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, pEffect->GetCreator(), pCreature->GetId(),
+            CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
+        return 0;
+    }
+    if (!bLoadingModule)
+    {
+        int nName;
+        CSWSCreature* pCreator = g_pAppManager->GetServerExoApp()
+            ->GetCreatureByGameObjectID(pEffect->GetCreator());
+        if (pCreature->m_pStats->GetEffectImmunity(
+                CSWSCreatureStats::IMMUNITY_TYPE_POISON, pCreator) != 0)
         {
+            CSWCCMessageData* pMessageData = new CSWCCMessageData;
+            pMessageData->SetObjectID(0, pObject->GetId());
+            pMessageData->SetInteger(0, 0);
+            pMessageData->SetInteger(1, 0);
+            pMessageData->SetInteger(2, DAMAGE_FLAG_POISON);
+            if (pCreator != NULL)
+            {
+                CSWCCMessageData* pCreatorMessageData = new CSWCCMessageData;
+                pMessageData->CopyTo(pCreatorMessageData);
+                pCreator->SendFeedbackMessage(
+                    CSWSCreature::FEEDBACK_DAMAGE_IMMUNITY, pCreatorMessageData);
+            }
+            pCreature->SendFeedbackMessage(
+                CSWSCreature::FEEDBACK_DAMAGE_IMMUNITY, pMessageData);
             g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                 0, 0, pEffect->GetCreator(), pCreature->GetId(),
                 CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
-        }
-        else if (pCreature->GetPoisoned() == 1)
-        {
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, pEffect->GetCreator(), pCreature->GetId(),
-                CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
+            return 0;
         }
         else
         {
-            if (!bLoadingModule)
-            {
-                int nName;
-                CSWSCreature* pCreator = g_pAppManager->GetServerExoApp()
-                    ->GetCreatureByGameObjectID(pEffect->GetCreator());
-                if (pCreature->m_pStats->GetEffectImmunity(
-                        CSWSCreatureStats::IMMUNITY_TYPE_POISON, pCreator) != 0)
-                {
-                    CSWCCMessageData* pMessageData = new CSWCCMessageData;
-                    pMessageData->SetObjectID(0, pObject->GetId());
-                    pMessageData->SetInteger(0, 0);
-                    pMessageData->SetInteger(1, 0);
-                    pMessageData->SetInteger(2, DAMAGE_FLAG_POISON);
-                    if (pCreator != NULL)
-                    {
-                        CSWCCMessageData* pCreatorMessageData = new CSWCCMessageData;
-                        pMessageData->CopyTo(pCreatorMessageData);
-                        pCreator->SendFeedbackMessage(
-                            CSWSCreature::FEEDBACK_DAMAGE_IMMUNITY, pCreatorMessageData);
-                    }
-                    pCreature->SendFeedbackMessage(
-                        CSWSCreature::FEEDBACK_DAMAGE_IMMUNITY, pMessageData);
-                    g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                        0, 0, pEffect->GetCreator(), pCreature->GetId(),
-                        CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
-                    return 0;
-                }
-                else
-                {
-                    g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
-                        &nCalendarDay, &nTimeOfDay);
-                    pEffect->SetInteger(1, nCalendarDay);
-                    pEffect->SetInteger(2, nTimeOfDay);
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
+                &nCalendarDay, &nTimeOfDay);
+            pEffect->SetInteger(1, nCalendarDay);
+            pEffect->SetInteger(2, nTimeOfDay);
 #ifdef _XBOX
-                    C2DA* pPoison = g_pRules->Get2DArrays()->GetPoison();
+            C2DA* pPoison = g_pRules->Get2DArrays()->GetPoison();
 #else
-                    C2DA* pPoison = g_pRules->Get2DArrays()->m_pPoison;
+            C2DA* pPoison = g_pRules->Get2DArrays()->m_pPoison;
 #endif
-                    if (pPoison == NULL)
-                    {
-                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                            0, 0, pEffect->GetCreator(), pCreature->GetId(),
-                            CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
-                        return 0;
-                    }
-                    int nPoison = pEffect->GetInteger(0);
-                    pPoison->GetINTEntry(nPoison, "DC_SAVE", &nDcSave);
-                    if (pCreature->SavingThrowRoll(CSWSCreature::SAVING_THROW_FORT,
-                            nDcSave, CSWSCreature::SAVING_THROW_TYPE_POISON,
-                            pEffect->GetCreator(), 1, 0, 0) != 0)
-                    {
-                        if (pEffect->m_nSpellId == SPELL_ID_7 ||
-                            pEffect->m_nSpellId == SPELL_ID_38)
-                        {
-                            CGameEffect* pResistedEffect = new CGameEffect(1);
-                            if (pResistedEffect != NULL)
-                            {
-                                pResistedEffect->m_nType = EFFECT_FORCERESISTED;
-                                pResistedEffect->SetObjectID(0, pEffect->GetCreator());
-                                pCreature->ApplyEffect(pResistedEffect, 0, 0);
-                            }
-                        }
-                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                            0, 0, pEffect->GetCreator(), pCreature->GetId(),
-                            CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
-                        return 0;
-                    }
-                    pPoison->GetINTEntry(nPoison, "Name", &nName);
-                    CSWCCMessageData* pPoisonMessageData = new CSWCCMessageData;
-                    pPoisonMessageData->SetInteger(0, nName);
-                    pPoisonMessageData->SetObjectID(0, pCreature->GetId());
-                    pCreature->BroadcastPoisoned(pPoisonMessageData);
-                    delete pPoisonMessageData;
-                    pCreature->BroadcastVoiceChat(28);
-                    pEffect->SetFloat(0, 2.0f);
-                    pCreature->ApplyPoisonDamage(nPoison, pEffect, 0, 1.0f);
-                    pEffect->SetInteger(3, nCalendarDay);
-                    pEffect->SetInteger(4, nTimeOfDay);
-                    pPoison->GetINTEntry(nPoison, "DURATION", &nDuration);
-                    pEffect->SetInteger(5, nDuration);
-                    pEffect->m_nSubType =
-                        (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
-                        CGameEffect::DURATION_TYPE_TEMPORARY;
-                    pEffect->m_fDuration = nDuration * 1000.0f;
-                    pPoison->GetINTEntry(nPoison, "PERIOD", &nPeriod);
-                    pEffect->SetInteger(6, nPeriod);
-                    pEffect->SetInteger(7, 0);
-                }
+            if (pPoison == NULL)
+            {
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, pEffect->GetCreator(), pCreature->GetId(),
+                    CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
+                return 0;
             }
-            CGameEffect* pVisualEffect = new CGameEffect(1);
-            pVisualEffect->m_nType = EFFECT_VISUALEFFECT;
-            pVisualEffect->m_nSubType =
-                (pVisualEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
-                CGameEffect::DURATION_TYPE_INSTANTANEOUS;
-            pVisualEffect->SetInteger(0, VFX_PRO_AFFLICT);
-            pVisualEffect->SetInteger(2, 0);
-            pVisualEffect->SetObjectID(0, pEffect->GetCreator());
-            pCreature->ApplyEffect(pVisualEffect, 0, 0);
-            pCreature->SetPoisoned(1, pEffect->m_nID);
+            int nPoison = pEffect->GetInteger(0);
+            pPoison->GetINTEntry(nPoison, "DC_SAVE", &nDcSave);
+            if (pCreature->SavingThrowRoll(CSWSCreature::SAVING_THROW_FORT,
+                    nDcSave, CSWSCreature::SAVING_THROW_TYPE_POISON,
+                    pEffect->GetCreator(), 1, 0, 0) != 0)
+            {
+                if (pEffect->m_nSpellId == SPELL_ID_7 ||
+                    pEffect->m_nSpellId == SPELL_ID_38)
+                {
+                    CGameEffect* pResistedEffect = new CGameEffect(1);
+                    if (pResistedEffect != NULL)
+                    {
+                        pResistedEffect->m_nType = EFFECT_FORCERESISTED;
+                        pResistedEffect->SetObjectID(0, pEffect->GetCreator());
+                        pCreature->ApplyEffect(pResistedEffect, 0, 0);
+                    }
+                }
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, pEffect->GetCreator(), pCreature->GetId(),
+                    CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
+                return 0;
+            }
+            pPoison->GetINTEntry(nPoison, "Name", &nName);
+            CSWCCMessageData* pPoisonMessageData = new CSWCCMessageData;
+            pPoisonMessageData->SetInteger(0, nName);
+            pPoisonMessageData->SetObjectID(0, pCreature->GetId());
+            pCreature->BroadcastPoisoned(pPoisonMessageData);
+            delete pPoisonMessageData;
+            pCreature->BroadcastVoiceChat(28);
+            pEffect->SetFloat(0, 2.0f);
+            pCreature->ApplyPoisonDamage(nPoison, pEffect, 0, 1.0f);
+            pEffect->SetInteger(3, nCalendarDay);
+            pEffect->SetInteger(4, nTimeOfDay);
+            pPoison->GetINTEntry(nPoison, "DURATION", &nDuration);
+            pEffect->SetInteger(5, nDuration);
+            pEffect->m_nSubType =
+                (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                CGameEffect::DURATION_TYPE_TEMPORARY;
+            pEffect->m_fDuration = nDuration * 1000.0f;
+            pPoison->GetINTEntry(nPoison, "PERIOD", &nPeriod);
+            pEffect->SetInteger(6, nPeriod);
+            pEffect->SetInteger(7, 0);
         }
     }
+    CGameEffect* pVisualEffect = new CGameEffect(1);
+    pVisualEffect->m_nType = EFFECT_VISUALEFFECT;
+    pVisualEffect->m_nSubType =
+        (pVisualEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+        CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+    pVisualEffect->SetInteger(0, VFX_PRO_AFFLICT);
+    pVisualEffect->SetInteger(2, 0);
+    pVisualEffect->SetObjectID(0, pEffect->GetCreator());
+    pCreature->ApplyEffect(pVisualEffect, 0, 0);
+    pCreature->SetPoisoned(1, pEffect->m_nID);
     return 0;
 }
 // PC 0x0052F210 GOG 0x00530F70 Xbox 0x00212DB0

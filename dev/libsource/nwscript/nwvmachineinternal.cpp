@@ -2152,13 +2152,11 @@ int CVirtualMachineInternal::RunScriptSituation(  // Xbox 0x0016E1E0
             return nResult == 0;
         }
 
-        AurPostString("ERROR: TRYING TO RUN WITH 64 MB CAP, BUT SCRIPTS HAVE CHANGED.", 2, 4, 15.0f);
-        AurPostString("ERROR: PLOTS COULD BE BROKEN.", 2, 6, 15.0f);
-        AurPostString("ERROR: REPORT THIS BUG IMMEDIATELY IF YOU THINK THIS IS IN ERROR.", 2, 8, 15.0f);
-        AurPostString("ERROR: STOP TESTING IMMEDIATELY!", 2, 10, 15.0f);
         DeleteScript(&m_aScripts[m_nCurrentScript]);
         m_aVMFile[m_nCurrentScript].m_pRes->Release();
         m_nCurrentScript--;
+        delete pScript;
+        return 0;
     }
 
     delete pScript;
