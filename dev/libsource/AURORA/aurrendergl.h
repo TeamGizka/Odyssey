@@ -1801,6 +1801,20 @@ public:
         PARAM_FOG_LIMITS = 22
     };
 
+#ifdef _XBOX
+    VertexProgram(unsigned long* pFunction, unsigned long* pLitFunction,
+                  unsigned long* pDeclaration);
+    ~VertexProgram();
+
+    void Enable(Part* pPart, bool bEnableLights);
+
+    unsigned char m_aUnmapped0[4];
+    unsigned long* m_pFunction[2];
+    unsigned long* m_pDeclaration;
+    unsigned int m_nGLProgram[2];
+    int m_nAllowedLights;
+    int m_bLoaded;
+#else
     VertexProgram(char* sProgram, unsigned long* pnProgram);
     ~VertexProgram();
     void FindNumberOfAllowedLights();
@@ -1808,9 +1822,7 @@ public:
     void Enable(Part* pPart, bool bEnableLights);
 
 
-#ifndef _XBOX
     unsigned char m_aUnmapped0[4];
-#endif
     char* m_sProgram;
     char m_sVertexProgram[VERTEX_PROGRAM_BUFFER_SIZE];
     unsigned long* m_pProgram;
@@ -1818,6 +1830,7 @@ public:
     int m_nAllowedLights;
     int m_nLastUpdateFrame;
     int m_bLoaded;
+#endif
 };
 
 class VertexProgramManager
@@ -1903,6 +1916,45 @@ extern char cBumpedOutVP[];
 extern char cPhongVP[];
 extern char cShadowTriMeshVariantVP[];
 extern char cSkinShadowVariantVP[];
+#ifdef _XBOX
+extern unsigned long dwBumpyShinyVPVertexShader[];
+extern unsigned long dwBumpMapVPVertexShader[];
+extern unsigned long dwStandardVPVertexShader[];
+extern unsigned long dwStandardLitVPVertexShader[];
+extern unsigned long dwEmitterVPVertexShader[];
+extern unsigned long dwMotionBlurredVPVertexShader[];
+extern unsigned long dwBumpedOutVPVertexShader[];
+extern unsigned long dwBumpedOutLitVPVertexShader[];
+extern unsigned long dwFogTestVPVertexShader[];
+extern unsigned long dwLightProjectionVPVertexShader[];
+extern unsigned long dwFogOutputVPVertexShader[];
+extern unsigned long dwBumpyShinySkinVPVertexShader[];
+extern unsigned long dwSkinVPVertexShader[];
+extern unsigned long dwSkinLitVPVertexShader[];
+extern unsigned long dwSkinBumpedOutVPVertexShader[];
+extern unsigned long dwSkinBumpedOutLitVPVertexShader[];
+extern unsigned long dwSkinMotionBlurVPVertexShader[];
+extern unsigned long dwSkinMotionBlurLitVPVertexShader[];
+extern unsigned long dwSkin3BoneVPVertexShader[];
+extern unsigned long dwSkinBumpyVPVertexShader[];
+extern unsigned long dwSkinBumpyLitVPVertexShader[];
+extern unsigned long dwNewSkinBumpyVPVertexShader[];
+extern unsigned long dwSkinSphereMapVPVertexShader[];
+extern unsigned long dwSkinSphereMapLitVPVertexShader[];
+extern unsigned long dwSkinCubeMapVPVertexShader[];
+extern unsigned long dwSkinCubeMapLitVPVertexShader[];
+extern unsigned long dwBumpMapOnePassVPVertexShader[];
+extern unsigned long dwBumpMapOnePassLitVPVertexShader[];
+extern unsigned long dwBumpMapDiffuseVPVertexShader[];
+extern unsigned long dwBumpMapDiffuseLitVPVertexShader[];
+extern unsigned long dwBumpMapSpecularVPVertexShader[];
+extern unsigned long dwBumpMapSpecularLitVPVertexShader[];
+extern unsigned long dwBlurVPVertexShader[];
+extern unsigned long dwPhongVPVertexShader[];
+extern unsigned long dwShadowTriMeshVPVertexShader[];
+extern unsigned long dwShadowTriMeshVariantVPVertexShader[];
+extern unsigned long dwSkinShadowVariantVPVertexShader[];
+#endif
 
 extern char szBumpyShinyVPARB_ATI[];
 extern char szBumpyShinyVPARB_NV[];

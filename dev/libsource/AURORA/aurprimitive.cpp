@@ -28,13 +28,18 @@ int usevertexprograms = 1;
 // Dead code: not in the PC executable
 VertexPrimitive::VertexPrimitive(PartTriMesh* pPart)
 #ifdef _XBOX
-    : m_nArrayPool(RequestPoolManager::INVALID_POOL), m_pPart(pPart), m_nArrayCount(0), m_bStatic(1),
-      m_bRebuild(0)
+    : m_pPart(pPart)
+{
+    m_nArrayPool = RequestPoolManager::INVALID_POOL;
+    m_nArrayCount = 0;
+    m_bStatic = 1;
+    m_bRebuild = 0;
+}
 #else
     : m_pPart(pPart), m_nArrayCount(0), m_bStatic(1), m_bRebuild(0)
-#endif
 {
 }
+#endif
 // PC 0x00495060 GOG 0x00495120 Xbox 0x0031AA60
 NodeVertexAnim* NodeVertex::AsNodeVertexAnim()
 {

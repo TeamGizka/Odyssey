@@ -330,32 +330,34 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
     m_nColorDepth = nBitsPerPixel;
     GLRender_Enable(Aurora::ENABLE_VERTEX_PROGRAM);
     g_pBumpyShinySkinPass1 = new VertexProgram(
-        usearbvertexprograms ? szBumpyShinySkinVPARB : cBumpyShinySkinVP,
+        dwBumpyShinySkinVPVertexShader, dwBumpyShinySkinVPVertexShader,
         cBumpyShinySkinVPDeclaration);
     g_pBumpyShinySkinPass1->Enable(NULL, true);
-    g_pBumpyShinySkinPass2 = new VertexProgram(cSkinVP, cBumpyShinySkinVPDeclaration);
+    g_pBumpyShinySkinPass2 = new VertexProgram(dwSkinVPVertexShader, dwSkinLitVPVertexShader,
+                                               cBumpyShinySkinVPDeclaration);
     g_pBumpyShinySkinPass2->Enable(NULL, true);
 
-    g_pBumpyShinySkinPass2_3bone = new VertexProgram(cSkin3BoneVP, cSkin3BoneVPDeclaration);
+    g_pBumpyShinySkinPass2_3bone = new VertexProgram(dwSkinVPVertexShader, dwSkinLitVPVertexShader,
+                                                     cSkin3BoneVPDeclaration);
     g_pBumpyShinySkinPass2_3bone->Enable(NULL, true);
     g_pBumpyShinyPass1 = new VertexProgram(
-        usearbvertexprograms ? szStandardVPARB : cStandardVP,
+        dwStandardVPVertexShader, dwStandardLitVPVertexShader,
         cStandardVP2Declaration);
     g_pBumpyShinyPass1->Enable(NULL, true);
     g_pBumpyShinyPass2 = new VertexProgram(
-        usearbvertexprograms ? szStandardVPARB : cStandardVP,
+        dwStandardVPVertexShader, dwStandardLitVPVertexShader,
         cStandardVPDeclaration);
     g_pBumpyShinyPass2->Enable(NULL, false);
     g_pBumpyShinyPass3 = new VertexProgram(
-        usearbvertexprograms ? szStandardVPARB : cStandardVP,
+        dwStandardVPVertexShader, dwStandardLitVPVertexShader,
         cBumpyShinyRegularVPDeclaration);
     g_pBumpyShinyPass3->Enable(NULL, true);
     g_pBumpyShinyPass4 = new VertexProgram(
-        usearbvertexprograms ? szBumpyShinyVPARB : cBumpyShinyVP,
+        dwBumpyShinyVPVertexShader, NULL,
         cBumpyShinyRegularVPDeclaration);
     g_pBumpyShinyPass4->Enable(NULL, false);
     g_pBumpyShinyPass5 = new VertexProgram(
-        usearbvertexprograms ? szBumpyShinyVPARB : cBumpyShinyVP,
+        dwBumpyShinyVPVertexShader, NULL,
         cBumpyShinyLightMappedVPDeclaration);
     g_pBumpyShinyPass5->Enable(NULL, false);
     g_pD3DDevice->SetVertexShader(0);

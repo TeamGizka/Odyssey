@@ -644,6 +644,7 @@ public:
     }
 
     static void GenPrograms(int nCount, unsigned int* pnPrograms);
+    static void DeletePrograms(int nCount, unsigned int* pnPrograms);
 
     static void ValidatePool(unsigned long nPool);
 
@@ -670,7 +671,7 @@ public:
 
     static void RestoreVertexPrograms();
     static int InitializeVertexShaders();
-    static int InitializePixelShaders();
+    static int InitializePixelShaders(D3DDevice* pDevice);
     static void EnableLight(unsigned long nLight);
 
     static void SetLightModel(const float* pfColor);

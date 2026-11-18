@@ -244,8 +244,8 @@ int (AurAddDrawableSquare)(float* pVertices, unsigned long nColor,
             pVertices[3], pVertices[4], pVertices[5]);
 #ifdef _XBOX
 
-    unsigned char nBlue = (unsigned char)(nColor >> 16);
-    unsigned char nRed = (unsigned char)nColor;
+    unsigned char nRed = ((unsigned char*)&nColor)[0];
+    unsigned char nBlue = ((unsigned char*)&nColor)[2];
     ((unsigned char*)&nColor)[0] = nBlue;
     ((unsigned char*)&nColor)[2] = nRed;
 #endif

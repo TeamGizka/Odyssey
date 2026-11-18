@@ -587,10 +587,10 @@ void CAurTriangleBin::DestroyGrassPolys()
 #ifdef _XBOX
             delete[] m_pCurrentVertices;
             m_pCurrentVertices = 0;
-            delete (void*)m_nVertexOffset;
-            m_nVertexOffset = 0;
             delete (void*)m_nIndexOffset;
             m_nIndexOffset = 0;
+            delete (void*)m_nVertexOffset;
+            m_nVertexOffset = 0;
             GLRender::DeletePool((unsigned long)m_pVertices);
             m_pVertices = (float*)RequestPoolManager::INVALID_POOL;
 #else

@@ -1,0 +1,23 @@
+vs.1.0 
+dp4   oPos.x, c[0], v0;
+dp4   oPos.y, c[1], v0;
+dp4   oPos.z, c[2], v0;
+dp4   oPos.w, c[3], v0;
+dp4   r1.x, c[8], v0;
+dp4   r1.y, c[9], v0;
+dp4   r1.z, c[10], v0;
+dp4   r1.w, c[11], v0;
+dp3   r1.w, r1, r1;
+rsq   r1.w, r1.w;
+rcp   r1.w, r1.w;
+add   r2.x, c[20].y, -c[20].x;
+add   r2.y, c[20].y, -r1.w;
+rcp   r2.z, r2.x;
+mul   r2.w, r2.y, r2.z;
+min   r2.w, r2.w, c[22].x;
+max   r2.w, r2.w, c[22].y;
+add   r2.w, c[22].x, -r2.w;
+mul   r3, c[21], r2.w;
+mov   r3.w, r2.w;
+mov   oD0, r3;
+mov   oFog.x, -c[22].y;

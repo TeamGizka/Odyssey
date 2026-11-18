@@ -4717,7 +4717,8 @@ void PartEmitter::RenderStandard()  // Xbox 0x002EF170
         bDepthTexture = 1;
         m_pEmitterMaterial->BindTexture1();
         GLRender_Enable(ENABLE_VERTEX_PROGRAM);
-        static VertexProgram* emittervp = new VertexProgram(cEmitterVP, cEmitterVPDeclaration);
+        static VertexProgram* emittervp = new VertexProgram(dwEmitterVPVertexShader, NULL,
+                                                            cEmitterVPDeclaration);
         emittervp->Enable(this, false);
         GLRender_EnablePixelShaders(AUR_EMITTER_DEPTH_PIXEL_SHADER, m_pEmitterMaterial->m_pTexture0,
                                     m_pEmitterMaterial->m_pTexture1, 0, 0);

@@ -2239,7 +2239,7 @@ void GLRender::InitExtensions()  // Xbox 0x0029DEB0
     InitAttenuationTexture();
 }
 
-int GLRender::InitializePixelShaders()  // Xbox 0x0031AA30
+int GLRender::InitializePixelShaders(D3DDevice* pDevice)  // Xbox 0x0031AA30
 {
     LPXGBUFFER pCompiledShader;
     LPXGBUFFER pErrors;
@@ -2663,9 +2663,8 @@ void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)  //
     LoadMatrixIdentity();
     if (multmatrix != 0)
     {
-        Vector vOrigin;
         float fMatrix[16];
-        MakeMatrix4x4(fMatrix, vOrigin, -qOrientation);
+        MakeMatrix4x4(fMatrix, Vector(0.0f, 0.0f, 0.0f), -qOrientation);
         MultMatrix(fMatrix);
         Translate(-vPosition.m_fX, -vPosition.m_fY, -vPosition.m_fZ);
     }
@@ -5102,7 +5101,7 @@ void GLRender::RestoreLights()  // Xbox 0x002A79D0
         {
             RestoreVertexPrograms();
             InitializeVertexShaders();
-            InitializePixelShaders();
+            InitializePixelShaders(g_pD3DDevice);
             for (int i = 0; i < g_lstLights.m_nCount; i++)
             {
                 g_pD3DDevice->SetLight(g_lstLights.m_pList[i], &g_lstLightBackUp.m_pList[i]);
@@ -5351,9 +5350,9 @@ void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nV
         Vector avVertex[3];
         for (int j = 0; j < 3; ++j)
         {
-            RenderVertexVNC* pVertex = &pTriangles[i * 3 + j];
             D3DXVECTOR3* pPosition = (D3DXVECTOR3*)(pVertices +
                 lFaces.m_pList[i].m_anVertexIndices[j] * nVertexStride + nPositionOffset);
+            RenderVertexVNC* pVertex = &pTriangles[i * 3 + j];
             pVertex->position.x = pPosition->x;
             pVertex->position.y = pPosition->y;
             pVertex->position.z = pPosition->z;
@@ -5382,6 +5381,24 @@ void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nV
     static unsigned long hShader = TranslatePoolFormat(0x13);
     g_pD3DDevice->SetVertexShader(hShader);
     g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, lFaces.m_nCount);
+}
+
+// Xbox 0x002A9000
+void GLRender::DeletePrograms(int nCount, unsigned int* pnPrograms)
+{
+    for (unsigned int i = 0; i < nCount; i++)
+    {
+        int nProgram = pnPrograms[i];
+        if (nProgram >= 0 && nProgram < g_listVertexPrograms.m_nCount)
+        {
+            DXVertexProgram* pProgram = g_listVertexPrograms.m_pList[nProgram];
+            if (pProgram)
+            {
+                delete pProgram;
+                g_listVertexPrograms.m_pList[nProgram] = NULL;
+            }
+        }
+    }
 }
 
 void GLRender::RemoveSquareToRender(unsigned long nPool)  // Xbox 0x002A9060

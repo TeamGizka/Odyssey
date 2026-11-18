@@ -1,0 +1,23 @@
+vs.1.1 
+mov r1, v0;
+mov r2, v3;
+mad r1, r2, c[12].x, r1;
+dp4   oPos.x, c[0], r1;
+dp4   oPos.y, c[1], r1;
+dp4   oPos.z, c[2], r1;
+dp4   oPos.w, c[3], r1;
+dp4   r10.x, c[8], r1;
+dp4   r10.y, c[9], r1;
+dp4   r10.z, c[10], r1;
+dp4   r10.w, c[11], r1;
+dp3   r1.w, r10, r10;
+rsq   r1.w, r1.w;
+rcp   r1.w, r1.w;
+mov  oFog.x, -r1.w;
+dp3   r11.x, c[8], v3;
+dp3   r11.y, c[9], v3;
+dp3   r11.z, c[10], v3;
+mov   r9, c[15].wwwz;
+mov   oT0, v7;
+mov   oT1, v8;
+mov oD0, c[12].wwww;

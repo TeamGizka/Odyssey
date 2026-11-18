@@ -670,7 +670,7 @@ unsigned char Material::HasBumpMap()
             sprintf(sMessage, "Invalid bumpmap: %s.tga",
                     AsTexture(m_pBumpMap)->GetName());
 #ifdef _XBOX
-            AurReportError(697, "aurmaterial.cpp", sMessage);
+            AurReportError(702, "aurmaterial.cpp", sMessage);
 #else
             MessageBoxA(0, sMessage, "Invalid Bumpmap!",
                         MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);

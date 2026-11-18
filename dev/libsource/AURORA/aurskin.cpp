@@ -54,50 +54,57 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
                            CAurTexture* pTexture2, CAurTexture* pTexture3,
                            bool bKeepBlend);
 
-#ifdef _XBOX
-VertexProgram* GetSkinVP(bool)
-{
-    static VertexProgram* pSkinVP = new VertexProgram(cSkinVP, cSkinVPDeclaration);
-
-    return pSkinVP;
-}
-#else
 // PC 0x004A06B0 GOG 0x004A0770
 VertexProgram* GetSkinVP(bool bHologram)
 {
     if (!pSkinVP)
     {
+#ifdef _XBOX
+        pSkinVP = new VertexProgram(dwSkinVPVertexShader, dwSkinLitVPVertexShader,
+                                    cSkinVPDeclaration);
+#else
         pSkinVP = new VertexProgram(
             usearbvertexprograms ?
             szSkinVPARB
             :
             cSkinVP,
             cSkinVPDeclaration);
+#endif
     }
     if (!pHoloSkinVP)
     {
+#ifdef _XBOX
+        pHoloSkinVP = new VertexProgram(dwSkinVPVertexShader, dwSkinLitVPVertexShader,
+                                        cSkinVPDeclaration);
+#else
         pHoloSkinVP = new VertexProgram(
             usearbvertexprograms ?
             cHoloSkinVPARB
             :
             cSkinVP,
             cSkinVPDeclaration);
+#endif
     }
 
     if (!bHologram)
         return pSkinVP;
     return pHoloSkinVP;
 }
-#endif
 
 // Dead code: not in the PC executable
 VertexProgram* GetSkinBumpyVP()
 {
     if (!pSkinBumpyVP)
     {
+#ifdef _XBOX
+        pSkinBumpyVP = new VertexProgram(
+            dwSkinBumpyVPVertexShader, dwSkinBumpyLitVPVertexShader,
+            cSkinBumpyVPDeclaration);
+#else
         pSkinBumpyVP = new VertexProgram(
             cSkinBumpyVP,
             cSkinBumpyVPDeclaration);
+#endif
     }
 
     return pSkinBumpyVP;
@@ -107,9 +114,15 @@ VertexProgram* GetSkinSphereMapVP()
 {
     if (!pSkinSphereMapVP)
     {
+#ifdef _XBOX
+        pSkinSphereMapVP = new VertexProgram(
+            dwSkinSphereMapVPVertexShader, dwSkinSphereMapLitVPVertexShader,
+            cSkinSphereMapVPDeclaration);
+#else
         pSkinSphereMapVP = new VertexProgram(
             cSkinSphereMapVP,
             cSkinSphereMapVPDeclaration);
+#endif
     }
 
     return pSkinSphereMapVP;
@@ -119,12 +132,18 @@ VertexProgram* GetSkinCubeMapVP()
 {
     if (!pSkinCubeMapVP)
     {
+#ifdef _XBOX
+        pSkinCubeMapVP = new VertexProgram(
+            dwSkinCubeMapVPVertexShader, dwSkinCubeMapLitVPVertexShader,
+            cSkinCubeMapVPDeclaration);
+#else
         pSkinCubeMapVP = new VertexProgram(
             usearbvertexprograms ?
             szSkinCubeMapVPARB
             :
             cSkinCubeMapVP,
             cSkinCubeMapVPDeclaration);
+#endif
     }
 
     return pSkinCubeMapVP;
@@ -437,6 +456,37 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
     }
 #endif
 }
+#ifdef _XBOX
+// Xbox 0x002D0450
+void AurSkinFreeVertexPrograms()
+{
+    if (pSkinVP != NULL)
+    {
+        delete pSkinVP;
+        pSkinVP = NULL;
+    }
+    if (pHoloSkinVP != NULL)
+    {
+        delete pHoloSkinVP;
+        pHoloSkinVP = NULL;
+    }
+    if (pSkinBumpyVP != NULL)
+    {
+        delete pSkinBumpyVP;
+        pSkinBumpyVP = NULL;
+    }
+    if (pSkinSphereMapVP != NULL)
+    {
+        delete pSkinSphereMapVP;
+        pSkinSphereMapVP = NULL;
+    }
+    if (pSkinCubeMapVP != NULL)
+    {
+        delete pSkinCubeMapVP;
+        pSkinCubeMapVP = NULL;
+    }
+}
+#endif
 // PC 0x004A1590 GOG 0x004A1650 Xbox 0x002D06F0
 void MakeInlinePartList(Part* pPart, List<Part*>& lstParts)
 {
@@ -1119,8 +1169,13 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             usenewbumpyskin)
         {
             GLRender_Disable(ENABLE_ALPHA_TEST);
+#ifdef _XBOX
+            static VertexProgram* skinvp = new VertexProgram(
+                dwNewSkinBumpyVPVertexShader, dwNewSkinBumpyVPVertexShader, cSkinBumpyVPDeclaration);
+#else
             static VertexProgram* skinvp = new VertexProgram(
                 cNewSkinBumpyVP, cSkinBumpyVPDeclaration);
+#endif
             Vector vDiffuse;
             Vector vSpecular;
             if (pTriMesh != 0)
@@ -1195,9 +1250,15 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
             AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
                 1.0f, 1.0f, 1.0f, 1.0f);
+#ifdef _XBOX
+            static VertexProgram* skinDecalPassvp = new VertexProgram(
+                dwSkinVPVertexShader, dwSkinLitVPVertexShader, cSkinBumpyVPDeclaration);
+            skinDecalPassvp->Enable(pSkin, true);
+#else
             static VertexProgram* skinDecalPassvp = new VertexProgram(
                 cSkinVP, cSkinBumpyVPDeclaration);
             skinDecalPassvp->Enable(pSkin, true);
+#endif
             if (enabledecal)
             {
                 GLRender::ActivateTextureStage(0);
@@ -1210,9 +1271,15 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         }
         else if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
         {
+#ifdef _XBOX
+            static VertexProgram* skinvp = new VertexProgram(
+                dwSkinBumpyVPVertexShader, dwSkinBumpyLitVPVertexShader,
+                cSkinBumpyVPDeclaration);
+#else
             static VertexProgram* skinvp = new VertexProgram(
                 usearbvertexprograms ? szSkinBumpyVPARB : cSkinBumpyVP,
                 cSkinBumpyVPDeclaration);
+#endif
             Vector vDiffuse;
             Vector vSpecular;
             if (pTriMesh != 0)
@@ -1312,9 +1379,15 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 VertexProgram* pProgram;
                 if (use3boneskinning)
                 {
+#ifdef _XBOX
+                    static VertexProgram* skin3bonevp = new VertexProgram(
+                        dwSkinVPVertexShader, dwSkinLitVPVertexShader, cSkin3BoneVPDeclaration);
+                    pProgram = skin3bonevp;
+#else
                     static VertexProgram* skin3bonevp = new VertexProgram(
                         cSkin3BoneVP, cSkin3BoneVPDeclaration);
                     pProgram = skin3bonevp;
+#endif
                     pProgram->Enable(pSkin, true);
                 }
                 else
@@ -2032,8 +2105,14 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
                 }
             }
 
+#ifdef _XBOX
+            static VertexProgram* skinmotionblurvp = new VertexProgram(
+                dwSkinMotionBlurVPVertexShader, dwSkinMotionBlurLitVPVertexShader,
+                cSkinMotionBlurVPDeclaration);
+#else
             static VertexProgram* skinmotionblurvp = new VertexProgram(
                 cSkinMotionBlurVP, cSkinMotionBlurVPDeclaration);
+#endif
 
             Gob*& pObject = pSkin->m_pAurObject;
             Quaternion qOrientation;
@@ -2317,12 +2396,21 @@ void PartSkin::Draw(bool bRenderLast)
                 AurSetVertexProgramParameter4f(SKIN_VP_SHELL_HEIGHT,
                     m_pAurObject->m_fBumpedOutShellHeight, 0.0f, 0.0f, 1.0f);
 
+#ifdef _XBOX
+                static VertexProgram* skinBumpedOutVP = new VertexProgram(
+                    dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
+                    cSkinBumpedOutVPDeclaration);
+                static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
+                    dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
+                    cBumpyShinySkinVPDeclaration);
+#else
                 static VertexProgram* skinBumpedOutVP = new VertexProgram(
                     usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
                     cSkinBumpedOutVPDeclaration);
                 static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
                     usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
                     cBumpyShinySkinVPDeclaration);
+#endif
                 VertexProgram* pProgram;
                 if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
                 {

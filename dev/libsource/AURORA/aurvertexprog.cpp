@@ -22,8 +22,8 @@ int currentframe;
 
 int nLastVertexProgram;
 int nLastVertexProgramFrame;
-List<VertexProgram*> VertexProgramManager::cm_listExistentVertexPrograms;
 #ifndef _XBOX
+List<VertexProgram*> VertexProgramManager::cm_listExistentVertexPrograms;
 
 unsigned long* cBumpyShinyRegularVPDeclaration = 0;
 unsigned long* cBumpyShinyLightMappedVPDeclaration = 0;
@@ -61,6 +61,27 @@ unsigned long* cShadowTriMeshVariantVPDeclaration = 0;
 unsigned long* cSkinShadowVPDeclaration = 0;
 #endif
 
+#ifdef _XBOX
+// Xbox 0x0032C760
+VertexProgram::VertexProgram(unsigned long* pFunction, unsigned long* pLitFunction,
+                             unsigned long* pDeclaration)
+{
+    m_pFunction[0] = pFunction;
+    if (pLitFunction)
+    {
+        m_pFunction[1] = pLitFunction;
+    }
+    else
+    {
+        m_pFunction[1] = pFunction;
+    }
+    m_nGLProgram[0] = 0;
+    m_nGLProgram[1] = 0;
+    m_pDeclaration = pDeclaration;
+    m_nAllowedLights = 3;
+    m_bLoaded = 0;
+}
+#else
 // Dead code: not in the PC executable
 void VertexProgram::FindNumberOfAllowedLights()
 {
@@ -86,6 +107,7 @@ void VertexProgram::FindNumberOfAllowedLights()
 
     m_nAllowedLights = nAllowedLights;
 }
+#endif
 // PC 0x004CEB30 GOG 0x004CEC70 Xbox 0x0032C7A0
 void AurVertexProgramMakeCurrent()
 {
@@ -153,22 +175,65 @@ int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0 GOG 0x004CED30
 
     return cm_listExistentVertexPrograms.m_nCount;
 }
+#else
+// Xbox 0x0032C7C0
+VertexProgram::~VertexProgram()
+{
+    if (GLRender::IsProgramNV(m_nGLProgram[0]))
+    {
+        GLRender::DeletePrograms(1, &m_nGLProgram[0]);
+    }
+    if (GLRender::IsProgramNV(m_nGLProgram[1]))
+    {
+        GLRender::DeletePrograms(1, &m_nGLProgram[1]);
+    }
+}
 #endif
 // PC 0x004CEC50 GOG 0x004CED90 Xbox 0x0032C810
 void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 {
+#ifdef _XBOX
+    static unsigned long* lastProg;
+    static bool wasLit;
+
+    if (LightManager::cm_bLightManagerUpdated || nLastVertexProgramFrame != currentframe ||
+        lastProg != m_pFunction[bEnableLights] || wasLit != bEnableLights)
+    {
+        int bNoObject = 1;
+        if (pPart && pPart->m_pAurObject)
+        {
+            bNoObject = 0;
+        }
+        if (currentscene)
+        {
+            currentscene->m_pLightManager->SetUpVertexProgramLightShaderConstants(
+                m_nAllowedLights, bNoObject);
+        }
+    }
+
+    wasLit = bEnableLights;
+    LightManager::cm_bLightManagerUpdated = 0;
+    nLastVertexProgramFrame = currentframe;
+    lastProg = m_pFunction[bEnableLights];
+
+    unsigned int* pnProgram = &m_nGLProgram[bEnableLights];
+    if (*pnProgram)
+    {
+        if (GLRender::IsProgramNV(*pnProgram))
+        {
+            GLRender::BindVertexProgram(*pnProgram);
+            return;
+        }
+    }
+    else
+    {
+        GLRender::GenPrograms(1, pnProgram);
+    }
+    GLRender::DrawElementsInShadow(*pnProgram, m_pFunction[bEnableLights], m_pDeclaration);
+#else
     static char* lastProg;
     static bool wasLit;
 
-#ifdef _XBOX
-    if (lastProg == m_sProgram &&
-        !LightManager::cm_bLightManagerUpdated &&
-        wasLit == bEnableLights)
-    {
-        GLRender::BindVertexProgram(m_nGLProgram);
-        return;
-    }
-#else
     unsigned int nProgram;
 
     if (m_nGLProgram != 0 && lastProg == m_sProgram &&
@@ -178,7 +243,6 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
         BindVertexProgram(m_nGLProgram);
         return;
     }
-#endif
 
     lastProg = m_sProgram;
     wasLit = bEnableLights;
@@ -192,17 +256,6 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 
     if (m_nLastUpdateFrame != currentframe)
     {
-#ifdef _XBOX
-        unsigned int nProgram = m_nGLProgram;
-        if (!GLRender::IsProgramNV(nProgram) || bEnableLights)
-
-        {
-            if (m_bLoaded && !CAurInternal::m_nHeadLightEnabled)
-            {
-                GLRender::BindVertexProgram(m_nGLProgram);
-                return;
-            }
-#else
         nProgram = m_nGLProgram;
         unsigned char bExists = usearbvertexprograms
             ? glIsProgramARB(nProgram) : glIsProgramNV(nProgram);
@@ -213,7 +266,6 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
                 BindVertexProgram(m_nGLProgram);
                 return;
             }
-#endif
             m_nLastUpdateFrame = currentframe;
             strcpy(m_sVertexProgram, m_sProgram);
             if (bEnableLights && m_nAllowedLights > 0)
@@ -226,24 +278,6 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
                 strcat(m_sVertexProgram, sLights);
                 delete[] sLights;
             }
-#ifdef _XBOX
-            if (!m_nGLProgram)
-            {
-                GLRender::GenPrograms(1, &m_nGLProgram);
-            }
-            unsigned long nLength = strlen(m_sVertexProgram);
-            XGBuffer* pFunction = NULL;
-            XGAssembleShader(NULL, m_sVertexProgram, nLength, SASM_SKIPVALIDATION, NULL, &pFunction,
-                             NULL, NULL, NULL, NULL, NULL);
-            GLRender::DrawElementsInShadow(m_nGLProgram, (const DWORD*)pFunction->GetBufferPointer(),
-                                           m_pProgram);
-            m_bLoaded = 1;
-            return;
-
-        }
-    }
-    GLRender::BindVertexProgram(m_nGLProgram);
-#else
             strcat(m_sVertexProgram, "END");
 
             if (!m_nGLProgram)
@@ -300,7 +334,6 @@ void VertexProgramManager::RemoveVertexProgram(VertexProgram* pProgram)
 {
     cm_listExistentVertexPrograms.Remove(pProgram);
 }
-#endif
 // PC 0x004CEF60 GOG 0x004CF0A0 Xbox 0x0032C760
 VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
 {
@@ -308,16 +341,11 @@ VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
     m_nGLProgram = 0;
     m_nLastUpdateFrame = -1;
     m_pProgram = pnProgram;
-#ifdef _XBOX
-    m_bLoaded = 0;
-#else
     m_nAllowedLights = 3;
     m_bLoaded = 0;
     VertexProgramManager::AddVertexProgram(this);
-#endif
 }
 
-#ifndef _XBOX
 VertexProgram::~VertexProgram()  // PC 0x004CEFB0 GOG 0x004CF0F0
 {
     unsigned char bExists;
@@ -987,45 +1015,7 @@ unsigned long cBumpyShinyRegularVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBumpyShinyVP[] =
-    "vs.1.1 \n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "dp3   r1.x, c[8], v11;\n"
-    "dp3   r2.x, c[8], v12;\n"
-    "dp3   r3.x, c[8], v13;\n"
-    "dp3   r1.y, c[9], v11;\n"
-    "dp3   r2.y, c[9], v12;\n"
-    "dp3   r3.y, c[9], v13;\n"
-    "dp3   r1.z, c[10], v11;\n"
-    "dp3   r2.z, c[10], v12;\n"
-    "dp3   r3.z, c[10], v13;\n"
-    "dp3   oT1.x, c[92], r1;\n"
-    "dp3   oT1.y, c[92], r2;\n"
-    "dp3   oT1.z, c[92], r3;\n"
-    "dp3   oT2.x, c[91], r1;\n"
-    "dp3   oT2.y, c[91], r2;\n"
-    "dp3   oT2.z, c[91], r3;\n"
-    "dp3   oT3.x, c[90], r1;\n"
-    "dp3   oT3.y, c[90], r2;\n"
-    "dp3   oT3.z, c[90], r3;\n"
-    "dp4   r4.x, v0, c[8];\n"
-    "dp4   r4.y, v0, c[9];\n"
-    "dp4   r4.z, v0, c[10];\n"
-    "dp4   r4.w, v0, c[11];\n"
-    "dp3   r1.w, r4, r4;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "rcp   r4.w, r4.w           ;\n"
-    "mul   r4.xyz, r4, -r4.w    ;\n"
-    "mov   oT0, v7;\n"
-    "dp3   oT1.w, r4, c[92];\n"
-    "dp3   oT2.w, r4, c[91];\n"
-    "dp3   oT3.w, r4, c[90];\n"
-    "mov   oD0, c[15].x;\n";
+#include "vsh/BumpyShinyVP.h"
 
 unsigned long cBumpMapVPDeclaration[] =
 {
@@ -1040,21 +1030,7 @@ unsigned long cBumpMapVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBumpMapVP[] =
-    "vs.1.1 \n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "mov   r0, v14;\n"
-    "dp3   r1.x, v11, r0;\n"
-    "dp3   r1.y, v12, r0;\n"
-    "dp3   r1.z, v13, r0;\n"
-    "mov   r1.w, c[17].x;\n"
-    "mov   oT1, r1;\n"
-    "mov   r9, c[16].zzzz; \n"
-    "mov   oFog, -v6.x;\n"
-    "mov   oT0, v7;\n";
+#include "vsh/BumpMapVP.h"
 
 unsigned long cStandardVPDeclaration[] =
 {
@@ -1093,129 +1069,12 @@ unsigned long cMotionBlurredVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cStandardVP[] =
-    "vs.1.1 \n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "dp4   r10.x, c[8], v0;\n"
-    "dp4   r10.y, c[9], v0;\n"
-    "dp4   r10.z, c[10], v0;\n"
-    "dp4   r10.w, c[11], v0;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "dp3   r11.x, c[8], v3;\n"
-    "dp3   r11.y, c[9], v3;\n"
-    "dp3   r11.z, c[10], v3;\n"
-    "mov   r9, c[15].wwwz;\n"
-    "mov   oT0, v7;\n"
-    "mov   oT1, v8;\n";
+#include "vsh/StandardVP.h"
+#include "vsh/StandardLitVP.h"
 
-char cEmitterVP[] =
-    "xvs.1.1 \n"
-    "dp4   r4.x, c[0], v0;\n"
-    "dp4   r4.y, c[1], v0;\n"
-    "dp4   r4.z, c[2], v0;\n"
-    "dp4   r4.w, c[3], v0;\n"
-    "mov   oPos, r4;\n"
-    "dp4   r10.x, c[8], v0;\n"
-    "dp4   r10.y, c[9], v0;\n"
-    "dp4   r10.z, c[10], v0;\n"
-    "dp4   r10.w, c[11], v0;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov   oD0, v5;\n"
-    "mov   oT2, c[16].xxxx;\n"
-    "mov r5,c[19];\n"
-    "dp4 r0.x,r5,c[0];\n"
-    "dp4 r0.y,r5,c[1];\n"
-    "dp4 r0.z,r5,c[2];\n"
-    "dp4 r0.w,r5,c[3];\n"
-    "rcp r2.w,r0.w;\n"
-    "mul r0,r0,r2.w;\n"
-    "mov r7, r0;\n"
-    "mov r5,c[20];\n"
-    "dp4 r1.x,r5,c[0];\n"
-    "dp4 r1.y,r5,c[1];\n"
-    "dp4 r1.z,r5,c[2];\n"
-    "dp4 r1.w,r5,c[3];\n"
-    "rcp r2.w,r1.w;\n"
-    "mul r1,r1,r2.w;\n"
-    "mov r8, r1;\n"
-    "add r0,r7,-r8;\n"
-    "dp3 r2.x,r0,r0;\n"
-    "rsq r1.x,r2.x;\n"
-    "rcp r1.y,r1.x;\n"
-    "mul r7.y, -r1.y, c[18].x;\n"
-    "mul oT2.y, r7.y, c[18].z;\n"
-    "rcp r1,r4.w;\n"
-    "mul r1,r1,r4.z;\n"
-    "mul oT2.z, r1, c[18].x;\n"
-    "mov   oT0, v7;\n"
-    "mov   oT1, v7;\n"
-    "mov   oT3, c[16].xxwx;\n";
+#include "vsh/EmitterVP.h"
 
-char cMotionBlurredVP[] =
-    "vs.1.1 \n"
-    "dp4   r10.x, c[8],  v0;\n"
-    "dp4   r10.y, c[9],  v0;\n"
-    "dp4   r10.z, c[10], v0;\n"
-    "dp4   r10.w, c[11], v0;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "dp3   r11.x, c[8], v3;\n"
-    "dp3   r11.y, c[9], v3;\n"
-    "dp3   r11.z, c[10], v3;\n"
-    "mov   r4, c[50];\n"
-    "dp3   r6.x, r4, r4;\n"
-    "rsq   r6.y, r6.x;\n"
-    "mul   r4.xyz, r4.xyz, r6.y;\n"
-    "mov   r7.x, c[51].x;\n"
-    "min   r2.y, r7.x, c[51].y;\n"
-    "mul   r5.xyz, r4.xyz, r2.y;\n"
-    "mov   r5.w, c[17].x;\n"
-    "dp3   r3.w, r4, v3;\n"
-    "slt   r2.w, r3.w, c[17].x;\n"
-    "mov   r1, c[53].xyzw;\n"
-    "mad   r6, r2.w, -r5, v0.xyzw;\n"
-    "mul   r7.y, r2.y, c[13].x;\n"
-    "rcp   r8.y, c[51].y;\n"
-    "mul   r8.w, r2.y, r8.y;\n"
-    "mul   r7.y, r7.y, r8.w;\n"
-    "mul   r7.y, r7.y, c[52].w;\n"
-    "mov   r3.w, c[17].x;\n"
-    "mov   r3, c[52].xyz;\n"
-    "dp3   r3.w, r3, r3;\n"
-    "rsq   r5.w, r3.w;\n"
-    "mul   r3, r3, r5.w;\n"
-    "add   r5.xyz, r6, -r1;\n"
-    "dp3   r5.w, r5, r3;\n"
-    "slt   r5.x, r5.w, c[17].x;\n"
-    "mov   r7.x, c[17].w;\n"
-    "mad   r5.y, r5.x, -c[17].y, r7.x;\n"
-    "mul   r5.z, r5.y, r7.y;\n"
-    "mul   r5.z, r5.z, r2.w;\n"
-    "mad   r6, r5.z, r3, r6;\n"
-    "add   r2.x, -r2.w, c[17].w;\n"
-    "mul   r1, v3, -c[51].z;\n"
-    "mov   r1.w, c[17].x;\n"
-    "mad   r5, r2.x, r1, r6;\n"
-    "dp4   oPos.x, r5, c[0];\n"
-    "dp4   oPos.y, r5, c[1];\n"
-    "dp4   oPos.z, r5, c[2];\n"
-    "dp4   oPos.w, r5, c[3];\n"
-    "add   r2.w, c[17].w, -r2.w;\n"
-    "mov r9.xyz, c[17].xxx;\n"
-    "mul r9.w, c[17].z, r2.w;\n"
-    "mov oD0, r9;\n"
-    "mov   oT0, v7;\n";
+#include "vsh/MotionBlurredVP.h"
 
 unsigned long cBumpedOutVPDeclaration[] =
 {
@@ -1226,30 +1085,8 @@ unsigned long cBumpedOutVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBumpedOutVP[] =
-    "vs.1.1 \n"
-    "mov r1, v0;\n"
-    "mov r2, v3;\n"
-    "mad r1, r2, c[12].x, r1;\n"
-    "dp4   oPos.x, c[0], r1;\n"
-    "dp4   oPos.y, c[1], r1;\n"
-    "dp4   oPos.z, c[2], r1;\n"
-    "dp4   oPos.w, c[3], r1;\n"
-    "dp4   r10.x, c[8], r1;\n"
-    "dp4   r10.y, c[9], r1;\n"
-    "dp4   r10.z, c[10], r1;\n"
-    "dp4   r10.w, c[11], r1;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "dp3   r11.x, c[8], v3;\n"
-    "dp3   r11.y, c[9], v3;\n"
-    "dp3   r11.z, c[10], v3;\n"
-    "mov   r9, c[15].wwwz;\n"
-    "mov   oT0, v7;\n"
-    "mov   oT1, v8;\n"
-    "mov oD0, c[12].wwww;\n";
+#include "vsh/BumpedOutVP.h"
+#include "vsh/BumpedOutLitVP.h"
 
 unsigned long cFogTestVPDeclaration[] =
 {
@@ -1258,29 +1095,7 @@ unsigned long cFogTestVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cFogTestVP[] =
-    "vs.1.0 \n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "dp4   r10.x, c[8], v0;\n"
-    "dp4   r10.y, c[9], v0;\n"
-    "dp4   r10.z, c[10], v0;\n"
-    "dp4   r10.w, c[11], v0;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "add   r2.x, c[17].y, -c[17].x;\n"
-    "add   r2.y, c[17].y, -r1.w;\n"
-    "rcp   r2.z, r2.x;\n"
-    "mul   r2.w, r2.y, r2.z;\n"
-    "mov   oFog, -r2.w;\n"
-    "mov   oD1.xyzw, r2.wwww;\n"
-    "mov   r3.xyzw, c[16].yxxy;\n"
-    "mov   r3.z, r2.w;\n"
-    "add   r3.x, r3.x, -r2.w;\n"
-    "mov   oD0, r3;";
+#include "vsh/FogTestVP.h"
 
 unsigned long cLightProjectionVPDeclaration[] =
 {
@@ -1290,48 +1105,7 @@ unsigned long cLightProjectionVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cLightProjectionVP[] =
-    "vs.1.0 \n"
-    "mov   r1, c[20];\n"
-    "add   r2, v0, -r1;\n"
-    "dp3   r0.w, r2, r2;\n"
-    "rsq   r0.w, r0.w;\n"
-    "mul   r2, r2, r0.w;\n"
-    "mov   r11, v6;\n"
-    "slt   r10.x, r11.x, r11.y;\n"
-    "sge   r10.y, r11.x, r11.y;\n"
-    "mad   r4, r2, c[21].x, r1;\n"
-    "mov   r4.w, c[21].z;\n"
-    "dp3   r3.w, r4, r4;\n"
-    "rcp   r0.w, r0.w;\n"
-    "sge   r9.y, r3.w, r0.w;\n"
-    "slt   r9.z, r3.w, r0.w;\n"
-    "mov   r0, v0;\n"
-    "mul   r0, r0, r9.z;\n"
-    "mad   r4, r4, r9.y, r0;\n"
-    "mul   r4, r4, r10.y;\n"
-    "mad   r5, r2, c[21].y, v0;\n"
-    "mov   r5.w, c[21].z;\n"
-    "mul   r5, r5, r10.x;\n"
-    "mad   r6, r5, r10.x, r4;\n"
-    "dp3   r7.x, r2, c[22];\n"
-    "rcp   r7.x, r7.x;\n"
-    "dp3   r7.y, r1, c[22];\n"
-    "add   r7.z, r7.y, c[22].w;\n"
-    "mul   r7.w, r7.z, -r7.x;\n"
-    "mad   r8, r2, r7.w, r1;\n"
-    "mov   r8.w, c[21].z;\n"
-    "dp3   r9.x, r6, c[22];\n"
-    "add   r9.x, r9.x, c[22].w;\n"
-    "sge   r9.y, r9.x, c[21].w;\n"
-    "slt   r9.z, r9.x, c[21].w;\n"
-    "mul   r8, r8, r9.y;\n"
-    "mad   r6, r6, r9.z, r8;\n"
-    "dp4   oPos.x, c[0], r6;\n"
-    "dp4   oPos.y, c[1], r6;\n"
-    "dp4   oPos.z, c[2], r6;\n"
-    "dp4   oPos.w, c[3], r6;\n"
-    "mov   oD0, v5;\n";
+#include "vsh/LightProjectionVP.h"
 
 unsigned long cFogOutputVPDeclaration[] =
 {
@@ -1340,30 +1114,7 @@ unsigned long cFogOutputVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cFogOutputVP[] =
-    "vs.1.0 \n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "dp4   r1.x, c[8], v0;\n"
-    "dp4   r1.y, c[9], v0;\n"
-    "dp4   r1.z, c[10], v0;\n"
-    "dp4   r1.w, c[11], v0;\n"
-    "dp3   r1.w, r1, r1;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "add   r2.x, c[20].y, -c[20].x;\n"
-    "add   r2.y, c[20].y, -r1.w;\n"
-    "rcp   r2.z, r2.x;\n"
-    "mul   r2.w, r2.y, r2.z;\n"
-    "min   r2.w, r2.w, c[22].x;\n"
-    "max   r2.w, r2.w, c[22].y;\n"
-    "add   r2.w, c[22].x, -r2.w;\n"
-    "mul   r3, c[21], r2.w;\n"
-    "mov   r3.w, r2.w;\n"
-    "mov   oD0, r3;\n"
-    "mov   oFog.x, -c[22].y;";
+#include "vsh/FogOutputVP.h"
 
 unsigned long cBumpyShinySkinVPDeclaration[] =
 {
@@ -1379,120 +1130,7 @@ unsigned long cBumpyShinySkinVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBumpyShinySkinVP[] =
-    "vs.1.1;\n"
-    "mul r0, v2, c[16].zzzz;\n"
-    "mov a0.x, r0.x;\n"
-    "dp4 r1.x, v0, c[a0.x + 18];\n"
-    "dp4 r1.y, v0, c[a0.x + 19];\n"
-    "dp4 r1.z, v0, c[a0.x + 20];\n"
-    "mul r9, v1.x, r1.xyz;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mul   r4, v1.x, r1.xyz;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mul   r5, v1.x, r1.xyz;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mul   r6, v1.x, r1.xyz;\n"
-    "mov a0.x, r0.y;\n"
-    "dp4 r1.x, v0, c[a0.x + 18];\n"
-    "dp4 r1.y, v0, c[a0.x + 19];\n"
-    "dp4 r1.z, v0, c[a0.x + 20];\n"
-    "mad r9, r1.xyz, v1.y, r9;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mad   r4, v1.y, r1.xyz, r4;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mad   r5, v1.y, r1.xyz, r5;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mad   r6, v1.y, r1.xyz, r6;\n"
-    "mov a0.x, r0.z;\n"
-    "dp4 r1.x, v0, c[a0.x + 18];\n"
-    "dp4 r1.y, v0, c[a0.x + 19];\n"
-    "dp4 r1.z, v0, c[a0.x + 20];\n"
-    "mad r9, r1.xyz, v1.z, r9;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mad   r4, v1.z, r1.xyz, r4;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mad   r5, v1.z, r1.xyz, r5;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mad   r6, v1.z, r1.xyz, r6;\n"
-    "mov a0.x, r0.w;\n"
-    "dp4 r1.x, v0, c[a0.x + 18];\n"
-    "dp4 r1.y, v0, c[a0.x + 19];\n"
-    "dp4 r1.z, v0, c[a0.x + 20];\n"
-    "mad r9, r1.xyz, v1.w, r9;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mad   r4, v1.w, r1.xyz, r4;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mad   r5, v1.w, r1.xyz, r5;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mad   r6, v1.w, r1.xyz, r6;\n"
-    "mov r9.w, c[16].w;\n"
-    "dp4 oPos.x, c[0], r9;\n"
-    "dp4 oPos.y, c[1], r9;\n"
-    "dp4 oPos.z, c[2], r9;\n"
-    "dp4 oPos.w, c[3], r9;\n"
-    "dp4 r10.x, c[8], r9;\n"
-    "dp4 r10.y, c[9], r9;\n"
-    "dp4 r10.z, c[10], r9;\n"
-    "dp4 r10.w, c[11], r9;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov r9, c[16].xxxw;\n"
-    "dp3 r1.x, c[8], r4;\n"
-    "dp3 r2.x, c[8], r5;\n"
-    "dp3 r3.x, c[8], r6;\n"
-    "dp3 r1.y, c[9], r4;\n"
-    "dp3 r2.y, c[9], r5;\n"
-    "dp3 r3.y, c[9], r6;\n"
-    "dp3 r1.z, c[10], r4;\n"
-    "dp3 r2.z, c[10], r5;\n"
-    "dp3 r3.z, c[10], r6;\n"
-    "dp3 oT1.x, c[92], r1;\n"
-    "dp3 oT1.y, c[92], r2;\n"
-    "dp3 oT1.z, c[92], r3;\n"
-    "dp3 oT2.x, c[91], r1;\n"
-    "dp3 oT2.y, c[91], r2;\n"
-    "dp3 oT2.z, c[91], r3;\n"
-    "dp3 oT3.x, c[90], r1;\n"
-    "dp3 oT3.y, c[90], r2;\n"
-    "dp3 oT3.z, c[90], r3;\n"
-    "dp4 r4.x, v0, c[8];\n"
-    "dp4 r4.y, v0, c[9];\n"
-    "dp4 r4.z, v0, c[10];\n"
-    "dp4 r4.w, v0, c[11];\n"
-    "rcp r4.w, r4.w;\n"
-    "mul r4.xyz, r4, -r4.w;\n"
-    "mov oT0, v7;\n"
-    "dp3 oT1.w, r4, c[92];\n"
-    "dp3 oT2.w, r4, c[91];\n"
-    "dp3 oT3.w, r4, c[90];\n"
-    "mov oD0, c[15].x;\n";
+#include "vsh/BumpyShinySkinVP.h"
 
 unsigned long cSkinVPDeclaration[] =
 {
@@ -1505,67 +1143,8 @@ unsigned long cSkinVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkinVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.xxx, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "dp4   oPos.x, c[0], r9;\n"
-    "dp4   oPos.y, c[1], r9;\n"
-    "dp4   oPos.z, c[2], r9;\n"
-    "dp4   oPos.w, c[3], r9;\n"
-    "dp3   r11.x, c[8], r10;\n"
-    "dp3   r11.y, c[9], r10;\n"
-    "dp3   r11.z, c[10], r10;\n"
-    "mov   r11.w, c[16].w;\n"
-    "dp3   r11.w, r11, r11;\n"
-    "rsq   r11.w, r11.w;\n"
-    "mul   r11, r11, r11.w;\n"
-    "dp4   r10.x, c[8], r9;\n"
-    "dp4   r10.y, c[9], r9;\n"
-    "dp4   r10.z, c[10], r9;\n"
-    "mov   r10.w, c[16].w;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov   r9, c[16].xxxw;\n"
-    "mov   oT0, v7;";
+#include "vsh/SkinVP.h"
+#include "vsh/SkinLitVP.h"
 
 unsigned long cSkinBumpedOutVPDeclaration[] =
 {
@@ -1578,69 +1157,8 @@ unsigned long cSkinBumpedOutVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkinBumpedOutVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.xxx, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "mad   r9.xyz, r10.xyz, c[12].xxx, r9.xyz;\n"
-    "dp4   oPos.x, c[0], r9;\n"
-    "dp4   oPos.y, c[1], r9;\n"
-    "dp4   oPos.z, c[2], r9;\n"
-    "dp4   oPos.w, c[3], r9;\n"
-    "dp3   r11.x, c[8], r10;\n"
-    "dp3   r11.y, c[9], r10;\n"
-    "dp3   r11.z, c[10], r10;\n"
-    "mov   r11.w, c[16].w;\n"
-    "dp3   r11.w, r11, r11;\n"
-    "rsq   r11.w, r11.w;\n"
-    "mul   r11, r11, r11.w;\n"
-    "dp4   r10.x, c[8], r9;\n"
-    "dp4   r10.y, c[9], r9;\n"
-    "dp4   r10.z, c[10], r9;\n"
-    "mov   r10.w, c[16].w;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov   r9, c[12].wwww;\n"
-    "mov   oD0.xyzw, c[12].wwww;\n"
-    "mov   oT0, v7;";
+#include "vsh/SkinBumpedOutVP.h"
+#include "vsh/SkinBumpedOutLitVP.h"
 
 unsigned long cSkinMotionBlurVPDeclaration[] =
 {
@@ -1653,104 +1171,8 @@ unsigned long cSkinMotionBlurVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkinMotionBlurVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.xxx, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "dp3   r10.w, r10, r10;\n"
-    "rsq   r10.w, r10.w;\n"
-    "mul   r10, r10, r10.w;\n"
-    "mov   r10.w, c[16].x;\n"
-    "mov   r4, c[12];\n"
-    "mov   r7.x, c[14].x;\n"
-    "min   r2.y, r7.x, c[14].y;\n"
-    "mul   r5.xyz, r4.xyz, r2.y;\n"
-    "mov   r5.w, c[16].x;\n"
-    "dp3   r3.w, r4, r10;\n"
-    "slt   r2.w, r3.w, c[16].x;\n"
-    "mov   r1, c[17].xyz;\n"
-    "mov   r1.w, c[16].x;\n"
-    "mad   r6, r2.w, -r5, r9.xyzw;\n"
-    "mul r7.y, r2.y, c[13].x;\n"
-    "rcp   r8.y, c[14].y;\n"
-    "mul   r8.w, r2.y, r8.y;\n"
-    "mul   r7.y, r7.y, r8.w;\n"
-    "mul   r7.y, r7.y, c[17].w;\n"
-    "mov   r3.w, c[16].x;\n"
-    "mov   r3, c[69].xyz;\n"
-    "dp3   r3.w, r3, r3;\n"
-    "rsq   r5.w, r3.w;\n"
-    "mul   r3, r3, r5.w;\n"
-    "add   r5.xyz, r6, -r1;\n"
-    "dp3   r5.w, r5, r3;\n"
-    "slt   r5.x, r5.w, c[16].x;\n"
-    "mov   r7.x, c[16].w;\n"
-    "mad   r5.y, r5.x, -c[16].y, r7.x;\n"
-    "mul   r5.z, r5.y, r7.y;\n"
-    "mul   r5.z, r5.z, r2.w;\n"
-    "mad   r6, r5.z, r3, r6;\n"
-    "add   r2.x, -r2.w, c[16].w;\n"
-    "mul   r1, r10, -c[14].z;\n"
-    "mov   r1.w, c[16].x;\n"
-    "mad   r5, r2.x, r1, r6;\n"
-    "dp4   r1.x, r5, c[0];\n"
-    "dp4   r1.y, r5, c[1];\n"
-    "dp4   r1.z, r5, c[2];\n"
-    "dp4   r1.w, r5, c[3];\n"
-    "mov   oPos.xyzw, r1.xyzw;\n"
-    "add   r2.w, c[16].w, -r2.w;\n"
-    "mov   r9.xyz, c[16].xxx;\n"
-    "mul   r9.w, c[69].w, r2.w;\n"
-    "mov   oD0, r9;\n"
-    "dp3   r11.x, c[8], r10;\n"
-    "dp3   r11.y, c[9], r10;\n"
-    "dp3   r11.z, c[10], r10;\n"
-    "mov   r11.w, c[16].w;\n"
-    "dp4   r10.x, c[8], r5;\n"
-    "dp4   r10.y, c[9], r5;\n"
-    "dp4   r10.z, c[10], r5;\n"
-    "mov   r10.w, c[16].w;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov   oT0, v7;";
+#include "vsh/SkinMotionBlurVP.h"
+#include "vsh/SkinMotionBlurLitVP.h"
 
 unsigned long cSkin3BoneVPDeclaration[] =
 {
@@ -1763,67 +1185,7 @@ unsigned long cSkin3BoneVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkin3BoneVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.xxx, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "dp4   oPos.x, c[0], r9;\n"
-    "dp4   oPos.y, c[1], r9;\n"
-    "dp4   oPos.z, c[2], r9;\n"
-    "dp4   oPos.w, c[3], r9;\n"
-    "dp3   r11.x, c[8], r10;\n"
-    "dp3   r11.y, c[9], r10;\n"
-    "dp3   r11.z, c[10], r10;\n"
-    "mov   r11.w, c[16].w;\n"
-    "dp3   r11.w, r11, r11;\n"
-    "rsq   r11.w, r11.w;\n"
-    "mul   r11, r11, r11.w;\n"
-    "dp4   r10.x, c[8], r9;\n"
-    "dp4   r10.y, c[9], r9;\n"
-    "dp4   r10.z, c[10], r9;\n"
-    "mov   r10.w, c[16].w;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov   r9, c[16].xxxw;\n"
-    "mov   oT0, v7;";
+#include "vsh/Skin3BoneVP.h"
 
 unsigned long cSkinBumpyVPDeclaration[] =
 {
@@ -1839,206 +1201,10 @@ unsigned long cSkinBumpyVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkinBumpyVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.x, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "dp4   oPos.x, c[0], r9;\n"
-    "dp4   oPos.y, c[1], r9;\n"
-    "dp4   oPos.z, c[2], r9;\n"
-    "dp4   oPos.w, c[3], r9;\n"
-    "dp3   r11.x, c[8], r10;\n"
-    "dp3   r11.y, c[9], r10;\n"
-    "dp3   r11.z, c[10], r10;\n"
-    "mov   r11.w, c[16].w;\n"
-    "dp3   r11.w, r11, r11;\n"
-    "rsq   r11.w, r11.w;\n"
-    "mul   r11, r11, r11.w;\n"
-    "dp4   r10.x, c[8], r9;\n"
-    "dp4   r10.y, c[9], r9;\n"
-    "dp4   r10.z, c[10], r9;\n"
-    "mov   r10.w, c[16].w;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "add   r0, c[12], -r9;\n"
-    "dp3   r0.w, r0, r0;\n"
-    "rsq   r1.w, r0.w;\n"
-    "dst   r2, r0.w, r1.w;\n"
-    "dp3   r2.w, r2, c[14];\n"
-    "rcp   r2.w, r2.w;\n"
-    "mov   r4.xyzw, r2.wwww;\n"
-    "mul   r0, r0, r1.w;\n"
-    "mov   r0.w, c[16].w;\n"
-    "add   r2, c[13],-r9;\n"
-    "dp3   r2.w, r2, r2;\n"
-    "rsq   r2.w, r2.w;\n"
-    "mul   r2, r2, r2.w;\n"
-    "mov   r2.w, c[16].w;\n"
-    "add   r2, r2, r0;mov   r2.w, c[16].w;\n"
-    "mov   r9, c[16].xxxw;\n"
-    "mov oD0, r9;\n"
-    "mov   oT0, v7;\n"
-    "mov   oT3, v7;\n"
-    "dp3   r1.x, v11, r0;\n"
-    "dp3   r1.y, v12, r0;\n"
-    "dp3   r1.z, v13, r0;\n"
-    "mov   r1.w, c[16].w;\n"
-    "mov   oT1, r1;\n"
-    "dp3   r1.x, v11, r2;\n"
-    "dp3   r1.y, v12, r2;\n"
-    "dp3   r1.z, v13, r2;\n"
-    "mov   r1.w, c[16].w;\n"
-    "mov   oT2, r1;\n"
-    "mov   oD1, r4;\n";
+#include "vsh/SkinBumpyVP.h"
+#include "vsh/SkinBumpyLitVP.h"
 
-char cNewSkinBumpyVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mul   r4, v1.x, r1.xyz;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mul   r5, v1.x, r1.xyz;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mul   r6, v1.x, r1.xyz;\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "mad   r9, r1.xyz, v1.y, r9;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mad   r4, r1.xyz, v1.y, r4;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mad   r5, r1.xyz, v1.y, r5;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mad   r6, r1.xyz, v1.y, r6;\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "mad   r9, r1.xyz, v1.z, r9;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mad   r4, r1.xyz, v1.z, r4;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mad   r5, r1.xyz, v1.z, r5;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mad   r6, r1.xyz, v1.z, r6;\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "mad   r9, r1.xyz, v1.w, r9;\n"
-    "dp3   r1.x, v11, c[a0.x + 18];\n"
-    "dp3   r1.y, v11, c[a0.x + 19];\n"
-    "dp3   r1.z, v11, c[a0.x + 20];\n"
-    "mad   r4, r1.xyz, v1.w, r4;\n"
-    "dp3   r1.x, v12, c[a0.x + 18];\n"
-    "dp3   r1.y, v12, c[a0.x + 19];\n"
-    "dp3   r1.z, v12, c[a0.x + 20];\n"
-    "mad   r5, r1.xyz, v1.w, r5;\n"
-    "dp3   r1.x, v13, c[a0.x + 18];\n"
-    "dp3   r1.y, v13, c[a0.x + 19];\n"
-    "dp3   r1.z, v13, c[a0.x + 20];\n"
-    "mad   r6, r1.xyz, v1.w, r6;\n"
-    "mov   r9.w, c[16].w;\n"
-    "dp4   oPos.x, c[0], r9;\n"
-    "dp4   oPos.y, c[1], r9;\n"
-    "dp4   oPos.z, c[2], r9;\n"
-    "dp4   oPos.w, c[3], r9;\n"
-    "dp4   r10.x, c[8], r9;\n"
-    "dp4   r10.y, c[9], r9;\n"
-    "dp4   r10.z, c[10], r9;\n"
-    "mov   r10.w, c[16].w;\n"
-    "mov  oFog.x, c[16].x;\n"
-    "add   r0, c[12], -r9;\n"
-    "dp3   r0.w, r0, r0;\n"
-    "rsq   r1.w, r0.w;\n"
-    "dst   r2, r0.w, r1.w;\n"
-    "dp3   r2.w, r2, c[14];\n"
-    "rcp   r2.w, r2.w;\n"
-    "mov   oD1.xyzw, r2.wwww;\n"
-    "mul   r0, r0, r1.w;\n"
-    "mov   r0.w, c[16].w;\n"
-    "add   r2, c[13],-r9;\n"
-    "dp3   r2.w, r2, r2;\n"
-    "rsq   r2.w, r2.w;\n"
-    "mul   r2, r2, r2.w;\n"
-    "mov   r2.w, c[16].w;\n"
-    "add   r2, r2, r0;mov   r2.w, c[16].w;\n"
-    "mov   r9, c[16].xxxw;\n"
-    "mov oD0, r9;\n"
-    "mov   oT0, v7;\n"
-    "mov   oT3, v7;\n"
-    "dp3   r1.x, r4.xyz, r0;\n"
-    "dp3   r1.y, r5.xyz, r0;\n"
-    "dp3   r1.z, r6.xyz, r0;\n"
-    "mov   r1.w, c[16].w;\n"
-    "mov   oT1, r1;\n"
-    "dp3   r1.x, r4.xyz, r2;\n"
-    "dp3   r1.y, r5.xyz, r2;\n"
-    "dp3   r1.z, r6.xyz, r2;\n"
-    "mov   r1.w, c[16].w;\n"
-    "mov   oT2, r1;\n";
+#include "vsh/NewSkinBumpyVP.h"
 
 unsigned long cSkinSphereMapVPDeclaration[] =
 {
@@ -2051,80 +1217,8 @@ unsigned long cSkinSphereMapVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkinSphereMapVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.xxx, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "dp4   oPos.x, c[0], r9;\n"
-    "dp4   oPos.y, c[1], r9;\n"
-    "dp4   oPos.z, c[2], r9;\n"
-    "dp4   oPos.w, c[3], r9;\n"
-    "dp3   r11.x, c[8], r10;\n"
-    "dp3   r11.y, c[9], r10;\n"
-    "dp3   r11.z, c[10], r10;\n"
-    "mov   r11.w, c[16].w;\n"
-    "dp3   r11.w, r11, r11;\n"
-    "rsq   r11.w, r11.w;\n"
-    "mul   r11, r11, r11.w;\n"
-    "dp4   r10.x, c[8], r9;\n"
-    "dp4   r10.y, c[9], r9;\n"
-    "dp4   r10.z, c[10], r9;\n"
-    "mov   r10.w, c[16].w;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov   r9, c[16].xxxw;\n"
-    "mov   oT0, v7;dp3   r0.x, -r10, r11;\n"
-    "mul   r1, r0.x, r11;\n"
-    "mul   r2, r1, c[16].y;\n"
-    "add   r4, r10, r2;\n"
-    "add   r4.z, r4.z, c[16].w;\n"
-    "dp3   r5.x, r4, r4;\n"
-    "rsq   r5.y, r5.x;\n"
-    "rcp   r5.z, r5.y;\n"
-    "mul   r5.w, r5.z, c[16].y;\n"
-    "rcp   r5.x, r5.w;\n"
-    "mov   r6.xyzw, c[16].xxxw;\n"
-    "mad   r6.x, r3.x, r5.x, c[17].w;\n"
-    "mad   r6.y, r3.y, r5.x, c[17].w;\n"
-    "mov\toT1, r6;\n";
+#include "vsh/SkinSphereMapVP.h"
+#include "vsh/SkinSphereMapLitVP.h"
 
 unsigned long cSkinCubeMapVPDeclaration[] =
 {
@@ -2137,79 +1231,8 @@ unsigned long cSkinCubeMapVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkinCubeMapVP[] =
-    "vs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.x, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "dp4   oPos.x, c[0], r9;\n"
-    "dp4   oPos.y, c[1], r9;\n"
-    "dp4   oPos.z, c[2], r9;\n"
-    "dp4   oPos.w, c[3], r9;\n"
-    "dp3   r11.x, c[8], r10;\n"
-    "dp3   r11.y, c[9], r10;\n"
-    "dp3   r11.z, c[10], r10;\n"
-    "mov   r11.w, c[16].w;\n"
-    "dp3   r11.w, r11, r11;\n"
-    "rsq   r11.w, r11.w;\n"
-    "mul   r11, r11, r11.w;\n"
-    "dp4   r10.x, c[8], r9;\n"
-    "dp4   r10.y, c[9], r9;\n"
-    "dp4   r10.z, c[10], r9;\n"
-    "mov   r10.w, c[16].w;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "mov   r9, c[16].xxxw;\n"
-    "mov   oT0, v7;\n"
-    "dp3   r0.x, -r10, r11;\n"
-    "mul   r1, r0.x, r11;\n"
-    "mul   r2, r1, c[16].y;\n"
-    "add   r3, r10, r2;\n"
-    "dp3   r3.w, r3, r3;\n"
-    "rsq   r3.w, r3.w;\n"
-    "mul   r3, r3, r3.w;\n"
-    "dp3   r4.x, c[92], r3;\n"
-    "dp3   r4.y, c[91], r3;\n"
-    "dp3   r4.z, c[90], r3;\n"
-    "mov   r4.w, c[16].w;\n"
-    "mov   oT1, r4;";
+#include "vsh/SkinCubeMapVP.h"
+#include "vsh/SkinCubeMapLitVP.h"
 
 unsigned long cBumpMapOnePassVPDeclaration[] =
 {
@@ -2223,53 +1246,8 @@ unsigned long cBumpMapOnePassVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBumpMapOnePassVP[] =
-    "vs.1.1;\n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "add  r0, c[12], -v0;\n"
-    "dp3   r0.w, r0, r0;\n"
-    "rsq   r1.w, r0.w;\n"
-    "dst r2, r0.w, r1.w;\n"
-    "dp3 r2.w, r2, c[14];\n"
-    "rcp r2.w, r2.w;\n"
-    "mov   r4.xyzw, r2.wwww;\n"
-    "mul   r0, r0, r1.w;\n"
-    "mov   r0.w, c[17].x;\n"
-    "dp3   r1.x, v11, r0;\n"
-    "dp3   r1.y, v12, r0;\n"
-    "dp3   r1.z, v13, r0;\n"
-    "mov   r1.w, c[17].x;\n"
-    "mov   oT1, r1;\n"
-    "add r2, c[13],-v0;\n"
-    "dp3   r2.w, r2, r2;\n"
-    "rsq   r2.w, r2.w;\n"
-    "mul   r2, r2, r2.w;\n"
-    "mov   r2.w, c[17].x;\n"
-    "add r2, r2,r0;\n"
-    "mov r2.w, c[17].x;\n"
-    "dp3   r1.x, v11, r2;\n"
-    "dp3   r1.y, v12, r2;\n"
-    "dp3   r1.z, v13, r2;\n"
-    "mov   r1.w, c[17].x;\n"
-    "mov   oT2, r1;\n"
-    "dp4   r10.x, c[8], v0;\n"
-    "dp4   r10.y, c[9], v0;\n"
-    "dp4   r10.z, c[10], v0;\n"
-    "dp4   r10.w, c[11], v0;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "dp3   r11.x, c[8], v3;\n"
-    "dp3   r11.y, c[9], v3;\n"
-    "dp3   r11.z, c[10], v3;\n"
-    "mov   r9, v5;\n"
-    "mov   oT0, v7;\n"
-    "mov   oT3, v7;\n"
-    "mov   oD1, r4;";
+#include "vsh/BumpMapOnePassVP.h"
+#include "vsh/BumpMapOnePassLitVP.h"
 
 unsigned long cBumpMapDiffuseVPDeclaration[] =
 {
@@ -2284,42 +1262,8 @@ unsigned long cBumpMapDiffuseVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBumpMapDiffuseVP[] =
-    "vs.1.1;\n"
-    "dp4 oPos.x, c[0], v0;\n"
-    "dp4 oPos.y, c[1], v0;\n"
-    "dp4 oPos.z, c[2], v0;\n"
-    "dp4 oPos.w, c[3], v0;\n"
-    "add r0, c[12], -v0;\n"
-    "dp3 r0.w, r0, r0;\n"
-    "rsq r1.w, r0.w;\n"
-    "dst r2, r0.w, r1.w;\n"
-    "dp3 r2.w, r2, c[14];\n"
-    "rcp r2.w, r2.w;\n"
-    "mov r4, r2.w;\n"
-    "mul r0, r0, r1.w;\n"
-    "mov r0.w, c[17].x;\n"
-    "dp3 r1.x, v11, r0;\n"
-    "dp3 r1.y, v12, r0;\n"
-    "dp3 r1.z, v13, r0;\n"
-    "mov r1.w, c[17].x;\n"
-    "mov oT1, r1;\n"
-    "dp4 r10.x, c[8], v0;\n"
-    "dp4 r10.y, c[9], v0;\n"
-    "dp4 r10.z, c[10], v0;\n"
-    "dp4 r10.w, c[11], v0;\n"
-    "dp3 r11.x, c[8], v3;\n"
-    "dp3 r11.y, c[9], v3;\n"
-    "dp3 r11.z, c[10], v3;\n"
-    "dp3 r1.w, r10, r10;\n"
-    "rsq r1.w, r1.w;\n"
-    "rcp r1.w, r1.w;\n"
-    "mov oFog.x, -r1.w;\n"
-    "mov oD1, r4;\n"
-    "mov r9, c[15].wwwx;\n"
-    "mov oT0, v7;\n"
-    "mov oT2, v8;\n"
-    "mov oT3, v7;\n";
+#include "vsh/BumpMapDiffuseVP.h"
+#include "vsh/BumpMapDiffuseLitVP.h"
 
 unsigned long cBumpMapSpecularVPDeclaration[] =
 {
@@ -2334,48 +1278,8 @@ unsigned long cBumpMapSpecularVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBumpMapSpecularVP[] =
-    "xvs.1.1;\n"
-    "dp4 oPos.x, c[0], v0;\n"
-    "dp4 oPos.y, c[1], v0;\n"
-    "dp4 oPos.z, c[2], v0;\n"
-    "dp4 oPos.w, c[3], v0;\n"
-    "add r0, c[12], -v0;\n"
-    "dp3 r0.w, r0, r0;\n"
-    "rsq r1.w, r0.w;\n"
-    "mul   r0, r0, r1.w;\n"
-    "dst r2, r0.w, r1.w;\n"
-    "dp3 r2.w, r2, c[14];\n"
-    "rcp r2.w, r2.w;\n"
-    "mov r4, r2.wwww;\n"
-    "add r2, c[13], -v0;\n"
-    "dp3 r2.w, r2, r2;\n"
-    "rsq r2.w, r2.w;\n"
-    "mul r2, r2, r2.w;\n"
-    "mov r2.w, c[17].x;\n"
-    "add r2, r2, r0;\n"
-    "mov r2.w, c[17].x;\n"
-    "dp3 r1.x, v11, r2;\n"
-    "dp3 r1.y, v12, r2;\n"
-    "dp3 r1.z, v13, r2;\n"
-    "mov r1.w, c[17].x;\n"
-    "mov oT1, r1;\n"
-    "dp4 r10.x, c[8], v0;\n"
-    "dp4 r10.y, c[9], v0;\n"
-    "dp4 r10.z, c[10], v0;\n"
-    "dp4 r10.w, c[11], v0;\n"
-    "dp3 r11.x, c[8], v3;\n"
-    "dp3 r11.y, c[9], v3;\n"
-    "dp3 r11.z, c[10], v3;\n"
-    "dp3 r1.w, r10, r10;\n"
-    "rsq r1.w, r1.w;\n"
-    "rcp r1.w, r1.w;\n"
-    "mov oFog.x, -r1.w;\n"
-    "mov oD1, r4;\n"
-    "mov r9, c[15].wwwx;\n"
-    "mov oT0, v7;\n"
-    "mov oT2, v8;\n"
-    "mov oT3, v7;\n";
+#include "vsh/BumpMapSpecularVP.h"
+#include "vsh/BumpMapSpecularLitVP.h"
 
 unsigned long cSkinFogOutputVPDeclaration[] =
 {
@@ -2444,17 +1348,7 @@ unsigned long cBlurVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cBlurVP[] =
-    "vs.1.1 \n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "mov a0.x, c[12];\n"
-    "add oT0, v7, c[a0.x];\n"
-    "add oT1, v7, c[a0.x+1];\n"
-    "add oT2, v7, c[a0.x+2];\n"
-    "add oT3, v7, c[a0.x+3];\n";
+#include "vsh/BlurVP.h"
 
 unsigned long cPhongEMBMVPDeclaration[] =
 {
@@ -2547,38 +1441,7 @@ unsigned long cPhongFlatVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cPhongVP[] =
-    "vs.1.1 \n"
-    "dp4   oPos.x, c[0], v0;\n"
-    "dp4   oPos.y, c[1], v0;\n"
-    "dp4   oPos.z, c[2], v0;\n"
-    "dp4   oPos.w, c[3], v0;\n"
-    "dp4   r10.x, c[8], v0;\n"
-    "dp4   r10.y, c[9], v0;\n"
-    "dp4   r10.z, c[10], v0;\n"
-    "dp4   r10.w, c[11], v0;\n"
-    "dp3   r1.w, r10, r10;\n"
-    "rsq   r1.w, r1.w;\n"
-    "rcp   r1.w, r1.w;\n"
-    "mov  oFog.x, -r1.w;\n"
-    "dp3   r11.x, c[8], v3;\n"
-    "dp3   r11.y, c[9], v3;\n"
-    "dp3   r11.z, c[10], v3;\n"
-    "mov oT3, v3\n"
-    "add  r0, c[12], -v0;\n"
-    "mov oT2, r0.xyz;\n"
-    "rcp r2, c[14].y;\n"
-    "mul r3, r0, r2.y;\n"
-    "mul r3, c[15].x, r3;\n"
-    "add r3.xy, c[15].y, r3;\n"
-    "dp3 r4.x, r3, r3;\n"
-    "mul r5, r3, c[15].wwyy;\n"
-    "dp3 r5.x, r5, r5;\n"
-    "rcp r5.x, r5.x;\n"
-    "mul r4.x, r4.x, r5.x;\n"
-    "mul r3, r3, r4.x;\n"
-    "mov oT1.xy, r3;\n"
-    "mov oT0, v7;\n";
+#include "vsh/PhongVP.h"
 
 unsigned long cShadowTriMeshVariantVPDeclaration[] =
 {
@@ -2588,54 +1451,9 @@ unsigned long cShadowTriMeshVariantVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cShadowTriMeshVP[] =
-    "xvs.1.1;\n"
-    "sge  r9.w, v0.z, c[12].w;\n"
-    "mov r11, c[16];\n"
-    "dp4   r10.x, c[4], r11;\n"
-    "dp4   r10.y, c[5], r11;\n"
-    "dp4   r10.z, c[6], r11;\n"
-    "dp3 r6.w, v3, -r10;\n"
-    "sge r9.y, r6.w, c[12].y;\n"
-    "add r9.w, r9.y, r9.w;\n"
-    "sge r9.w, r9.w, c[12].x;\n"
-    "add r9.z, c[12].x, -r9.w;\n"
-    "mov r7, c[14];\n"
-    "dp4   r3.x, c[0], v0;\n"
-    "dp4   r3.y, c[1], v0;\n"
-    "dp4   r3.z, c[2], v0;\n"
-    "dp4   r3.w, c[3], v0;\n"
-    "mul r7, r7, r9.w;\n"
-    "mul r3, r3, r9.z;\n"
-    "add r4, r3, r3;\n"
-    "sub r7, r4, r7;\n"
-    "add oPos, r3, r7;\n";
+#include "vsh/ShadowTriMeshVP.h"
 
-char cShadowTriMeshVariantVP[] =
-    "xvs.1.1;\n"
-    "sge  r9.w, v0.z, c[15].w;\n"
-    "slt  r9.z, v0.z, c[15].w;\n"
-    "dp3 r6.w, c[14], -v3;\n"
-    "sge r9.y, r6.w, c[12].y;\n"
-    "add r9.w, r9.y, r9.w;\n"
-    "sge r9.w, r9.w, c[12].x;\n"
-    "slt  r9.z, r9.w, c[12].x;\n"
-    "mov r8, -c[14];\n"
-    "mov r10, v0;\n"
-    "add r10, r10, c[17];\n"
-    "dp4   r3.x, c[0], r10;\n"
-    "dp4   r3.y, c[1], r10;\n"
-    "dp4   r3.z, c[2], r10;\n"
-    "dp4   r3.w, c[3], r10;\n"
-    "dp4   r7.x, c[0], r8;\n"
-    "dp4   r7.y, c[1], r8;\n"
-    "dp4   r7.z, c[2], r8;\n"
-    "dp4   r7 .w, c[3], r8;\n"
-    "mul r7, r7, r9.w;\n"
-    "mul r3, r3, r9.z;\n"
-    "add oPos, r3, r7;\n"
-    "mov oD0, c[12].zzzz;\n"
-    "mov oB0, c[12].xxxx;\n";
+#include "vsh/ShadowTriMeshVariantVP.h"
 
 unsigned long cSkinShadowVPDeclaration[] =
 {
@@ -2648,65 +1466,5 @@ unsigned long cSkinShadowVPDeclaration[] =
     D3DVSD_END()
 };
 
-char cSkinShadowVariantVP[] =
-    "xvs.1.1 \n"
-    "mul   r0, v2, c[16].zzzz;\n"
-    "mov   a0.x, r0.x;\n"
-    "dp4   r1.x, v0, c[a0.x + 18];\n"
-    "dp4   r1.y, v0, c[a0.x + 19];\n"
-    "dp4   r1.z, v0, c[a0.x + 20];\n"
-    "dp3   r5.x, v3, c[a0.x + 18];\n"
-    "dp3   r5.y, v3, c[a0.x + 19];\n"
-    "dp3   r5.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.y;\n"
-    "dp4   r2.x, v0, c[a0.x + 18];\n"
-    "dp4   r2.y, v0, c[a0.x + 19];\n"
-    "dp4   r2.z, v0, c[a0.x + 20];\n"
-    "dp3   r6.x, v3, c[a0.x + 18];\n"
-    "dp3   r6.y, v3, c[a0.x + 19];\n"
-    "dp3   r6.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.z;\n"
-    "dp4   r3.x, v0, c[a0.x + 18];\n"
-    "dp4   r3.y, v0, c[a0.x + 19];\n"
-    "dp4   r3.z, v0, c[a0.x + 20];\n"
-    "dp3   r7.x, v3, c[a0.x + 18];\n"
-    "dp3   r7.y, v3, c[a0.x + 19];\n"
-    "dp3   r7.z, v3, c[a0.x + 20];\n"
-    "mov   a0.x, r0.w;\n"
-    "dp4   r4.x, v0, c[a0.x + 18];\n"
-    "dp4   r4.y, v0, c[a0.x + 19];\n"
-    "dp4   r4.z, v0, c[a0.x + 20];\n"
-    "dp3   r8.x, v3, c[a0.x + 18];\n"
-    "dp3   r8.y, v3, c[a0.x + 19];\n"
-    "dp3   r8.z, v3, c[a0.x + 20];\n"
-    "mul   r9, v1.x, r1.xyz;\n"
-    "mad   r9, r2.xyz, v1.y, r9;\n"
-    "mad   r9, r3.xyz, v1.z, r9;\n"
-    "mad   r9, r4.xyz, v1.w, r9;\n"
-    "mov   r9.w, c[16].w;\n"
-    "mul   r10, v1.xxx, r5.xyz;\n"
-    "mad   r10, r6.xyz, v1.y, r10;\n"
-    "mad   r10, r7.xyz, v1.z, r10;\n"
-    "mad   r10, r8.xyz, v1.w, r10;\n"
-    "add r9, r9, c[17];\n"
-    "dp4   r3.x, c[0], r9;\n"
-    "dp4   r3.y, c[1], r9;\n"
-    "dp4   r3.z, c[2], r9;\n"
-    "dp4   r3.w, c[3], r9;\n"
-    "sge  r8.w, v0.z, c[15].w;\n"
-    "slt  r8.z, v0.z, c[15].w;\n"
-    "dp3 r6.w, c[14], -r10;\n"
-    "sge r8.y, r6.w, c[12].y;\n"
-    "add r8.w, r8.y, r8.w;\n"
-    "sge r8.w, r8.w, c[12].x;\n"
-    "slt  r8.z, r8.w, c[12].x;\n"
-    "mov r6, -c[14];\n"
-    "dp4   r7.x, c[0], r6;\n"
-    "dp4   r7.y, c[1], r6;\n"
-    "dp4   r7.z, c[2], r6;\n"
-    "dp4   r7.w, c[3], r6;\n"
-    "mul r7, r7, r8.w;\n"
-    "mul r3, r3, r8.z;\n"
-    "add oPos, r7, r3;\n"
-    "mov oD0, c[12].xyyx;\n";
+#include "vsh/SkinShadowVariantVP.h"
 #endif

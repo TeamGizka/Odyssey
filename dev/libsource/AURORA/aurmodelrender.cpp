@@ -2526,25 +2526,41 @@ void RenderHologramEffect(int nRenderPath, VertexPrimitiveFlat* pPrimitive)
     {
     case PartTriMesh::RENDER_EMBM:
     {
+#ifdef _XBOX
+        static VertexProgram* pHoloBumpyShinyRegularVP =
+            new VertexProgram(dwFogTestVPVertexShader, dwFogTestVPVertexShader, cBumpyShinyRegularVPDeclaration);
+#else
         static VertexProgram* pHoloBumpyShinyRegularVP =
             new VertexProgram(cHoloVPARB, cBumpyShinyRegularVPDeclaration);
+#endif
         pHoloVP = pHoloBumpyShinyRegularVP;
         break;
     }
     case PartTriMesh::RENDER_LIGHTMAPPED_BUMP_SPECULAR:
     {
+#ifdef _XBOX
+        static VertexProgram* pHoloBumpMapSpecularVP =
+            new VertexProgram(dwFogTestVPVertexShader, dwFogTestVPVertexShader, cBumpMapSpecularVPDeclaration);
+#else
         static VertexProgram* pHoloBumpMapSpecularVP =
             new VertexProgram(cHoloVPARB, cBumpMapSpecularVPDeclaration);
+#endif
         pHoloVP = pHoloBumpMapSpecularVP;
         break;
     }
     case PartTriMesh::RENDER_LIGHTMAPPED_BUMP_DIFFUSE:
     {
+#ifdef _XBOX
+        static VertexProgram* pHoloBumpMapDiffuseVP =
+            new VertexProgram(dwFogTestVPVertexShader, dwFogTestVPVertexShader, cBumpMapDiffuseVPDeclaration);
+#else
         static VertexProgram* pHoloBumpMapDiffuseVP =
             new VertexProgram(cHoloVPARB, cBumpMapDiffuseVPDeclaration);
+#endif
         pHoloVP = pHoloBumpMapDiffuseVP;
         break;
     }
+#ifndef _XBOX
     case PartTriMesh::RENDER_NORMALMAPPED:
     {
         static VertexProgram* pHoloNormalmapVP =
@@ -2552,11 +2568,17 @@ void RenderHologramEffect(int nRenderPath, VertexPrimitiveFlat* pPrimitive)
         pHoloVP = pHoloNormalmapVP;
         break;
     }
+#endif
     case PartTriMesh::RENDER_BUMPMAPPED:
     case PartTriMesh::RENDER_BUMPMAP_FALLBACK:
     {
+#ifdef _XBOX
+        static VertexProgram* pHoloBumpMapOnePassVP =
+            new VertexProgram(dwFogTestVPVertexShader, dwFogTestVPVertexShader, cBumpMapOnePassVPDeclaration);
+#else
         static VertexProgram* pHoloBumpMapOnePassVP =
             new VertexProgram(cHoloVPARB, cBumpMapOnePassVPDeclaration);
+#endif
         pHoloVP = pHoloBumpMapOnePassVP;
         break;
     }
@@ -2565,8 +2587,13 @@ void RenderHologramEffect(int nRenderPath, VertexPrimitiveFlat* pPrimitive)
     case PartTriMesh::RENDER_ENVIRONMENTMAPPED:
     case PartTriMesh::RENDER_ENVIRONMENTMAPPED_VP:
     {
+#ifdef _XBOX
+        static VertexProgram* pHoloStandardVP =
+            new VertexProgram(dwFogTestVPVertexShader, dwFogTestVPVertexShader, cStandardVPDeclaration);
+#else
         static VertexProgram* pHoloStandardVP =
             new VertexProgram(cHoloVPARB, cStandardVPDeclaration);
+#endif
         pHoloVP = pHoloStandardVP;
         break;
     }
@@ -3242,9 +3269,15 @@ void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x00
         }
         Vector vDiffuse;
 
+#ifdef _XBOX
+        static VertexProgram* bumpmapvp = new VertexProgram(
+            dwBumpMapDiffuseVPVertexShader, dwBumpMapDiffuseLitVPVertexShader,
+            cBumpMapDiffuseVPDeclaration);
+#else
         static VertexProgram* bumpmapvp = new VertexProgram(
             cBumpMapDiffuseVP,
             cBumpMapDiffuseVPDeclaration);
+#endif
         GLRender_Enable(ENABLE_VERTEX_PROGRAM);
         if (pNode != 0)
         {
@@ -3338,9 +3371,15 @@ void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x0
         Vector vSpecular;
         Vector vDiffuse;
 
+#ifdef _XBOX
+        static VertexProgram* bumpmapvp = new VertexProgram(
+            dwBumpMapSpecularVPVertexShader, dwBumpMapSpecularLitVPVertexShader,
+            cBumpMapSpecularVPDeclaration);
+#else
         static VertexProgram* bumpmapvp = new VertexProgram(
             cBumpMapSpecularVP,
             cBumpMapSpecularVPDeclaration);
+#endif
         GLRender_Enable(ENABLE_VERTEX_PROGRAM);
         if (pNode != 0)
         {
@@ -3460,8 +3499,13 @@ void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002
         vDiffuse = (vDiffuse * fDiffuse) / (fDiffuse + fSpecular);
     }
 
+#ifdef _XBOX
+    static VertexProgram* bumpvp = new VertexProgram(
+        dwBumpMapVPVertexShader, NULL, cBumpMapVPDeclaration);
+#else
     static VertexProgram* bumpvp = new VertexProgram(
         cBumpMapVP, cBumpMapVPDeclaration);
+#endif
     bumpvp->Enable(pPart, false);
     GLRender_Enable(ENABLE_VERTEX_PROGRAM);
     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_CONSTANTS,
@@ -3549,8 +3593,13 @@ void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x00
         vSpecular = (vDiffuse * fSpecular) / (fDiffuse + fSpecular);
     }
 
+#ifdef _XBOX
+    static VertexProgram* bumpvp = new VertexProgram(
+        dwBumpMapVPVertexShader, NULL, cBumpMapVPDeclaration);
+#else
     static VertexProgram* bumpvp = new VertexProgram(
         cBumpMapVP, cBumpMapVPDeclaration);
+#endif
     bumpvp->Enable(pPart, false);
     GLRender_Enable(ENABLE_VERTEX_PROGRAM);
     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_CONSTANTS,
@@ -3646,7 +3695,7 @@ void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
         GLRender_Disable(ENABLE_ALPHA_TEST);
 
         static VertexProgram* motionblurredvp = new VertexProgram(
-            cMotionBlurredVP, cMotionBlurredVPDeclaration);
+            dwMotionBlurredVPVertexShader, NULL, cMotionBlurredVPDeclaration);
 
         GLRender_Enable(ENABLE_VERTEX_PROGRAM);
         GLRender_SetDepthMask(false);
@@ -3785,11 +3834,17 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
         Vector vSpecular;
         Vector vDiffuse;
 
+#ifdef _XBOX
+        static VertexProgram* bumpmapvp = new VertexProgram(
+            dwBumpMapOnePassVPVertexShader, dwBumpMapOnePassLitVPVertexShader,
+            cBumpMapOnePassVPDeclaration);
+#else
         static VertexProgram* bumpmapvp = new VertexProgram(
             usearbvertexprograms ?
             szBumpmapVPARB
             : cBumpMapOnePassVP,
             cBumpMapOnePassVPDeclaration);
+#endif
 #ifndef _XBOX
         if (usearbvertexprograms)
         {
@@ -3933,8 +3988,13 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
             RenderDiffuseBumpMappedPass(pPrimitive);
         }
 
+#ifdef _XBOX
+        static VertexProgram* standardvp = new VertexProgram(
+            dwStandardVPVertexShader, dwStandardLitVPVertexShader, cStandardVPDeclaration);
+#else
         static VertexProgram* standardvp = new VertexProgram(
             cStandardVP, cStandardVPDeclaration);
+#endif
         if (bumpother)
         {
             currentscene->m_pLightManager->DisableBumpMapLights();
@@ -3968,8 +4028,13 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
         if (bFog)
         {
 
+#ifdef _XBOX
+            static VertexProgram* fogvp = new VertexProgram(
+                dwFogOutputVPVertexShader, NULL, cFogOutputVPDeclaration);
+#else
             static VertexProgram* fogvp = new VertexProgram(
                 cFogOutputVP, cFogOutputVPDeclaration);
+#endif
             fogvp->Enable(pPrimitive->m_pPart, false);
             GLRender_Enable(ENABLE_VERTEX_PROGRAM);
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_FOG_RANGE,
@@ -4229,7 +4294,9 @@ void PartTriMesh::Draw(bool bMotionBlurred)  // Xbox 0x002E7A60
         AurSetVertexProgramParameter4f(VertexProgram::PARAM_BUMPED_OUT_SHELL,
             m_pAurObject->m_fBumpedOutShellHeight, 0.0f, 0.0f, 1.0f);
 #ifdef _XBOX
-        static VertexProgram* bumpedoutvp = new VertexProgram(cBumpedOutVP, cBumpedOutVPDeclaration);
+        static VertexProgram* bumpedoutvp = new VertexProgram(dwBumpedOutVPVertexShader,
+                                                              dwBumpedOutLitVPVertexShader,
+                                                              cBumpedOutVPDeclaration);
 #else
         static VertexProgram* bumpedoutvp = new VertexProgram(cBumpedOutVP, cStandardVPDeclaration);
 #endif

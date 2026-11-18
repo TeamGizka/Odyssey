@@ -78,6 +78,9 @@ float visibilitycheckdelay = 0.33f;
 float visibilitycutoffratio = 0.04f;
 int enablevisibilitytest = 0;
 int countvisibilityculls = 0;
+#ifdef _XBOX
+int visibilitytestindex;
+#endif
 int dogobrender = 1;
 int showlightpriorityinfo = 0;
 
@@ -2858,36 +2861,14 @@ static unsigned long cShadowVolumeVPDeclaration[] =
     D3DVSD_END()
 };
 
-static char cShadowVolumeVP[] =
-    "xvs.1.1;\n"
-    "sge  r9.w, v0.z, c[12].w;\n"
-    "mov r11, c[16];\n"
-    "dp4   r10.x, c[4], r11;\n"
-    "dp4   r10.y, c[5], r11;\n"
-    "dp4   r10.z, c[6], r11;\n"
-    "dp3 r6.w, v3, -r10;\n"
-    "sge r9.y, r6.w, c[12].y;\n"
-    "add r9.w, r9.y, r9.w;\n"
-    "sge r9.w, r9.w, c[12].x;\n"
-    "add r9.z, c[12].x, -r9.w;\n"
-    "mov r7, c[14];\n"
-    "dp4   r3.x, c[0], v0;\n"
-    "dp4   r3.y, c[1], v0;\n"
-    "dp4   r3.z, c[2], v0;\n"
-    "dp4   r3.w, c[3], v0;\n"
-    "mul r7, r7, r9.w;\n"
-    "mul r3, r3, r9.z;\n"
-    "add r4, r3, r3;\n"
-    "sub r7, r4, r7;\n"
-    "add oPos, r3, r7;\n";
-
 void Scene::RenderShadows(int bStaticShadows, int bDynamicShadows,  // Xbox 0x002C50A0
                           int bRenderGobs, int bClearStencil)
 {
     if (systemmemoryshadows)
     {
         static VertexProgram* pShadowVolumeProgram =
-            new VertexProgram(cShadowVolumeVP, cShadowVolumeVPDeclaration);
+            new VertexProgram(dwShadowTriMeshVPVertexShader, NULL,
+                              cShadowVolumeVPDeclaration);
         pShadowVolumeProgram->Enable(NULL, false);
         GLRender_Enable(ENABLE_VERTEX_PROGRAM);
         AurSetVertexProgramParameter4f(12, 1.0f, 0.0f, 0.0f, 1000000.0f);

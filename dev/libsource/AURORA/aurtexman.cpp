@@ -1369,9 +1369,14 @@ void CAurTextureBasic::ConstructImage()  // Xbox 0x002963D0
         {
             m_nWidth = m_nDefaultWidth;
             m_nHeight = m_nDefaultHeight;
+            int nDepth = m_nDepth;
+            if (nDepth == 0)
+            {
+                nDepth = 1;
+            }
             m_nBPP = 4;
-            m_pImage = (unsigned char*)operator new(4 * m_nWidth * m_nHeight);
-            memset(m_pImage, 0x7F, m_nBPP * m_nHeight * m_nWidth);
+            m_pImage = (unsigned char*)operator new(4 * m_nWidth * m_nHeight * nDepth);
+            memset(m_pImage, 0x7F, m_nBPP * m_nHeight * nDepth * m_nWidth);
         }
         else
         {
