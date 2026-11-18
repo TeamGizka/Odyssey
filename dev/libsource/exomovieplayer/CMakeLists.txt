@@ -14,9 +14,9 @@ elseif(KOTOR_PLATFORM STREQUAL "xbox")
 endif()
 kotor_library(exomovieplayer ${sources})
 if(KOTOR_PLATFORM STREQUAL "xbox")
-  # Xbox: the Bink for Xbox headers (3rdparty/Bink/xbox-1.5t, see its MANIFEST.txt) come before the PC Bink headers.
+  # Xbox: the Bink for Xbox headers (3rdparty/Bink/xbox-1.6b, see its MANIFEST.txt) come before the PC Bink headers.
   # No /Ob1 here: the retail Xbox movie player inlines CExoArrayList's constructor into CExoMoviePlayerInternal().
-  set(KOTOR_XBOX_BINK_DIR "${THIRDPARTY}/Bink/xbox-1.5t" CACHE PATH "Bink for Xbox SDK directory")
+  set(KOTOR_XBOX_BINK_DIR "${THIRDPARTY}/Bink/xbox-1.6b" CACHE PATH "Bink for Xbox SDK directory")
   target_include_directories(exomovieplayer BEFORE PRIVATE "${KOTOR_XBOX_BINK_DIR}/include")
   target_compile_options(exomovieplayer PRIVATE /YX)
 else()

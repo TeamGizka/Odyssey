@@ -37,11 +37,10 @@ if(KOTOR_PLATFORM STREQUAL "xbox")
   # The XBE records d:\KotOR2\Code\game\swmain\Xbox_Release_DVD_SHIP\swmain.exe: the linked image is swmain.exe.
   set_target_properties(swmain PROPERTIES OUTPUT_NAME swmain)
   target_link_options(swmain PRIVATE /NODEFAULTLIB "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swmain.map")
-  # The movie player links Bink for Xbox, not XMV. KOTOR_XBOX_BINK_LIB: its library; the default is the 1.5t one next to
-  # the headers the movie player compiles against (3rdparty/Bink/xbox-1.5t/README.md: retail links a later release).
-  # That library holds link-time code generation objects, so the link takes /LTCG.
-  set(KOTOR_XBOX_BINK_LIB "${THIRDPARTY}/Bink/xbox-1.5t/lib/binkxbox.lib" CACHE FILEPATH "Xbox Bink library (binkxbox.lib)")
-  target_link_options(swmain PRIVATE /LTCG)
+  # The movie player links Bink for Xbox, not XMV. KOTOR_XBOX_BINK_LIB: its library; the default is the 1.6b one next to
+  # the headers the movie player compiles against (3rdparty/Bink/xbox-1.6b/README.md). It is native code like the game
+  # objects, so the link takes no /LTCG.
+  set(KOTOR_XBOX_BINK_LIB "${THIRDPARTY}/Bink/xbox-1.6b/lib/binkxbox.lib" CACHE FILEPATH "Xbox Bink library (binkxbox.lib)")
   target_link_libraries(swmain PRIVATE
     exomovieplayer exoresman SWGui AURORA math3d worldtimer servercore pathfindinfo nwscript netlayer exosound
     exoinput exobase clientcore aurorainterface namegen NvTriStrip xapilib.lib d3d8.lib d3dx8.lib xboxkrnl.lib

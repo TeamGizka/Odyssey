@@ -73,7 +73,7 @@ default build) writes `release/swkotor2.exe` from it: the cursors are added with
 rewrites the resource section as the shipped file's (`cmake/release/release_resources.py`), then the link time stamp
 and checksum fields of the shipped file are set (`cmake/release/release_header.py`). The `xbox` preset configures the
 game for Xbox from the tree and the XDK alone (environment variable `XDK_ROOT`; `VS2002_ROOT` for nmake): the sources
-reach the XDK's `<xtl.h>` through `dev/include/platform.h`, and the Bink for Xbox SDK is `3rdparty/Bink/xbox-1.5t/`.
+reach the XDK's `<xtl.h>` through `dev/include/platform.h`, and the Bink for Xbox SDK is `3rdparty/Bink/xbox-1.6b/`.
 There is no Xbox executable yet.
 
 ## Addresses
