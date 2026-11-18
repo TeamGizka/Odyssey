@@ -167,8 +167,7 @@ void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0
         }
     }
 }
-#ifndef _XBOX
-// PC 0x00720B40 GOG 0x00720850
+// PC 0x00720B40 GOG 0x00720850 Xbox 0x00107700
 void CSWGuiInGamePause::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0 && nEvent == GUIEVENT_ACTIVATE)
@@ -191,7 +190,6 @@ void CSWGuiInGamePause::HandleInputEvent(int nEvent, int nState)
     }
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-#endif
 // PC 0x00720C20 GOG 0x00720930 Xbox 0x001077B0
 CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)

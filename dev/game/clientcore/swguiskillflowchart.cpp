@@ -21,7 +21,7 @@ CSWGuiSkillFlow::CSWGuiSkillFlow()
         m_aSkills[i].m_cLeftImage.m_cParams.SetDrawStyle(1);
         m_aSkills[i].m_cLeftImage.m_cParams.SetAlignment(CSWGuiTextParams::ALIGNMENT_CENTER);
 #ifdef _XBOX
-        m_aSkills[i].m_cRightImage.m_cParams.SetImage("lbl_indent", 0);
+        m_aSkills[i].m_cRightImage.m_cParams.SetImage("UIBIT_ABI_BACK", 0);
 #else
         CResRef cIndent("UIBIT_ABI_BACK");
         m_aSkills[i].m_cRightImage.m_cParams.SetImage(cIndent, 0);
@@ -32,7 +32,7 @@ CSWGuiSkillFlow::CSWGuiSkillFlow()
         m_aArrows[i].m_cParams.SetDrawStyle(1);
         m_aArrows[i].m_cParams.SetAlignment(CSWGuiTextParams::ALIGNMENT_CENTER);
 #ifdef _XBOX
-        m_aArrows[i].m_cParams.SetImage("lbl_skarr", 0);
+        m_aArrows[i].m_cParams.SetImage("UIBIT_ABI_ARROW", 0);
 #else
         CResRef cArrow("UIBIT_ABI_ARROW");
         m_aArrows[i].m_cParams.SetImage(cArrow, 0);

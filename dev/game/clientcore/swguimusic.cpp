@@ -352,7 +352,7 @@ void CSWGuiTitleMusic::OnPlayPicked(CSWGuiControl* pControl)
         {
             StopMusic();
         }
-        m_pStreamingSound->Play(CResRef(pInfo->m_sFileName), m_nMusicResType, 0, 1, 0);
+        m_pStreamingSound->Play(pInfo->m_sFileName, m_nMusicResType, 0, 1, 0);
         m_sCurrentSong = pInfo->m_sFileName;
     }
 }

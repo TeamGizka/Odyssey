@@ -1341,6 +1341,7 @@ int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
                 Vector vMin, vMax;
                 int nTriangle;
 #ifdef _XBOX
+                const int nExpectedFields = 7;
                 int nFields = sscanf(pText, "%f %f %f %f %f %f %d",
                        &vMin.m_fX, &vMin.m_fY, &vMin.m_fZ,
                        &vMax.m_fX, &vMax.m_fY, &vMax.m_fZ, &nTriangle);
@@ -1353,7 +1354,7 @@ int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
                     nTriangle = pnWalkableMap[nTriangle] != -1 ?
                         pnWalkableMap[nTriangle] :
                         m_nAdjacencyCount + pnNonWalkableMap[nTriangle];
-                EXOXBOXASSERT(nFields == 7);
+                EXOXBOXASSERT(nFields == nExpectedFields);
                 float fTemp;
                 if (vMin.m_fX > vMax.m_fX)
                 {

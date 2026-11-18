@@ -204,12 +204,14 @@ public:
     // PC 0x006049D0 GOG 0x006049B0
     virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)
     {
+        EXOXBOXASSERT(0);
     }
     virtual void Initialize(const CSWGuiExtent&,  // PC 0x00693D50 GOG 0x00693AC0
                                           const CSWGuiTextParams&,
                                           const CSWGuiBorderParams&,
                                           const CSWGuiBorderParams&)
     {
+        EXOXBOXASSERT(0);
     }
 #ifndef _XBOX
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int,
@@ -241,12 +243,14 @@ public:
     virtual void Draw(float fElapsed);
     virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0 GOG 0x006049B0
     {
+        EXOXBOXASSERT(0);
     }
     virtual void Initialize(const CSWGuiExtent&,  // PC 0x00693D50 GOG 0x00693AC0
                                          const CSWGuiTextParams&,
                                          const CSWGuiBorderParams&,
                                          const CSWGuiBorderParams&)
     {
+        EXOXBOXASSERT(0);
     }
 
     unsigned long m_oidItem;

@@ -2123,6 +2123,9 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
     int nWaypoints;
     i = 0;
     nWaypoints = 0;
+#ifdef _XBOX
+    int nWaypointsWritten = 0;
+#endif
     for (; i < m_lstObjectIds.num; i++)
     {
         if (pObjectArray->GetGameObject(m_lstObjectIds[i], &pObject) ==
@@ -2142,9 +2145,6 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
         }
     }
     pMessage->WriteINT(nWaypoints, 32);
-#ifdef _XBOX
-    int nWaypointsWritten = 0;
-#endif
     for (i = 0; i < nWaypoints; i++)
     {
         if (pObjectArray->GetGameObject(lstWaypoints[i], &pObject) ==

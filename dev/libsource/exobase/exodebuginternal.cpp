@@ -157,7 +157,11 @@ void CExoDebugInternal::InitializeWarningFile()
 
     CExoString sHeader(szHeader);
 
+#ifdef _XBOX
+    FILE* pFile = fopen("t:\\Logs\\swcWarnings.txt", "at");
+#else
     FILE* pFile = fopen("Logs\\swcWarnings.txt", "at");
+#endif
 
     if (pFile)
     {
@@ -362,7 +366,11 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
                         "or Ignore to continue",
                         file, line, message);
     }
+#ifdef _XBOX
+    FILE* pFile = fopen("t:\\Logs\\swcWarnings.txt", "at");
+#else
     FILE* pFile = fopen("Logs\\swcWarnings.txt", "at");
+#endif
     if (pFile)
     {
         fprintf(pFile, sWarning.CStr());

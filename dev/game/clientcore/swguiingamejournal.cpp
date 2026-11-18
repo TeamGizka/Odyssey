@@ -137,7 +137,11 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     m_vHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 #endif
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lblItemDescription.m_pProtoItem;
+#ifdef _XBOX
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel);
+#else
     m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+#endif
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbxItems.m_pProtoItem;
     pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;

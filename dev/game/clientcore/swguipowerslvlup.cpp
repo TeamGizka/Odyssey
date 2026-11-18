@@ -210,14 +210,14 @@ void CSWGuiPowersLevelUp::OnEnterPower(unsigned long nPower)
         {
             CSWGuiTextParams* pParams = &m_lblSelect.m_cText.m_cParams;
             pParams->SetText(m_sSelectText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             break;
         }
     case POWER_CHOSEN:
         {
             CSWGuiTextParams* pParams = &m_lblSelect.m_cText.m_cParams;
             pParams->SetText(m_sDeselectText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             break;
         }
     case POWER_GRANTED:

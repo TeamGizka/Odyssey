@@ -57,7 +57,11 @@ void CSWCameraOnAStick::Message(char* sMessage)
     {
         Parse(sMessage + 8, m_fSpeed);
     }
+#ifdef _XBOX
+    if (stricmp("m_fPitch", firstword(sMessage)) == 0)
+#else
     if (stricmp("m_fPresetPitch", firstword(sMessage)) == 0)
+#endif
     {
 #ifdef _XBOX
         Parse(sMessage + 8, m_fPresetPitch);

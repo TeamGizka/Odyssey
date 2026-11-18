@@ -668,9 +668,14 @@ CSWGuiDialogTop::CSWGuiDialogTop(CSWGuiManager* pManager,
             CSWGuiExtent(0, 0, m_cExtent.m_nWidth, m_cExtent.m_nHeight),
             CSWGuiTextParams(sReply, cFont, vColor,
                              CSWGuiTextParams::ALIGNMENT_DIALOG_REPLY, 1.0f),
+#ifdef _XBOX
+            CSWGuiBorderParams(CResRef(), CResRef(), CResRef(), 0, 0, 1.0f,
+                               Vector(1.0f, 1.0f, 1.0f), 0));
+#else
             CSWGuiBorderParams(CResRef(), CResRef(), CResRef(), 0, 0, 1.0f,
                                Vector(1.0f, 1.0f, 1.0f), 0),
             1.0f);
+#endif
     }
     AddControl(&m_lblReply);
 #ifndef _XBOX

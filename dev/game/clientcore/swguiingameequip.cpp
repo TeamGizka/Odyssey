@@ -3365,7 +3365,7 @@ void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
 #ifndef _XBOX
         CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        *pParams = CSWGuiBorderParams("", "", "UIBIT_EQP_ITM1", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
         pParams->m_vColor = CGuiInGame::COLOR_DARK_GOLD;
     }
@@ -3374,7 +3374,7 @@ void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
 #ifndef _XBOX
         CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        *pParams = CSWGuiBorderParams("", "", "UIBIT_EQP_ITM1", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
         pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
         pParams->SetPulsingAlpha(1, 0, 1);

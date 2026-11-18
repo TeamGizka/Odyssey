@@ -41,7 +41,7 @@ static inline void SetBorderFillImage(CSWGuiBorderParams& cParams, const CResRef
 }
 
 // Dead code: not in the PC executable
-void CSWGuiMessageBox::DisplayDeathMessage()  // Xbox 0x0005A310
+void CSWGuiMessageBox::DisplayDeathMessage()
 {
 #ifndef _XBOX
     if (SWGUIINGAME_DEBUG)
@@ -1867,6 +1867,8 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // Xbox 0x0004A
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         if (m_pCallbackObject != 0 && m_pCallback != 0)
             (m_pCallbackObject->*m_pCallback)(m_pCallbackControl);
+        if (m_nStyle != 0)
+            g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -2752,11 +2754,9 @@ void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
             g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
 #endif
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-#ifndef _XBOX
             HandleAlignmentMovie();
             HandleLevelUpDLG();
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_aItemsReceived.num = 0;
-#endif
             if (!m_bWasPaused)
                 g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);
 #ifndef _XBOX

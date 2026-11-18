@@ -5519,7 +5519,11 @@ float CSWCCreature::GetHeadTurnVertical()
             nAppearance,
             CTwoDimArrays::COL2DA_APPEARANCETABLE_HEAD_ARC_V, &fHeadArc) == 0)
     {
+#ifdef _XBOX
+        return 40.0f;
+#else
         return 30.0f;
+#endif
     }
     return fHeadArc;
 }

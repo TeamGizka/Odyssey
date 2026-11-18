@@ -2808,8 +2808,7 @@ void CSWGuiLabelHilight::Initialize(const CSWGuiExtent& cExtent,
     Initialize(cExtent, pProto->m_cText.m_cParams, pProto->m_cBorder.m_cParams,
                pProto->m_cHilite.m_cParams);
 }
-#ifndef _XBOX
-// PC 0x00418530 GOG 0x00736640
+// PC 0x00418530 GOG 0x00736640 Xbox 0x00334260
 void CSWGuiLabelHilight::SetActive(int bActive)
 {
     CSWGuiControl::SetActive(bActive);
@@ -2825,7 +2824,6 @@ void CSWGuiLabelHilight::SetActive(int bActive)
         pText->RestoreDefaultColor();
     }
 }
-#endif
 // PC 0x00418570 GOG 0x00418560 Xbox 0x003342A0
 void CSWGuiButton::Initialize(const CSWGuiExtent& cExtent, CSWGuiButton* pProto)
 {

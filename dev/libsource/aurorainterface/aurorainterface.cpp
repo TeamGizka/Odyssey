@@ -227,7 +227,11 @@ void* CAuroraInterface::GetResource(char* szName, char* szExtension, int* pnSize
             return pTexture->GetTextureDataPtr();
         }
     }
+#ifdef _XBOX
+    else if (strcmp(szBuffer, "TXB") == 0)
+#else
     else if (strcmp(szBuffer, "TPC") == 0)
+#endif
     {
         pProcessedTexture = GetProcessedTexture(sName);
         if (pProcessedTexture != NULL)

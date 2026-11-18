@@ -424,7 +424,6 @@ public:
 
 #ifdef _XBOX
     enum { NUM_TARGET_TYPES = 5, NUM_PERSONAL_MENUS = 7 };
-    enum { TRANSITION_PORTRAIT_MARGIN = 106 };
 #endif
     enum
     {

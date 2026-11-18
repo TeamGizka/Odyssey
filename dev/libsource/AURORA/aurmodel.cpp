@@ -3933,7 +3933,7 @@ int Gob::Append(char* sModel, char* sPart)
     AUR_MODEL_ADDREF(pModel, this);
     Part* pPart = CreateInstanceTree(pModel->m_pRootNode, this);
     pPart->m_vPosition = Vector(0.0f, 0.0f, 0.0f);
-    pPart->m_qOrientation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+    pPart->m_qOrientation = Quaternion();
     m_lstAppendModels.Add(pModel);
     m_lstAppendParts.Add(pPart);
     pParent->m_lstChildren.Add(pPart);

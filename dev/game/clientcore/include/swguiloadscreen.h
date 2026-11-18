@@ -8,9 +8,7 @@ class CSWGuiLoadScreen : public CSWGuiPanel
 public:
     CSWGuiLoadScreen(CSWGuiManager* pManager);
 
-#ifndef _XBOX
     virtual void Draw(float fElapsed);
-#endif
     virtual void OnPanelAdded();
     virtual void OnPanelRemoved();
 

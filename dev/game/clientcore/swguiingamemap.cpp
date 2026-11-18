@@ -447,11 +447,7 @@ CExoString CSWGuiMapHider::GetNextMapNote()
                 CSWSAreaMap* pAreaMap =
                     g_pAppManager->m_pServerExoApp->GetModule()->m_pAreaMap;
                 int bExplored = pAreaMap->IsWorldPointExplored(pWaypoint->m_vPosition);
-#ifdef _XBOX
-                if (bExplored)
-#else
                 if (bExplored || !g_bShowFogOfWar)
-#endif
                 {
                     m_pCurrentNote = pPos;
                     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
@@ -577,12 +573,8 @@ CExoString CSWGuiMapHider::GetPrevMapNote()
             {
                 CSWSAreaMap* pAreaMap =
                     g_pAppManager->m_pServerExoApp->GetModule()->m_pAreaMap;
-#ifdef _XBOX
-                if (pAreaMap->IsWorldPointExplored(pWaypoint->m_vPosition))
-#else
                 if (pAreaMap->IsWorldPointExplored(pWaypoint->m_vPosition) ||
                     !g_bShowFogOfWar)
-#endif
                 {
                     m_pCurrentNote = pPos;
                     pWaypoint->m_lsMapNote.GetString(
@@ -672,9 +664,6 @@ CSWGuiMapHider::CSWGuiMapHider()
 {
     ClearMapNotes();
     m_nMapMode = 0;
-#ifdef _XBOX
-    m_pBlackDot = 0;
-#endif
     m_pBlackDot = NewCAurGUIImage("blackdot");
     m_pArrow = new CSWGuiImage;
     m_pCircle = new CSWGuiImage;
@@ -855,16 +844,10 @@ void CSWGuiMapHider::Draw(float fElapsed)
             if (pObject != NULL && pObject->AsSWSWaypoint() != NULL)
             {
                 CSWSWaypoint* pWaypoint = pObject->AsSWSWaypoint();
-#ifdef _XBOX
-                if (pWaypoint->m_bMapNoteEnabled &&
-                    g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap()
-                        ->IsWorldPointExplored(pWaypoint->m_vPosition))
-#else
                 if ((pWaypoint->m_bMapNoteEnabled || !g_bShowFogOfWar) &&
                     (g_pAppManager->m_pServerExoApp->GetModule()->GetAreaMap()
                          ->IsWorldPointExplored(pWaypoint->m_vPosition) ||
                      !g_bShowFogOfWar))
-#endif
                 {
                     int nNoteX, nNoteY = 0;
                     if (g_pAppManager->m_pServerExoApp->GetModule()->GetAreaMap()

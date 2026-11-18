@@ -1604,14 +1604,23 @@ Normal* downSampleNormalMap(Normal* pNormalMap, int nWidth, int nHeight,
             {
                 fNX *= 0.5f; fNY *= 0.5f;
             }
+#ifdef _XBOX
+            fLength = SqrtEstimateNR_ASM(fNX * fNX + fNY * fNY + fNZ * fNZ);
+            if (fLength == 0.0f)
+#else
             fLength = (float)sqrt(fNX * fNX + fNY * fNY + fNZ * fNZ);
             if (fLength == 0.0)
+#endif
             {
                 fNX = 0.0; fNY = 0.0; fNZ = 1.0;
             }
             else
             {
+#ifdef _XBOX
+                fInverseLength = ReciprocalEstimateNR_ASM(fLength);
+#else
                 fInverseLength = 1.0f / fLength;
+#endif
                 fNX *= fInverseLength;
                 fNY *= fInverseLength;
                 fNZ *= fInverseLength;

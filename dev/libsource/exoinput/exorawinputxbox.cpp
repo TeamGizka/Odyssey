@@ -458,8 +458,8 @@ void CExoRawInputInternal::UpdateJoysticks()  // Xbox 0x00150100
         unsigned long nTime = (unsigned long)(
             g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
         unsigned long nElapsed = nTime - m_nRestoreTime;
-        m_nRestoreTime = nTime;
         m_nRestoreElapsed += nElapsed;
+        m_nRestoreTime = nTime;
 
         if (!m_bBindEnded)
         {

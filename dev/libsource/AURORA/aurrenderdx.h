@@ -978,7 +978,7 @@ inline void AurSetVertexProgramParameter4f(unsigned int nIndex, float x, float y
     fParameter[1] = y;
     fParameter[2] = z;
     fParameter[3] = w;
-    g_pD3DDevice->SetVertexShaderConstant(nIndex, fParameter, 1);
+    g_pD3DDevice->SetVertexShaderConstantFast(nIndex, fParameter, 1);
 }
 
 // Xbox 0x0029C2C0

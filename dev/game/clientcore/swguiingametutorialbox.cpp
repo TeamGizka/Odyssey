@@ -54,7 +54,11 @@ int CSWGuiTutorialBox::TutorialReasonIsValid(unsigned char nReason)
 {
     bool bMissing;
     {
+#ifdef _XBOX
+        CExoString sColumn("Message_XBox0");
+#else
         CExoString sColumn("Message_PC0");
+#endif
         CTwoDimArrays* p2DArrays = g_pRules->Get2DArrays();
         EXOXBOXASSERT(p2DArrays->m_pTutorial);
         C2DA* pTutorial = p2DArrays->m_pTutorial;
@@ -334,7 +338,11 @@ int CSWGuiTutorialBox::SetNextMessage()
     CExoString sColumn;
     CExoString sIconResRef;
     unsigned long nStrRef = 0;
+#ifdef _XBOX
+    sColumn.Format("Message_XBox%i", (unsigned char)m_nMessageIndex);
+#else
     sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
+#endif
     ++m_nMessageIndex;
     CTwoDimArrays* p2DArrays = g_pRules->Get2DArrays();
     EXOXBOXASSERT(p2DArrays->m_pTutorial);
@@ -342,7 +350,11 @@ int CSWGuiTutorialBox::SetNextMessage()
     if (pTutorial->GetINTEntry(m_nTutorialReason, sColumn, (int*)&nStrRef) != 0)
     {
         int bFound;
+#ifdef _XBOX
+        sColumn.Format("Message_XBox%i", (unsigned char)m_nMessageIndex);
+#else
         sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
+#endif
         int nNextStrRef;
         p2DArrays = g_pRules->Get2DArrays();
         EXOXBOXASSERT(p2DArrays->m_pTutorial);

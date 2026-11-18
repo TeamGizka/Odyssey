@@ -676,7 +676,7 @@ void CExoStreamingSoundSourceInternal::DoObstructionWork()  // Xbox 0x00169520
 void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)
 {
     int bPlaying = m_pStream->m_bPlaying;
-    CPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(nPriorityGroup);
+    CPriorityGroup* pGroup = GetSoundInternal()->GetPriorityGroup(nPriorityGroup);
 
     if (pGroup != NULL)
     {
@@ -684,7 +684,7 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityG
     }
     else
     {
-        pGroup = m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
+        pGroup = GetSoundInternal()->GetPriorityGroup(m_nPriorityGroup);
     }
     if (bPlaying == 0)
     {
@@ -696,7 +696,7 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityG
         cCommand.m_pStream = m_pStream;
         cCommand.m_nCommand = CExoXboxStreamCommand::COMMAND_SET_PRIORITY_GROUP;
         cCommand.m_fParam1 = (float)m_nPriorityGroup;
-        m_pSoundInternal->m_pStreamManager->QueueCommand(cCommand);
+        GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
     }
     if (pGroup != NULL)
     {

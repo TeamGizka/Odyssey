@@ -3422,12 +3422,12 @@ void GLRender::SetShadowLightConstants()  // Xbox 0x0029FEF0
     fConstant[1] = g_vShadowLightClip.y;
     fConstant[2] = g_vShadowLightClip.z;
     fConstant[3] = g_vShadowLightClip.w;
-    g_pD3DDevice->SetVertexShaderConstant(SHADOW_CONSTANT_LIGHT_CLIP, fConstant, 1);
+    g_pD3DDevice->SetVertexShaderConstantFast(SHADOW_CONSTANT_LIGHT_CLIP, fConstant, 1);
     fConstant[0] = g_vShadowLightView.x;
     fConstant[1] = g_vShadowLightView.y;
     fConstant[2] = g_vShadowLightView.z;
     fConstant[3] = g_vShadowLightView.w;
-    g_pD3DDevice->SetVertexShaderConstant(SHADOW_CONSTANT_LIGHT_VIEW, fConstant, 1);
+    g_pD3DDevice->SetVertexShaderConstantFast(SHADOW_CONSTANT_LIGHT_VIEW, fConstant, 1);
 }
 
 void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)  // Xbox 0x0029FF80
@@ -6576,7 +6576,7 @@ static unsigned long g_adwHeatDistortionDeclaration[] =
 void GLRender::RenderForceDistortion(unsigned long nTexture)  // Xbox 0x002A7D10
 {
     float fParameter[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
-    g_pD3DDevice->SetVertexShaderConstant(DISTORTION_ENV_PARAMETER, fParameter, 1);
+    g_pD3DDevice->SetVertexShaderConstantFast(DISTORTION_ENV_PARAMETER, fParameter, 1);
     if (!IsProgramNV(cm_pHeatDistortionVertexProg))
     {
         GenPrograms(1, &cm_pHeatDistortionVertexProg);

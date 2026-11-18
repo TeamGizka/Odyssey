@@ -62,10 +62,15 @@ void BSPTraverse(BSPNode* pNode, const Vector& vCenter, float fRadiusSquared,
 {
     if (pNode != 0)
     {
+#ifndef _XBOX
         float fRadius = (float)sqrt(fRadiusSquared);
+#endif
         do
         {
             pCallback(pNode, vCenter, fRadiusSquared);
+#ifdef _XBOX
+            float fRadius = SqrtEstimateNR_ASM(fRadiusSquared);
+#endif
             float fDistance =
                 pNode->m_Plane.m_vNormal * vCenter + pNode->m_Plane.m_fDistance;
             if (fDistance > -fRadius)

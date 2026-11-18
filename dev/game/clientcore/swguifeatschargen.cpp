@@ -213,14 +213,14 @@ void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
         {
             CSWGuiTextParams* pParams = &m_lblSelect.m_cText.m_cParams;
             pParams->SetText(m_sFeatUnavailableText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             break;
         }
     case FEAT_CHOSEN:
         {
             CSWGuiTextParams* pParams = &m_lblSelect.m_cText.m_cParams;
             pParams->SetText(m_sFeatLockedText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             break;
         }
     case FEAT_LOCKED:

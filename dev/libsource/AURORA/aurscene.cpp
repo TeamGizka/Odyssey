@@ -68,11 +68,7 @@ float grassalphatest = 0.4f;
 int newsorting = 1;
 int numgobs = 0;
 int rendertransparentcharacters = 0;
-#ifdef _XBOX
-int interleaveanimations;
-#else
 int interleaveanimations = 1;
-#endif
 char g_bEnableInterleavedAnimations = 0;
 float visibilitycheckdelay = 0.33f;
 float visibilitycutoffratio = 0.04f;
@@ -2147,7 +2143,11 @@ void Scene::RenderStencilShadowsForThisLight(PartLight& light, float fAlpha,
         fRadius = fRadius * fRadius - fHeight * fHeight;
         if (fRadius < 0.0f)
             fRadius = 0.0f;
+#ifdef _XBOX
+        fRadius = SqrtEstimateNR_ASM(fRadius);
+#else
         fRadius = (float)sqrt(fRadius);
+#endif
         pVertexArray[0].position[0] = light.m_vWorldPosition.m_fX;
 
         pVertexArray[0].position[1] = light.m_vWorldPosition.m_fY;

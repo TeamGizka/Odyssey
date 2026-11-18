@@ -125,9 +125,9 @@ void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
     }
 }
 
-#ifndef _XBOX
-void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430 GOG 0x006D0490
+void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430 GOG 0x006D0490 Xbox 0x0010CBD0
 {
+#ifndef _XBOX
     AurGUIStartLayer();
     if (AurGUISetupViewport(0, 0, m_pManager->m_nWidth, m_pManager->m_nHeight,
                             CGuiInGame::COLOR_BLACK, false, 1.0f) != 0)
@@ -136,6 +136,6 @@ void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430 GOG 0x006D0490
         AurGUICloseViewport();
     }
     AurGUIStopLayer();
+#endif
     return CSWGuiPanel::Draw(fElapsed);
 }
-#endif

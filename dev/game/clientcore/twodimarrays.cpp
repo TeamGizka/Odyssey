@@ -260,7 +260,11 @@ int CTwoDimArrays::Load2DArrays_Appearance()  // PC 0x0060ED00 GOG 0x00613680 Xb
     }
     EXOXBOXASSERT(COL2DA_APPEARANCETABLE_DRIVEACCl != -1);
     {
+#ifdef _XBOX
+        CExoString sColumn("DriveAnimRun_XBox");
+#else
         CExoString sColumn("DriveAnimRun_PC");
+#endif
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_DRIVEANIMRUN = p2DA->GetColumnIndex(sColumn);
     }

@@ -935,6 +935,200 @@ int CExoResMan::NukeDirectory(const CExoString& sPath, int bDeleteFiles,
 {
     return WipeDirectory(sPath, bDeleteFiles, 1, 0, bRecurse);
 }
+#ifdef _XBOX
+#include "appmanager.h"
+#include "clientexoapp.h"
+
+void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
+{
+    CExoCriticalSection* pCriticalSection = &m_csAsync;
+    pCriticalSection->EnterCriticalSection();
+
+    int bResult = 1;
+    int bSaveGame = 0;
+    CExoString sPath;
+    CExoString sDirectory;
+
+    if (m_bAsyncIsModule == 0)
+    {
+        sPath = CExoString("RIMS:") + m_sAsyncModuleName;
+        bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+    }
+    else
+    {
+        AddKeyTable("RIMSXBOX:scripts", TABLE_RESOURCE_IMAGE, 0);
+        int nDownloadedPackage = FindModuleDownloadedPkg(m_sAsyncModuleName);
+
+        sPath = m_sAsyncModuleName + CExoString("_a");
+        if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
+        {
+            if (nDownloadedPackage == 0)
+            {
+                sPath = CExoString("RIMSXBOX:") + sPath;
+            }
+            else
+            {
+                sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
+                sPath = sDirectory + sPath;
+            }
+            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+
+            if (bResult)
+            {
+                m_nAsyncLoadedFlags |= LOADED_MODULE_AREA_RIM;
+            }
+        }
+        else
+        {
+            g_pAppManager->m_pClientExoApp->SetMissingFilePending(1);
+        }
+
+        if (bResult)
+        {
+            sPath = m_sAsyncModuleName + CExoString("_adx");
+            if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
+            {
+                if (nDownloadedPackage == 0)
+                {
+                    sPath = CExoString("RIMSXBOX:") + sPath;
+                }
+                else
+                {
+                    sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
+                    sPath = sDirectory + sPath;
+                }
+                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+
+                if (bResult)
+                {
+                    m_nAsyncLoadedFlags |= LOADED_MODULE_ADX_RIM;
+                }
+            }
+            else
+            {
+                g_pAppManager->m_pClientExoApp->SetMissingFilePending(1);
+            }
+
+            if (bResult)
+            {
+                AddKeyTable("MODULES:", TABLE_DIRECTORY, 0);
+                if (nDownloadedPackage != 0)
+                {
+                    sDirectory.Format("LIVE%d:MODULES", nDownloadedPackage);
+                    AddKeyTable(sDirectory, TABLE_DIRECTORY, 0);
+                }
+
+                if (!Exists(m_sAsyncModuleName, RESTYPE_MOD, (unsigned long*)NULL))
+                {
+                    sPath = m_sAsyncModuleName + CExoString("_s");
+                    if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
+                    {
+                        if (nDownloadedPackage == 0)
+                        {
+                            sPath = CExoString("MODULES:") + sPath;
+                        }
+                        else
+                        {
+                            sDirectory = sDirectory + CExoString("\\");
+                            sPath = sDirectory + sPath;
+                        }
+                        bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+
+                        if (bResult)
+                        {
+                            bSaveGame = 1;
+                            m_nAsyncLoadedFlags |= LOADED_SAVE_GAME_RIM;
+                        }
+                    }
+                    else
+                    {
+                        g_pAppManager->m_pClientExoApp->SetMissingFilePending(1);
+                    }
+
+                    if (nDownloadedPackage == 0)
+                    {
+                        sPath = CExoString("MODULES:") + m_sAsyncModuleName +
+                                CExoString("_dlg");
+                    }
+                    else
+                    {
+                        sDirectory = sDirectory + CExoString("\\");
+                        sPath = sDirectory + m_sAsyncModuleName + CExoString("_dlg");
+                    }
+                    int nCached;
+                    AddKeyTable(CacheResource(sPath, RESTYPE_ERF, nCached),
+                                TABLE_ENCAPSULATED, PRIORITY_MODULE);
+                }
+                else
+                {
+                    if (nDownloadedPackage == 0)
+                    {
+                        sPath = CExoString("MODULES:") + m_sAsyncModuleName;
+                    }
+                    else
+                    {
+                        sDirectory = sDirectory + CExoString("\\");
+                        sPath = sDirectory + m_sAsyncModuleName;
+                    }
+                    bResult = AddKeyTable(sPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
+
+                    if (bResult)
+                    {
+                        m_nAsyncLoadedFlags |= LOADED_MODULE_RIM;
+                    }
+                }
+
+                if (nDownloadedPackage != 0)
+                {
+                    sDirectory.Format("LIVE%d:MODULES", nDownloadedPackage);
+                    RemoveKeyTable(sDirectory, TABLE_DIRECTORY);
+                }
+                RemoveKeyTable("MODULES:", TABLE_DIRECTORY);
+            }
+        }
+
+        if (!m_bAsyncFromCurrentGame && bResult)
+        {
+            sPath = CExoString("CURRENTGAME:") + m_sAsyncModuleName;
+
+            AddKeyTable("CURRENTGAME:", TABLE_DIRECTORY, 0);
+            if (Exists(m_sAsyncModuleName, RESTYPE_RSV, (unsigned long*)NULL) ||
+                Exists(m_sAsyncModuleName, RESTYPE_RIM, (unsigned long*)NULL))
+            {
+                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+
+                if (bResult)
+                {
+                    m_nAsyncLoadedFlags |= LOADED_CURRENT_GAME_RIM;
+                }
+            }
+
+            RemoveKeyTable("CURRENTGAME:", TABLE_DIRECTORY);
+        }
+        else
+        {
+            sPath = CExoString("CURRENTGAME:") + m_sAsyncModuleName;
+            bResult = AddKeyTable(sPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
+
+            if (bResult)
+            {
+                m_nAsyncLoadedFlags |= LOADED_CURRENT_GAME_KEY;
+            }
+        }
+    }
+
+    if (bResult)
+    {
+        m_nAsyncState = (bSaveGame == 0) + ASYNC_MODULE_LOADED;
+    }
+    else
+    {
+        m_nAsyncState = ASYNC_LOAD_FAILED;
+    }
+
+    pCriticalSection->LeaveCriticalSection();
+}
+#else
 void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
 {
     CExoCriticalSection* pCriticalSection = &m_csAsync;
@@ -1112,6 +1306,7 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
     pCriticalSection->LeaveCriticalSection();
 
 }
+#endif
 
 // Dead code: not in the PC executable
 int CExoResMan::GetNewResRef(const CResRef& cResRef, unsigned short nType,

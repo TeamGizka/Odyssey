@@ -363,7 +363,9 @@ void CSWGuiPartySelection::OnPanelRemoved()
 #endif
     m_bPlaySound = 0;
     m_bAllowCancel = 0;
+#ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 #ifdef _XBOX
 // Xbox 0x000F07E0

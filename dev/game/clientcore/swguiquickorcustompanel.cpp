@@ -143,15 +143,7 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
     m_cCustomButton.AddEvent(
         GUIEVENT_ACCEPT, this,
         (PFNGUIEVENT)&CSWGuiQuickOrCustomPanel::OnSelectCustomCharacterButton);
-#ifdef _XBOX
-    m_cQuickButton.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-    m_cQuickButton.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-#endif
     m_cQuickButton.m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
-#ifdef _XBOX
-    m_cCustomButton.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-    m_cCustomButton.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-#endif
     m_cCustomButton.m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
 #ifndef _XBOX
     CSWGuiButton* pBack = &m_cBackButton;
@@ -160,10 +152,6 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
                     (PFNGUIEVENT)&CSWGuiPanel::OnBButtonPressed);
 #endif
     SetActiveControl(&m_cQuickButton, 0);
-#ifdef _XBOX
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
-#endif
 }
 
 // Dead code: not in the PC executable

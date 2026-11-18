@@ -366,11 +366,11 @@ CGuiInGame::CGuiInGame()
     m_vAreaTransition = Vector(0.0f, 0.0f, 0.0f);
     m_oidAreaTransition = OBJECT_INVALID;
     m_bCameraRelativeAreaTransition = 1;
+#endif
     m_bFadeUntilScript = 0;
     m_bVideoEffectEnabled = 0;
     m_bKeepStealthInDialog = 0;
     m_pDemoScreen = 0;
-#endif
 }
 // PC 0x006858F0 GOG 0x00685660 Xbox 0x0005A3B0
 CGuiInGame::~CGuiInGame()
@@ -6718,37 +6718,40 @@ void CGuiInGame::SetDialogAnimations()
             if (pObject->AsSWCCreature() != 0)
             {
                 CSWCCreature* pCreature = pObject->AsSWCCreature();
-                if (pCreature != 0 && CanPlayDialogAnimations(pCreature->GetId()))
+                if (pCreature != 0)
                 {
-                    if (IsLoopingDialogAnimation(nAnimation))
+                    if (CanPlayDialogAnimations(pCreature->GetId()))
                     {
-                        pCreature->m_bPlayedOutOfPlace = 0;
-                        pCreature->m_pAnimBase->SetInCutscene(1);
-                        pCreature->LookAt(OBJECT_INVALID, 0.0f);
-                        if (pCreature->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
+                        if (IsLoopingDialogAnimation(nAnimation))
                         {
-                            if (IsOverlayDialogAnimation(nAnimation))
+                            pCreature->m_bPlayedOutOfPlace = 0;
+                            pCreature->m_pAnimBase->SetInCutscene(1);
+                            pCreature->LookAt(OBJECT_INVALID, 0.0f);
+                            if (pCreature->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
+                            {
+                                if (IsOverlayDialogAnimation(nAnimation))
+                                    pCreature->AbortFireForgetAnimation(0);
+                                pCreature->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
+                            }
+                            pCreature->SetAnimation(nAnimation, 0, 0);
+                        }
+                        if (IsFireForgetDialogAnimation(nAnimation))
+                        {
+                            pCreature->m_bPlayedOutOfPlace = 0;
+                            pCreature->m_pAnimBase->SetInCutscene(1);
+                            pCreature->LookAt(OBJECT_INVALID, 0.0f);
+                            if (pCreature->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
+                                pCreature->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
+                            if (nAnimation >= CUTSCENE_ANIMATION_FIRST && nAnimation <= CUTSCENE_ANIMATION_W_LAST)
+                            {
                                 pCreature->AbortFireForgetAnimation(0);
-                            pCreature->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
+                                pCreature->RemoveAllFireForgetAnimations();
+                                pCreature->AddFireForgetAnimation(nAnimation, 0);
+                                pCreature->AnimateFireAndForget();
+                            }
+                            else
+                                pCreature->AddFireForgetAnimation(nAnimation, 0);
                         }
-                        pCreature->SetAnimation(nAnimation, 0, 0);
-                    }
-                    if (IsFireForgetDialogAnimation(nAnimation))
-                    {
-                        pCreature->m_bPlayedOutOfPlace = 0;
-                        pCreature->m_pAnimBase->SetInCutscene(1);
-                        pCreature->LookAt(OBJECT_INVALID, 0.0f);
-                        if (pCreature->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
-                            pCreature->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
-                        if (nAnimation >= CUTSCENE_ANIMATION_FIRST && nAnimation <= CUTSCENE_ANIMATION_W_LAST)
-                        {
-                            pCreature->AbortFireForgetAnimation(0);
-                            pCreature->RemoveAllFireForgetAnimations();
-                            pCreature->AddFireForgetAnimation(nAnimation, 0);
-                            pCreature->AnimateFireAndForget();
-                        }
-                        else
-                            pCreature->AddFireForgetAnimation(nAnimation, 0);
                     }
                 }
 #ifdef _XBOX

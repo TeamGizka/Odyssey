@@ -26,7 +26,11 @@ static VertexProgram* pHoloSkinVP = 0;
 static VertexProgram* pSkinBumpyVP = 0;
 static VertexProgram* pSkinSphereMapVP = 0;
 static VertexProgram* pSkinCubeMapVP = 0;
+#ifdef _XBOX
+float g_DesatureFactor = 0.25f;
+#else
 float g_DesatureFactor = 0.65f;
+#endif
 int usebumpdiffuse = 1;
 int usebumpspecular = 1;
 int use3boneskinning = 0;

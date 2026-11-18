@@ -2736,23 +2736,13 @@ void SingleEmitter::Update(float fTimeStep)
 // Dead code: not in the PC executable
 unsigned char MdlNodeEmitter::IsPointToPoint()
 {
-#ifdef _XBOX
-    unsigned char bPointToPoint = m_EmitterFlags.m_bPointToPoint;
-    return bPointToPoint;
-#else
     return (unsigned char)m_EmitterFlags.m_bPointToPoint;
-#endif
 }
 
 // Dead code: not in the PC executable
 unsigned char MdlNodeEmitter::IsPointToPointSel()
 {
-#ifdef _XBOX
-    unsigned char bPointToPointSel = m_EmitterFlags.m_bPointToPointSel;
-    return bPointToPointSel;
-#else
     return (unsigned char)m_EmitterFlags.m_bPointToPointSel;
-#endif
 }
 // PC 0x004C17A0 GOG 0x004C18B0 Xbox 0x002F83E0
 void PartEmitter::MoveFunc(float fTimeStep)

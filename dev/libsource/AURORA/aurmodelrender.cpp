@@ -1022,18 +1022,13 @@ void PartTriMesh::Mat()  // Xbox 0x002E2390
     static Vector vDiffuse;
     static Vector vAmbient;
     static Vector vIllumination;
-#ifdef _XBOX
-    if (!bNeedsMat)
-    {
-        if (!bLastNeedsMat)
-            return;
-#else
+#ifndef _XBOX
     GLRender_SetColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+#endif
     if (!bNeedsMat)
     {
         if (!bLastNeedsMat && !alwaysmat)
             return;
-#endif
         vDiffuse.m_fX = 1.0f;
         vDiffuse.m_fY = 1.0f;
         vDiffuse.m_fZ = 1.0f;
@@ -1054,23 +1049,32 @@ void PartTriMesh::Mat()  // Xbox 0x002E2390
                                          fAlpha);
     }
 
-#ifdef _XBOX
-    if ((bLastNeedsMat || bNeedsMat) &&
-        (!equal(vLastDiffuse, vDiffuse) || !equal(vLastAmbient, vAmbient) ||
-         !equal(vLastIllumination, vIllumination) || fLastAlpha != fAlpha ||
-         m_bMaterialHasChanged))
-#else
     if (((bLastNeedsMat || bNeedsMat) &&
          (!equal(vLastDiffuse, vDiffuse) || !equal(vLastAmbient, vAmbient) ||
           !equal(vLastIllumination, vIllumination) || fLastAlpha != fAlpha ||
           m_bMaterialHasChanged)) || alwaysmat)
-#endif
     {
         if ((usevertexprograms || enablebumpyshiny) && AurVertexProgramsAvailable())
         {
             Vector vColor = vIllumination;
             if (currentscene && m_pAurObject)
                 vColor = vColor + cmul(currentscene->m_vAmbient, vAmbient);
+#ifdef _XBOX
+            float afMaterial[12];
+            afMaterial[0] = vColor.m_fX;
+            afMaterial[1] = vColor.m_fY;
+            afMaterial[2] = vColor.m_fZ;
+            afMaterial[3] = 1.0f;
+            afMaterial[4] = vDiffuse.m_fX;
+            afMaterial[5] = vDiffuse.m_fY;
+            afMaterial[6] = vDiffuse.m_fZ;
+            afMaterial[7] = fAlpha;
+            afMaterial[8] = vAmbient.m_fX;
+            afMaterial[9] = vAmbient.m_fY;
+            afMaterial[10] = vAmbient.m_fZ;
+            afMaterial[11] = 1.0f;
+            g_pD3DDevice->SetVertexShaderConstantFast(VertexProgram::PARAM_MATERIAL_ILLUMINATION, afMaterial, 3);
+#else
             float fRed = vColor.m_fX;
             float fGreen = vColor.m_fY;
             float fBlue = vColor.m_fZ;
@@ -1080,6 +1084,7 @@ void PartTriMesh::Mat()  // Xbox 0x002E2390
                 vDiffuse.m_fX, vDiffuse.m_fY, vDiffuse.m_fZ, fAlpha);
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_MATERIAL_AMBIENT,
                 vAmbient.m_fX, vAmbient.m_fY, vAmbient.m_fZ, 1.0f);
+#endif
         }
         float* pAmbient = Homogenize(vAmbient, 1.0f);
         GLRender_SetMaterialv(FACING_FRONT, MATERIAL_AMBIENT, pAmbient);
@@ -4625,6 +4630,7 @@ void PartSkin::Project(const Vector& vPosition, float fDistance,
             qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
             mRotation = qbones[i].getmatrix();
             Vector& vBoneTranslation = tbones[i];
+            int nRegister = SKIN_VP_BONES + 3 * nBone;
 #ifdef _XBOX
             float afBone[12];
             afBone[0] = mRotation.m_vFirst.m_fX;
@@ -4639,9 +4645,8 @@ void PartSkin::Project(const Vector& vPosition, float fDistance,
             afBone[9] = mRotation.m_vSecond.m_fZ;
             afBone[10] = mRotation.m_vThird.m_fZ;
             afBone[11] = vBoneTranslation.m_fZ;
-            g_pD3DDevice->SetVertexShaderConstantFast(SKIN_VP_BONES + 3 * nBone, afBone, 3);
+            g_pD3DDevice->SetVertexShaderConstantFast(nRegister, afBone, 3);
 #else
-            int nRegister = SKIN_VP_BONES + 3 * nBone;
             AurSetVertexProgramParameter4f(nRegister,
                 mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
                 mRotation.m_vThird.m_fX, vBoneTranslation.m_fX);

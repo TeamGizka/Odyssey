@@ -372,10 +372,8 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     CExoString sName;
     int nNumber;
 
-#ifndef _XBOX
     m_bShowGrantedFeats = 0;
     m_bShowGrantedPowers = 0;
-#endif
     m_pManager = g_pAppManager->GetClientExoApp()->GetSWGuiManager();
     m_pCreature =
         g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(nCreature);
@@ -489,14 +487,12 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
         m_aHilights[3].SetEnabledFlag(0);
         m_aNumbers[3].SetEnabledFlag(0);
         m_anStateUsed[3] = 0;
-#ifndef _XBOX
         CExoArrayList<unsigned long> lstGrantedPowers;
         m_pCreature->GetStats()->AddGrantedPowers(&lstGrantedPowers);
         if (lstGrantedPowers.num > 0)
         {
             m_bShowGrantedPowers = 1;
         }
-#endif
     }
 
     m_aSteps[4].AddEvent(
@@ -507,10 +503,7 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     m_anStateUsed[4] = 1;
     m_aNumbers[4].m_cText.m_cParams.SetText(nNumber);
 
-#ifdef _XBOX
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
-#else
+#ifndef _XBOX
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(39, this,
                        (PFNGUIEVENT)&CSWGuiPanel::OnBButtonPressed);

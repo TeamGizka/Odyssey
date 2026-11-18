@@ -255,15 +255,11 @@ void CSWGuiCustomPanel::FeatCreationCompleted()
 // PC 0x00760650 GOG 0x00760490
 void CSWGuiCustomPanel::ClearAbilities()
 {
-#ifdef _XBOX
-    ((CSWGuiMainCharGen*)m_pParentPanel)->ClearAbilities();
-#else
     CSWGuiMainCharGen* pMainCharGen = (CSWGuiMainCharGen*)m_pParentPanel;
     if (pMainCharGen != NULL)
     {
         pMainCharGen->ClearAbilities();
     }
-#endif
     m_pCreature->m_pStats->m_nCreationStage = 30;
 }
 
@@ -294,9 +290,14 @@ void CSWGuiCustomPanel::CancelPanel()
     {
         m_nState--;
         SetState(m_nState);
-        if (m_nState - 1 == 0)
+        switch (m_nState)
         {
+        case 1:
             ClearAbilities();
+            break;
+        case 2:
+            ClearFeats();
+            break;
         }
     }
 #else
@@ -459,8 +460,4 @@ CSWGuiCustomPanel::CSWGuiCustomPanel(CSWGuiManager* pManager,
         (PFNGUIEVENT)&CSWGuiCustomPanel::OnCancelPressed);
 #endif
     SetState(CUSTOM_PANEL_STATE_PORTRAIT);
-#ifdef _XBOX
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
-#endif
 }

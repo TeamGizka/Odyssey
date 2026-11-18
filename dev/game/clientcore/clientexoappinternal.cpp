@@ -3872,9 +3872,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_bInputDisabled = 0;
     m_nCombatMode = 0;
     m_bEnemySighted = 0;
-#ifndef _XBOX
     m_bMineSighted = 0;
-#endif
     m_nInputHistoryCount = 0;
     m_nHitCheckMaterialMask = 0;
     memset(m_anKeyboardModal, 0, sizeof(m_anKeyboardModal));
@@ -3996,10 +3994,8 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_fEnemyAutoPauseDelay = 0.0f;
     m_fEnemyAutoPauseTimer = 0.0f;
     m_fCombatAutoPauseTimer = 0.0f;
-#ifndef _XBOX
     m_fMineSightedTime = 0;
     m_nDelayedAutoPauseType = AUTO_PAUSE_TYPE_UNSET;
-#endif
     m_fEnemyAutoPauseCooldown = 0.0f;
     m_nEnemyAutoPauseCount = 0;
     m_nVideoEffect = CLIENT_VIDEO_EFFECT_DISABLED;
@@ -7968,6 +7964,16 @@ void CClientExoAppInternal::EnableVideoEffect(int nEffect)
             if (nEnableSaturation)
             {
                 m_nVideoEffect = nEffect;
+#ifdef _XBOX
+                pVideoEffects->GetFLOATEntry(nEffect, "ModulationRed_XBox",
+                                             &vModulation.m_fX);
+                pVideoEffects->GetFLOATEntry(nEffect, "ModulationGreen_XBox",
+                                             &vModulation.m_fY);
+                pVideoEffects->GetFLOATEntry(nEffect, "ModulationBlue_XBox",
+                                             &vModulation.m_fZ);
+                pVideoEffects->GetFLOATEntry(nEffect, "Saturation_XBox",
+                                             &fSaturation);
+#else
                 pVideoEffects->GetFLOATEntry(nEffect, "ModulationRed_PC",
                                              &vModulation.m_fX);
                 pVideoEffects->GetFLOATEntry(nEffect, "ModulationGreen_PC",
@@ -7976,6 +7982,7 @@ void CClientExoAppInternal::EnableVideoEffect(int nEffect)
                                              &vModulation.m_fZ);
                 pVideoEffects->GetFLOATEntry(nEffect, "Saturation_PC",
                                              &fSaturation);
+#endif
                 AurEnableSaturation();
                 AurSetSaturationParams(vModulation, fSaturation);
             }
@@ -8811,7 +8818,11 @@ void CClientExoAppInternal::DoScreenShot()
     HANDLE hFind;
     for (int nIndex = 0; nIndex < SCREENSHOT_MAX_INDEX; nIndex++)
     {
+#ifdef _XBOX
+        sprintf(m_szScreenShot, "T:\\K2_%05i.tga", nIndex);
+#else
         sprintf(m_szScreenShot, "K2_%05i.tga", nIndex);
+#endif
         hFind = FindFirstFile(m_szScreenShot, &cFindData);
         if (hFind == INVALID_HANDLE_VALUE)
             break;
@@ -11248,9 +11259,9 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // Xbox 0x00022840
         m_bCameraTiltActive = 1;
     else
         m_bCameraTiltActive = 0;
-    m_pModule->TiltCamera((CameraVertAxisFlip ? 1 : -1) * fTilt);
+    m_pModule->TiltCamera((CameraHorzAxisFlip ? 1 : -1) * fTilt);
     float fTurn = -g_pExoInput->PollInput(XBOX_CAMERA_TURN_INPUT, m_nInputClass);
-    m_pModule->TurnCamera((CameraHorzAxisFlip ? 1 : -1) * fTurn, fDeltaTime);
+    m_pModule->TurnCamera((CameraVertAxisFlip ? 1 : -1) * fTurn, fDeltaTime);
 
     if (m_fCameraZoom != 0.0f)
     {
@@ -11469,7 +11480,11 @@ void CClientExoAppInternal::StopServices()  // Xbox 0x00030860
         g_pExoResMan->RemoveResourceDirectory("OVERRIDE:");
         g_pExoResMan->RemoveResourceDirectory("HD0:MOVIES");
         g_pExoResMan->RemoveResourceDirectory("HD0:STREAMMUSIC");
+#ifdef _XBOX
+        g_pExoResMan->RemoveResourceDirectory("HD0:STREAMVOICE");
+#else
         g_pExoResMan->RemoveResourceDirectory("HD0:STREAMWAVES");
+#endif
         g_pExoResMan->RemoveResourceDirectory("TEMPCLIENT:");
         if (g_pExoResMan->Exists("GLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
             g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:GLOBAL");

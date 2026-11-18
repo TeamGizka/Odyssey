@@ -352,10 +352,6 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
         GUIEVENT_ACTIVATE, this, (CSWGuiEventHandler)&CSWGuiQuickPanel::OnCancelPressed);
 #endif
     SetState(0);
-#ifdef _XBOX
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
-#endif
 }
 // PC 0x00761950 GOG 0x00761260 Xbox 0x0013BDC0
 void CSWGuiQuickPanel::OnPanelAdded()

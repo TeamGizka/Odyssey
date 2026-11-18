@@ -190,7 +190,41 @@ extern Vector zaxis;
 extern int quaternionidentityoptimization;
 
 #ifdef _XBOX
+__forceinline float ReciprocalEstimateNR_ASM(float f)
+{
+    float rec;
+    __asm
+    {
+        rcpss    xmm0, f
+        movss    xmm1, f
+        mulss    xmm1, xmm0
+        mulss    xmm1, xmm0
+        addss    xmm0, xmm0
+        subss    xmm0, xmm1
+        movss    rec, xmm0
+    }
+    return rec;
+}
+
 const float g_SqrtNRConst[2] = {0.5f, 3.0f};
+
+__forceinline float ReciprocalSqrtEstimateNR_ASM(float f)
+{
+    float recsqrt;
+    __asm
+    {
+        rsqrtss  xmm0, f
+        movss    xmm1, f
+        mulss    xmm1, xmm0
+        movss    xmm2, g_SqrtNRConst+4
+        mulss    xmm1, xmm0
+        mulss    xmm0, g_SqrtNRConst
+        subss    xmm2, xmm1
+        mulss    xmm0, xmm2
+        movss    recsqrt, xmm0
+    }
+    return recsqrt;
+}
 
 __forceinline float SqrtEstimateNR_ASM(float f)
 {

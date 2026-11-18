@@ -489,7 +489,11 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 3:
     case 4:
     case 5:
+#ifdef _XBOX
+        cImage = "PCARDS_POS_X";
+#else
         cImage = "PCARDS_POS_P";
+#endif
         break;
     case 6:
     case 7:
@@ -497,7 +501,11 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 9:
     case 10:
     case 11:
+#ifdef _XBOX
+        cImage = "PCARDS_NEG_X";
+#else
         cImage = "PCARDS_NEG_P";
+#endif
         break;
     case 12:
     case 13:
@@ -507,11 +515,19 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 17:
         if (cCard.m_bFlipped != 0)
         {
+#ifdef _XBOX
+            cImage = "PCARDS_DBLNEG_X";
+#else
             cImage = "PCARDS_DBLNEG_P";
+#endif
         }
         else
         {
+#ifdef _XBOX
+            cImage = "PCARDS_DBLPOS_X";
+#else
             cImage = "PCARDS_DBLPOS_P";
+#endif
         }
         break;
     case 18:
@@ -519,7 +535,11 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 20:
     case 21:
     case 22:
+#ifdef _XBOX
+        cImage = "PCARDS_GOLD_X";
+#else
         cImage = "PCARDS_GOLD_P";
+#endif
         break;
     case 23:
     case 24:
@@ -531,13 +551,21 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 30:
     case 31:
     case 32:
+#ifdef _XBOX
+        cImage = "PCARDS_GENERIC_X";
+#else
         cImage = "PCARDS_GENERIC_P";
+#endif
         break;
     case -1:
         cImage = "";
         break;
     default:
+#ifdef _XBOX
+        cImage = "PCARDS_BACK_X";
+#else
         cImage = "PCARDS_BACK_P";
+#endif
         break;
     }
     m_cBorder.m_cParams.SetFillImage(cImage, 0);
@@ -872,7 +900,11 @@ int CSWGuiPazaakGame::RefreshDisplay()
         if (nPlayerWin >= 0 && nPlayerWin < 3)
         {
 #ifdef _XBOX
+#ifdef _XBOX
+            m_lblPlayerScore[nPlayerWin].m_cBorder.m_cParams.SetFillImage("pz_rounds_on", 0);
+#else
             m_lblPlayerScore[nPlayerWin].m_cBorder.m_cParams.SetFillImage("lbl_winmark02", 0);
+#endif
 #else
             CResRef cMark("pz_rounds_on");
             m_lblPlayerScore[nPlayerWin].m_cBorder.m_cParams.SetFillImage(cMark,
@@ -883,7 +915,11 @@ int CSWGuiPazaakGame::RefreshDisplay()
         if (nNpcWin >= 0 && nNpcWin < 3)
         {
 #ifdef _XBOX
+#ifdef _XBOX
+            m_lblNpcScore[nNpcWin].m_cBorder.m_cParams.SetFillImage("pz_rounds_on", 0);
+#else
             m_lblNpcScore[nNpcWin].m_cBorder.m_cParams.SetFillImage("lbl_winmark02", 0);
+#endif
 #else
             CResRef cMark("pz_rounds_on");
             m_lblNpcScore[nNpcWin].m_cBorder.m_cParams.SetFillImage(cMark, 0);

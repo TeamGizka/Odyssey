@@ -1481,7 +1481,11 @@ void CExoSoundInternal::LoadPriorityGroups()
             CPriorityGroup* pGroup = &m_pPriorityGroups[i];
             pGroup->m_nPriority = (unsigned char)nValue;
         }
+#ifdef _XBOX
+        if (pTable->GetINTEntry(i, "Volume_XBox", &nValue))
+#else
         if (pTable->GetINTEntry(i, "Volume_PC", &nValue))
+#endif
         {
             CPriorityGroup* pGroup = &m_pPriorityGroups[i];
             pGroup->m_nVolume = (unsigned char)nValue;
@@ -1502,8 +1506,13 @@ void CExoSoundInternal::LoadPriorityGroups()
             pGroup->m_nFadeTime = (unsigned short)nValue;
         }
 
+#ifdef _XBOX
+        if (pTable->GetFLOATEntry(i, "MaxVolumeDist_XBox", &fMaxVolumeDist) &&
+            pTable->GetFLOATEntry(i, "MinVolumeDist_XBox", &fMinVolumeDist))
+#else
         if (pTable->GetFLOATEntry(i, "MaxVolumeDist_PC", &fMaxVolumeDist) &&
             pTable->GetFLOATEntry(i, "MinVolumeDist_PC", &fMinVolumeDist))
+#endif
         {
             m_pPriorityGroups[i].SetVolumeDistances(fMinVolumeDist, fMaxVolumeDist);
         }

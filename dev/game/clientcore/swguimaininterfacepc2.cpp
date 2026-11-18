@@ -212,8 +212,7 @@ void CSWGuiMainInterface::StartRotation()  // Xbox 0x000D8ED0
         m_fPortraitTransitionTime = 0.25f;
         for (int nPortrait = 0; nPortrait < 3; nPortrait++)
             m_aCharacters[nPortrait].SetDestination(nPortrait, nCount, m_pManager);
-        m_cTransitionCharacter.m_nEndX = m_pManager->m_nWidth - TRANSITION_PORTRAIT_MARGIN;
-        m_cTransitionCharacter.m_nEndY = m_cTransitionCharacter.m_nStartY;
+        m_cTransitionCharacter.SetDestination(3, nCount, m_pManager);
     }
 }
 

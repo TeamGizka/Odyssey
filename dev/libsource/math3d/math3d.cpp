@@ -841,6 +841,17 @@ int IntersectLineSegments2d(const Vector& vStart1, const Vector& vEnd1,
                             Vector& vHit)
 {
 
+#ifdef _XBOX
+    float fDot = ((vEnd2.m_fX - vStart2.m_fX) * (vEnd1.m_fX - vStart1.m_fX) + (vEnd2.m_fY - vStart2.m_fY) * (vEnd1.m_fY - vStart1.m_fY));
+    float fLength1 = SqrtEstimateNR_ASM((vEnd1.m_fY - vStart1.m_fY) * (vEnd1.m_fY - vStart1.m_fY) + (vEnd1.m_fX - vStart1.m_fX) * (vEnd1.m_fX - vStart1.m_fX));
+    float fLength2 = SqrtEstimateNR_ASM((vEnd2.m_fX - vStart2.m_fX) * (vEnd2.m_fX - vStart2.m_fX) + (vEnd2.m_fY - vStart2.m_fY) * (vEnd2.m_fY - vStart2.m_fY));
+    float fCosine = fDot / fLength1;
+    if (fCosine /
+        fLength2 == 1.0)
+    {
+        return 0;
+    }
+#else
     double fSquareY1 = (vEnd1.m_fY - vStart1.m_fY) * (vEnd1.m_fY - vStart1.m_fY);
     float fLength1 = (float)sqrt(fSquareY1 + (vEnd1.m_fX - vStart1.m_fX) * (vEnd1.m_fX - vStart1.m_fX));
     float fLength2 = sqrt((vEnd2.m_fX - vStart2.m_fX) * (vEnd2.m_fX - vStart2.m_fX) + (vEnd2.m_fY - vStart2.m_fY) * (vEnd2.m_fY - vStart2.m_fY));
@@ -850,6 +861,7 @@ int IntersectLineSegments2d(const Vector& vStart1, const Vector& vEnd1,
     {
         return 0;
     }
+#endif
 
     bool bHit = false;
     if (vStart1.m_fX == vEnd1.m_fX)
@@ -952,8 +964,8 @@ Quaternion::Quaternion(Vector vAxis, float fAngle)
 {
     if (fAngle == 0.0f)
     {
-        m_fX = m_fY = m_fZ = 0.0f;
         m_fW = 1.0f;
+        m_fX = m_fY = m_fZ = 0.0f;
         return;
     }
 
@@ -1381,6 +1393,20 @@ Vector operator*(const Vector& vector, const Quaternion& quaternion)
 // PC 0x004D8A90 GOG 0x004D8BD0 Xbox 0x00290DA0
 Quaternion normalize(Quaternion quaternion)
 {
+#ifdef _XBOX
+    float fScale = ReciprocalSqrtEstimateNR_ASM(
+        quaternion.m_fW * quaternion.m_fW + quaternion.m_fX * quaternion.m_fX +
+        quaternion.m_fY * quaternion.m_fY + quaternion.m_fZ * quaternion.m_fZ);
+    if (fScale == 1.0f || fScale == -1.0f)
+    {
+        quaternion.m_fW = 1.0f;
+        quaternion.m_fX = 0.0f;
+        quaternion.m_fY = 0.0f;
+        quaternion.m_fZ = 0.0f;
+        return quaternion;
+    }
+    return quaternion * fScale;
+#else
     float fMagnitude = (float)sqrt(
         quaternion.m_fW * quaternion.m_fW + quaternion.m_fX * quaternion.m_fX +
         quaternion.m_fY * quaternion.m_fY + quaternion.m_fZ * quaternion.m_fZ);
@@ -1393,6 +1419,7 @@ Quaternion normalize(Quaternion quaternion)
         return quaternion;
     }
     return quaternion * (1.0f / fMagnitude);
+#endif
 }
 // PC 0x004D8B40 GOG 0x004D8C80 Xbox 0x00290EB0
 Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
@@ -1504,16 +1531,24 @@ float Pitch(const Quaternion& quaternion)
                                 quaternion.m_fW * quaternion.m_fX));
     float fX = v.m_fX;
     float fY = v.m_fY;
+#ifdef _XBOX
+    return (float)atan2(v.m_fZ, SqrtEstimateNR_ASM(fX * fX + fY * fY)) * RAD_TO_DEG;
+#else
     float fZ = v.m_fZ;
     return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
+#endif
 }
 // PC 0x004D8D70 GOG 0x004D8EB0 Xbox 0x002912E0
 float Pitch(const Vector& vector)
 {
     float fX = vector.m_fX;
     float fY = vector.m_fY;
+#ifdef _XBOX
+    return (float)atan2(vector.m_fZ, SqrtEstimateNR_ASM(fX * fX + fY * fY)) * RAD_TO_DEG;
+#else
     float fZ = vector.m_fZ;
     return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
+#endif
 }
 // PC 0x004D8DA0 GOG 0x004D8EE0 Xbox 0x00291360
 Quaternion RotationArc(Vector vFirst, Vector vSecond)
@@ -1528,7 +1563,11 @@ Quaternion RotationArc(Vector vFirst, Vector vSecond)
         return Quaternion(0.0f, 1.0f, 0.0f, 0.0f);
     }
 
+#ifdef _XBOX
+    float fScale = SqrtEstimateNR_ASM((fDot + 1.0f) * 2.0f);
+#else
     float fScale = (float)sqrt((fDot + 1.0f) * 2.0f);
+#endif
     q.m_fX = vCross.m_fX * (1.0f / fScale);
     q.m_fY = vCross.m_fY * (1.0f / fScale);
     q.m_fZ = (1.0f / fScale) * vCross.m_fZ;

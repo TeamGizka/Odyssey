@@ -30,9 +30,7 @@ public:
     void SetPauseReason(unsigned char nReason);
     virtual void OnPanelAdded();
     void OnUnpauseButtonPressed(CSWGuiControl* pControl);
-#ifndef _XBOX
     virtual void HandleInputEvent(int nEvent, int nState);
-#endif
     CSWGuiInGamePause(CSWGuiManager*);
 
 };

@@ -65,8 +65,8 @@ int CExoXboxStream::OpenWMAFile(XBOXADPCMWAVEFORMAT* pFormat)  // Xbox 0x00166BD
         m_pFileObject->Release();
         m_pFileObject = NULL;
     }
-    if (FAILED(WmaCreateDecoderEx(m_sFileName.CStr(), NULL, FALSE, WMA_LOOKAHEAD_SIZE, NUM_PACKETS, 1,
-                                  &pFormat->wfx, (XWmaFileMediaObject**)&m_pFileObject)))
+    if (FAILED(WmaCreateDecoder(m_sFileName.CStr(), NULL, FALSE, WMA_LOOKAHEAD_SIZE, NUM_PACKETS, 1,
+                                &pFormat->wfx, &m_pFileObject)))
     {
         return 0;
     }

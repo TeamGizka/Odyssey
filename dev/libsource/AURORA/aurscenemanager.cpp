@@ -678,8 +678,13 @@ static void ConstructCameraFadePlane(Scene* pScene)
     Vector vCamera = CurrentCamera->GetPosition();
     Vector vForward = vTarget - vCamera;
     Vector vDirection = normalize(vForward);
+#ifdef _XBOX
+    float fHorizontal = SqrtEstimateNR_ASM(vDirection.m_fX * vDirection.m_fX +
+                                           vDirection.m_fY * vDirection.m_fY);
+#else
     float fHorizontal = sqrt(vDirection.m_fX * vDirection.m_fX +
                              vDirection.m_fY * vDirection.m_fY);
+#endif
     if (fHorizontal < AUR_MINIMUM_FADE_HORIZONTAL)
     {
         pScene->m_nCameraFadeState = Scene::FADING_OFF;
