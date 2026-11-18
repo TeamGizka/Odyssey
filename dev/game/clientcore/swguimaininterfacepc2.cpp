@@ -427,11 +427,8 @@ void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon, int bEnabled,
             m_lblIconB.m_cBorder.m_cParams.SetFillImage(cIcon, 0);
             CSWGuiExtent cExtent = m_cIconExtent;
             cExtent.m_nLeft = 0;
-            if (nSlide != 1)
-            {
-                cExtent.m_nTop = -cExtent.m_nHeight;
-                m_lblIconB.SetExtent(cExtent);
-            }
+            cExtent.m_nTop = nSlide != 1 ? -cExtent.m_nHeight : cExtent.m_nHeight;
+            m_lblIconB.SetExtent(cExtent);
             cExtent.m_nTop += cExtent.m_nHeight;
             m_lblIcon.SetExtent(cExtent);
             m_lblIcon.SetEnabledFlag(0);
@@ -5079,6 +5076,20 @@ enum
     XBOX_STRREF_ATTACK_ALREADY_QUEUED = 42478
 };
 
+// Xbox 0x000D9210
+void CSWGuiMainInterface::ParseTargetName(CExoString& sName)
+{
+    int nTokenStart = sName.Find('<', 0);
+    int nCustomStart = sName.Find('{', 0);
+    if (nTokenStart != -1 || nCustomStart != -1)
+    {
+        g_pSWTlkTable->ParseStr(
+            sName,
+            (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
+            0, 1);
+    }
+}
+
 void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // Xbox 0x000DAC90
 {
     CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_nTargetId);
@@ -5094,6 +5105,8 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // Xbox 0x000DAC90
 
     if (pObject != NULL && pObject->AsSWCObject() != NULL)
     {
+        m_fActionBarAlpha = 0.0f;
+        m_fActionBarIdleElapsed = 0.0f;
         CSWCObject* pTarget = pObject->AsSWCObject();
         int bFriendly = 1;
         int nPoisonState = 0;
@@ -5200,7 +5213,36 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // Xbox 0x000DAC90
                     fAlpha = fFraction * 2.0f;
             }
             else
+            {
                 sName = pTarget->GetName();
+                if (pTarget->AsSWCPlaceable() != NULL)
+                {
+                    CSWSPlaceable* pPlaceable =
+                        pTarget->AsSWCPlaceable()->GetServerPlaceable();
+                    if (pPlaceable != NULL &&
+                        pPlaceable->m_bHasInventory &&
+                        pPlaceable->AsSWSPlaceable()->GetItemCount(0) == 0)
+                    {
+                        int bUseSearch = 0;
+                        g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(
+                            pTarget->AsSWCPlaceable()->GetAppearance(),
+                            "UseSearch", &bUseSearch);
+                        if (bUseSearch)
+                        {
+                            sName = sName + " (" +
+                                    g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NOTHING) +
+                                    ")";
+                        }
+                        else
+                        {
+                            sName = sName + " (" +
+                                    g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_EMPTY) +
+                                    ")";
+                        }
+                    }
+                }
+            }
+            ParseTargetName(sName);
             m_lblName.m_cText.m_cParams.SetText(sName);
             m_lblName.m_cText.m_cParams.m_fAlpha = fAlpha;
             m_pbHealth.SetMaxValue(pServerObject->GetMaxHitPoints(1));
@@ -5210,18 +5252,18 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // Xbox 0x000DAC90
         if (bFriendly)
         {
             if (nPoisonState)
-                m_pbHealth.m_cFill.m_cParams.SetFillImage("POISON_BAR", 0);
+                m_pbHealth.m_cFill.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
             else
-                m_pbHealth.m_cFill.m_cParams.SetFillImage("FRIEND_BAR", 0);
-            m_lblIndicate.m_cBorder.m_cParams.SetFillImage("lbl_miindic01f", 0);
+                m_pbHealth.m_cFill.m_cParams.m_vColor = m_vIndicateColor;
+            m_lblIndicate.m_cBorder.m_cParams.m_vColor = m_vIndicateColor;
         }
         else
         {
             if (nPoisonState)
-                m_pbHealth.m_cFill.m_cParams.SetFillImage("POISON_BAR", 0);
+                m_pbHealth.m_cFill.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
             else
-                m_pbHealth.m_cFill.m_cParams.SetFillImage("ENEMY_BAR", 0);
-            m_lblIndicate.m_cBorder.m_cParams.SetFillImage("lbl_miindic01e", 0);
+                m_pbHealth.m_cFill.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
+            m_lblIndicate.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
         }
 
         if (nPoint != CSWCObject::RETICLE_POINT_UNAVAILABLE)
@@ -5262,9 +5304,9 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // Xbox 0x000DAC90
             else if (vPoint.m_fX > nWidth - nMarginX)
             {
                 cReticle = cArrow;
+                fRotation = 180.0f;
                 nSize = STICKY_RETICLE_MARGIN;
                 cExtent.m_nLeft = nWidth - nMarginX - nSize;
-                fRotation = 180.0f;
                 if (vPoint.m_fY < nMarginY)
                     cExtent.m_nTop = nMarginY;
                 else if (vPoint.m_fY > nHeight - nMarginY)

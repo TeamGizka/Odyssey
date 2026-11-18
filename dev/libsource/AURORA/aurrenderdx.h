@@ -93,6 +93,7 @@ class GLRender
     friend void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive);
     friend void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive);
     friend void RenderNV1xEMLM(VertexPrimitiveFlat* pPrimitive);
+    friend void RenderNoiseMapped(VertexPrimitiveFlat* pPrimitive, int nTexture, int nCoordSpace);
     friend void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive);
     friend void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive);
     friend void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
@@ -1184,6 +1185,11 @@ inline unsigned char AurBumpMapCardValidate()
     return 1;
 }
 
+inline unsigned char AurNonRadeon8500Validate()
+{
+    return 1;
+}
+
 inline int AurBumpyShinyAvailable()
 {
     return 1;
@@ -1407,6 +1413,18 @@ inline void GLRender::BeginImmediatePrimitive(Aurora::AuroraPrimitiveTypes nType
     g_pD3DDevice->Begin((D3DPRIMITIVETYPE)primTypeTranslationTable[nType]);
 }
 
+inline void GLRender::SetLightmapTexCoordToStage0(unsigned long nStride, int nFlags,
+                                                  unsigned long nPool, int nVertexCount,
+                                                  MdlNodeTriMesh* pMesh, unsigned long nOffset)
+{
+}
+
+inline void GLRender::SetDecalTexCoordToStage0(unsigned long nStride, int nFlags,
+                                               unsigned long nPool, int nVertexCount,
+                                               MdlNodeTriMesh* pMesh, unsigned long nOffset)
+{
+}
+
 inline void GLRender::SetTextureCoordGenerationState(
     Aurora::AuroraTexCoordMappingModes nMode)
 {
@@ -1480,7 +1498,7 @@ inline void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOf
 #define GLRender_EnablePixelShaders GLRender::EnablePixelShaders
 #define GLRender_SetPixelShaderAmbientColor GLRender::SetPixelShaderAmbientColor
 #define GLRender_SetBumpLightColor(vColor, fAlpha) GLRender::SetBumpLightColor(vColor)
-#define GLRender_SetDepthMask GLRender::SetDepthMask
+#define GLRender_SetDepthMask(bWrite) D3DDevice_SetRenderState(D3DRS_ZWRITEENABLE, bWrite)
 #define GLRender_SetFrontFace GLRender::SetFrontFace
 
 #define GLRender_QueryIntegerv(nName, pnValue) g_pD3DDevice->GetRenderState((D3DRENDERSTATETYPE)(nName), (DWORD*)(pnValue))

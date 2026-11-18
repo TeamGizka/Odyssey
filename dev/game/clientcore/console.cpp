@@ -30,6 +30,9 @@ char* g_szProcessModuleMemName = 0;
 // PC 0x00656580 GOG 0x00656430
 int GetCheatsTurnedOn()
 {
+#if defined(_XBOX) && !defined(_DEBUG)
+    return 0;
+#endif
     int nCheats = 0;
     CExoIni cIni;
     CExoString sValue;
@@ -59,6 +62,7 @@ int GetCheatsTurnedOn()
     }
     return nCheats == 1;
 }
+#if !defined(_XBOX) || defined(_DEBUG)
 // PC 0x006566F0 GOG 0x006565A0
 void heal()
 {
@@ -68,6 +72,7 @@ void heal()
             ->SendPlayerToServerCheat_Resurrect();
     }
 }
+#endif
 // PC 0x00656710 GOG 0x006565C0
 void CheatSetSkill(int nSkill, char* szValue)
 {
@@ -96,42 +101,42 @@ void CheatSetSkill(int nSkill, char* szValue)
         }
     }
 }
-// PC 0x006567A0 GOG 0x00656650
+// PC 0x006567A0 GOG 0x00656650 Xbox 0x001A2B40
 void setcomputeruse(char* szValue)
 {
     CheatSetSkill(0, szValue);
 }
-// PC 0x006567B0 GOG 0x00656660
+// PC 0x006567B0 GOG 0x00656660 Xbox 0x001A2B40
 void setdemolitions(char* szValue)
 {
     CheatSetSkill(1, szValue);
 }
-// PC 0x006567C0 GOG 0x00656670
+// PC 0x006567C0 GOG 0x00656670 Xbox 0x001A2B40
 void setstealth(char* szValue)
 {
     CheatSetSkill(2, szValue);
 }
-// PC 0x006567D0 GOG 0x00656680
+// PC 0x006567D0 GOG 0x00656680 Xbox 0x001A2B40
 void setawareness(char* szValue)
 {
     CheatSetSkill(3, szValue);
 }
-// PC 0x006567E0 GOG 0x00656690
+// PC 0x006567E0 GOG 0x00656690 Xbox 0x001A2B40
 void setpersuade(char* szValue)
 {
     CheatSetSkill(4, szValue);
 }
-// PC 0x006567F0 GOG 0x006566A0
+// PC 0x006567F0 GOG 0x006566A0 Xbox 0x001A2B40
 void setrepair(char* szValue)
 {
     CheatSetSkill(5, szValue);
 }
-// PC 0x00656800 GOG 0x006566B0
+// PC 0x00656800 GOG 0x006566B0 Xbox 0x001A2B40
 void setsecurity(char* szValue)
 {
     CheatSetSkill(6, szValue);
 }
-// PC 0x00656810 GOG 0x006566C0
+// PC 0x00656810 GOG 0x006566C0 Xbox 0x001A2B40
 void settreatinjury(char* szValue)
 {
     CheatSetSkill(7, szValue);
@@ -188,12 +193,12 @@ void CheatSetAbility(int nAbility, char* szValue)
         }
     }
 }
-// PC 0x00656920 GOG 0x006567D0
+// PC 0x00656920 GOG 0x006567D0 Xbox 0x001A2B40
 void setstrength(char* szValue)
 {
     CheatSetAbility(0, szValue);
 }
-// PC 0x00656930 GOG 0x006567E0
+// PC 0x00656930 GOG 0x006567E0 Xbox 0x001A2B40
 void setdexterity(char* szValue)
 {
     int nValue = 0;
@@ -225,7 +230,7 @@ void setdexterity(char* szValue)
         }
     }
 }
-// PC 0x006569C0 GOG 0x00656870
+// PC 0x006569C0 GOG 0x00656870 Xbox 0x001A2B40
 void setconstitution(char* szValue)
 {
     int nValue = 0;
@@ -257,7 +262,7 @@ void setconstitution(char* szValue)
         }
     }
 }
-// PC 0x00656A60 GOG 0x00656910
+// PC 0x00656A60 GOG 0x00656910 Xbox 0x001A2B40
 void setintelligence(char* szValue)
 {
     int nValue = 0;
@@ -289,7 +294,7 @@ void setintelligence(char* szValue)
         }
     }
 }
-// PC 0x00656AF0 GOG 0x006569A0
+// PC 0x00656AF0 GOG 0x006569A0 Xbox 0x001A2B40
 void setwisdom(char* szValue)
 {
     int nValue = 0;
@@ -321,7 +326,7 @@ void setwisdom(char* szValue)
         }
     }
 }
-// PC 0x00656B80 GOG 0x00656A30
+// PC 0x00656B80 GOG 0x00656A30 Xbox 0x001A2B40
 void setcharisma(char* szValue)
 {
     int nValue = 0;
@@ -353,7 +358,7 @@ void setcharisma(char* szValue)
         }
     }
 }
-// PC 0x00656C10 GOG 0x00656AC0
+// PC 0x00656C10 GOG 0x00656AC0 Xbox 0x001A2B40
 void addexp(char* szValue)
 {
     int nExperience = 0;
@@ -372,7 +377,7 @@ void addexp(char* szValue)
         }
     }
 }
-// PC 0x00656C70 GOG 0x00656B20
+// PC 0x00656C70 GOG 0x00656B20 Xbox 0x001A2B40
 void turbo()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -384,7 +389,7 @@ void turbo()
             nFlags == 0;
     }
 }
-// PC 0x00656CB0 GOG 0x00656B60
+// PC 0x00656CB0 GOG 0x00656B60 Xbox 0x001A2B40
 void invulnerability()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -393,7 +398,7 @@ void invulnerability()
             ->SendPlayerToServerCheat_Invulnerability();
     }
 }
-// PC 0x00656CD0 GOG 0x00656B80
+// PC 0x00656CD0 GOG 0x00656B80 Xbox 0x001A2B40
 void restartminigame()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -406,7 +411,7 @@ void restartminigame()
         }
     }
 }
-// PC 0x00656D10 GOG 0x00656BC0
+// PC 0x00656D10 GOG 0x00656BC0 Xbox 0x001A2B40
 void bright()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -429,7 +434,7 @@ void bright()
         }
     }
 }
-// PC 0x00656D50 GOG 0x00656C00
+// PC 0x00656D50 GOG 0x00656C00 Xbox 0x001A2B40
 void addlightside(int nAmount)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -447,7 +452,7 @@ void addlightside(int nAmount)
         }
     }
 }
-// PC 0x00656DC0 GOG 0x00656C70
+// PC 0x00656DC0 GOG 0x00656C70 Xbox 0x001A2B40
 void adddarkside(int nAmount)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -465,7 +470,7 @@ void adddarkside(int nAmount)
         }
     }
 }
-// PC 0x00656E40 GOG 0x00656CF0
+// PC 0x00656E40 GOG 0x00656CF0 Xbox 0x001A2B40
 void revealmap()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -473,7 +478,7 @@ void revealmap()
         g_bShowFogOfWar = g_bShowFogOfWar == 0;
     }
 }
-// PC 0x00656E60 GOG 0x00656D10
+// PC 0x00656E60 GOG 0x00656D10 Xbox 0x00036CC0
 void givecredits(char* szValue)
 {
     int nCredits = 0;
@@ -498,7 +503,7 @@ void givecredits(char* szValue)
         }
     }
 }
-// PC 0x00656EE0 GOG 0x00656D90
+// PC 0x00656EE0 GOG 0x00656D90 Xbox 0x00036CE0
 void giveitem(char* szValue)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -521,11 +526,12 @@ void giveitem(char* szValue)
         pClient->CreatureAcquireItem(pClient->GetPlayerCreatureId(), cResRef);
     }
 }
-// PC 0x00656F60 GOG 0x00656E10
+// PC 0x00656F60 GOG 0x00656E10 Xbox 0x001A2B40
 void givemed(char* szValue)
 {
     int nCount = 0;
 
+#if !defined(_XBOX) || defined(_DEBUG)
     if (GetCheatsTurnedOn() != 0)
     {
         sscanf(szValue, "%d", &nCount);
@@ -542,12 +548,14 @@ void givemed(char* szValue)
                                          cResRef);
         }
     }
+#endif
 }
-// PC 0x00656FF0 GOG 0x00656EA0
+// PC 0x00656FF0 GOG 0x00656EA0 Xbox 0x001A2B40
 void giverepair(char* szValue)
 {
     int nCount = 0;
 
+#if !defined(_XBOX) || defined(_DEBUG)
     if (GetCheatsTurnedOn() != 0)
     {
         sscanf(szValue, "%d", &nCount);
@@ -564,12 +572,14 @@ void giverepair(char* szValue)
                                          cResRef);
         }
     }
+#endif
 }
-// PC 0x00657080 GOG 0x00656F30
+// PC 0x00657080 GOG 0x00656F30 Xbox 0x001A2B40
 void givecomspikes(char* szValue)
 {
     int nCount = 0;
 
+#if !defined(_XBOX) || defined(_DEBUG)
     if (GetCheatsTurnedOn() != 0)
     {
         sscanf(szValue, "%d", &nCount);
@@ -586,12 +596,14 @@ void givecomspikes(char* szValue)
                                          cResRef);
         }
     }
+#endif
 }
-// PC 0x00657110 GOG 0x00656FC0
+// PC 0x00657110 GOG 0x00656FC0 Xbox 0x001A2B40
 void givesecspikes(char* szValue)
 {
     int nCount = 0;
 
+#if !defined(_XBOX) || defined(_DEBUG)
     if (GetCheatsTurnedOn() != 0)
     {
         sscanf(szValue, "%d", &nCount);
@@ -608,10 +620,12 @@ void givesecspikes(char* szValue)
                                          cResRef);
         }
     }
+#endif
 }
-// PC 0x006571A0 GOG 0x00657050
+// PC 0x006571A0 GOG 0x00657050 Xbox 0x001A2B40
 void givesitharmour()
 {
+#if !defined(_XBOX) || defined(_DEBUG)
     if (GetCheatsTurnedOn() != 0)
     {
         CResRef cResRef("ptar_sitharmor");
@@ -619,8 +633,9 @@ void givesitharmour()
 
         pClient->CreatureAcquireItem(pClient->GetPlayerCreatureId(), cResRef);
     }
+#endif
 }
-// PC 0x006571E0 GOG 0x00657090
+// PC 0x006571E0 GOG 0x00657090 Xbox 0x00036CE0
 void warp(char* szValue)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -646,7 +661,7 @@ void warp(char* szValue)
         g_pAppManager->m_pServerExoApp->SetMoveToModulePending(1);
     }
 }
-// PC 0x006572B0 GOG 0x00657160
+// PC 0x006572B0 GOG 0x00657160 Xbox 0x001A2B40
 void infiniteuses()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -658,7 +673,7 @@ void infiniteuses()
             nFlags == 0;
     }
 }
-// PC 0x006572F0 GOG 0x006571A0
+// PC 0x006572F0 GOG 0x006571A0 Xbox 0x001A2B40
 void whereami()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -683,7 +698,7 @@ void whereami()
         }
     }
 }
-// PC 0x00657420 GOG 0x006572D0
+// PC 0x00657420 GOG 0x006572D0 Xbox 0x001A2B40
 void addlevel()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -722,15 +737,15 @@ void addlevel()
     }
 }
 
-#ifndef _XBOX
-void dancedancemalak()  // PC 0x00657510 GOG 0x006573C0
+void dancedancemalak()  // PC 0x00657510 GOG 0x006573C0 Xbox 0x001A2B40
 {
+#ifndef _XBOX
     if (GetCheatsTurnedOn() != 0)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bDanceDanceMalak = 1;
     }
-}
 #endif
+}
 // PC 0x00657540 GOG 0x006573F0 Xbox 0x00036D00
 int lockcamera(char* szValue)
 {
@@ -768,7 +783,7 @@ int lockcamera(char* szValue)
     return bLockcamera;
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 int g_bMovieNotification;
 int g_bLiveContentIgnore;
@@ -784,7 +799,9 @@ void ToggleLiveContentIgnore()
 }
 #endif
 
+#if !defined(_XBOX) || defined(_DEBUG)
 ConsoleFunc ConFheal("heal", heal);
+#endif
 ConsoleFunc ConFsetcomputeruse("setcomputeruse", setcomputeruse);
 ConsoleFunc ConFsetdemolitions("setdemolitions", setdemolitions);
 ConsoleFunc ConFsetstealth("setstealth", setstealth);
@@ -818,15 +835,13 @@ ConsoleFunc ConFwarp("warp", warp);
 ConsoleFunc ConFinfiniteuses("infiniteuses", infiniteuses);
 ConsoleFunc ConFwhereami("whereami", whereami);
 ConsoleFunc ConFaddlevel("addlevel", addlevel);
-#ifndef _XBOX
 ConsoleFunc ConFdancedancemalak("dancedancemalak", dancedancemalak);
-#endif
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 ConsoleFunc ConFToggleMovieNotification("ToggleMovieNotification", ToggleMovieNotification);
 ConsoleFunc ConFToggleLiveContentIgnore("ToggleLiveContentIgnore", ToggleLiveContentIgnore);
 #endif
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 #include "worldtimer.h"
 #include "exoinput.h"
@@ -966,7 +981,7 @@ char* Binarize2DA(char* szArgs)
             }
             else
             {
-                sprintf(szFile, "logs\%s.2da", (*pList)[i]->CStr());
+                sprintf(szFile, "logs\\%s.2da", (*pList)[i]->CStr());
                 if (c2DA.SaveBinary2da(szFile))
                 {
                     nBinarized++;
@@ -978,11 +993,11 @@ char* Binarize2DA(char* szArgs)
     int nFailed = pList->GetCount() - nSkipped - nBinarized;
     if (nFailed == 0)
     {
-        sprintf(szResult, "Binarized %d files to logs\; %d skipped", nBinarized, nSkipped);
+        sprintf(szResult, "Binarized %d files to logs\\; %d skipped", nBinarized, nSkipped);
     }
     else
     {
-        sprintf(szResult, "**** %d files failed!  Binarized %d files to logs\; %d skipped", nFailed,
+        sprintf(szResult, "**** %d files failed!  Binarized %d files to logs\\; %d skipped", nFailed,
                 nBinarized, nSkipped);
     }
     if (pList != NULL)

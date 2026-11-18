@@ -350,7 +350,9 @@ int CCombatInformationNode::operator!=(CCombatInformationNode& cNode)
 void CSWRules::LoadClassInfo()
 {
     int nStrRef;
+#ifndef _XBOX
     int nDie;
+#endif
     int nValue;
 
     C2DA* p2DA = new C2DA("CLASSES", 0);
@@ -363,6 +365,9 @@ void CSWRules::LoadClassInfo()
     for (int i = 0; i < m_nNumClasses; i++)
     {
         CExoString sValue;
+#ifdef _XBOX
+        int nDie;
+#endif
         int bFound;
         short nSkillPointBase;
 

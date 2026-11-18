@@ -1084,9 +1084,11 @@ void CSWGuiInGameInventory::CreateItemEntry(CSWCCreature* pCreature, CSWSItem* p
     pEntry->m_bEquipped = bEquipped;
     if (pCreature->IsLeaderUsableItem(pItem, bSquadItem) != 0)
     {
-        int nItemType = pItem->GetBaseItem()->m_nItemType;
+        CSWBaseItem* pBaseItem = pItem->GetBaseItem();
+        int nItemType = pBaseItem->m_nItemType;
         if ((nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
-             nItemType == CSWBaseItem::ITEM_TYPE_MEDPAC) &&
+             nItemType == CSWBaseItem::ITEM_TYPE_MEDPAC ||
+             nItemType == CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC) &&
             pCreature->m_pStats->GetCurrentHitPoints() >=
                 pCreature->m_pStats->GetMaxHitPoints())
         {
@@ -1094,6 +1096,12 @@ void CSWGuiInGameInventory::CreateItemEntry(CSWCCreature* pCreature, CSWSItem* p
             if (pServerCreature == 0 || pServerCreature->m_nPoisonState == 0)
             {
                 pEntry->m_pfnSelect = (CSWGuiHandler)&CSWGuiInGameInventory::FullHealth;
+                pEntry->m_bUsable = 0;
+            }
+            if (nItemType != CSWBaseItem::ITEM_TYPE_MEDPAC &&
+                pCreature->m_pStats->m_nRace == CSWRace::CRACE_DROID)
+            {
+                pEntry->m_pfnSelect = (CSWGuiHandler)&CSWGuiInGameInventory::NotUseable;
                 pEntry->m_bUsable = 0;
             }
         }
@@ -1399,7 +1407,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // Xbox 
                 CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
                 if (pItem != NULL && !pItem->m_bDeleting)
                 {
-                    static_cast<CSWGuiInGameItemEntry*>(pControl)->RefreshItem();
+                    static_cast<CSWGuiInGameItemEntry*>(pControl)->UpdateItem();
                 }
                 else
                 {
@@ -1436,9 +1444,16 @@ void CSWGuiInGameInventory::PopulateItemListBox()
     CExoArrayList<CExoString> lNames;
     ItemListEntry cEntry;
     m_lItems.num = 0;
-    for (unsigned long nSlot = 0; nSlot < 14; ++nSlot)
+    for (unsigned long nSlot = 0; nSlot < 20; ++nSlot)
     {
         unsigned long nInventorySlot = 1 << nSlot;
+        if (nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON1 ||
+            nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON2 ||
+            nInventorySlot == INVENTORY_SLOT_CREATUREWEAPON3 ||
+            nInventorySlot == INVENTORY_SLOT_CREATUREARMOUR)
+        {
+            continue;
+        }
         CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
         CSWCItem* pClientItem = pClient->GetItemByGameObjectID(
             pCreature->GetEquippedItemID(nInventorySlot));
@@ -1454,6 +1469,10 @@ void CSWGuiInGameInventory::PopulateItemListBox()
                 CreateItemEntry(pCreature, pItem, &cEntry, bSquadItem, 1);
                 pItem->m_sLocalizedName.GetString(
                     g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
+                if (sName.Find('<', 0) != -1 || sName.Find('{', 0) != -1)
+                {
+                    g_pSWTlkTable->ParseStr(sName, pCreature, 1, 1);
+                }
                 int nIndex;
                 for (nIndex = 0; nIndex < m_lItems.num; nIndex++)
                 {

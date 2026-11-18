@@ -1051,6 +1051,23 @@ void CSWPartyFollowDataArray::SmoothFollowPath()
         float fDistance = pPathfind->m_fStepScale;
         float fWidth = pPathfind->m_fHalfStep;
         CSWPartyFollowData* pPathPoint = GetPathData(nIndex);
+#ifdef _XBOX
+        if (g_pAppManager->GetServerExoApp()->TestDirectLine(
+                oidLeader, cAreaResRef, aSmoothPath[nCount - 1],
+                pPathPoint->m_vPosition, fDistance, fWidth, 1, NULL) ==
+            CSWSArea::DIRECT_LINE_CLEAR)
+        {
+            aSmoothPath[nCount] = GetPathData(nIndex)->m_vPosition;
+            ++nCount;
+        }
+        else
+        {
+            aSmoothPath[nCount] = GetPathData(nLastIndex)->m_vPosition;
+            ++nCount;
+            aSmoothPath[nCount] = GetPathData(nIndex)->m_vPosition;
+            ++nCount;
+        }
+#else
         if (g_pAppManager->GetServerExoApp()->TestDirectLine(
                 oidLeader, cAreaResRef, aSmoothPath[nCount - 1],
                 pPathPoint->m_vPosition, fDistance, fWidth, 1, NULL) ==
@@ -1065,6 +1082,7 @@ void CSWPartyFollowDataArray::SmoothFollowPath()
             aSmoothPath[nCount] = GetPathData(nIndex)->m_vPosition;
         }
         ++nCount;
+#endif
     }
 
     AurDrawLine(
@@ -1309,6 +1327,8 @@ int CSWParty::TestAndResetPath()
                     int nFormationPathIndex = GetMemberData(nMember)->m_nFormationPathIndex;
                     GetMemberData(nMember)->m_nFollowPathIndex = nFormationPathIndex;
                     GetMemberData(nMember)->m_vFollowPosition = GetMemberData(nMember)->m_vFormationPosition;
+                    if (g_allowForceSpeedEffect)
+                        GetMemberData(nMember);
                     GetMemberData(nMember)->m_nCharacterIndex = CSWPartyMemberData::MOVING_TO_OFFSET;
                 }
             }

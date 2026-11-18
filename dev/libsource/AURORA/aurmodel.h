@@ -1752,11 +1752,7 @@ inline CAurObject* Part::GetAurObject()
 // PC 0x00453080 GOG 0x004531C0 Xbox 0x002B43D0
 inline char* Part::Name()
 {
-#ifdef _XBOX
-    return m_pNode->m_pModel->AsModel()->m_lNames.m_pList[m_pNode->m_nIndex];
-#else
     MaxTree* pTree = m_pNode->m_pModel; Model* pModel = (pTree->m_nType & MaxTree::TYPE_MASK) == 2 ? static_cast<Model*>(pTree) : 0; return pModel->m_lNames.m_pList[m_pNode->m_nIndex];
-#endif
 }
 
 #ifdef _XBOX

@@ -642,6 +642,8 @@ public:
 #ifdef _XBOX
     void SelectNextUseItemTarget();
     void SelectPreviousUseItemTarget();
+    void ParseTargetName(CExoString& sName);
+    enum { STRREF_EMPTY = 125550, STRREF_NOTHING = 125551 };
 #endif
     void UpdateGameMenu();
     void OnCharacterEntered(CSWGuiControl*);

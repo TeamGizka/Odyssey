@@ -2275,7 +2275,7 @@ CSWCArea::~CSWCArea()
     }
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 #include "aurconsole.h"
 
 
@@ -2320,7 +2320,7 @@ void CSWCArea::SetHideFadeGeometryMode(unsigned char nMode)  // Xbox 0x00031B80
     }
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 
 #include "aurconsole.h"

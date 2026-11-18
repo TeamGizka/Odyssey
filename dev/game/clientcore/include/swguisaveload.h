@@ -32,44 +32,44 @@ public:
     CExoString m_sResourceDirectory;
     CSWGuiLabel m_lblPanelName;
     CSWGuiLabel m_lblScreenshot;
+    CSWGuiLabel m_lblPlanetName;
+    CSWGuiLabel m_lblAreaName;
+
+    CSWGuiLabel m_aPartyMemberLabels[3];
+    CSWGuiListBox m_lbSaveGames;
+    CSWGuiLabel m_lblPCName;
+    CSWGuiLabel m_lblTimePlayed;
 #ifdef _XBOX
+    CSWGuiLabel m_lblFreeblocks;
+    CSWGuiLabel m_lblFreeblocksAmt;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblSaveload;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblDelete;
-#endif
-    CSWGuiLabel m_lblPlanetName;
-    CSWGuiLabel m_lblAreaName;
-
-    CSWGuiLabel m_aPartyMemberLabels[3];
-#ifdef _XBOX
-    CSWGuiLabel m_lblFreeblocks;
-    CSWGuiLabel m_lblFreeblocksAmt;
-#endif
-    CSWGuiListBox m_lbSaveGames;
-#ifndef _XBOX
-    CSWGuiLabel m_lblPCName;
-    CSWGuiLabel m_lblTimePlayed;
+    CSWGuiLabel m_lblY;
+    CSWGuiLabel m_lblFilter;
+#else
     CSWGuiButton m_btnSaveLoad;
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnDelete;
     CSWGuiButton m_btnFilter;
+#endif
     CSWGuiLabel m_alblBar[4];
+#ifdef _XBOX
+    Vector m_vTextColor;
 #endif
     CExoArrayList<CSWGuiSaveLoadEntry*> m_lEntries;
-#ifndef _XBOX
     int m_nCurrentFilter;
     CExoArrayList<CExoString> m_lFilterNames;
     int m_nFilterCount;
-#endif
     int m_bEndGameMode;
     void SetEndGameMode();
     int LaunchMostRecentSave();
-#ifndef _XBOX
     void HandleFilterPress(CSWGuiControl* pControl);
     void PopulateGameLB();
+#ifndef _XBOX
     void SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lControls);
     void SelectValidSaveDirectory();
     void OnSteamCloudSaves(CSWGuiControl* pControl);
@@ -197,12 +197,13 @@ public:
     int GetSaveSpaceNeeded() { return m_nSaveSpaceNeeded; }
     unsigned char m_nGameplayHint;
     unsigned char GetGameplayHint() { return m_nGameplayHint; }
+#ifdef _XBOX
+    enum { STORY_HINT_AREAS = 10, SAVE_ENTRY_HEIGHT = 32 };
+#else
     enum { STORY_HINT_AREAS = 10, SAVE_ENTRY_HEIGHT = 36 };
+#endif
     unsigned char m_anStoryHint[STORY_HINT_AREAS];
     unsigned char GetStoryHint(unsigned char nArea) { return m_anStoryHint[nArea]; }
-#ifdef _XBOX
-    unsigned char m_nStoryHint;
-#endif
 #ifndef _XBOX
     CExoString m_sSaveGameName;
 #endif
@@ -216,14 +217,12 @@ public:
     CExoString m_sMissingLiveContent;
 
     CResRef m_aPortraits[3];
-#ifndef _XBOX
     unsigned __int64 m_nTimeStamp;
     unsigned __int64 GetTimeStamp() { return m_nTimeStamp; }
     CExoString m_sPCName;
     int m_nSaveNumber;
     int GetSaveNumber() { return m_nSaveNumber; }
     CExoString GetPCName() { return m_sPCName; }
-#endif
 
     CExoString GetGameDirectory();
     CResRef GetPlayerPortrait(int nIndex);
@@ -233,9 +232,7 @@ public:
     CExoString FormatTimeToString();
 #endif
     CSWGuiSaveLoadEntry();
-#ifndef _XBOX
     CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry);
-#endif
 };
 #ifndef _XBOX
 #pragma pack(pop)

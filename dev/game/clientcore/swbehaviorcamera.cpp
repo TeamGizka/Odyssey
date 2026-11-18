@@ -203,8 +203,13 @@ void CSWCameraOnAStick::SetCameraStyle(int nStyle)
             p2DA->GetFLOATEntry(m_nStyle, "DISTANCE", &m_fDistance);
             p2DA->GetFLOATEntry(m_nStyle, "SPEED", &m_fSpeed);
             p2DA->GetFLOATEntry(m_nStyle, "PITCH", &m_fPresetPitch);
+#ifdef _XBOX
+            CameraLookUp = 0.0f;
+            CameraLookDown = 0.0f;
+#else
             p2DA->GetFLOATEntry(m_nStyle, "TILTUP", &CameraLookUp);
             p2DA->GetFLOATEntry(m_nStyle, "TILTDOWN", &CameraLookDown);
+#endif
             p2DA->GetFLOATEntry(m_nStyle, "HEIGHT", &m_fHeight);
             p2DA->GetFLOATEntry(m_nStyle, "TILTSPEED", &m_fTiltSpeed);
             p2DA->GetFLOATEntry(m_nStyle, "ROTATION", &CameraRotate);
@@ -678,8 +683,16 @@ Quaternion CSWCameraOnAStick::Control_SetCameraOrientation(float fTimeStep)  // 
             max(m_fPresetPitch - CameraLookDown,
                 m_fTiltSpeed * m_fTilt * fTimeStep + m_fDesiredPitch);
     }
-    float fDelta = (m_fDesiredPitch - fPitch) * fTimeStep * 0.5f;
     m_fTilt = 0.0f;
+    if (m_fDesiredPitch > m_fPresetPitch + CameraLookUp)
+    {
+        m_fDesiredPitch = m_fPresetPitch + CameraLookUp;
+    }
+    if (m_fDesiredPitch < m_fPresetPitch - CameraLookDown)
+    {
+        m_fDesiredPitch = m_fPresetPitch - CameraLookDown;
+    }
+    float fDelta = (m_fDesiredPitch - fPitch) * fTimeStep * 0.5f;
     return YawPitchRoll(Yaw(normalize(vDirection)) + m_fShakeYaw,
                         m_fDesiredPitch - fDelta + m_fShakePitch, 0.0f);
 }
@@ -1537,7 +1550,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // Xbox 0
     return qResult;
 }
 #endif
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 #include "aurconsole.h"
 #include "nwccreature.h"

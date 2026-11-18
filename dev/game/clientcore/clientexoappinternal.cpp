@@ -88,7 +88,6 @@
 #include "exoinputinternal.h"
 #include "clientexoappinternalinl.h"
 
-#define RESTYPE_XMV 13
 enum
 {
     MOVIE_SKIP_EVENT_FIRST = 16,
@@ -175,6 +174,10 @@ int CClientExoAppInternal::Initialize()
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
     }
 
+#ifdef _XBOX
+    m_nSuperModelSet = 1;
+    g_pExoResMan->AddEncapsulatedResourceFile("SUPERMODELS:smseta", 1);
+#endif
     m_bClientInitialized = 1;
     return 1;
 }
@@ -1169,7 +1172,8 @@ void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)  
     cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "RefreshRate");
     unsigned long nRefreshRate = sValue.AsINT();
 
-    if (!cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumDynamicLights"))
+    int bFound = cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumDynamicLights");
+    if (!bFound)
     {
         sValue.Format("%d", VIDEO_DEFAULT_DYNAMIC_LIGHTS);
         cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumDynamicLights");
@@ -2396,6 +2400,9 @@ void CClientExoAppInternal::StartMenuMusic(int bCultTheme, int nVolume,
         }
         else if (!m_pMenuMusic->IsPlaying())
         {
+            CExoString sFileName;
+            sFileName.Format("HD0:STREAMMUSIC\\%s", sMusic.CStr());
+            g_pExoResMan->CacheResource(sFileName, RESTYPE_XBOX_STREAM);
             m_pMenuMusic->Play(sMusic, RESTYPE_XBOX_STREAM, 0, 1, 1);
         }
 #else
@@ -2420,22 +2427,7 @@ void CClientExoAppInternal::StopMenuMusic()
 {
     if (m_pMenuMusic != NULL)
     {
-#ifdef _XBOX
-        unsigned long nStart =
-            (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() /
-                            1000);
-        m_pMenuMusic->FadeAndStop(500);
-        do
-        {
-            g_pExoSound->Render();
-        } while ((unsigned long)(g_pExoBase->m_pExoTimers
-                                     ->GetHighResolutionTimer() /
-                                 1000) -
-                     nStart <
-                 500);
-#else
         FadeAndStopStreamingSoundSource(m_pMenuMusic, 500);
-#endif
         delete m_pMenuMusic;
         m_pMenuMusic = NULL;
     }
@@ -2468,14 +2460,7 @@ CSWCPlayer* CClientExoAppInternal::GetPlayerByCreatureName(const CExoString& sCr
 // PC 0x00641F60 GOG 0x00641E10 Xbox 0x00022D10
 void CClientExoAppInternal::StartLoadMusic()
 {
-#ifdef _XBOX
-    if (m_pMenuMusic != NULL)
-    {
-        StopMenuMusic();
-    }
-#else
     StopMenuMusic();
-#endif
 
     if (g_pExoSound != NULL && m_aMoveToModuleMovies.num == 0)
     {
@@ -2483,20 +2468,16 @@ void CClientExoAppInternal::StartLoadMusic()
         {
             if (m_sLoadMusic != "")
             {
-#ifdef _XBOX
-                CExoString sFileName;
-                sFileName.Format("HD0:STREAMMUSIC\\%s", m_sLoadMusic.CStr());
-                {
-                    g_pExoResMan->CacheResource(sFileName, RESTYPE_WAV);
-                }
-#endif
-
                 m_pLoadMusic = new CExoStreamingSoundSource(1);
                 m_pLoadMusic->SetLooping(1);
                 m_pLoadMusic->SetPriorityGroup(
                     CExoStreamingSoundSource::PRIORITY_GROUP_MUSIC);
 #ifdef _XBOX
-                m_pLoadMusic->Play(m_sLoadMusic, RESTYPE_WAV, 0, 1, 1);
+                CExoString sFileName;
+                CExoString sCachedFile;
+                sFileName.Format("HD0:STREAMMUSIC\\%s", m_sLoadMusic.CStr());
+                g_pExoResMan->CacheResource(sFileName, RESTYPE_XBOX_STREAM);
+                m_pLoadMusic->Play(m_sLoadMusic, RESTYPE_XBOX_STREAM, 0, 1, 1);
 #else
                 m_pLoadMusic->Play(m_sLoadMusic, RESTYPE_MP3, 0, 1, 0);
 #endif
@@ -6034,7 +6015,7 @@ int CClientExoAppInternal::AddMoveToModuleMovie(const CExoString& sMovie)  // Xb
         CExoString sAlias;
         sFileName.Format("MOVIES:%s", sMovie.CStr());
         int bFound = 0;
-        CExoFile* pFile = new CExoFile(sFileName, RESTYPE_XMV, "rb");
+        CExoFile* pFile = new CExoFile(sFileName, RESTYPE_BIK, "rb");
 
         if (!pFile->FileOpened())
         {
@@ -6050,7 +6031,7 @@ int CClientExoAppInternal::AddMoveToModuleMovie(const CExoString& sMovie)  // Xb
                 if (g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0).GetLength())
                 {
                     sFileName.Format("LIVE%d:movies\\%s", nPackage, sMovie.CStr());
-                    pFile = new CExoFile(sFileName, RESTYPE_XMV, "rb");
+                    pFile = new CExoFile(sFileName, RESTYPE_BIK, "rb");
                     if (pFile->FileOpened())
                     {
                         bFound = 1;
@@ -6071,7 +6052,7 @@ int CClientExoAppInternal::AddMoveToModuleMovie(const CExoString& sMovie)  // Xb
 
         if (bFound)
         {
-            sFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(sFileName, RESTYPE_XMV);
+            sFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(sFileName, RESTYPE_BIK);
             m_aMoveToModuleMovies.AddUnique(sFileName);
             m_pClientOptions->SetMovieShown(sMovie, 1);
             return 1;
@@ -7639,8 +7620,7 @@ void CClientExoAppInternal::SetLoadScreenByModuleName(const CExoString& sModule)
         m_bShowLoadScreen = 1;
     }
 }
-#ifndef _XBOX
-// PC 0x0063EB30 GOG 0x0063E9A0
+// PC 0x0063EB30 GOG 0x0063E9A0 Xbox 0x0001FE40
 CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sModule)
 {
     CExoString sMusicResRef;
@@ -7675,7 +7655,6 @@ CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sMo
     }
     return sMusicResRef;
 }
-#endif
 void CClientExoAppInternal::SetLoadScreenHint(unsigned long nHint)  // PC 0x0063ECE0 GOG 0x0063EB50 Xbox 0x0001FF80
 {
     if (m_pGuiLoadScreen != NULL)
@@ -9383,7 +9362,18 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(  // Xbox 0x00
     CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()
                               ->GetClientObjectByObjectId(oidPlayerCreature);
     int bFoundLiving = 0;
-    if (pPlayer != NULL)
+    int bSelectingTarget = m_pGuiInGame->m_pMainInterface->m_bSelectingUseItemTarget;
+    CSWCCreature* pLeader = m_pSWParty->GetCharacter(0);
+    if (pLeader != NULL)
+    {
+        CSWSCreature* pLeaderServerCreature = pLeader->GetServerCreature();
+        if (pLeaderServerCreature != NULL &&
+            (pLeaderServerCreature->GetDead() || pLeaderServerCreature->GetDeadTemp()))
+        {
+            bSelectingTarget = 0;
+        }
+    }
+    if (pPlayer != NULL && !bSelectingTarget)
     {
         if (bCheckDead != 0)
         {
@@ -9930,8 +9920,6 @@ void CClientExoAppInternal::SetEventDescriptions()  // Xbox 0x0001BA90
     g_pExoInput->AddEvent(54, INPUT_CONTEXT_DIALOG);
     g_pExoInput->SetEventRepeatable(54, 500, 40);
     g_pExoInput->CreateNewEvent(15, CExoInput::EVENT_TYPE_BUTTON, CExoInput::INPUTDEVICE_JOYSTICKSTART, CExoInput::JOYSTICK_BUTTON14, CExoInput::INPUT_CONTROL_NONE);
-    g_pExoInput->AddEvent(15, INPUT_CONTEXT_PC);
-    g_pExoInput->AddEvent(15, INPUT_CONTEXT_MINIGAME);
     g_pExoInput->CreateNewEvent(1, CExoInput::EVENT_TYPE_BUTTON, CExoInput::INPUTDEVICE_JOYSTICKSTART, CExoInput::JOYSTICK_BUTTON15, CExoInput::INPUT_CONTROL_NONE);
     g_pExoInput->AddEvent(1, INPUT_CONTEXT_PC);
     g_pExoInput->AddEvent(1, INPUT_CONTEXT_FREE_LOOK);
@@ -10324,7 +10312,9 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 #define CONTENT_SIGNATURE_SIZE 20
 #define STRREF_CHECKING_CONTENT 47939
 int g_bAcceptCorruptDownloads = 0;
+#ifdef _DEBUG
 ConsoleFunc ConVg_bAcceptCorruptDownloads("g_bAcceptCorruptDownloads", &g_bAcceptCorruptDownloads);
+#endif
 void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgress)  // Xbox 0x00026A40
 {
     HRESULT hr = S_OK;
@@ -10788,21 +10778,6 @@ void CClientExoAppInternal::TurnOffKeyboardModal()  // Xbox 0x0001F050
     {
         m_pModule->m_pInfo->HiliteAreaObjects(0);
     }
-}
-#endif
-#ifdef _XBOX
-
-CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sModule)  // Xbox 0x0001FE40
-{
-    CExoString sMusicResRef;
-    {
-        CExoString sColumn("MusicResRef");
-        CExoString sDefault("DEFAULT");
-        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-        C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
-        pLoadscreens->GetCExoStringEntry(sDefault, sColumn, &sMusicResRef);
-    }
-    return sMusicResRef;
 }
 #endif
 #ifdef _XBOX
@@ -11621,7 +11596,7 @@ RenderSound:
 }
 #endif
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 #include "aurconsole.h"
 

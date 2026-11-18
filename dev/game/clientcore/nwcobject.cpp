@@ -102,8 +102,8 @@ void CSWGuiInterfaceAction::Clear()
     m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
 #ifndef _XBOX
     m_nStackSize = 1;
-    m_bRevertActionBar = 0;
 #endif
+    m_bRevertActionBar = 0;
 }
 // PC 0x00692D60 GOG 0x00692AD0 Xbox 0x00091940
 unsigned short CSWCObject::GetCurrentAnimation()

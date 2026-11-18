@@ -64,7 +64,12 @@ inline int CSWGuiUpgradeItemSelect::GetUpgradeItemEquipped()
     return 0;
 }
 // PC 0x007327B0 GOG 0x007324C0
+#ifdef _XBOX
+// Xbox 0x0011BC40
+void CSWGuiCreateMedicalItem::OnControlXButton()
+#else
 void CSWGuiCreateMedicalItem::OnControlXButton(CSWGuiControl* pControl)
+#endif
 {
     m_bAlternateList = !m_bAlternateList;
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
@@ -1226,6 +1231,23 @@ void CSWGuiCreateItem::UpdateItemSlots(int nTopItem, int nSelectedItem)
 }
 #endif
 // PC 0x00729E20 GOG 0x00729B30
+#ifdef _XBOX
+// Xbox 0x00113840
+void CSWGuiCreateItem::OnBreakdownFilterPicked()
+{
+    if (m_bBuyMode == 0)
+    {
+        int nFilter = m_nBreakdownFilter + 1;
+        if (nFilter >= 5)
+            nFilter = 0;
+        m_nTopItem = 0;
+        m_nSelectedItem = 0;
+        m_nBreakdownFilter = nFilter;
+        UpdateBreakdownFilters();
+        PopulateInventoryItemListBox();
+    }
+}
+#else
 void CSWGuiCreateItem::OnBreakdownFilterPicked(CSWGuiControl* pControl)
 {
     if (m_bBuyMode == 0 && pControl != 0)
@@ -1235,6 +1257,7 @@ void CSWGuiCreateItem::OnBreakdownFilterPicked(CSWGuiControl* pControl)
         PopulateInventoryItemListBox();
     }
 }
+#endif
 // PC 0x00724610 GOG 0x00724320 Xbox 0x0010D450
 void CSWGuiUpgrade::OnPanelRemoved()
 {
@@ -2396,6 +2419,21 @@ void CSWGuiUpgrade::OnDisabledSelected(CSWGuiControl* pControl)
     }
 }
 // PC 0x00732400 GOG 0x00732110
+#ifdef _XBOX
+// Xbox 0x0011B8D0
+void CSWGuiCreateItem::OnCreateFilterPicked()
+{
+    if (m_bBuyMode != 0)
+    {
+        int nFilter = m_nCreateFilter + 1;
+        if (nFilter >= 5)
+            nFilter = 0;
+        m_nCreateFilter = nFilter;
+        UpdateCreateFilters();
+        SetItemList();
+    }
+}
+#else
 void CSWGuiCreateItem::OnCreateFilterPicked(CSWGuiControl* pControl)
 {
     if (m_bBuyMode != 0 && pControl != 0)
@@ -2405,6 +2443,7 @@ void CSWGuiCreateItem::OnCreateFilterPicked(CSWGuiControl* pControl)
         SetItemList();
     }
 }
+#endif
 // PC 0x0072BE80 GOG 0x0072BB90
 void CSWGuiCreateMedicalItem::SellItemCallback(CSWGuiControl* pControl)
 {
@@ -2530,7 +2569,12 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
     }
 }
 // PC 0x00732430 GOG 0x00732140
+#ifdef _XBOX
+// Xbox 0x0011B910
+void CSWGuiCreateItem::OnControlXButton()
+#else
 void CSWGuiCreateItem::OnControlXButton(CSWGuiControl* pControl)
+#endif
 {
     m_bAlternateList = !m_bAlternateList;
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
@@ -3388,6 +3432,7 @@ void CSWGuiCreateItem::InitializeStoreType()
         }
     }
 }
+#ifndef _XBOX
 // PC 0x0072EF70 GOG 0x0072EC80
 void CSWGuiCreateItem::OnAcceptPicked(CSWGuiControl* pControl)
 {
@@ -3406,7 +3451,17 @@ void CSWGuiCreateItem::OnAcceptPicked(CSWGuiControl* pControl)
     }
 #endif
 }
+#endif
 // PC 0x00726180 GOG 0x00725E90 Xbox 0x0010EBB0
+#ifdef _XBOX
+void CSWGuiCreateItem::CloseCreateItem()
+{
+    if (m_pUpgradeSelection != 0 && m_pUpgradeSelection->m_bDisableUpgrade != 0)
+    {
+        m_pUpgradeSelection->HandleInputEvent(GUIEVENT_CANCEL, 1);
+    }
+    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+#else
 void CSWGuiCreateItem::CloseCreateItem(CSWGuiControl* pControl)
 {
     if (m_pUpgradeSelection != 0 && m_pUpgradeSelection->m_bDisableUpgrade != 0)
@@ -3417,6 +3472,7 @@ void CSWGuiCreateItem::CloseCreateItem(CSWGuiControl* pControl)
     {
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     }
+#endif
     SetToBeRemoved(0);
     m_pManager->PopModalPanel();
 }
@@ -4755,6 +4811,7 @@ CSWGuiCreateMedicalItem::CSWGuiCreateMedicalItem(CSWGuiManager* pManager,
 #endif
 #endif
 }
+#ifndef _XBOX
 // PC 0x0072F8A0 GOG 0x0072F5B0
 void CSWGuiCreateMedicalItem::OnAcceptPicked(CSWGuiControl* pControl)
 {
@@ -4771,12 +4828,15 @@ void CSWGuiCreateMedicalItem::OnAcceptPicked(CSWGuiControl* pControl)
             OnControlInvAButton(pSelected);
     }
 }
+#endif
 // PC 0x0072D5C0 GOG 0x0072D2D0
 void CSWGuiCreateItem::DeleteItemEntries()
 {
     CExoArrayList<CSWGuiStoreItemEntry*>& lStoreEntries = m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*>& lInventoryEntries = m_lInventoryEntries;
-#ifndef _XBOX
+#ifdef _XBOX
+    m_lItemSlots.RemoveAll();
+#else
     m_lbxInventoryItems.ClearItems();
 #endif
     m_lbxStoreItems.ClearItems();
@@ -4786,12 +4846,14 @@ void CSWGuiCreateItem::DeleteItemEntries()
         lStoreEntries[i] = 0;
     }
     lStoreEntries.num = 0;
+#ifndef _XBOX
     for (int i = 0; i < lInventoryEntries.num; i++)
     {
         delete lInventoryEntries[i];
         lInventoryEntries[i] = 0;
     }
     lInventoryEntries.num = 0;
+#endif
 }
 // PC 0x007275A0 GOG 0x007272B0 Xbox 0x00112620
 void CSWGuiUpgrade::OnPanelAdded()
@@ -5047,18 +5109,81 @@ CSWUpgradeItemEntry::CSWUpgradeItemEntry()
     m_oidItem = OBJECT_INVALID;
     m_nUpgradeIndex = -1;
 }
+#ifdef _XBOX
+// Xbox 0x00110720
+void CSWGuiCreateItem::SelectPreviousItem()
+{
+    int nSelected = m_nSelectedItem - 1;
+    int nTop = m_nTopItem;
+    if (nSelected < 0)
+    {
+        nSelected = m_lItemSlots.num - 1;
+        nTop = nSelected - (CREATEITEM_NUM_ITEM_SLOTS - 1) < 0
+                   ? 0
+                   : nSelected - (CREATEITEM_NUM_ITEM_SLOTS - 1);
+        g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
+    }
+    else if (nSelected < nTop)
+    {
+        nTop = nSelected;
+    }
+    UpdateItemSlots(nTop, nSelected);
+}
+// Xbox 0x00110780
+void CSWGuiCreateItem::SelectNextItem()
+{
+    int nSelected = m_nSelectedItem + 1;
+    int nTop = m_nTopItem;
+    if (nSelected >= m_lItemSlots.num)
+    {
+        nSelected = 0;
+        nTop = 0;
+        g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
+    }
+    else if (nSelected - nTop > CREATEITEM_NUM_ITEM_SLOTS - 1)
+    {
+        nTop = nSelected - (CREATEITEM_NUM_ITEM_SLOTS - 1);
+    }
+    UpdateItemSlots(nTop, nSelected);
+}
+#endif
 // PC 0x00727FD0 GOG 0x00727CE0
 void CSWGuiCreateItem::HandleInputEvent(int nEvent, int nState)
 {
+#ifdef _XBOX
+    if (m_bBuyMode ||
+        (nEvent != GUIEVENT_DOWN_ALTERNATE && nEvent != GUIEVENT_UP_ALTERNATE &&
+         nEvent != GUIEVENT_DOWN && nEvent != GUIEVENT_UP))
+    {
+        CSWGuiPanel::HandleInputEvent(nEvent, nState);
+    }
+#else
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
+#endif
 
     if (nState != 0)
     {
         switch (nEvent)
         {
+#ifdef _XBOX
+        case GUIEVENT_UP:
+        case GUIEVENT_UP_ALTERNATE:
+            if (!m_bBuyMode)
+                SelectPreviousItem();
+            break;
+        case GUIEVENT_DOWN:
+        case GUIEVENT_DOWN_ALTERNATE:
+            if (!m_bBuyMode)
+                SelectNextItem();
+            break;
+#endif
         case GUIEVENT_CANCEL:
         case 46:
+#ifdef _XBOX
+            CloseCreateItem();
+#else
             CloseCreateItem(0);
+#endif
             break;
         case 58:
             if (m_bBuyMode)
@@ -5072,6 +5197,17 @@ void CSWGuiCreateItem::HandleInputEvent(int nEvent, int nState)
             else
                 m_lbxDescriptionInv.HandleInputEvent(GUIEVENT_UP, 1);
             break;
+#ifdef _XBOX
+        case 42:
+            if (m_bBuyMode)
+                OnCreateFilterPicked();
+            else
+                OnBreakdownFilterPicked();
+            break;
+        case 41:
+            OnControlXButton();
+            break;
+#endif
         }
     }
 }
@@ -5231,6 +5367,15 @@ void CSWGuiCreateMedicalItem::HandleInputEvent(int nEvent, int nState)
             else
                 m_lbxDescriptionInv.HandleInputEvent(GUIEVENT_UP, 1);
             break;
+#ifdef _XBOX
+        case 41:
+            OnControlXButton();
+            break;
+        case 42:
+            if (m_bBuyMode)
+                OnCreateFilterPicked();
+            break;
+#endif
         }
     }
 }
@@ -5812,6 +5957,7 @@ void CSWGuiUpgradeSelection::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
+#ifndef _XBOX
 // PC 0x0072E200 GOG 0x0072DF10
 void CSWGuiUpgradeSelection::OnFilterPicked(CSWGuiControl* pControl)
 {
@@ -5819,6 +5965,7 @@ void CSWGuiUpgradeSelection::OnFilterPicked(CSWGuiControl* pControl)
     UpdateFilterButtons();
     PopulateItemList();
 }
+#endif
 #ifdef _XBOX
 
 // Xbox 0x0011AFC0
@@ -5835,6 +5982,21 @@ void CSWGuiUpgradeSelection::NextFilter()
 }
 #endif
 // PC 0x00732780 GOG 0x00732490
+#ifdef _XBOX
+// Xbox 0x0011BC00
+void CSWGuiCreateMedicalItem::OnCreateFilterPicked()
+{
+    if (m_bBuyMode != 0)
+    {
+        int nFilter = m_nCreateFilter + 1;
+        if (nFilter >= 4)
+            nFilter = 0;
+        m_nCreateFilter = nFilter;
+        UpdateCreateFilters();
+        SetItemList();
+    }
+}
+#else
 void CSWGuiCreateMedicalItem::OnCreateFilterPicked(CSWGuiControl* pControl)
 {
     if (m_bBuyMode != 0 && pControl != 0)
@@ -5844,6 +6006,7 @@ void CSWGuiCreateMedicalItem::OnCreateFilterPicked(CSWGuiControl* pControl)
         SetItemList();
     }
 }
+#endif
 // PC 0x00728D40 GOG 0x00728A50 Xbox 0x0010EED0
 void CSWGuiSwoopUpgrade::SetDescription(const CExoString& sDescription)
 {

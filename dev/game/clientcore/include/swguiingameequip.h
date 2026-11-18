@@ -283,9 +283,6 @@ public:
     void SetItem(unsigned long, int, int);
     void UpdateItem();
     CSWGuiInGameItemEntry();
-#ifdef _XBOX
-    void RefreshItem();
-#endif
 };
 class CSWGuiStoreItemEntry : public CSWGuiButton
 {

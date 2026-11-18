@@ -337,7 +337,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
                                                cBumpyShinySkinVPDeclaration);
     g_pBumpyShinySkinPass2->Enable(NULL, true);
 
-    g_pBumpyShinySkinPass2_3bone = new VertexProgram(dwSkinVPVertexShader, dwSkinLitVPVertexShader,
+    g_pBumpyShinySkinPass2_3bone = new VertexProgram(dwSkin3BoneVPVertexShader, dwSkin3BoneLitVPVertexShader,
                                                      cSkin3BoneVPDeclaration);
     g_pBumpyShinySkinPass2_3bone->Enable(NULL, true);
     g_pBumpyShinyPass1 = new VertexProgram(

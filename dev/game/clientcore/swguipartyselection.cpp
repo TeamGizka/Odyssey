@@ -359,7 +359,19 @@ void CSWGuiPartySelection::OnPanelRemoved()
     m_bAllowCancel = 0;
     CSWGuiPanel::OnPanelRemoved();
 }
-#ifndef _XBOX
+#ifdef _XBOX
+// Xbox 0x000F07E0
+void CSWGuiPartySelection::OnExit(CSWGuiControl* pControl)
+{
+    CSWGuiPartySelectionData* pData =
+        (CSWGuiPartySelectionData*)pControl->m_nIndex;
+    if (pData->m_pCreature != 0)
+    {
+        delete pData->m_pCreature;
+        pData->m_pCreature = 0;
+    }
+}
+#else
 // PC 0x0071E000 GOG 0x0071DDB0
 void CSWGuiPartySelection::OnExit(CSWGuiControl* pControl)
 {

@@ -313,8 +313,7 @@ void CClientOptions::ApplySoundOptions()
     }
 }
 
-#ifndef _XBOX
-void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 0x0066CF70 GOG 0x0066CD10
+void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 0x0066CF70 GOG 0x0066CD10 Xbox 0x0005E940
 {
     if (g_pRules == NULL || g_pRules->m_p2DArrays == NULL)
     {
@@ -339,7 +338,11 @@ void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 
         CExoString sName = sMovie.Right(nLength - nSlash);
         sName = sName.Left(nDot - nSlash - 1);
         p2DArrays = g_pRules->m_p2DArrays;
+#ifdef _XBOX
+        pMovies = p2DArrays->GetMovies2DA();
+#else
         pMovies = p2DArrays->m_pMovies2DA;
+#endif
         nRow = (unsigned char)pMovies->GetRowIndex(sName);
         if (nRow < 0)
         {
@@ -362,7 +365,6 @@ void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 
     }
     g_pAppManager->m_pClientExoApp->SaveOptions();
 }
-#endif
 // PC 0x0066D130 GOG 0x0066CED0 Xbox 0x0005EAC0
 int CClientOptions::GetMovieShown(const CResRef& sMovie)
 {
@@ -1374,33 +1376,6 @@ void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)  // 
     }
     memcpy(m_aMoviesShown, pData->m_aMoviesShown, sizeof(m_aMoviesShown));
 }
-
-void CClientOptions::SetMovieShown(const CResRef& sMovie, int bShown)  // Xbox 0x0005E940
-{
-    CExoString sName;
-    sMovie.CopyToString(sName);
-    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-    EXOXBOXASSERT(p2DArrays->m_pMovies2DA);
-    C2DA* const pMovies = p2DArrays->m_pMovies2DA;
-    int nRow = pMovies->GetRowIndex(sName);
-    if (nRow >= 0)
-    {
-        unsigned char nByte = nRow / 8;
-        if (nByte < 11)
-        {
-            unsigned char nBit = nRow - 8 * nByte;
-            if (bShown != 0)
-            {
-                m_aMoviesShown[nByte] |= (1 << nBit);
-            }
-            else
-            {
-                m_aMoviesShown[nByte] &= ~(1 << nBit);
-            }
-            g_pAppManager->m_pClientExoApp->SaveOptions();
-        }
-    }
-}
 #endif
 
 #ifdef _XBOX
@@ -1580,7 +1555,7 @@ CClientOptions::CClientOptions()  // Xbox 0x0005F950
     SetDefaults();
 }
 #endif
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 #include "aurconsole.h"
 #include <stdlib.h>

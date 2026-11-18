@@ -2318,7 +2318,14 @@ void CAurTexture::Bind()
 
         if (nCurrentTID != GLRender::GetCurrentStageTID())
         {
-            AurTextureBindTID(nCurrentTID, pBasic->IsCubeMap(), false);
+            if (GetDepth())
+            {
+                AurTextureBindTID(nCurrentTID, false, true);
+            }
+            else
+            {
+                AurTextureBindTID(nCurrentTID, pBasic->IsCubeMap(), false);
+            }
             TextureController* pController = AurTextureGetController(pBasic);
             if (pController != NULL)
             {
@@ -3315,6 +3322,8 @@ void CAurTextureBasic::AsNormalizeVectorCubeMap()  // Xbox 0x002985F0
     GLRender::SetActiveTexture(1);
     GLRender::BindTexture(ENABLE_TEXTURE_CUBE_MAP, m_nTIDIndex);
     GLRender::MakeNormalizationCubeMap(64);
+    GLRender::SetTextureParameteri(TEX_PARAM_TARGET_2D, TEX_PARAM_MAG_FILTER, 5);
+    GLRender::SetTextureParameteri(TEX_PARAM_TARGET_2D, TEX_PARAM_MIN_FILTER, 6);
     GLRender::Disable(ENABLE_TEXTURE_CUBE_MAP);
     GLRender::SetActiveTexture(0);
 }

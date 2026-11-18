@@ -74,7 +74,7 @@ VertexProgram* GetSkinVP(bool bHologram)
     if (!pHoloSkinVP)
     {
 #ifdef _XBOX
-        pHoloSkinVP = new VertexProgram(dwSkinVPVertexShader, dwSkinLitVPVertexShader,
+        pHoloSkinVP = new VertexProgram(dwHoloSkinVPVertexShader, dwHoloSkinLitVPVertexShader,
                                         cSkinVPDeclaration);
 #else
         pHoloSkinVP = new VertexProgram(
@@ -269,10 +269,16 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,  // Xbox 0x
             newnormal.m_fX = newnormal.m_fY = newnormal.m_fZ = 0.0f;
             for (int k = 0; k < 4; k++)
             {
+#ifdef _XBOX
+                float fWeight = ((float*)(pVertices +
+                    pNode->m_nVertexDataOffset + nVertex * pNode->m_nVertexStride +
+                    pNode->m_nSkinWeightOffset))[k];
+#else
                 float* pWeights = (float*)(pVertices +
                     pNode->m_nVertexDataOffset + nVertex * pNode->m_nVertexStride +
                     pNode->m_nSkinWeightOffset);
                 float fWeight = pWeights[k];
+#endif
                 if (fWeight != 0.0f)
                 {
 #ifdef _XBOX
@@ -392,7 +398,7 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,  // Xbox 0x
     if ((pPart->m_pAurObject && pPart->m_pAurObject->m_pEnvironmentMap.m_pObject) ||
         pPart->m_pMaterial->HasEnvMap())
     {
-        RenderEnvironmentMapped(pPrimitive, false);
+        RenderEnvironmentMapped(pPrimitive, false, false);
     }
     else
     {
@@ -1089,6 +1095,22 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     continue;
                 mRotation = (qRotation * qbones.m_pList[i] * pNode->m_lstQBoneRefInv.m_pList[i]).getmatrix();
                 const Vector& vThird = pAxes[2];
+#ifdef _XBOX
+                float afBone[12];
+                afBone[0] = pAxes[0].m_fX;
+                afBone[1] = pAxes[1].m_fX;
+                afBone[2] = vThird.m_fX;
+                afBone[3] = vBone.m_fX;
+                afBone[4] = pAxes[0].m_fY;
+                afBone[5] = pAxes[1].m_fY;
+                afBone[6] = vThird.m_fY;
+                afBone[7] = vBone.m_fY;
+                afBone[8] = pAxes[0].m_fZ;
+                afBone[9] = pAxes[1].m_fZ;
+                afBone[10] = vThird.m_fZ;
+                afBone[11] = vBone.m_fZ;
+                g_pD3DDevice->SetVertexShaderConstantFast(PartSkin::SKIN_VP_BONES + 3 * nBone, afBone, 3);
+#else
                 nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
                 GLRender_SetVertexProgramParameter4f(nBone,
                     pAxes[0].m_fX, pAxes[1].m_fX,
@@ -1099,290 +1121,14 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 GLRender_SetVertexProgramParameter4f(nBone + 1,
                     pAxes[0].m_fZ, pAxes[1].m_fZ,
                     vThird.m_fZ, vBone.m_fZ);
+#endif
             }
         }
 
 #ifdef _XBOX
-
         if (enablebumpyshiny && pSkin->m_pMaterial->HasBumpMap() &&
             pSkin->m_pMaterial->HasBumpyShinyMap() && pTriMesh->HasTangentBases())
         {
-            GLRender_Enable(ENABLE_BLEND);
-            GLRender_Disable(ENABLE_ALPHA_TEST);
-            if (bumpyskinpass)
-            {
-                GLRender_SetBlendFunc(BLEND_ONE, BLEND_ZERO);
-                GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS0);
-                GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS1);
-                GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS2);
-                GLRender_DisableClientState(CLIENT_STATE_NORMAL);
-                AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
-                    1.0f, 0.0f, 1.0f, 0.0f);
-                g_pBumpyShinySkinPass1->Enable(pSkin, false);
-                GLRender_EnablePixelShaders(MODEL_SHADER_TEXTURE_SHADER_BUMP,
-                    pSkin->m_pMaterial->m_pBumpMap, 0, 0,
-                    pSkin->m_pMaterial->m_pEnvMap);
-                GLRender_EnablePixelShaders(MODEL_SHADER_ENVIRONMENT_ONLY,
-                    0, 0, 0, 0);
-                RenderFlat(pPrimitive);
-                GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
-                GLRender_EnablePixelShaders(MODEL_SHADER_TEXTURE_SHADER_DISABLE,
-                    0, 0, 0, 0);
-                GLRender_EnablePixelShaders(MODEL_SHADER_BUMP_DISABLE, 0, 0, 0, 0);
-                GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS0);
-                GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS1);
-                GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS2);
-                GLRender_EnableClientState(CLIENT_STATE_NORMAL);
-            }
-            AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
-                1.0f, 1.0f, 1.0f, 1.0f);
-            if (use3boneskinning)
-                g_pBumpyShinySkinPass2_3bone->Enable(pSkin, true);
-            else
-                g_pBumpyShinySkinPass2->Enable(pSkin, true);
-            if (enabledecal)
-            {
-                GLRender::ActivateTextureStage(0);
-                pSkin->m_pMaterial->BindTexture0();
-                GLRender_SetBlendFunc(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
-                RenderFlat(pPrimitive);
-            }
-            GLRender_Enable(ENABLE_ALPHA_TEST);
-        }
-        else if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases() &&
-            usenewbumpyskin)
-        {
-            GLRender_Disable(ENABLE_ALPHA_TEST);
-#ifdef _XBOX
-            static VertexProgram* skinvp = new VertexProgram(
-                dwNewSkinBumpyVPVertexShader, dwNewSkinBumpyVPVertexShader, cSkinBumpyVPDeclaration);
-#else
-            static VertexProgram* skinvp = new VertexProgram(
-                cNewSkinBumpyVP, cSkinBumpyVPDeclaration);
-#endif
-            Vector vDiffuse;
-            Vector vSpecular;
-            if (pTriMesh != 0)
-            {
-                vSpecular = pSkin->m_pMaterial->GetBumpMapSpecularColor();
-                vDiffuse = pTriMesh->m_vDiffuse;
-            }
-            List<PartLight*> lstLights(*currentscene->m_pLightManager->GetBumpMapLights());
-            GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS0);
-            GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS1);
-            GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS2);
-            GLRender_EnablePixelShaders(MODEL_SHADER_BUMP,
-                pSkin->m_pMaterial->m_pBumpMap,
-                currentscene->m_pNormalizationCubeMap,
-                currentscene->m_pNormalizationCubeMap,
-                pSkin->m_pMaterial->m_pTexture0);
-            Vector& vAmbient = currentscene->m_vAmbient;
-            GLRender_SetPixelShaderAmbientColor(vAmbient, 1.0f);
-            Quaternion qOrientation;
-            Vector vPosition;
-            pSkin->GetWorld(vPosition, qOrientation);
-            Vector vEye = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
-            GLRender_Enable(ENABLE_VERTEX_PROGRAM);
-            GLRender_SetBlendFunc(BLEND_ONE, BLEND_ZERO);
-            currentscene->m_pLightManager->DisableBumpMapLights();
-            for (int nLight = 0; nLight < lstLights.m_nCount; nLight++)
-            {
-                skinvp->Enable(pSkin, false);
-                PartLight* pLight = lstLights[nLight];
-                Vector vLight = lstLights[nLight]->m_vWorldPosition;
-                vLight = -qOrientation * (vLight - vPosition);
-                Vector vLightColor = cmul(pLight->m_vColor, vDiffuse * diffuseintensity);
-                if (usebumpdiffuse)
-                    GLRender_SetBumpLightColor(vLightColor, 1.0f);
-                else
-                {
-                    Vector vBlack;
-                    GLRender_SetBumpLightColor(vBlack, 1.0f);
-                }
-                vLightColor = cmul(lstLights[nLight]->m_vColor,
-                    (vSpecular * specularintensity) *
-                    pSkin->m_pMaterial->GetBumpMapIntensity());
-                if (usebumpspecular)
-                    GLRender_SetPixelShaderAmbientColor(vLightColor, 1.0f);
-                else
-                {
-                    Vector vBlack;
-                    GLRender_SetPixelShaderAmbientColor(vBlack, 1.0f);
-                }
-                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION,
-                    vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
-                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
-                    vEye.m_fX, vEye.m_fY, vEye.m_fZ, 1.0f);
-                float fRadius = lstLights[nLight]->m_fRadius;
-                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
-                    1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
-                RenderFlat(pPrimitive);
-            }
-            if (lstLights.m_nCount == 0)
-            {
-                skinvp->Enable(pSkin, false);
-                GLRender_SetBumpLightColor(Vector(), 1.0f);
-                GLRender_SetPixelShaderAmbientColor(Vector(), 1.0f);
-                RenderFlat(pPrimitive);
-            }
-            GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS0);
-            GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS1);
-            GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS2);
-            currentscene->DoFog();
-            GLRender_SetBlendFunc(BLEND_ONE, BLEND_ONE);
-            GLRender_EnablePixelShaders(MODEL_SHADER_BUMP_DISABLE, 0, 0, 0, 0);
-            GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
-            AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
-                1.0f, 1.0f, 1.0f, 1.0f);
-#ifdef _XBOX
-            static VertexProgram* skinDecalPassvp = new VertexProgram(
-                dwSkinVPVertexShader, dwSkinLitVPVertexShader, cSkinBumpyVPDeclaration);
-            skinDecalPassvp->Enable(pSkin, true);
-#else
-            static VertexProgram* skinDecalPassvp = new VertexProgram(
-                cSkinVP, cSkinBumpyVPDeclaration);
-            skinDecalPassvp->Enable(pSkin, true);
-#endif
-            if (enabledecal)
-            {
-                GLRender::ActivateTextureStage(0);
-                pSkin->m_pMaterial->BindTexture0();
-                RenderFlat(pPrimitive);
-            }
-            GLRender_Enable(ENABLE_ALPHA_TEST);
-            currentscene->m_pLightManager->EnableBumpMapLights();
-            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-        }
-        else if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
-        {
-#ifdef _XBOX
-            static VertexProgram* skinvp = new VertexProgram(
-                dwSkinBumpyVPVertexShader, dwSkinBumpyLitVPVertexShader,
-                cSkinBumpyVPDeclaration);
-#else
-            static VertexProgram* skinvp = new VertexProgram(
-                usearbvertexprograms ? szSkinBumpyVPARB : cSkinBumpyVP,
-                cSkinBumpyVPDeclaration);
-#endif
-            Vector vDiffuse;
-            Vector vSpecular;
-            if (pTriMesh != 0)
-            {
-                vSpecular = pSkin->m_pMaterial->GetBumpMapSpecularColor();
-                vDiffuse = pTriMesh->m_vDiffuse;
-            }
-            List<PartLight*> lstLights(*currentscene->m_pLightManager->GetBumpMapLights());
-            GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS0);
-            GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS1);
-            GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS2);
-            GLRender_EnablePixelShaders(MODEL_SHADER_BUMP,
-                pSkin->m_pMaterial->m_pBumpMap,
-                currentscene->m_pNormalizationCubeMap,
-                currentscene->m_pNormalizationCubeMap,
-                pSkin->m_pMaterial->m_pTexture0);
-            Vector& vAmbient = currentscene->m_vAmbient;
-            GLRender_SetPixelShaderAmbientColor(vAmbient, 1.0f);
-            Quaternion qOrientation;
-            Vector vPosition;
-            pSkin->GetWorld(vPosition, qOrientation);
-            Vector vEye = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
-            GLRender_Enable(ENABLE_VERTEX_PROGRAM);
-            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-            for (int nLight = 0; nLight < lstLights.m_nCount; nLight++)
-            {
-                currentscene->m_pLightManager->DisableBumpMapLights();
-                skinvp->Enable(pSkin, true);
-                PartLight* pLight = lstLights[nLight];
-                Vector vLight = lstLights[nLight]->m_vWorldPosition;
-                vLight = -qOrientation * (vLight - vPosition);
-                Vector vLightColor = cmul(pLight->m_vColor, diffuseintensity * vDiffuse);
-                if (usebumpdiffuse)
-                    GLRender_SetBumpLightColor(vLightColor, 1.0f);
-                else
-                {
-                    Vector vBlack;
-                    GLRender_SetBumpLightColor(vBlack, 1.0f);
-                }
-                vLightColor = cmul(lstLights[nLight]->m_vColor,
-                    (specularintensity * vSpecular) *
-                    pSkin->m_pMaterial->GetBumpMapIntensity());
-                if (usebumpspecular)
-                    GLRender_SetPixelShaderAmbientColor(vLightColor, 1.0f);
-                else
-                {
-                    Vector vBlack;
-                    GLRender_SetPixelShaderAmbientColor(vBlack, 1.0f);
-                }
-                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION,
-                    vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
-                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
-                    vEye.m_fX, vEye.m_fY, vEye.m_fZ, 1.0f);
-                float fRadius = lstLights[nLight]->m_fRadius;
-                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
-                    1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
-                RenderFlat(pPrimitive);
-                currentscene->m_pLightManager->EnableBumpMapLights();
-            }
-            if (lstLights.m_nCount == 0)
-            {
-                skinvp->Enable(pSkin, true);
-                GLRender_SetBumpLightColor(Vector(), 1.0f);
-                GLRender_SetPixelShaderAmbientColor(Vector(), 1.0f);
-                RenderFlat(pPrimitive);
-            }
-            GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS0);
-            GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS1);
-            GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS2);
-            currentscene->DoFog();
-            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-            GLRender_EnablePixelShaders(MODEL_SHADER_BUMP_DISABLE, 0, 0, 0, 0);
-            GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
-        }
-        else
-        {
-            if ((pSkin->m_pAurObject != 0 && pSkin->m_pAurObject->m_pEnvironmentMap.m_pObject != 0) ||
-                pSkin->m_pMaterial->HasEnvMap())
-            {
-                CAurTexture* pEnvMap;
-                if (pSkin->m_pAurObject != 0 && pSkin->m_pAurObject->m_pEnvironmentMap.m_pObject != 0)
-                    pEnvMap = pSkin->m_pAurObject->m_pEnvironmentMap;
-                else
-                    pEnvMap = pSkin->m_pMaterial->m_pEnvMap;
-                VertexProgram* pProgram;
-                if (pEnvMap->IsCubeMap())
-                    pProgram = GetSkinCubeMapVP();
-                else
-                    pProgram = GetSkinSphereMapVP();
-                pProgram->Enable(pSkin, true);
-                RenderEnvironmentMapped(pPrimitive, true);
-            }
-            else
-            {
-                GLRender::ActivateTextureStage(0);
-                pSkin->m_pMaterial->BindTexture0();
-                VertexProgram* pProgram;
-                if (use3boneskinning)
-                {
-#ifdef _XBOX
-                    static VertexProgram* skin3bonevp = new VertexProgram(
-                        dwSkinVPVertexShader, dwSkinLitVPVertexShader, cSkin3BoneVPDeclaration);
-                    pProgram = skin3bonevp;
-#else
-                    static VertexProgram* skin3bonevp = new VertexProgram(
-                        cSkin3BoneVP, cSkin3BoneVPDeclaration);
-                    pProgram = skin3bonevp;
-#endif
-                    pProgram->Enable(pSkin, true);
-                }
-                else
-                {
-                    pProgram = GetSkinVP(pSkin->m_bHologram);
-                    pProgram->Enable(pSkin, true);
-                }
-                RenderFlat(pPrimitive);
-            }
-        }
-        GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 #else
         if (pSkin->m_pMaterial->HasBumpMap() &&
             pSkin->m_pMaterial->HasBumpyShinyMap() &&
@@ -1390,12 +1136,18 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             enablebumpyshiny)
         {
             GLRender_PushAttrib(GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT);
+#endif
             GLRender_Enable(ENABLE_BLEND);
             GLRender_Disable(ENABLE_ALPHA_TEST);
             if (bHologram)
             {
+#ifdef _XBOX
+                static VertexProgram* pHoloBumpyShinySkinVP = new VertexProgram(dwHoloSkinVPVertexShader,
+                    dwHoloSkinLitVPVertexShader, cBumpyShinySkinVPDeclaration);
+#else
                 static VertexProgram* pHoloBumpyShinySkinVP = new VertexProgram(
                     cHoloSkinVPARB, cBumpyShinySkinVPDeclaration);
+#endif
                 GLRender_DisableClientState(CLIENT_STATE_NORMAL);
                 pHoloBumpyShinySkinVP->Enable(pSkin, false);
                 if (g_ForceSight)
@@ -1411,20 +1163,29 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 RenderFlat(pPrimitive);
                 GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DISABLE, 0, 0, 0, 0);
                 SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+#ifndef _XBOX
                 if (usearbvertexprograms)
                 {
                     glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS0);
                     glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS1);
                     glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS2);
                 }
+#endif
                 GLRender_EnableClientState(CLIENT_STATE_NORMAL);
+#ifndef _XBOX
                 GLRender::PopAttrib();
+#endif
             }
             else
             {
                 if (bumpyskinpass && pObject->m_fAlpha >= 1.0f)
                 {
                     SetBlendMode(BLEND_ONE, BLEND_ZERO);
+#ifdef _XBOX
+                    GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS0);
+                    GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS1);
+                    GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS2);
+#endif
                     GLRender_DisableClientState(CLIENT_STATE_NORMAL);
                     AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
                         1.0f, 0.0f, 1.0f, 0.0f);
@@ -1442,6 +1203,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                             0, 0, 0, 0);
                         GLRender_EnablePixelShaders(MODEL_SHADER_BUMP_DISABLE, 0, 0, 0, 0);
                     }
+#ifndef _XBOX
                     if (usearbvertexprograms)
                     {
                         glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS0);
@@ -1449,6 +1211,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                         glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS2);
                     }
                     else
+#endif
                     {
                         GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS0);
                         GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS1);
@@ -1456,7 +1219,9 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     }
                     GLRender_EnableClientState(CLIENT_STATE_NORMAL);
                 }
+#ifndef _XBOX
                 GLRender::PopAttrib();
+#endif
                 AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
                     1.0f, 1.0f, 1.0f, 1.0f);
                 if (use3boneskinning)
@@ -1476,12 +1241,24 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     {
                         GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
                         SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+#ifdef _XBOX
+                        GLRender_SetDepthMask(GL_TRUE);
+#else
                         glDepthMask(GL_TRUE);
+#endif
                     }
                 }
                 GLRender_Enable(ENABLE_ALPHA_TEST);
             }
         }
+#ifdef _XBOX
+        else if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases() &&
+            usenewbumpyskin)
+        {
+            GLRender_Disable(ENABLE_ALPHA_TEST);
+            static VertexProgram* skinvp = new VertexProgram(
+                dwNewSkinBumpyVPVertexShader, dwNewSkinBumpyVPVertexShader, cSkinBumpyVPDeclaration);
+#else
         else if (pSkin->m_pMaterial->HasBumpMap() && AurBumpMapCardValidate() &&
             pTriMesh->HasTangentBases() && AurNV2xLevelShadersAvailable() &&
             enablebumpmap && usenewbumpyskin)
@@ -1490,10 +1267,16 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             static VertexProgram* skinvp = new VertexProgram(
                 usearbvertexprograms ? szNewSkinBumpyVPARB : cNewSkinBumpyVP,
                 cSkinBumpyVPDeclaration);
+#endif
             if (bHologram)
             {
+#ifdef _XBOX
+                static VertexProgram* pHoloNewSkinBumpyVP = new VertexProgram(dwHoloSkinVPVertexShader,
+                    dwHoloSkinLitVPVertexShader, cSkinBumpyVPDeclaration);
+#else
                 static VertexProgram* pHoloNewSkinBumpyVP = new VertexProgram(
                     cHoloSkinVPARB, cSkinBumpyVPDeclaration);
+#endif
                 pHoloNewSkinBumpyVP->Enable(pSkin, false);
                 if (g_ForceSight)
                 {
@@ -1519,6 +1302,11 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     vDiffuse = pTriMesh->m_vDiffuse;
                 }
                 List<PartLight*> lstLights(*currentscene->m_pLightManager->GetBumpMapLights());
+#ifdef _XBOX
+                GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS0);
+                GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS1);
+                GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS2);
+#endif
                 if (!g_ForceSight)
                 {
                     GLRender_EnablePixelShaders(MODEL_SHADER_BUMP,
@@ -1543,6 +1331,15 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                         Vector& vColor = lstLights.m_pList[nLight]->m_vColor;
                         vLight = -qOrientation * (vLight - vPosition);
                         Vector vLightColor = cmul(vColor, vDiffuse * diffuseintensity);
+#ifdef _XBOX
+                        if (usebumpdiffuse)
+                            GLRender_SetBumpLightColor(vLightColor, 1.0f);
+                        else
+                        {
+                            Vector vBlack;
+                            GLRender_SetBumpLightColor(vBlack, 1.0f);
+                        }
+#else
                         if (usebumpdiffuse)
                             SetBumpLightColor(vLightColor);
                         else
@@ -1550,6 +1347,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                             Vector vBlack;
                             SetBumpLightColor(vBlack);
                         }
+#endif
                         vLightColor = cmul(lstLights.m_pList[nLight]->m_vColor,
                             (vSpecular * specularintensity) *
                             pSkin->m_pMaterial->GetBumpMapIntensity());
@@ -1560,6 +1358,23 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                             Vector vBlack;
                             GLRender_SetPixelShaderAmbientColor(vBlack, 1.0f);
                         }
+#ifdef _XBOX
+                        float fRadius = lstLights.m_pList[nLight]->m_fRadius;
+                        float afLight[12];
+                        afLight[0] = vLight.m_fX;
+                        afLight[1] = vLight.m_fY;
+                        afLight[2] = vLight.m_fZ;
+                        afLight[3] = 1.0f;
+                        afLight[4] = vEye.m_fX;
+                        afLight[5] = vEye.m_fY;
+                        afLight[6] = vEye.m_fZ;
+                        afLight[7] = 1.0f;
+                        afLight[8] = 1.0f;
+                        afLight[9] = 0.0f;
+                        afLight[10] = AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius * 2.0f);
+                        afLight[11] = 1.0f;
+                        g_pD3DDevice->SetVertexShaderConstantFast(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION, afLight, 3);
+#else
                         AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION,
                             vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
                         AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
@@ -1567,16 +1382,22 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                         float fRadius = lstLights.m_pList[nLight]->m_fRadius;
                         AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
                             1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
+#endif
                         RenderFlat(pPrimitive);
                     }
                     if (lstLights.m_nCount == 0)
                     {
                         skinvp->Enable(pSkin, false);
+#ifdef _XBOX
+                        GLRender_SetBumpLightColor(Vector(), 1.0f);
+#else
                         SetBumpLightColor(Vector());
+#endif
                         GLRender_SetPixelShaderAmbientColor(Vector(), 1.0f);
                         RenderFlat(pPrimitive);
                     }
                 }
+#ifndef _XBOX
                 if (usearbvertexprograms)
                 {
                     glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS0);
@@ -1584,6 +1405,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS2);
                 }
                 else
+#endif
                 {
                     GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS0);
                     GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS1);
@@ -1594,9 +1416,14 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
                 AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
                     1.0f, 1.0f, 1.0f, 1.0f);
+#ifdef _XBOX
+                static VertexProgram* skinDecalPassvp = new VertexProgram(
+                    dwSkinVPVertexShader, dwSkinLitVPVertexShader, cSkinBumpyVPDeclaration);
+#else
                 static VertexProgram* skinDecalPassvp = new VertexProgram(
                     usearbvertexprograms ? szSkinVPARB : cSkinVP,
                     cSkinBumpyVPDeclaration);
+#endif
                 skinDecalPassvp->Enable(pSkin, true);
                 if (enabledecal)
                 {
@@ -1615,6 +1442,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 GLRender_Enable(ENABLE_ALPHA_TEST);
                 currentscene->m_pLightManager->EnableBumpMapLights();
                 SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+#ifndef _XBOX
                 currentscene->DoFog();
                 if (currentscene->m_bFog)
                 {
@@ -1626,8 +1454,10 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     RenderFlat(pPrimitive);
                     GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
                 }
+#endif
             }
         }
+#ifndef _XBOX
         else if (pSkin->m_pMaterial->HasNormalMap() && AurBumpMapCardValidate() &&
             AurNV2xLevelShadersAvailable() && enablebumpmap && usenewbumpyskin)
         {
@@ -1703,6 +1533,23 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                         Vector vBlack;
                         GLRender_SetPixelShaderAmbientColor(vBlack, 1.0f);
                     }
+#ifdef _XBOX
+                    float fRadius = lstLights[nLight]->m_fRadius;
+                    float afLight[12];
+                    afLight[0] = vLight.m_fX;
+                    afLight[1] = vLight.m_fY;
+                    afLight[2] = vLight.m_fZ;
+                    afLight[3] = 1.0f;
+                    afLight[4] = vEye.m_fX;
+                    afLight[5] = vEye.m_fY;
+                    afLight[6] = vEye.m_fZ;
+                    afLight[7] = 1.0f;
+                    afLight[8] = 1.0f;
+                    afLight[9] = 0.0f;
+                    afLight[10] = AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius * 2.0f);
+                    afLight[11] = 1.0f;
+                    g_pD3DDevice->SetVertexShaderConstantFast(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION, afLight, 3);
+#else
                     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION,
                         vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
                     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
@@ -1710,6 +1557,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     float fRadius = lstLights[nLight]->m_fRadius;
                     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
                         1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
+#endif
                     RenderFlat(pPrimitive);
                 }
                 if (lstLights.m_nCount == 0)
@@ -1743,6 +1591,14 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
             }
         }
+#endif
+#ifdef _XBOX
+        else if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
+        {
+            static VertexProgram* skinvp = new VertexProgram(
+                dwSkinBumpyVPVertexShader, dwSkinBumpyLitVPVertexShader,
+                cSkinBumpyVPDeclaration);
+#else
         else if (pSkin->m_pMaterial->HasBumpMap() && AurBumpMapCardValidate() &&
             pTriMesh->HasTangentBases() && AurNV2xLevelShadersAvailable() &&
             enablebumpmap)
@@ -1750,10 +1606,16 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             static VertexProgram* skinvp = new VertexProgram(
                 usearbvertexprograms ? szSkinBumpyVPARB : cSkinBumpyVP,
                 cSkinBumpyVPDeclaration);
+#endif
             if (bHologram)
             {
+#ifdef _XBOX
+                static VertexProgram* pHoloSkinBumpyVP = new VertexProgram(dwHoloSkinVPVertexShader,
+                    dwHoloSkinLitVPVertexShader, cSkinBumpyVPDeclaration);
+#else
                 static VertexProgram* pHoloSkinBumpyVP = new VertexProgram(
                     cHoloSkinVPARB, cSkinBumpyVPDeclaration);
+#endif
                 pHoloSkinBumpyVP->Enable(pSkin, false);
                 if (g_ForceSight)
                 {
@@ -1817,6 +1679,23 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                         Vector vBlack;
                         GLRender_SetPixelShaderAmbientColor(vBlack, 1.0f);
                     }
+#ifdef _XBOX
+                    float fRadius = lstLights[nLight]->m_fRadius;
+                    float afLight[12];
+                    afLight[0] = vLight.m_fX;
+                    afLight[1] = vLight.m_fY;
+                    afLight[2] = vLight.m_fZ;
+                    afLight[3] = 1.0f;
+                    afLight[4] = vEye.m_fX;
+                    afLight[5] = vEye.m_fY;
+                    afLight[6] = vEye.m_fZ;
+                    afLight[7] = 1.0f;
+                    afLight[8] = 1.0f;
+                    afLight[9] = 0.0f;
+                    afLight[10] = AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius * 2.0f);
+                    afLight[11] = 1.0f;
+                    g_pD3DDevice->SetVertexShaderConstantFast(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION, afLight, 3);
+#else
                     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION,
                         vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
                     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
@@ -1824,6 +1703,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     float fRadius = lstLights[nLight]->m_fRadius;
                     AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
                         1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
+#endif
                     RenderFlat(pPrimitive);
                     currentscene->m_pLightManager->EnableBumpMapLights();
                 }
@@ -1834,6 +1714,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     GLRender_SetPixelShaderAmbientColor(Vector(), 1.0f);
                     RenderFlat(pPrimitive);
                 }
+#ifndef _XBOX
                 if (usearbvertexprograms)
                 {
                     glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS0);
@@ -1841,6 +1722,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     glDisableVertexAttribArrayARB(GLRender::VERTEX_ATTRIBUTE_TANGENT_BASIS2);
                 }
                 else
+#endif
                 {
                     GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS0);
                     GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS1);
@@ -1865,10 +1747,20 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     pEnvMap = pSkin->m_pMaterial->m_pEnvMap;
                 if (bHologram)
                 {
+#ifdef _XBOX
+                    static VertexProgram* pHoloCubeMapVP = new VertexProgram(dwHoloSkinVPVertexShader,
+                        dwHoloSkinLitVPVertexShader, cSkinCubeMapVPDeclaration);
+#else
                     static VertexProgram* pHoloCubeMapVP = new VertexProgram(
                         cHoloSkinVPARB, cSkinCubeMapVPDeclaration);
+#endif
+#ifdef _XBOX
+                    static VertexProgram* pHoloSphereMapVP = new VertexProgram(dwHoloSkinVPVertexShader,
+                        dwHoloSkinLitVPVertexShader, cSkinSphereMapVPDeclaration);
+#else
                     static VertexProgram* pHoloSphereMapVP = new VertexProgram(
                         cHoloSkinVPARB, cSkinSphereMapVPDeclaration);
+#endif
                     if (pEnvMap->IsCubeMap())
                         pHoloCubeMapVP->Enable(pSkin, false);
                     else
@@ -1893,6 +1785,10 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                         pProgram = GetSkinCubeMapVP();
                     else
                         pProgram = GetSkinSphereMapVP();
+#ifdef _XBOX
+                    pProgram->Enable(pSkin, true);
+                    RenderEnvironmentMapped(pPrimitive, true, false);
+#else
                     if (AurATIValidate())
                     {
                         if (!currentscene->m_bFog)
@@ -1924,12 +1820,14 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                             pSkin->m_pMaterial->m_pTexture0, 0, 0, 0);
                         currentscene->DoFog();
                     }
+#endif
                 }
             }
             else
             {
                 GLRender::ActivateTextureStage(0);
                 pSkin->m_pMaterial->BindTexture0();
+#ifndef _XBOX
                 if (AurATIValidate() && currentscene->m_bFog)
                 {
                     GLRender_Disable(ENABLE_FOG);
@@ -1942,10 +1840,16 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     afFog[3] = 1.0f;
                     glSetFragmentShaderConstantATI(GL_CON_1_ATI, afFog);
                 }
+#endif
                 if (use3boneskinning)
                 {
+#ifdef _XBOX
+                    static VertexProgram* skin3bonevp = new VertexProgram(
+                        dwSkin3BoneVPVertexShader, dwSkin3BoneLitVPVertexShader, cSkin3BoneVPDeclaration);
+#else
                     static VertexProgram* skin3bonevp = new VertexProgram(
                         cSkin3BoneVP, cSkin3BoneVPDeclaration);
+#endif
                     pProgram = skin3bonevp;
                     pProgram->Enable(pSkin, true);
                 }
@@ -1954,16 +1858,24 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     pProgram = GetSkinVP(bHologram);
                     pProgram->Enable(pSkin, true);
                 }
+#ifdef _XBOX
+                if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
+#else
                 if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases() &&
                         !AurNV2xLevelShadersAvailable())
+#endif
                 {
                     GLRender_SetBlendFunc(BLEND_ONE, BLEND_ZERO);
                     RenderFlat(pPrimitive);
                     GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
                         BLEND_ONE_MINUS_SRC_ALPHA);
                 }
+#ifdef _XBOX
+                else if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
+#else
                 else if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases() &&
                         !AurBumpMapCardValidate())
+#endif
                 {
                     GLRender_SetBlendFunc(BLEND_ONE, BLEND_ZERO);
                     if (g_ForceSight)
@@ -1974,7 +1886,11 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     {
                         GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
                         SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+#ifdef _XBOX
+                        GLRender_SetDepthMask(GL_TRUE);
+#else
                         glDepthMask(GL_TRUE);
+#endif
                     }
                     GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
                         BLEND_ONE_MINUS_SRC_ALPHA);
@@ -2009,21 +1925,30 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     {
                         GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
                         GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+#ifdef _XBOX
+                        GLRender_SetDepthMask(GL_TRUE);
+#else
                         glDepthMask(GL_TRUE);
+#endif
                     }
                 }
+#ifndef _XBOX
                 if (AurATIValidate())
                 {
                     GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE,
                         pSkin->m_pMaterial->m_pTexture0, 0, 0, 0);
                     currentscene->DoFog();
                 }
+#endif
             }
         }
+#ifndef _XBOX
         if (usearbvertexprograms)
             glDisable(GL_VERTEX_PROGRAM_ARB);
         else
+#endif
             GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+#ifndef _XBOX
         SkinDebugEnd((int)pNode->m_pfBoneMap[pNode->m_nBoneMap - 1]);
 #endif
     }
@@ -2070,6 +1995,22 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
                     qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
                     mRotation = qbones[i].getmatrix();
                     Vector& vBoneTranslation = tbones[i];
+#ifdef _XBOX
+                    float afBone[12];
+                    afBone[0] = mRotation.m_vFirst.m_fX;
+                    afBone[1] = mRotation.m_vSecond.m_fX;
+                    afBone[2] = mRotation.m_vThird.m_fX;
+                    afBone[3] = vBoneTranslation.m_fX;
+                    afBone[4] = mRotation.m_vFirst.m_fY;
+                    afBone[5] = mRotation.m_vSecond.m_fY;
+                    afBone[6] = mRotation.m_vThird.m_fY;
+                    afBone[7] = vBoneTranslation.m_fY;
+                    afBone[8] = mRotation.m_vFirst.m_fZ;
+                    afBone[9] = mRotation.m_vSecond.m_fZ;
+                    afBone[10] = mRotation.m_vThird.m_fZ;
+                    afBone[11] = vBoneTranslation.m_fZ;
+                    g_pD3DDevice->SetVertexShaderConstantFast(PartSkin::SKIN_VP_BONES + 3 * nBone, afBone, 3);
+#else
                     nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
                     AurSetVertexProgramParameter4f(nBone,
                         mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
@@ -2077,11 +2018,6 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
                     AurSetVertexProgramParameter4f(++nBone,
                         mRotation.m_vFirst.m_fY, mRotation.m_vSecond.m_fY,
                         mRotation.m_vThird.m_fY, vBoneTranslation.m_fY);
-#ifdef _XBOX
-                    AurSetVertexProgramParameter4f(nBone + 1,
-                        mRotation.m_vFirst.m_fZ, mRotation.m_vSecond.m_fZ,
-                        mRotation.m_vThird.m_fZ, vBoneTranslation.m_fZ);
-#else
                     AurSetVertexProgramParameter4f(++nBone,
                         mRotation.m_vFirst.m_fZ, mRotation.m_vSecond.m_fZ,
                         mRotation.m_vThird.m_fZ, vBoneTranslation.m_fZ);
@@ -2152,8 +2088,11 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
     }
 }
 
-#ifndef _XBOX
+#ifdef _XBOX
+void PartSkin::DrawBumpedOutShell()  // Xbox 0x002D93A0
+#else
 void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
+#endif
 {
     GLRender::SetActiveTexture(0);
     m_pMaterial->m_pTexture3->Bind();
@@ -2208,6 +2147,22 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
                 qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
                 mRotation = qbones[i].getmatrix();
                 Vector& vBoneTranslation = tbones[i];
+#ifdef _XBOX
+                float afBone[12];
+                afBone[0] = mRotation.m_vFirst.m_fX;
+                afBone[1] = mRotation.m_vSecond.m_fX;
+                afBone[2] = mRotation.m_vThird.m_fX;
+                afBone[3] = vBoneTranslation.m_fX;
+                afBone[4] = mRotation.m_vFirst.m_fY;
+                afBone[5] = mRotation.m_vSecond.m_fY;
+                afBone[6] = mRotation.m_vThird.m_fY;
+                afBone[7] = vBoneTranslation.m_fY;
+                afBone[8] = mRotation.m_vFirst.m_fZ;
+                afBone[9] = mRotation.m_vSecond.m_fZ;
+                afBone[10] = mRotation.m_vThird.m_fZ;
+                afBone[11] = vBoneTranslation.m_fZ;
+                g_pD3DDevice->SetVertexShaderConstantFast(SKIN_VP_BONES + 3 * nBone, afBone, 3);
+#else
                 nBone = SKIN_VP_BONES + 3 * nBone;
                 AurSetVertexProgramParameter4f(nBone,
                     mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
@@ -2218,10 +2173,19 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
                 AurSetVertexProgramParameter4f(++nBone,
                     mRotation.m_vFirst.m_fZ, mRotation.m_vSecond.m_fZ,
                     mRotation.m_vThird.m_fZ, vBoneTranslation.m_fZ);
+#endif
             }
         }
         AurSetVertexProgramParameter4f(SKIN_VP_SHELL_HEIGHT,
             m_pAurObject->m_fBumpedOutShellHeight, 0.0f, 0.0f, 1.0f);
+#ifdef _XBOX
+        if (g_pSkinBumpedOutVP == NULL)
+            g_pSkinBumpedOutVP = new VertexProgram(dwSkinBumpedOutVPVertexShader,
+                dwSkinBumpedOutLitVPVertexShader, cSkinBumpedOutVPDeclaration);
+        if (g_pSkinBumpedOutWithTangentVP == NULL)
+            g_pSkinBumpedOutWithTangentVP = new VertexProgram(dwSkinBumpedOutVPVertexShader,
+                dwSkinBumpedOutLitVPVertexShader, cBumpyShinySkinVPDeclaration);
+#endif
         VertexProgram* pProgram;
         if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases() &&
             AurNV2xLevelShadersAvailable())
@@ -2241,7 +2205,11 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
         {
             GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
             GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+#ifdef _XBOX
+            GLRender_SetDepthMask(GL_TRUE);
+#else
             glDepthMask(GL_TRUE);
+#endif
         }
 #ifndef _XBOX
         if (usearbvertexprograms != 0)
@@ -2256,12 +2224,14 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
             GLRender_DisableClientState(CLIENT_STATE_BONE_INDEX);
         }
         GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+#ifdef _XBOX
+        GLRender_SetDepthMask(GL_TRUE);
+#else
         glDepthMask(GL_TRUE);
+#endif
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
     }
 }
-
-#endif
 
 #ifndef _XBOX
 void PartSkin::DrawBumpedOutShell()  // PC 0x004AB160 GOG 0x004AB220
@@ -2275,109 +2245,6 @@ void PartSkin::DrawBumpedOutShell()  // PC 0x004AB160 GOG 0x004AB220
     RenderSkinned(
         (VertexPrimitiveSkinned*)m_pVertexPrimitive->AsVertexPrimitiveSkinned(),
         true);
-}
-#endif
-#ifdef _XBOX
-void PartSkin::DrawBumpedOutShell()  // Xbox 0x002D93A0
-{
-    GLRender::SetActiveTexture(0);
-    ((CAurTexture*)m_pMaterial->m_pTexture3.m_pObject)->Bind();
-    if (m_pMaterial->m_lstBlendSrc.m_nCount > 1)
-    {
-        m_pMaterial->SetBlendingMode(1);
-    }
-
-    VertexPrimitiveSkinned* pPrimitive =
-        m_pVertexPrimitive->AsVertexPrimitiveSkinned();
-    PartSkin* pSkin = pPrimitive->m_pPart->AsPartSkin();
-    MdlNodeSkin* pNode = (MdlNodeSkin*)pSkin->m_pNode;
-    if (pNode->m_nTextureCount != 0)
-    {
-        PartTriMesh* pMeshPart = pSkin->AsPartTriMesh();
-        MdlNodeTriMesh* pTriMesh = 0;
-        if (pMeshPart != 0)
-        {
-            pTriMesh = (MdlNodeTriMesh*)pSkin->m_pNode;
-        }
-        pPrimitive->SetupVertexArraysStandard();
-        static List<Quaternion> qbones(0);
-        static List<Vector> tbones(0);
-        qbones.m_nCount = 0;
-        tbones.m_nCount = 0;
-        Matrix mRotation;
-
-        GLRender_Enable(ENABLE_VERTEX_PROGRAM);
-        GLRender_EnableClientState(CLIENT_STATE_SKIN_WEIGHT);
-        GLRender_EnableClientState(CLIENT_STATE_BONE_INDEX);
-        AurSetVertexProgramParameter4f(SKIN_VP_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
-        AurSetVertexProgramParameter4f(SKIN_VP_FOG, currentscene->m_fFogNear,
-            currentscene->m_fFogFar, currentscene->m_bFog ? 1.0f : 0.0f, 0.5f);
-
-        Part* pPart = pSkin;
-        Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
-        Quaternion qRotation = -pPart->m_qOrientation;
-        while (pPart->m_pParent != 0)
-        {
-            pPart = pPart->m_pParent;
-            vTranslation = vTranslation + qRotation *
-                (-pPart->m_qOrientation * -pPart->m_vPosition);
-            qRotation = qRotation * -pPart->m_qOrientation;
-        }
-        GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
-        for (int i = 0; i < pNode->m_nBoneMap; i++)
-        {
-            int nBone = (int)pNode->m_pfBoneMap[i];
-            if (nBone != -1)
-            {
-                tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
-                qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
-                mRotation = qbones[i].getmatrix();
-                Vector& vBoneTranslation = tbones[i];
-                int nRegister = SKIN_VP_BONES + 3 * nBone;
-                AurSetVertexProgramParameter4f(nRegister,
-                    mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
-                    mRotation.m_vThird.m_fX, vBoneTranslation.m_fX);
-                AurSetVertexProgramParameter4f(++nRegister,
-                    mRotation.m_vFirst.m_fY, mRotation.m_vSecond.m_fY,
-                    mRotation.m_vThird.m_fY, vBoneTranslation.m_fY);
-                AurSetVertexProgramParameter4f(++nRegister,
-                    mRotation.m_vFirst.m_fZ, mRotation.m_vSecond.m_fZ,
-                    mRotation.m_vThird.m_fZ, vBoneTranslation.m_fZ);
-            }
-        }
-        AurSetVertexProgramParameter4f(SKIN_VP_SHELL_HEIGHT,
-            m_pAurObject->m_fBumpedOutShellHeight, 0.0f, 0.0f, 1.0f);
-
-#ifdef _XBOX
-        static VertexProgram* skinBumpedOutVP = new VertexProgram(
-            dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
-            cSkinBumpedOutVPDeclaration);
-        static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
-            dwSkinBumpedOutVPVertexShader, dwSkinBumpedOutLitVPVertexShader,
-            cBumpyShinySkinVPDeclaration);
-#else
-        static VertexProgram* skinBumpedOutVP = new VertexProgram(
-            usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
-            cSkinBumpedOutVPDeclaration);
-        static VertexProgram* skinBumpedOutWithTangentVP = new VertexProgram(
-            usearbvertexprograms ? szSkinBumpedOutVPARB : cSkinBumpedOutVP,
-            cBumpyShinySkinVPDeclaration);
-#endif
-        VertexProgram* pProgram;
-        if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases())
-        {
-            pProgram = skinBumpedOutWithTangentVP;
-        }
-        else
-        {
-            pProgram = skinBumpedOutVP;
-        }
-        pProgram->Enable(pSkin, false);
-        RenderFlat(pPrimitive);
-        GLRender_DisableClientState(CLIENT_STATE_SKIN_WEIGHT);
-        GLRender_DisableClientState(CLIENT_STATE_BONE_INDEX);
-        GLRender_Disable(ENABLE_VERTEX_PROGRAM);
-    }
 }
 #endif
 // PC 0x004AB190 GOG 0x004AB250 Xbox 0x002DA460

@@ -162,11 +162,7 @@ public:
 };
 
 void RenderFlat(VertexPrimitiveFlat* pPrimitive);
-#ifdef _XBOX
-void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool bFog);
-#else
 void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool bVertexProgram,
                               bool bATI);
-#endif
 
 #endif

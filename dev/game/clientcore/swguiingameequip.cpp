@@ -1171,11 +1171,6 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)  // Xbox 0x000FDE70
         }
     }
 }
-
-void CSWGuiInGameItemEntry::RefreshItem()
-{
-    SetItem(m_oidItem, m_bEquipped, m_bUnavailable);
-}
 #endif
 void CSWGuiContainer::HandleInputEvent(int nEvent, int nState)  // PC 0x0071A050 GOG 0x00719D40
 {

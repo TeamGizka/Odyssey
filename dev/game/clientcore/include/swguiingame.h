@@ -522,18 +522,16 @@ public:
     void OnControlEntered(CSWGuiControl* pControl);
     void PopulateItemListBox();
     void MarkNewQuestsObserved();
-#ifndef _XBOX
     void OnControlExited(CSWGuiControl* pControl);
+#ifndef _XBOX
     void OnFilterPressed(CSWGuiControl* pControl);
     void UpdateFilterLabelHighlights();
     int GetNextSortType();
 #endif
     int GetPreviousSortType();
-#ifndef _XBOX
 
     static const unsigned long STRREF_ACTIVE_QUESTS_BY = 49145;
     static const unsigned long STRREF_COMPLETED_QUESTS_BY = 49146;
-#endif
 
     static const unsigned long STRREF_SORT = 42566;
     static const unsigned long STRREF_COMPLETED_QUESTS = 32177;
@@ -548,20 +546,18 @@ public:
     CSWGuiLabel m_lblTitle;
     CSWGuiListBox m_lblItemDescription;
     CSWGuiLabel m_lblDescription;
-#ifdef _XBOX
-    CSWGuiLabel m_lblImage;
-#endif
     CSWGuiListBox m_lbxItems;
 #ifdef _XBOX
-    CSWGuiLabel m_lblSortButton;
-    CSWGuiLabel m_lblSort;
-    CSWGuiLabel m_lblSwapText;
     CSWGuiLabel m_lblSwapButton;
     CSWGuiLabel m_lblStart;
     CSWGuiLabel m_lblExit;
     CSWGuiLabel m_lblXButton;
-    CSWGuiLabel m_lblQuestItems;
+    CSWGuiLabel m_lblMessages;
     CSWGuiLabel m_lblRAnalog;
+    CSWGuiLabel m_lblImage;
+    CSWGuiLabel m_alblBar[6];
+    CSWGuiLabel m_lblCurrentView;
+    CSWGuiLabel m_lblFilter;
 #else
     CSWGuiButton m_btnSwapText;
     CSWGuiButton m_btnExit;
@@ -569,12 +565,12 @@ public:
     CSWGuiButton m_btnFilterName;
     CSWGuiButton m_btnFilterPlanet;
     CSWGuiButton m_btnMessages;
-#endif
     CSWGuiLabel m_alblBar[5];
-#ifdef _XBOX
-    CSWGuiQuestItem* m_pQuestItemPanel;
-#else
+#endif
     CSWGuiInGameMessages* m_pMessagesPanel;
+#ifdef _XBOX
+    Vector m_vTextColor;
+    Vector m_vHighlightColor;
 #endif
     CSWGuiControl* m_pLastSelectedItem;
     CExoArrayList<int> m_aNewQuests;

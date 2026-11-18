@@ -871,7 +871,7 @@ void CSWCAmbientSound::StopAllMusic()
     m_nTimeRemaining = 0;
 }
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 #include "aurconsole.h"
 #include "nwcarea.h"

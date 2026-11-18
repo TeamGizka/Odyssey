@@ -1565,11 +1565,11 @@ bool Output::Write(MaxTree* pTree, char* sFileName)
 {
     if (sFileName)
     {
-        sprintf(sOutputPath, "d:\override\%s", sFileName);
+        sprintf(sOutputPath, "d:\\override\\%s", sFileName);
     }
     else
     {
-        sprintf(sOutputPath, "d:\override\%s.mdl", pTree->m_sName);
+        sprintf(sOutputPath, "d:\\override\\%s.mdl", pTree->m_sName);
     }
     fclose(fopen(sOutputPath, "wb"));
     return false;

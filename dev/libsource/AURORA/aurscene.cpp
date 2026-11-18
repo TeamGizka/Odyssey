@@ -2527,137 +2527,15 @@ void Scene::UpdateEmitters()
 #ifdef _XBOX
 
 char g_bNoSceneRendered = 1;
-extern int g_nSpawnedGobs;
-
-void Scene::Render()  // Xbox 0x002C4A30
-{
-    char sDownSampled[32];
-    char sDecoded[32];
-    char sRead[32];
-    char sGobs[32];
-    char sRoom[128];
-
-    g_bNoSceneRendered = 0;
-    if (m_nAnimationFrame == 0)
-        UpdateEmitters();
-    if (!interleaveanimations || !g_bEnableInterleavedAnimations)
-        m_nAnimationFrame++;
-    g_nDanglyMeshAnimationByMod3Counter =
-        (g_nDanglyMeshAnimationByMod3Counter + 1) % 3;
-
-    if (enablescenerender)
-    {
-        count_render = 0;
-        countvertices = 0;
-        m_SceneRoot.SetPosition(m_vSceneFocus);
-        PartTriMesh::m_bMaterialHasChanged = true;
-        AurTextureMakeCurrent();
-        AurTextureForceControllerUpdate();
-        currentscene = this;
-        ManageSceneBSP(this);
-        if (showvisibilityinfo)
-        {
-            if (m_bIgnoreVisibilityGraph)
-            {
-                AurPostString("ERROR: ignoreVisibilityGraph flag set", 10, 6, 0.5f);
-            }
-            else if (!m_pCurrentRoom)
-            {
-                AurPostString("ERROR: currentRoom hasn't been set", 10, 6, 0.5f);
-            }
-            else if (!m_lstRooms.m_nCount)
-            {
-                AurPostString("ERROR: No rooms in scene", 10, 6, 0.5f);
-            }
-            else
-            {
-                sprintf(sRoom, "Current room:%s", m_pCurrentRoom->m_sName);
-                AurPostString(sRoom, 10, 6, 1.0f);
-                if (!m_pCurrentRoom->m_lstVisibleRooms.m_nCount)
-                {
-                    AurPostString("     Visible:< none visible >", 10, 7, 0.5f);
-                }
-                else
-                {
-                    for (int i = 0; i < m_pCurrentRoom->m_lstVisibleRooms.m_nCount; i++)
-                    {
-                        if (i == 19 && m_pCurrentRoom->m_lstVisibleRooms.m_nCount > 20)
-                        {
-                            sprintf(sRoom, "     Visible:< %d more rooms >",
-                                    m_pCurrentRoom->m_lstVisibleRooms.m_nCount - 19);
-                        }
-                        else if (i > 19)
-
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            sprintf(sRoom, "     Visible:%s",
-                                    m_pCurrentRoom->m_lstVisibleRooms[i]->m_sName);
-                        }
-                        AurPostString(sRoom, 10, i + 7, 0.5f);
-                    }
-                }
-            }
-        }
-        SetDepthFunc(CMP_LEQUAL);
-        GLRender_EnableClientState(CLIENT_STATE_NORMAL);
-        GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
-        GLRender_EnableClientState(CLIENT_STATE_VERTEX);
-        GLRender_Enable(ENABLE_ALPHA_TEST);
-        GLRender_SetAlphaFunc(CMP_GREATER, alphatest);
-        GLRender_Enable(ENABLE_LIGHTING);
-        if (!m_pBSPRoot && !m_lstRooms.m_nCount)
-        {
-            RenderOnlyGobs();
-            currentscene = 0;
-        }
-        else
-        {
-            m_pWindManager->updateTimer(DeltaT);
-            RenderSinglePass();
-            currentscene = 0;
-            if (maxtotaltime < currenttextime + modelloadtime + appendtime)
-                maxtotaltime = currenttextime + modelloadtime + appendtime;
-            if (maxmodelloadtime < modelloadtime)
-                maxmodelloadtime = modelloadtime;
-            modelloadtime = 0;
-            if (maxappendtime < appendtime)
-                maxappendtime = appendtime;
-            appendtime = 0;
-            if (enablehiccups)
-            {
-                sprintf(sDownSampled, "Number down sampled: %i\n", g_nImagesDownSampled);
-                sprintf(sDecoded, "Number decoded: %i\n", g_nImagesDecoded);
-                sprintf(sRead, "Number read in: %i\n", g_nModelsRead);
-                sprintf(sGobs, "Number Gobs Made: %i\n", g_nSpawnedGobs);
-                if (g_nSpawnedGobs)
-                    AurPostString(sGobs, 0, 14, 1.0f);
-                if (g_nImagesDownSampled)
-                    AurPostString(sDownSampled, 0, 12, 1.0f);
-                if (g_nImagesDecoded)
-                    AurPostString(sDecoded, 0, 10, 1.0f);
-                if (g_nModelsRead)
-                    AurPostString(sRead, 0, 8, 1.0f);
-                g_nImagesDownSampled = 0;
-                g_nImagesDecoded = 0;
-                g_nModelsRead = 0;
-                g_nSpawnedGobs = 0;
-            }
-            IsAnimating();
-        }
-    }
-    if (interleaveanimations && g_bEnableInterleavedAnimations)
-        m_nAnimationFrame++;
-}
-#else
-void Scene::Render()  // PC 0x00465500 GOG 0x00465610
-{
-#ifndef _XBOX
-    AurATIValidate();
 #endif
+void Scene::Render()  // PC 0x00465500 GOG 0x00465610 Xbox 0x002C4A30
+{
+#ifdef _XBOX
+    g_bNoSceneRendered = 0;
+#else
+    AurATIValidate();
     g_pLastScene = this;
+#endif
     g_SceneRender_CurrentTime_ms = timeGetTime();
     if (m_nAnimationFrame == 0)
         UpdateEmitters();
@@ -2676,7 +2554,9 @@ void Scene::Render()  // PC 0x00465500 GOG 0x00465610
         AurTextureForceControllerUpdate();
         currentscene = this;
         ManageSceneBSP(this);
+#ifndef _XBOX
         GLRender_PushAttrib(GL_FOG_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
+#endif
         SetDepthFunc(CMP_LEQUAL);
         GLRender_EnableClientState(CLIENT_STATE_NORMAL);
         GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
@@ -2710,7 +2590,6 @@ void Scene::Render()  // PC 0x00465500 GOG 0x00465610
     if (interleaveanimations && g_bEnableInterleavedAnimations)
         m_nAnimationFrame++;
 }
-#endif
 // PC 0x004656F0 GOG 0x00465800 Xbox 0x002C4C20
 void Scene::RenderSinglePass()
 

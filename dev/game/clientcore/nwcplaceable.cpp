@@ -972,10 +972,10 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,  // Xbox 0x0009C6A0
     CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
     CExoString sName;
     int nAction = 0;
+    CSWItemProperty* pProperty;
     int nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
     for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
     {
-        CSWItemProperty* pProperty;
         CSWSItem* pItem = pRepository->ItemListGetItem(i);
         if (pItem != NULL && pItem->m_bPlotObject &&
             pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))

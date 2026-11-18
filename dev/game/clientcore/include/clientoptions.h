@@ -50,11 +50,7 @@ public:
     int SaveOptions();
     int LoadOptions(int bSetAntiAliasing);
     void ApplySoundOptions();
-#ifdef _XBOX
-    void SetMovieShown(const CResRef& sMovie, int bShown);
-#else
     void SetMovieShown(const CExoString& sMovie, int bShown);
-#endif
     int GetMovieShown(const CResRef& sMovie);
     void SetDefaultGameplayOptions();
     void SetDefaultAutopauseOptions();

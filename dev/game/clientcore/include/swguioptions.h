@@ -39,13 +39,14 @@ public:
 
     enum { NUM_OPTIONS = 5 };
     CSWGuiButton m_btnOptions[NUM_OPTIONS];
+    CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
-    CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblSelect;
-    CSWGuiLabel m_lblBack;
-    CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblRAnalog;
+    CSWGuiLabel m_alblBar[4];
     CSWGuiListBox m_lbDescription;
 #else
     enum

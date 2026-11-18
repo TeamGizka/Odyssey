@@ -153,12 +153,14 @@ enum AuroraModelShader
     MODEL_SHADER_FGLOW = 46,
     MODEL_SHADER_FGLOW_LM = 47,
     MODEL_SHADER_FGLOW_EM = 48,
+    MODEL_SHADER_FGLOW_EM_TEXGEN = 49,
     MODEL_SHADER_FGLOW_EMLM = 50,
     MODEL_SHADER_FGLOW_BUMPMAP = 52,
     MODEL_SHADER_FGLOW_BUMPY_SHINY = 53,
     MODEL_SHADER_DESAT = 54,
     MODEL_SHADER_DESAT_LM = 55,
     MODEL_SHADER_DESAT_EM = 56,
+    MODEL_SHADER_DESAT_EM_TEXGEN = 57,
     MODEL_SHADER_DESAT_EMLM = 58,
     MODEL_SHADER_DESAT_BUMPMAP = 60,
     MODEL_SHADER_DESAT_BUMPY_SHINY = 61,
@@ -180,6 +182,7 @@ enum AuroraModelShader
     MODEL_SHADER_HOLO_DISABLE = 77,
     MODEL_SHADER_ILLUM = 78,
     MODEL_SHADER_ILLUM_ENV = 79,
+    MODEL_SHADER_ILLUM_ENV_TEXGEN = 80,
     MODEL_SHADER_ILLUM_NOISE_SUBTRACT = 81,
     MODEL_SHADER_ILLUM_NOISE_ADD = 82,
     MODEL_SHADER_ILLUM_NOISE_MODULATE = 83,
@@ -1921,12 +1924,35 @@ extern unsigned long dwBumpyShinyVPVertexShader[];
 extern unsigned long dwBumpMapVPVertexShader[];
 extern unsigned long dwStandardVPVertexShader[];
 extern unsigned long dwStandardLitVPVertexShader[];
+extern unsigned long dwStandardDirtyVPVertexShader[];
+extern unsigned long dwStandardDirtyEMVPVertexShader[];
+extern unsigned long dwStandardDirtyEMLitVPVertexShader[];
+extern unsigned long dwStandardDirtyEMLMVPVertexShader[];
+extern unsigned long dwStandardDirtyEMLMLitVPVertexShader[];
+extern unsigned long dwStandardDirtyLitVPVertexShader[];
+extern unsigned long dwStandardDirtyLMVPVertexShader[];
+extern unsigned long dwStandardDirtyLMLitVPVertexShader[];
+extern unsigned long dwStandardDirtyLSVPVertexShader[];
+extern unsigned long dwStandardDirtyLSEMVPVertexShader[];
+extern unsigned long dwStandardDirtyLSEMLitVPVertexShader[];
+extern unsigned long dwStandardDirtyLSEMLMVPVertexShader[];
+extern unsigned long dwStandardDirtyLSEMLMLitVPVertexShader[];
+extern unsigned long dwStandardDirtyLSLitVPVertexShader[];
+extern unsigned long dwStandardDirtyLSLMVPVertexShader[];
+extern unsigned long dwStandardDirtyLSLMLitVPVertexShader[];
 extern unsigned long dwEmitterVPVertexShader[];
 extern unsigned long dwMotionBlurredVPVertexShader[];
+extern unsigned long dwMotionBlurredLitVPVertexShader[];
 extern unsigned long dwBumpedOutVPVertexShader[];
 extern unsigned long dwBumpedOutLitVPVertexShader[];
 extern unsigned long dwFogTestVPVertexShader[];
+extern unsigned long dwHeatDistortionVPVertexShader[];
+extern unsigned long dwDreamDistortionVPVertexShader[];
 extern unsigned long dwLightProjectionVPVertexShader[];
+extern unsigned long dwHoloVPVertexShader[];
+extern unsigned long dwHoloLitVPVertexShader[];
+extern unsigned long dwHoloSkinVPVertexShader[];
+extern unsigned long dwHoloSkinLitVPVertexShader[];
 extern unsigned long dwFogOutputVPVertexShader[];
 extern unsigned long dwBumpyShinySkinVPVertexShader[];
 extern unsigned long dwSkinVPVertexShader[];
@@ -1936,6 +1962,7 @@ extern unsigned long dwSkinBumpedOutLitVPVertexShader[];
 extern unsigned long dwSkinMotionBlurVPVertexShader[];
 extern unsigned long dwSkinMotionBlurLitVPVertexShader[];
 extern unsigned long dwSkin3BoneVPVertexShader[];
+extern unsigned long dwSkin3BoneLitVPVertexShader[];
 extern unsigned long dwSkinBumpyVPVertexShader[];
 extern unsigned long dwSkinBumpyLitVPVertexShader[];
 extern unsigned long dwNewSkinBumpyVPVertexShader[];

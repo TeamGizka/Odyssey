@@ -19,9 +19,7 @@ void CSWGuiTitleMovies::HandleInputEvent(int nEvent, int nState)
         case 46:
             g_pAppManager->m_pClientExoApp->SetStartMenuMusicOnMovieEnd(1);
             g_pAppManager->m_pClientExoApp->StartMenuMusic(1, 127, 2);
-#ifndef _XBOX
             g_pAppManager->m_pClientExoApp->EnableMainMenuIdleTimer();
-#endif
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             m_pManager->PopModalPanel();
 #ifdef _XBOX
@@ -77,6 +75,9 @@ CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)  // PC 0x0074BE70 
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblPlayMovie, "LBL_PLAYMOVIE", 1);
     InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblUnlocked, "LBL_UNLOCKED", 1);
+    InitControl(m_lblUnlockedValue, "LBL_UNLOCKED_VALUE", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
 #else
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_alblBar[0], "LBL_BAR1", 1);
@@ -86,24 +87,16 @@ CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)  // PC 0x0074BE70 
     InitControl(m_lblUnlockedValue, "LBL_UNLOCKED_VALUE", 1);
 #endif
     StopLoadFromLayout();
-#ifndef _XBOX
     m_lblUnlocked.SetEnabledFlag(1);
     m_lblUnlockedValue.SetEnabledFlag(1);
-#endif
 
     CSWGuiButton* pProto = m_lbxMovies.m_pProtoItem->AsButton();
     if (pProto != NULL)
     {
-#ifdef _XBOX
-        pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-        pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
-#else
         pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
         pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
         pProto->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
         pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 1);
-#endif
     }
 
 #ifndef _XBOX
@@ -132,11 +125,7 @@ void CSWGuiTitleMovies::PopulateMovies()
     int nOrder = 0;
     CSWGuiExtent cExtent = m_lbxMovies.m_cItemExtent;
 
-#ifdef _XBOX
-    g_pExoBase->GetDirectoryList(&lMovies, "MOVIES:", 13, 0, 0);
-#else
     g_pExoBase->GetDirectoryList(&lMovies, "MOVIES:", RESTYPE_BIK, 0, 0);
-#endif
     CExoString sAlias;
     int i;
     for (i = 1; i < CTlkTable::NUM_CONTENT_PKGS; i++)
@@ -145,11 +134,7 @@ void CSWGuiTitleMovies::PopulateMovies()
         if (g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0).GetLength() > 0)
         {
             sAlias = sAlias + ":movies";
-#ifdef _XBOX
-            g_pExoBase->GetDirectoryList(&lMovies, sAlias, 13, 0, 0);
-#else
             g_pExoBase->GetDirectoryList(&lMovies, sAlias, RESTYPE_BIK, 0, 0);
-#endif
         }
     }
 
@@ -157,9 +142,7 @@ void CSWGuiTitleMovies::PopulateMovies()
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbxMovies.m_pProtoItem;
     int nMovies = lMovies.num;
     CExoString sName;
-#ifndef _XBOX
     int nUnlocked = 0;
-#endif
 
     for (i = 0; i < nMovies; i++)
     {
@@ -188,9 +171,7 @@ void CSWGuiTitleMovies::PopulateMovies()
                 continue;
 #endif
         }
-#ifndef _XBOX
         nUnlocked++;
-#endif
         {
             CSWGuiButton* pButton = new CSWGuiButton;
             pButton->Initialize(cExtent, pProto);
@@ -249,11 +230,9 @@ void CSWGuiTitleMovies::PopulateMovies()
             m_lMovieNames.Insert(sMovie, nInsert);
         }
     }
-#ifndef _XBOX
     CExoString sUnlocked;
     sUnlocked.Format("%d / %d", nUnlocked, nMovies);
     m_lblUnlockedValue.m_cText.m_cParams.SetText(sUnlocked);
-#endif
     m_lbxMovies.AddControls(lControls, 1, 0, 0);
 }
 
@@ -268,7 +247,7 @@ void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)
         {
             int nMovieResult = 0;
             g_pAppManager->m_pClientExoApp->PlayMovie(*psMovie, nMovieResult,
-                                                      0, 1);
+                                                      1, 1);
         }
     }
 }

@@ -126,6 +126,9 @@ public:
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblPlayMovie;
+    CSWGuiLabel m_lblUnlocked;
+    CSWGuiLabel m_lblUnlockedValue;
+    CSWGuiLabel m_alblBar[1];
 #else
     CSWGuiButton m_btnBack;
     CSWGuiLabel m_alblBar[3];

@@ -4122,9 +4122,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_ControlObject(
     unsigned long oidObject)
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
-#ifndef _XBOX
     pApp->SetCharacterChangeInProgress(0);
-#endif
     CSWCCreature* pOldCreature = pApp->GetPlayerCreature();
     pApp->SetPlayerCreature(oidObject);
     if (pOldCreature != NULL)
@@ -7591,8 +7589,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiQuickbarItemUseCount()
     }
     return 1;
 }
-#ifndef _XBOX
-int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0 GOG 0x006A45D0
+int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0 GOG 0x006A45D0 Xbox 0x00074480
 {
     unsigned char nMode = ReadCHAR(8);
     if (MessageReadOverflow(1))
@@ -7642,7 +7639,6 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0 GOG
     }
     return 0;
 }
-#endif
 int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x006A4910 GOG 0x006A46F0 Xbox 0x000745A0
 {
     unsigned char nMode = ReadCHAR(8);
@@ -11121,48 +11117,3 @@ int CSWCMessage::HandleServerToPlayerMessage(unsigned char* pMessage,
     return bResult;
 }
 
-#ifdef _XBOX
-
-int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // Xbox 0x00074480
-{
-    unsigned char nMode = ReadBYTE(8);
-    if (MessageReadOverflow(1))
-    {
-        return 0;
-    }
-
-    if (nMode == GUI_INVENTORY_RECORD_ADD)
-    {
-        unsigned long nSlot = ReadDWORD(32);
-        if (MessageReadOverflow(1))
-        {
-            return 0;
-        }
-        CSWCItem* pItem;
-        if (!HandleServerToPlayerItemUpdate_Add(1, &pItem))
-        {
-            return 0;
-        }
-        pItem->m_nEquipSlot = nSlot;
-        pItem->m_nInventorySlot = INVENTORY_SLOT_INVALID;
-        CSWCCreature* pCreature =
-            g_pAppManager->m_pClientExoApp->GetPlayerCreature();
-        if (pCreature != NULL)
-        {
-            if (pCreature->GetEquippedItemID(nSlot) != pItem->GetId())
-                pCreature->EquipToInventorySlot(nSlot, pItem, 0);
-        }
-        return 1;
-    }
-    else if (nMode == GUI_INVENTORY_RECORD_DELETE)
-    {
-        ReadDWORD(32);
-        if (MessageReadOverflow(1))
-        {
-            return 0;
-        }
-        return 1;
-    }
-    return 0;
-}
-#endif

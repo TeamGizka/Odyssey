@@ -467,7 +467,11 @@ public:
 
     void PopulateStore();
     int CheckBreakdownFilter(CSWSItem*, CSWSCreature*, int);
+#ifdef _XBOX
+    void CloseCreateItem();
+#else
     void CloseCreateItem(CSWGuiControl*);
+#endif
     void UpdateBreakdownFilters();
     void UpdateCreateFilters();
     unsigned long GetItemBuyValue(CSWSItem*);
@@ -476,7 +480,11 @@ public:
     void BuyItemCallback(CSWGuiControl*);
     void SetDescription(const CExoString&);
     void PopulateInventoryItemListBox();
+#ifdef _XBOX
+    void OnBreakdownFilterPicked();
+#else
     void OnBreakdownFilterPicked(CSWGuiControl*);
+#endif
     void OnControlStoreAButton(CSWGuiControl*);
     void OnControlEntered(CSWGuiControl*);
     void SellItem(CSWSItem*);
@@ -492,11 +500,18 @@ public:
     void PopulateStoreItemListBox();
     void ShowBuyGUI();
     void SetItemList();
+#ifdef _XBOX
+    void OnCreateFilterPicked();
+    void OnControlXButton();
+#else
     void OnCreateFilterPicked(CSWGuiControl*);
     void OnControlXButton(CSWGuiControl*);
+#endif
     void InitializeStoreType();
 #ifdef _XBOX
     void UpdateItemSlots(int nTopItem, int nSelectedItem);
+    void SelectPreviousItem();
+    void SelectNextItem();
 #endif
     CSWGuiCreateItem(CSWGuiManager*, unsigned long);
     virtual void OnPanelAdded();
@@ -597,8 +612,13 @@ public:
     void PopulateStoreItemListBox();
     void ShowBuyGUI();
     void SetItemList();
+#ifdef _XBOX
+    void OnCreateFilterPicked();
+    void OnControlXButton();
+#else
     void OnCreateFilterPicked(CSWGuiControl*);
     void OnControlXButton(CSWGuiControl*);
+#endif
     void InitializeStoreType();
     CSWGuiCreateMedicalItem(CSWGuiManager*, unsigned long);
     virtual void OnPanelAdded();

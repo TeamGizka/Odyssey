@@ -4724,7 +4724,11 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions.SetSize(nEntry + 1);
     lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_IMPLANT_NAME_REGEN);
     lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuSwapImplantRegen;
+#ifdef _XBOX
+    lstActions[nEntry].m_oidTarget = (unsigned long)this;
+#else
     lstActions[nEntry].m_oidTarget = GetId();
+#endif
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_REGEN;
     lstActions[nEntry].m_resIcon = "ii_implant1_001";
     lstActions[nEntry].m_bRevertActionBar = 1;
@@ -4732,7 +4736,11 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions.SetSize(nEntry + 1);
     lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_IMPLANT_NAME_STR);
     lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuSwapImplantStr;
+#ifdef _XBOX
+    lstActions[nEntry].m_oidTarget = (unsigned long)this;
+#else
     lstActions[nEntry].m_oidTarget = GetId();
+#endif
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_STR;
     lstActions[nEntry].m_resIcon = "ii_implant3_003";
     lstActions[nEntry].m_bRevertActionBar = 1;
@@ -4740,7 +4748,11 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions.SetSize(nEntry + 1);
     lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_IMPLANT_NAME_AGI);
     lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuSwapImplantAgi;
+#ifdef _XBOX
+    lstActions[nEntry].m_oidTarget = (unsigned long)this;
+#else
     lstActions[nEntry].m_oidTarget = GetId();
+#endif
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_AGI;
     lstActions[nEntry].m_resIcon = "ii_implant2_002";
     lstActions[nEntry].m_bRevertActionBar = 1;
@@ -4748,7 +4760,11 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions.SetSize(nEntry + 1);
     lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_IMPLANT_NAME_END);
     lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuSwapImplantEnd;
+#ifdef _XBOX
+    lstActions[nEntry].m_oidTarget = (unsigned long)this;
+#else
     lstActions[nEntry].m_oidTarget = GetId();
+#endif
     lstActions[nEntry].m_nAction = ACTION_SWAP_IMPLANT_END;
     lstActions[nEntry].m_resIcon = "ii_implant3_004";
     lstActions[nEntry].m_bRevertActionBar = 1;
@@ -4783,7 +4799,11 @@ void CSWCCreature::GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActio
         lstActions.SetSize(nEntry + 1);
         lstActions[nEntry].m_sName = pFeat->GetNameText();
         lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuAction;
+#ifdef _XBOX
+        lstActions[nEntry].m_oidTarget = (unsigned long)this;
+#else
         lstActions[nEntry].m_oidTarget = m_nId;
+#endif
         lstActions[nEntry].m_nAction = nSpell | CSWGuiInterfaceAction::SPELL_ACTION_MASK;
         lstActions[nEntry].m_resIcon = pFeat->m_cIcon;
         lstActions[nEntry].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
@@ -4822,7 +4842,11 @@ void CSWCCreature::GetDroidConfusion(CExoArrayList<CSWGuiInterfaceAction>& lstAc
         lstActions.SetSize(nEntry + 1);
         lstActions[nEntry].m_sName = pFeat->GetNameText();
         lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuAction;
+#ifdef _XBOX
+        lstActions[nEntry].m_oidTarget = (unsigned long)pTarget;
+#else
         lstActions[nEntry].m_oidTarget = pTarget->m_nId;
+#endif
         lstActions[nEntry].m_nAction = nSpell | CSWGuiInterfaceAction::SPELL_ACTION_MASK;
         lstActions[nEntry].m_resIcon = pFeat->m_cIcon;
         lstActions[nEntry].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
@@ -5024,7 +5048,11 @@ void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions
             lstActions[nEntry].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(nNameStrRef);
             lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuSelectBehavior;
             lstActions[nEntry].m_bRevertActionBar = 1;
+#ifdef _XBOX
+            lstActions[nEntry].m_oidTarget = (unsigned long)this;
+#else
             lstActions[nEntry].m_oidTarget = GetId();
+#endif
             switch (nAIState)
             {
             case AI_STATE_AGGRESSIVE:
@@ -5128,6 +5156,12 @@ void CSWCCreature::CreateHostileItemEntry(
         CExoString sName;
         pItem->m_sLocalizedName.GetString(
             g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
+#ifdef _XBOX
+        if (pItem->m_nStackSize > 1)
+        {
+            sName.Format("%s (%d)", sName.CStr(), pItem->m_nStackSize);
+        }
+#endif
         int nNum = lstActions.num;
         lstActions.SetSize(nNum + 1);
         lstActions[nEntry].m_sName = sName;
@@ -5167,7 +5201,11 @@ void CSWCCreature::CreateHostileItemEntry(
         lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
         lstActions[nEntry].m_pfnAction =
             static_cast<PFNMENUACTION>(&CSWCCreature::PartyMenuUseHostileItem);
+#ifdef _XBOX
+        lstActions[nEntry].m_oidTarget = (unsigned long)pTarget;
+#else
         lstActions[nEntry].m_oidTarget = pTarget->GetId();
+#endif
         lstActions[nEntry].m_resIcon = pItem->GetIcon();
 #ifndef _XBOX
         int nStackSize = pItem->m_nStackSize;
@@ -9042,7 +9080,6 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot)  // Xbox 0x0004
 
         CSWItemProperty* pProperty;
         CSWBaseItem* pBaseItem;
-        int bUsable;
         if (pItem->m_bPlotObject)
         {
             if (!pItem->GetPropertyByType(&pProperty,
@@ -9071,12 +9108,18 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot)  // Xbox 0x0004
                 return 0;
             if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_STIMULANT ||
                 pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
+                pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC ||
                 pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_MEDPAC)
             {
-                bUsable = !pItem->GetPropertyByType(&pProperty,
-                         CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0) ||
-                       (unsigned char)pProperty->m_bUseable;
-                return bUsable ? pCreature->CanUseItem(pItem, 1) : 0;
+                if (pItem->GetPropertyByType(&pProperty,
+                        CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0) &&
+                    !(unsigned char)pProperty->m_bUseable)
+                    return 0;
+                if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_MEDPAC)
+                    return g_pAppManager->GetClientExoApp()->GetSWParty()->PartyHasRace(
+                        CSWRace::CRACE_DROID) != 0;
+                return g_pAppManager->GetClientExoApp()->GetSWParty()->PartyHasRace(
+                    CSWRace::CRACE_HUMAN) != 0;
             }
             if (!pItem->GetPropertyByType(&pProperty,
                                           CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0) ||
@@ -9124,38 +9167,48 @@ void CSWCCreature::CreateUsableItemEntry(  // Xbox 0x00046C50
         pItem->m_sLocalizedName.GetString(
             g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
         if (pItem->GetStackSize() > 1)
-            sName.Format("%s (%s) (%d)", sName.CStr(),
-                g_pAppManager->GetClientExoApp()->GetGUIString(
-                    CSWGuiInterfaceAction::STRREF_SELF).CStr(),
-                pItem->m_nStackSize);
-        else
+        {
+            if (bEquipped)
+            {
+                sName.Format("%s (%s) (%d)", sName.CStr(),
+                    g_pAppManager->GetClientExoApp()->GetGUIString(
+                        CSWGuiInterfaceAction::STRREF_SELF).CStr(),
+                    pItem->GetStackSize());
+            }
+            else
+            {
+                sName.Format("%s (%d)", sName.CStr(), pItem->GetStackSize());
+            }
+        }
+        else if (bEquipped)
+        {
             sName.Format("%s (%s)", sName.CStr(),
                 g_pAppManager->GetClientExoApp()->GetGUIString(
                     CSWGuiInterfaceAction::STRREF_SELF).CStr());
+        }
+        else
+        {
+            sName.Format("%s ", sName.CStr());
+        }
+        int nTokenStart = sName.Find('<', 0);
+        int nBraceStart = sName.Find('{', 0);
+        if (nTokenStart != -1 || nBraceStart != -1)
+        {
+            g_pSWTlkTable->ParseStr(sName,
+                g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter(),
+                0, 1);
+        }
         int nNum = lstActions.num;
         lstActions.SetSize(nNum + 1);
         lstActions[nEntry].m_sName = sName;
         lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
-        lstActions[nEntry].m_pfnAction =
-            static_cast<PFNMENUACTION>(&CSWCCreature::PartyMenuUseItem);
+        lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::PartyMenuUseItem;
         lstActions[nEntry].m_oidTarget = (unsigned long)this;
         lstActions[nEntry].m_resIcon = pItem->GetIcon();
 
-        int nItemType = pItem->GetBaseItem()->m_nItemType;
-        if ((nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
-             nItemType == CSWBaseItem::ITEM_TYPE_MEDPAC) &&
-            GetStats()->GetCurrentHitPoints() >= GetStats()->GetMaxHitPoints())
-        {
-            CSWSCreature* pCreature = GetServerObject() != NULL ?
-                GetServerObject()->AsSWSCreature() : NULL;
-            if (pCreature == NULL || !pCreature->m_nPoisonState)
-            {
-                lstActions[nEntry].m_bEnabled = 0;
-                lstActions[nEntry].m_nDisabledReason =
-                    CSWGuiInterfaceAction::DISABLED_REASON_FULL_HEALTH;
-            }
-        }
-        else if (bEquipped)
+        CSWBaseItem* pBaseItem = pItem->GetBaseItem();
+        if (bEquipped &&
+            pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48)
         {
             CSWItemProperty* pProperty;
             pItem->GetPropertyByType(&pProperty,
@@ -9228,10 +9281,17 @@ void CSWCCreature::GetNonCombatFeatsSkills(CExoArrayList<CSWGuiInterfaceAction>&
                 GetEquippedItemID(INVENTORY_SLOT_CREATUREARMOUR));
             if (pItem != NULL && pItem->GetBaseItem() != NULL)
             {
-                bHasStealthDevice =
+                bHasStealthDevice |=
                     pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_STEALTH_DEVICE;
             }
-            if (bHasStealthDevice)
+            if (pCreature->GetStats()->HasFeat(CSWFeat::FEAT_PERSONAL_CLOAKING_SHIELD))
+                bHasStealthDevice |= 1;
+            int bHasCamouflage = 0;
+            if (pCreature->GetStats()->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE, 0) ||
+                pCreature->GetStats()->HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE, 0) ||
+                pCreature->GetStats()->HasSpell(0, CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE, 0))
+                bHasCamouflage = 1;
+            if (bHasStealthDevice || bHasCamouflage)
             {
                 sName = g_pAppManager->GetClientExoApp()->GetGUIString(XBOX_STRREF_STEALTH) +
                         " (" +
@@ -9256,14 +9316,18 @@ void CSWCCreature::GetFriendlyInterfaceActions(  // Xbox 0x00047610
     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     int nAction = lstActions.num;
-    lstActions.SetSize(nAction + 1);
-    lstActions[nAction].m_sName =
-        g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_DIALOG);
-    lstActions[nAction].m_pfnAction =
-        (PFNMENUACTION)&CSWCCreature::ActionInitiateDialog;
-    lstActions[nAction].m_oidTarget = (unsigned long)this;
-    lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_DIALOG;
-    lstActions[nAction].m_resIcon = "i_dialog";
+    CSWSCreature* pCreature = GetServerCreature();
+    if (pCreature != NULL && pCreature->m_bConfused == 0)
+    {
+        lstActions.SetSize(nAction + 1);
+        lstActions[nAction].m_sName =
+            g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_DIALOG);
+        lstActions[nAction].m_pfnAction =
+            (PFNMENUACTION)&CSWCCreature::ActionInitiateDialog;
+        lstActions[nAction].m_oidTarget = (unsigned long)this;
+        lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_DIALOG;
+        lstActions[nAction].m_resIcon = "i_dialog";
+    }
     unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
     CSWSPlayer* pServerPC = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayer);
     unsigned long oidServerPC = pServerPC->m_oidPCObject;
@@ -9426,6 +9490,8 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,
     }
 }
 
+#endif
+#if defined(_XBOX) && defined(_DEBUG)
 #include "aurconsole.h"
 char* overrideheadturnbone(char* szArgs)
 {

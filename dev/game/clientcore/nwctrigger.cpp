@@ -637,7 +637,11 @@ void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
         lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
         lstActions[nAction].m_nAction = nSpell | CSWGuiInterfaceAction::SPELL_ACTION_MASK;
         lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuHostileAction;
+#ifdef _XBOX
+        lstActions[nAction].m_oidTarget = (unsigned long)this;
+#else
         lstActions[nAction].m_oidTarget = m_nId;
+#endif
         if (nForceBodyLevel != -1)
         {
             int nPercent = 0;

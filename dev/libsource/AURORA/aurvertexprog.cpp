@@ -1072,9 +1072,27 @@ unsigned long cMotionBlurredVPDeclaration[] =
 #include "vsh/StandardVP.h"
 #include "vsh/StandardLitVP.h"
 
+#include "vsh/StandardDirtyVP.h"
+#include "vsh/StandardDirtyEMVP.h"
+#include "vsh/StandardDirtyEMLitVP.h"
+#include "vsh/StandardDirtyEMLMVP.h"
+#include "vsh/StandardDirtyEMLMLitVP.h"
+#include "vsh/StandardDirtyLitVP.h"
+#include "vsh/StandardDirtyLMVP.h"
+#include "vsh/StandardDirtyLMLitVP.h"
+#include "vsh/StandardDirtyLSVP.h"
+#include "vsh/StandardDirtyLSEMVP.h"
+#include "vsh/StandardDirtyLSEMLitVP.h"
+#include "vsh/StandardDirtyLSEMLMVP.h"
+#include "vsh/StandardDirtyLSEMLMLitVP.h"
+#include "vsh/StandardDirtyLSLitVP.h"
+#include "vsh/StandardDirtyLSLMVP.h"
+#include "vsh/StandardDirtyLSLMLitVP.h"
+
 #include "vsh/EmitterVP.h"
 
 #include "vsh/MotionBlurredVP.h"
+#include "vsh/MotionBlurredLitVP.h"
 
 unsigned long cBumpedOutVPDeclaration[] =
 {
@@ -1096,6 +1114,8 @@ unsigned long cFogTestVPDeclaration[] =
 };
 
 #include "vsh/FogTestVP.h"
+#include "vsh/HeatDistortionVP.h"
+#include "vsh/DreamDistortionVP.h"
 
 unsigned long cLightProjectionVPDeclaration[] =
 {
@@ -1145,6 +1165,10 @@ unsigned long cSkinVPDeclaration[] =
 
 #include "vsh/SkinVP.h"
 #include "vsh/SkinLitVP.h"
+#include "vsh/HoloVP.h"
+#include "vsh/HoloLitVP.h"
+#include "vsh/HoloSkinVP.h"
+#include "vsh/HoloSkinLitVP.h"
 
 unsigned long cSkinBumpedOutVPDeclaration[] =
 {
@@ -1186,6 +1210,7 @@ unsigned long cSkin3BoneVPDeclaration[] =
 };
 
 #include "vsh/Skin3BoneVP.h"
+#include "vsh/Skin3BoneLitVP.h"
 
 unsigned long cSkinBumpyVPDeclaration[] =
 {

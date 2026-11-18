@@ -998,10 +998,12 @@ int CSWCMessage::SendPlayerToServerCheat_Kill(unsigned long oidTarget, unsigned 
     }
     return SendPlayerToServerMessage(15, 7, pBuffer, nSize);
 }
+#if !defined(_XBOX) || defined(_DEBUG)
 int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006CD0A0 GOG 0x006CCDA0
 {
     return SendPlayerToServerMessage(15, 4, NULL, 0);
 }
+#endif
 
 // Dead code: not in the PC executable
 int CSWCMessage::SendPlayerToServerCheat_ToggleCombatDebugging(int bEnable)
@@ -1893,6 +1895,8 @@ int CSWCMessage::SendPlayerToServerInventory_Use(unsigned long oidObject)
 
 #include "aurconsole.h"
 #include "nwrules.h"
+#endif
+#if defined(_XBOX) && defined(_DEBUG)
 
 char* NetProfile(char* szArgs)
 {
@@ -1981,7 +1985,7 @@ int CSWCMessage::SendPlayerToServerCheat_RainOfCows()
     }
     return SendPlayerToServerMessage(15, 13, pBuffer, nSize);
 }
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 int CSWCMessage::SendPlayerToServerCheat_DebugMode(int bDebugMode)
 {
@@ -2170,7 +2174,7 @@ char* visualeffect(char* szArgs)
 ConsoleFunc ConFvisualeffect("visualeffect", visualeffect);
 #endif
 
-#ifdef _XBOX
+#if defined(_XBOX) && defined(_DEBUG)
 
 #include "nwcarea.h"
 #include "nwcmodule.h"

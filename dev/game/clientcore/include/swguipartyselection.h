@@ -116,9 +116,7 @@ public:
     void OnEnter(CSWGuiControl* pControl);
 #ifdef _XBOX
     // PC 0x005EE1C0 GOG 0x005EE1A0
-    void OnExit(CSWGuiControl*)
-    {
-    }
+    void OnExit(CSWGuiControl* pControl);
 #else
     void OnExit(CSWGuiControl* pControl);
 #endif

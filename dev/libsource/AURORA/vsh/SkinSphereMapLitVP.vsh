@@ -1,2 +1,2 @@
 #include "SkinSphereMapVP.vsh"
-#include "Lights3.vsh"
+#include "Lights2.vsh"

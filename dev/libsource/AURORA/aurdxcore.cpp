@@ -6537,20 +6537,6 @@ void GLRender::CopyFrameBufferTexture(D3DBaseTexture* pSource, D3DTexture* pTarg
     pDepthStencil->Release();
 }
 
-static DWORD g_dwHeatDistortionVertexShader[] =
-{
-    0x000a2078,
-    0x00000000, 0x022df400, 0xa8001157, 0xf830f81c,
-    0x00000000, 0x062de000, 0xfc0013fc, 0x24380000,
-    0x00000000, 0x022de000, 0xfc0013fc, 0x28401804,
-    0x00000000, 0x02201455, 0xa8001068, 0xd440c854,
-    0x00000000, 0x0047401a, 0x08355800, 0x20a0e800,
-    0x00000000, 0x02001200, 0x0800106e, 0x60a0f84c,
-    0x00000000, 0x02001600, 0x08001002, 0xe0a02854,
-    0x00000000, 0x02001600, 0x08001156, 0xe0a0285c,
-    0x00000000, 0x02000000, 0x08001069, 0x10a0c85c,
-    0x00000000, 0x0087601a, 0xc400286a, 0xf0b0e801
-};
 static unsigned long g_adwHeatDistortionDeclaration[] =
 {
     D3DVSD_STREAM(0),
@@ -6569,7 +6555,7 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)  // Xbox 0x002A7D10
     if (!IsProgramNV(cm_pHeatDistortionVertexProg))
     {
         GenPrograms(1, &cm_pHeatDistortionVertexProg);
-        DrawElementsInShadow(cm_pHeatDistortionVertexProg, g_dwHeatDistortionVertexShader,
+        DrawElementsInShadow(cm_pHeatDistortionVertexProg, dwHeatDistortionVPVertexShader,
                              g_adwHeatDistortionDeclaration);
     }
     BindVertexProgram(cm_pHeatDistortionVertexProg);
@@ -6634,18 +6620,6 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)  // Xbox 0x002A7D10
     SetTextureStageFlag(3, 0);
 }
 
-static DWORD g_dwDreamDistortionVertexShader[] =
-{
-    0x00082078,
-    0x00000000, 0x0020001b, 0x0836106c, 0x2070f800,
-    0x00000000, 0x0020061b, 0x0836106c, 0x2070f818,
-    0x00000000, 0x0020121b, 0x0836106c, 0x2070f848,
-    0x00000000, 0x0020141b, 0x0836106c, 0x2070f850,
-    0x00000000, 0x0020161b, 0x0836106c, 0x2070f858,
-    0x00000000, 0x0020181b, 0x0836106c, 0x2070f860,
-    0x00000000, 0x0647401b, 0xc4361bff, 0x1078e800,
-    0x00000000, 0x0087601b, 0xc400286c, 0x3070e801
-};
 static unsigned long g_adwDreamDistortionDeclaration[] =
 {
     D3DVSD_STREAM(0),
@@ -6675,7 +6649,7 @@ void GLRender::RenderDreamDistortion(D3DTexture* pFrame, D3DTexture* pTarget)  /
     if (!IsProgramNV(cm_pDreamDistortionVertexProg))
     {
         GenPrograms(1, &cm_pDreamDistortionVertexProg);
-        DrawElementsInShadow(cm_pDreamDistortionVertexProg, g_dwDreamDistortionVertexShader,
+        DrawElementsInShadow(cm_pDreamDistortionVertexProg, dwDreamDistortionVPVertexShader,
                              g_adwDreamDistortionDeclaration);
     }
     g_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
@@ -6754,7 +6728,7 @@ void GLRender::RenderFury(D3DTexture* pTarget)  // Xbox 0x002A8490
     if (!IsProgramNV(cm_pDreamDistortionVertexProg))
     {
         GenPrograms(1, &cm_pDreamDistortionVertexProg);
-        DrawElementsInShadow(cm_pDreamDistortionVertexProg, g_dwDreamDistortionVertexShader,
+        DrawElementsInShadow(cm_pDreamDistortionVertexProg, dwDreamDistortionVPVertexShader,
                              g_adwFuryDeclaration);
     }
     g_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);

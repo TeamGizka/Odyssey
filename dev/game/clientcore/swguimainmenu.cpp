@@ -298,6 +298,9 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
     {
+#ifdef _XBOX
+        m_fIdleTime = 0.0f;
+#endif
         switch (nEvent)
         {
         case 40:
@@ -308,9 +311,7 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
                 m_view3D.SetEnabledFlag(1);
                 m_btnLoadGame.SetEnabledFlag(1);
                 m_btnMovies.SetEnabledFlag(1);
-#ifndef _XBOX
                 m_btnMusic.SetEnabledFlag(1);
-#endif
                 m_btnNewGame.SetEnabledFlag(1);
                 m_btnOptions.SetEnabledFlag(1);
 #ifdef _XBOX

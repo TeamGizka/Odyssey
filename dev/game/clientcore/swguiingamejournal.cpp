@@ -21,6 +21,11 @@ unsigned long CSWGuiInGameJournal::s_pnSortLabels[4] =
 {
     32173, 32174, 32175, 32176
 };
+#ifdef _XBOX
+static const unsigned long STRREF_SORTED_BY_DATE = 50676;
+static const unsigned long STRREF_SORTED_BY_NAME = 234;
+static const unsigned long STRREF_SORTED_BY_PLANET = 50679;
+#endif
 // PC 0x0069B540 GOG 0x0069B2F0 Xbox 0x000EF010
 void CGuiInGame::SetJournalDone(int bDone)
 {
@@ -80,11 +85,7 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     m_pLastSelectedItem = 0;
-#ifdef _XBOX
-    m_pQuestItemPanel = new CSWGuiQuestItem(m_pManager);
-#else
     m_pMessagesPanel = new CSWGuiInGameMessages(m_pManager);
-#endif
 
 #ifdef _XBOX
     StartLoadFromLayout("journal_x");
@@ -95,19 +96,24 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     }
 #endif
 #ifdef _XBOX
-    InitControl(m_lblSwapText, "LBL_SWAPTEXT", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbxItems, "LB_ITEMS", 1);
+    InitControl(m_lblItemDescription, "LBL_ITEM_DESCRIPTION", 1);
+    InitControl(m_lblFilter, "LBL_FILTER", 1);
     InitControl(m_lblSwapButton, "LBL_SWAPBUTTON", 1);
-    InitControl(m_lblQuestItems, "LBL_QUESTITEMS", 1);
+    InitControl(m_lblMessages, "LBL_MESSAGES", 1);
     InitControl(m_lblXButton, "LBL_XBUTTON", 1);
     InitControl(m_lblStart, "LBL_START", 1);
     InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblImage, "LBLA_IMAGE", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lbxItems, "LB_ITEMS", 1);
-    InitControl(m_lblItemDescription, "LBL_ITEM_DESCRIPTION", 1);
-    InitControl(m_lblSort, "LBL_SORT", 1);
-    InitControl(m_lblSortButton, "LBL_SORTBUTTON", 1);
     InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_lblCurrentView, "LBL_CURRENTVIEW", 1);
 #else
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbxItems, "LB_ITEMS", 1);
@@ -126,16 +132,15 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
 #endif
     StopLoadFromLayout();
 
+#ifdef _XBOX
+    m_vTextColor = CGuiInGame::COLOR_NEW_TEXT;
+    m_vHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+#endif
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lblItemDescription.m_pProtoItem;
     m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbxItems.m_pProtoItem;
-#ifdef _XBOX
-    pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-    pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-#else
     pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-#endif
     pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
 
     CSWGuiListBox* pItems = &m_lbxItems;
@@ -172,36 +177,41 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
 #endif
     SetActiveControl(pItems, 0);
 
+#ifdef _XBOX
+    CExoString sTitle;
+    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bJournalDone)
+    {
+        sTitle = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_COMPLETED_QUESTS_BY);
+    }
+    else
+    {
+        sTitle = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_ACTIVE_QUESTS_BY);
+    }
+    unsigned long nSortLabel = (unsigned long)-1;
+    switch (g_nJournalSortType)
+    {
+    case 0:
+        nSortLabel = STRREF_SORTED_BY_DATE;
+        break;
+    case 1:
+        nSortLabel = STRREF_SORTED_BY_NAME;
+        break;
+    case 3:
+        nSortLabel = STRREF_SORTED_BY_PLANET;
+        break;
+    }
+    sTitle = sTitle + " " +
+             g_pAppManager->GetClientExoApp()->GetGUIString(nSortLabel);
+    m_lblCurrentView.m_cText.m_cParams.SetText(sTitle);
+#else
     int nNextSort = g_nJournalSortType + 1;
     if (nNextSort >= 4)
     {
         nNextSort = 0;
     }
-#ifndef _XBOX
     UpdateFilterLabelHighlights();
-#endif
     CExoString sSort = g_pTlkTable->GetSimpleString(STRREF_SORT) + " " +
                        g_pTlkTable->GetSimpleString(s_pnSortLabels[nNextSort]);
-#ifdef _XBOX
-    m_lblSort.m_cText.m_cParams.SetText(sSort);
-
-    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bJournalDone)
-    {
-        m_lblSwapText.m_cText.m_cParams.SetStrRef(STRREF_ACTIVE_QUESTS);
-        sSort =
-            g_pTlkTable->GetSimpleString(STRREF_COMPLETED_QUESTS) + " - " +
-            g_pTlkTable->GetSimpleString(s_pnSortLabels[g_nJournalSortType]);
-        m_lblTitle.m_cText.m_cParams.SetText(sSort);
-    }
-    else
-    {
-        m_lblSwapText.m_cText.m_cParams.SetStrRef(STRREF_COMPLETED_QUESTS);
-        sSort =
-            g_pTlkTable->GetSimpleString(STRREF_ACTIVE_QUESTS) + " - " +
-            g_pTlkTable->GetSimpleString(s_pnSortLabels[g_nJournalSortType]);
-        m_lblTitle.m_cText.m_cParams.SetText(sSort);
-    }
-#else
     if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bJournalDone)
     {
         m_btnSwapText.m_cText.m_cParams.SetStrRef(STRREF_COMPLETED_QUESTS_BY);
@@ -218,23 +228,17 @@ CSWGuiInGameJournal::~CSWGuiInGameJournal()
 {
     m_lblItemDescription.ClearItems();
     m_lbxItems.ClearItems();
-#ifdef _XBOX
-    delete m_pQuestItemPanel;
-#else
     if (m_pMessagesPanel != 0)
     {
         delete m_pMessagesPanel;
         m_pMessagesPanel = 0;
     }
-#endif
 }
-#ifndef _XBOX
 // PC 0x0069B640 GOG 0x0069B3F0
 void CSWGuiInGameJournal::OnControlExited(CSWGuiControl* pControl)
 {
     ((CSWGuiJournalItemEntry*)pControl)->SetEncouraged(0);
 }
-#endif
 // PC 0x0069B650 GOG 0x0069B400 Xbox 0x000EF410
 CSWJournalEntry* CSWGuiInGameJournal::GetQuestEntryAt(int nIndex)
 {
@@ -335,7 +339,6 @@ void CSWGuiInGameJournal::OnControlEntered(CSWGuiControl* pControl)
                 }
                 sText = g_pTlkTable->GetSimpleString(nStrRef) + ":\n" + sText;
             }
-#ifndef _XBOX
             if (sText.Find('<', 0) != -1 || sText.Find('{', 0) != -1)
             {
                 g_pSWTlkTable->ParseStr(
@@ -343,7 +346,6 @@ void CSWGuiInGameJournal::OnControlEntered(CSWGuiControl* pControl)
                     (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
                     0, 1);
             }
-#endif
             m_lblDescription.m_cText.m_cParams.SetText(sText);
         }
     }
@@ -389,12 +391,9 @@ void CSWGuiInGameJournal::PopulateItemListBox()
             pItem->Initialize(extent, pProto);
             pItem->AddEvent(
                 0, this, (PFNGUIEVENT)&CSWGuiInGameJournal::OnControlEntered);
-#ifndef _XBOX
             pItem->AddEvent(
                 1, this, (PFNGUIEVENT)&CSWGuiInGameJournal::OnControlExited);
-#endif
             pEntry->m_lsName.GetString(nLanguage, &sText, 0);
-#ifndef _XBOX
             if (sText.Find('<', 0) != -1 || sText.Find('{', 0) != -1)
             {
                 g_pSWTlkTable->ParseStr(
@@ -402,7 +401,6 @@ void CSWGuiInGameJournal::PopulateItemListBox()
                     (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
                     0, 1);
             }
-#endif
             pItem->m_cText.m_cParams.SetText(sText);
             if (pEntry->m_bNew)
             {
@@ -467,128 +465,94 @@ void CSWGuiInGameJournal::Draw(float fElapsed)
 }
 // PC 0x0069C740 GOG 0x0069C4F0
 #ifdef _XBOX
+// Xbox 0x000F0430
 void CSWGuiInGameJournal::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
     {
+        if (m_pManager->PanelExists(m_pMessagesPanel))
+        {
+            return;
+        }
         CSWCJournal* pJournal =
             g_pAppManager->GetClientExoApp()->GetQuestJournal();
         switch (nEvent)
         {
-        case 43:
-        {
-            int (CSWCJournal::*pfnGetSortBy)();
-            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetJournalDone())
-            {
-                pfnGetSortBy = &CSWCJournal::GetDoneSortBy;
-            }
-            else
-            {
-                pfnGetSortBy = &CSWCJournal::GetActiveSortBy;
-            }
-            g_nJournalSortType = (pJournal->*pfnGetSortBy)() + 1;
-            if (g_nJournalSortType >= 4)
-            {
-                g_nJournalSortType = 0;
-            }
-            void (CSWCJournal::*pfnSetSortBy)(int);
-            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetJournalDone())
-            {
-                pfnSetSortBy = &CSWCJournal::SetDoneSortBy;
-            }
-            else
-            {
-                pfnSetSortBy = &CSWCJournal::SetActiveSortBy;
-            }
-            (pJournal->*pfnSetSortBy)(g_nJournalSortType);
-            int nNextSort = g_nJournalSortType + 1;
-            if (nNextSort >= 4)
-            {
-                nNextSort = 0;
-            }
-            CExoString sSort =
-                g_pTlkTable->GetSimpleString(STRREF_SORT) + " " +
-                g_pTlkTable->GetSimpleString(s_pnSortLabels[nNextSort]);
-#ifdef _XBOX
-            m_lblSort.m_cText.m_cParams.SetText(sSort);
-#endif
-            sSort = g_pTlkTable->GetSimpleString(
-                        g_pAppManager->GetClientExoApp()->GetInGameGui()
-                                ->GetJournalDone()
-                            ? STRREF_COMPLETED_QUESTS
-                            : STRREF_ACTIVE_QUESTS) +
-                    " - " +
-                    g_pTlkTable->GetSimpleString(
-                        s_pnSortLabels[g_nJournalSortType]);
-            m_lblTitle.m_cText.m_cParams.SetText(sSort);
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-        }
-        break;
         case 42:
         {
             MarkNewQuestsObserved();
-            int (CSWCJournal::*pfnGetSortBy)();
-            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetJournalDone())
+            int bDone = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bJournalDone;
+            int nSortBy;
+            if (bDone)
             {
-                pfnGetSortBy = &CSWCJournal::GetDoneSortBy;
+                nSortBy = pJournal->GetDoneSortBy();
             }
             else
             {
-                pfnGetSortBy = &CSWCJournal::GetActiveSortBy;
+                nSortBy = pJournal->GetActiveSortBy();
             }
-            g_nJournalSortType = (pJournal->*pfnGetSortBy)();
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->SetJournalDone(
-                !g_pAppManager->GetClientExoApp()->GetInGameGui()
-                     ->GetJournalDone());
+            nSortBy++;
+            if (nSortBy == 2)
+            {
+                nSortBy = 3;
+            }
+            else if (nSortBy >= 4)
+            {
+                CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
+                nSortBy = 0;
+                bDone = !bDone;
+                pClientApp->GetInGameGui()->SetJournalDone(bDone);
+            }
+            g_nJournalSortType = nSortBy;
+            if (bDone)
+            {
+                pJournal->SetDoneSortBy(nSortBy);
+            }
+            else
+            {
+                pJournal->SetActiveSortBy(nSortBy);
+            }
             PopulateItemListBox();
             CExoString sTitle;
-            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetJournalDone())
+            if (bDone)
             {
-#ifdef _XBOX
-                m_lblSwapText.m_cText.m_cParams.SetStrRef(STRREF_ACTIVE_QUESTS);
-#else
-                m_btnSwapText.m_cText.m_cParams.SetStrRef(STRREF_ACTIVE_QUESTS);
-#endif
-                sTitle = g_pTlkTable->GetSimpleString(STRREF_COMPLETED_QUESTS) + " - " +
-                         g_pTlkTable->GetSimpleString(
-                             s_pnSortLabels[g_nJournalSortType]);
-                m_lblTitle.m_cText.m_cParams.SetText(sTitle);
+                sTitle = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_COMPLETED_QUESTS_BY);
             }
             else
             {
-#ifdef _XBOX
-                m_lblSwapText.m_cText.m_cParams.SetStrRef(STRREF_COMPLETED_QUESTS);
-#else
-                m_btnSwapText.m_cText.m_cParams.SetStrRef(STRREF_COMPLETED_QUESTS);
-#endif
-                sTitle = g_pTlkTable->GetSimpleString(STRREF_ACTIVE_QUESTS) + " - " +
-                         g_pTlkTable->GetSimpleString(
-                             s_pnSortLabels[g_nJournalSortType]);
-                m_lblTitle.m_cText.m_cParams.SetText(sTitle);
+                sTitle = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_ACTIVE_QUESTS_BY);
             }
+            unsigned long nSortLabel = (unsigned long)-1;
+            switch (g_nJournalSortType)
+            {
+            case 0:
+                nSortLabel = STRREF_SORTED_BY_DATE;
+                break;
+            case 1:
+                nSortLabel = STRREF_SORTED_BY_NAME;
+                break;
+            case 3:
+                nSortLabel = STRREF_SORTED_BY_PLANET;
+                break;
+            }
+            sTitle = sTitle + " " +
+                     g_pAppManager->GetClientExoApp()->GetGUIString(nSortLabel);
+            m_lblCurrentView.m_cText.m_cParams.SetText(sTitle);
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         }
         break;
         case 41:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            m_pManager->AddPanel(m_pQuestItemPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+            m_pManager->AddPanel(m_pMessagesPanel, CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
+            m_pManager->SendPanelToBack(m_pMessagesPanel);
+            m_pManager->SendPanelToBack(this);
             break;
         case 40:
         case 45:
         case 46:
-#ifdef _XBOX
             if (g_pAppManager->GetClientExoApp()->GetInGameGui()->HideSWInGameGui() != 0)
-#else
-        case 223:
-            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->HideSWInGameGui(
-                    0) != 0)
-#endif
             {
-#ifdef _XBOX
                 g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME);
-#else
-                g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME, 1);
-#endif
             }
             break;
         case 57:
@@ -670,46 +634,7 @@ void CSWGuiInGameJournal::HandleInputEvent(int nEvent, int nState)
 #ifdef _XBOX
 void CSWGuiInGameJournal::OnPanelAdded()
 {
-    CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
-    int nSortType = g_nJournalSortType;
-    if (g_bOverrideJournalSortType != 0)
-    {
-        nSortType = 0;
-        g_bOverrideJournalSortType = 0;
-    }
-    void (CSWCJournal::*pfnSetSortBy)(int);
-    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bJournalDone)
-    {
-        pfnSetSortBy = &CSWCJournal::SetDoneSortBy;
-    }
-    else
-    {
-        pfnSetSortBy = &CSWCJournal::SetActiveSortBy;
-    }
-    (pJournal->*pfnSetSortBy)(nSortType);
-    int nNextSort = nSortType + 1;
-    if (nNextSort >= 4)
-    {
-        nNextSort = 0;
-    }
-    CExoString sSort = g_pTlkTable->GetSimpleString(STRREF_SORT) + " " +
-                       g_pTlkTable->GetSimpleString(s_pnSortLabels[nNextSort]);
-#ifdef _XBOX
-    m_lblSort.m_cText.m_cParams.SetText(sSort);
-#endif
-    sSort = g_pTlkTable->GetSimpleString(
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bJournalDone
-                    ? STRREF_COMPLETED_QUESTS
-                    : STRREF_ACTIVE_QUESTS) +
-            " - " + g_pTlkTable->GetSimpleString(s_pnSortLabels[nSortType]);
-    m_lblTitle.m_cText.m_cParams.SetText(sSort);
     PopulateItemListBox();
-#ifndef _XBOX
-    m_btnExit.HandleMouseOver(0);
-#endif
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
 }
 #else
 void CSWGuiInGameJournal::OnPanelAdded()
@@ -739,12 +664,10 @@ void CSWGuiInGameJournal::OnPanelAdded()
 // PC 0x0069CA60 GOG 0x0069C810
 void CSWGuiInGameJournal::OnPanelRemoved()
 {
-#ifndef _XBOX
     if (m_pManager->PanelExists(m_pMessagesPanel))
     {
         m_pMessagesPanel->SetToBeRemoved(0);
     }
-#endif
     MarkNewQuestsObserved();
 }
 
