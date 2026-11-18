@@ -80,6 +80,7 @@ int enablevisibilitytest = 0;
 int countvisibilityculls = 0;
 #ifdef _XBOX
 int visibilitytestindex;
+int countvisibilitytests;
 #endif
 int dogobrender = 1;
 int showlightpriorityinfo = 0;
@@ -3590,6 +3591,32 @@ void Scene::DoGobBuckets()
     LightManager* pLightManager = m_pLightManager;
     pLightManager->m_lstPreviousFadeLights.m_nCount = 0;
     pLightManager->m_lstPreviousFadeIntensities.m_nCount = 0;
+#ifdef _XBOX
+    countvisibilitytests = 0;
+    GLRender_SetDepthMask(GL_FALSE);
+    GLRender_SetColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    List<Gob*> lstVisibilityGobs(gobbucket);
+    int nGob = gobbucket.m_nCount;
+    while (nGob--)
+    {
+        Gob* pVisibilityGob = gobbucket.m_pList[nGob];
+        if (pVisibilityGob->m_bHasGeometry == 1)
+        {
+            g_pD3DDevice->BeginVisibilityTest();
+            for (int nStage = 0; nStage < 4; nStage++)
+            {
+                g_pD3DDevice->SetTexture(nStage, NULL);
+            }
+            pVisibilityGob->RenderVisibilityBounds();
+            g_pD3DDevice->EndVisibilityTest(visibilitytestindex);
+            g_lstVisibilityTests.Add(visibilitytestindex);
+            pVisibilityGob->m_nVisibilityTest = visibilitytestindex;
+            visibilitytestindex++;
+        }
+    }
+    GLRender_SetDepthMask(GL_TRUE);
+    GLRender_SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+#endif
 
     int nPasses = 1;
     if (g_ForceSight)
@@ -3623,8 +3650,14 @@ void Scene::DoGobBuckets()
                 if (i >= gobbucket.m_nCount)
                     continue;
             }
+#ifdef _XBOX
+            if (pGob->m_bHasGeometry && pGob->IsVisibilityTested())
+                g_pD3DDevice->GetVisibilityTestResult(pGob->m_nVisibilityTest,
+                    (UINT*)&pGob->m_nVisiblePixels, NULL);
+#else
             if (!pGob->VisibilityCheck())
                 continue;
+#endif
 
             if (rendertransparentcharacters && pGob->m_pModel &&
                 bool(pGob->m_pModel->m_Classification.m_bCharacter))
@@ -3699,6 +3732,32 @@ void Scene::DoHologramGobBuckets()
     LightManager* pLightManager = m_pLightManager;
     pLightManager->m_lstPreviousFadeLights.m_nCount = 0;
     pLightManager->m_lstPreviousFadeIntensities.m_nCount = 0;
+#ifdef _XBOX
+    countvisibilitytests = 0;
+    GLRender_SetDepthMask(GL_FALSE);
+    GLRender_SetColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    List<Gob*> lstVisibilityGobs(g_listHologramBucket);
+    int nGob = g_listHologramBucket.m_nCount;
+    while (nGob--)
+    {
+        Gob* pVisibilityGob = g_listHologramBucket.m_pList[nGob];
+        if (pVisibilityGob->m_bHasGeometry == 1)
+        {
+            g_pD3DDevice->BeginVisibilityTest();
+            for (int nStage = 0; nStage < 4; nStage++)
+            {
+                g_pD3DDevice->SetTexture(nStage, NULL);
+            }
+            pVisibilityGob->RenderVisibilityBounds();
+            g_pD3DDevice->EndVisibilityTest(visibilitytestindex);
+            g_lstVisibilityTests.Add(visibilitytestindex);
+            pVisibilityGob->m_nVisibilityTest = visibilitytestindex;
+            visibilitytestindex++;
+        }
+    }
+    GLRender_SetDepthMask(GL_TRUE);
+    GLRender_SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+#endif
 
     int i = g_listHologramBucket.m_nCount;
     while (i--)
@@ -3713,8 +3772,14 @@ void Scene::DoHologramGobBuckets()
             if (i >= g_listHologramBucket.m_nCount)
                 continue;
         }
+#ifdef _XBOX
+        if (pGob->m_bHasGeometry && pGob->IsVisibilityTested())
+            g_pD3DDevice->GetVisibilityTestResult(pGob->m_nVisibilityTest,
+                (UINT*)&pGob->m_nVisiblePixels, NULL);
+#else
         if (!pGob->VisibilityCheck())
             continue;
+#endif
 
         if (rendertransparentcharacters && pGob->m_pModel &&
             bool(pGob->m_pModel->m_Classification.m_bCharacter))

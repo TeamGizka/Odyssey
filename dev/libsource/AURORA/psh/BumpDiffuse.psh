@@ -1,0 +1,10 @@
+xps.1.1 
+tex t0 
+tex t1 
+dp3 r0, c4, t1 
+mov_x4 r0.rgba, r0_bx2 
+mov r0, r0_sat 
+mov r1, t1 
+dp3 r0.rgb, r1_bx2, t0_bx2 
+mul r0, r0_sat, c2 
+xfc fog.a, r0.rgb, fog.rgb, zero, zero, zero, r0.a;

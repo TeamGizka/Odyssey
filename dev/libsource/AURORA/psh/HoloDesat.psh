@@ -1,0 +1,9 @@
+xps.1.1
+def c7, 0.3, 0.59, 0.11, 0.75
+tex t0
+tex t1
+dp3 r0.rgb, t0, c7
+mul r0.rgb, r0, t1
+dp3 r0.rgb, r0, c7
++mul r0.a, t1.a, c7.a
+xfc fog.a, r0.rgb, fog.rgb, zero, zero, zero, r0.a

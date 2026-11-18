@@ -1,0 +1,8 @@
+xps.1.1
+tex t0
+tex t1
+add r1.rgb, v0, c1_bx2
++add r1.a, v0.a, c1_bx2.a
+xmma discard.rgb, discard.rgb, r0.rgb, r1, t0, r1, t1
++mov r0.a, t0.a
+xfc fog.a, r0.rgb, fog.rgb, zero, zero, zero, r0.a

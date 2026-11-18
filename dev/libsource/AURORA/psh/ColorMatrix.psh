@@ -1,0 +1,11 @@
+xps.1.1
+def c4, 1, 0, 0, 0
+def c5, 0, 1, 0, 0
+def c6, 0, 0, 1, 0
+def c0, 0, 0, 0, 1
+tex t0
+xdd r0, r1, t0, c1, t0, c2
+xmma discard, discard, r0, r0, c4, r1, c5
+dp3 r1, t0, c3
+mad r0.rgb, r1, c6, r0
++add r0.a, r0.a, c0.a

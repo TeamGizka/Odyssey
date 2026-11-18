@@ -60,6 +60,10 @@ CSWGuiStartScreen::CSWGuiStartScreen(CSWGuiManager* pManager)  // Xbox 0x000B4BA
     StartLoadFromLayout("startscreen");
 #endif
     InitControl(m_lblStartText, "LBL_STARTTEXT", 1);
+#ifdef _XBOX
+    InitControl(m_lblGameLogo, "LBL_GAMELOGO", 1);
+    InitControl(m_lblLegalText, "LEGALTXT", 1);
+#endif
     StopLoadFromLayout();
 
     CSWGuiTextParams* pParams = &m_lblStartText.m_cText.m_cParams;

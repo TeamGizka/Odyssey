@@ -1,0 +1,13 @@
+xps.1.1
+tex t0
+tex t1
+tex t2
+tex t3
+xdd r0, r1, t0_bx2, t1_bx2, t0_bx2, t2_bx2
+xdm r1, r0, r1.b, r1.b, r0, c1
+xdd r0.rgb, r1.rgb, r0, v1, v1, c0
+add r0, v0, r0
+dp3 r0.rgb, t3, r0
+dp3 r1.rgb, r1.a, r1
+add r0, r0, r1
+xfc fog.a, r0.rgb, fog.rgb, zero, zero, zero, r0.a;

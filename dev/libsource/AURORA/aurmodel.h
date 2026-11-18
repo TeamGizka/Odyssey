@@ -609,7 +609,11 @@ public:
     bool IsEmitterBounds(); bool CheckEventCallBack(float fDelay, bool bRepeat);
 #endif
     int m_bSkipHierarchyAnimation;
+#ifdef _XBOX
+    int m_nVisibilityTest;
+#else
     int m_bSkipAnimation;
+#endif
 };
 
 CAurObject* NewCAurObject(char* sModel, char* sName, FILE* pModelFile, FILE* pVertexFile);

@@ -1,0 +1,6 @@
+xps.1.1
+tex t0
+tex t1
+tex t2
+add r0, t0, t1
+add r0, r0, t2

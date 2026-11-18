@@ -416,7 +416,23 @@ const char* spawn(char* sCommand)
 
 bool Gob::IsVisibilityTested()
 {
-    return (IsInCutscene() || IsAlternateShadowCaster() || IsAllRooms() || IsEmitterBounds()) ? false : true;
+    if (IsInCutscene())
+    {
+        return false;
+    }
+    if (IsAlternateShadowCaster())
+    {
+        return false;
+    }
+    if (IsAllRooms())
+    {
+        return false;
+    }
+    if (IsEmitterBounds())
+    {
+        return false;
+    }
+    return true;
 }
 #endif
 
@@ -3881,7 +3897,11 @@ Gob::Gob(char* sName)
     m_pLightContainer = new CAurObjectLightContainer;
     m_nVisiblePixels = 1;
     m_bSkipHierarchyAnimation = 0;
+#ifdef _XBOX
+    m_nVisibilityTest = 0;
+#else
     m_bSkipAnimation = 0;
+#endif
     gobs.Insert(this, FindGobIdx(m_sName));
 }
 // PC 0x0045F850 GOG 0x0045F960 Xbox 0x002C1C90

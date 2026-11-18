@@ -1,0 +1,12 @@
+xps.1.1
+def c0, 1, 0, 0, 0
+def c1, 0, 1, 0, 0
+def c2, 0, 0, 1, 0
+tex t0
+texreg2ar t1, t0
+texreg2gb t2, t0
+texreg2gb t3, t0
+xmma discard.rgb, discard.rgb, r0.rgb, t1, c0, t2, c1
++xmma discard.a, discard.a, r0.a, t1.a, c0.a, t2.a, c1.a
+mad r0.rgb, t3, c2, r0
++mov r0.a, v0.a

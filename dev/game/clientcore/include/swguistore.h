@@ -3,6 +3,9 @@
 
 #include "swguicontrol.h"
 #include "swgui.h"
+#ifdef _XBOX
+#include "swguiingameequip.h"
+#endif
 class CSWGuiControl;
 class CSWGuiStoreItemEntry;
 class CSWGuiManager;
@@ -57,12 +60,22 @@ public:
     CSWGuiLabel m_lblItemValue;
     CSWGuiLabel m_lblStock;
     CSWGuiLabel m_lblStockValue;
+#ifdef _XBOX
+    CSWGuiLabel m_lblOnHand;
+    CSWGuiLabel m_lblOnHandValue;
+    CSWGuiLabel m_alblBar[5];
+    CSWGuiLabel m_lblFilter;
+    CSWGuiLabel m_alblFilter[STORE_FILTER_COUNT];
+    CSWGuiLabel m_lblFilterY;
+#endif
     CSWGuiLabel m_lblRanalog;
     CSWGuiLabel m_lblCredits;
     CSWGuiLabel m_lblCreditsValue;
     CSWGuiLabel m_lblBuySell;
+#ifndef _XBOX
     CSWGuiListBox m_lbxStoreItems;
     CSWGuiListBox m_lbxInventoryItems;
+#endif
     CSWGuiListBox m_lbxDescription;
 #ifndef _XBOX
     CSWGuiButton m_btnCancel;
@@ -79,9 +92,35 @@ public:
     int m_nSelectedEntry;
     unsigned long m_nStoreId;
     unsigned long m_nCreatureId;
-#ifndef _XBOX
     unsigned char m_nFilter;
     unsigned char m_bInventoryDirty;
+#ifdef _XBOX
+    enum { NUM_ITEM_ROWS = 8 };
+    struct ItemListEntry
+    {
+        unsigned long m_oidItem;
+        CSWGuiHandler m_pHandler;
+        char m_nCharacter;
+    };
+    int m_bBuying;
+    CExoArrayList<ItemListEntry> m_lInventoryItems;
+    CExoArrayList<ItemListEntry> m_lStoreItems;
+    CSWGuiStoreItemEntry m_aItemRows[NUM_ITEM_ROWS];
+    int m_nTopItem;
+    int m_nSelectedItem;
+    int m_nPreviousSelectedItem;
+    int GetNumItemEntries()
+    {
+        return m_bBuying ? m_lStoreItems.num : m_lInventoryItems.num;
+    }
+    ItemListEntry* GetItemEntries()
+    {
+        return m_bBuying ? m_lStoreItems.element : m_lInventoryItems.element;
+    }
+    void SetItemRows(int nTopItem, int nSelectedItem);
+    void SelectNextItem();
+    void SelectPreviousItem();
+    void OnNextFilter();
 #endif
     int CheckFilter(CSWSItem* pItem);
     void UpdateFilters();

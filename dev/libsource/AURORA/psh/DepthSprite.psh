@@ -1,0 +1,6 @@
+xps.1.1 
+tex t0 
+tex t1 
+texm3x2pad t2, t1_hl 
+texm3x2depth t3, t1_hl 
+mul r0, t0, v0 

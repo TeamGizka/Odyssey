@@ -1,0 +1,5 @@
+xps.1.1
+tex t0
+tex t1
+xmma discard.rgb, discard.rgb, r0.rgb, t0, c0, t1, c1
++mov r0.a, c0.a

@@ -556,13 +556,14 @@ void GLRender::CopyVolumeToTextureMemory(void* pImage, D3DLOCKED_BOX* pLock, int
         bLinear = 1;
         nFormat = 1;
     }
-    if (nFormat == 0)
+    switch (nFormat)
     {
+    case 0:
         XGSwizzleBox(pImage, 0, 0, NULL, pLock->pBits, nWidth, nHeight, nDepth, NULL, 4);
-    }
-    else if (nFormat == 10)
-    {
+        break;
+    case 10:
         memcpy(pLock->pBits, pImage, nWidth * nHeight * nDepth * 4);
+        break;
     }
 }
 
@@ -1584,6 +1585,7 @@ float g_afConvolutionWeights[25] =
 D3DMATERIAL8 g_Material;
 DWORD g_hGrassVertexShader;
 
+#ifndef _XBOX
 char g_szPixelShaderTexture[] =
     "xps.1.1\n"
     "tex t0\n"
@@ -1850,6 +1852,7 @@ char g_szPixelShaderWhite[] =
     "xps.1.1\n"
     "mov r0, 1-zero\n"
     "xfc 1-zero, r0.rgb, fog.rgb, zero, zero, zero, r0.a;\n";
+#endif
 
 void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,  // Xbox 0x0029D010
                                  int nIndex)
@@ -2239,7 +2242,8 @@ void GLRender::InitExtensions()  // Xbox 0x0029DEB0
     InitAttenuationTexture();
 }
 
-int GLRender::InitializePixelShaders(D3DDevice* pDevice)  // Xbox 0x0031AA30
+#ifndef _XBOX
+int GLRender::InitializePixelShaders(D3DDevice* pDevice)
 {
     LPXGBUFFER pCompiledShader;
     LPXGBUFFER pErrors;
@@ -2642,6 +2646,7 @@ int GLRender::InitializePixelShaders(D3DDevice* pDevice)  // Xbox 0x0031AA30
 
     return 1;
 }
+#endif
 
 void GLRender::SetPerspectiveTransform(double fFieldOfView, double fAspect,  // Xbox 0x0029B8E0
                               double fNearClip, double fFarClip)
@@ -4614,7 +4619,7 @@ void GLRender::DisableCombiners(CAurTexture* pTexture)  // Xbox 0x002A3120
 
 int envmapon;
 int tex1on;
-unsigned long g_ahPixelShader[28];
+unsigned long g_ahPixelShader[NUM_PIXEL_SHADERS];
 bool g_bRendererShutDown;
 int g_nLightBackUpDepth;
 List<D3DLIGHT8> g_lstLightBackUp;
@@ -4915,7 +4920,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             pTexture2->Bind();
             SetActiveTexture(3);
             pTexture3->Bind();
-            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NORMAL_MAP_LIGHT]);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_BUMP_SELF_SHADOW]);
             g_pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
             return;
 
@@ -5631,7 +5636,7 @@ void GLRender::RenderOverlayConvolutionPyramid(D3DTexture* pTexture)  // Xbox 0x
     g_pD3DDevice->SetRenderTarget(pBackBuffer, pDepthStencil);
     SetBlendFunc(Aurora::BLEND_SRC_ALPHA, Aurora::BLEND_ONE);
     g_pD3DDevice->SetVertexShader(g_hConvolutionVertexShader);
-    g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_FOUR_TEXTURE_ADD]);
+    g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_TEXTURE]);
     D3DDevice_SetStreamSource(0, (D3DVertexBuffer*)pPoolManager->GetPool(nPool), sizeof(ConvolutionVertex));
     g_pD3DDevice->SetTexture(0, apTextures[0]);
     SetTextureStageFlag(0, 0);
@@ -5657,7 +5662,7 @@ void GLRender::RenderOverlayConvolutionPyramid(D3DTexture* pTexture)  // Xbox 0x
     g_pD3DDevice->SetTextureStageState(3, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
     g_pD3DDevice->SetTextureStageState(3, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
     g_pD3DDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
-    g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_THREE_TEXTURE_ADD]);
+    g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_TEXTURE]);
     g_pD3DDevice->SetTexture(0, apTextures[4]);
     SetTextureStageFlag(0, 0);
     g_pD3DDevice->SetTexture(1, apTextures[5]);

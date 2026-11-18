@@ -1,0 +1,10 @@
+xps.1.1
+tex t0
+texm3x3pad t1, t0_bx2
+texm3x3pad t2, t0_bx2
+texm3x3vspec t3, t0_bx2
+dp3 r0.rgb, t3, c7
++mov r0.a, t3.a
+mul r0.rgb, r0, c7.a
++mul r0.a, r0.a, c6.a
+xfc fog.a, r0.rgb, fog.rgb, zero, zero, zero, r0.a

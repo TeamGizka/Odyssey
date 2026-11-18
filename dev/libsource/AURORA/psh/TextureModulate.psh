@@ -1,0 +1,4 @@
+xps.1.1 
+tex t0 
+mul r0, t0, v0 
+xfc fog.a, r0.rgb, fog.rgb, zero, zero, zero, r0.a;
