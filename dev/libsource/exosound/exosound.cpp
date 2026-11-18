@@ -455,7 +455,11 @@ void CExoSound::SetDialogVolume(float fVolume)
     pInternal = m_pInternal;
     if (pInternal != NULL)
     {
+#ifdef _XBOX
+        pInternal->SetDialogVolume(max(0.0f, min(fVolume, 1.0f)), 0);
+#else
         pInternal->SetDialogVolume(max(0.01f, min(fVolume, 1.0f)), 0);
+#endif
         m_pInternal->ApplyNewVolume(0);
     }
 }

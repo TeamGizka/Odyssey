@@ -168,8 +168,8 @@ int CResTPC::OnResourceServiced()
     if (pTPC->m_nDataSize == 0)
     {
 #ifdef _XBOX
-        nHeight = pTPC->m_nHeight;
         nWidth = pTPC->m_nWidth;
+        nHeight = pTPC->m_nHeight;
         if (nHeight / nWidth == 6)
         {
             nDepth = 6;

@@ -1268,7 +1268,9 @@ struct CSWSCreatureAppearanceInfo
     unsigned char m_nAppearanceHead;
 };
 
+#ifndef _XBOX
 #pragma pack(push, 4)
+#endif
 class CSWSCreature : public CSWSObject
 {
 public:
@@ -1916,16 +1918,6 @@ public:
 
 
 
-#ifdef _XBOX
-
-
-
-
-
-    float m_fMoveToPointTime;
-    int m_nMoveToPointCalls;
-    int m_nMoveToPointElapsed;
-#endif
     unsigned short m_nPathRetryCount;
     unsigned char m_bIgnoreCrePath;
     int m_nJoiningXP;
@@ -3101,6 +3093,8 @@ public:
     void AddPrerequisiteSpells(unsigned long nSpell);
 #endif
 };
+#ifndef _XBOX
 #pragma pack(pop)
+#endif
 
 #endif

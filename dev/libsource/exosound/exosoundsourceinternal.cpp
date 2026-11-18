@@ -68,7 +68,10 @@ void CExoSoundSourceInternal::DoObstructionWork()
         ZeroMemory(&cSource, sizeof(cSource));
         cSource.Obstruction.lHFLevel = (int)(m_fObstruction * -2000.0f);
         cSource.Obstruction.flLFRatio = m_fObstruction * 0.25f;
-        m_p3DVoice->m_pBuffer->SetI3DL2Source(&cSource, DS3D_IMMEDIATE);
+        if (m_p3DVoice->m_pBuffer != 0)
+        {
+            m_p3DVoice->m_pBuffer->SetI3DL2Source(&cSource, DS3D_IMMEDIATE);
+        }
     }
 }
 #else
@@ -84,33 +87,44 @@ void CExoSoundSourceInternal::DoObstructionWork()  // PC 0x00626DE0 GOG 0x00626D
 #ifdef _XBOX
 CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)
 {
-    m_pSound = pSound;
-    m_fMaxVolumeDist = 10.0f;
     m_pListNode = 0;
     m_b3D = 0;
     m_bLooping = 0;
+    m_pSound = pSound;
+    m_nVolume = 127;
     m_bPlayWhenFree = 0;
     m_p3DVoice = 0;
     m_p2DVoice = 0;
+    m_pReleasing3DVoice = 0;
+    m_pReleasing2DVoice = 0;
+    m_fMaxVolumeDist = 10.0f;
+    m_fMinVolumeDist = 20.0f;
     m_nRestartPosition = 0;
     m_nListType = LIST_NONE;
-    m_nVolume = 127;
-    m_fMinVolumeDist = 20.0f;
     m_nPriorityGroup = CExoSound::PRIORITY_GROUP_DEFAULT;
-    m_nGroupVolume = pSound->m_pPriorityGroups[CExoSound::PRIORITY_GROUP_DEFAULT].m_nVolume;
+    CPriorityGroup* pGroup =
+        pSound->GetPriorityGroup(CExoSound::PRIORITY_GROUP_DEFAULT);
+    if (pGroup != NULL)
+    {
+        m_nGroupVolume = pGroup->m_nVolume;
+    }
+    else
+    {
+        m_nGroupVolume = 127;
+    }
+    m_fPitchVariance = 0.0f;
+    m_fFixedVariance = 0.0f;
     m_bDemanded = 0;
     m_nOneShotDelay = 0;
     m_nDelayStart = 0;
     m_nDuration = 0;
-    m_fPitchVariance = 0.0f;
-    m_fFixedVariance = 0.0f;
-    int nSourceId = pSound->m_nNextSourceId++;
+    int nSourceId = m_pSound->m_nNextSourceId++;
     m_nSourceId = nSourceId;
     m_bStreaming = 0;
     m_nDataSize = 0;
     m_pData = 0;
     ZeroMemory(&m_wfxFormat, sizeof(m_wfxFormat));
-    m_vObstructionListenerPosition = Vector();
+    m_vObstructionListenerPosition = Vector(0.0f, 0.0f, 0.0f);
     m_nObstructionTime = 0;
     m_fObstruction = 0.0f;
 }
@@ -447,12 +461,12 @@ void CExoSoundSourceInternal::Pause()
     {
         if (IsPlaying() != 0)
         {
-            if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
+            if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0 && m_p3DVoice->m_pBuffer != 0)
             {
                 m_p3DVoice->m_pBuffer->GetCurrentPosition(&m_nRestartPosition, NULL);
                 m_p3DVoice->m_pBuffer->Stop();
             }
-            else if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0)
+            else if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0 && m_p2DVoice->m_pBuffer != 0)
             {
                 m_p2DVoice->m_pBuffer->GetCurrentPosition(&m_nRestartPosition, NULL);
                 m_p2DVoice->m_pBuffer->Stop();
@@ -486,9 +500,9 @@ void CExoSoundSourceInternal::Pause()  // PC 0x006270E0 GOG 0x00627080
 #ifdef _XBOX
 void CExoSoundSourceInternal::Resume()
 {
-    if (m_pSound->m_bInitialized != 0)
+    if (m_pSound->m_bInitialized != 0 && IsPaused())
     {
-        if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
+        if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0 && m_p3DVoice->m_pBuffer != 0)
         {
             m_p3DVoice->m_pBuffer->SetCurrentPosition(m_nRestartPosition);
             if (m_bLooping != 0)
@@ -503,7 +517,7 @@ void CExoSoundSourceInternal::Resume()
         }
         else
         {
-            if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0)
+            if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0 && m_p2DVoice->m_pBuffer != 0)
             {
                 m_p2DVoice->m_pBuffer->SetCurrentPosition(m_nRestartPosition);
                 if (m_bLooping != 0)
@@ -560,53 +574,95 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)
         m_pSound->RemoveFromDelayedOneShotList(this);
     }
 
-    if (m_pSound->m_bInitialized != 0 &&
-        ((m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0) || (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0)))
+    if (m_pSound->m_bInitialized != 0)
     {
-        if (m_p3DVoice != 0)
+        if ((m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0) || (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0))
         {
-            if (m_p3DVoice->m_pBuffer != 0)
+            if (m_p3DVoice != 0)
             {
-                if (m_pSound->IsReleasing3DVoice(m_p3DVoice) == 0)
+                if (m_p3DVoice->m_pBuffer != 0)
                 {
-                    m_p3DVoice->m_pBuffer->Stop();
-                    if (m_p3DVoice->m_pSource->IsPlaying())
+                    if (m_pSound->IsReleasing3DVoice(m_p3DVoice) == 0)
                     {
-                        m_pSound->AddReleasing3DVoice(m_p3DVoice);
-                        bReleaseDemand = 0;
+                        m_p3DVoice->m_pBuffer->Stop();
+                        if (m_p3DVoice->m_pSource->IsPlaying())
+                        {
+                            if (bForce)
+                            {
+                                while (m_p3DVoice->m_pSource->IsPlaying())
+                                {
+                                }
+                                m_p3DVoice->m_pBuffer->Release();
+                                m_p3DVoice->m_pSource = 0;
+                                m_p3DVoice->m_pBuffer = 0;
+                            }
+                            else
+                            {
+                                m_pSound->AddReleasing3DVoice(m_p3DVoice);
+                                bReleaseDemand = 0;
+                                m_pReleasing3DVoice = m_p3DVoice;
+                            }
+                        }
+                        else
+                        {
+                            m_p3DVoice->m_pBuffer->Release();
+                            m_p3DVoice->m_pSource = 0;
+                            m_p3DVoice->m_pBuffer = 0;
+                        }
+                    }
+                    m_p3DVoice = 0;
+                }
+            }
+            else if (m_p2DVoice->m_pBuffer != 0)
+            {
+                if (m_pSound->IsReleasing2DVoice(m_p2DVoice) == 0)
+                {
+                    m_p2DVoice->m_pBuffer->Stop();
+                    if (m_p2DVoice->m_pSource->IsPlaying())
+                    {
+                        if (bForce)
+                        {
+                            while (m_p2DVoice->m_pSource->IsPlaying())
+                            {
+                            }
+                            m_p2DVoice->m_pBuffer->Release();
+                            m_p2DVoice->m_pSource = 0;
+                            m_p2DVoice->m_pBuffer = 0;
+                        }
+                        else
+                        {
+                            m_pSound->AddReleasing2DVoice(m_p2DVoice);
+                            bReleaseDemand = 0;
+                        }
                     }
                     else
                     {
-                        m_p3DVoice->m_pBuffer->Release();
-                        m_p3DVoice->m_pSource = 0;
+                        m_p2DVoice->m_pBuffer->Release();
+                        m_p2DVoice->m_pSource = 0;
+                        m_p2DVoice->m_pBuffer = 0;
                     }
                 }
-                m_p3DVoice = 0;
+                m_p2DVoice = 0;
             }
-        }
-        else if (m_p2DVoice->m_pBuffer != 0)
-        {
-            if (m_pSound->IsReleasing2DVoice(m_p2DVoice) == 0)
+            m_nListType = LIST_NONE;
+            m_pListNode = 0;
+            if (bReleaseDemand != 0)
             {
-                m_p2DVoice->m_pBuffer->Stop();
-                if (m_p2DVoice->m_pSource->IsPlaying())
-                {
-                    m_pSound->AddReleasing2DVoice(m_p2DVoice);
-                    bReleaseDemand = 0;
-                }
-                else
-                {
-                    m_p2DVoice->m_pBuffer->Release();
-                    m_p2DVoice->m_pSource = 0;
-                }
+                Release();
             }
-            m_p2DVoice = 0;
         }
-        m_nListType = LIST_NONE;
-        m_pListNode = 0;
-        if (bReleaseDemand != 0)
+        else if (bForce)
         {
-            Release();
+            if (m_pReleasing3DVoice != 0)
+            {
+                m_pSound->ForceRelease3DVoice(m_pReleasing3DVoice);
+                m_pReleasing3DVoice = 0;
+            }
+            if (m_pReleasing2DVoice != 0)
+            {
+                m_pSound->ForceRelease2DVoice(m_pReleasing2DVoice);
+                m_pReleasing2DVoice = 0;
+            }
         }
     }
 }
@@ -672,7 +728,7 @@ void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)
     m_vPosition = vPosition;
     if (m_b3D != 0)
     {
-        if (IsPlaying() != 0)
+        if (IsPlaying() != 0 && m_p3DVoice->m_pBuffer != NULL)
         {
             m_p3DVoice->m_pBuffer->SetPosition(vPosition.m_fX, vPosition.m_fZ, vPosition.m_fY, DS3D_DEFERRED);
         }
@@ -710,32 +766,34 @@ void CExoSoundSourceInternal::Set3D(int b3D)
 int CExoSoundSourceInternal::IsPaused()
 {
     DWORD nPosition = 0;
-    LPDIRECTSOUNDBUFFER pBuffer;
 
-    if (m_pSound->m_bInitialized == 0)
+    if (m_pSound->m_bInitialized != 0)
     {
-        return 0;
-    }
-    if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
-    {
-        pBuffer = m_p3DVoice->m_pBuffer;
-    }
-    else if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0)
-    {
-        pBuffer = m_p2DVoice->m_pBuffer;
-    }
-    else
-    {
-        return 0;
-    }
-    if (m_nRestartPosition != 0)
-    {
-        return 1;
-    }
-    pBuffer->GetCurrentPosition(&nPosition, NULL);
-    if (!IsPlaying() && (nPosition == 0 || nPosition == m_nDataSize))
-    {
-        return 1;
+        if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0 &&
+            m_p3DVoice->m_pBuffer != 0)
+        {
+            if (m_nRestartPosition != 0)
+            {
+                return 1;
+            }
+            m_p3DVoice->m_pBuffer->GetCurrentPosition(&nPosition, NULL);
+        }
+        else
+        {
+            if (m_p2DVoice == 0 || m_p2DVoice->m_pSource == 0)
+            {
+                return 0;
+            }
+            if (m_nRestartPosition != 0)
+            {
+                return 1;
+            }
+            m_p2DVoice->m_pBuffer->GetCurrentPosition(&nPosition, NULL);
+        }
+        if (!IsPlaying() && (nPosition == 0 || nPosition == m_nDataSize))
+        {
+            return 1;
+        }
     }
     return 0;
 }
@@ -842,8 +900,9 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
                 return 1;
             }
             m_pData = 0;
+            return 1;
         }
-        else if (m_bPlayWhenFree != 0)
+        if (m_bPlayWhenFree != 0)
         {
             m_nDuration = 0;
             m_bRetryPlay = 1;
@@ -857,14 +916,17 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
     }
     if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
     {
-        m_p3DVoice->m_pBuffer->SetCurrentPosition(m_nRestartPosition);
-        if (m_bLooping != 0)
+        if (m_p3DVoice->m_pBuffer != 0)
         {
-            m_p3DVoice->m_pBuffer->Play(0, 0, DSBPLAY_LOOPING);
-        }
-        else
-        {
-            m_p3DVoice->m_pBuffer->Play(0, 0, 0);
+            m_p3DVoice->m_pBuffer->SetCurrentPosition(m_nRestartPosition);
+            if (m_bLooping != 0)
+            {
+                m_p3DVoice->m_pBuffer->Play(0, 0, DSBPLAY_LOOPING);
+            }
+            else
+            {
+                m_p3DVoice->m_pBuffer->Play(0, 0, 0);
+            }
         }
         return m_nDuration;
     }
@@ -896,7 +958,8 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
         if (m_pData == 0)
         {
             m_pData = 0;
-            m_nDataSize = m_pSound->ParseWaveData(m_pRes->GetData(), &m_wfxFormat, &m_pData);
+            CExoSoundInternal* pSound = m_pSound;
+            m_nDataSize = pSound->ParseWaveData(m_pRes->GetData(), &m_wfxFormat, &m_pData);
         }
         if (m_nDataSize == 0)
         {
@@ -929,8 +992,10 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
         }
     }
 
+    unsigned char nGroup = m_nPriorityGroup;
+    CExoSoundInternal* pSound = m_pSound;
     unsigned int nDuration = m_nDuration;
-    CPriorityGroup* pGroup = m_pSound->GetPriorityGroup(m_nPriorityGroup);
+    CPriorityGroup* pGroup = pSound->GetPriorityGroup(nGroup);
     if (pGroup != NULL && pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
     {
         if (bNoInterrupt != 0 || pGroup->m_bInterrupt == 0)
@@ -953,9 +1018,11 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
         }
         m_pSound->InterruptPlayingSound(m_nPriorityGroup);
     }
+    nGroup = m_nPriorityGroup;
+    pSound = m_pSound;
     if (m_b3D != 0)
     {
-        C3DVoice* p3DVoice = m_pSound->GetFree3DVoice(m_nPriorityGroup);
+        C3DVoice* p3DVoice = pSound->GetFree3DVoice(nGroup);
         if (p3DVoice == 0)
         {
             Release();
@@ -988,7 +1055,7 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
     }
     else
     {
-        C2DVoice* p2DVoice = m_pSound->GetFree2DVoice(m_nPriorityGroup);
+        C2DVoice* p2DVoice = pSound->GetFree2DVoice(nGroup);
         if (p2DVoice == 0)
         {
             Release();
@@ -1140,14 +1207,14 @@ int CExoSoundSourceInternal::SetFixedVariance(float fVariance)
         if (pSound->m_bInitialized != 0)
         {
             Pause();
-            if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
+            if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0 && m_p3DVoice->m_pBuffer != 0)
             {
                 CalculateFixedVarianceFrequency();
                 m_p3DVoice->m_pBuffer->SetFrequency(m_nFixedRate);
                 Resume();
                 return 1;
             }
-            if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0)
+            if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0 && m_p2DVoice->m_pBuffer != 0)
             {
                 CalculateFixedVarianceFrequency();
                 m_p2DVoice->m_pBuffer->SetFrequency(m_nFixedRate);
@@ -1195,18 +1262,21 @@ int CExoSoundSourceInternal::SetFixedVariance(float fVariance)  // PC 0x006279C0
 
 void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)
 {
-    CExoSoundInternal* pSound = m_pSound;
-    if (pSound->m_bInitialized != 0)
+    if (m_pSound->m_bInitialized != 0)
     {
         CPriorityGroup* pGroup =
-            &pSound->m_pPriorityGroups[nPriorityGroup];
+            m_pSound->GetPriorityGroup(nPriorityGroup);
         if (pGroup != NULL)
         {
             m_nPriorityGroup = nPriorityGroup;
         }
         else
         {
-            pGroup = &pSound->m_pPriorityGroups[m_nPriorityGroup];
+            pGroup = m_pSound->GetPriorityGroup(m_nPriorityGroup);
+            if (pGroup == NULL)
+            {
+                return;
+            }
         }
         m_nGroupVolume = pGroup->m_nVolume;
         SetVolume(m_nVolume, 0, 1.0f);
@@ -1253,14 +1323,14 @@ void CExoSoundSourceInternal::SetPitchVariance(float fVariance)
     if (pSound->m_bInitialized != 0)
     {
         Pause();
-        if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
+        if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0 && m_p3DVoice->m_pBuffer != 0)
         {
             CalculatePitchVarianceFrequency();
             m_p3DVoice->m_pBuffer->SetFrequency(m_nPitchRate);
             Resume();
             return;
         }
-        if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0)
+        if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0 && m_p2DVoice->m_pBuffer != 0)
         {
             CalculatePitchVarianceFrequency();
             m_p2DVoice->m_pBuffer->SetFrequency(m_nPitchRate);

@@ -436,8 +436,10 @@ public:
     void DetachReleasingVoices(CExoSoundSourceInternal*);
     int IsReleasing2DVoice(C2DVoice* pVoice);
     void AddReleasing2DVoice(C2DVoice* pVoice);
+    void ForceRelease2DVoice(C2DVoice* pVoice);
     int IsReleasing3DVoice(C3DVoice* pVoice);
     void AddReleasing3DVoice(C3DVoice* pVoice);
+    void ForceRelease3DVoice(C3DVoice* pVoice);
 
 
     void SetEnvironmentEffectLevel(float fLevel);
@@ -528,8 +530,13 @@ public:
     unsigned char m_nPriorityGroup;
     C2DVoice* m_p2DVoice;
     C3DVoice* m_p3DVoice;
+#ifdef _XBOX
+    C2DVoice* m_pReleasing2DVoice;
+    C3DVoice* m_pReleasing3DVoice;
+#else
     int m_n2DVoiceIndex;
     int m_n3DVoiceIndex;
+#endif
     CExoLinkedListNode* m_pListNode;
     CExoSoundInternal* m_pSound;
     unsigned long m_nSampleRate;

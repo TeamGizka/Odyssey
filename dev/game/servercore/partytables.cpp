@@ -2705,9 +2705,8 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)
         return 0;
     }
 
-    CSWSCreature* pCreature =
-        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
-            m_aoidNPC[nNPC]);
+    unsigned long oidNPC = m_aoidNPC[nNPC];
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
     m_aoidNPC[nNPC] = OBJECT_INVALID;
     if (pCreature != NULL)
     {

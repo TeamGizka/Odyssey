@@ -1066,7 +1066,7 @@ void CExoBaseInternal::LoadAliases(const CExoString& sFile)
     }
 
     {
-        CExoString sXboxPath("t:\\override");
+        CExoString sXboxPath("d:\\override");
         CExoString sDefault(".\\override");
         CExoString sAlias("OVERRIDE");
 
@@ -1202,9 +1202,17 @@ void CExoBaseInternal::LoadAliases(const CExoString& sFile)
     }
 
     {
-        CExoString sXboxPath("d:\\streamwaves");
-        CExoString sDefault(".\\streamwaves");
-        CExoString sAlias("STREAMWAVES");
+        CExoString sXboxPath("d:\\streamvoice");
+        CExoString sDefault(".\\streamvoice");
+        CExoString sAlias("STREAMVOICE");
+
+        AddAlias(sAliasFile, sAlias, sDefault, sXboxPath);
+    }
+
+    {
+        CExoString sXboxPath("d:\\supermodels");
+        CExoString sDefault(".\\supermodels");
+        CExoString sAlias("SUPERMODELS");
 
         AddAlias(sAliasFile, sAlias, sDefault, sXboxPath);
     }

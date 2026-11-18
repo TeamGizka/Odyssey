@@ -22,11 +22,18 @@ struct SServerOption
 class CPersistantWorldOptions
 {
 public:
+#ifdef _XBOX
+    CPersistantWorldOptions()
+        : bVaultCharsOnly(0), bSaveCharsInSaveGame(1) {}
+#else
     CPersistantWorldOptions()
         : bVaultCharsOnly(0), bSaveCharsInSaveGame(1), bSuppressBaseServerVault(0) {}
+#endif
     int bVaultCharsOnly;
     int bSaveCharsInSaveGame;
+#ifndef _XBOX
     int bSuppressBaseServerVault;
+#endif
 };
 
 class CServerInfo
@@ -107,7 +114,9 @@ public:
     CPersistantWorldOptions m_PersistantWorldOptions;
 
 #ifdef _XBOX
+    CExoString m_sServerDescription;
     short m_nGameType;
+    int m_bSuppressBaseServerVault;
 #endif
     int m_bPartyPicking;
     int m_bConversationMultiPlayer;

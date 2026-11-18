@@ -122,11 +122,7 @@ int CSWVirtualMachineCommands::ExecuteCommand(int nCommand, int nArgs)
 {
     int (CSWVirtualMachineCommands::*pCommand)(int, int);
 
-#ifdef _XBOX
-    if (nCommand < 768 && (pCommand = m_pCommands[nCommand]) != NULL)
-#else
     if (nCommand < 877 && (pCommand = m_pCommands[nCommand]) != NULL)
-#endif
     {
         return (this->*pCommand)(nCommand, nArgs);
     }

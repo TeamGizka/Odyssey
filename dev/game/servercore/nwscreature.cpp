@@ -244,9 +244,6 @@ int CSWSCreature::AddMoveToPointActionToFront(
     float fRange, float fTimeout, int bUsePath, int nMovementRate, int nMovementOption, int bClientMoving, int bPartialPathSearch, int bUsePoint,
     const Vector& vOrientation, unsigned long nForceDay, unsigned long nForceTime, int bStopAtUseRange)
 {
-#ifdef _XBOX
-    m_nMoveToPointElapsed = -1;
-#endif
     int nMoveFlags = bRun | (bUsePath << MOVE_USE_PATH_SHIFT);
     if (fTimeout != 0.0f)
     {
@@ -290,9 +287,6 @@ int CSWSCreature::AddMoveToPointAction(
     unsigned short nGroupId, const Vector& vPosition, unsigned long oidArea, unsigned long oidTarget, int bRun, float fRange, float fTimeout,
     int bUsePath, int nMovementRate, int nMovementOption, int bClientMoving, int bPartialPathSearch, int bUsePoint, const Vector& vOrientation, unsigned long nForceDay, unsigned long nForceTime, int bStopAtUseRange)
 {
-#ifdef _XBOX
-    m_nMoveToPointElapsed = -1;
-#endif
     int nFlags;
     CPathfindInformation* pPathfind;
 

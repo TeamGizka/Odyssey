@@ -93,6 +93,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)
 {
     CExoFile file(sFileName, 2057, "rb");
     HANDLE hSignature = INVALID_HANDLE_VALUE;
+    unsigned long i;
 
     if (pSignature != NULL)
     {
@@ -103,7 +104,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)
     {
         file.Seek(160, 0);
 
-        for (unsigned long i = 0; i < m_nLanguageCount; i++)
+        for (i = 0; i < m_nLanguageCount; i++)
         {
             CERFString* pString = new CERFString;
             pString->Read(file);
@@ -118,7 +119,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)
             m_lstStrings.AddTail(pString);
         }
 
-        for (unsigned long j = 0; j < m_nEntryCount; j++)
+        for (i = 0; i < m_nEntryCount; i++)
         {
             CERFKey* pKey = new CERFKey;
             pKey->Read(file);
@@ -137,7 +138,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)
             m_lstKeys.AddTail(pKey);
         }
 
-        for (unsigned long k = 0; k < m_nEntryCount; k++)
+        for (i = 0; i < m_nEntryCount; i++)
         {
             CERFRes* pRes = new CERFRes;
             pRes->Read(file);

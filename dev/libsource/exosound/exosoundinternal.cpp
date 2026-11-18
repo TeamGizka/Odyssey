@@ -3010,24 +3010,33 @@ void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,
         cDesc.dwFlags = DSBCAPS_CTRL3D | DSBCAPS_MUTE3DATMAXDISTANCE;
         cDesc.dwBufferBytes = 0;
         cDesc.lpwfxFormat = &pSource->m_wfxFormat.wfx;
-        m_pDirectSound->CreateSoundBuffer(&cDesc, &p3DVoice->m_pBuffer, NULL);
-        if (pSource->m_pData != NULL)
+        if (SUCCEEDED(m_pDirectSound->CreateSoundBuffer(&cDesc, &p3DVoice->m_pBuffer, NULL)))
         {
-            p3DVoice->m_pBuffer->SetBufferData(pSource->m_pData, pSource->m_nDataSize);
+            if (pSource->m_pData != NULL)
+            {
+                p3DVoice->m_pBuffer->SetBufferData(pSource->m_pData, pSource->m_nDataSize);
+            }
+        }
+        else
+        {
+            p3DVoice->m_pBuffer = NULL;
         }
     }
     pSource->SetVolume(pSource->m_nVolume, 0, 1.0f);
-    p3DVoice->m_pBuffer->SetMinDistance(fMaxVolumeDist, DS3D_DEFERRED);
-    p3DVoice->m_pBuffer->SetMaxDistance(fMinVolumeDist, DS3D_DEFERRED);
-    p3DVoice->m_pBuffer->SetPosition(vPosition.m_fX, vPosition.m_fZ, vPosition.m_fY, DS3D_DEFERRED);
+    if (p3DVoice->m_pBuffer != NULL)
+    {
+        p3DVoice->m_pBuffer->SetMinDistance(fMaxVolumeDist, DS3D_DEFERRED);
+        p3DVoice->m_pBuffer->SetMaxDistance(fMinVolumeDist, DS3D_DEFERRED);
+        p3DVoice->m_pBuffer->SetPosition(vPosition.m_fX, vPosition.m_fZ, vPosition.m_fY, DS3D_DEFERRED);
 
-    if (pSource->m_fPitchVariance != 0.0f)
-    {
-        p3DVoice->m_pBuffer->SetFrequency(pSource->m_nPitchRate);
-    }
-    else if (pSource->m_fFixedVariance != 0.0f)
-    {
-        p3DVoice->m_pBuffer->SetFrequency(pSource->m_nFixedRate);
+        if (pSource->m_fPitchVariance != 0.0f)
+        {
+            p3DVoice->m_pBuffer->SetFrequency(pSource->m_nPitchRate);
+        }
+        else if (pSource->m_fFixedVariance != 0.0f)
+        {
+            p3DVoice->m_pBuffer->SetFrequency(pSource->m_nFixedRate);
+        }
     }
 
     Vector vSourcePosition = pSource->m_vPosition;
@@ -3060,7 +3069,7 @@ void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,
     m_nOcclusionTime += (unsigned long)(
         g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) - nTime;
     m_pDirectSound->CommitDeferredSettings();
-    if (pSource->m_pData != NULL)
+    if (pSource->m_pData != NULL && p3DVoice->m_pBuffer != NULL)
     {
         p3DVoice->m_pBuffer->Play(0, 0, bOneShot ? 0 : DSBPLAY_LOOPING);
     }
@@ -3085,23 +3094,26 @@ void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,
         cDesc.dwFlags = 0;
         cDesc.dwBufferBytes = 0;
         cDesc.lpwfxFormat = &pSource->m_wfxFormat.wfx;
-        m_pDirectSound->CreateSoundBuffer(&cDesc, &p2DVoice->m_pBuffer, NULL);
-        if (pSource->m_pData != NULL)
+        if (m_pDirectSound->CreateSoundBuffer(&cDesc, &p2DVoice->m_pBuffer, NULL) == DS_OK &&
+            pSource->m_pData != NULL)
         {
             p2DVoice->m_pBuffer->SetBufferData(pSource->m_pData, pSource->m_nDataSize);
         }
     }
     pSource->SetVolume(pSource->m_nVolume, 0, m_fVolumeScale);
 
-    if (pSource->m_fPitchVariance != 0.0f)
+    if (p2DVoice->m_pBuffer != NULL)
     {
-        p2DVoice->m_pBuffer->SetFrequency(pSource->m_nPitchRate);
+        if (pSource->m_fPitchVariance != 0.0f)
+        {
+            p2DVoice->m_pBuffer->SetFrequency(pSource->m_nPitchRate);
+        }
+        else if (pSource->m_fFixedVariance != 0.0f)
+        {
+            p2DVoice->m_pBuffer->SetFrequency(pSource->m_nFixedRate);
+        }
     }
-    else if (pSource->m_fFixedVariance != 0.0f)
-    {
-        p2DVoice->m_pBuffer->SetFrequency(pSource->m_nFixedRate);
-    }
-    if (pSource->m_pData != NULL)
+    if (pSource->m_pData != NULL && p2DVoice->m_pBuffer != NULL)
     {
         p2DVoice->m_pBuffer->Play(0, 0, bOneShot ? 0 : DSBPLAY_LOOPING);
     }
@@ -3143,10 +3155,9 @@ int CExoSoundInternal::Play3DOneShotSound(CResRef const& sResRef,
     {
         pSource->SetPitchVariance(fPitchVariance);
     }
-    float fMinVolumeDist =
-        m_pPriorityGroups[nPriorityGroup].m_fMinVolumeDist;
-    float fMaxVolumeDist =
-        m_pPriorityGroups[nPriorityGroup].m_fMaxVolumeDist;
+    CPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
+    float fMinVolumeDist = pGroup->m_fMinVolumeDist;
+    float fMaxVolumeDist = pGroup->m_fMaxVolumeDist;
     pSource->m_fMaxVolumeDist = fMaxVolumeDist;
     pSource->m_fMinVolumeDist = fMinVolumeDist;
     if (nOneShotDelay != 0)
@@ -3200,8 +3211,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromPlayingList(
     m_lstPlaying.Remove(pSource->m_pListNode);
     pSource->m_nListType = CExoSoundSourceInternal::LIST_NONE;
     pSource->m_pListNode = NULL;
-    CPriorityGroup* pGroup =
-        m_pPriorityGroups + pSource->m_nPriorityGroup;
+    CPriorityGroup* pGroup = GetPriorityGroup(pSource->m_nPriorityGroup);
 
     pGroup->m_nPlaying = pGroup->m_nPlaying - 1;
     return pPosition;
@@ -3276,7 +3286,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromStreamingList(
         {
             m_lstStreaming.Remove(pPosition);
             CPriorityGroup* pGroup =
-                m_pPriorityGroups + pCurrent->m_nPriorityGroup;
+                GetPriorityGroup(pCurrent->m_nPriorityGroup);
 
             pGroup->m_nPlaying = pGroup->m_nPlaying - 1;
             break;
@@ -3291,7 +3301,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromStreamingList(
 C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)
 {
     unsigned char nPriority = 0;
-    CPriorityGroup* pGroup = m_pPriorityGroups + nPriorityGroup;
+    CPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
     int nInterrupt;
     int nVoice;
 
@@ -3311,7 +3321,7 @@ C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)
                 return &m_p3DVoices[nVoice];
             }
             CPriorityGroup* pVoiceGroup =
-                m_pPriorityGroups + pVoiceSource->m_nPriorityGroup;
+                GetPriorityGroup(pVoiceSource->m_nPriorityGroup);
 
             if (pVoiceGroup != NULL &&
                 pVoiceGroup->m_nPriority > pGroup->m_nPriority &&
@@ -3358,7 +3368,7 @@ C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)
 C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)
 {
     unsigned char nPriority = 0;
-    CPriorityGroup* pGroup = m_pPriorityGroups + nPriorityGroup;
+    CPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
     int nInterrupt;
     int nVoice;
 
@@ -3379,7 +3389,7 @@ C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)
                 return &m_p2DVoices[nVoice];
             }
             CPriorityGroup* pVoiceGroup =
-                m_pPriorityGroups + pVoiceSource->m_nPriorityGroup;
+                GetPriorityGroup(pVoiceSource->m_nPriorityGroup);
 
             if (pVoiceGroup != NULL &&
                 pVoiceGroup->m_nPriority > pGroup->m_nPriority &&
@@ -3495,9 +3505,12 @@ void CExoSoundInternal::AddToStreamingList(
 {
     m_lstStreaming.AddHead(pSource);
     CPriorityGroup* pGroup =
-        m_pPriorityGroups + pSource->m_nPriorityGroup;
+        GetPriorityGroup(pSource->m_nPriorityGroup);
 
-    pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
+    if (pGroup != NULL)
+    {
+        pGroup->m_nPlaying++;
+    }
 }
 
 
@@ -3542,6 +3555,44 @@ void CExoSoundInternal::AddReleasing2DVoice(C2DVoice* pVoice)
     pVoice->m_bReleasing = 1;
 }
 
+// Xbox 0x001630A0
+void CExoSoundInternal::ForceRelease2DVoice(C2DVoice* pVoice)
+{
+    DWORD nStatus = 0;
+    CExoLinkedListNode* pPosition = m_lstReleasing2DVoices.GetHeadPos();
+    while (pPosition != NULL)
+    {
+        C2DVoice* p2DVoice = m_lstReleasing2DVoices.GetAtPos(pPosition);
+        if (p2DVoice == pVoice)
+        {
+            if (p2DVoice->m_pBuffer != NULL)
+            {
+                do
+                {
+                    p2DVoice->m_pBuffer->GetStatus(&nStatus);
+                } while (nStatus & DSBSTATUS_PLAYING);
+            }
+            CExoLinkedListNode* pReleasePosition = pPosition;
+            m_lstReleasing2DVoices.GetNext(pPosition);
+            m_lstReleasing2DVoices.Remove(pReleasePosition);
+            if (p2DVoice->m_pBuffer != NULL)
+            {
+                p2DVoice->m_pBuffer->Release();
+                p2DVoice->m_pBuffer = NULL;
+            }
+            if (p2DVoice->m_bSourceGone == 0)
+            {
+                p2DVoice->m_pSource->Release();
+            }
+            p2DVoice->m_pSource = NULL;
+            p2DVoice->m_bReleasing = 0;
+            p2DVoice->m_bSourceGone = 0;
+            return;
+        }
+        m_lstReleasing2DVoices.GetNext(pPosition);
+    }
+}
+
 int CExoSoundInternal::IsReleasing3DVoice(C3DVoice* pVoice)
 {
     return m_lstReleasing3DVoices.Contains(pVoice);
@@ -3551,6 +3602,44 @@ void CExoSoundInternal::AddReleasing3DVoice(C3DVoice* pVoice)
 {
     m_lstReleasing3DVoices.AddHead(pVoice);
     pVoice->m_bReleasing = 1;
+}
+
+// Xbox 0x00163190
+void CExoSoundInternal::ForceRelease3DVoice(C3DVoice* pVoice)
+{
+    DWORD nStatus = 0;
+    CExoLinkedListNode* pPosition = m_lstReleasing3DVoices.GetHeadPos();
+    while (pPosition != NULL)
+    {
+        C3DVoice* p3DVoice = m_lstReleasing3DVoices.GetAtPos(pPosition);
+        if (p3DVoice == pVoice)
+        {
+            if (p3DVoice->m_pBuffer != NULL)
+            {
+                do
+                {
+                    p3DVoice->m_pBuffer->GetStatus(&nStatus);
+                } while (nStatus & DSBSTATUS_PLAYING);
+            }
+            CExoLinkedListNode* pReleasePosition = pPosition;
+            m_lstReleasing3DVoices.GetNext(pPosition);
+            m_lstReleasing3DVoices.Remove(pReleasePosition);
+            if (p3DVoice->m_pBuffer != NULL)
+            {
+                p3DVoice->m_pBuffer->Release();
+                p3DVoice->m_pBuffer = NULL;
+            }
+            if (p3DVoice->m_bSourceGone == 0)
+            {
+                p3DVoice->m_pSource->Release();
+            }
+            p3DVoice->m_pSource = NULL;
+            p3DVoice->m_bReleasing = 0;
+            p3DVoice->m_bSourceGone = 0;
+            return;
+        }
+        m_lstReleasing3DVoices.GetNext(pPosition);
+    }
 }
 #endif
 
@@ -4154,8 +4243,8 @@ HRESULT CExoSoundInternal::LoadEffectsImage(const char* pszFileName)
     }
     if (SUCCEEDED(hr))
     {
-        cLocation.dwI3DL2ReverbIndex = 0;
-        cLocation.dwCrosstalkIndex = 1;
+        cLocation.dwI3DL2ReverbIndex = 3;
+        cLocation.dwCrosstalkIndex = 4;
         hr = m_pDirectSound->DownloadEffectsImage(pBuffer, nSize, &cLocation, &pDescription);
     }
     delete[] pBuffer;

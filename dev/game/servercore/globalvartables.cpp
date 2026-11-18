@@ -63,17 +63,23 @@ int CSWGlobalVariableTable::AddIdentifier(const CExoString& sIdentifier,
                 ++nSteps;
             } while (nIdentifier != nNextIdentifier);
 
+#ifndef _XBOX
             if (nIdentifier != nNextIdentifier)
             {
                 nIdentifier = nNextIdentifier;
             }
-#ifdef _XBOX
-            else
-            {
-                EXOXBOXASSERT(0);
-            }
 #endif
         }
+#ifdef _XBOX
+        if (nIdentifier != nNextIdentifier)
+        {
+            nIdentifier = nNextIdentifier;
+        }
+        else
+        {
+            EXOXBOXASSERT(0);
+        }
+#endif
 
         nMaximumCollisionSteps = m_nMaximumCollisionSteps;
         m_nCollisionSteps += nSteps;

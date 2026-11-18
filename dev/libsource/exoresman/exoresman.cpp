@@ -2898,6 +2898,33 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
             sCacheName + sFileName.Right(sFileName.GetLength() - nColon - 1);
     }
 
+    sDest = g_pExoBase->m_pExoAliasList->ResolveFileName(sCacheName, nType);
+
+    CExoString sStampFile;
+    int nDot = sDest.Find('.', 0);
+    {
+        CExoString sStampExtension("_v.res");
+        if (nDot < 0)
+        {
+            sStampFile = sDest + sStampExtension;
+        }
+        else
+        {
+            sStampFile = sDest.SubString(0, nDot) + sStampExtension;
+        }
+    }
+
+    WIN32_FIND_DATA cFindData;
+    HANDLE hFind = FindFirstFile(sStampFile.CStr(), &cFindData);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(hFind);
+        sResult = sCacheName;
+        nResult = 1;
+        return sResult;
+    }
+    CloseHandle(hFind);
+
     CreateDirectory2("CACHE:");
 
     int nSlash = sCacheName.Find("\\", 0);
@@ -2907,18 +2934,22 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
         CreateDirectory2(sDirectory);
     }
 
-    sDest = g_pExoBase->m_pExoAliasList->ResolveFileName(sCacheName, nType);
-
     if (!CopyFile(sSource.CStr(), sDest.CStr(), TRUE))
     {
         if (GetLastError() == ERROR_ALREADY_EXISTS)
         {
             HANDLE hSource = CreateFile(sSource.CStr(), GENERIC_READ,
-                                        FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
+                                        FILE_SHARE_READ | FILE_SHARE_DELETE,
+                                        NULL, OPEN_EXISTING,
                                         FILE_ATTRIBUTE_NORMAL, NULL);
             HANDLE hDest = CreateFile(sDest.CStr(), GENERIC_READ,
-                                      FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
+                                      FILE_SHARE_READ | FILE_SHARE_DELETE,
+                                      NULL, OPEN_EXISTING,
                                       FILE_ATTRIBUTE_NORMAL, NULL);
+            if (hSource == INVALID_HANDLE_VALUE || hDest == INVALID_HANDLE_VALUE)
+            {
+                EXOLOG("CExoResMan::CacheResource() open failed %d\n", GetLastError());
+            }
             unsigned long nSourceSize = GetFileSize(hSource, NULL);
             unsigned long nDestSize = GetFileSize(hDest, NULL);
             CloseHandle(hSource);
@@ -2940,6 +2971,13 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
     }
     else
     {
+        HANDLE hStamp = CreateFile(sStampFile.CStr(), GENERIC_WRITE,
+                                   FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                                   NULL, CREATE_ALWAYS,
+                                   FILE_ATTRIBUTE_NORMAL, NULL);
+        DWORD nBytesWritten;
+        WriteFile(hStamp, &nBytesWritten, sizeof(nBytesWritten), &nBytesWritten, NULL);
+        CloseHandle(hStamp);
         sResult = sCacheName;
         nResult = 1;
         bCached = 1;
@@ -2952,13 +2990,7 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
 
     if (!bCached)
     {
-        AurPostString("!!!WARNING!!! ATTEMPT TO CACHE FILE FAILED!!!", 5, 5,
-                      60.0f);
-        AurPostString(sDest.CStr(), 5, 7, 60.0f);
-        AurPostString("!!!WARNING!!! CACHE MAY CONTAIN INVALID FILES!!!", 5, 10,
-                      60.0f);
-        AurPostString("!!!WARNING!!! PROGRAM MAY NOT BEHAVE AS EXPECTED!!!", 5,
-                      15, 60.0f);
+        EXOLOG("!!!WARNING!!! ATTEMPT TO CACHE FILE %s FAILED!!!\n", sDest.CStr());
     }
 
     return sResult;

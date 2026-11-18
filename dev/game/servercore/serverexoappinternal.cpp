@@ -1746,7 +1746,7 @@ void CServerExoAppInternal::GetServerInfoFromIniFile()
     CExoFile cServerDesc("HD0:ServerDesc", RESTYPE_TXT, "rt");
     if (cServerDesc.Read(sValue, cServerDesc.GetSize()) > 0)
     {
-        m_pServerInfo->m_sModuleName = sValue;
+        m_pServerInfo->m_sServerDescription = sValue;
     }
 
     bFound = cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Difficulty Level");

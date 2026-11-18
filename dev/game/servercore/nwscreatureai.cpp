@@ -8014,12 +8014,6 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
     return nResult;
 }
 
-#ifdef _XBOX
-static __int64 QueryTimer();
-#define AIACTIONMOVETOPOINT_RETURN(nValue) { m_fMoveToPointTime += (float)(int)(QueryTimer() - nStartTime) * 0.001f; return nValue; }
-#else
-#define AIACTIONMOVETOPOINT_RETURN(nValue) return nValue
-#endif
 int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x005559F0 GOG 0x00555B10
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -8036,20 +8030,6 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
 
     if (m_pPathfindInformation == NULL)
         return ACTION_FAILED;
-#ifdef _XBOX
-    if (m_nMoveToPointElapsed == -1)
-    {
-        m_fMoveToPointTime = 0.0f;
-        m_nMoveToPointElapsed = 0;
-        m_nMoveToPointCalls = 1;
-    }
-    else
-    {
-        m_nMoveToPointElapsed += m_nElapsedTime;
-        m_nMoveToPointCalls++;
-    }
-    __int64 nStartTime = QueryTimer();
-#endif
 
     float fX;
     float fY;
@@ -8136,7 +8116,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
             action.m_oidTargetObject = oidTarget;
             m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
             ForceMoveToPoint(&action);
-            AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+            return ACTION_COMPLETE;
         }
     }
     if (bTimeout == 1 && fTimeout > 0.0f)
@@ -8149,7 +8129,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
         pPathfind->m_nTimeoutDay = 0;
         pPathfind->m_nTimeoutTime = 0;
         m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
-        AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+        return ACTION_COMPLETE;
     }
 
     CGameObject* pObject;
@@ -8166,7 +8146,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                 pObject->AsSWSTrigger()->CalculateNearestPoint(m_vPosition, &vNearest);
                 vDestination = vNearest + normalize(m_vPosition - vNearest) * NWSCREATURE_MOVE_TRIGGER_OFFSET;
                 AddMoveToPointActionToFront(pAction->m_nGroupId, vDestination, oidArea, OBJECT_INVALID, bRun, fRange, 0.0f, bUsePath, nMovementRate, nMovementOption, bClientMoving, bPartialPathSearch, bUsePoint, vOrientation, nForceDay, nForceTime, 0);
-                AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                return ACTION_COMPLETE;
             }
             if (GetIsInUseRange(oidTarget, 0.0f, 0))
             {
@@ -8174,7 +8154,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                 pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLICK;
                 pEvent->SetObjectID(0, m_nId);
                 g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime( 0, 0, m_nId, oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-                AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                return ACTION_COMPLETE;
             }
             break;
         }
@@ -8197,7 +8177,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                         0.0f, bUsePath, nMovementRate, nMovementOption,
                         bClientMoving, bPartialPathSearch, bUsePoint, vOrientation,
                         nForceDay, nForceTime, 0);
-                    AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                    return ACTION_COMPLETE;
                 }
             }
             else
@@ -8233,7 +8213,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                             oidTargetArea, oidTarget, bRun, fRange, 0.0f, bUsePath,
                             nMovementRate, nMovementOption, bClientMoving, bPartialPathSearch,
                             bUsePoint, vOrientation, nForceDay, nForceTime, 0);
-                        AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                        return ACTION_COMPLETE;
                     }
                 }
                 Vector vUsePosition;
@@ -8246,7 +8226,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                         m_pPathfindInformation->ResetAtEndOfPath();
                         SetAnimation(ANIMATION_IDLE);
                         m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
-                        AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                        return ACTION_COMPLETE;
                     }
                 }
                 else
@@ -8258,7 +8238,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                         m_pPathfindInformation->ResetAtEndOfPath();
                         m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
                         SetAnimation(ANIMATION_IDLE);
-                        AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                        return ACTION_COMPLETE;
                     }
                 }
             }
@@ -8276,7 +8256,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                     pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_PATH_BLOCKED;
                     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                         0, 0, oidTarget, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-                    AIACTIONMOVETOPOINT_RETURN(ACTION_IN_PROGRESS);
+                    return ACTION_IN_PROGRESS;
                 }
                 CScriptEvent* pEvent = new CScriptEvent;
                 pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLICK;
@@ -8288,7 +8268,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                 m_pPathfindInformation->ResetWayPointData();
                 m_pPathfindInformation->ResetInterTileSearchData();
                 m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
-                AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                return ACTION_COMPLETE;
             }
             if (bUsePoint == 0)
             {
@@ -8304,7 +8284,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                         nMovementRate, nMovementOption, bClientMoving, bPartialPathSearch,
                         1, vOrientation, nForceDay, nForceTime, 0);
                     m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
-                    AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                    return ACTION_COMPLETE;
                 }
             }
             break;
@@ -8326,7 +8306,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                         nMovementRate, nMovementOption, bClientMoving, bPartialPathSearch,
                         1, vOrientation, nForceDay, nForceTime, 0);
                     m_nAnimationState = ANIMATION_STATE_MOVE_COMPLETE;
-                    AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                    return ACTION_COMPLETE;
                 }
             }
             break;
@@ -8340,10 +8320,10 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
             TerminateClientSidePath(nMovementRate);
         m_pPathfindInformation->HandlePathfindError(0,
             "I have no legs! I can't feel my legs!!!!");
-        AIACTIONMOVETOPOINT_RETURN(ACTION_FAILED);
+        return ACTION_FAILED;
     }
     if (GetArea() == NULL)
-        AIACTIONMOVETOPOINT_RETURN(ACTION_IN_PROGRESS);
+        return ACTION_IN_PROGRESS;
     if (GetArea() != NULL && GetArea()->GetId() == oidArea)
     {
         Vector vDelta = vDestination - m_vPosition;
@@ -8356,7 +8336,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
                 m_pPathfindInformation->HandlePathfindError(0,
                     "Bailed the desired position is unsafe.");
             SetAnimation(ANIMATION_COMBAT_READY);
-            AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+            return ACTION_COMPLETE;
         }
     }
     m_pPathfindInformation->m_nPathFlags = bUsePath != 0;
@@ -8462,7 +8442,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
             if (bNoForceMoves == 0 && nForceDay > 0 && nForceTime > 0)
             {
                 SetPosition(vDestination, 1, 1, 0);
-                AIACTIONMOVETOPOINT_RETURN(ACTION_COMPLETE);
+                return ACTION_COMPLETE;
             }
         }
     }
@@ -8481,7 +8461,7 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
         else
             nResult = WalkUpdateLocation();
     }
-    AIACTIONMOVETOPOINT_RETURN(nResult);
+    return nResult;
 }
 
 #ifdef _XBOX
@@ -8584,18 +8564,4 @@ ConsoleFunc ConFDraw_Line("Draw_Line", Draw_Line);
 ConsoleFunc ConFTestLocationIsSafe("TestLocationIsSafe", TestLocationIsSafe);
 ConsoleFunc ConFLocateNearestPathPoint("LocateNearestPathPoint", LocateNearestPathPoint);
 ConsoleFunc ConFValidateCreaturePath("ValidateCreaturePath", ValidateCreaturePath);
-#endif
-
-#ifdef _XBOX
-
-static __int64 QueryTimer()
-{
-    LARGE_INTEGER nFrequency;
-    LARGE_INTEGER nCount;
-    static __int64 performanceFrequency =
-        (QueryPerformanceFrequency(&nFrequency), nFrequency.QuadPart);
-
-    QueryPerformanceCounter(&nCount);
-    return 1000000 * nCount.QuadPart / performanceFrequency;
-}
 #endif

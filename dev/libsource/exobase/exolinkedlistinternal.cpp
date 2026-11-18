@@ -57,11 +57,7 @@ CExoLinkedListNode* CExoLinkedListInternal::AddBefore(
     if (!pPosition)
     {
         g_pExoBase->m_pExoDebug->Warning(
-#ifdef _XBOX
-            193, "exolinkedlistinternal.cpp",
-#else
             191, "exolinkedlistinternal.cpp",
-#endif
             "CExoLinkedListInternal::AddBefore() Position parameter is NULL");
         return 0;
     }
@@ -85,11 +81,7 @@ void* CExoLinkedListInternal::GetAtPos(CExoLinkedListNode* pPosition) const
     if (!pPosition)
     {
         g_pExoBase->m_pExoDebug->Warning(
-#ifdef _XBOX
-            238, "exolinkedlistinternal.cpp",
-#else
             236, "exolinkedlistinternal.cpp",
-#endif
             "CExoLinkedListInternal::GetAtPos() Position paramter is NULL");
         return 0;
     }
@@ -101,11 +93,7 @@ void* CExoLinkedListInternal::GetNext(CExoLinkedListNode*& pPosition) const
     if (!pPosition)
     {
         g_pExoBase->m_pExoDebug->Warning(
-#ifdef _XBOX
-            257, "exolinkedlistinternal.cpp",
-#else
             255, "exolinkedlistinternal.cpp",
-#endif
             "CExoLinkedListInternal::GetNext() Position paramter is NULL");
         return 0;
     }
@@ -124,11 +112,7 @@ void* CExoLinkedListInternal::GetPrev(CExoLinkedListNode*& pPosition) const
     if (!pPosition)
     {
         g_pExoBase->m_pExoDebug->Warning(
-#ifdef _XBOX
-            283, "exolinkedlistinternal.cpp",
-#else
             281, "exolinkedlistinternal.cpp",
-#endif
             "CExoLinkedListInternal::GetPreviousg() Position paramter is NULL");
         return 0;
     }
@@ -147,11 +131,7 @@ void* CExoLinkedListInternal::Remove(CExoLinkedListNode* pPosition)
     if (!pPosition)
     {
         g_pExoBase->m_pExoDebug->Warning(
-#ifdef _XBOX
-            309, "exolinkedlistinternal.cpp",
-#else
             307, "exolinkedlistinternal.cpp",
-#endif
             "CExoLinkedListInternal::Remove() Position paramter is NULL");
         return 0;
     }
@@ -177,11 +157,7 @@ void* CExoLinkedListInternal::RemoveHead()
     if (!pNode)
     {
         g_pExoBase->m_pExoDebug->Warning(
-#ifdef _XBOX
-            359, "exolinkedlistinternal.cpp",
-#else
             357, "exolinkedlistinternal.cpp",
-#endif
             "CExoLinkedListInternal::RemoveHead() Removing from empty List");
         return 0;
     }
@@ -202,11 +178,7 @@ void* CExoLinkedListInternal::RemoveTail()
     if (!pNode)
     {
         g_pExoBase->m_pExoDebug->Warning(
-#ifdef _XBOX
-            397, "exolinkedlistinternal.cpp",
-#else
             395, "exolinkedlistinternal.cpp",
-#endif
             "CExoLinkedListInternal::RemoveTail() Removing from empty List");
         return 0;
     }
