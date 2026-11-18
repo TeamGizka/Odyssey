@@ -1006,10 +1006,7 @@ unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage,
     g_nImagesDownSampled++;
     int nNewHeight = nHeight / nFactor;
     unsigned char* pDest = (unsigned char*)operator new(nNewHeight * nNewWidth * 4);
-    int nRed = 0;
-    int nGreen = 0;
-    int nBlue = 0;
-    int nAlpha = 0;
+    int anSum[4] = {0, 0, 0, 0};
     int anColor[4];
     for (int y = 0; y < nNewHeight; y++)
     {
@@ -1019,24 +1016,22 @@ unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage,
             {
                 for (int i = 0; i < nFactor; i++)
                 {
-                    nRed += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4];
-                    nGreen += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4 + 1];
-                    nBlue += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4 + 2];
-                    nAlpha += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4 + 3];
+                    anSum[0] += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4];
+                    anSum[1] += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4 + 1];
+                    anSum[2] += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4 + 2];
+                    anSum[3] += pImage[((y * nWidth + x) * nFactor + j * nWidth + i) * 4 + 3];
                 }
             }
-            anColor[0] = nRed / (nFactor * nFactor);
-            anColor[1] = nGreen / (nFactor * nFactor);
-            anColor[2] = nBlue / (nFactor * nFactor);
-            anColor[3] = nAlpha / (nFactor * nFactor);
+            anColor[0] = anSum[0] / (nFactor * nFactor);
+            anColor[1] = anSum[1] / (nFactor * nFactor);
+            anColor[2] = anSum[2] / (nFactor * nFactor);
+            anColor[3] = anSum[3] / (nFactor * nFactor);
             pDest[(y * nNewWidth + x) * 4] = anColor[0];
             pDest[(y * nNewWidth + x) * 4 + 1] = anColor[1];
             pDest[(y * nNewWidth + x) * 4 + 2] = anColor[2];
             pDest[(y * nNewWidth + x) * 4 + 3] = anColor[3];
-            nRed = 0;
-            nGreen = 0;
-            nBlue = 0;
-            nAlpha = 0;
+            for (int k = 0; k < 4; k++)
+                anSum[k] = 0;
         }
     }
     return pDest;

@@ -1142,6 +1142,7 @@ CSWGuiControl* CSWGuiManager::UpdateMouseOverControl()  // PC 0x0040B500 GOG 0x0
     return pOver;
 }
 #endif
+#ifndef _XBOX
 // PC 0x0040B560 GOG 0x0040B530
 void CSWGuiManager::GetUpdatedFontName(char* sFont)
 {
@@ -1177,6 +1178,7 @@ void CSWGuiManager::GetUpdatedFontName(char* sFont)
         }
     }
 }
+#endif
 
 #ifndef _XBOX
 void CSWGuiManager::SetSize(int nWidth, int nHeight)  // PC 0x0040C1D0 GOG 0x0040C190
@@ -1193,6 +1195,12 @@ void CSWGuiManager::SetSize(int nWidth, int nHeight)  // PC 0x0040C1D0 GOG 0x004
             DetermineNeedToDraw();
         }
     }
+}
+#else
+void CSWGuiManager::SetSize(int nWidth, int nHeight)  // Xbox 0x00331C80
+{
+    m_nWidth = nWidth;
+    m_nHeight = nHeight;
 }
 #endif
 // PC 0x0040C220 GOG 0x0040C1E0 Xbox 0x00333010

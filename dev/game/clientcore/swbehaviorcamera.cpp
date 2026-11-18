@@ -786,7 +786,11 @@ Vector CSWCameraOnAStick::Control_ComputeNewCameraPosition(
     {
         fDeltaYaw += 360.0f;
     }
+#ifdef _XBOX
+    fDeltaYaw = fDeltaYaw * m_fPositionInterpSpeed * fTimeStep + fCurrentYaw;
+#else
     fDeltaYaw = fDeltaYaw * m_fPositionInterpSpeed * fTimeStep;
+#endif
 
     if (m_bResetToTargetOrientation)
     {
@@ -803,9 +807,7 @@ Vector CSWCameraOnAStick::Control_ComputeNewCameraPosition(
     {
         fDeltaYaw += 360.0f;
     }
-#ifdef _XBOX
-    fDeltaYaw += fCurrentYaw;
-#else
+#ifndef _XBOX
     if (m_bPreserveLastYaw)
     {
         m_bPreserveLastYaw = 0;
@@ -1353,7 +1355,6 @@ int CSWCameraOnAStick::Control(float fTimeStep)
             static_cast<Gob*>(m_pObject)->GetPosition(), vDesiredPosition, fTimeStep);
         vDesiredPosition = Control_HitCheckCamera(Control_ComputeNewCameraPosition(
             vDesiredPosition, vPosition, vTargetPosition, fTimeStep));
-#ifndef _XBOX
         if (RenderQA && m_pObject)
         {
             SW_CAMERA_QA_REPORT("Camera position (%f, %f, %f), target distance %f",
@@ -1362,7 +1363,6 @@ int CSWCameraOnAStick::Control(float fTimeStep)
                 static_cast<Gob*>(m_pObject)->GetPosition().m_fZ,
                 magnitude(static_cast<Gob*>(m_pObject)->GetPosition() - vTargetPosition));
         }
-#endif
         static_cast<Gob*>(m_pObject)->SetPosition(vDesiredPosition);
         static_cast<Gob*>(m_pObject)->SetOrientation(Control_SetCameraOrientation(fTimeStep));
         if (m_bResetToTargetOrientation)

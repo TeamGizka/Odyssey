@@ -1546,6 +1546,11 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
         {
             bStateChanged = 1;
             PlaySoundSetSound(SOUNDSET_ENTER_STEALTH, 1);
+#ifdef _XBOX
+            AddVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_FRAMEBUFFER,
+                0, OBJECT_INVALID, OBJECT_INVALID, 0, 0,
+                Vector(0.0f, 0.0f, 0.0f));
+#else
             if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nFrameBuffer &&
                 AurCheckFrameBufferModificationsAvailable())
             {
@@ -1559,11 +1564,15 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
                     0, OBJECT_INVALID, OBJECT_INVALID, 0, 0,
                     Vector(0.0f, 0.0f, 0.0f));
             }
+#endif
         }
     }
     else if (nState == 0 && m_nStealthState == 1)
     {
         bStateChanged = 1;
+#ifdef _XBOX
+        DeleteVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_FRAMEBUFFER);
+#else
         if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nFrameBuffer &&
             AurCheckFrameBufferModificationsAvailable())
         {
@@ -1573,6 +1582,7 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
         {
             DeleteVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_FALLBACK);
         }
+#endif
         AddVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_END,
             1, OBJECT_INVALID, OBJECT_INVALID, 0, 0,
             Vector(0.0f, 0.0f, 0.0f));
@@ -1597,6 +1607,11 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
                 if (nState)
                 {
                     PlaySoundSetSound(SOUNDSET_ENTER_STEALTH, 1);
+#ifdef _XBOX
+                    pNPC->AddVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_FRAMEBUFFER,
+                        0, OBJECT_INVALID, OBJECT_INVALID, 0, 0,
+                        Vector(0.0f, 0.0f, 0.0f));
+#else
                     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nFrameBuffer &&
                         AurCheckFrameBufferModificationsAvailable())
                     {
@@ -1610,9 +1625,13 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
                             0, OBJECT_INVALID, OBJECT_INVALID, 0, 0,
                             Vector(0.0f, 0.0f, 0.0f));
                     }
+#endif
                 }
                 else
                 {
+#ifdef _XBOX
+                    pNPC->DeleteVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_FRAMEBUFFER);
+#else
                     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nFrameBuffer &&
                         AurCheckFrameBufferModificationsAvailable())
                     {
@@ -1622,6 +1641,7 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
                     {
                         pNPC->DeleteVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_FALLBACK);
                     }
+#endif
                     pNPC->AddVisualEffect(CSWCVisualEffectOnObject::VFX_STEALTH_END,
                         1, OBJECT_INVALID, OBJECT_INVALID, 0, 0,
                         Vector(0.0f, 0.0f, 0.0f));
@@ -8885,7 +8905,9 @@ void CSWCCreature::AIUpdate()
         {
             AnimateFireAndForget();
             FollowAnimationUpdate();
+#ifndef _XBOX
             MoveCreatureToPosition(m_vDesiredPosition);
+#endif
         }
         else
             AnimationUpdate();
@@ -9390,6 +9412,10 @@ void CSWCCreature::GetFriendlyInterfaceActions(  // Xbox 0x00047610
 {
     int nAction = lstActions.num;
     CSWSCreature* pCreature = GetServerCreature();
+    if (NWCCREATURE_DEBUG)
+    {
+        EXOLOG("CSWCCreature::GetFriendlyInterfaceActions() target %x type %d actions %d\n", pTarget->GetId(), nType, nAction);
+    }
     if (pCreature != NULL && pCreature->m_bConfused == 0)
     {
         lstActions.SetSize(nAction + 1);

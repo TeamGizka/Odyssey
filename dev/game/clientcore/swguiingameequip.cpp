@@ -696,6 +696,115 @@ void CSWGuiInGameEquip::ScrollItemsUp()  // Xbox 0x000FD260
     }
 }
 
+void CSWGuiContainer::SetItemRows(int nTopItem, int nSelectedItem)  // Xbox 0x000FD2E0
+{
+    int bTakeMode = m_nGiveModeFlags & GIVE_MODE_ACTIVE;
+    int nItems;
+    if (m_nGiveModeFlags & GIVE_MODE_ACTIVE)
+    {
+        nItems = m_lContainerItems.num;
+        if (nSelectedItem >= nItems)
+        {
+            nSelectedItem = nItems - 1;
+            nTopItem = m_nSelectedItem - NUM_ITEM_ROWS < 0 ? 0 : m_nSelectedItem - NUM_ITEM_ROWS;
+        }
+    }
+    else
+    {
+        nItems = m_lGiveItems.num;
+        if (nSelectedItem >= nItems)
+        {
+            nSelectedItem = nItems - 1;
+            nTopItem = m_nSelectedItem - NUM_ITEM_ROWS < 0 ? 0 : m_nSelectedItem - NUM_ITEM_ROWS;
+        }
+    }
+    if (nTopItem + (NUM_ITEM_ROWS - 1) >= nItems)
+    {
+        nTopItem = nItems - NUM_ITEM_ROWS < 0 ? 0 : nItems - NUM_ITEM_ROWS;
+    }
+    nItems = bTakeMode ? m_lContainerItems.num : m_lGiveItems.num;
+    int nRows = nItems > NUM_ITEM_ROWS ? NUM_ITEM_ROWS : nItems;
+    m_nTopItem = nTopItem;
+    m_nPreviousSelectedItem = m_nSelectedItem;
+    m_nSelectedItem = nSelectedItem;
+    SetActiveControl(NULL, 0);
+    int nRow;
+    for (nRow = 0; nRow < nRows; nRow++)
+    {
+        CSWGuiInGameItemEntry& cRow = m_aItemRows[nRow];
+        if (m_nGiveModeFlags & GIVE_MODE_ACTIVE)
+        {
+            cRow.SetItem(m_lContainerItems[nTopItem + nRow], 0, 0, CGuiInGame::COLOR_NEW_TEXT,
+                         CGuiInGame::COLOR_NEW_GREEN, CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            cRow.AddEvent(GUIEVENT_ACTIVATE, this, NULL);
+        }
+        else
+        {
+            cRow.SetItem(m_lGiveItems[nTopItem + nRow], 0, 0, CGuiInGame::COLOR_NEW_TEXT,
+                         CGuiInGame::COLOR_NEW_GREEN, CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            cRow.AddEvent(GUIEVENT_ACTIVATE, this,
+                          (CSWGuiHandler)&CSWGuiContainer::GiveItem);
+        }
+        cRow.m_bEnabled = 1;
+    }
+    for (nRow = nRows; nRow < NUM_ITEM_ROWS; nRow++)
+    {
+        m_aItemRows[nRow].m_bEnabled = 0;
+    }
+    if (m_nGiveModeFlags & GIVE_MODE_ACTIVE)
+    {
+        SetActiveControl(NULL, 0);
+    }
+    else if (m_lGiveItems.num > 0)
+    {
+        SetActiveControl(&m_aItemRows[nSelectedItem - nTopItem], 1);
+    }
+}
+
+void CSWGuiContainer::SelectPreviousItem()  // Xbox 0x000FD490
+{
+    int bTakeMode = m_nGiveModeFlags & GIVE_MODE_ACTIVE;
+    if (bTakeMode)
+    {
+        m_nSelectedItem = m_nTopItem;
+    }
+    int nSelected = m_nSelectedItem - 1;
+    int nTop = m_nTopItem;
+    if (nSelected < 0)
+    {
+        nSelected = bTakeMode ? m_lContainerItems.num - 1 : m_lGiveItems.num - 1;
+        nTop = nSelected - (NUM_ITEM_ROWS - 1) < 0 ? 0 : nSelected - (NUM_ITEM_ROWS - 1);
+        g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
+    }
+    else if (nSelected < nTop)
+    {
+        nTop = nSelected;
+    }
+    SetItemRows(nTop, nSelected);
+}
+
+void CSWGuiContainer::SelectNextItem()  // Xbox 0x000FD510
+{
+    int bTakeMode = m_nGiveModeFlags & GIVE_MODE_ACTIVE;
+    if (bTakeMode)
+    {
+        m_nSelectedItem = m_nTopItem + (NUM_ITEM_ROWS - 1);
+    }
+    int nSelected = m_nSelectedItem + 1;
+    int nTop = m_nTopItem;
+    if (nSelected >= (bTakeMode ? m_lContainerItems.num : m_lGiveItems.num))
+    {
+        nSelected = 0;
+        nTop = 0;
+        g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
+    }
+    else if (nSelected - nTop > NUM_ITEM_ROWS - 1)
+    {
+        nTop = nSelected - (NUM_ITEM_ROWS - 1);
+    }
+    SetItemRows(nTop, nSelected);
+}
+
 // Xbox 0x000FE4A0
 void CSWGuiInGameEquip::UpdateInventory()  // Xbox 0x000FE4A0
 {
@@ -1172,12 +1281,22 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)  // Xbox 0x000FDE70
     }
 }
 #endif
-void CSWGuiContainer::HandleInputEvent(int nEvent, int nState)  // PC 0x0071A050 GOG 0x00719D40
+void CSWGuiContainer::HandleInputEvent(int nEvent, int nState)  // PC 0x0071A050 GOG 0x00719D40 Xbox 0x001007A0
 {
     if (nState != 0)
     {
         switch (nEvent)
         {
+#ifdef _XBOX
+        case GUIEVENT_UP:
+        case GUIEVENT_UP_ALTERNATE:
+            SelectPreviousItem();
+            return;
+        case GUIEVENT_DOWN:
+        case GUIEVENT_DOWN_ALTERNATE:
+            SelectNextItem();
+            return;
+#endif
         case GUIEVENT_ACCEPT:
             if ((m_nGiveModeFlags & GIVE_MODE_ACTIVE) == 0)
             {
@@ -1210,10 +1329,10 @@ void CSWGuiContainer::HandleInputEvent(int nEvent, int nState)  // PC 0x0071A050
             if ((m_nGiveModeFlags & GIVE_MODE_ACTIVE) != 0)
             {
 #ifdef _XBOX
-                SetupGiveMode();
-#else
-                SetupGiveMode(0);
+                m_nTopItem = 0;
+                m_nSelectedItem = 0;
 #endif
+                SetupGiveMode(0);
             }
             else
             {
@@ -1494,7 +1613,8 @@ int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int nSlot, int bClearActions)
 
     return 0;
 }
-// PC 0x007184A0 GOG 0x00718190
+#endif
+// PC 0x007184A0 GOG 0x00718190 Xbox 0x000FF200
 CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
 {
     m_bPulsing = 0;
@@ -1503,13 +1623,14 @@ CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
     m_oidItem = OBJECT_INVALID;
     m_nCanUse = 0;
 }
-#ifndef _XBOX
-// PC 0x007163B0 GOG 0x007160A0
+// PC 0x007163B0 GOG 0x007160A0 Xbox 0x000FF280
 CSWGuiContainer::CSWGuiContainer(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("container");
+    m_nTopItem = 0;
+    m_nSelectedItem = 0;
+    StartLoadFromLayout("container_x", 0);
 #else
     StartLoadFromLayout("container_p", 0);
     m_bPositioned = 1;
@@ -1517,26 +1638,32 @@ CSWGuiContainer::CSWGuiContainer(CSWGuiManager* pManager)
     InitControl(m_lblMessage, "LBL_MESSAGE", 1);
     InitControl(m_lblButton, "LBL_BUTTON", 1);
     InitControl(m_lblOk, "LBL_OK", 1);
+#ifndef _XBOX
     InitControl(m_lbItems, "LB_ITEMS", 1);
+#endif
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblX, "LBL_X", 1);
 #ifdef _XBOX
     InitControl(m_lblGiveitems, "LBL_GIVEITEMS", 1);
     InitControl(m_lblCancel, "LBL_CANCEL", 1);
-    StopLoadFromLayout();
-
-    m_nGiveModeFlags |= GIVE_MODE_ACTIVE;
-    m_lbItems.SetScrollOnly(1);
-    m_lbItems.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    for (int nRow = 0; nRow < NUM_ITEM_ROWS; nRow++)
+    {
+        InitControl(m_aItemRows[nRow],
+                    CExoString("BTN_ITEM") + CExoString(nRow + 1), 1, 0);
+        m_aItemRows[nRow].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        m_aItemRows[nRow].m_cText.m_cParams.SetAlignment(ITEM_ROW_TEXT_ALIGNMENT);
+    }
 #else
     InitControl(m_lblCancel, "LBL_CANCEL", 1);
     InitControl(m_btnOk, "BTN_OK", 1);
     InitControl(m_btnGiveitems, "BTN_GIVEITEMS", 1);
     InitControl(m_btnCancel, "BTN_CANCEL", 1);
+#endif
     StopLoadFromLayout();
 
     m_nGiveModeFlags = (m_nGiveModeFlags & ~(GIVE_MODE_SETUP | GIVE_MODE_CLEAR)) |
                        GIVE_MODE_ACTIVE;
+#ifndef _XBOX
     m_lbItems.SetScrollOnly(1);
     m_lbItems.SetEnabled(0);
     m_lbItems.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
@@ -1550,40 +1677,55 @@ CSWGuiContainer::CSWGuiContainer(CSWGuiManager* pManager)
     m_btnCancel.SetFocusable(0);
     m_btnCancel.AddEvent(GUIEVENT_ACTIVATE, this,
                         (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+#endif
     m_cExtent.m_nTop = 0;
     m_cExtent.m_nLeft = 0;
-#endif
     CenterPanel();
 }
-#endif
-// PC 0x007186F0 GOG 0x007183E0
+// PC 0x007186F0 GOG 0x007183E0 Xbox 0x000FF630
 void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
 {
+#ifdef _XBOX
+    m_lGiveItems.RemoveAll();
+    m_lContainerItems.RemoveAll();
+    m_nTopItem = 0;
+    m_nSelectedItem = 0;
+#endif
     m_oidContainer = oidContainer;
     m_nContainerType = nType;
+#ifndef _XBOX
 
     CExoArrayList<CSWGuiInGameItemEntry*> lItems;
     CSWGuiLabelHilight* pProto = (CSWGuiLabelHilight*)m_lbItems.m_pProtoItem;
     CSWGuiText* pText = &pProto->m_cText;
     CSWGuiBorder* pBorder = &pProto->m_cBorder;
     CSWGuiBorder* pHilite = &pProto->m_cHilite;
+#endif
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
     CSWSPlaceable* pPlaceable = pServer->GetPlaceableByGameObjectID(
         pServer->ClientToServerObjectId(oidContainer));
     CItemRepository* pRepository = pPlaceable->m_pcItemRepository;
+#ifndef _XBOX
     lItems.SetSize(pRepository->GetNumItems());
     int nWidth = m_lbItems.GetItemWidth();
+#endif
 
     for (unsigned long nItem = 0; nItem < pRepository->GetNumItems(); ++nItem)
     {
         unsigned long oidItem = pClient->ServerToClientObjectId(
             pRepository->ItemListGetItemObjectID(nItem));
+#ifdef _XBOX
+        m_lContainerItems.Add(oidItem);
+#else
         lItems[nItem] = new CSWGuiInGameItemEntry;
         lItems[nItem]->Initialize(*pText, *pBorder, *pHilite, nWidth, 0);
         lItems[nItem]->SetItem(oidItem, 0, 0);
+#endif
     }
+#ifndef _XBOX
     m_lbItems.AddControls(*(CExoArrayList<CSWGuiControl*>*)&lItems, 1, 0, 0);
+#endif
 
     int bUseSearch = 0;
     bUseSearch = pPlaceable->m_bIsBodyBag;
@@ -1616,7 +1758,8 @@ void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
         g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_GET_ITEMS));
     m_lblGiveitems.m_cText.m_cParams.SetText(sGive);
     m_nGiveModeFlags |= GIVE_MODE_ACTIVE;
-    m_lbItems.SetScrollOnly(1);
+    SetActiveControl(0, 0);
+    SetItemRows(m_nTopItem, m_nSelectedItem);
 #else
     m_lblMessage.m_cText.m_cParams.SetStrRef(nStrRef);
     m_lblOk.m_cText.m_cParams.SetStrRef(STRREF_GET_ITEMS);
@@ -1625,28 +1768,33 @@ void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
     m_nGiveModeFlags |= GIVE_MODE_ACTIVE;
     m_lbItems.SetScrollOnly(1);
     m_lbItems.SetEnabled(0);
-#endif
     SetActiveControl(0, 0);
     SetActiveControl(&m_lbItems, 0);
+#endif
 }
 #ifdef _XBOX
-
 #define STRREF_XBOX_GIVE_ITEM_LABEL 47885
-void CSWGuiContainer::SetupGiveMode()  // PC 0x00718A50 GOG 0x00718740
-#else
-void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
 #endif
+// PC 0x00718A50 GOG 0x00718740 Xbox 0x000FF950
+void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
 {
+#ifdef _XBOX
+    m_lContainerItems.RemoveAll();
+    m_lGiveItems.RemoveAll();
+#else
     CExoArrayList<CSWGuiInGameItemEntry*> lItems;
     CSWGuiLabelHilight* pProto = (CSWGuiLabelHilight*)m_lbItems.m_pProtoItem;
     CSWGuiText* pText = &pProto->m_cText;
     CSWGuiBorder* pBorder = &pProto->m_cBorder;
     CSWGuiBorder* pHilite = &pProto->m_cHilite;
+#endif
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
     CItemRepository* pRepository =
         g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPartyItems();
+#ifndef _XBOX
     int nWidth = m_lbItems.GetItemWidth();
     int nEntry = 0;
+#endif
 
     for (unsigned long nItem = 0; nItem < pRepository->GetNumItems(); ++nItem)
     {
@@ -1655,6 +1803,9 @@ void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
         CSWSItem* pItem = pRepository->ItemListGetItem(nItem);
         if (pItem != NULL && pItem->m_bPlotObject == 0)
         {
+#ifdef _XBOX
+            m_lGiveItems.Add(oidItem);
+#else
             lItems.Add(new CSWGuiInGameItemEntry);
             lItems[nEntry]->Initialize(*pText, *pBorder, *pHilite, nWidth, 1);
             lItems[nEntry]->SetItem(oidItem, 0, 0);
@@ -1663,6 +1814,7 @@ void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
             lItems[nEntry]->AddEvent(GUIEVENT_ACCEPT, this,
                                     (CSWGuiHandler)&CSWGuiContainer::GiveItem);
             ++nEntry;
+#endif
         }
     }
 
@@ -1676,10 +1828,7 @@ void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
         g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_XBOX_GIVE_ITEM_LABEL));
     m_lblGiveitems.m_cText.m_cParams.SetText(sGive);
     m_nGiveModeFlags &= ~GIVE_MODE_ACTIVE;
-    m_lbItems.SetScrollOnly(0);
-    m_lbItems.AddControls(*(CExoArrayList<CSWGuiControl*>*)&lItems, 1, 0, 0);
-    SetActiveControl(0, 0);
-    SetActiveControl(&m_lbItems, 0);
+    SetItemRows(m_nTopItem, m_nSelectedItem);
 #else
     m_lblMessage.m_cText.m_cParams.SetStrRef(STRREF_ITEMS_TO_GIVE);
     m_lblOk.m_cText.m_cParams.SetStrRef(STRREF_GIVE_ITEM);
@@ -1703,8 +1852,7 @@ void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
     }
 #endif
 }
-#ifndef _XBOX
-void CSWGuiContainer::Update(float fElapsed)  // PC 0x00718DB0 GOG 0x00718AA0
+void CSWGuiContainer::Update(float fElapsed)  // PC 0x00718DB0 GOG 0x00718AA0 Xbox 0x000FFB50
 {
     int nResult = m_nGiveModeFlags;
 
@@ -1720,7 +1868,7 @@ void CSWGuiContainer::Update(float fElapsed)  // PC 0x00718DB0 GOG 0x00718AA0
         m_nGiveModeFlags &= ~GIVE_MODE_SETUP;
     }
 }
-#endif
+#ifndef _XBOX
 #ifndef _XBOX
 // PC 0x00714220 GOG 0x00713F10
 int CSWGuiInGameEquip::EquipItem(unsigned long oidItem, int nSlot,
@@ -1830,13 +1978,15 @@ void CSWGuiInGameEquip::ShowCantEquipMessage(int bShow, unsigned long nStrRef)
     m_btnEquip.m_cBorder.m_cParams.m_vColor =
         bShow ? CGuiInGame::DISABLED_TEXT : CGuiInGame::COLOR_NEW_GREEN;
 }
-// PC 0x00716780 GOG 0x00716470
+#endif
+// PC 0x00716780 GOG 0x00716470 Xbox 0x000FFB80
 CSWGuiStoreItemEntry::CSWGuiStoreItemEntry()
 {
     m_oidItem = OBJECT_INVALID;
     m_nUpgradeRow = -1;
     m_bSkillRequirementMet = 0;
 }
+#ifndef _XBOX
 
 // PC 0x00714560 GOG 0x00714250
 CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
@@ -2786,7 +2936,7 @@ void CSWGuiInGameItemEntry::SetCanUse(unsigned char nCanUse, const Vector& vBord
     m_cIconHilite.m_cParams.SetPulsingAlpha(m_bPulsing, 0, 1);
     m_nCanUse = nCanUse;
 }
-// PC 0x007153D0 GOG 0x007150C0
+// PC 0x007153D0 GOG 0x007150C0 Xbox 0x000FC740
 void CSWGuiContainer::GiveItem(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2797,12 +2947,7 @@ void CSWGuiContainer::GiveItem(CSWGuiControl* pControl)
         }
 
 #ifdef _XBOX
-
-        g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter()->PerformGiveItem(
-            static_cast<CSWGuiInGameItemEntry*>(pControl)->m_oidItem, m_oidContainer, 1);
-        g_pAppManager->m_pClientExoApp->GetSWCMessage()->
-            SendPlayerToServerGuiContainer_Close(m_oidContainer, 0);
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->HideContainerGui();
+        int nItems = static_cast<CSWGuiInGameItemEntry*>(pControl)->GetNumItems();
 #else
         int nItems = 1;
         if (g_bShiftActionState != 0)
@@ -2810,6 +2955,7 @@ void CSWGuiContainer::GiveItem(CSWGuiControl* pControl)
             nItems =
                 static_cast<CSWGuiInGameItemEntry*>(pControl)->GetNumItems();
         }
+#endif
 
         unsigned long oidContainer = m_oidContainer;
         unsigned long oidItem =
@@ -2818,7 +2964,6 @@ void CSWGuiContainer::GiveItem(CSWGuiControl* pControl)
         pClient->GetSWParty()->GetPlayerCharacter()->PerformGiveItem(
             oidItem, oidContainer, nItems);
         m_nGiveModeFlags |= GIVE_MODE_SETUP | GIVE_MODE_CLEAR;
-#endif
     }
 }
 #ifndef _XBOX

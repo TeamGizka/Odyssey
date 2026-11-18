@@ -1302,6 +1302,7 @@ public:
     void SetReverbEnabled(int bEnabled);
     CResRef GetFilePlaying();
 #ifdef _XBOX
+    int GetStreamingMusicForMovie();
 
 
     void Set3D(int b3D);

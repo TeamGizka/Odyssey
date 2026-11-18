@@ -1106,11 +1106,14 @@ int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
 
     int nSpellId = (int)pNode->m_apParam[0];
     unsigned long oidTarget = (unsigned long)pNode->m_apParam[2];
-    int nX = (int)pNode->m_apParam[3];
-    int nY = (int)pNode->m_apParam[4];
-    int nZ = (int)pNode->m_apParam[5];
+    float fX;
+    memcpy(&fX, &pNode->m_apParam[3], sizeof(float));
+    float fY;
+    memcpy(&fY, &pNode->m_apParam[4], sizeof(float));
+    float fZ;
+    memcpy(&fZ, &pNode->m_apParam[5], sizeof(float));
     int nProjectilePathType = (int)pNode->m_apParam[6];
-    vTarget = Vector(*(float*)&nX, *(float*)&nY, *(float*)&nZ);
+    vTarget = Vector(fX, fY, fZ);
     int bFake =
         ((unsigned long)pNode->m_apParam[6] & SWSOBJECT_CAST_SPELL_FAKE_FLAG) != 0;
     unsigned char nSpellType = (unsigned char)nProjectilePathType == 0 ? 6 : 7;
@@ -1838,7 +1841,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // Xbox 0x002212C0
 {
     int nLightColor;
     if (m_bLightIsOn == bLightIsOn ||
-        !g_pRules->m_p2DArrays->m_pPlaceables->GetINTEntry(m_nAppearance, CExoString("LightColor"), &nLightColor))
+        !g_pRules->m_p2DArrays->GetPlaceables()->GetINTEntry(GetAppearance(), "LightColor", &nLightColor))
     {
         return;
     }

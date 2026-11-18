@@ -310,8 +310,6 @@ void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
 #ifdef _XBOX
 void CSWGuiLevelUpCharGen::SetBackPromptEnabled(int bEnabled)
 {
-    m_lblBack.m_bEnabled = bEnabled;
-    m_lblB.m_bEnabled = bEnabled;
 }
 #endif
 // PC 0x00757E30 GOG 0x00757BD0 Xbox 0x00135800

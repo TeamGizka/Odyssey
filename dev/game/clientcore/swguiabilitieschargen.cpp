@@ -533,11 +533,7 @@ void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
             break;
         case 42:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-#ifdef _XBOX
-            if (m_nPointsRemaining > 0)
-#else
             if (m_nPointsRemaining > 0 || m_bLevelUp == 0)
-#endif
             {
                 OnRecommendButton();
             }
@@ -567,23 +563,13 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
         if (pControl == &m_btnPoints[i])
         {
             m_nSelected = i;
-#ifdef _XBOX
-            m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-            m_lblScore[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
-#else
             m_btnPoints[i].m_cText.m_cParams.SetColor(m_vScoreTextHighlightColor);
             m_lblScore[i].m_cText.m_cParams.SetColor(m_vScoreTextHighlightColor);
-#endif
         }
         else
         {
-#ifdef _XBOX
-            m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-            m_lblScore[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
             m_btnPoints[i].m_cText.m_cParams.SetColor(m_vScoreTextColor);
             m_lblScore[i].m_cText.m_cParams.SetColor(m_vScoreTextColor);
-#endif
         }
     }
 
@@ -609,6 +595,9 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
     }
 
     m_lblCostPoints.m_cText.m_cParams.SetText(sCost);
+#ifdef _XBOX
+    m_lblAbilityMod.m_cText.m_cParams.SetText(sModifier);
+#endif
     SetDescription(m_aDescriptionStrRef[m_nSelected]);
     CSWGuiTextParams* pLabelParams = &m_lblScore[m_nSelected].m_cText.m_cParams;
     pLabelParams->m_bHilightText = 1;

@@ -257,20 +257,65 @@ void CSWCAmbientSound::PlayMusic(int bPlay)
                     }
                 }
 #else
-                int bPlaying;
                 if (m_bDaytime != 0)
                 {
-                    bPlaying = m_pMusicSource->Play(m_MusicDay.m_sSound,
-                                                    RESTYPE_BMU, 0, 1, 0);
+                    if (m_pMusicSource->GetStreamingMusicForMovie())
+                    {
+                        CExoString sFileName;
+                        sFileName.Format("HD0:STREAMMUSIC\\%s", m_MusicDay.m_sSound.CStr());
+                        if (!m_pMusicSource->Play(g_pExoResMan->CacheResource(sFileName, RESTYPE_BMU),
+                                                  RESTYPE_BMU, 0, 1, 0))
+                        {
+                            m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
+                        }
+                    }
+                    else
+                    {
+                        CExoStreamingSoundSource* pSource =
+                            g_pAppManager->GetClientExoApp()->AquireLoadMusic(m_MusicDay.m_sSound);
+                        if (pSource != 0)
+                        {
+                            delete m_pMusicSource;
+                            m_pMusicSource = pSource;
+                            m_pMusicSource->SetLooping(0);
+                            m_pMusicSource->SetPriorityGroup(
+                                CExoStreamingSoundSource::PRIORITY_GROUP_MUSIC);
+                        }
+                        else if (!m_pMusicSource->Play(m_MusicDay.m_sSound, RESTYPE_BMU, 0, 1, 0))
+                        {
+                            m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
+                        }
+                    }
                 }
                 else
                 {
-                    bPlaying = m_pMusicSource->Play(m_MusicNight.m_sSound,
-                                                    RESTYPE_BMU, 0, 1, 0);
-                }
-                if (!bPlaying)
-                {
-                    m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
+                    if (m_pMusicSource->GetStreamingMusicForMovie())
+                    {
+                        CExoString sFileName;
+                        sFileName.Format("HD0:STREAMMUSIC\\%s", m_MusicNight.m_sSound.CStr());
+                        if (!m_pMusicSource->Play(g_pExoResMan->CacheResource(sFileName, RESTYPE_BMU),
+                                                  RESTYPE_BMU, 0, 1, 0))
+                        {
+                            m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
+                        }
+                    }
+                    else
+                    {
+                        CExoStreamingSoundSource* pSource =
+                            g_pAppManager->GetClientExoApp()->AquireLoadMusic(m_MusicNight.m_sSound);
+                        if (pSource != 0)
+                        {
+                            delete m_pMusicSource;
+                            m_pMusicSource = pSource;
+                            m_pMusicSource->SetLooping(0);
+                            m_pMusicSource->SetPriorityGroup(
+                                CExoStreamingSoundSource::PRIORITY_GROUP_MUSIC);
+                        }
+                        else if (!m_pMusicSource->Play(m_MusicNight.m_sSound, RESTYPE_BMU, 0, 1, 0))
+                        {
+                            m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
+                        }
+                    }
                 }
 #endif
             }
@@ -356,8 +401,15 @@ void CSWCAmbientSound::PlayBattleMusic(int bPlay)
         else
         {
             m_pMusicSource->SetPriorityGroup(2);
+#ifdef _XBOX
+            m_pMusicSource->SetLooping(1);
+#endif
+#ifdef _XBOX
+            if (m_pMusicSource->Play(m_BattleMusic.m_sSound, RESTYPE_BMU, 0, 1, 0) == 0)
+#else
             CResRef cBattleResRef(m_BattleMusic.m_sSound);
             if (m_pMusicSource->Play(cBattleResRef, RESTYPE_BMU, 0, 1, 0) == 0)
+#endif
             {
                 m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
             }
@@ -407,6 +459,32 @@ void CSWCAmbientSound::PlayAmbientSound(int bPlay)
         {
             if (!m_pAmbientSource->IsPlaying())
             {
+#ifdef _XBOX
+                if (m_bDaytime)
+                {
+                    m_pAmbientSource->SetVolume(m_nAmbientDayVolume);
+                    m_pAmbientSource->SetPriorityGroup(SOUND_PRIORITY_GROUP_AMBIENT);
+                    m_bAmbientFallback =
+                        !m_pAmbientSource->Play(m_AmbientDay.m_sSound, RESTYPE_MP3, 0, 1, 0);
+                    if (m_bAmbientFallback)
+                    {
+                        m_bAmbientFallback =
+                            !m_pAmbientSource->Play(m_AmbientDay.m_sSound, RESTYPE_WAV, 0, 1, 0);
+                    }
+                }
+                else
+                {
+                    m_pAmbientSource->SetVolume(m_nAmbientNightVolume);
+                    m_pAmbientSource->SetPriorityGroup(SOUND_PRIORITY_GROUP_AMBIENT);
+                    m_bAmbientFallback =
+                        !m_pAmbientSource->Play(m_AmbientNight.m_sSound, RESTYPE_MP3, 0, 1, 0);
+                    if (m_bAmbientFallback)
+                    {
+                        m_bAmbientFallback =
+                            !m_pAmbientSource->Play(m_AmbientNight.m_sSound, RESTYPE_WAV, 0, 1, 0);
+                    }
+                }
+#else
                 if (m_bDaytime)
                 {
                     m_pAmbientSource->SetVolume(m_nAmbientDayVolume);
@@ -439,6 +517,7 @@ void CSWCAmbientSound::PlayAmbientSound(int bPlay)
                             !m_pAmbientSource->Play(cResRef, RESTYPE_WAV, 0, 1, 0);
                     }
                 }
+#endif
             }
             m_bAmbientPlaying = 1;
         }

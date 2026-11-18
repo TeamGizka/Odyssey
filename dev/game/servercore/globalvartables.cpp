@@ -542,7 +542,6 @@ void CSWGlobalVariableTable::ReadTableWithoutCatalogue(CResGFF* pRes,
     CResStruct sString;
     int bSuccess;
     char cDefault = 0;
-    int nString = 0;
 
     memset(aBooleanValues, 0, sizeof(aBooleanValues));
     memset(acNumberValues, 0, sizeof(acNumberValues));
@@ -553,6 +552,7 @@ void CSWGlobalVariableTable::ReadTableWithoutCatalogue(CResGFF* pRes,
     pRes->ReadFieldVOID(&sStruct, aLocations, sizeof(aLocations),
                         "ValLocation", bSuccess, &cDefault);
 
+    int nString = 0;
     if (pRes->GetList(&lStrings, &sStruct, "ValString"))
     {
         nString = pRes->GetListCount(&lStrings) > 5 ?

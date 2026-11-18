@@ -139,10 +139,14 @@ struct CNearestStruct
     };
 
     unsigned long m_oidObject;
+#ifdef _XBOX
+    int m_nCanSee;
+#else
     char m_nCanSee;
 
     unsigned long m_bInFront : 1;
     unsigned long m_nMuzzleFlashState : 31;
+#endif
 };
 int TestNearestStruct(void* pObjectId, CNearestStruct cNearest);
 
@@ -847,7 +851,11 @@ public:
     int m_nCameraScrollZ;
     int m_bClientImeUI;
     CExoImeUI* m_pImeUI;
+#ifdef _XBOX
+    int m_bCameraTiltActive;
+#else
     int m_nDriveMode;
+#endif
     int m_nDriveStopTimeLow;
     int m_nDriveStopTimeHigh;
     int m_nDriveTimeLow;

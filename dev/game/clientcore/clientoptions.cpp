@@ -77,6 +77,7 @@ void CClientOptions::SetAutoLevelUpNPCs(int bEnabled)
         }
     }
 }
+#ifndef _XBOX
 // PC 0x0066A750 GOG 0x0066A4F0
 int CClientOptions::SaveOptions()
 {
@@ -302,6 +303,7 @@ int CClientOptions::SaveOptions()
                        "Enable Tooltips");
     return 1;
 }
+#endif
 // PC 0x0066CF00 GOG 0x0066CCA0 Xbox 0x0005E8D0
 void CClientOptions::ApplySoundOptions()
 {
@@ -339,11 +341,11 @@ void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 
         sName = sName.Left(nDot - nSlash - 1);
         p2DArrays = g_pRules->m_p2DArrays;
 #ifdef _XBOX
-        pMovies = p2DArrays->GetMovies2DA();
+        nRow = (unsigned char)p2DArrays->GetMovies2DA()->GetRowIndex(sName);
 #else
         pMovies = p2DArrays->m_pMovies2DA;
-#endif
         nRow = (unsigned char)pMovies->GetRowIndex(sName);
+#endif
         if (nRow < 0)
         {
             return;
@@ -418,6 +420,7 @@ void CClientOptions::SetDefaultAutopauseOptions()
     m_bAutopauseActionMenu = 0;
     m_bAutopauseNewTargetSelected = 1;
 }
+#ifndef _XBOX
 // PC 0x0066D290 GOG 0x0066D030
 void CClientOptions::SetDefaultAdvancedGraphicsOptions()
 {
@@ -429,6 +432,7 @@ void CClientOptions::SetDefaultAdvancedGraphicsOptions()
     m_nAntiAlias = 0;
     m_nSoftShadows = 1;
 }
+#endif
 // PC 0x0066D2B0 GOG 0x0066D050
 void CClientOptions::SetDefaultSoundOptions()
 {
@@ -437,14 +441,11 @@ void CClientOptions::SetDefaultSoundOptions()
     m_nSoundEffectsVolume = 85;
     m_nMovieVolume = 85;
 }
+#ifndef _XBOX
 // PC 0x0066D2C0 GOG 0x0066D060
 int CClientOptions::SetDefaultAdvancedSoundOptions()
 {
     int nEAXMode;
-#ifdef _XBOX
-    nEAXMode = 3;
-    m_nEAXMode = 3;
-#else
     if (g_pExoSound->GetBestEAXAvailable() > 3)
     {
         nEAXMode = 3;
@@ -455,10 +456,10 @@ int CClientOptions::SetDefaultAdvancedSoundOptions()
         nEAXMode = g_pExoSound->GetBestEAXAvailable();
         m_nEAXMode = nEAXMode;
     }
-#endif
     m_nEAXFlags = 0;
     return nEAXMode;
 }
+#endif
 // PC 0x0066D300 GOG 0x0066D0A0 Xbox 0x0005EC20
 float CClientOptions::GetGammaSetting()
 {
@@ -473,6 +474,7 @@ float CClientOptions::GetGammaSetting()
     return m_fGammaMax - (m_fGammaMax - m_fGammaMin) * (nBrightness * 0.01f);
 #endif
 }
+#ifndef _XBOX
 // PC 0x0066D330 GOG 0x0066D0D0
 float CClientOptions::GetMouseSenSetting()
 {
@@ -1121,6 +1123,7 @@ int CClientOptions::LoadOptions(int bSetAntiAliasing)  // PC 0x0066D930 GOG 0x00
     }
     return 1;
 }
+#endif
 
 #ifdef _XBOX
 #include "LaunchData.h"
@@ -1190,8 +1193,8 @@ void CClientOptions::SetDefaults()  // Xbox 0x0005F8F0
     m_bAutopauseEndOfCombatRound = 0;
     m_bAutopauseEnemySighted = 1;
     m_nDifficulty = 1;
-    m_nXboxUnmapped34 = 0;
-    m_nXboxUnmapped38 = 0;
+    m_nCheatFlags = 0;
+    m_nDebugFlags = 0;
     SetDefaultVideoOptions();
     memset(m_aMoviesShown, 0, sizeof(m_aMoviesShown));
 }
@@ -1212,9 +1215,13 @@ void CClientOptions::LoadFromGFF(CResGFF* pGFF, CResStruct* pStruct)  // Xbox 0x
         pGFF->ReadFieldBYTE(pStruct, "AutoSave", bSuccess, m_bAutoSave);
 
     m_bReverseMinigameYAxis =
-        pGFF->ReadFieldBYTE(pStruct, "Reverse", bSuccess, m_bMouseLook);
+        pGFF->ReadFieldBYTE(pStruct, "Reverse", bSuccess, m_bReverseMinigameYAxis);
+    m_bReverseIngame =
+        pGFF->ReadFieldBYTE(pStruct, "ReverseIngame", bSuccess, m_bReverseIngame);
     m_bCombatMovement =
         pGFF->ReadFieldBYTE(pStruct, "CombatMove", bSuccess, m_bCombatMovement);
+    m_bGuiFade =
+        pGFF->ReadFieldBYTE(pStruct, "GuiFade", bSuccess, m_bGuiFade);
     m_bHideUnequippable =
         pGFF->ReadFieldBYTE(pStruct, "HideUnequippable", bSuccess, m_bHideUnequippable);
     m_bTutorialPopups =
@@ -1233,6 +1240,8 @@ void CClientOptions::LoadFromGFF(CResGFF* pGFF, CResStruct* pStruct)  // Xbox 0x
         pGFF->ReadFieldBYTE(pStruct, "PauseEndRound", bSuccess, m_bAutopauseEndOfCombatRound);
     m_bAutopauseEnemySighted =
         pGFF->ReadFieldBYTE(pStruct, "PauseEnemy", bSuccess, m_bAutopauseEnemySighted);
+    m_bAutopauseMineSighted =
+        pGFF->ReadFieldBYTE(pStruct, "PauseMine", bSuccess, m_bAutopauseMineSighted);
     m_bAutopausePartyKilled =
         pGFF->ReadFieldBYTE(pStruct, "PausePartyKilled", bSuccess, m_bAutopausePartyKilled);
     m_bAutopauseActionMenu =
@@ -1263,6 +1272,13 @@ void CClientOptions::LoadFromGFF(CResGFF* pGFF, CResStruct* pStruct)  // Xbox 0x
     {
         memset(m_aMoviesShown, 0, sizeof(m_aMoviesShown));
     }
+    m_nCurSithLord = pGFF->ReadFieldBYTE(pStruct, "CurSithLord", bSuccess, 0);
+    m_bGameCompleted = pGFF->ReadFieldBYTE(pStruct, "GameCompleted", bSuccess, 0);
+    m_nUnlockedSongs = pGFF->ReadFieldDWORD(pStruct, "UnlockedSongs", bSuccess, 0);
+    m_nPCGender = pGFF->ReadFieldBYTE(pStruct, "PCGender", bSuccess, 0);
+    m_nAppearanceType = pGFF->ReadFieldWORD(pStruct, "AppearanceType", bSuccess, 0);
+    m_nBodyVariation = pGFF->ReadFieldBYTE(pStruct, "BodyVariation", bSuccess, 0);
+    m_nTextureVariation = pGFF->ReadFieldBYTE(pStruct, "TextureVariation", bSuccess, 0);
 }
 
 void CClientOptions::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)  // Xbox 0x0005E400
@@ -1272,7 +1288,9 @@ void CClientOptions::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)  // Xbox 0x00
     pGFF->WriteFieldBYTE(pStruct, m_bMouseLook, "AutoCentre");
     pGFF->WriteFieldBYTE(pStruct, m_bAutoSave, "AutoSave");
     pGFF->WriteFieldBYTE(pStruct, m_bReverseMinigameYAxis, "Reverse");
+    pGFF->WriteFieldBYTE(pStruct, m_bReverseIngame, "ReverseIngame");
     pGFF->WriteFieldBYTE(pStruct, m_bCombatMovement, "CombatMove");
+    pGFF->WriteFieldBYTE(pStruct, m_bGuiFade, "GuiFade");
     pGFF->WriteFieldBYTE(pStruct, m_bHideUnequippable, "HideUnequippable");
     pGFF->WriteFieldBYTE(pStruct, m_bTutorialPopups, "ShowTutorial");
     pGFF->WriteFieldBYTE(pStruct, m_bSubtitles, "ShowSubtitles");
@@ -1282,6 +1300,7 @@ void CClientOptions::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)  // Xbox 0x00
     pGFF->WriteFieldBYTE(pStruct, m_bStatusSummary, "ShowSummary");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopauseEndOfCombatRound, "PauseEndRound");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopauseEnemySighted, "PauseEnemy");
+    pGFF->WriteFieldBYTE(pStruct, m_bAutopauseMineSighted, "PauseMine");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopausePartyKilled, "PausePartyKilled");
     pGFF->WriteFieldBYTE(pStruct, m_bAutopauseActionMenu, "PauseHorzMenu");
     pGFF->WriteFieldBYTE(pStruct, m_bPauseVertMenu, "PauseVertMenu");
@@ -1293,6 +1312,67 @@ void CClientOptions::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)  // Xbox 0x00
     pGFF->WriteFieldBYTE(pStruct, m_nMovieVolume, "VolumeMovie");
     pGFF->WriteFieldVOID(pStruct, m_aMoviesShown, sizeof(m_aMoviesShown),
                          "MoviesShown");
+    char nGlobalValue = 0;
+    CExoString sGlobal("GBL_MAIN_SITH_LORD");
+    if (g_pAppManager->m_pServerExoApp != NULL)
+    {
+        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+            ->GetValueNumber(sGlobal, nGlobalValue);
+        pGFF->WriteFieldBYTE(pStruct, nGlobalValue, "CurSithLord");
+    }
+    else
+    {
+        pGFF->WriteFieldBYTE(pStruct, m_nCurSithLord, "CurSithLord");
+    }
+    sGlobal = "GBL_GAME_COMPLETE";
+    if (g_pAppManager->m_pServerExoApp != NULL)
+    {
+        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+            ->GetValueNumber(sGlobal, nGlobalValue);
+        m_bGameCompleted = nGlobalValue;
+        pGFF->WriteFieldBYTE(pStruct, nGlobalValue, "GameCompleted");
+    }
+    else
+    {
+        pGFF->WriteFieldBYTE(pStruct, m_bGameCompleted, "GameCompleted");
+    }
+    pGFF->WriteFieldDWORD(pStruct, m_nUnlockedSongs, "UnlockedSongs");
+    if (g_pAppManager->m_pServerExoApp == NULL)
+    {
+        pGFF->WriteFieldBYTE(pStruct, m_nPCGender, "PCGender");
+        pGFF->WriteFieldWORD(pStruct, m_nAppearanceType, "AppearanceType");
+        pGFF->WriteFieldBYTE(pStruct, m_nBodyVariation, "BodyVariation");
+        pGFF->WriteFieldBYTE(pStruct, m_nTextureVariation, "TextureVariation");
+    }
+    else
+    {
+        CSWCCreature* pPlayer =
+            g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
+        int bPlayerCreated = 0;
+        if (pPlayer != NULL)
+        {
+            CSWSCreature* pServerCreature = pPlayer->GetServerCreature();
+            if (pServerCreature != NULL && pServerCreature->m_bPlayerCreated)
+            {
+                bPlayerCreated = 1;
+            }
+        }
+        if (pPlayer != NULL && (m_bGameCompleted > 2 || bPlayerCreated))
+        {
+            pGFF->WriteFieldBYTE(pStruct, pPlayer->GetStats()->m_nGender, "PCGender");
+            CCAppearanceInfo cAppearance = *pPlayer->GetAppearance();
+            pGFF->WriteFieldWORD(pStruct, cAppearance.m_nAppearance, "AppearanceType");
+            pGFF->WriteFieldBYTE(pStruct, cAppearance.m_nBodyVariation, "BodyVariation");
+            pGFF->WriteFieldBYTE(pStruct, cAppearance.m_nTextureVar, "TextureVariation");
+        }
+        else
+        {
+            pGFF->WriteFieldBYTE(pStruct, m_nPCGender, "PCGender");
+            pGFF->WriteFieldWORD(pStruct, m_nAppearanceType, "AppearanceType");
+            pGFF->WriteFieldBYTE(pStruct, m_nBodyVariation, "BodyVariation");
+            pGFF->WriteFieldBYTE(pStruct, m_nTextureVariation, "TextureVariation");
+        }
+    }
 }
 
 void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)  // Xbox 0x0005ED60

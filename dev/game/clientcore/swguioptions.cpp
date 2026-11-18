@@ -481,6 +481,7 @@ void CSWGuiOptionsFeedback::OnSummary(CSWGuiControl* pControl)
         pOptions->m_bStatusSummary = bSummary;
     }
 }
+#ifndef _XBOX
 // PC 0x0074DC10 GOG 0x0074E1B0
 void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
 {
@@ -494,6 +495,7 @@ void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
         }
     }
 }
+#endif
 // PC 0x0074DC50 GOG 0x0074E1F0
 void CSWGuiOptionsFeedback::SetUpOptions()
 {
@@ -608,6 +610,7 @@ void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
+#ifndef _XBOX
 // PC 0x0074DF10 GOG 0x0074E4B0
 void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
 {
@@ -621,6 +624,7 @@ void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
         }
     }
 }
+#endif
 
 #ifndef _XBOX
 void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x0074DF50 GOG 0x0074E4F0
@@ -1315,6 +1319,7 @@ void CSWGuiOptionsSound::SetUpOptions()
         OnMoveVolumeSlider(&m_sldMovie);
     }
 }
+#ifndef _XBOX
 // PC 0x007504D0 GOG 0x00750A50
 void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
 {
@@ -1564,6 +1569,7 @@ void CSWGuiOptionsSoundAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
     m_bDiscard = 1;
     OnBButtonPressed(pControl);
 }
+#endif
 
 // PC 0x0074F570 GOG 0x0074DA30 Xbox 0x0012DEB0
 void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
@@ -2190,6 +2196,7 @@ CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     m_pGraphics = pGraphics;
 }
 #endif
+#ifndef _XBOX
 // PC 0x007528D0 GOG 0x00751D70
 CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -2249,6 +2256,7 @@ CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     SetActiveControl(&m_cbForceSoftware, 0);
     m_bDiscard = 0;
 }
+#endif
 
 #ifndef _XBOX
 CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x007517D0 GOG 0x007501D0
@@ -2359,6 +2367,7 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
     m_bResolutionChanged = 0;
 }
 #endif
+#ifndef _XBOX
 // PC 0x00751E50 GOG 0x00750D40
 void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
 {
@@ -2371,6 +2380,7 @@ void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
         m_bChanged = 1;
     }
 }
+#endif
 #ifndef _XBOX
 // PC 0x00751E90 GOG 0x00752400
 CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
@@ -2425,6 +2435,7 @@ CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     SetUpOptions();
 }
 #endif
+#ifndef _XBOX
 // PC 0x0074FBE0 GOG 0x0074FBB0
 void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
 {
@@ -2436,6 +2447,7 @@ void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
+#endif
 // PC 0x0074FC10 GOG 0x0074FBE0 Xbox 0x0012E220
 void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
 {
@@ -3086,6 +3098,7 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
 #endif
 }
 
+#ifndef _XBOX
 // PC 0x00752800 GOG 0x00751100
 void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
 {
@@ -3097,6 +3110,7 @@ void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
+#endif
 
 #ifndef _XBOX
 void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x007542E0 GOG 0x007540F0

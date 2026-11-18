@@ -63,18 +63,22 @@ void CSWGuiSkillFlow::Clear()
 void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cFlowExtent = cExtent;
+#ifdef _XBOX
+    cFlowExtent.m_nWidth = FLOW_WIDTH;
+#else
     float fScale = 1.0f;
     if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
     {
         fScale = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
     }
     cFlowExtent.m_nWidth = (int)(fScale * FLOW_WIDTH);
+#endif
     cFlowExtent.m_nHeight = FLOW_HEIGHT;
     CSWGuiExtent cSkillExtent;
     cSkillExtent.m_nLeft = cFlowExtent.m_nLeft;
-    cSkillExtent.m_nTop = cFlowExtent.m_nTop + (cFlowExtent.m_nHeight - SKILL_ICON_SIZE) / 2;
     cSkillExtent.m_nHeight = SKILL_ICON_SIZE;
     cSkillExtent.m_nWidth = SKILL_ICON_SIZE;
+    cSkillExtent.m_nTop = cFlowExtent.m_nTop + (cFlowExtent.m_nHeight - SKILL_ICON_SIZE) / 2;
     CSWGuiExtent cArrowExtent;
     cArrowExtent.m_nLeft = 0;
     cArrowExtent.m_nTop = 0;

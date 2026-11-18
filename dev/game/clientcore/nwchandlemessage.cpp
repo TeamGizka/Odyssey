@@ -7913,10 +7913,14 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileProjectile()
             pAmmunitionTypes->GetCExoStringEntry(nAmmunitionType,
                                                  sImpactSoundColumn,
                                                  &sImpactSound);
+#ifdef _XBOX
+            pProjectile->m_cProjectileSound = CResRef(sImpactSound.CStr());
+#else
             {
                 CResRef cImpactSound(sImpactSound.CStr());
                 pProjectile->m_cProjectileSound = cImpactSound;
             }
+#endif
 
             switch (nAttackResult)
             {

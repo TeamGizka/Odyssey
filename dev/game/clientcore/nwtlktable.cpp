@@ -232,6 +232,7 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
             }
         }
         break;
+#ifndef _XBOX
     case CTlkTableToken::MOUSE_BUTTON:
         {
             int nButton = token.m_nTokenValue;
@@ -259,6 +260,7 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
             sValue = g_pTlkTable->GetSimpleString(nStrRef);
         }
         break;
+#endif
     }
 
     while (sValue.GetLength() > 0 && sValue[0] == ' ')

@@ -2758,6 +2758,22 @@ void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
                     sDirectory + sResourceName + CExoString("_s"));
             }
         }
+#ifdef _XBOX
+        if (g_pExoResMan->Exists("scripts", RESTYPE_RIM, (unsigned long*)NULL))
+        {
+            if (nDownloadedPackage == 0)
+            {
+                g_pExoResMan->RemoveResourceImageFile(
+                    CExoString("RIMSXBOX:scripts"));
+            }
+            else
+            {
+                CExoString sDirectory;
+                sDirectory.Format("LIVE%d:RIMSXBOX\\scripts", nDownloadedPackage);
+                g_pExoResMan->RemoveResourceImageFile(sDirectory);
+            }
+        }
+#endif
     }
     g_pExoResMan->RemoveResourceDirectory("MODULES:");
 

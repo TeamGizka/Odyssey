@@ -4975,7 +4975,11 @@ void CSWSCreature::ApplyDeathExperience()
     if (nPercentXP > 0)
     {
         int nMembers = pParty->m_nNumMembers;
+#ifdef _XBOX
+        float fBonus = 1.0f + (nPercentXP / 100.0f) * nMembers;
+#else
         double fBonus = 1.0f + (nPercentXP / 100.0f) * nMembers;
+#endif
         fExperience *= fBonus;
     }
     int nExperience = (int)ceil(fExperience);
@@ -11107,9 +11111,7 @@ int CSWSCreature::ApplyDiseasePayload(CGameEffect* pEffect,
     CWorldTimer* pActiveTimer =
         g_pAppManager->GetServerExoApp()->GetActiveTimer(GetId());
 #ifdef _XBOX
-    CTwoDimArrays* pArraysForDisease = g_pRules->Get2DArrays();
-    EXOXBOXASSERT(pArraysForDisease->m_pDisease);
-    C2DA* pDisease = pArraysForDisease->m_pDisease;
+    C2DA* pDisease = g_pRules->Get2DArrays()->GetDisease();
 #else
     C2DA* pDisease = g_pRules->Get2DArrays()->m_pDisease;
 #endif

@@ -842,6 +842,17 @@ void CExoStreamingSoundSource::SetStreamingMusicForMovie(
         pInternal->m_bStreamingMusicForMovie = bStreamingMusicForMovie;
     }
 }
+#ifdef _XBOX
+int CExoStreamingSoundSource::GetStreamingMusicForMovie()  // Xbox 0x00165DD0
+{
+    CExoStreamingSoundSourceInternal* pInternal = m_pInternal;
+    if (pInternal != NULL)
+    {
+        return pInternal->m_bStreamingMusicForMovie;
+    }
+    return 0;
+}
+#endif
 // PC 0x00621F60 GOG 0x00621F30 Xbox 0x00165DE0
 CExoSound::~CExoSound()
 {

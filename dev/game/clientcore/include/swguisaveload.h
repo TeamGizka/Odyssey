@@ -219,6 +219,9 @@ public:
     CExoString m_sAreaName;
     CExoString m_sLastModule;
     CExoString m_sSaveDirectory;
+#ifdef _XBOX
+    void SetSaveDirectory(const CExoString& sDirectory) { m_sSaveDirectory = sDirectory; }
+#endif
     CExoString m_sXboxTitle;
     CExoString m_sScreenshot;
 

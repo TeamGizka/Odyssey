@@ -5154,12 +5154,14 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectVisualEffect(int nCommand,
             return -2001;
         }
     }
+#ifndef _XBOX
     if (nVisualEffectId == VISUAL_EFFECT_FRAME_BUFFER &&
         (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nFrameBuffer == 0 ||
          !AurCheckFrameBufferModificationsAvailable()))
     {
         nVisualEffectId = VISUAL_EFFECT_FRAME_BUFFER_FALLBACK;
     }
+#endif
     pGameEffect = new CGameEffect(1);
     pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
     pGameEffect->m_nSubType =

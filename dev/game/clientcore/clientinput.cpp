@@ -2439,8 +2439,8 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x
             }
             else
             {
-                ChangeCharacterToNextLivingPartyMember(0, 1);
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->ChangeCharacter();
+                if (ChangeCharacterToNextLivingPartyMember(0, 1))
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->ChangeCharacter();
             }
             g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PlayGuiSound(CSWGuiManager::GUISOUND_WORLD_ACTION);
         }
@@ -2499,6 +2499,10 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x
             }
         }
         break;
+    case 75:
+        if (nValue != 0)
+            DoScreenShot();
+        break;
     case INPUT_EVENT_PAUSE:
     case 37:
     case 38:
@@ -2527,7 +2531,8 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x
         }
         break;
     case INPUT_EVENT_FREE_LOOK:
-        if (GetPlayerCreature()->m_nCombatState == 0 && nValue != 0 && m_nGameOver == 0)
+        if (GetPlayerCreature() != NULL && GetPlayerCreature()->m_nCombatState == 0 &&
+            nValue != 0 && m_nGameOver == 0)
         {
             CSWSCreature* pServerCreature;
             if (m_pClientOptions->m_nCameraMode != CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED &&
@@ -2574,6 +2579,12 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x
     case INPUT_EVENT_PREVIOUS_TARGET:
         if (nValue != 0)
         {
+            if (g_pAppManager->GetClientExoApp()->GetInGameGui() != NULL)
+            {
+                CSWGuiMainInterface* pMainInterface = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface;
+                if (pMainInterface != NULL)
+                    pMainInterface->m_bSelectingUseItemTarget = 0;
+            }
             if (m_pClientOptions->m_nCameraMode == CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
             {
                 g_bShowIndicator = 1;
@@ -2591,6 +2602,10 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x
     case INPUT_EVENT_NEXT_TARGET:
         if (nValue != 0)
         {
+            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface != NULL)
+            {
+                g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 0;
+            }
             if (m_pClientOptions->m_nCameraMode == CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
             {
                 g_bShowIndicator = 1;
@@ -2605,11 +2620,42 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x
             }
         }
         break;
+    case INPUT_EVENT_FIRE:
+        if (nValue != 0 && m_pModule != NULL && m_pModule->m_pInfo != NULL && !GetPausedByCombat())
+        {
+            CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
+            if (pMiniGame != NULL && pMiniGame->GetPlayer() != NULL)
+            {
+                if (pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
+                    pMiniGame->GetPlayer()->OnBrake(0);
+                else
+                    pMiniGame->GetPlayer()->Fire();
+            }
+        }
+        break;
     case 21:
     case 24:
-    case 25:
-    case 26:
+    case INPUT_EVENT_FIRE_SECONDARY:
     case 27:
+        if (nValue != 0)
+        {
+            if (m_pModule != NULL && m_pModule->m_pInfo != NULL && !GetPausedByCombat())
+            {
+                CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
+                if (pMiniGame != NULL && pMiniGame->GetPlayer() != NULL)
+                {
+                    if (pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
+                        pMiniGame->GetPlayer()->OnAccelerate(0);
+                    else
+                        pMiniGame->GetPlayer()->Fire();
+                }
+            }
+            else if (GetPausedByCombat())
+            {
+                m_pSWGuiManager->HandleInputEvent(39, 1);
+            }
+        }
+        break;
     case 28:
         if (nValue != 0 && m_pModule != NULL && m_pModule->m_pInfo != NULL && !GetPausedByCombat())
         {

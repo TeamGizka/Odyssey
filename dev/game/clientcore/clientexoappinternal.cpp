@@ -3017,7 +3017,9 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                 int bNoMine = 1;
                 for (i = 0; i < nObjects; i++)
                 {
+#ifndef _XBOX
                     m_aNearestObjects[i].m_bInFront = aForward.Contains(aNearest[i]);
+#endif
                     aNearest[i] = ServerToClientObjectId(aNearest[i]);
                     m_aNearestObjects[i].m_oidObject = aNearest[i];
                     m_aNearestObjects[i].m_nCanSee = CNearestStruct::CAN_SEE_UNKNOWN;
@@ -9490,12 +9492,6 @@ int CClientExoAppInternal::WaitForMovie()  // Xbox 0x00023440
 
 #ifdef _XBOX
 
-inline void XboxSetGuiManagerSize(CSWGuiManager* pManager, int nWidth, int nHeight)
-{
-    pManager->m_nWidth = nWidth;
-    pManager->m_nHeight = nHeight;
-}
-
 void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA0
                                         const CExoString& sModule,
                                         const CExoString& sLoadMusic,
@@ -9514,6 +9510,24 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA
     m_pAnimationTimer = new CWorldTimer;
     m_pGameObjectArray = new CGameObjectArray(1);
     g_pExoResMan = new CExoResMan;
+    if (!bPlayLoadMusic)
+    {
+        char szCacheFile[32];
+        WIN32_FIND_DATA cFindData;
+        sprintf(szCacheFile, "z:\\cache\\_build_%s_.res", g_sBuildNumber.CStr());
+        HANDLE hFind = FindFirstFile(szCacheFile, &cFindData);
+        if (hFind == INVALID_HANDLE_VALUE)
+        {
+            g_pExoResMan->CleanDirectory("CACHE:", 1, 1);
+            HANDLE hFile = CreateFile(szCacheFile, GENERIC_WRITE,
+                                      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                                      NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+            DWORD nWritten;
+            WriteFile(hFile, &nWritten, sizeof(nWritten), &nWritten, NULL);
+            CloseHandle(hFile);
+        }
+        CloseHandle(hFind);
+    }
 
     if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options",
                           "AllowWindowedMode"))
@@ -9543,23 +9557,19 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA
 
     g_pExoResMan->AddResourceDirectory("TEMPCLIENT:");
     g_pExoResMan->AddResourceDirectory("OVERRIDE:");
-    g_pExoResMan->AddResourceDirectory("ERRORTEX:");
     g_pSWTlkTable = new CSWTlkTable;
     g_pTlkTable = g_pSWTlkTable;
     if (bPlayLoadMusic)
+    {
         MountDownloadedContent(0, 0);
-    g_pExoResMan->CacheResource("HD0:DATAXBOX\\items", RESTYPE_BIF);
-    g_pExoResMan->CacheResource("HD0:DATAXBOX\\scripts", RESTYPE_BIF);
-    g_pExoResMan->CacheResource("HD0:DATAXBOX\\gui", RESTYPE_BIF);
+    }
+    else
+    {
+        g_pExoResMan->CacheResource("HD0:DATAXBOX\\templates", RESTYPE_BIF);
+        g_pExoResMan->CacheResource("HD0:DATAXBOX\\gui", RESTYPE_BIF);
+    }
     g_pExoResMan->AddResourceDirectory("RIMSXBOX:");
-    if (g_pExoResMan->Exists("SUBGLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
-        g_pExoResMan->AddResourceImageFile("RIMSXBOX:SUBGLOBAL");
-    if (g_pExoResMan->Exists("SUBGLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
-        g_pExoResMan->AddResourceImageFile("RIMSXBOX:SUBGLOBALDX");
     g_pAuroraInterface = new CAuroraInterface;
-    g_pExoResMan->AddResourceDirectory("SERVERVAULT:");
-    g_pExoResMan->AddResourceDirectory("PORTRAITS:");
-    g_pExoResMan->AddEncapsulatedResourceFile("OVERRIDE:textures", 1);
     ReInitAurora(g_nScreenWidth, g_nScreenHeight, g_nBitsPerPixel, g_nReInitializing == 2);
     if (bPlayLoadMusic)
     {
@@ -9575,7 +9585,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA
     if (nMissing == 1)
         g_pExoResMan->ReportMissingFile("", 0xffff, 1);
     m_pSWGuiManager = new CSWGuiManager;
-    XboxSetGuiManagerSize(m_pSWGuiManager, g_nScreenWidth, g_nScreenHeight);
+    m_pSWGuiManager->SetSize(g_nScreenWidth, g_nScreenHeight);
     if (!bPlayLoadMusic)
     {
         if (g_pExoResMan->Exists("LEGAL", RESTYPE_RIM, (unsigned long*)NULL))
@@ -9585,12 +9595,36 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA
         m_pLegalScreen = new CSWGuiLegalScreen(m_pSWGuiManager, nLegalDisplayMinimum);
         m_pSWGuiManager->AddPanel(m_pLegalScreen, 1, 1);
         ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("leclogo");
+        g_pExoResMan->CacheResource("HD0:DATAXBOX\\dialogs", RESTYPE_BIF);
     }
     InitializeMoviePlayer();
+    g_pExoResMan->AddFixedKeyTableFile("HD0:CHITIN");
+    if (!bPlayLoadMusic)
+    {
+        WIN32_FIND_DATA cFindData;
+        HANDLE hFind;
+        memset(&cFindData, 0, sizeof(cFindData));
+        cFindData.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
+#define XBOX_CHECK_DATA_DIRECTORY(sDirectory)                                  \
+        hFind = FindFirstFile("d:\\" sDirectory, &cFindData);                  \
+        if (hFind == INVALID_HANDLE_VALUE)                                     \
+            g_pExoResMan->ReportMissingFile(sDirectory, RESTYPE_INVALID, 1);   \
+        CloseHandle(hFind)
+        XBOX_CHECK_DATA_DIRECTORY("dataxbox");
+        XBOX_CHECK_DATA_DIRECTORY("lips");
+        XBOX_CHECK_DATA_DIRECTORY("Modules");
+        XBOX_CHECK_DATA_DIRECTORY("Movies");
+        XBOX_CHECK_DATA_DIRECTORY("rimsxbox");
+        XBOX_CHECK_DATA_DIRECTORY("StreamMusic");
+        XBOX_CHECK_DATA_DIRECTORY("StreamSounds");
+        XBOX_CHECK_DATA_DIRECTORY("StreamVoice");
+        XBOX_CHECK_DATA_DIRECTORY("SuperModels");
+#undef XBOX_CHECK_DATA_DIRECTORY
+    }
     sFileName = g_pExoResMan->CacheResource("HD0:DIALOG", RESTYPE_TLK);
     if (!g_pTlkTable->OpenFile(sFileName))
         g_pExoResMan->ReportMissingFile("dialog", RESTYPE_TLK, 1);
-    g_pExoResMan->AddFixedKeyTableFile("HD0:CHITIN");
+    InitializeSoundOptions();
     if (bPlayLoadMusic)
     {
         if (m_pGuiLoadScreen == NULL)
@@ -9604,58 +9638,46 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA
             unsigned char nLoadStep = m_aLoadSteps[0];
             SetLoadBarProgress(nLoadStep - 5, 1);
             if (m_aMoveToModuleMovies.num == 0)
-            {
                 m_pGuiLoadScreen->Draw(1.0f / 30.0f);
-                UpdateScreen(1.0f / 30.0f, 0, 0);
-            }
         }
         PlayLoadModuleMovies();
     }
     g_pExoResMan->AddResourceDirectory("HD0:MOVIES");
-    g_pExoResMan->AddResourceDirectory("HD0:STREAMWAVES");
-    g_pExoResMan->AddResourceDirectory("HD0:STREAMMUSIC");
     if (sLoadScreen == "" && sModule != "")
     {
         SetLoadBarProgress(20, 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
     }
-    if (m_bMinGlobalRim == 1)
+    else if (sLoadScreen != "" && sModule != "")
     {
-        if (g_pExoResMan->Exists("MINIGLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
-        {
-            sFileName = g_pExoResMan->CacheResource("RIMSXBOX:MINIGLOBAL", RESTYPE_RIM);
-            g_pExoResMan->AddResourceImageFile(sFileName);
-        }
-        if (g_pExoResMan->Exists("MINIGLOBALDX", RESTYPE_RIM, (unsigned long*)NULL))
-        {
-            sFileName = g_pExoResMan->CacheResource("RIMSXBOX:MINIGLOBALDX", RESTYPE_RIM);
-            g_pExoResMan->AddResourceImageFile(sFileName);
-        }
+        SetLoadBarProgress(3, 1);
+        UpdateScreen(1.0f / 30.0f, 0, 0);
     }
-    else
+    if (!bPlayLoadMusic)
     {
-        if (g_pExoResMan->Exists("GLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
-        {
-            sFileName = g_pExoResMan->CacheResource("RIMSXBOX:GLOBAL", RESTYPE_RIM);
-            g_pExoResMan->AddResourceImageFile(sFileName);
-        }
-        if (!bPlayLoadMusic)
-            ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("biowarelogo");
-        if (g_pExoResMan->Exists("GLOBALDX", RESTYPE_RIM, (unsigned long*)NULL))
-        {
-            sFileName = g_pExoResMan->CacheResource("RIMSXBOX:GLOBALDX", RESTYPE_RIM);
-            g_pExoResMan->AddResourceImageFile(sFileName);
-        }
+        g_pExoResMan->CacheResource("HD0:DATAXBOX\\2DA", RESTYPE_BIF);
+        ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("obsidianlogo");
     }
+    g_pExoResMan->CacheResource("HD0:gui", RESTYPE_ERF);
+    g_pExoResMan->CacheResource("HD0:DATAXBOX\\scripts", RESTYPE_BIF);
     if (sLoadScreen == "" && sModule != "")
     {
         SetLoadBarProgress(30, 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
     }
-    InitializeSoundOptions();
+    else if (sLoadScreen != "" && sModule != "")
+    {
+        SetLoadBarProgress(5, 1);
+        UpdateScreen(1.0f / 30.0f, 0, 0);
+    }
     if (sLoadScreen == "" && sModule != "")
     {
         SetLoadBarProgress(40, 1);
+        UpdateScreen(1.0f / 30.0f, 0, 0);
+    }
+    else if (sLoadScreen != "" && sModule != "")
+    {
+        SetLoadBarProgress(10, 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
     }
     if (bPlayLoadMusic)
@@ -9747,13 +9769,15 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // Xbox 0x0002DBA
             else
             {
                 if (sLoadScreen == "" && sModule != "")
+                {
                     SetLoadBarProgress(90, 1);
+                    UpdateScreen(1.0f / 30.0f, 0, 0);
+                }
                 else
                 {
                     unsigned char nLoadStep = m_aLoadSteps[0];
                     SetLoadBarProgress(nLoadStep, 1);
                 }
-                UpdateScreen(1.0f / 30.0f, 0, 0);
             }
         }
     }
@@ -10141,8 +10165,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
     if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable VSync"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetVSyncEnabled(sValue.AsINT() != 0);
+        m_pClientOptions->SetVSyncEnabled(sValue.AsINT() != 0);
     }
     else
     {
@@ -10155,8 +10178,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
     {
         if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "ShinyWater"))
         {
-            CClientOptions* pClientOptions = m_pClientOptions;
-            pClientOptions->SetShinyWater(sValue.AsINT() != 0);
+            m_pClientOptions->SetShinyWater(sValue.AsINT() != 0);
         }
         else
         {
@@ -10195,8 +10217,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
     if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableVisualEffectsHigh"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetVisualEffectsHigh((sValue.AsINT() != 0));
+        m_pClientOptions->SetVisualEffectsHigh((sValue.AsINT() != 0));
     }
     else
     {
@@ -10207,8 +10228,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
     if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable Truform"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetTruform(sValue.AsINT() != 0);
+        m_pClientOptions->SetTruform(sValue.AsINT() != 0);
     }
     else
     {
@@ -10219,8 +10239,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
     if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable AnisotropicFiltering"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetAnisotropicFiltering(sValue.AsINT() != 0);
+        m_pClientOptions->SetAnisotropicFiltering(sValue.AsINT() != 0);
     }
     else
     {
@@ -10263,8 +10282,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
     if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "Enable ScreenEdgeCameraTurn"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetScreenEdgeCameraTurn((sValue.AsINT() != 0));
+        m_pClientOptions->SetScreenEdgeCameraTurn((sValue.AsINT() != 0));
     }
     else
     {
@@ -10274,8 +10292,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
     if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableGrass"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetGrassEnabled(sValue.AsINT() != 0);
+        m_pClientOptions->SetGrassEnabled(sValue.AsINT() != 0);
     }
     else
     {
@@ -10286,8 +10303,7 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
     if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableFastGrass"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetFastGrass(sValue.AsINT() != 0);
+        m_pClientOptions->SetFastGrass(sValue.AsINT() != 0);
     }
     else
     {
@@ -10705,6 +10721,15 @@ void CClientExoAppInternal::DisplayMainMenu(int bScanContent)  // Xbox 0x000288E
             delete m_pStartupPanel;
         }
         m_pStartupPanel = NULL;
+    }
+
+    if (m_pMainMenu != NULL)
+    {
+        m_pMainMenu->SetToBeRemoved(0);
+        CSWGuiPanel* pPanel = m_pMainMenu;
+        pPanel->m_bDeferredRemoval = 0;
+        pPanel->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+        m_pMainMenu = NULL;
     }
 
     m_pMainMenu = new CSWGuiMainMenu(m_pSWGuiManager);
@@ -11204,6 +11229,7 @@ enum
     XBOX_CAMERA_TILT_INPUT = 12,
     XBOX_CAMERA_TURN_INPUT = 13
 };
+#define XBOX_CAMERA_TILT_DEAD_ZONE 0.94f
 void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // Xbox 0x00022840
 {
     if (m_pModule == NULL)
@@ -11216,6 +11242,12 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // Xbox 0x00022840
     g_bKeepHistory = false;
     CAurCamera* pCamera = m_pModule->GetCamera();
     float fTilt = g_pExoInput->PollInput(XBOX_CAMERA_TILT_INPUT, m_nInputClass);
+    if (fTilt > -XBOX_CAMERA_TILT_DEAD_ZONE && fTilt < XBOX_CAMERA_TILT_DEAD_ZONE)
+        fTilt = 0.0f;
+    if (fTilt != 0.0f)
+        m_bCameraTiltActive = 1;
+    else
+        m_bCameraTiltActive = 0;
     m_pModule->TiltCamera((CameraVertAxisFlip ? 1 : -1) * fTilt);
     float fTurn = -g_pExoInput->PollInput(XBOX_CAMERA_TURN_INPUT, m_nInputClass);
     m_pModule->TurnCamera((CameraHorzAxisFlip ? 1 : -1) * fTurn, fDeltaTime);
@@ -11310,9 +11342,12 @@ void CClientExoAppInternal::UpdateRumble(float fDeltaTime)  // Xbox 0x00023790
 
 void CClientExoAppInternal::StopServices()  // Xbox 0x00030860
 {
-#ifndef _XBOX
-    ShutDownMoviePlayer();
-#endif
+    UnloadSuperModelSet();
+    if (m_pMoviePlayer != NULL)
+    {
+        delete m_pMoviePlayer;
+        m_pMoviePlayer = NULL;
+    }
     if (m_pSWGuiManager->PanelExists(m_pMainMenu))
         delete m_pMainMenu;
     m_pMainMenu = NULL;
@@ -11483,13 +11518,6 @@ void CClientExoAppInternal::StopServices()  // Xbox 0x00030860
     }
     if (m_pPlayerControl != NULL)
         delete m_pPlayerControl;
-#ifdef _XBOX
-    if (m_pMoviePlayer != NULL)
-    {
-        delete m_pMoviePlayer;
-        m_pMoviePlayer = NULL;
-    }
-#endif
     DestroyQuestJournal();
     if (m_pCharacterFile != NULL)
     {

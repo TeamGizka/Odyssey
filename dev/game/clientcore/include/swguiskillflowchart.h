@@ -97,8 +97,13 @@ public:
 
     static const unsigned long SKILL_INVALID = -1;
     static const int FLOW_WIDTH = 262;
+#ifdef _XBOX
+    static const int FLOW_HEIGHT = 40;
+    static const int SKILL_ICON_SIZE = 36;
+#else
     static const int FLOW_HEIGHT = 44;
     static const int SKILL_ICON_SIZE = 40;
+#endif
 
     CSWGuiSkillFlow();
     void Clear();

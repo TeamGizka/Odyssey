@@ -3323,10 +3323,11 @@ int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)  // 
     int nCount = 0;
     int nLimit = nMaxCount;
 
-    if (GetFirstObjectInArea(oidObject) == 1)
+    int bFound = GetFirstObjectInArea(oidObject);
+    if (bFound == 1)
     {
         Vector vStart = vPosition;
-        do
+        while (bFound == 1)
         {
             if (nCount >= nLimit)
             {
@@ -3360,8 +3361,8 @@ int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)  // 
                     }
                 }
             }
-        } while (GetNextObjectInArea(oidObject) == 1);
-        return nCount;
+            bFound = GetNextObjectInArea(oidObject);
+        }
     }
     return nCount;
 }

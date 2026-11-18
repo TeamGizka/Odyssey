@@ -249,9 +249,16 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
     {
         CSWCCreature* pPlayer = GetPlayer();
         CSWSCreature* pServerPlayer = pPlayer->GetServerCreature();
-        if (pServerPlayer != NULL && pPlayer != NULL &&
-            !pServerPlayer->GetDead() && !pServerPlayer->GetIsPCDying() &&
-            !pServerPlayer->GetDeadTemp())
+        if (pServerPlayer == NULL)
+            return 0;
+        if (pPlayer == NULL)
+            return 0;
+        if (pServerPlayer->GetDead())
+            return 0;
+        if (pServerPlayer->GetIsPCDying())
+            return 0;
+        if (pServerPlayer->GetDeadTemp())
+            return 0;
         {
 #ifndef _XBOX
             CClientOptions* pOptions = g_pAppManager->GetClientExoApp()->GetClientOptions();

@@ -61,10 +61,10 @@ public:
 #ifndef _XBOX
     void OnCancelPressed(CSWGuiControl* pControl);
     void SetCanCancel(int bCanCancel);
-    void ShowGrantedPowers(CSWGuiControl* pControl);
 #else
     void SetCanCancel(int bCanCancel) { m_bCanCancel = bCanCancel; }
 #endif
+    void ShowGrantedPowers(CSWGuiControl* pControl);
     void PlayGame();
     void OnSelectAcceptButton(CSWGuiControl* pControl);
     void ClearAbilities();

@@ -488,7 +488,8 @@ FoundCharacter:
                                 Vector vFollow = pParty->m_aPartyMemberData[nMember].m_vFormationPosition;
                                 int nPathIndex = pParty->m_aPartyMemberData[nMember].m_nFormationPathIndex;
 #endif
-                                float fFacing = pParty->m_cFollowPaths.GetPathData(nPathIndex)->m_fFacing;
+                                CSWPartyFollowData* pPathData = pParty->m_cFollowPaths.GetPathData(nPathIndex);
+                                float fFacing = pPathData->m_fFacing;
                                 Vector vAxis(0.0f, 0.0f, 1.0f);
                                 Vector vPosition = vFollow + Quaternion(vAxis, DegToRad(fFacing)) * vOffset;
                                 g_pAppManager->GetServerExoApp()->ComputeSafeLocation(

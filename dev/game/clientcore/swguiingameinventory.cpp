@@ -1214,8 +1214,7 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
     case 5:
         if (pCreature->GetClientCreature() != 0)
         {
-            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot,
-                                                                   0xFF) != 0 &&
+            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot) != 0 &&
                 pCreature->CanUseItem(pItem, 0) != 0)
             {
                 bResult = 1;
@@ -1402,6 +1401,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // Xbox 
             }
             else
             {
+                pCreature->SetSpellTarget(pCreature->m_nId);
                 pCreature->m_bSafeProjectileBroadcast = 0;
                 pCreature->InstantUseItem(oidItem);
                 CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);

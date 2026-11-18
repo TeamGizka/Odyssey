@@ -960,7 +960,7 @@ CSWCArea::CSWCArea()
     m_pAmbientSound = new CSWCAmbientSound(this);
     m_fLightningTimer = 0.0f;
     m_fLightningFlashTime = 0.0f;
-    m_nLightningFlashCount = 0;
+    m_fLightningFlashCount = 0.0f;
     m_nWeatherDuration = 0;
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
@@ -971,7 +971,7 @@ CSWCArea::CSWCArea()
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
     m_nCalendarDay = nDay;
     m_nTimeOfDay = nTime;
-    m_bHitCheckIgnoreChanged = 0;
+    m_fHitCheckIgnoreTimer = 0.0f;
     m_bLightCountChanged = 0;
     m_bIsDark = 0;
     m_pAreaGrid = 0;
@@ -1426,11 +1426,13 @@ LoadFailed:
 // PC 0x00655500 GOG 0x006553B0 Xbox 0x00035C40
 void CSWCArea::UnloadArea()
 {
+#ifndef _XBOX
     if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()
             ->FadeAndStopDialogAmbientTrack();
     }
+#endif
     AurGrassClearInfo();
     ClearTilePathNodes();
     m_lstRenderTriggerIds.SetSize(0);
@@ -1473,7 +1475,7 @@ void CSWCArea::UnloadArea()
     }
     m_fLightningTimer = 0.0f;
     m_fLightningFlashTime = 0.0f;
-    m_nLightningFlashCount = 0;
+    m_fLightningFlashCount = 0.0f;
     m_nWeatherDuration = 0;
     m_nWeatherType = WEATHER_CLEAR;
     m_nNewWeatherType = WEATHER_CLEAR;
@@ -2250,7 +2252,6 @@ void CSWCArea::EmptyCAurObjectToHitCheckIgnoreList()
 // PC 0x00656310 GOG 0x006561C0
 CSWCArea::~CSWCArea()
 {
-#ifndef _XBOX
     for (int i = 0; i < m_lstToBeDeletedEmitters.m_nCount; i++)
     {
         CAurObject* pEmitter = m_lstToBeDeletedEmitters[i];
@@ -2261,7 +2262,6 @@ CSWCArea::~CSWCArea()
             m_lstToBeDeletedEmitters[i] = NULL;
         }
     }
-#endif
     UnloadArea();
     delete m_pAmbientSound;
     m_pAmbientSound = 0;

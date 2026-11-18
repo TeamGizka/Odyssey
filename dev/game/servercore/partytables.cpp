@@ -718,9 +718,15 @@ void CSWPartyTable::PositionParty()
                 EXOXBOXASSERT(nMember + 1 >= 0 && nMember + 1 < 3);
                 pMember->m_vLastPosition = vPosition;
                 pNPCCreature->SetOrientation(vFacing);
+#ifdef _XBOX
+                pNPC++;
+                pMember++;
+                nMember++;
+#else
                 nMember++;
                 pNPC++;
                 pMember++;
+#endif
             } while (nMember < m_nNumMembers);
         }
         for (nMember = 0; nMember < m_nNumPuppets; nMember++)
@@ -2401,9 +2407,14 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         pGFF->WriteFieldVOID(&stTop, pInGameGui->m_aTutorialWindowsShown,
                              sizeof(pInGameGui->m_aTutorialWindowsShown),
                              "PT_TUT_WND_SHOWN");
+#ifdef _XBOX
+        pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+        pGFF->WriteFieldINT(&stTop, pInGameGui->m_nLastGuiPanel, "PT_LAST_GUI_PNL");
+#else
         int nLastGuiPanel =
             g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nLastGuiPanel;
         pGFF->WriteFieldINT(&stTop, nLastGuiPanel, "PT_LAST_GUI_PNL");
+#endif
         pGFF->WriteFieldINT(&stEntry, m_nForfeitViolation, "FORFEITVIOL");
         pGFF->WriteFieldINT(&stEntry, m_nForfeitConditions, "FORFEITCONDS");
 
@@ -2458,9 +2469,14 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
              nBaseItem < g_pRules->m_pBaseItems->m_nNumBaseItems; nBaseItem++)
         {
             pGFF->AddListElement(&stEntry, &lstItems, 0);
+#ifdef _XBOX
+            CSWBaseItem* pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
+            pGFF->WriteFieldFLOAT(&stEntry, pBaseItem->m_fCostMultiplier, "PT_COST_MULT_VALUE");
+#else
             float fCostMultiplier =
                 g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_fCostMultiplier;
             pGFF->WriteFieldFLOAT(&stEntry, fCostMultiplier, "PT_COST_MULT_VALUE");
+#endif
         }
         pGFF->WriteFieldINT(&stEntry, m_bDisableMap, "PT_DISABLEMAP");
         pGFF->WriteFieldINT(&stEntry, m_bDisableRegen, "PT_DISABLEREGEN");

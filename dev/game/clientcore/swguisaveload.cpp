@@ -222,7 +222,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
             g_pExoBase->m_pExoAliasList->ChangePath("SAVES", pEntry->m_sSaveDirectory);
             CExoString& sLastModule = pEntry->m_sLastModule;
             pClientExoApp->SetLoadScreenByModuleName(sLastModule);
-            pClientExoApp->SetLoadMusic(CExoString(""));
+            pClientExoApp->SetLoadMusic("");
             pClientExoApp->ShowLoadScreen(0, 1, 0);
             pClientExoApp->SetLoadScreenByModuleName(sLastModule);
             unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
@@ -252,7 +252,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
             g_pExoBase->m_pExoAliasList->ChangePath("SAVES", sSaveDirectory);
             CExoString& sLastModule = pEntry->m_sLastModule;
             pClientExoApp->SetLoadScreenByModuleName(sLastModule);
-            pClientExoApp->SetLoadMusic(CExoString(""));
+            pClientExoApp->SetLoadMusic("");
             pClientExoApp->ShowLoadScreen(0, 1, 0);
             unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
             pClientExoApp->SetGamePlayHint(nGamePlayHint);
@@ -317,13 +317,13 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
                     }
                 }
                 cLaunchData.m_bMinGlobalRim = bMinGlobalRim;
-                cLaunchData.SetLoadMusic(CExoString(""));
+                cLaunchData.SetLoadMusic("");
                 cLaunchData.SetStartWaypoint(pEntry->m_sGameName);
                 cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
                 cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-                for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+                for (int nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
                 {
-                    cLaunchData.m_anStoryHint[nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
+                    cLaunchData.m_anStoryHint[(unsigned char)nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
                 }
                 cLaunchData.m_nLoadScreenHintUpdateTimer =
                     g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
@@ -336,7 +336,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
             CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
             CExoString& sLastModule = pEntry->m_sLastModule;
             pClient->SetLoadScreenByModuleName(sLastModule);
-            pClient->SetLoadMusic(CExoString(""));
+            pClient->SetLoadMusic("");
             pClient->ShowLoadScreen(0, 1, 0);
             unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
             pClient->SetGamePlayHint(nGamePlayHint);
@@ -402,13 +402,13 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
                     }
                 }
                 cLaunchData.m_bMinGlobalRim = bMinGlobalRim;
-                cLaunchData.SetLoadMusic(CExoString(""));
+                cLaunchData.SetLoadMusic("");
                 cLaunchData.SetStartWaypoint(pEntry->m_sGameName);
                 cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
                 cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-                for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+                for (int nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
                 {
-                    cLaunchData.m_anStoryHint[nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
+                    cLaunchData.m_anStoryHint[(unsigned char)nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
                 }
                 cLaunchData.m_nLoadScreenHintUpdateTimer =
                     g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
@@ -436,11 +436,9 @@ void CSWGuiSaveLoad::PromptLaunchDashboard(CSWGuiControl* pControl)
 
 void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // Xbox 0x000E3830
 {
-    CSWGuiMessageBox* pMessageBox;
     WCHAR wszTitle[128];
 
-    pMessageBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
-    if (pMessageBox->m_bAccepted)
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox->m_bAccepted)
     {
         CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)pControl;
         mbstowcs(wszTitle, pEntry->m_sXboxTitle.CStr(), 128);
@@ -455,8 +453,7 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // Xbox 0x000E3830
         g_pExoBase->m_pExoAliasList->ChangePath("SAVES", "U:\\");
         int nIndex = m_lbSaveGames.m_nSelectedItem;
         PopulateGameList();
-        int nLastIndex = m_lbSaveGames.m_lItems.num - 1;
-        m_lbSaveGames.SetSelectedControl(nIndex < nLastIndex ? nIndex : nLastIndex, 0);
+        m_lbSaveGames.SetSelectedControl(min(nIndex, m_lbSaveGames.m_lItems.num - 1), 0);
         UpdateFreeBlocks();
         SetActiveControl(NULL, 0);
         SetActiveControl(&m_lbSaveGames, 0);
@@ -628,10 +625,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
             }
             if (pEntry->m_bMissingLiveContent)
             {
-                {
-                    CResRef cEmpty("");
-                    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(cEmpty, 0);
-                }
+                m_lblScreenshot.m_cBorder.m_cParams.SetFillImage("", 0);
                 CExoString sMessage;
                 sMessage = g_pTlkTable->GetSimpleString(XBOX_STRREF_MISSING_LIVE_CONTENT);
                 g_pTlkTable->SetCustomToken(0, pEntry->m_sMissingLiveContent);
@@ -642,25 +636,18 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
             {
                 if (pEntry->m_bRebootAutoSave)
                 {
-                    CResRef cScreenshot(pEntry->m_sScreenshot);
-                    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(cScreenshot, 0);
+                    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(pEntry->m_sScreenshot, 0);
                 }
                 else
                 {
-                    {
-                        CResRef cEmpty("");
-                        m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(cEmpty, 0);
-                    }
+                    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage("", 0);
                     if (!m_sResourceDirectory.IsEmpty())
                     {
                         g_pExoResMan->RemoveResourceDirectory(m_sResourceDirectory);
                     }
                     m_sResourceDirectory = pEntry->GetGameDirectory();
                     g_pExoResMan->AddResourceDirectory(m_sResourceDirectory);
-                    {
-                        CResRef cScreenshot("screen");
-                        m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(cScreenshot, 0);
-                    }
+                    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage("screen", 0);
                 }
                 m_lblScreenshot.m_cText.m_cParams.SetText("");
             }
@@ -841,87 +828,84 @@ void CSWGuiSaveLoad::SaveGameToSlot(CSWGuiControl* pControl)
         }
         pEntry->m_nSaveGame = nSaveGame;
     }
-    if (pEntry->m_bDataLoaded)
+    if (!pEntry->m_bDataLoaded ||
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox->m_bAccepted)
     {
-        CSWGuiMessageBox* pMessageBox =
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
-        if (!pMessageBox->m_bAccepted)
+        AurReleaseFrameTexture();
+        WCHAR wszTitle[256];
+        if (!pEntry->m_bNewSlot)
         {
-            return;
+            mbstowcs(wszTitle, pEntry->m_sXboxTitle.CStr(), 255);
+            XDeleteSaveGame("U:\\", wszTitle);
         }
-    }
-    AurReleaseFrameTexture();
-    WCHAR wszTitle[256];
-    if (!pEntry->m_bNewSlot)
-    {
-        mbstowcs(wszTitle, pEntry->m_sXboxTitle.CStr(), 255);
-        XDeleteSaveGame("U:\\", wszTitle);
-    }
-    CExoString sDrive("U:\\");
-    CExoString sName("NoName");
-    unsigned long nSeconds = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetTotalPlayedSeconds();
-    CExoString sOldTitle;
-    CExoString sTimePlayed;
-    CExoString sNumber;
-    if (pEntry->m_bDataLoaded)
-    {
-        sNumber = CExoString((int)pEntry->m_nSaveGame);
-        sOldTitle = "Game ";
-        sOldTitle = sOldTitle + sNumber;
-        mbstowcs(wszTitle, sOldTitle.CStr(), 255);
-        XDeleteSaveGame(sDrive.CStr(), wszTitle);
-    }
-    CExoString sTitle;
-    sNumber = CExoString((int)pEntry->m_nSaveGame);
-    sTitle = "Game ";
-    sTitle = sTitle + sNumber;
-    mbstowcs(wszTitle, sTitle.CStr(), 255);
-    pEntry->SetXboxTitle(sTitle);
-    char szSaveDirectory[256];
-    if (XCreateSaveGame(sDrive.CStr(), wszTitle, OPEN_ALWAYS, 1, szSaveDirectory, 254) == ERROR_SUCCESS)
-    {
-        pEntry->m_sSaveDirectory = CExoString(szSaveDirectory);
-        pEntry->m_bNewSlot = 0;
-        g_pAppManager->m_pClientExoApp->BusyWaitMuteSound();
-        g_pAppManager->m_pClientExoApp->BusyWaitMuteSound();
-        g_pExoBase->m_pExoAliasList->ChangePath("SAVES", pEntry->m_sSaveDirectory);
-        if (pEntry->m_nSaveGame == XBOX_SAVE_SLOT_AUTO)
+        CExoString sDrive("U:\\");
+        CExoString sName("NoName");
+        unsigned long nSeconds = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetTotalPlayedSeconds();
+        CExoString sOldTitle;
+        CExoString sTimePlayed;
+        CExoString sNumber;
+        if (pEntry->m_bDataLoaded)
         {
-            if (!g_pExoResMan->FileCopy("HD0:AutoSaveImage", "SAVES:SaveImage",
-                                        XBOX_RESTYPE_SAVE_IMAGE, RESTYPE_INVALID))
+            sNumber = CExoString(pEntry->GetSaveGame());
+            sOldTitle = "Game ";
+            sOldTitle = sOldTitle + sNumber;
+            mbstowcs(wszTitle, sOldTitle.CStr(), 255);
+            XDeleteSaveGame(sDrive.CStr(), wszTitle);
+        }
+        CExoString sTitle;
+        sNumber = CExoString(pEntry->GetSaveGame());
+        sTitle = "Game ";
+        sTitle = sTitle + sNumber;
+        mbstowcs(wszTitle, sTitle.CStr(), 255);
+        pEntry->SetXboxTitle(sTitle);
+        char szSaveDirectory[256];
+        if (XCreateSaveGame(sDrive.CStr(), wszTitle, OPEN_ALWAYS, 1, szSaveDirectory, 254) == ERROR_SUCCESS)
+        {
+            pEntry->SetSaveDirectory(CExoString(szSaveDirectory));
+            pEntry->m_bNewSlot = 0;
+            g_pAppManager->m_pClientExoApp->BusyWaitMuteSound();
+            g_pAppManager->m_pClientExoApp->BusyWaitMuteSound();
+            g_pExoBase->m_pExoAliasList->ChangePath("SAVES", pEntry->m_sSaveDirectory);
+            if (pEntry->m_nSaveGame == XBOX_SAVE_SLOT_AUTO)
             {
-                g_pExoResMan->ReportMissingFile("AutoSaveImage", XBOX_RESTYPE_SAVE_IMAGE, 1);
+                if (!g_pExoResMan->FileCopy("HD0:AutoSaveImage", "SAVES:SaveImage",
+                                            XBOX_RESTYPE_SAVE_IMAGE, RESTYPE_INVALID))
+                {
+                    g_pExoResMan->ReportMissingFile("AutoSaveImage", XBOX_RESTYPE_SAVE_IMAGE, 1);
+                }
+            }
+            else
+            {
+                if (!g_pExoResMan->FileCopy("HD0:PlaySaveImage", "SAVES:SaveImage",
+                                            XBOX_RESTYPE_SAVE_IMAGE, RESTYPE_INVALID))
+                {
+                    g_pExoResMan->ReportMissingFile("PlaySaveImage", XBOX_RESTYPE_SAVE_IMAGE, 1);
+                }
             }
         }
         else
         {
-            if (!g_pExoResMan->FileCopy("HD0:PlaySaveImage", "SAVES:SaveImage",
-                                        XBOX_RESTYPE_SAVE_IMAGE, RESTYPE_INVALID))
-            {
-                g_pExoResMan->ReportMissingFile("PlaySaveImage", XBOX_RESTYPE_SAVE_IMAGE, 1);
-            }
+            pEntry->m_sSaveDirectory = CExoString("U:\\");
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            m_pManager->PopModalPanel();
+            CSWGuiMessageBox* pMessageBox =
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+            CExoString sMessage = g_pTlkTable->GetSimpleString(STRREF_MAXIMUM_SAVES);
+            g_pTlkTable->ParseStr(sMessage);
+            pMessageBox->SetAllowCancel(0);
+            pMessageBox->SetMessage(sMessage);
+            m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+            return;
         }
         CExoString sGameName;
-        sGameName.Format("Slot%d", pEntry->m_nSaveGame);
-        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nSaveNumber = pEntry->m_nSaveGame;
-        g_pAppManager->m_pClientExoApp->SendSaveGameRequest(pEntry->m_nSaveGame, sGameName);
+        sGameName.Format("Slot%d", pEntry->GetSaveGame());
+        int nSlot = pEntry->m_nSaveGame;
+        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nSaveNumber = nSlot;
+        g_pAppManager->m_pClientExoApp->SendSaveGameRequest(pEntry->GetSaveGame(), sGameName);
         m_bDeferredRemoval = 0;
         m_nExitState = EXITSTATE_DELETE;
         m_pManager->PopModalPanel();
-    }
-    else
-    {
-        pEntry->m_sSaveDirectory = CExoString("U:\\");
-        m_bDeferredRemoval = 0;
-        m_nExitState = EXITSTATE_DELETE;
-        m_pManager->PopModalPanel();
-        CSWGuiMessageBox* pMessageBox =
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
-        CExoString sMessage = g_pTlkTable->GetSimpleString(STRREF_MAXIMUM_SAVES);
-        g_pTlkTable->ParseStr(sMessage);
-        pMessageBox->SetAllowCancel(0);
-        pMessageBox->SetMessage(sMessage);
-        m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
 

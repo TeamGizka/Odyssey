@@ -400,30 +400,37 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // Xbox 0x0011DBB0
     Quaternion qOrientation =
         YawPitchRoll(fTurn, 0.0f, 0.0f) * pCamera->GetOrientation();
     float fCameraYaw = Yaw(qOrientation);
-    float fTargetYaw = Yaw(pTarget->m_vPosition - pCamera->GetPosition());
-
-    float fDelta = fCameraYaw - fTargetYaw;
-    float fAngle = (float)fabs(fDelta);
-    while (fAngle < 0.0f)
-        fAngle += 360.0f;
-    while (fAngle >= 360.0f)
-        fAngle -= 360.0f;
-    if (fAngle > 180.0f)
-        fAngle = 360.0f - fAngle;
-    if (fAngle > 25.0f)
+    if (m_fTurn == 0.0f)
     {
-        float fOffset = 25.0f;
-        if (fCameraYaw > fTargetYaw)
+        float fTargetYaw = Yaw(pTarget->m_vPosition - pCamera->GetPosition());
+
+        float fDelta = fCameraYaw - fTargetYaw;
+        float fAngle = (float)fabs(fDelta);
+        while (fAngle < 0.0f)
+            fAngle += 360.0f;
+        while (fAngle >= 360.0f)
+            fAngle -= 360.0f;
+        if (fAngle > 180.0f)
+            fAngle = 360.0f - fAngle;
+        if (fAngle > 25.0f)
         {
-            if (fDelta > 180.0f)
+            float fOffset = 25.0f;
+            if (fCameraYaw > fTargetYaw)
+            {
+                if (fDelta > 180.0f)
+                    fOffset = -25.0f;
+            }
+            else if (fTargetYaw - fCameraYaw < 180.0f)
+            {
                 fOffset = -25.0f;
+            }
+            fYaw = fTargetYaw + fOffset;
+            qOrientation = YawPitchRoll(fYaw, 0.0f, 0.0f);
         }
-        else if (fTargetYaw - fCameraYaw < 180.0f)
+        else
         {
-            fOffset = -25.0f;
+            fYaw = fCameraYaw;
         }
-        fYaw = fTargetYaw + fOffset;
-        qOrientation = YawPitchRoll(fYaw, 0.0f, 0.0f);
     }
     else
     {
@@ -475,8 +482,8 @@ float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw, 
             fRemaining = fYaw - fCurrent;
             if (fRemaining > 180.0f)
             {
-                fRemaining = 360.0f - fRemaining;
                 bForward = 0;
+                fRemaining = 360.0f - fRemaining;
             }
             else
             {

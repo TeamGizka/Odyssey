@@ -13,6 +13,8 @@
 #include <d3dx8.h>
 #include <xgraphics.h>
 
+#define AURDXCORE_DEBUG 0
+
 const unsigned int streamTranslationTable[] =
 {
     D3DVSDE_POSITION, D3DVSDE_TEXCOORD0, D3DVSDE_DIFFUSE, D3DVSDE_NORMAL
@@ -6875,6 +6877,10 @@ void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nV
                              int nVertexStride, int nPositionOffset, short nVertexCount,
                              unsigned long nColorPool, int nPoolOffset)
 {
+    if (AURDXCORE_DEBUG)
+    {
+        AurPrintf("GLRender::DrawTriangles() faces %d vertices %d\n", nFaces, nVertexCount);
+    }
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
     static unsigned long nPool = RequestPool(Aurora::POOL_VERTEX, lFaces.m_nCount * 3 * sizeof(RenderVertexVNC),
                                              RequestPoolManager::POOL_FLARE_USAGE, 0x13, &nPool);
@@ -6903,6 +6909,10 @@ void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nV
                                  pVertex->position.z);
         }
         Vector vNormal = NormalOf(avVertex[0], avVertex[1], avVertex[2]);
+        if (AURDXCORE_DEBUG)
+        {
+            AurPrintf("GLRender::DrawTriangles() face %d normal %f %f %f\n", i, vNormal.m_fX, vNormal.m_fY, vNormal.m_fZ);
+        }
         for (int k = 0; k < 3; ++k)
         {
             pTriangles[i * 3 + k].normal.x = vNormal.m_fX;

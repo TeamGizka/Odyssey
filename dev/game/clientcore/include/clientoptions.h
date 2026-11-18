@@ -42,7 +42,9 @@ public:
     void SetCameraMode(unsigned char nMode);
     unsigned char GetCameraMode() { return m_nCameraMode; }
 
+#ifndef _XBOX
     void SetEAXMode(unsigned char nMode) { m_nEAXMode = nMode; }
+#endif
 
     enum { TEXTURE_QUALITY_COUNT = 4 };
     void SetFullScreenEnabled(int bEnabled);
@@ -185,8 +187,8 @@ public:
     float m_fCameraDistance;
     float m_fCameraHeight;
 
-    int m_nXboxUnmapped34;
-    int m_nXboxUnmapped38;
+    int m_nCheatFlags;
+    int m_nDebugFlags;
     unsigned char m_nCurSithLord;
     unsigned long m_nUnlockedSongs;
     unsigned char m_bGameCompleted;
@@ -194,39 +196,6 @@ public:
     unsigned short m_nAppearanceType;
     unsigned char m_nBodyVariation;
     unsigned char m_nTextureVariation;
-
-    unsigned int m_bDialogSubtitles : 1;
-    unsigned int m_bTooltipHelp : 1;
-    unsigned int m_bUseSmallFonts : 1;
-    unsigned int m_bHideInGameGUI : 1;
-    unsigned int m_bEnableTooltips : 1;
-    unsigned int m_bGUIsInScreenShot : 1;
-    float m_fGuiScale;
-    int m_bMouseTeleporting;
-    unsigned long m_nShadows;
-    unsigned long m_nSoftShadows;
-    unsigned long m_nGrass;
-    unsigned long m_nFrameBuffer;
-    unsigned long m_nAnisotropy;
-    int m_nShaderLevel;
-    unsigned char m_nTexQual;
-    unsigned char m_nTexturePack;
-    unsigned long m_nVSync;
-    unsigned char m_nAntiAlias;
-    unsigned char m_nEAXMode;
-    int m_nEAXFlags;
-    unsigned char m_nMouseSensitivity;
-    int m_bReverseMouseButtons;
-    unsigned char m_bEnableScreenShot;
-    int m_nInputFlags;
-    unsigned char m_nFontMode;
-    float m_fCameraFollowRate;
-    int m_nCheatFlags;
-    int m_nDebugFlags;
-    int m_bEnableCheats;
-    float m_fKeyboardCameraDPS;
-    float m_fKeyboardCameraAcceleration;
-    float m_fKeyboardCameraDeceleration;
 #else
     unsigned int m_bAutoDetectVideo : 1;
     unsigned int m_bHardwareMouseCursor : 1;

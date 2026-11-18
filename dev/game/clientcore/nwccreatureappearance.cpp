@@ -517,7 +517,6 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
     }
 
     m_nAlignment = nAlignment;
-#ifndef _XBOX
     if (m_pCreature != 0)
     {
         CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
@@ -545,7 +544,6 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
             }
         }
     }
-#endif
     if (m_pCreature == 0 ||
         m_pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 0) == 0)
     {

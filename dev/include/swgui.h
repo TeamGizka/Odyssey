@@ -420,9 +420,7 @@ public:
 #endif
     void SendPanelToBack(CSWGuiPanel* pPanel);
     int PushModalPanel(CSWGuiPanel* pPanel);
-#ifndef _XBOX
     void SetSize(int nWidth, int nHeight);
-#endif
     void DrawSafeRegion(float fElapsed);
     void HideAllPanels();
 #ifndef _XBOX

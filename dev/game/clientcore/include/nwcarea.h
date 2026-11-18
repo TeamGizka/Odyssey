@@ -159,7 +159,7 @@ public:
 
 
     float m_fLightningFlashTime;
-    int m_nLightningFlashCount;
+    float m_fLightningFlashCount;
     unsigned long m_nWeatherDuration;
     unsigned char m_nWeatherType;
     unsigned char m_nNewWeatherType;
@@ -169,7 +169,7 @@ public:
     unsigned long m_nCalendarDay;
     unsigned long m_nTimeOfDay;
     CExoLinkedList<CAurObject> m_lstHitCheckIgnoreObjects;
-    int m_bHitCheckIgnoreChanged;
+    float m_fHitCheckIgnoreTimer;
     CExoArrayList<unsigned long> m_lstObjectIds;
     CExoArrayList<CSWCPlaceableObjectLight*> m_lstPlaceableLights;
     CExoArrayList<unsigned long> m_lstDeferredDeleteIds;

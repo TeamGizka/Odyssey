@@ -76,6 +76,9 @@ public:
         ANIMATION_STATE_DEACTIVATE
     };
 
+#ifdef _XBOX
+    unsigned long GetAppearance() { return m_nAppearance; }
+#endif
     int GetFactionId() { return m_nFaction; }
     void SetFactionId(int nFaction) { m_nFaction = nFaction; }
     unsigned char GetTrapType() { return m_nTrapType; }

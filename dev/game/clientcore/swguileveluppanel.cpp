@@ -148,14 +148,12 @@ void CSWGuiLevelUpPanel::PlayGame()
         m_pParent->SetVisible(1);
         ChangeState(0);
     }
-#ifndef _XBOX
     if (m_anStateUsed[STATE_POWERS] == 0)
     {
         m_pCreature->m_pStats->AddGrantedPowers(0);
         m_pParent->SetVisible(1);
         ChangeState(0);
     }
-#endif
     m_pParent->BeginPlayGame();
 }
 
@@ -172,7 +170,8 @@ void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D
         ChangeState(1);
     }
 }
-// PC 0x0075D480 GOG 0x0075D2A0
+#endif
+// PC 0x0075D480 GOG 0x0075D2A0 Xbox 0x0013A6B0
 void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
 {
     CExoArrayList<unsigned long> lPowers;
@@ -186,6 +185,7 @@ void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
         m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
+#ifndef _XBOX
 // PC 0x0075D060 GOG 0x0075D220
 void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
 {
@@ -225,19 +225,6 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
 {
     int nStep;
 
-#ifdef _XBOX
-    if (bBack != 0 && m_bCanCancel != 0 && m_nState == m_nFirstState)
-    {
-        m_pParent->CancelLevelUp();
-        CSWGuiSkillInfoBox* pInfoBox =
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
-        if (m_pManager->PanelExists(pInfoBox))
-        {
-            m_pManager->RemovePanel(pInfoBox);
-        }
-        return;
-    }
-#else
     if (bBack != 0)
     {
         if (m_nState == m_nFirstState)
@@ -256,7 +243,6 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
             return;
         }
     }
-#endif
 
     BOOL bSearching = TRUE;
     if (bBack != 0)
@@ -333,9 +319,9 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
                 {
 #ifdef _XBOX
                     m_aNumbers[i].m_cText.m_cParams.SetColor(
-                        CGuiInGame::COLOR_BLUE);
+                        CGuiInGame::COLOR_NEW_TEXT);
                     m_aSteps[i].m_cText.m_cParams.SetColor(
-                        CGuiInGame::COLOR_BLUE);
+                        CGuiInGame::COLOR_NEW_TEXT);
                 }
                 else
                 {
@@ -543,9 +529,7 @@ void CSWGuiLevelUpPanel::OnPanelAdded()
     {
         OnSelectAcceptButton(NULL);
     }
-#ifdef _XBOX
-    m_pParent->SetBackPromptEnabled(m_bCanCancel);
-#else
+#ifndef _XBOX
     if (m_bCanCancel == 0)
     {
         m_btnBack.SetEnabled(0);
@@ -553,6 +537,7 @@ void CSWGuiLevelUpPanel::OnPanelAdded()
         m_btnCancel.m_bEnabled = 0;
     }
     CSWGuiPanel::OnPanelAdded();
+#endif
     if (m_bShowGrantedFeats != 0)
     {
         CExoArrayList<unsigned long> lFeats;
@@ -578,6 +563,5 @@ void CSWGuiLevelUpPanel::OnPanelAdded()
         pInfoBox->SetMessage(111635);
         m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
-#endif
 }
 

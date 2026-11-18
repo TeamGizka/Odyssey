@@ -14,56 +14,6 @@ class CSWGuiText_vtbl;
 class CSWGuiInGameItemEntry;
 class CSWSItem;
 
-class CSWGuiContainer : public CSWGuiPanel
-{
-public:
-    enum
-    {
-        GIVE_MODE_ACTIVE = 0x01,
-        GIVE_MODE_SETUP = 0x02,
-        GIVE_MODE_CLEAR = 0x04
-    };
-
-    enum { CONTAINER_TAKE_ALL = 1 };
-
-    enum { STRREF_ITEMS_TO_GIVE = 392, STRREF_GET_ITEMS = 38542, STRREF_GIVE_ITEM = 38543, STRREF_GIVE_BUTTON_PREFIX = 47884 };
-
-    enum { STRREF_CONTAINER_INVENTORY = 393, STRREF_CONTAINER_EMPTY = 394,
-           STRREF_TARGET_INVENTORY_EMPTY = 119906 };
-
-    unsigned long m_oidContainer;
-    unsigned char m_nContainerType;
-    unsigned long m_nGiveModeFlags;
-    CSWGuiLabel m_lblMessage;
-    CSWGuiLabel m_lblButton;
-    CSWGuiLabel m_lblOk;
-    CSWGuiLabel m_lblB;
-    CSWGuiLabel m_lblCancel;
-    CSWGuiLabel m_lblX;
-#ifdef _XBOX
-    CSWGuiLabel m_lblGiveitems;
-#endif
-    CSWGuiListBox m_lbItems;
-#ifndef _XBOX
-    CSWGuiButton m_btnOk;
-    CSWGuiButton m_btnCancel;
-    CSWGuiButton m_btnGiveitems;
-#endif
-    virtual void OnPanelAdded();
-    virtual void OnPanelRemoved();
-    CSWGuiContainer(CSWGuiManager*);
-    void GiveItem(CSWGuiControl*);
-#ifdef _XBOX
-    void SetupGiveMode();
-#else
-    void SetupGiveMode(int);
-#endif
-    void SetContainer(unsigned long, int);
-#ifndef _XBOX
-    virtual void Update(float);
-#endif
-    virtual void HandleInputEvent(int, int);
-};
 #ifndef _XBOX
 class CSWGuiInGameEquip : public CSWGuiPanel
 {
@@ -312,6 +262,65 @@ public:
     CSWGuiStoreItemEntry();
     void SetItem(unsigned long, int, int nCharacter = CHARACTER_NONE);
     void SetColors(Vector, Vector, Vector, Vector);
+};
+
+class CSWGuiContainer : public CSWGuiPanel
+{
+public:
+    enum
+    {
+        GIVE_MODE_ACTIVE = 0x01,
+        GIVE_MODE_SETUP = 0x02,
+        GIVE_MODE_CLEAR = 0x04
+    };
+
+    enum { CONTAINER_TAKE_ALL = 1 };
+#ifdef _XBOX
+    enum { NUM_ITEM_ROWS = 5, ITEM_ROW_TEXT_ALIGNMENT = 0x11 };
+#endif
+
+    enum { STRREF_ITEMS_TO_GIVE = 392, STRREF_GET_ITEMS = 38542, STRREF_GIVE_ITEM = 38543, STRREF_GIVE_BUTTON_PREFIX = 47884 };
+
+    enum { STRREF_CONTAINER_INVENTORY = 393, STRREF_CONTAINER_EMPTY = 394,
+           STRREF_TARGET_INVENTORY_EMPTY = 119906 };
+
+    unsigned long m_oidContainer;
+    unsigned char m_nContainerType;
+    unsigned long m_nGiveModeFlags;
+    CSWGuiLabel m_lblMessage;
+    CSWGuiLabel m_lblButton;
+    CSWGuiLabel m_lblOk;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblCancel;
+    CSWGuiLabel m_lblX;
+#ifdef _XBOX
+    CSWGuiLabel m_lblGiveitems;
+    int m_nItemRowsReserved;
+    CExoArrayList<unsigned long> m_lContainerItems;
+    CExoArrayList<unsigned long> m_lGiveItems;
+    CSWGuiInGameItemEntry m_aItemRows[NUM_ITEM_ROWS];
+    int m_nTopItem;
+    int m_nSelectedItem;
+    int m_nPreviousSelectedItem;
+#else
+    CSWGuiListBox m_lbItems;
+    CSWGuiButton m_btnOk;
+    CSWGuiButton m_btnCancel;
+    CSWGuiButton m_btnGiveitems;
+#endif
+    virtual void OnPanelAdded();
+    virtual void OnPanelRemoved();
+    CSWGuiContainer(CSWGuiManager*);
+    void GiveItem(CSWGuiControl*);
+    void SetupGiveMode(int);
+    void SetContainer(unsigned long, int);
+    virtual void Update(float);
+    virtual void HandleInputEvent(int, int);
+#ifdef _XBOX
+    void SetItemRows(int nTopItem, int nSelectedItem);
+    void SelectNextItem();
+    void SelectPreviousItem();
+#endif
 };
 
 #ifdef _XBOX
