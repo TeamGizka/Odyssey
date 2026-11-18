@@ -18,8 +18,10 @@ extern char g_szEmptyString[];
 #ifdef _XBOX
 void ExoXboxRestart();
 #define EXOXBOXASSERT(x) if (!(x)) ExoXboxRestart()
+#define EXOXBOXVERIFY(x) if (!(x)) ExoXboxRestart()
 #else
 #define EXOXBOXASSERT(x)
+#define EXOXBOXVERIFY(x) x
 #endif
 
 

@@ -425,10 +425,17 @@ void CTlkTable::ParseStr(CExoString& sText)
 {
     CExoString sParsed;
     CExoString sValue;
+#ifdef _XBOX
+    int nStart = 0;
+    m_bParsing = FALSE;
+    const char* pText = sText.CStr();
+    int nPos = 0;
+#else
     m_bParsing = FALSE;
     int nStart = 0;
     const char* pText = sText.CStr();
     int nPos = 0;
+#endif
     while (pText[nPos] != '\0')
     {
         if (pText[nPos] == '<')

@@ -444,11 +444,7 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
 #endif
 
     C2DA* pPortraits = new C2DA("PORTRAITS", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(pPortraits->Load2DArray());
-#else
-    pPortraits->Load2DArray();
-#endif
+    EXOXBOXVERIFY(pPortraits->Load2DArray());
     int nRows = pPortraits->GetNumRows();
     CExoArrayList<unsigned long> aFemalePortraits;
     CExoArrayList<unsigned long> aMalePortraits;

@@ -41,7 +41,9 @@ void CSWSObject::SetSpellTargetPosition(const Vector& vPosition)
 #include "nwccreature.h"
 #include "swparty.h"
 #include "clientexoapp.h"
+#ifndef _XBOX
 #include "serverinfo.h"
+#endif
 #include "guiingame.h"
 #include "swguiabilitieschargen.h"
 #include "pathfindinfo.h"
@@ -558,12 +560,17 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bCharacterObject)
     m_oidInventoryContainer = CGameObjectArray::INVALIDOBJID;
     m_fClientPathTime = 1.0f;
     m_fMovementRateFactor = 1.0f;
+#ifndef _XBOX
     m_nAIStateFlags = AI_STATE_ALL;
+#endif
     m_nActivity = 0;
     m_bInDialog = 0;
     m_bJumped = 0;
     m_bLightsaberThrow = 0;
     m_bUpdateMovingOrientation = 0;
+#ifdef _XBOX
+    m_nAIStateFlags = AI_STATE_ALL;
+#endif
     m_bDebilitated = 0;
     m_nLastMineCheckDay = 0;
     m_nLastMineCheckTime = 0;
@@ -587,8 +594,13 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bCharacterObject)
     m_bCreationScriptFired = 0;
     m_nAITargetPriority = 0;
     m_nAIState = 0;
+#ifdef _XBOX
+    m_oidAITarget = OBJECT_INVALID;
+    m_nCurrentAction = ACTION_TYPE_INVALID;
+#else
     m_nCurrentAction = ACTION_TYPE_INVALID;
     m_oidAITarget = OBJECT_INVALID;
+#endif
     m_oidCurrentActionTarget = OBJECT_INVALID;
     unsigned long nDay;
     unsigned long nTime;

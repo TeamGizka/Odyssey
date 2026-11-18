@@ -160,6 +160,9 @@ public:
     CExoString GetMovie6() { return CExoString(m_szMovie6); }
 #ifdef _XBOX
     unsigned long GetModuleTrans() { return m_nModuleTrans; }
+    bool GetLoadingSave() { return m_bLoadingSave; }
+    bool GetLoadAutoSave() { return m_bLoadAutoSave; }
+    unsigned char GetOptionsDataValid() { return m_bOptionsDataValid; }
 #endif
 
     int SaveToGFF(class CResGFF* pRes, class CResStruct& stStruct);

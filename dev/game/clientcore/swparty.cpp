@@ -397,11 +397,11 @@ float CSWPartyFollowDataArray::PointOnLineDistanceFromLeader(int nMember,
                                                              int bSquared)
 {
     CSWCCreature* pLeader = m_pParty->GetCharacter(0);
-    Vector vDelta;
 #ifdef _XBOX
-    vDelta = m_pParty->GetMemberData(nMember)->m_vFollowPosition -
+    Vector vDelta = m_pParty->GetMemberData(nMember)->m_vFollowPosition -
                     pLeader->m_vPosition;
 #else
+    Vector vDelta;
     CSWParty* pParty = m_pParty;
     vDelta = pParty->m_aPartyMemberData[nMember].m_vFollowPosition -
                     pLeader->m_vPosition;

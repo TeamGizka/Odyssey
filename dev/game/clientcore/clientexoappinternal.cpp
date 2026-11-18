@@ -10676,49 +10676,13 @@ void CClientExoAppInternal::UpdateDeathSequence()  // Xbox 0x0001F680
     if (m_nGameOver)
     {
         m_fDeathSequenceElapsed += nElapsed * 0.001f;
-        float fElapsed = m_fDeathSequenceElapsed;
-        float fScale = m_fDeathSequenceScale;
-        float fSpeed = CLIENT_DEATH_SEQUENCE_MIN_SPEED;
         if (m_bGameOverPending)
         {
             m_bGameOverPending = 0;
-            fScale = m_fDeathSequenceScale =
-                (float)-(log(fElapsed / CLIENT_DEATH_SEQUENCE_DURATION) / XBOX_DEATH_SEQUENCE_SPEED_RANGE);
-        }
-        if (m_fDeathSequenceElapsed <= CLIENT_DEATH_SEQUENCE_DURATION)
-        {
-            fSpeed = -(float)log(fElapsed / CLIENT_DEATH_SEQUENCE_DURATION);
-            fSpeed /= fScale;
-            fSpeed += CLIENT_DEATH_SEQUENCE_MIN_SPEED;
-        }
-        SetGameSpeed(fSpeed);
-
-        if (!m_pGuiInGame->IsGlobalFading() && m_fEndGamePendingDelay == 0.0f)
-        {
-            KOTOR_LAUNCH_DATA cParams;
-            cParams.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_NONE;
-            cParams.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
-            cParams.m_nPortBinding = g_pExoInput->GetPortBinding();
-            cParams.m_bRenderQA = RenderQA;
-
-            KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
-            g_pAppManager->m_pClientExoApp->GetClientOptions()->GetOptionsData(&cOptionsData);
-            cParams.SetOptionsData(cOptionsData);
-
-            SetLoadScreenByModuleName("default");
-            SetLoadMusic("");
-            SetLoadBarProgress(0, 1);
-            if (m_pGuiLoadScreen != NULL)
-            {
-                m_pGuiLoadScreen->SetHint(0);
-            }
-            ShowLoadScreen(1, 1, 0);
-            UpdateScreen(1.0f / 30.0f, 0, 0);
-
-            cParams.SetLoadScreen("load_default");
-            cParams.m_nLoadScreenHint = 0;
-            AurPersistDisplay();
-            ExoXboxLaunch(&cParams, g_pAppManager->m_pServerExoApp->GetModuleName().CStr());
+            m_fDeathSequenceScale =
+                (float)(-log(m_fDeathSequenceElapsed /
+                             CLIENT_DEATH_SEQUENCE_DURATION) /
+                        XBOX_DEATH_SEQUENCE_SPEED_RANGE);
         }
     }
 }

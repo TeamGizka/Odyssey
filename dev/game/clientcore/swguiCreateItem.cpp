@@ -141,11 +141,7 @@ CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
         else
         {
             C2DA* pBaseItems = new C2DA("BASEITEMS", 0);
-#ifdef _XBOX
-            EXOXBOXASSERT(pBaseItems->Load2DArray());
-#else
-            pBaseItems->Load2DArray();
-#endif
+            EXOXBOXVERIFY(pBaseItems->Load2DArray());
             CExoString sLabel;
             pBaseItems->GetCExoStringEntry(i - 1, "Label", &sLabel);
             sText.Format("No StrRef: %s", sLabel);

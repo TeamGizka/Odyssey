@@ -2726,7 +2726,7 @@ int main()  // Xbox 0x00012560
     if (bNoLaunchData == 0)
     {
         g_pAppManager->GetClientExoApp()->GetClientOptions()->SetDefaults();
-        if ((unsigned char)cParams.m_bOptionsDataValid == 1)
+        if (cParams.GetOptionsDataValid() == 1)
             g_pAppManager->GetClientExoApp()->GetClientOptions()
                 ->SetOptionsData(&cParams.m_cOptionsData);
 
@@ -2747,12 +2747,12 @@ int main()  // Xbox 0x00012560
         }
     }
 
-    if ((bool)cParams.m_bLoadingSave)
+    if (cParams.GetLoadingSave())
         g_pAppManager->GetClientExoApp()->SetLoadingSaveGame(1);
 
     if (bNoLaunchData == 0 &&
         (cParams.m_nModuleTrans == KOTOR_LAUNCH_DATA::MODULETRANS_LOADGAME ||
-         (bool)cParams.m_bLoadAutoSave))
+         cParams.GetLoadAutoSave()))
     {
         g_pAppManager->GetClientExoApp()->SetLoadStep(0, 10);
         g_pAppManager->GetClientExoApp()->SetLoadStep(1, 20);
@@ -2781,7 +2781,7 @@ int main()  // Xbox 0x00012560
 
     if (bNoLaunchData == 0)
     {
-        if ((unsigned char)cParams.m_bOptionsDataValid == 0)
+        if (cParams.GetOptionsDataValid() == 0)
             g_pAppManager->GetClientExoApp()->LoadOptions();
         g_pAppManager->GetClientExoApp()->GetClientOptions()->ApplySoundOptions();
         g_pAurora->ResetGammaRamp(

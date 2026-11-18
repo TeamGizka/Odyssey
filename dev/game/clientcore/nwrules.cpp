@@ -305,11 +305,7 @@ CSWRules::CSWRules()
     delete pRanges;
 
     m_p2DArrays = new CTwoDimArrays;
-#ifdef _XBOX
-    EXOXBOXASSERT(m_p2DArrays->Load2DArrays());
-#else
-    m_p2DArrays->Load2DArrays();
-#endif
+    EXOXBOXVERIFY(m_p2DArrays->Load2DArrays());
     m_pSpellArray = new CSWSpellArray;
     m_pSpellArray->Load();
     LoadFeatInfo();
@@ -317,11 +313,7 @@ CSWRules::CSWRules()
     m_pBaseItems->Load();
 
     C2DA* pExperience = new C2DA(RULES_EXPERIENCE_TABLE, 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(pExperience->Load2DArray());
-#else
-    pExperience->Load2DArray();
-#endif
+    EXOXBOXVERIFY(pExperience->Load2DArray());
     int nExperience;
     for (int i = 0; i <= RULES_MAX_LEVEL; i++)
     {
@@ -362,11 +354,7 @@ void CSWRules::LoadClassInfo()
     int nValue;
 
     C2DA* p2DA = new C2DA("CLASSES", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(p2DA->Load2DArray());
-#else
-    p2DA->Load2DArray();
-#endif
+    EXOXBOXVERIFY(p2DA->Load2DArray());
 
     int nNumRows = p2DA->m_nNumRows;
     m_nNumClasses = nNumRows;
@@ -514,11 +502,7 @@ void CSWRules::LoadClassInfo()
 void CSWRules::LoadRaceInfo()
 {
     C2DA* p2DA = new C2DA("RacialTypes", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(p2DA->Load2DArray());
-#else
-    p2DA->Load2DArray();
-#endif
+    EXOXBOXVERIFY(p2DA->Load2DArray());
 
     int nNumRows = p2DA->m_nNumRows;
     m_nNumRaces = nNumRows;
@@ -650,11 +634,7 @@ CSWRules::~CSWRules()
 void CSWRules::LoadSkillInfo()
 {
     C2DA* p2DA = new C2DA("Skills", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(p2DA->Load2DArray());
-#else
-    p2DA->Load2DArray();
-#endif
+    EXOXBOXVERIFY(p2DA->Load2DArray());
 
     int nNumRows = p2DA->m_nNumRows;
     m_nNumSkills = nNumRows;
@@ -826,11 +806,7 @@ void CSWRules::LoadFeatInfo()
 #ifdef _XBOX
     EXOXBOXASSERT(p2DA->Load2DArray());
 #else
-#ifdef _XBOX
-    EXOXBOXASSERT(p2DA->Load2DArray());
-#else
-    p2DA->Load2DArray();
-#endif
+    EXOXBOXVERIFY(p2DA->Load2DArray());
 #endif
 
     int nNumRows = p2DA->m_nNumRows;
@@ -981,11 +957,7 @@ void CSWRules::LoadFeatInfo()
     delete p2DA;
 
     p2DA = new C2DA("MasterFeats", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(p2DA->Load2DArray());
-#else
-    p2DA->Load2DArray();
-#endif
+    EXOXBOXVERIFY(p2DA->Load2DArray());
 
     nNumRows = p2DA->m_nNumRows;
     m_nNumMasterFeats = nNumRows;

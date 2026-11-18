@@ -391,7 +391,7 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // Xbox 0x0011DBB0
     CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
     float& fYaw)
 {
-    CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
+    CAurCamera* pCamera = g_pAppManager->GetClientExoApp()->GetModuleCamera();
     Vector vResult;
     Vector vDirection;
     Vector vPosition = pCreature->m_vPosition;

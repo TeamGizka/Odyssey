@@ -257,11 +257,7 @@ void CSWGuiPortraitCharGen::HandleInputEvent(int nEvent, int bPressed)
 void CSWGuiPortraitCharGen::GetPortraitsList(int nGender)
 {
     C2DA* p2DA = new C2DA("PORTRAITS", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(p2DA->Load2DArray());
-#else
-    p2DA->Load2DArray();
-#endif
+    EXOXBOXVERIFY(p2DA->Load2DArray());
     int nRows = p2DA->m_nNumRows;
     CExoString sBaseResRef;
     CResRef cResRef;

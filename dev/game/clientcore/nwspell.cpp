@@ -174,11 +174,7 @@ CSWSpellArray::~CSWSpellArray()
 void CSWSpellArray::Load()
 {
     C2DA* p2DA = new C2DA("SPELLS", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(p2DA->Load2DArray());
-#else
-    p2DA->Load2DArray();
-#endif
+    EXOXBOXVERIFY(p2DA->Load2DArray());
     m_nNumSpells = p2DA->m_nNumRows;
     m_pSpells = new CSWSpell[m_nNumSpells];
 
