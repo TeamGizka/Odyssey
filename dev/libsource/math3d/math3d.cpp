@@ -1052,8 +1052,13 @@ int logbase2(unsigned int nValue)  // Xbox 0x0028F9F0
 // PC 0x004D81D0 GOG 0x004D8310 Xbox 0x00290240
 float magnitude(const Vector& vector)
 {
+#ifdef _XBOX
+    return SqrtEstimateNR_ASM(vector.m_fX * vector.m_fX + vector.m_fY * vector.m_fY +
+                              vector.m_fZ * vector.m_fZ);
+#else
     return (float)sqrt(vector.m_fX * vector.m_fX + vector.m_fY * vector.m_fY +
                        vector.m_fZ * vector.m_fZ);
+#endif
 }
 
 // Dead code: not in the PC executable
@@ -1543,7 +1548,11 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
         vSum = vSum + cross(pVertices[nNext] - pVertices[i],
                             pVertices[nAfter] - pVertices[nNext]);
     }
+#ifdef _XBOX
+    float fMagnitude = SqrtEstimateNR_ASM(vSum * vSum);
+#else
     float fMagnitude = magnitude(vSum);
+#endif
     if (fMagnitude < 1e-8f)
     {
         return 0;

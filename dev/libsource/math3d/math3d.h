@@ -189,6 +189,32 @@ public:  // Xbox 0x0027A270
 extern Vector zaxis;
 extern int quaternionidentityoptimization;
 
+#ifdef _XBOX
+const float g_SqrtNRConst[2] = {0.5f, 3.0f};
+
+__forceinline float SqrtEstimateNR_ASM(float f)
+{
+    float recsqrt;
+    __asm
+    {
+        rsqrtss  xmm0, f
+        movss    xmm1, f
+        mulss    xmm1, xmm0
+        movss    xmm2, g_SqrtNRConst+4
+        mulss    xmm1, xmm0
+        mulss    xmm0, g_SqrtNRConst
+        subss    xmm2, xmm1
+        mulss    xmm0, xmm2
+        xorps    xmm1, xmm1
+        mulss    xmm0, f
+        cmpneqss xmm1, f
+        andps    xmm0, xmm1
+        movss    recsqrt, xmm0
+    }
+    return recsqrt;
+}
+#endif
+
 float magnitude(const Vector& vector);
 int SphereIntersect(const Vector& vStart, const Vector& vEnd,
                     const Vector& vCenter, float fRadius);
