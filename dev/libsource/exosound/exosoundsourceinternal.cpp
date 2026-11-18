@@ -16,7 +16,7 @@ inline unsigned char CPriorityGroup::GetPlaying()
 {
     return m_nPlaying;
 }
-// PC 0x00626D80 GOG 0x00626D20
+// PC 0x00626D80 GOG 0x00626D20 Xbox 0x00167B50
 int CExoSoundSourceInternal::Demand()
 {
     if (m_pRes == 0)
@@ -34,7 +34,7 @@ int CExoSoundSourceInternal::Demand()
 
 #ifdef _XBOX
 
-int CExoSoundSourceInternal::Release()
+int CExoSoundSourceInternal::Release()  // Xbox 0x00167D80
 {
     m_nDuration = 0;
     m_pData = 0;
@@ -59,7 +59,7 @@ int CExoSoundSourceInternal::Release()  // PC 0x00626DC0 GOG 0x00626D60
 #endif
 
 #ifdef _XBOX
-void CExoSoundSourceInternal::DoObstructionWork()
+void CExoSoundSourceInternal::DoObstructionWork()  // Xbox 0x00168340
 {
     if (m_p3DVoice != 0)
     {
@@ -85,7 +85,7 @@ void CExoSoundSourceInternal::DoObstructionWork()  // PC 0x00626DE0 GOG 0x00626D
 #endif
 
 #ifdef _XBOX
-CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)
+CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // Xbox 0x00167C10
 {
     m_pListNode = 0;
     m_b3D = 0;
@@ -380,7 +380,7 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // PC
     return m_nDuration;
 }
 #endif
-// PC 0x00626FE0 GOG 0x00626F80
+// PC 0x00626FE0 GOG 0x00626F80 Xbox 0x00167DC0
 int CExoSoundSourceInternal::GetWithinRangeOfListener()
 {
     if (m_b3D == 0)
@@ -395,7 +395,7 @@ int CExoSoundSourceInternal::GetWithinRangeOfListener()
 }
 
 #ifdef _XBOX
-int CExoSoundSourceInternal::IsPlaying()
+int CExoSoundSourceInternal::IsPlaying()  // Xbox 0x00167E70
 {
     DWORD nStatus = 0;
 
@@ -441,7 +441,7 @@ int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070 GOG 0x00627010
     return 0;
 }
 #endif
-// PC 0x006270C0 GOG 0x00627060
+// PC 0x006270C0 GOG 0x00627060 Xbox 0x00167ED0
 void CExoSoundSourceInternal::SetLooping(int bLooping)
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
@@ -455,7 +455,7 @@ void CExoSoundSourceInternal::SetLooping(int bLooping)
 }
 
 #ifdef _XBOX
-void CExoSoundSourceInternal::Pause()
+void CExoSoundSourceInternal::Pause()  // Xbox 0x00167EF0
 {
     if (m_pSound->m_bInitialized != 0)
     {
@@ -498,7 +498,7 @@ void CExoSoundSourceInternal::Pause()  // PC 0x006270E0 GOG 0x00627080
 #endif
 
 #ifdef _XBOX
-void CExoSoundSourceInternal::Resume()
+void CExoSoundSourceInternal::Resume()  // Xbox 0x001683C0
 {
     if (m_pSound->m_bInitialized != 0 && IsPaused())
     {
@@ -557,7 +557,7 @@ void CExoSoundSourceInternal::Resume()  // PC 0x006277E0 GOG 0x00627780
 
 #ifdef _XBOX
 
-void CExoSoundSourceInternal::ShutDownSource(bool bForce)
+void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // Xbox 0x00167F70
 {
     int bReleaseDemand = 1;
 
@@ -716,14 +716,14 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150 GOG 
     m_pListNode = 0;
 }
 #endif
-// PC 0x006271F0 GOG 0x00627190
+// PC 0x006271F0 GOG 0x00627190 Xbox 0x00168130
 void CExoSoundSourceInternal::Stop()
 {
     ShutDownSource();
 }
 
 #ifdef _XBOX
-void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)
+void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // Xbox 0x00168140
 {
     m_vPosition = vPosition;
     if (m_b3D != 0)
@@ -748,7 +748,7 @@ void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // PC 0x0062
     }
 }
 #endif
-// PC 0x00627260 GOG 0x00627200
+// PC 0x00627260 GOG 0x00627200 Xbox 0x001681A0
 void CExoSoundSourceInternal::Set3D(int b3D)
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
@@ -763,7 +763,7 @@ void CExoSoundSourceInternal::Set3D(int b3D)
 
 #ifdef _XBOX
 
-int CExoSoundSourceInternal::IsPaused()
+int CExoSoundSourceInternal::IsPaused()  // Xbox 0x001681C0
 {
     DWORD nPosition = 0;
 
@@ -835,7 +835,7 @@ int CExoSoundSourceInternal::IsPaused()
     return 0;
 }
 #endif
-void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x00627300 GOG 0x006272A0
+void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x00627300 GOG 0x006272A0 Xbox 0x00168250
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
     {
@@ -875,7 +875,7 @@ void CExoSoundSourceInternal::StoreRestartSoundPosition()  // PC 0x00627340 GOG 
 #endif
 
 #ifdef _XBOX
-unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
+unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // Xbox 0x00168740
 {
     m_bRetryPlay = 0;
     m_nOneShotDelay = 0;
@@ -1101,7 +1101,7 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
 #endif
 
 #ifdef _XBOX
-void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,
+void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,  // Xbox 0x00168490
                                         float fScale)
 {
     if (nVolume > 127)
@@ -1197,7 +1197,7 @@ int CExoSoundSourceInternal::IsScalable()
 }
 
 #ifdef _XBOX
-int CExoSoundSourceInternal::SetFixedVariance(float fVariance)
+int CExoSoundSourceInternal::SetFixedVariance(float fVariance)  // Xbox 0x001685A0
 {
     if (fVariance <= 2.0f && fVariance >= 0.5f)
     {
@@ -1260,7 +1260,7 @@ int CExoSoundSourceInternal::SetFixedVariance(float fVariance)  // PC 0x006279C0
 
 #ifdef _XBOX
 
-void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)
+void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)  // Xbox 0x00168B00
 {
     if (m_pSound->m_bInitialized != 0)
     {
@@ -1313,7 +1313,7 @@ void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)  //
 #endif
 
 #ifdef _XBOX
-void CExoSoundSourceInternal::SetPitchVariance(float fVariance)
+void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // Xbox 0x00168640
 {
     float fPitchVariance = min(1.0f, max(0.0f, fVariance));
 
@@ -1367,7 +1367,7 @@ void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // PC 0x00627A8
     }
 }
 #endif
-// PC 0x00627390 GOG 0x00627330
+// PC 0x00627390 GOG 0x00627330 Xbox 0x00168290
 void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 {
     if (EXOSOUNDSOURCEINTERNAL_DEBUG)
@@ -1396,7 +1396,7 @@ void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 }
 
 #ifdef _XBOX
-void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()
+void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // Xbox 0x00168310
 {
     m_nFixedRate = (unsigned long)((float)m_nSampleRate * m_fFixedVariance);
 }

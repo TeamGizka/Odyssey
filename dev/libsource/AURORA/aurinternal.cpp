@@ -32,7 +32,7 @@ CAurInternalGL* CAurInternal::NewCAuroraInstance()
 {
     return CAurInternalGL::NewCAuroraInstance();
 }
-// PC 0x00461730 GOG 0x00461840
+// PC 0x00461730 GOG 0x00461840 Xbox 0x002CEDA0
 int CAurInternal::FullScreen()
 {
     return m_bFullScreen;
@@ -40,7 +40,7 @@ int CAurInternal::FullScreen()
 
 #ifdef _XBOX
 
-bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,
+bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,  // Xbox 0x002CEDB0
                                unsigned char* pnBitsPerPixel,
                                unsigned long* pnRefreshRate, bool bSetMode)
 {
@@ -111,7 +111,7 @@ bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,
            selectedMode.dmDisplayFrequency == *pnRefreshRate;
 }
 #endif
-// PC 0x00461950 GOG 0x00461A60
+// PC 0x00461950 GOG 0x00461A60 Xbox 0x002CEDC0
 void CAurInternal::RestoreDesktopDisplayMode()
 {
     ResetGammaRamp(1.0f, 1);
@@ -123,7 +123,7 @@ void CAurInternal::RestoreDesktopDisplayMode()
     ChangeDisplaySettingsA(NULL, 0);
 #endif
 }
-// PC 0x00461980 GOG 0x00461A90
+// PC 0x00461980 GOG 0x00461A90 Xbox 0x002CEDD0
 void CAurInternal::RestoreAuroraDisplayMode()
 {
     ResetGammaRamp(m_fGamma, 1);
@@ -138,7 +138,7 @@ void CAurInternal::RestoreAuroraDisplayMode()
     }
 #endif
 }
-// PC 0x004619C0 GOG 0x00461AD0
+// PC 0x004619C0 GOG 0x00461AD0 Xbox 0x002CEDE0
 void CAurInternal::DestroyCAuroraInstance()
 {
     if (AuroraInstance != NULL && --AuroraCount == 0)
@@ -149,14 +149,14 @@ void CAurInternal::DestroyCAuroraInstance()
 }
 
 // Dead code: not in the PC executable
-int CAurInternal::GetGLContext()
+int CAurInternal::GetGLContext()  // Xbox 0x00316120
 {
     return 0;
 }
 
 #ifdef _XBOX
 
-void CAurInternalGL::MakeCurrentGLContext(HDC hDeviceContext, HGLRC hRenderContext)
+void CAurInternalGL::MakeCurrentGLContext(HDC hDeviceContext, HGLRC hRenderContext)  // Xbox 0x000C4DE0
 {
 }
 #else
@@ -175,7 +175,7 @@ void CAurInternalGL::MakeCurrentGLContext(HDC hDeviceContext, HGLRC hRenderConte
 
 extern LPDIRECT3DDEVICE8 g_pD3DDevice;
 
-int CAurInternal::ResetGammaRamp(float fGamma, int bSaveGamma)
+int CAurInternal::ResetGammaRamp(float fGamma, int bSaveGamma)  // Xbox 0x002CF330
 {
     D3DGAMMARAMP ramp;
 
@@ -250,7 +250,7 @@ CAurInternal::CAurInternal()
 #endif
     m_nColorDepth = 0;
 }
-// PC 0x00461AF0 GOG 0x00461C00
+// PC 0x00461AF0 GOG 0x00461C00 Xbox 0x002CF3C0
 void AurEnableHeadLight()
 {
     if (CAurInternal::m_nHeadLightEnabled != 1)
@@ -259,7 +259,7 @@ void AurEnableHeadLight()
     }
     CAurInternal::m_nHeadLightEnabled = 1;
 }
-// PC 0x00461B10 GOG 0x00461C20
+// PC 0x00461B10 GOG 0x00461C20 Xbox 0x002CEE30
 void AurDisableHeadLight()
 {
     if (CAurInternal::m_nHeadLightEnabled != 0)
@@ -277,12 +277,12 @@ CAurInternal::~CAurInternal()
 
 static D3DPRESENT_PARAMETERS g_d3dpp;
 
-void CAurInternalGL::SwapBuffers()
+void CAurInternalGL::SwapBuffers()  // Xbox 0x002CEE50
 {
     g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
 
-int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,
+int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // Xbox 0x002CEE60
                                unsigned long nWidth, unsigned long nHeight,
                                unsigned char nBitsPerPixel,
                                unsigned long nRefreshRate, int bFullScreen,
@@ -363,7 +363,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,
     return 1;
 }
 
-void AurSetFrameBufferMode(int nMode)
+void AurSetFrameBufferMode(int nMode)  // Xbox 0x002CF170
 {
     GLRender::SetFrameBufferMode(nMode);
     if (nMode == 2)
@@ -377,7 +377,7 @@ void AurSetFrameBufferMode(int nMode)
     g_pD3DDevice->Reset(&g_d3dpp);
 }
 
-int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,
+int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // Xbox 0x002CF1C0
                                unsigned long nWidth, unsigned long nHeight,
                                unsigned char nBitsPerPixel,
                                unsigned long nRefreshRate, int bFullScreen)
@@ -808,7 +808,7 @@ int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // 
 
 #ifdef _XBOX
 
-void CAurInternalGL::Reshape(int nWidth, int nHeight)
+void CAurInternalGL::Reshape(int nWidth, int nHeight)  // Xbox 0x002CF1D0
 {
     m_nWidth = nWidth;
     m_nHeight = nHeight;
@@ -856,7 +856,7 @@ void CAurInternalGL::Reshape(int nWidth, int nHeight)  // PC 0x00462AA0 GOG 0x00
 }
 #endif
 #ifdef _XBOX  // PC 0x00462AF0 GOG 0x00462C00
-void CAurInternalGL::ShutDown(int bReleaseRenderer)
+void CAurInternalGL::ShutDown(int bReleaseRenderer)  // Xbox 0x002CF220
 #else
 int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
 #endif
@@ -964,7 +964,7 @@ int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
     return nResult;
 #endif
 }
-// PC 0x00462D90 GOG 0x00462EA0
+// PC 0x00462D90 GOG 0x00462EA0 Xbox 0x002CF3E0
 CAurInternalGL* CAurInternalGL::NewCAuroraInstance()
 {
     if (AuroraInstance == NULL)

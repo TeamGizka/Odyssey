@@ -18,7 +18,7 @@
 #include "exobase.h"
 #include <math.h>
 #include "nwrules.h"
-// PC 0x0073F790 GOG 0x0073F610
+// PC 0x0073F790 GOG 0x0073F610 Xbox 0x0011DA30
 CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
     : CAurBehavior(pObject)
 {
@@ -145,7 +145,7 @@ float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
     return fYaw;
 }
 #endif
-// PC 0x0073FCB0 GOG 0x0073FB30
+// PC 0x0073FCB0 GOG 0x0073FB30 Xbox 0x0011E0C0
 Vector CSWBehaviorCameraCombat::GetNextPosition(const Vector& vTarget,
                                                 float fTimeStep, float fSpeed)
 {
@@ -187,7 +187,7 @@ int CSWBehaviorCameraCombat::SetTurn(float fTurn)
 CSWMGBehaviorBullet::~CSWMGBehaviorBullet()
 {
 }
-// PC 0x0073FE10 GOG 0x0073FCB0
+// PC 0x0073FE10 GOG 0x0073FCB0 Xbox 0x0011E210
 Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
                                                       const Vector& vDesired,
                                                       const Vector& vCurrent)
@@ -259,7 +259,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
 
     return vSafe;
 }
-// PC 0x00740540 GOG 0x007403E0
+// PC 0x00740540 GOG 0x007403E0 Xbox 0x0011EAF0
 int CSWBehaviorCameraCombat::Control(float fTimeStep)
 {
     int nResult = CAurBehavior::Control(fTimeStep);
@@ -353,7 +353,7 @@ int CSWBehaviorCameraCombat::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x00740840 GOG 0x007406E0
+// PC 0x00740840 GOG 0x007406E0 Xbox 0x0011EC90
 void CSWBehaviorCameraCombat::PutAtDesiredLocation()
 {
     CSWParty* pSWParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -387,7 +387,7 @@ void CSWBehaviorCameraCombat::PutAtDesiredLocation()
 
 #ifdef _XBOX
 
-Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(
+Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // Xbox 0x0011DBB0
     CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
     float& fYaw)
 {
@@ -446,7 +446,7 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(
     return vResult;
 }
 
-float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
+float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,  // Xbox 0x0011DFB0
                                           float fTimeStep, float& fTurn)
 {
     Quaternion qOrientation = ((Gob*)m_pObject)->GetOrientation();

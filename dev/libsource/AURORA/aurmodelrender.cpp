@@ -298,7 +298,7 @@ int countreset()
     countdisplaycreates = 0;
     return 0;
 }
-// PC 0x00485E30 GOG 0x00485EF0
+// PC 0x00485E30 GOG 0x00485EF0 Xbox 0x002DA5E0
 void PartTriMesh::RotateTexture(float fAngle)
 {
     m_fTextureAngle = fAngle;
@@ -413,7 +413,7 @@ inline void GLRender::Transform(const Vector& vPosition,
     }
 }
 #endif
-// PC 0x004861A0 GOG 0x00486260
+// PC 0x004861A0 GOG 0x00486260 Xbox 0x002DA600
 int PartTriMesh::WithinRange(Vector vPosition, float fRange)
 {
     Vector vDifference;
@@ -425,7 +425,7 @@ int PartTriMesh::WithinRange(Vector vPosition, float fRange)
     fRange += 2.0f;
     return fDistance < fRange;
 }
-// PC 0x00486200 GOG 0x004862C0
+// PC 0x00486200 GOG 0x004862C0 Xbox 0x002DCD00
 static RenderVertexC* GetWalkMeshColors()
 {
 #ifdef _XBOX
@@ -459,7 +459,7 @@ static RenderVertexC* GetWalkMeshColors()
     return (RenderVertexC*)colorarray;
 #endif
 }
-// PC 0x00486300 GOG 0x004863C0
+// PC 0x00486300 GOG 0x004863C0 Xbox 0x002DCE00
 static RenderVertexC* GetInverseWalkMeshColors()
 {
 #ifdef _XBOX
@@ -493,7 +493,7 @@ static RenderVertexC* GetInverseWalkMeshColors()
     return (RenderVertexC*)colorarray;
 #endif
 }
-// PC 0x00486410 GOG 0x004864D0
+// PC 0x00486410 GOG 0x004864D0 Xbox 0x002DA670
 bool StaticPartNeedsMat(PartTriMesh* pPart, MdlNodeTriMesh* pNode,
                         bool& bHasTileData, bool& bTileMaterial)
 {
@@ -521,7 +521,7 @@ bool StaticPartNeedsMat(PartTriMesh* pPart, MdlNodeTriMesh* pNode,
 
     return false;
 }
-// PC 0x00489B10 GOG 0x00489BE0
+// PC 0x00489B10 GOG 0x00489BE0 Xbox 0x002DCCA0
 void PartAnimMesh::Draw(bool bRenderChildren)
 {
     VertexPrimitiveFlat* pPrimitive;
@@ -644,7 +644,7 @@ static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
 #endif
 }
 
-void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
+void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40 Xbox 0x002DD190
 {
     if (lightsaberrender != 0)
     {
@@ -936,18 +936,18 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
     }
 }
 
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void Part::Mat()
 {
 }
-// PC 0x005EE1C0 GOG 0x005EE1A0
+// PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
 void PartLight::Draw(bool bRenderChildren)
 {
 }
 
 void SetBumpLightColor(Vector& vColor);
 
-// PC 0x0048E200 GOG 0x0048E2D0
+// PC 0x0048E200 GOG 0x0048E2D0 Xbox 0x002E2250
 void PartLight::Mat()
 {
     float fRed = m_vColor.m_fX;
@@ -965,7 +965,7 @@ void PartLight::Mat()
 void DynamicPartCalculateMaterial(Gob* pGob, Vector& vColor,
                                   Vector& vIllumination, float& fAlpha);
 
-void PartTriMesh::Mat()
+void PartTriMesh::Mat()  // Xbox 0x002E2390
 {
     MdlNodeTriMesh* pNode = (MdlNodeTriMesh*)m_pNode;
     static Vector vLastDiffuse(-1.0f, -1.0f, -1.0f);
@@ -1102,7 +1102,7 @@ void PartTriMesh::Mat()
     }
 }
 
-void DynamicPartCalculateMaterial(Gob* pGob, Vector& vColor,
+void DynamicPartCalculateMaterial(Gob* pGob, Vector& vColor,  // Xbox 0x002E2290
                                   Vector& vIllumination, float& fAlpha)
 {
     if (pGob->m_bColorShifting)
@@ -1136,7 +1136,7 @@ void BindVertexProgram(unsigned int nProgram)
 }
 #endif
 
-int ClipProjectionCaps(Vector& vStart, Vector& vEnd, const Plane& plane)
+int ClipProjectionCaps(Vector& vStart, Vector& vEnd, const Plane& plane)  // Xbox 0x002DA700
 {
     if (vEnd.m_fX * plane.m_vNormal.m_fX + vEnd.m_fY * plane.m_vNormal.m_fY +
             vEnd.m_fZ * plane.m_vNormal.m_fZ + plane.m_fDistance >
@@ -1163,7 +1163,7 @@ int ClipProjectionCaps(Vector& vStart, Vector& vEnd, const Plane& plane)
     return 1;
 }
 
-void ClipProjection(Vector& vPosition, const Vector& vStart, const Plane& plane)
+void ClipProjection(Vector& vPosition, const Vector& vStart, const Plane& plane)  // Xbox 0x002DA7E0
 {
     if (vPosition.m_fX * plane.m_vNormal.m_fX +
             vPosition.m_fY * plane.m_vNormal.m_fY +
@@ -1175,7 +1175,7 @@ void ClipProjection(Vector& vPosition, const Vector& vStart, const Plane& plane)
     }
 }
 
-// PC 0x004866C0 GOG 0x00486780
+// PC 0x004866C0 GOG 0x00486780 Xbox 0x002CFA40
 void SetBumpLightColor(Vector& vColor)
 {
     GLRender_SetBumpLightColor(vColor, 1.0f);
@@ -1187,7 +1187,7 @@ void SetPerInstanceIllumination(float* pColor)
     memcpy(GLRender::m_PerInstanceIllumination, pColor, sizeof(GLRender::m_PerInstanceIllumination));
 }
 
-void Transform(const Vector& vPosition, const Quaternion& qOrientation,
+void Transform(const Vector& vPosition, const Quaternion& qOrientation,  // Xbox 0x002DA8B0
                int nForce)
 {
     if (enabletransform != 0)
@@ -1196,17 +1196,17 @@ void Transform(const Vector& vPosition, const Quaternion& qOrientation,
     }
 }
 
-void PartTriMesh::TransformTextureMatrix()
+void PartTriMesh::TransformTextureMatrix()  // Xbox 0x002DA8C0
 {
     GLRender::TransformTextureMatrix(m_fTextureAngle);
 }
 
-void PartTriMesh::RestoreTextureMatrix()
+void PartTriMesh::RestoreTextureMatrix()  // Xbox 0x002DA920
 {
     GLRender::RestoreTextureMatrix(m_fTextureAngle);
 }
 
-void PartTriMesh::TransformModelviewMatrix()
+void PartTriMesh::TransformModelviewMatrix()  // Xbox 0x002DA960
 {
     if (m_pAurObject == 0)
     {
@@ -1222,7 +1222,7 @@ void PartTriMesh::TransformModelviewMatrix()
     }
 }
 
-void PartTriMesh::RestoreModelviewMatrix()
+void PartTriMesh::RestoreModelviewMatrix()  // Xbox 0x002DA990
 {
     if (m_pAurObject == 0)
     {
@@ -1230,7 +1230,7 @@ void PartTriMesh::RestoreModelviewMatrix()
     }
 }
 
-void DoEnvMapTransform(CAurTexture* pTexture, unsigned long nStage)
+void DoEnvMapTransform(CAurTexture* pTexture, unsigned long nStage)  // Xbox 0x002DA9A0
 {
     GLfloat m[16];
 
@@ -1288,7 +1288,7 @@ void DoEnvMapTransform(CAurTexture* pTexture, unsigned long nStage)
 #endif
 }
 
-void UndoEnvMapTransform(CAurTexture* pTexture, unsigned long nStage)
+void UndoEnvMapTransform(CAurTexture* pTexture, unsigned long nStage)  // Xbox 0x002DAAD0
 {
 #ifdef _XBOX
 
@@ -1323,7 +1323,7 @@ void UndoEnvMapTransform(CAurTexture* pTexture, unsigned long nStage)
 #endif
 }
 
-// PC 0x00486960 GOG 0x00486A20
+// PC 0x00486960 GOG 0x00486A20 Xbox 0x002DAB90
 void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
                            CAurTexture* pTexture0, CAurTexture* pTexture1,
                            CAurTexture* pTexture2, CAurTexture* pTexture3,
@@ -1387,7 +1387,7 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
     }
 }
 
-void RenderFlat(VertexPrimitiveFlat* pPrimitive)
+void RenderFlat(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DADC0
 {
     if (enablerender == 0)
     {
@@ -1454,7 +1454,7 @@ void RenderFlat(VertexPrimitiveFlat* pPrimitive)
 #endif
 }
 
-void RenderLightMapped(VertexPrimitiveFlat* pPrimitive)
+void RenderLightMapped(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DAEA0
 {
 #ifndef _XBOX
     if (enablerenderlightmapped == 0)
@@ -1905,7 +1905,7 @@ static inline void XbSetPixelShaderAmbientColor(Vector& vColor, float fAlpha)
     g_pD3DDevice->SetPixelShaderConstant(0, Homogenize(vColor, fW), 1);
 }
 
-void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool bFog)
+void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool bFog)  // Xbox 0x002E5660
 #else
 void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool,
                              bool bFog)
@@ -2113,7 +2113,7 @@ void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool,
     GLRender::SetActiveTexture(0);
 }
 
-void RenderEMLM(VertexPrimitiveFlat* pPrimitive)
+void RenderEMLM(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DBBE0
 {
     if (renderemlm == 0 || enablerenderenv == 0 || enablerender == 0 ||
         !AurNV2xLevelShadersAvailable())
@@ -2242,7 +2242,7 @@ void RenderNV1xEMLM(VertexPrimitiveFlat* pPrimitive)
 }
 #endif
 
-void RenderFlatNonTextured(VertexPrimitiveFlat* pPrimitive)
+void RenderFlatNonTextured(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DBDB0
 {
     if (enablerender != 0)
     {
@@ -2254,7 +2254,7 @@ void RenderFlatNonTextured(VertexPrimitiveFlat* pPrimitive)
     }
 }
 
-void RenderFlatDecal(VertexPrimitiveFlat* pPrimitive)
+void RenderFlatDecal(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DBDF0
 {
     if (enablerender == 0)
     {
@@ -2286,7 +2286,7 @@ void RenderFlatDecal(VertexPrimitiveFlat* pPrimitive)
     GLRender_EnableClientState(CLIENT_STATE_COLOR);
 }
 
-void RenderEMBM(VertexPrimitiveFlat* pPrimitive)  // PC 0x00488800 GOG 0x004888C0
+void RenderEMBM(VertexPrimitiveFlat* pPrimitive)  // PC 0x00488800 GOG 0x004888C0 Xbox 0x002DBE80
 {
     if (!enablerenderembm)
         return;
@@ -2903,7 +2903,7 @@ static inline void PushMatrix();
 
 static inline void PopMatrix();
 
-void Gob::PartDraw(Part* pPart, bool bRenderLast)
+void Gob::PartDraw(Part* pPart, bool bRenderLast)  // Xbox 0x002E29E0
 {
     if (pPart->m_bIncludeChildBounds)
     {
@@ -2936,7 +2936,7 @@ void Gob::PartDraw(Part* pPart, bool bRenderLast)
     }
 }
 
-void ProcessFaces(const Vector& vPosition, ShadowInfo* pShadowInfo,
+void ProcessFaces(const Vector& vPosition, ShadowInfo* pShadowInfo,  // Xbox 0x002E2CE0
                   MdlNodeTriMesh* pNode)
 {
     for (int nFace = 0; nFace < pNode->m_lFaces.m_nCount; nFace++)
@@ -2963,7 +2963,7 @@ static inline void PopMatrix()
     GLRender_PopCurrentMatrix();
 }
 
-void PartTriMesh::Project(const Vector& vPoint, float fDistance,
+void PartTriMesh::Project(const Vector& vPoint, float fDistance,  // Xbox 0x002E2D70
                           const Plane& plane, CAurShadowData* pShadowData)
 {
     if (m_pNode->AsMdlNodeLightsaber())
@@ -3063,7 +3063,7 @@ void PartTriMesh::Project(const Vector& vPoint, float fDistance,
     m_pVertexPrimitive->AsVertexPrimitiveFlat();
 }
 
-void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,
+void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,  // Xbox 0x002E3240
                             Plane plane)
 {
     if (pPart->m_bIncludeChildBounds)
@@ -3120,7 +3120,7 @@ void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,
     }
 }
 
-void SetBeaming()
+void SetBeaming()  // Xbox 0x002DCBE0
 {
     GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE);
     GLRender_SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -3133,7 +3133,7 @@ void SetBeaming()
     }
 }
 
-void Part::Draw(bool bRenderChildren)
+void Part::Draw(bool bRenderChildren)  // Xbox 0x002DCC50
 {
     GLfloat fColor[3];
 
@@ -3147,7 +3147,7 @@ void Part::Draw(bool bRenderChildren)
     }
 }
 
-inline void Gob::ProxyPartDraw(Part* pPart, bool bRenderLast)
+inline void Gob::ProxyPartDraw(Part* pPart, bool bRenderLast)  // Xbox 0x002E3EE0
 {
     if (m_pTileData && m_pTileData->m_fFadeAlpha < 1.0f)
     {
@@ -3177,7 +3177,7 @@ inline void Gob::ProxyPartDraw(Part* pPart, bool bRenderLast)
     }
 }
 
-void Gob::RenderBlur()
+void Gob::RenderBlur()  // Xbox 0x002E4080
 {
     GLRender_PushCurrentMatrix();
 #ifdef _XBOX
@@ -3216,7 +3216,7 @@ char* setseparatespecular(char* sArguments)
 }
 #endif
 
-void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive)
+void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002E41F0
 {
     if (currentscene == 0)
     {
@@ -3312,7 +3312,7 @@ void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive)
     }
 }
 
-void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)
+void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002E4B10
 {
     if (currentscene == 0)
     {
@@ -3429,7 +3429,7 @@ void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)
         GLRender_Enable(ENABLE_ALPHA_TEST);
 }
 
-void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive)
+void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002E5BA0
 {
     if (enablerender == 0)
     {
@@ -3520,7 +3520,7 @@ void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive)
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
 
-void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive)
+void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002E6270
 {
     if (enablerender == 0)
     {
@@ -3729,7 +3729,7 @@ void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
 #endif
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
-// PC 0x00492190 GOG 0x00492260
+// PC 0x00492190 GOG 0x00492260 Xbox 0x002E6BA0
 void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
 {
     if (currentscene == 0)
@@ -4157,7 +4157,7 @@ void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive)  // PC 0x00492F00 GOG 0
 #ifdef _XBOX
 void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive);
 
-void PartTriMesh::Draw(bool bMotionBlurred)
+void PartTriMesh::Draw(bool bMotionBlurred)  // Xbox 0x002E7A60
 {
     if (rendertrimesh == 0 && AsPartDanglyMesh() == 0 && m_pAurObject != 0)
     {
@@ -4412,7 +4412,7 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30 GOG 0x00493B00
     RestoreModelviewMatrix();
 }
 #endif
-// PC 0x00493F70 GOG 0x00494030
+// PC 0x00493F70 GOG 0x00494030 Xbox 0x002E8020
 void PartDanglyMesh::Draw(bool bRenderChildren)
 {
     if (renderdangly != 0)
@@ -4421,7 +4421,7 @@ void PartDanglyMesh::Draw(bool bRenderChildren)
         PartTriMesh::Draw(bRenderChildren);
     }
 }
-// PC 0x00493FA0 GOG 0x00494060
+// PC 0x00493FA0 GOG 0x00494060 Xbox 0x002E8050
 void PartSkin::Project(const Vector& vPosition, float fDistance,
                        const Plane& plane, CAurShadowData* pShadowData)
 {
@@ -4504,7 +4504,7 @@ void PartSkin::Project(const Vector& vPosition, float fDistance,
         STENCIL_KEEP);
     m_pVertexPrimitive->AsVertexPrimitiveSkinned();
 }
-// PC 0x00494C50 GOG 0x00494D10
+// PC 0x00494C50 GOG 0x00494D10 Xbox 0x002E90D0
 void Gob::Render(bool bRenderLast)
 {
     if (!enablegobrender)
@@ -4583,7 +4583,7 @@ void Gob::Render(bool bRenderLast)
     if (bRenderLast)
         DoEvent("propagaterender", 0);
 }
-// PC 0x00693D50 GOG 0x00693AC0
+// PC 0x00693D50 GOG 0x00693AC0 Xbox 0x00092890
 void Part::Project(const Vector& vPoint, float fDistance, const Plane& cPlane,
                    CAurShadowData* pShadowData)
 {
@@ -4591,7 +4591,7 @@ void Part::Project(const Vector& vPoint, float fDistance, const Plane& cPlane,
 
 #ifdef _XBOX
 
-void Gob::RenderVisibilityBounds()
+void Gob::RenderVisibilityBounds()  // Xbox 0x002E4130
 {
     GLRender_Disable(ENABLE_CULL_FACE);
     GLRender::PushCurrentMatrix();

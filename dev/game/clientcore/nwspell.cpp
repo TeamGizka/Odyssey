@@ -16,7 +16,7 @@ const int CSWSpell::USERTYPE_FEAT = 3;
 const int CSWSpell::USERTYPE_ITEM = 4;
 const int CSWSpell::USERTYPE_MASTER = 5;
 const int CSWSpell::USERTYPE_FORM = 6;
-// PC 0x005E1D00 GOG 0x005E1D30
+// PC 0x005E1D00 GOG 0x005E1D30 Xbox 0x00067DA0
 CSWSpell::CSWSpell()
 {
     m_nConjureTime = 3000;
@@ -57,7 +57,7 @@ CSWSpell::CSWSpell()
     m_nCatchTime = 0;
     m_nCatchAnim = 0;
 }
-// PC 0x005E1FB0 GOG 0x005E1FE0
+// PC 0x005E1FB0 GOG 0x005E1FE0 Xbox 0x00068010
 CSWSpell::~CSWSpell()
 {
     if (m_pSubRadialSpells != 0)
@@ -65,7 +65,7 @@ CSWSpell::~CSWSpell()
         delete m_pSubRadialSpells;
     }
 }
-// PC 0x005E2050 GOG 0x005E2080
+// PC 0x005E2050 GOG 0x005E2080 Xbox 0x00068060
 unsigned char CSWSpell::GetSpellLevel(unsigned char nClass)
 {
     switch (nClass)
@@ -99,7 +99,7 @@ unsigned char CSWSpell::GetSpellLevel(unsigned char nClass)
         return m_nInnateLevel;
     }
 }
-// PC 0x005E20F0 GOG 0x005E2120
+// PC 0x005E20F0 GOG 0x005E2120 Xbox 0x00068100
 int CSWSpell::GetSubRadialSpell(unsigned char nIndex)
 {
     if (nIndex >= m_nSubRadialSpellCount)
@@ -117,13 +117,13 @@ void CSWSpell::SetSubRadialSpell(unsigned char nIndex, unsigned long nSpell)
         m_pSubRadialSpells[nIndex] = nSpell;
     }
 }
-// PC 0x005FF150 GOG 0x005FF130
+// PC 0x005FF150 GOG 0x005FF130 Xbox 0x00147BE0
 CSWSpellArray::CSWSpellArray()
 {
     m_nNumSpells = 0;
     m_pSpells = NULL;
 }
-// PC 0x005E2120 GOG 0x005E2150
+// PC 0x005E2120 GOG 0x005E2150 Xbox 0x00068130
 CSWSpell* CSWSpellArray::GetSpell(int nIndex) const
 {
     if (m_pSpells != 0 && nIndex >= 0 && nIndex < m_nNumSpells)
@@ -132,7 +132,7 @@ CSWSpell* CSWSpellArray::GetSpell(int nIndex) const
     }
     return 0;
 }
-// PC 0x005E2150 GOG 0x005E2180
+// PC 0x005E2150 GOG 0x005E2180 Xbox 0x00068160
 void CSWSpell::SetPrerequisites(const CExoString& sSpells)
 {
     m_sPrerequisites = sSpells;
@@ -160,7 +160,7 @@ void CSWSpell::SetPrerequisites(const CExoString& sSpells)
         }
     }
 }
-// PC 0x005E2500 GOG 0x005E2530
+// PC 0x005E2500 GOG 0x005E2530 Xbox 0x0006A0E0
 CSWSpellArray::~CSWSpellArray()
 {
     if (m_pSpells != 0)
@@ -170,7 +170,7 @@ CSWSpellArray::~CSWSpellArray()
         m_nNumSpells = 0;
     }
 }
-// PC 0x005E2540 GOG 0x005E2570
+// PC 0x005E2540 GOG 0x005E2570 Xbox 0x00068520
 void CSWSpellArray::Load()
 {
     C2DA* p2DA = new C2DA("SPELLS", 0);
@@ -538,7 +538,7 @@ void CSWSpellArray::Load()
     }
     delete p2DA;
 }
-// PC 0x005E2230 GOG 0x005E2260
+// PC 0x005E2230 GOG 0x005E2260 Xbox 0x00068240
 void CSWSpell::SetMasterSpells(const CExoString& sSpells)
 {
     m_sMasterSpells = sSpells;
@@ -577,7 +577,7 @@ CSWSpell CSWSpellArray::operator[](int nIndex) const
     CSWSpell cSpell;
     return cSpell;
 }
-// PC 0x005E2310 GOG 0x005E2340
+// PC 0x005E2310 GOG 0x005E2340 Xbox 0x00068320
 int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust, int nRoomForceRating,
                                      int nForm, char nCharismaModifier)
 {
@@ -632,7 +632,7 @@ int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust, int nRoo
     }
     return nForcePoints;
 }
-// PC 0x005E2460 GOG 0x005E2490
+// PC 0x005E2460 GOG 0x005E2490 Xbox 0x000B4390
 CExoString CSWSpell::GetSpellNameText()
 {
     STR_RES strRes;

@@ -30,12 +30,12 @@ public:
 
     CSWCPlaceable();
     virtual ~CSWCPlaceable();
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWCPlaceable* AsSWCPlaceable()
     {
         return this;
     }
-    // PC 0x006D96B0 GOG 0x006DB220
+    // PC 0x006D96B0 GOG 0x006DB220 Xbox 0x0009B430
     virtual CExoString GetName()
     {
         return m_sName;

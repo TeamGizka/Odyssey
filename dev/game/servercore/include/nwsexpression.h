@@ -56,9 +56,9 @@ public:
     CSWSExpressionNode* GetHead() { return m_pHead; }
     CSWSExpressionNode* GetCurrent() { return m_pCurrent; }
     CSWSExpressionNode* GetTail() { return m_pTail; }
-    void SetHead(CSWSExpressionNode* pNode) { m_pHead = pNode; }
-    void SetCurrent(CSWSExpressionNode* pNode) { m_pCurrent = pNode; }
-    void SetTail(CSWSExpressionNode* pNode) { m_pTail = pNode; }
+    void SetHead(CSWSExpressionNode* pNode) { m_pHead = pNode; }  // Xbox 0x00171F80
+    void SetCurrent(CSWSExpressionNode* pNode) { m_pCurrent = pNode; }  // Xbox 0x00043AB0
+    void SetTail(CSWSExpressionNode* pNode) { m_pTail = pNode; }  // Xbox 0x0008EE90
 
     CSWSExpressionNode* m_pHead;
     CSWSExpressionNode* m_pCurrent;

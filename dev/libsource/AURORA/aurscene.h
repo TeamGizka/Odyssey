@@ -118,7 +118,7 @@ public:
 
     Scene(char* sName);
     virtual ~Scene();
-    virtual int SetFog(int bFog)  // PC 0x0046DC80 GOG 0x0046DDE0
+    virtual int SetFog(int bFog)  // PC 0x0046DC80 GOG 0x0046DDE0 Xbox 0x002CD320
     {
         m_bFog = bFog;
         return bFog;
@@ -143,26 +143,26 @@ public:
     virtual void DeleteTile(const Vector& vPosition);
     virtual int HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                          CHitInfo* pHitInfo);
-    virtual void GetFogRange(float& fNear, float& fFar)  // PC 0x0046DC90 GOG 0x0046DDF0
+    virtual void GetFogRange(float& fNear, float& fFar)  // PC 0x0046DC90 GOG 0x0046DDF0 Xbox 0x002CD330
     {
         fNear = m_fFogNear;
         fFar = m_fFogFar;
     }
-    virtual void SetFogRange(float fNear, float fFar)  // PC 0x0046DCB0 GOG 0x0046DE10
+    virtual void SetFogRange(float fNear, float fFar)  // PC 0x0046DCB0 GOG 0x0046DE10 Xbox 0x002CD350
     {
         m_fFogNear = fNear;
         m_fFogFar = fFar;
     }
-    virtual void SetSceneFocus(Vector vFocus)  // PC 0x0046DCD0 GOG 0x0046DE30
+    virtual void SetSceneFocus(Vector vFocus)  // PC 0x0046DCD0 GOG 0x0046DE30 Xbox 0x002CD370
     {
         m_vSceneFocus = vFocus;
     }
     virtual unsigned char SetGeomFadeProperties(int nProperties);
-    virtual char IsGeomFadeEnabled()  // PC 0x0046DCF0 GOG 0x0046DE50
+    virtual char IsGeomFadeEnabled()  // PC 0x0046DCF0 GOG 0x0046DE50 Xbox 0x002CD390
     {
         return geomFadeEnabled == 1;
     }
-    virtual int GetObjectCount()  // PC 0x0046DD00 GOG 0x0046DE60
+    virtual int GetObjectCount()  // PC 0x0046DD00 GOG 0x0046DE60 Xbox 0x002CD3A0
     {
         return m_lstObjects.m_nCount;
     }
@@ -193,7 +193,7 @@ public:
     virtual void RenderGobAfter(CAurObject* pObject, CAurObject* pAfter);
     virtual void RenderGobBefore(CAurObject* pObject, CAurObject* pBefore);
     virtual char IsAnimating();
-    virtual void AddObject(CAurObject* pObject)  // PC 0x0046DD10 GOG 0x0046DE70
+    virtual void AddObject(CAurObject* pObject)  // PC 0x0046DD10 GOG 0x0046DE70 Xbox 0x002CD3B0
     {
         ChildAdd((Gob*)pObject);
     }
@@ -341,7 +341,7 @@ public:
     };
 
     CHitInfo(int nType, int nFlags, int nMask);
-    // PC 0x0046B430 GOG 0x0046B590
+    // PC 0x0046B430 GOG 0x0046B590 Xbox 0x000478A0
     ~CHitInfo()
     {
     }

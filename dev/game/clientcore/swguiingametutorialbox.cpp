@@ -17,7 +17,7 @@
 #include "nwrules.h"
 #include "swguiingame.h"
 #include "swguiingame.inl"
-// PC 0x00735300 GOG 0x00734860
+// PC 0x00735300 GOG 0x00734860 Xbox 0x000EB070
 CSWGuiTutorialBox::CSWGuiTutorialBox(CSWGuiManager* pManager)
     : CSWGuiMessageBox(pManager)
 {
@@ -35,21 +35,21 @@ CSWGuiTutorialBox::CSWGuiTutorialBox(CSWGuiManager* pManager)
 #endif
     m_nOpenSound = 15;
 }
-// PC 0x007353A0 GOG 0x007350C0
+// PC 0x007353A0 GOG 0x007350C0 Xbox 0x000EAE00
 void CSWGuiTutorialBox::OnPanelAdded()
 {
     CSWGuiMessageBox::OnPanelAdded();
     MessageBoxPause(0);
 }
 
-// PC 0x00734A90 GOG 0x007347A0
+// PC 0x00734A90 GOG 0x007347A0 Xbox 0x000EA6D0
 void CSWGuiTutorialBox::SetMessage(unsigned long nStrRef)
 {
     CExoString sMessage = g_pTlkTable->GetSimpleString(nStrRef);
     g_pTlkTable->ParseStr(sMessage);
     CSWGuiMessageBox::SetMessage(sMessage);
 }
-// PC 0x00734B20 GOG 0x00734900
+// PC 0x00734B20 GOG 0x00734900 Xbox 0x000EA760
 int CSWGuiTutorialBox::TutorialReasonIsValid(unsigned char nReason)
 {
     bool bMissing;
@@ -63,7 +63,7 @@ int CSWGuiTutorialBox::TutorialReasonIsValid(unsigned char nReason)
     }
     return !bMissing;
 }
-// PC 0x00734BB0 GOG 0x00734990
+// PC 0x00734BB0 GOG 0x00734990 Xbox 0x000EA7D0
 void CSWGuiTutorialBox::MessageBoxUnpause(CSWGuiControl* pControl)
 {
     if (m_bWasPausedByCombat == 0)
@@ -72,7 +72,7 @@ void CSWGuiTutorialBox::MessageBoxUnpause(CSWGuiControl* pControl)
     }
     m_bWasPausedByCombat = 0;
 }
-// PC 0x00734BE0 GOG 0x00734830
+// PC 0x00734BE0 GOG 0x00734830 Xbox 0x000EA730
 int CSWGuiTutorialBox::SetTutorialInstigator(unsigned long oidInstigator,
                                              unsigned long oidTarget,
                                              unsigned long nActionParam)
@@ -82,7 +82,7 @@ int CSWGuiTutorialBox::SetTutorialInstigator(unsigned long oidInstigator,
     m_nActionParam = nActionParam;
     return nActionParam;
 }
-// PC 0x00734C10 GOG 0x007349C0
+// PC 0x00734C10 GOG 0x007349C0 Xbox 0x000EA800
 void CSWGuiTutorialBox::PerformCombatFeat(CSWGuiControl* pControl)
 {
     CSWCCreature* pCreature =
@@ -94,7 +94,7 @@ void CSWGuiTutorialBox::PerformCombatFeat(CSWGuiControl* pControl)
         pCreature->PerformCombatFeat(m_nActionParam, pCreature);
     }
 }
-// PC 0x00734C70 GOG 0x00734A20
+// PC 0x00734C70 GOG 0x00734A20 Xbox 0x000EA860
 void CSWGuiTutorialBox::PerformForcePower(CSWGuiControl* pControl)
 {
     CSWCCreature* pCreature =
@@ -108,7 +108,7 @@ void CSWGuiTutorialBox::PerformForcePower(CSWGuiControl* pControl)
                                     (unsigned char)m_oidTarget, 0, 0, 0);
     }
 }
-// PC 0x00734D00 GOG 0x00734AB0
+// PC 0x00734D00 GOG 0x00734AB0 Xbox 0x000EA8F0
 void CSWGuiTutorialBox::PerformUseGrenade(CSWGuiControl* pControl)
 {
     CSWCCreature* pInstigator =
@@ -123,7 +123,7 @@ void CSWGuiTutorialBox::PerformUseGrenade(CSWGuiControl* pControl)
         pInstigator->PerformUseHostileItem(m_nActionParam, pTarget);
     }
 }
-// PC 0x00734D80 GOG 0x00734B30
+// PC 0x00734D80 GOG 0x00734B30 Xbox 0x000EA970
 void CSWGuiTutorialBox::PerformSetMine(CSWGuiControl* pControl)
 {
     CSWCCreature* pCreature =
@@ -136,13 +136,13 @@ void CSWGuiTutorialBox::PerformSetMine(CSWGuiControl* pControl)
                                   pCreature->m_vPosition);
     }
 }
-// PC 0x00734DF0 GOG 0x00734BA0
+// PC 0x00734DF0 GOG 0x00734BA0 Xbox 0x000EA9E0
 void CSWGuiTutorialBox::PerformPlayerFlourishWeapons(CSWGuiControl* pControl)
 {
     MessageBoxUnpause(0);
     g_pAppManager->m_pClientExoApp->PlayerFlourishWeapons();
 }
-// PC 0x00734E30 GOG 0x00734BE0
+// PC 0x00734E30 GOG 0x00734BE0 Xbox 0x000EAA20
 void CSWGuiTutorialBox::PerformBash(CSWGuiControl* pControl)
 {
     CSWCCreature* pCreature =
@@ -172,7 +172,7 @@ void CSWGuiTutorialBox::PerformBash(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00734ED0 GOG 0x00734C80
+// PC 0x00734ED0 GOG 0x00734C80 Xbox 0x000EAAC0
 void CSWGuiTutorialBox::PerformAttack(CSWGuiControl* pControl)
 {
     CSWCCreature* pCreature =
@@ -230,7 +230,7 @@ void CSWGuiTutorialBox::PerformCombatYButton(CSWGuiControl* pControl)
     g_pAppManager->m_pClientExoApp->GetInGameGui()
         ->m_pMainInterface->OnCombatYButton();
 }
-// PC 0x00734FD0 GOG 0x00734D80
+// PC 0x00734FD0 GOG 0x00734D80 Xbox 0x000EAC20
 void CSWGuiTutorialBox::PerformReturnToBase(CSWGuiControl* pControl)
 {
     MessageBoxUnpause(0);
@@ -238,7 +238,7 @@ void CSWGuiTutorialBox::PerformReturnToBase(CSWGuiControl* pControl)
          ->GetGuiInGameScreenPanel(6))
         ->OnXButton(0);
 }
-// PC 0x007353E0 GOG 0x00735100
+// PC 0x007353E0 GOG 0x00735100 Xbox 0x000EAE40
 void CSWGuiTutorialBox::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -264,7 +264,7 @@ void CSWGuiTutorialBox::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiMessageBox::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00735440 GOG 0x00735160
+// PC 0x00735440 GOG 0x00735160 Xbox 0x000EAEA0
 int CSWGuiTutorialBox::SetTutorialReason(unsigned char nReason)
 {
     m_nTutorialReason = nReason;
@@ -328,7 +328,7 @@ int CSWGuiTutorialBox::SetTutorialReason(unsigned char nReason)
         return TRUE;
     }
 }
-// PC 0x00735020 GOG 0x00734DD0
+// PC 0x00735020 GOG 0x00734DD0 Xbox 0x000EAC70
 int CSWGuiTutorialBox::SetNextMessage()
 {
     CExoString sColumn;

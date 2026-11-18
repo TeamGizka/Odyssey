@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x0041FF20 GOG 0x0041FF30
+// PC 0x0041FF20 GOG 0x0041FF30 Xbox 0x00161310
 CRes2DA::CRes2DA()
 {
     m_bServiced = 0;
@@ -18,12 +18,12 @@ unsigned long* CRes2DA::Get2DAHeaderPtr()
 {
     return m_p2DAHeader;
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 void* CRes2DA::Get2DADataPtr()
 {
     return m_p2DAData;
 }
-// PC 0x007846A0 GOG 0x00784450
+// PC 0x007846A0 GOG 0x00784450 Xbox 0x0015B870
 unsigned long CRes2DA::Get2DASize()
 {
     return m_n2DASize;
@@ -34,7 +34,7 @@ int CRes2DA::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x0041FF60 GOG 0x0041FF70
+// PC 0x0041FF60 GOG 0x0041FF70 Xbox 0x00161350
 int CRes2DA::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -44,7 +44,7 @@ int CRes2DA::OnResourceFreed()
     m_bPacked = 0;
     return 1;
 }
-// PC 0x0041FF80 GOG 0x0041FF90
+// PC 0x0041FF80 GOG 0x0041FF90 Xbox 0x00161370
 int CRes2DA::OnResourceServiced()
 {
     unsigned long* pData = (unsigned long*)m_pResource;

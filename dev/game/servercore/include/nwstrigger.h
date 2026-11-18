@@ -47,12 +47,12 @@ public:
         TRAP_ANIMATION_ACTIVE = 10143,
         TRAP_ANIMATION_INACTIVE = 10144
     };
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWSTrigger* AsSWSTrigger()
     {
         return this;
     }
-    virtual CExoLocString* GetFirstName()  // PC 0x00587F40 GOG 0x00587FC0
+    virtual CExoLocString* GetFirstName()  // PC 0x00587F40 GOG 0x00587FC0 Xbox 0x0021EC90
     {
         return &m_lsName;
     }

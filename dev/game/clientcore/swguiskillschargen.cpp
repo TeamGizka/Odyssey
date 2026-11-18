@@ -13,7 +13,7 @@
 #include "swguiabilitieschargen.h"
 #include "swguiskillschargen.h"
 #include "nwccreature.h"
-// PC 0x00765CF0 GOG 0x00765CE0
+// PC 0x00765CF0 GOG 0x00765CE0 Xbox 0x00140550
 void CSWGuiSkillsCharGen::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -22,7 +22,7 @@ void CSWGuiSkillsCharGen::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x11, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x00765D20 GOG 0x00765D10
+// PC 0x00765D20 GOG 0x00765D10 Xbox 0x00140570
 void CSWGuiSkillsCharGen::HandleCancelButton()
 {
     if (m_pParentPanel != NULL)
@@ -56,7 +56,7 @@ void CSWGuiSkillsCharGen::HandleCancelButton()
         }
     }
 }
-// PC 0x00765DD0 GOG 0x00765DC0
+// PC 0x00765DD0 GOG 0x00765DC0 Xbox 0x00140620
 void CSWGuiSkillsCharGen::OnExitPointsButton(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pLabelParams;
@@ -67,7 +67,7 @@ void CSWGuiSkillsCharGen::OnExitPointsButton(CSWGuiControl* pControl)
     pButtonParams = &m_btnPoints[pControl->m_nIndex].m_cText.m_cParams;
     pButtonParams->m_bHilightText = 0;
 }
-// PC 0x00767AF0 GOG 0x00767910
+// PC 0x00767AF0 GOG 0x00767910 Xbox 0x00142700
 void CSWGuiSkillsCharGen::OnMinusButton()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
@@ -110,7 +110,7 @@ void CSWGuiSkillsCharGen::OnMinusButton()
     }
 #endif
 }
-// PC 0x00767CF0 GOG 0x00767B10
+// PC 0x00767CF0 GOG 0x00767B10 Xbox 0x001428D0
 void CSWGuiSkillsCharGen::OnPlusButton()
 {
     int bEnoughPoints = 0;
@@ -232,7 +232,7 @@ void CSWGuiSkillsCharGen::OnPlusButton()
     }
 #endif
 }
-// PC 0x00768140 GOG 0x00767F60
+// PC 0x00768140 GOG 0x00767F60 Xbox 0x00142CA0
 void CSWGuiSkillsCharGen::OnAcceptButton()
 {
     if (m_nPointsRemaining > 0)
@@ -248,7 +248,7 @@ void CSWGuiSkillsCharGen::OnAcceptButton()
     }
     CompletePanel();
 }
-// PC 0x007681D0 GOG 0x00767FF0
+// PC 0x007681D0 GOG 0x00767FF0 Xbox 0x00142D30
 void CSWGuiSkillsCharGen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -289,7 +289,7 @@ void CSWGuiSkillsCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00766120 GOG 0x00765F60
+// PC 0x00766120 GOG 0x00765F60 Xbox 0x00140D40
 void CSWGuiSkillsCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
 {
     int i;
@@ -434,7 +434,7 @@ void CSWGuiSkillsCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x007663B0 GOG 0x007661F0
+// PC 0x007663B0 GOG 0x007661F0 Xbox 0x00140FD0
 void CSWGuiSkillsCharGen::ConfirmAccept(CSWGuiControl* pControl)
 {
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -443,7 +443,7 @@ void CSWGuiSkillsCharGen::ConfirmAccept(CSWGuiControl* pControl)
         CompletePanel();
     }
 }
-// PC 0x00766410 GOG 0x00766250
+// PC 0x00766410 GOG 0x00766250 Xbox 0x00141030
 void CSWGuiSkillsCharGen::OnRecommendButton()
 {
     unsigned char nIndex = m_pCreature->GetStats()->GetNumClasses() - 1;
@@ -548,7 +548,7 @@ void CSWGuiSkillsCharGen::OnRecommendButton()
     m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
 
-// PC 0x00766800 GOG 0x00766640
+// PC 0x00766800 GOG 0x00766640 Xbox 0x00141470
 CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
                                        CSWCCreature* pCreature, int bLevelUp)
     : CSWGuiPanel(pManager)
@@ -830,7 +830,7 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     m_lblRemainingSelections.m_cText.m_cParams.SetText(m_nPointsRemaining);
     SetActiveControl(&m_btnPoints[m_nSelected], 0);
 }
-// PC 0x00765E00 GOG 0x00765DF0
+// PC 0x00765E00 GOG 0x00765DF0 Xbox 0x00140650
 void CSWGuiSkillsCharGen::SetDescription(const CExoString& sDescription)
 {
 
@@ -853,7 +853,7 @@ void CSWGuiSkillsCharGen::SetDescription(const CExoString& sDescription)
     m_lblRanalog.SetEnabledFlag(m_lbDescription.IsOversized());
 #endif
 }
-// PC 0x00765EC0 GOG 0x00765EB0
+// PC 0x00765EC0 GOG 0x00765EB0 Xbox 0x00140760
 int CSWGuiSkillsCharGen::IsClassSkill(unsigned short nSkill)
 {
     int nClass;
@@ -876,7 +876,7 @@ int CSWGuiSkillsCharGen::IsClassSkill(unsigned short nSkill)
     return 0;
 }
 
-// PC 0x00765F50 GOG 0x00765B10
+// PC 0x00765F50 GOG 0x00765B10 Xbox 0x001408A0
 CSWGuiSkillsCharGen::~CSWGuiSkillsCharGen()
 {
     m_lbDescription.ClearItems();
@@ -899,7 +899,7 @@ void CSWGuiSkillsCharGen::CompletePanel()
 
 #ifdef _XBOX
 
-void CSWGuiSkillsCharGen::Draw(float fElapsed)
+void CSWGuiSkillsCharGen::Draw(float fElapsed)  // Xbox 0x001407F0
 {
     int nCount = m_lArrowHilights.num;
 
@@ -915,7 +915,7 @@ void CSWGuiSkillsCharGen::Draw(float fElapsed)
     CSWGuiPanel::Draw(fElapsed);
 }
 
-void CSWGuiSkillsCharGen::HilightArrow(CSWGuiLabel* pLabel)
+void CSWGuiSkillsCharGen::HilightArrow(CSWGuiLabel* pLabel)  // Xbox 0x001413C0
 {
     int nCount = m_lArrowHilights.num;
 

@@ -6,7 +6,7 @@
 #include "nwsparty.h"
 #include "factionmanager.h"
 #include "nwrules.h"
-// PC 0x005AD1E0 GOG 0x005AD250
+// PC 0x005AD1E0 GOG 0x005AD250 Xbox 0x00265360
 CFactionManager::CFactionManager()
 {
     m_pPlayer = NULL;
@@ -20,7 +20,7 @@ CFactionManager::CFactionManager()
     m_nNumFactions = 0;
     m_pReputations = NULL;
 }
-// PC 0x005AD250 GOG 0x005AD2C0
+// PC 0x005AD250 GOG 0x005AD2C0 Xbox 0x002653B0
 CFactionManager::~CFactionManager()
 {
     if (m_pFactions != NULL)
@@ -41,12 +41,12 @@ CFactionManager::~CFactionManager()
         m_pReputations = NULL;
     }
 }
-// PC 0x005ACB80 GOG 0x005ACBF0
+// PC 0x005ACB80 GOG 0x005ACBF0 Xbox 0x00264D80
 int CFactionManager::GetIsNPCFaction(int nFaction)
 {
     return nFaction >= 1 && nFaction <= m_nNumFactions;
 }
-// PC 0x005ACBA0 GOG 0x005ACC10
+// PC 0x005ACBA0 GOG 0x005ACC10 Xbox 0x00264DA0
 void CFactionManager::ResolveFactionName(const CExoString& sName,
                                          CSWSFaction* pFaction)
 {
@@ -79,7 +79,7 @@ void CFactionManager::ResolveFactionName(const CExoString& sName,
         m_pInsane = pFaction;
     }
 }
-// PC 0x005ACC70 GOG 0x005ACCE0
+// PC 0x005ACC70 GOG 0x005ACCE0 Xbox 0x00264E70
 void CFactionManager::DeleteFaction(int nFaction)
 {
     if (m_pFactions != NULL)
@@ -134,7 +134,7 @@ int CFactionManager::GetFactionIdByName(const CExoString& sName)
     }
     return 0;
 }
-// PC 0x005AD130 GOG 0x005AD1A0
+// PC 0x005AD130 GOG 0x005AD1A0 Xbox 0x002652B0
 int CFactionManager::SaveReputations(CResGFF* pRes, CResList* pList)
 {
     CResStruct stRep;
@@ -156,7 +156,7 @@ int CFactionManager::SaveReputations(CResGFF* pRes, CResList* pList)
     }
     return 1;
 }
-// PC 0x005ACCB0 GOG 0x005ACD20
+// PC 0x005ACCB0 GOG 0x005ACD20 Xbox 0x00264EB0
 CSWSFaction* CFactionManager::GetFaction(int nFaction)
 {
     if (nFaction < 0 || nFaction >= m_pFactions->num)
@@ -165,7 +165,7 @@ CSWSFaction* CFactionManager::GetFaction(int nFaction)
     }
     return m_pFactions->element[nFaction];
 }
-// PC 0x005ACCD0 GOG 0x005ACD40
+// PC 0x005ACCD0 GOG 0x005ACD40 Xbox 0x00264ED0
 void CFactionManager::SetNPCFactionReputation(int nFaction1, int nFaction2,
                                               int nReputation)
 {
@@ -187,7 +187,7 @@ void CFactionManager::SetNPCFactionReputation(int nFaction1, int nFaction2,
         }
     }
 }
-// PC 0x005ACD20 GOG 0x005ACD90
+// PC 0x005ACD20 GOG 0x005ACD90 Xbox 0x00264F20
 int CFactionManager::GetNPCFactionReputation(int nFaction1, int nFaction2)
 {
     if (!GetIsNPCFaction(nFaction1) && !GetIsNPCFaction(nFaction2))
@@ -205,7 +205,7 @@ int CFactionManager::GetNPCFactionReputation(int nFaction1, int nFaction2)
     }
     return GetNPCFactionReputation(nFaction2, nFaction1);
 }
-// PC 0x005ACD90 GOG 0x005ACE00
+// PC 0x005ACD90 GOG 0x005ACE00 Xbox 0x00264F90
 int CFactionManager::LoadFactions(int bAppend)
 {
     CExoString sName;
@@ -234,7 +234,7 @@ int CFactionManager::LoadFactions(int bAppend)
     }
     return 1;
 }
-// PC 0x005ACEC0 GOG 0x005ACF30
+// PC 0x005ACEC0 GOG 0x005ACF30 Xbox 0x00265080
 int CFactionManager::LoadFactionsFromSaveGame(CResGFF* pRes, CResList* pList)
 {
     CResStruct stFaction;
@@ -268,7 +268,7 @@ int CFactionManager::LoadFactionsFromSaveGame(CResGFF* pRes, CResList* pList)
     int bLoaded = LoadFactions(1);
     return bSuccess && bLoaded;
 }
-// PC 0x005AD090 GOG 0x005AD100
+// PC 0x005AD090 GOG 0x005AD100 Xbox 0x00265210
 int CFactionManager::SaveFactions(CResGFF* pRes, CResList* pList)
 {
     CResStruct stFaction;
@@ -284,7 +284,7 @@ int CFactionManager::SaveFactions(CResGFF* pRes, CResList* pList)
     }
     return 1;
 }
-// PC 0x005AD2E0 GOG 0x005AD350
+// PC 0x005AD2E0 GOG 0x005AD350 Xbox 0x00265440
 int CFactionManager::LoadReputations()
 {
     int nEntries = m_nNumFactions * (m_nNumFactions + 1);
@@ -322,7 +322,7 @@ int CFactionManager::LoadReputations()
     }
     return bSuccess;
 }
-// PC 0x005AD4E0 GOG 0x005AD550
+// PC 0x005AD4E0 GOG 0x005AD550 Xbox 0x00265630
 int CFactionManager::LoadReputationsFromSaveGame(CResGFF* pRes, CResList* pList)
 {
     int bSuccess;
@@ -342,7 +342,7 @@ int CFactionManager::LoadReputationsFromSaveGame(CResGFF* pRes, CResList* pList)
     }
     return bSuccess;
 }
-// PC 0x005AD5E0 GOG 0x005AD650
+// PC 0x005AD5E0 GOG 0x005AD650 Xbox 0x00265730
 void CFactionManager::CreateDefaultFactions()
 {
     m_pPlayer = new CSWSFaction;

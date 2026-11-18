@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x007838F0 GOG 0x007833D0
+// PC 0x007838F0 GOG 0x007833D0 Xbox 0x0032FEC0
 int CAuroraModelX::GetModelDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ int CAuroraModelX::GetModelDataSize()
     }
     return 0;
 }
-// PC 0x00783FE0 GOG 0x00783400
+// PC 0x00783FE0 GOG 0x00783400 Xbox 0x00331360
 unsigned char* CAuroraModelX::GetModelDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -17,7 +17,7 @@ unsigned char* CAuroraModelX::GetModelDataPtr()
     }
     return 0;
 }
-// PC 0x00783600 GOG 0x00783430
+// PC 0x00783600 GOG 0x00783430 Xbox 0x00330B00
 int CAuroraModelX::Load()
 {
     SMDXResPrefix* pPrefix;
@@ -31,7 +31,7 @@ int CAuroraModelX::Load()
     pPrefix->pOwner = this;
     return 1;
 }
-// PC 0x00783830 GOG 0x00783660
+// PC 0x00783830 GOG 0x00783660 Xbox 0x00330CD0
 CAuroraModelX::CAuroraModelX(CResRef cResRef, int bRequest)
 {
     SetResRef(cResRef, bRequest);
@@ -40,7 +40,7 @@ CAuroraModelX::CAuroraModelX(CResRef cResRef, int bRequest)
 CAuroraModelX::~CAuroraModelX()
 {
 }
-// PC 0x00783630 GOG 0x00783460
+// PC 0x00783630 GOG 0x00783460 Xbox 0x0032ED20
 void CAuroraModelX::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -48,7 +48,7 @@ void CAuroraModelX::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x00783320 GOG 0x007826C0
+// PC 0x00783320 GOG 0x007826C0 Xbox 0x0032FF20
 unsigned char* CAuroraModelX::GetPtrToResHelperInfo()
 {
     unsigned char* nMDXDataPtr;

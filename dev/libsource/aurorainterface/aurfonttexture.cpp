@@ -84,7 +84,7 @@ int CAuroraFontTexture::Load()
 }
 
 // Dead code: not in the PC executable
-void CAuroraFontTexture::Unload()
+void CAuroraFontTexture::Unload()  // Xbox 0x0032ED20
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
     {

@@ -7,7 +7,7 @@
 #include "nwsmodule.h"
 #include "serveraimaster.h"
 #include "nwswaypoint.h"
-// PC 0x0056F3B0 GOG 0x0056F4E0
+// PC 0x0056F3B0 GOG 0x0056F4E0 Xbox 0x00281030
 CSWSWaypoint::CSWSWaypoint(unsigned long oidWaypoint)
     : CSWSObject(CGameObject::OBJECT_TYPE_WAYPOINT, oidWaypoint, 0)
 {
@@ -15,11 +15,11 @@ CSWSWaypoint::CSWSWaypoint(unsigned long oidWaypoint)
     m_bHasMapNote = 0;
     m_bMapNoteEnabled = 0;
 }
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void CSWSWaypoint::AIUpdate()
 {
 }
-// PC 0x0056F450 GOG 0x0056F580
+// PC 0x0056F450 GOG 0x0056F580 Xbox 0x002810A0
 void CSWSWaypoint::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                                 void* pEventData, unsigned long nCalendarDay,
                                 unsigned long nTimeOfDay)
@@ -32,7 +32,7 @@ void CSWSWaypoint::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         }
     }
 }
-// PC 0x0056F470 GOG 0x0056F5A0
+// PC 0x0056F470 GOG 0x0056F5A0 Xbox 0x002810C0
 int CSWSWaypoint::LoadWaypoint(CResGFF* pRes, CResStruct* pStruct)
 {
     Vector vPosition;
@@ -89,7 +89,7 @@ int CSWSWaypoint::LoadWaypoint(CResGFF* pRes, CResStruct* pStruct)
         m_sTag, m_nId);
     return 1;
 }
-// PC 0x0056F770 GOG 0x0056F8A0
+// PC 0x0056F770 GOG 0x0056F8A0 Xbox 0x00281370
 int CSWSWaypoint::SaveWaypoint(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldCExoString(pStruct, GetTag(), "Tag");
@@ -111,7 +111,7 @@ int CSWSWaypoint::SaveWaypoint(CResGFF* pRes, CResStruct* pStruct)
     }
     return 1;
 }
-// PC 0x0056F890 GOG 0x0056F9C0
+// PC 0x0056F890 GOG 0x0056F9C0 Xbox 0x00281490
 void CSWSWaypoint::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -122,7 +122,7 @@ void CSWSWaypoint::RemoveFromArea()
     Vector vPosition;
     SetPosition(vPosition, 1, 1, 0);
 }
-// PC 0x0056F8F0 GOG 0x0056FA20
+// PC 0x0056F8F0 GOG 0x0056FA20 Xbox 0x002814F0
 int CSWSWaypoint::LoadFromTemplate(const CResRef& cResRef)
 {
     CResGFF* pRes = new CResGFF(2058, "UTW ", cResRef);
@@ -144,7 +144,7 @@ int CSWSWaypoint::LoadFromTemplate(const CResRef& cResRef)
     delete pRes;
     return 1;
 }
-// PC 0x0056FA20 GOG 0x0056FB50
+// PC 0x0056FA20 GOG 0x0056FB50 Xbox 0x002815C0
 CSWSWaypoint::~CSWSWaypoint()
 {
     if (GetArea() != NULL)
@@ -158,7 +158,7 @@ CSWSWaypoint::~CSWSWaypoint()
         pModule->RemoveObjectFromLookupTable(m_sTag, oid);
     }
 }
-// PC 0x0056FAC0 GOG 0x0056FBF0
+// PC 0x0056FAC0 GOG 0x0056FBF0 Xbox 0x00281620
 void CSWSWaypoint::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                              int bLoadingGame)
 {

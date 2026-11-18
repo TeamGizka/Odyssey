@@ -41,17 +41,17 @@ public:
     void LoadFeatsTable(const CExoString& sTable);
     int IsFirstLevelGrantedFeat(unsigned short nFeat);
 
-    void SetNameStrRef(unsigned long nStrRef)
+    void SetNameStrRef(unsigned long nStrRef)  // Xbox 0x00171F80
     {
         m_nNameStrRef = nStrRef;
     }
 
-    void SetConverNameStrRef(unsigned long nStrRef)
+    void SetConverNameStrRef(unsigned long nStrRef)  // Xbox 0x00043AB0
     {
         m_nConverNameStrRef = nStrRef;
     }
 
-    void SetConverNameLowerStrRef(unsigned long nStrRef)
+    void SetConverNameLowerStrRef(unsigned long nStrRef)  // Xbox 0x0008EE90
     {
         m_nConverNameLowerStrRef = nStrRef;
     }

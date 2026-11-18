@@ -16,7 +16,7 @@
 
 static inline void TraceDebugMenuOption();
 
-// PC 0x0073D000 GOG 0x0073CE20
+// PC 0x0073D000 GOG 0x0073CE20 Xbox 0x001082E0
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
     unsigned long nSpell, CSWSCreature* pCreature)
 {
@@ -47,7 +47,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
         pCreature->m_pStats->AddKnownSpell(nClass, nSpell);
     }
 }
-// PC 0x0073D0A0 GOG 0x0073CEC0
+// PC 0x0073D0A0 GOG 0x0073CEC0 Xbox 0x00108380
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteFeats(
     unsigned short nFeat, CSWSCreature* pCreature)
 {
@@ -79,7 +79,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::HideMenu()
     CreateMainPowersFeatsSkillsMenu();
     g_pAppManager->m_pClientExoApp->GetInGameGui()->HidePowersFeatsSkillsDebugMenu();
 }
-// PC 0x0073D130 GOG 0x0073CF50
+// PC 0x0073D130 GOG 0x0073CF50 Xbox 0x00108410
 void CSWGuiPowersFeatsSkillsDebugMenu::OnSkillPicked(CSWGuiControl* pControl)
 {
     if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
@@ -159,7 +159,7 @@ static inline void TraceDebugMenu()
 {
 }
 
-// PC 0x0073D280 GOG 0x0073D180
+// PC 0x0073D280 GOG 0x0073D180 Xbox 0x001084A0
 void CSWGuiPowersFeatsSkillsDebugMenu::OnPowerPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -175,7 +175,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnPowerPicked(CSWGuiControl* pControl)
         HideMenu();
     }
 }
-// PC 0x0073D300 GOG 0x0073D200
+// PC 0x0073D300 GOG 0x0073D200 Xbox 0x00108520
 void CSWGuiPowersFeatsSkillsDebugMenu::OnFeatPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -195,7 +195,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnFeatPicked(CSWGuiControl* pControl)
         HideMenu();
     }
 }
-// PC 0x0073D3A0 GOG 0x0073D2C0
+// PC 0x0073D3A0 GOG 0x0073D2C0 Xbox 0x00108670
 void CSWGuiPowersFeatsSkillsDebugMenu::CreatePowersSubMenu()
 {
     int i = 0;
@@ -225,7 +225,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::CreatePowersSubMenu()
     m_nMenu = MENU_POWERS;
     m_lbOptions.SetActiveControl(m_lbOptions.GetControl(m_nSelected), 0);
 }
-// PC 0x0073D580 GOG 0x0073D4A0
+// PC 0x0073D580 GOG 0x0073D4A0 Xbox 0x00108810
 void CSWGuiPowersFeatsSkillsDebugMenu::CreateFeatsSubMenu()
 {
     int i = 0;
@@ -254,7 +254,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::CreateFeatsSubMenu()
     m_nMenu = MENU_FEATS;
     m_lbOptions.SetActiveControl(m_lbOptions.GetControl(m_nSelected), 0);
 }
-// PC 0x0073D730 GOG 0x0073CFE0
+// PC 0x0073D730 GOG 0x0073CFE0 Xbox 0x00108970
 void CSWGuiPowersFeatsSkillsDebugMenu::CreateSkillsSubMenu()
 {
     int i = 0;
@@ -306,7 +306,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnAddFeatPicked(CSWGuiControl* pControl)
         CreateFeatsSubMenu();
     }
 }
-// PC 0x0073D930 GOG 0x0073D690
+// PC 0x0073D930 GOG 0x0073D690 Xbox 0x00108B20
 void CSWGuiPowersFeatsSkillsDebugMenu::CreateMainPowersFeatsSkillsMenu()
 {
     CSWGuiListBox* pList = &m_lbOptions;
@@ -337,7 +337,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::CreateMainPowersFeatsSkillsMenu()
     m_nMenu = MENU_MAIN;
     m_lbOptions.SetActiveControl(m_lbOptions.GetControl(m_nSelected), 0);
 }
-// PC 0x0073DAC0 GOG 0x0073D820
+// PC 0x0073DAC0 GOG 0x0073D820 Xbox 0x00108C70
 CSWGuiPowersFeatsSkillsDebugMenu::CSWGuiPowersFeatsSkillsDebugMenu(
     CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -353,7 +353,7 @@ CSWGuiPowersFeatsSkillsDebugMenu::CSWGuiPowersFeatsSkillsDebugMenu(
     CreateMainPowersFeatsSkillsMenu();
     CenterPanel();
 }
-// PC 0x0073DCA0 GOG 0x0073DA00
+// PC 0x0073DCA0 GOG 0x0073DA00 Xbox 0x00108D90
 void CSWGuiPowersFeatsSkillsDebugMenu::Back()
 {
     if (m_nMenu == MENU_MAIN)
@@ -365,7 +365,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::Back()
     }
     CreateMainPowersFeatsSkillsMenu();
 }
-// PC 0x0073DCE0 GOG 0x0073DA40
+// PC 0x0073DCE0 GOG 0x0073DA40 Xbox 0x00108DD0
 void CSWGuiPowersFeatsSkillsDebugMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)

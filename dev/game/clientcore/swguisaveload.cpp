@@ -52,7 +52,7 @@ static void ConstructSaveNameEditBox()
     new CSWGuiSaveGameEditBox;
 }
 
-void CSWGuiSaveLoad::ExitPanel()
+void CSWGuiSaveLoad::ExitPanel()  // Xbox 0x000DFAE0
 {
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
@@ -88,7 +88,7 @@ void CSWGuiSaveNamePanel::SetTextAndPointer(CSWGuiSaveLoad* pSaveLoad, const CEx
 #ifdef _XBOX
 #include "exoinput.h"
 
-void CSWGuiSaveLoad::UpdateFreeBlocks()
+void CSWGuiSaveLoad::UpdateFreeBlocks()  // Xbox 0x000DFCF0
 {
     unsigned __int64 nFreeBlocks;
     g_pExoResMan->GetFreeDiskSpace("SAVES:", &nFreeBlocks);
@@ -373,7 +373,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
     }
 }
 
-void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)
+void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // Xbox 0x000E3830
 {
     CSWGuiMessageBox* pMessageBox;
     WCHAR wszTitle[128];
@@ -404,7 +404,7 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)
 
 #define XBOX_STRREF_NOT_ENOUGH_BLOCKS 42140
 
-void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)
+void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // Xbox 0x000E4C90
 {
     int bSelected = pControl->m_bSelected;
     int nOptionsSpace = 0;
@@ -479,7 +479,7 @@ void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)
     }
 }
 
-void CSWGuiSaveLoad::OnCorruptGameSelected(CSWGuiControl* pControl)
+void CSWGuiSaveLoad::OnCorruptGameSelected(CSWGuiControl* pControl)  // Xbox 0x000DFB10
 {
     if (pControl->m_bSelected)
     {
@@ -816,7 +816,7 @@ void CSWGuiSaveLoad::SaveGameToSlot(CSWGuiControl* pControl)
 
 #define XBOX_FUTUREGAME_LOAD_STEP 40
 
-int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,
+int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // Xbox 0x000E0F40
                                        const CExoString& sSaveName)
 {
 
@@ -896,7 +896,7 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,
     g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);          \
     g_pExoBase->m_pExoDebug->FlushScriptLogFile()
 
-int CSWGuiSaveLoad::LoadPCAutoSave()
+int CSWGuiSaveLoad::LoadPCAutoSave()  // Xbox 0x000E2610
 {
 
     CExoString sSavePath;
@@ -1055,7 +1055,7 @@ int CSWGuiSaveLoad::LoadPCAutoSave()
 
 #define XBOX_SAVE_SLOT_CORRUPT 1000
 
-void CSWGuiSaveLoad::PopulateGameList()
+void CSWGuiSaveLoad::PopulateGameList()  // Xbox 0x000E5000
 {
     CExoArrayList<CExoString> lDirectories;
     CExoArrayList<CSWGuiControl*> lControls;
@@ -1226,7 +1226,7 @@ void KOTOR_LAUNCH_OPTIONS_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
     }
 }
 
-void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
+void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)  // Xbox 0x000E19C0
 {
     int bSuccess;
     CResStruct stSub;
@@ -1275,7 +1275,7 @@ void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
     m_nStoryHint = pRes->ReadFieldBYTE(&stStruct, "STORYHINT", bSuccess, nDefault);
 }
 #endif
-int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0 GOG 0x007070C0
+int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0 GOG 0x007070C0 Xbox 0x000DFC30
 {
 #ifdef _XBOX
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(
@@ -1449,7 +1449,7 @@ inline CResRef CSWGuiSaveLoadEntry::GetPlayerPortrait(int nIndex)
     }
     return CResRef();
 }
-// PC 0x00708260 GOG 0x00707E50
+// PC 0x00708260 GOG 0x00707E50 Xbox 0x000DEE80
 CExoString CSWGuiSaveLoadEntry::GetGameDirectory()
 {
     CExoString sDirectory;
@@ -2048,7 +2048,7 @@ void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x0070
     g_pAppManager->GetServerExoApp()->ExecuteLoadModule(sModuleName);
 }
 #endif
-// PC 0x0070B0D0 GOG 0x0070AE10
+// PC 0x0070B0D0 GOG 0x0070AE10 Xbox 0x000E4980
 void CSWGuiSaveLoad::DeleteGame(CSWGuiControl* pControl)
 {
     int bSelected;
@@ -2245,7 +2245,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x0070B130 GOG 0x0070AE70
+// PC 0x0070B130 GOG 0x0070AE70 Xbox 0x000E49E0
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
 {
     m_nGameplayHint = 0;

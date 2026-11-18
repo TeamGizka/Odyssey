@@ -4,7 +4,7 @@
 #include "clientexoappinternal.h"
 #include "twodimarray.h"
 #include "soundset.h"
-// PC 0x006CDFD0 GOG 0x006CDCD0
+// PC 0x006CDFD0 GOG 0x006CDCD0 Xbox 0x0008E090
 int CSoundSet::GetStrres(unsigned short nSound, STR_RES& strRes)
 {
     SSFFileHeader* pHeader;
@@ -28,7 +28,7 @@ int CSoundSet::GetStrres(unsigned short nSound, STR_RES& strRes)
     }
     return 0;
 }
-// PC 0x006CE030 GOG 0x006CDD30
+// PC 0x006CE030 GOG 0x006CDD30 Xbox 0x0008E0F0
 CSoundSetList::~CSoundSetList()
 {
     if (m_pResRefs != NULL)
@@ -47,7 +47,7 @@ CSoundSetList::~CSoundSetList()
         m_pStrRefs = NULL;
     }
 }
-// PC 0x006CE080 GOG 0x006CDD80
+// PC 0x006CE080 GOG 0x006CDD80 Xbox 0x0008E140
 CResRef CSoundSetList::GetSoundSet(unsigned short nSoundSet)
 {
     if (nSoundSet >= m_nCount)
@@ -72,7 +72,7 @@ CExoString CSoundSetList::GetName(unsigned short nSoundSet)
     g_pTlkTable->Fetch(m_pStrRefs[nSoundSet], strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x006CE2D0 GOG 0x006CDFD0
+// PC 0x006CE2D0 GOG 0x006CDFD0 Xbox 0x0008E370
 CSoundSet::CSoundSet(const CResRef& cResRef)
 {
     SetResRef(cResRef, 0);
@@ -85,7 +85,7 @@ CSoundSet::~CSoundSet()
         m_pRes->Release();
     }
 }
-// PC 0x006CE3C0 GOG 0x006CE0C0
+// PC 0x006CE3C0 GOG 0x006CE0C0 Xbox 0x0008E3D0
 CSoundSetList::CSoundSetList()
 {
     C2DA* pSoundSet;

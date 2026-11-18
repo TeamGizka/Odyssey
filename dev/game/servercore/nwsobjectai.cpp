@@ -52,17 +52,17 @@ static inline void DeleteActionNode(CSWSObjectActionNode* pAction)
 int RenderAi = 0;
 
 int OverrideReputation = CSWSObject::REPUTATION_NO_OVERRIDE;
-// PC 0x005DACE0 GOG 0x005DAD50
+// PC 0x005DACE0 GOG 0x005DAD50 Xbox 0x001FDB30
 void CSWSCreature::SetPreDialogPosition(Vector vPosition)
 {
     m_vPreDialogPosition = vPosition;
 }
-// PC 0x005DAD00 GOG 0x005DAD70
+// PC 0x005DAD00 GOG 0x005DAD70 Xbox 0x001FDB50
 void CSWSCreature::SetPreDialogOrientation(Vector vOrientation)
 {
     m_vPreDialogOrientation = vOrientation;
 }
-// PC 0x005DAD20 GOG 0x005DAD90
+// PC 0x005DAD20 GOG 0x005DAD90 Xbox 0x001FDB70
 unsigned long CSWSObject::GetAcceptableAction(unsigned long nActionType)
 {
     int nResult;
@@ -114,7 +114,7 @@ unsigned long CSWSObject::GetAcceptableAction(unsigned long nActionType)
 
     return nResult;
 }
-// PC 0x005DADA0 GOG 0x005DAE10
+// PC 0x005DADA0 GOG 0x005DAE10 Xbox 0x001FDBF0
 unsigned short CSWSObject::GetAQActionIDByID(unsigned short nActionType,
                                   int bSpecialAction)
 {
@@ -265,7 +265,7 @@ unsigned short CSWSObject::GetIDByAQActionID(unsigned short nAQActionID)
 }
 #define NWSOBJECTAI_DEBUG_LINE_LOW 0.01f
 #define NWSOBJECTAI_DEBUG_LINE_HIGH 1.0f
-// PC 0x005DAFA0 GOG 0x005DB010
+// PC 0x005DAFA0 GOG 0x005DB010 Xbox 0x001FDDF0
 int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1)
@@ -577,7 +577,7 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
         0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
     return ACTION_COMPLETE;
 }
-// PC 0x005DC030 GOG 0x005DC0A0
+// PC 0x005DC030 GOG 0x005DC0A0 Xbox 0x001FEFF0
 int CSWSObject::AIActionPauseDialog(CSWSObjectActionNode* pNode)
 {
     CSWSCreature* pCreature;
@@ -603,7 +603,7 @@ int CSWSObject::AIActionPauseDialog(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC0D0 GOG 0x005DC140
+// PC 0x005DC0D0 GOG 0x005DC140 Xbox 0x001FF090
 int CSWSObject::AIActionResumeDialog(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -629,7 +629,7 @@ int CSWSObject::AIActionResumeDialog(CSWSObjectActionNode* pNode)
         return ACTION_COMPLETE;
     }
 }
-// PC 0x005DC190 GOG 0x005DC200
+// PC 0x005DC190 GOG 0x005DC200 Xbox 0x001FF150
 int CSWSObject::AIActionSpeakStrRef(CSWSObjectActionNode* pNode)
 {
     if (AsSWSCreature() != NULL)
@@ -645,7 +645,7 @@ int CSWSObject::AIActionSpeakStrRef(CSWSObjectActionNode* pNode)
         nStrRef, m_nId, nPlayer);
     return ACTION_COMPLETE;
 }
-// PC 0x005DC1F0 GOG 0x005DC260
+// PC 0x005DC1F0 GOG 0x005DC260 Xbox 0x001FF1B0
 int CSWSObject::AIActionSpeak(CSWSObjectActionNode* pNode)
 {
     CExoString sMessage;
@@ -666,7 +666,7 @@ int CSWSObject::AIActionSpeak(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC2F0 GOG 0x005DC360
+// PC 0x005DC2F0 GOG 0x005DC360 Xbox 0x001FF270
 int CSWSObject::AIActionDoCommand(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -685,7 +685,7 @@ int CSWSObject::AIActionDoCommand(CSWSObjectActionNode* pNode)
     pNode->m_apParam[0] = NULL;
     return ACTION_COMPLETE;
 }
-// PC 0x005DC380 GOG 0x005DC3F0
+// PC 0x005DC380 GOG 0x005DC3F0 Xbox 0x001FF300
 int CSWSObject::AIActionWait(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -718,7 +718,7 @@ int CSWSObject::AIActionWait(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005E08F0 GOG 0x005E0920
+// PC 0x005E08F0 GOG 0x005E0920 Xbox 0x002036D0
 int CSWSObject::AIActionGiveItem(CSWSObjectActionNode* pNode)
 {
     CSWSItem* pItem = NULL;
@@ -833,7 +833,7 @@ int CSWSObject::AIActionGiveItem(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC480 GOG 0x005DC4F0
+// PC 0x005DC480 GOG 0x005DC4F0 Xbox 0x001FF400
 int CSWSObject::AIActionTakeItem(CSWSObjectActionNode* pNode)
 {
     if (pNode->m_nNumParams < 1)
@@ -880,7 +880,7 @@ int CSWSObject::AIActionTakeItem(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC590 GOG 0x005DC600
+// PC 0x005DC590 GOG 0x005DC600 Xbox 0x001FF510
 int CSWSObject::AIActionCloseDoor(CSWSObjectActionNode* pNode)
 {
     float fDelay;
@@ -941,7 +941,7 @@ int CSWSObject::AIActionCloseDoor(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DC870 GOG 0x005DC8E0
+// PC 0x005DC870 GOG 0x005DC8E0 Xbox 0x001FF7F0
 int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
 {
     int bSuccess = 0;
@@ -1209,7 +1209,7 @@ int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DD170 GOG 0x005DD1E0
+// PC 0x005DD170 GOG 0x005DD1E0 Xbox 0x00200070
 int CSWSObject::AIActionSwitchWeapons(CSWSObjectActionNode* pNode)
 {
     CSWSCreature* pCreature = AsSWSCreature();
@@ -1276,7 +1276,7 @@ int CSWSObject::AIActionSwitchWeapons(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DD350 GOG 0x005DD3C0
+// PC 0x005DD350 GOG 0x005DD3C0 Xbox 0x00200250
 int CSWSObject::AIActionSetCommandable(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -1296,7 +1296,7 @@ int CSWSObject::AIActionSetCommandable(CSWSObjectActionNode* pNode)
     m_bCommandable = bCommandable;
     return ACTION_COMPLETE;
 }
-// PC 0x005DD3C0 GOG 0x005DD430
+// PC 0x005DD3C0 GOG 0x005DD430 Xbox 0x002002C0
 int CSWSObject::AddUseObjectAction(unsigned long oidObject)
 {
     if (m_bCommandable == 0)
@@ -1354,7 +1354,7 @@ int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarge
     return 0;
 }
 #endif
-int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD530 GOG 0x005DD5A0
+int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD530 GOG 0x005DD5A0 Xbox 0x00200430
                                   int bAddToQueue)
 {
     int bRun = 0;
@@ -1396,7 +1396,7 @@ int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarge
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-// PC 0x005DD6C0 GOG 0x005DD730
+// PC 0x005DD6C0 GOG 0x005DD730 Xbox 0x002005E0
 int CSWSObject::AddDoCommandAction(void* pScriptSituation)
 {
     if (m_bCommandable == 0)
@@ -1494,7 +1494,7 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction) 
     return REPUTATION_DEFAULT;
 }
 #endif
-unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)  // PC 0x005DD940 GOG 0x005DD9B0
+unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)  // PC 0x005DD940 GOG 0x005DD9B0 Xbox 0x00200870
 {
     CServerExoApp* pServer;
     int nReputation;
@@ -1521,7 +1521,7 @@ unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)  // PC 0
     }
     return 0;
 }
-// PC 0x005DD9B0 GOG 0x005DDA20
+// PC 0x005DD9B0 GOG 0x005DDA20 Xbox 0x002008E0
 int CSWSObject::AIActionBarkString(CSWSObjectActionNode* pNode)
 {
     unsigned long nStrRef = (unsigned long)pNode->m_apParam[0];
@@ -1540,7 +1540,7 @@ int CSWSObject::AIActionBarkString(CSWSObjectActionNode* pNode)
     pClientExoApp->BarkString(oidClientObject, sBarkString, resSound, 0);
     return ACTION_COMPLETE;
 }
-// PC 0x005DDAB0 GOG 0x005DDB20
+// PC 0x005DDAB0 GOG 0x005DDB20 Xbox 0x002009A0
 int CSWSObject::AIActionPlaySound(CSWSObjectActionNode* pNode)
 {
     CExoLinkedListNode* pPosition;
@@ -1582,7 +1582,7 @@ int CSWSObject::AIActionPlaySound(CSWSObjectActionNode* pNode)
     return ACTION_COMPLETE;
 }
 
-// PC 0x005DDC30 GOG 0x005DDCA0
+// PC 0x005DDC30 GOG 0x005DDCA0 Xbox 0x00200B00
 int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -1853,7 +1853,7 @@ int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // PC 0x005DE080 
     return ACTION_FAILED;
 }
 #endif
-// PC 0x005DE5D0 GOG 0x005DE640
+// PC 0x005DE5D0 GOG 0x005DE640 Xbox 0x00201470
 int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
 {
     int bSuccess = 0;
@@ -2255,7 +2255,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DF660 GOG 0x005DF6A0
+// PC 0x005DF660 GOG 0x005DF6A0 Xbox 0x00202470
 int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -2397,7 +2397,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DFD00 GOG 0x005DFD30
+// PC 0x005DFD00 GOG 0x005DFD30 Xbox 0x00202B60
 int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -2688,7 +2688,7 @@ inline int CSWSObject::TerminateAISliceAfterAction(unsigned long nAction)
     }
     return 0;
 }
-// PC 0x005E0D90 GOG 0x005E0DC0
+// PC 0x005E0D90 GOG 0x005E0DC0 Xbox 0x00203B60
 void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
                             unsigned __int64 nTimer)
 {
@@ -3153,7 +3153,7 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
 
 #ifdef _XBOX
 
-int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction)
+int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction)  // Xbox 0x00200650
 {
     if (OverrideReputation != REPUTATION_NO_OVERRIDE)
     {
@@ -3240,7 +3240,7 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUseOriginalFaction)
     return REPUTATION_DEFAULT;
 }
 
-int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)
+int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // Xbox 0x00200F20
 {
     int nDeadTemp = 0;
     if (AsSWSCreature() != NULL)
@@ -3357,7 +3357,7 @@ int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)
     return ACTION_FAILED;
 }
 
-int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,
+int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // Xbox 0x00200320
                                   int nQuantity, int bAddToQueue)
 {
     CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);

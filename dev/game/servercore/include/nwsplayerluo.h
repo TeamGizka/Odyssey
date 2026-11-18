@@ -13,7 +13,7 @@ class CLoopingVisualEffect;
 class CSWSPlayerLUOSortedObjectList
 {
 public:
-    CSWSPlayerLUOSortedObjectList()  // PC 0x0058B7C0 GOG 0x0058B840
+    CSWSPlayerLUOSortedObjectList()  // PC 0x0058B7C0 GOG 0x0058B840 Xbox 0x00266AB0
         : m_oidObject(OBJECT_INVALID), m_fDistance(0.0f), m_nCategory(0)
     {
     }
@@ -195,7 +195,7 @@ public:
     CExoArrayList<unsigned long> m_lstTrapDetectedBy;
     int m_bTrapFlag;
     int m_bTrapFlagged;
-    int GetTrapFlagged() { return m_bTrapFlagged; }
+    int GetTrapFlagged() { return m_bTrapFlagged; }  // Xbox 0x001FB640
     int m_nFaction;
     int m_bLocked;
     int GetLocked() { return m_bLocked; }

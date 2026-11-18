@@ -56,7 +56,7 @@ public:
 
     CSWCArea();
     virtual ~CSWCArea();
-    // PC 0x006524E0 GOG 0x00652390
+    // PC 0x006524E0 GOG 0x00652390 Xbox 0x00032C50
     virtual CSWCArea* AsSWCArea()
     {
         return this;

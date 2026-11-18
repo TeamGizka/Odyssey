@@ -100,7 +100,7 @@ public:
     {
         return this;
     }
-    virtual CAurObject* AsCAurObject()  // PC 0x00471670 GOG 0x004717D0
+    virtual CAurObject* AsCAurObject()  // PC 0x00471670 GOG 0x004717D0 Xbox 0x00306560
     {
         return this;
     }
@@ -114,11 +114,11 @@ public:
     virtual void SetBehavior(CAurBehavior* pBehavior);
     virtual Vector SetPosition(Vector vPosition);
     virtual Quaternion SetOrientation(Quaternion qOrientation);
-    virtual Vector GetPosition()  // PC 0x00471680 GOG 0x004717E0
+    virtual Vector GetPosition()  // PC 0x00471680 GOG 0x004717E0 Xbox 0x00306570
     {
         return m_vPosition;
     }
-    virtual Quaternion GetOrientation()  // PC 0x004716B0 GOG 0x00471810
+    virtual Quaternion GetOrientation()  // PC 0x004716B0 GOG 0x00471810 Xbox 0x003065A0
     {
         return m_qOrientation;
     }
@@ -127,18 +127,18 @@ public:
     virtual void Animate(float fTimeStep);
 
     Vector MouseDir(int nX, int nY);
-    int GetViewPortHeight()  // PC 0x004716E0 GOG 0x00471870
+    int GetViewPortHeight()  // PC 0x004716E0 GOG 0x00471870 Xbox 0x003065D0
     {
         return m_nViewPortHeight;
     }
     void SetClipDist(float fNear, float fFar);
-    void GetClipDist(float& fNear, float& fFar)  // PC 0x004716F0 GOG 0x00471880
+    void GetClipDist(float& fNear, float& fFar)  // PC 0x004716F0 GOG 0x00471880 Xbox 0x003065E0
     {
         fNear = m_fNearClip;
         fFar = m_fFarClip;
     }
     void SetViewAngle(float fViewAngle);
-    float GetViewAngle()  // PC 0x00471710 GOG 0x004718A0
+    float GetViewAngle()  // PC 0x00471710 GOG 0x004718A0 Xbox 0x00306600
     {
         return m_fViewAngle;
     }
@@ -151,12 +151,12 @@ public:
     float GetYaw();
     float GetPitch();
     float GetDist();
-    virtual void SetFadePlanes(Plane& planeNear, Plane& planeFar)  // PC 0x00471720 GOG 0x004718B0
+    virtual void SetFadePlanes(Plane& planeNear, Plane& planeFar)  // PC 0x00471720 GOG 0x004718B0 Xbox 0x00306610
     {
         m_planeFadeNear = planeNear;
         m_planeFadeFar = planeFar;
     }
-    int ViewVolumeSet()  // PC 0x00471770 GOG 0x00471900
+    int ViewVolumeSet()  // PC 0x00471770 GOG 0x00471900 Xbox 0x00306660
     {
         return m_bViewVolumeSet;
     }

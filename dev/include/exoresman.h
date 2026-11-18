@@ -192,20 +192,20 @@ public:
 
 
 
-    // PC 0x00406590 GOG 0x00406560
+    // PC 0x00406590 GOG 0x00406560 Xbox 0x0017C400
     virtual int GetFixedResourceSize()
     {
         return -1;
     }
-    virtual int GetFixedResourceDataOffset()  // PC 0x004065A0 GOG 0x00406570
+    virtual int GetFixedResourceDataOffset()  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     {
         return 0;
     }
-    virtual int OnResourceFreed()  // PC 0x0065D0F0 GOG 0x0065CF00
+    virtual int OnResourceFreed()  // PC 0x0065D0F0 GOG 0x0065CF00 Xbox 0x000A7970
     {
         return 1;
     }
-    virtual int OnResourceServiced()  // PC 0x0065D0F0 GOG 0x0065CF00
+    virtual int OnResourceServiced()  // PC 0x0065D0F0 GOG 0x0065CF00 Xbox 0x000A7970
     {
         return 1;
     }

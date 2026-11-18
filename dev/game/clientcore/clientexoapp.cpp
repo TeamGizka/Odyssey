@@ -9,7 +9,7 @@
 
 extern const int CLIENTEXOAPP_UNREFERENCED_128 = 128;
 
-// PC 0x006384F0 GOG 0x006383E0
+// PC 0x006384F0 GOG 0x006383E0 Xbox 0x0001A190
 int CClientExoAppInternal::GetPlayerMovementInput()
 {
     if (m_pPlayerControl != NULL &&
@@ -28,7 +28,7 @@ void CClientExoApp::BeginIntro()  // PC 0x00638540 GOG 0x00638430
     m_pcExoAppInternal->BeginIntro();
 }
 #endif
-// PC 0x0062B870 GOG 0x00638C70
+// PC 0x0062B870 GOG 0x00638C70 Xbox 0x00171760
 void CClientExoApp::EndLoadBar()
 {
     m_pcExoAppInternal->EndLoadBar();
@@ -39,7 +39,7 @@ void CClientExoApp::CreateQuestJournal()
 {
     m_pcExoAppInternal->CreateQuestJournal();
 }
-// PC 0x00638550 GOG 0x00638440
+// PC 0x00638550 GOG 0x00638440 Xbox 0x0001A1E0
 CSWCJournal* CClientExoApp::GetQuestJournal()
 {
     return m_pcExoAppInternal->m_pQuestJournal;
@@ -56,7 +56,7 @@ void CClientExoApp::CreateWorldJournal()
 {
     m_pcExoAppInternal->CreateWorldJournal();
 }
-// PC 0x00638560 GOG 0x00638450
+// PC 0x00638560 GOG 0x00638450 Xbox 0x0001A1F0
 CSWCWorldJournal* CClientExoApp::GetWorldJournal()
 {
     return m_pcExoAppInternal->m_pWorldJournal;
@@ -67,18 +67,18 @@ void CClientExoApp::DestroyWorldJournal()
 {
     m_pcExoAppInternal->DestroyWorldJournal();
 }
-// PC 0x00638570 GOG 0x00638460
+// PC 0x00638570 GOG 0x00638460 Xbox 0x0001A200
 void CClientExoApp::JournalUpdated(int nType, int nIndex,
                                    const CExoString& sName)
 {
     m_pcExoAppInternal->JournalUpdated(nType, nIndex, sName);
 }
-// PC 0x00638580 GOG 0x00638470
+// PC 0x00638580 GOG 0x00638470 Xbox 0x0001A210
 int CClientExoApp::GetObjectName(unsigned long oidObject, CExoString& sName)
 {
     return m_pcExoAppInternal->GetObjectName(oidObject, sName);
 }
-// PC 0x00638590 GOG 0x00638480
+// PC 0x00638590 GOG 0x00638480 Xbox 0x0001A220
 void CClientExoApp::AddFeedbackMessage(unsigned short nType,
                                        CSWCCMessageData* pMessage,
                                        const CExoString& sString)
@@ -93,7 +93,7 @@ void CClientExoApp::AddFeedbackMessage(unsigned short nType,
         m_pcExoAppInternal->AddFeedbackMessage(nType, pMessage, sString);
     }
 }
-// PC 0x00638640 GOG 0x00638530
+// PC 0x00638640 GOG 0x00638530 Xbox 0x0001A290
 void CClientExoApp::SetCharacterFile(unsigned long nDataSize,
                                      unsigned char* pCharacterData,
                                      int nCharacterFileId)
@@ -101,7 +101,7 @@ void CClientExoApp::SetCharacterFile(unsigned long nDataSize,
     m_pcExoAppInternal->SetCharacterFile(nDataSize, pCharacterData,
                                        nCharacterFileId);
 }
-// PC 0x00638650 GOG 0x00638540
+// PC 0x00638650 GOG 0x00638540 Xbox 0x0001A2A0
 void CClientExoApp::DisplayMainMenu(int bScanContent)
 {
     m_pcExoAppInternal->DisplayMainMenu(bScanContent);
@@ -114,17 +114,17 @@ void CClientExoApp::DestroyMainMenuPanel()
 }
 
 #ifdef _XBOX
-void CClientExoApp::DisplayStartScreen()
+void CClientExoApp::DisplayStartScreen()  // Xbox 0x0001A2B0
 {
     m_pcExoAppInternal->DisplayStartScreen();
 }
 #endif
-// PC 0x00638660 GOG 0x00638550
+// PC 0x00638660 GOG 0x00638550 Xbox 0x0001A2C0
 void CClientExoApp::UnloadModule()
 {
     m_pcExoAppInternal->UnloadModule();
 }
-// PC 0x00638670 GOG 0x00638560
+// PC 0x00638670 GOG 0x00638560 Xbox 0x0001A2D0
 CSWCModule* CClientExoApp::CreateModule()
 {
     return m_pcExoAppInternal->CreateModule();
@@ -136,22 +136,22 @@ void CClientExoApp::ExitProgram()  // PC 0x00638680 GOG 0x00638570
     m_pcExoAppInternal->ExitProgram();
 }
 #endif
-// PC 0x00638690 GOG 0x00638580
+// PC 0x00638690 GOG 0x00638580 Xbox 0x0001A2E0
 CExoFile* CClientExoApp::GetCaptureEventFile()
 {
     return m_pcExoAppInternal->m_pCaptureEventFile;
 }
-// PC 0x006386A0 GOG 0x00638590
+// PC 0x006386A0 GOG 0x00638590 Xbox 0x0001A2F0
 int CClientExoApp::GetCaptureEvents()
 {
     return m_pcExoAppInternal->m_nCaptureEvents;
 }
-// PC 0x006386B0 GOG 0x006385A0
+// PC 0x006386B0 GOG 0x006385A0 Xbox 0x0001A300
 int CClientExoApp::GetCaptureEventPlayBack()
 {
     return m_pcExoAppInternal->m_nCaptureEventPlayBack;
 }
-// PC 0x006386C0 GOG 0x006385B0
+// PC 0x006386C0 GOG 0x006385B0 Xbox 0x0001A310
 CExoString CClientExoApp::GetClientName()
 {
     return m_pcExoAppInternal->m_sClientName;
@@ -162,7 +162,7 @@ void CClientExoApp::SetClientName(const CExoString& sName)
 {
     m_pcExoAppInternal->m_sClientName = sName;
 }
-// PC 0x006386F0 GOG 0x006385E0
+// PC 0x006386F0 GOG 0x006385E0 Xbox 0x0001A330
 int CClientExoApp::GetClientLanguage()
 {
     return m_pcExoAppInternal->m_nClientLanguage;
@@ -177,110 +177,110 @@ CExoImeUI* CClientExoApp::GetImeUI()
 {
     return m_pcExoAppInternal->m_pImeUI;
 }
-// PC 0x00638720 GOG 0x00638610
+// PC 0x00638720 GOG 0x00638610 Xbox 0x0001A340
 CWorldTimer* CClientExoApp::GetWorldTimer()
 {
     return m_pcExoAppInternal->m_pWorldTimer;
 }
-// PC 0x00638730 GOG 0x00638620
+// PC 0x00638730 GOG 0x00638620 Xbox 0x0001A350
 CWorldTimer* CClientExoApp::GetPauseTimer()
 {
     return m_pcExoAppInternal->m_pPauseTimer;
 }
-// PC 0x00638740 GOG 0x00638630
+// PC 0x00638740 GOG 0x00638630 Xbox 0x0001A360
 CWorldTimer* CClientExoApp::GetAnimationTimer()
 {
     return m_pcExoAppInternal->m_pAnimationTimer;
 }
-// PC 0x00638750 GOG 0x00638640
+// PC 0x00638750 GOG 0x00638640 Xbox 0x0001A370
 CConnectionLib* CClientExoApp::GetConnectionLib()
 {
     return m_pcExoAppInternal->m_pConnectionLib;
 }
-// PC 0x00638760 GOG 0x00638650
+// PC 0x00638760 GOG 0x00638650 Xbox 0x0001A380
 CSWCModule* CClientExoApp::GetModule()
 {
     return m_pcExoAppInternal->GetModule();
 }
-// PC 0x004065A0 GOG 0x00406570
+// PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
 CExoLocString* CClientExoApp::GetModuleDescription()
 {
     return 0;
 }
-// PC 0x00638770 GOG 0x00638660
+// PC 0x00638770 GOG 0x00638660 Xbox 0x0001A390
 CSWCCreature* CClientExoApp::GetPlayerCreature()
 {
     return m_pcExoAppInternal->GetPlayerCreature();
 }
-// PC 0x00638780 GOG 0x00638670
+// PC 0x00638780 GOG 0x00638670 Xbox 0x0001A3A0
 unsigned long CClientExoApp::GetPlayerCreatureId()
 {
     return m_pcExoAppInternal->m_nPlayerCreatureId;
 }
-// PC 0x00638790 GOG 0x00638680
+// PC 0x00638790 GOG 0x00638680 Xbox 0x0001A3B0
 CAurCamera* CClientExoApp::GetModuleCamera()
 {
     return m_pcExoAppInternal->GetModuleCamera();
 }
-// PC 0x006387A0 GOG 0x00638690
+// PC 0x006387A0 GOG 0x00638690 Xbox 0x0001A3C0
 CGameObjectArray* CClientExoApp::GetGameObjectArray()
 {
     return m_pcExoAppInternal->m_pGameObjectArray;
 }
-// PC 0x006387B0 GOG 0x006386A0
+// PC 0x006387B0 GOG 0x006386A0 Xbox 0x0001A3D0
 CSWCObject* CClientExoApp::GetGameObject(unsigned long oidObject)
 {
     return (CSWCObject*)m_pcExoAppInternal->GetGameObject(oidObject);
 }
-// PC 0x006387E0 GOG 0x006386D0
+// PC 0x006387E0 GOG 0x006386D0 Xbox 0x0001A400
 CSWCPlayer* CClientExoApp::GetPlayerByGameObjectID(unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetPlayerByGameObjectID(oidObject);
 }
-// PC 0x006387F0 GOG 0x006386E0
+// PC 0x006387F0 GOG 0x006386E0 Xbox 0x0001A410
 CSWCItem* CClientExoApp::GetItemByGameObjectID(unsigned long nId)
 {
     return m_pcExoAppInternal->GetItemByGameObjectID(nId);
 }
-// PC 0x00638800 GOG 0x006386F0
+// PC 0x00638800 GOG 0x006386F0 Xbox 0x0001A420
 CSWCCreature* CClientExoApp::GetCreatureByGameObjectID(unsigned long nId)
 {
     return m_pcExoAppInternal->GetCreatureByGameObjectID(nId);
 }
-// PC 0x00638810 GOG 0x00638700
+// PC 0x00638810 GOG 0x00638700 Xbox 0x0001A430
 CSWCArea* CClientExoApp::GetAreaByGameObjectID(unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetAreaByGameObjectID(oidObject);
 }
-// PC 0x00638820 GOG 0x00638710
+// PC 0x00638820 GOG 0x00638710 Xbox 0x0001A440
 CSWCTrigger* CClientExoApp::GetTriggerByGameObjectID(unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetTriggerByGameObjectID(oidObject);
 }
-// PC 0x00638830 GOG 0x00638720
+// PC 0x00638830 GOG 0x00638720 Xbox 0x0001A450
 CSWCProjectile* CClientExoApp::GetProjectileByGameObjectID(
     unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetProjectileByGameObjectID(oidObject);
 }
-// PC 0x00638840 GOG 0x00638730
+// PC 0x00638840 GOG 0x00638730 Xbox 0x0001A460
 CSWCPlaceable* CClientExoApp::GetPlaceableByGameObjectID(
     unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetPlaceableByGameObjectID(oidObject);
 }
-// PC 0x00638850 GOG 0x00638740
+// PC 0x00638850 GOG 0x00638740 Xbox 0x0001A470
 CSWCDoor* CClientExoApp::GetDoorByGameObjectID(unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetDoorByGameObjectID(oidObject);
 }
-// PC 0x00638860 GOG 0x00638750
+// PC 0x00638860 GOG 0x00638750 Xbox 0x0001A480
 CSWCAreaOfEffectObject* CClientExoApp::GetAreaOfEffectByGameObjectID(
     unsigned long oidObject)
 {
     return m_pcExoAppInternal->GetAreaOfEffectByGameObjectID(oidObject);
 }
-// PC 0x00638870 GOG 0x00638760
+// PC 0x00638870 GOG 0x00638760 Xbox 0x0001A490
 CSWCSoundObject* CClientExoApp::GetSoundObjectByGameObjectID(
     unsigned long oidObject)
 {
@@ -292,17 +292,17 @@ int CClientExoApp::GetInStartNewModule()
 {
     return m_pcExoAppInternal->m_bInStartNewModule;
 }
-// PC 0x00638880 GOG 0x00638770
+// PC 0x00638880 GOG 0x00638770 Xbox 0x0001A4A0
 void CClientExoApp::SetInStartNewModule(int bInStartNewModule)
 {
     m_pcExoAppInternal->m_bInStartNewModule = bInStartNewModule;
 }
-// PC 0x00638890 GOG 0x00638780
+// PC 0x00638890 GOG 0x00638780 Xbox 0x0001A4B0
 int CClientExoApp::GetPauseState(unsigned char nPauseType)
 {
     return m_pcExoAppInternal->GetPauseState(nPauseType);
 }
-// PC 0x006388A0 GOG 0x00638790
+// PC 0x006388A0 GOG 0x00638790 Xbox 0x0001A4C0
 void CClientExoApp::SetPauseState(unsigned char nPauseState, int bPause,
                                  CExoLinkedList<unsigned long>* pExclusionList)
 {
@@ -315,7 +315,7 @@ void CClientExoApp::ReprocessExclusionList()
 {
     m_pcExoAppInternal->ReprocessExclusionList();
 }
-// PC 0x006388B0 GOG 0x006387A0
+// PC 0x006388B0 GOG 0x006387A0 Xbox 0x0001A4D0
 CWorldTimer* CClientExoApp::GetActiveTimer(unsigned long nTimer)
 {
     return m_pcExoAppInternal->GetActiveTimer(nTimer);
@@ -334,7 +334,7 @@ void CClientExoApp::AddToPauseExclusionList(unsigned long oidObject)
 }
 
 #ifdef _XBOX
-int CClientExoApp::SendSaveGameRequest(unsigned long nPlayerId,
+int CClientExoApp::SendSaveGameRequest(unsigned long nPlayerId,  // Xbox 0x0001A4E0
                                        const CExoString& sSaveName)
 {
     return m_pcExoAppInternal->SendSaveGameRequest(nPlayerId, sSaveName);
@@ -348,7 +348,7 @@ int CClientExoApp::SendSaveGameRequest(unsigned long nPlayerId,  // PC 0x006388C
                                                    sSaveDir);
 }
 #endif
-// PC 0x006388D0 GOG 0x006387C0
+// PC 0x006388D0 GOG 0x006387C0 Xbox 0x0001A4F0
 int CClientExoApp::SendLoadGameRequest(unsigned long nPlayerId,
                                        const CExoString& sSaveName,
                                        const CExoString& sSaveDir)
@@ -356,87 +356,87 @@ int CClientExoApp::SendLoadGameRequest(unsigned long nPlayerId,
     return m_pcExoAppInternal->SendLoadGameRequest(nPlayerId, sSaveName,
                                                    sSaveDir);
 }
-// PC 0x006388E0 GOG 0x006387D0
+// PC 0x006388E0 GOG 0x006387D0 Xbox 0x0001A500
 CGuiInGame* CClientExoApp::GetInGameGui()
 {
     return m_pcExoAppInternal->m_pGuiInGame;
 }
-// PC 0x006388F0 GOG 0x006387E0
+// PC 0x006388F0 GOG 0x006387E0 Xbox 0x0001A510
 int CClientExoApp::GetPlayModulePanel()
 {
     return m_pcExoAppInternal->m_nPlayModulePanel;
 }
-// PC 0x00638900 GOG 0x006387F0
+// PC 0x00638900 GOG 0x006387F0 Xbox 0x0001A520
 CClientAIMaster* CClientExoApp::GetClientAIMaster()
 {
     return m_pcExoAppInternal->m_pClientAIMaster;
 }
-// PC 0x00638910 GOG 0x00638800
+// PC 0x00638910 GOG 0x00638800 Xbox 0x0001A530
 CExoLinkedList<CSWCPlayer>* CClientExoApp::GetPlayerList()
 {
     return &m_pcExoAppInternal->m_lstPlayerList;
 }
-// PC 0x00638920 GOG 0x00638810
+// PC 0x00638920 GOG 0x00638810 Xbox 0x0001A540
 CSWCPlayer* CClientExoApp::GetPlayerByPlayerID(unsigned long nPlayerId)
 {
     return m_pcExoAppInternal->GetPlayerByPlayerID(nPlayerId);
 }
-// PC 0x00638930 GOG 0x00638820
+// PC 0x00638930 GOG 0x00638820 Xbox 0x0001A550
 CNetLayer* CClientExoApp::GetNetLayer()
 {
     return m_pcExoAppInternal->m_pNetLayer;
 }
-// PC 0x00638940 GOG 0x00638830
+// PC 0x00638940 GOG 0x00638830 Xbox 0x0001A560
 CSWCMessage* CClientExoApp::GetSWCMessage()
 {
     return m_pcExoAppInternal->m_pSWCMessage;
 }
-// PC 0x00638950 GOG 0x00638840
+// PC 0x00638950 GOG 0x00638840 Xbox 0x0014DBD0
 CClientOptions* CClientExoApp::GetClientOptions()
 {
     return m_pcExoAppInternal->m_pClientOptions;
 }
-// PC 0x00638960 GOG 0x00638850
+// PC 0x00638960 GOG 0x00638850 Xbox 0x0001A570
 CServerInfo* CClientExoApp::GetServerInfo()
 {
     return m_pcExoAppInternal->m_pServerInfo;
 }
-// PC 0x00638970 GOG 0x00638860
+// PC 0x00638970 GOG 0x00638860 Xbox 0x0001A580
 void CClientExoApp::AttachPlayerGameObjectToArea()
 {
     m_pcExoAppInternal->AttachPlayerGameObjectToArea();
 }
-// PC 0x00638980 GOG 0x00638870
+// PC 0x00638980 GOG 0x00638870 Xbox 0x0001A590
 int CClientExoApp::InitializeInGameGUI()
 {
     return m_pcExoAppInternal->InitializeInGameGUI();
 }
-// PC 0x00638990 GOG 0x00638880
+// PC 0x00638990 GOG 0x00638880 Xbox 0x0001A5A0
 void CClientExoApp::ServerModeChange(unsigned char nServerMode)
 {
     m_pcExoAppInternal->ServerModeChange(nServerMode);
 }
-// PC 0x006389A0 GOG 0x00638890
+// PC 0x006389A0 GOG 0x00638890 Xbox 0x0001A5B0
 void CClientExoApp::AddObjectToHitcheckIgnoreList(unsigned long oidObject)
 {
     m_pcExoAppInternal->AddObjectToHitcheckIgnoreList(oidObject);
 }
-// PC 0x006389B0 GOG 0x006388A0
+// PC 0x006389B0 GOG 0x006388A0 Xbox 0x0001A5C0
 void CClientExoApp::RemoveObjectFromHitcheckIgnoreList(unsigned long oidObject)
 {
     m_pcExoAppInternal->RemoveObjectFromHitcheckIgnoreList(oidObject);
 }
-// PC 0x006389C0 GOG 0x006388B0
+// PC 0x006389C0 GOG 0x006388B0 Xbox 0x0001A5D0
 void CClientExoApp::EmptyHitcheckIgnoreList()
 {
     m_pcExoAppInternal->EmptyHitcheckIgnoreList();
 }
-// PC 0x006389D0 GOG 0x006388C0
+// PC 0x006389D0 GOG 0x006388C0 Xbox 0x0001A5E0
 int CClientExoApp::SetPlayerCreature(unsigned long oidObject)
 {
     return m_pcExoAppInternal->SetPlayerCreature(oidObject);
 }
-// PC 0x006389E0 GOG 0x006388D0
+// PC 0x006389E0 GOG 0x006388D0 Xbox 0x0001A5F0
 int CClientExoApp::HandleMessage(unsigned long nPlayerId,
                                  unsigned char* pMessage, unsigned long nSize,
                                  int bGuaranteed)
@@ -444,12 +444,12 @@ int CClientExoApp::HandleMessage(unsigned long nPlayerId,
     return m_pcExoAppInternal->HandleMessage(nPlayerId, pMessage, nSize,
                                              bGuaranteed);
 }
-// PC 0x006389F0 GOG 0x006388E0
+// PC 0x006389F0 GOG 0x006388E0 Xbox 0x0001A600
 int CClientExoApp::ContinueMessageProcessing()
 {
     return m_pcExoAppInternal->ContinueMessageProcessing();
 }
-// PC 0x00638A00 GOG 0x006388F0
+// PC 0x00638A00 GOG 0x006388F0 Xbox 0x0001A610
 int CClientExoApp::Initialize()
 {
     return m_pcExoAppInternal->Initialize();
@@ -459,12 +459,12 @@ int CClientExoApp::IsClientInitialized()
 {
     return m_pcExoAppInternal->m_bClientInitialized;
 }
-// PC 0x00638A20 GOG 0x00638910
+// PC 0x00638A20 GOG 0x00638910 Xbox 0x0001A620
 int CClientExoApp::MainLoop()
 {
     return m_pcExoAppInternal->MainLoop();
 }
-// PC 0x00638A30 GOG 0x00638920
+// PC 0x00638A30 GOG 0x00638920 Xbox 0x0001A630
 int CClientExoApp::CreatureAcquireItem(unsigned long oidObject,
                                        const CResRef& cResRef)
 {
@@ -475,7 +475,7 @@ int CClientExoApp::CreatureAcquireItem(unsigned long oidObject,
 }
 
 // Dead code: not in the PC executable
-void CClientExoApp::OnCDChange()
+void CClientExoApp::OnCDChange()  // Xbox 0x0001A660
 {
     m_pcExoAppInternal->OnCDChange();
 }
@@ -523,7 +523,7 @@ void CClientExoApp::SetCaptureEventPlayBack(int nRate)
 {
     m_pcExoAppInternal->SetCaptureEventPlayBackRate(nRate);
 }
-// PC 0x00638AA0 GOG 0x00638990
+// PC 0x00638AA0 GOG 0x00638990 Xbox 0x0001A670
 int CClientExoApp::SetDebugMode(int nDebugMode)
 {
     return m_pcExoAppInternal->SetDebugMode(nDebugMode);
@@ -559,7 +559,7 @@ void CClientExoApp::SetEventDescriptions()  // PC 0x00638AC0 GOG 0x006389B0
 {
     m_pcExoAppInternal->SetEventDescriptions();
 }
-// PC 0x00638AD0 GOG 0x006389C0
+// PC 0x00638AD0 GOG 0x006389C0 Xbox 0x0001A690
 void CClientExoApp::StopServices()
 {
     m_pcExoAppInternal->StopServices();
@@ -572,12 +572,12 @@ void CClientExoApp::CleanUpModuleServices()
 }
 
 #ifdef _XBOX
-void CClientExoApp::ShutDownLegalScreen()
+void CClientExoApp::ShutDownLegalScreen()  // Xbox 0x0001A6A0
 {
     m_pcExoAppInternal->ShutDownLegalScreen();
 }
 #endif
-// PC 0x00638AE0 GOG 0x006389D0
+// PC 0x00638AE0 GOG 0x006389D0 Xbox 0x0001A6B0
 void CClientExoApp::ShutDownToMainMenu()
 {
     m_pcExoAppInternal->ShutDownToMainMenu();
@@ -593,17 +593,17 @@ int CClientExoApp::IsHostingServer()
 {
     return m_pcExoAppInternal->IsHostingServer();
 }
-// PC 0x00638AF0 GOG 0x006389E0
+// PC 0x00638AF0 GOG 0x006389E0 Xbox 0x0001A6C0
 void CClientExoApp::SetApplicationIdsMatch(int bMatch)
 {
     m_pcExoAppInternal->m_bApplicationIdsMatch = bMatch;
 }
-// PC 0x00638B00 GOG 0x006389F0
+// PC 0x00638B00 GOG 0x006389F0 Xbox 0x0001A6D0
 CSWParty* CClientExoApp::GetSWParty()
 {
     return m_pcExoAppInternal->m_pSWParty;
 }
-// PC 0x00638B10 GOG 0x00638A00
+// PC 0x00638B10 GOG 0x00638A00 Xbox 0x0001A6E0
 int CClientExoApp::GetHitCheckMaterialMask()
 {
     return m_pcExoAppInternal->m_nHitCheckMaterialMask;
@@ -640,12 +640,12 @@ int CClientExoApp::SetTexturePack(unsigned char nTexturePack)
 {
     return m_pcExoAppInternal->SetTexturePack(nTexturePack, 1);
 }
-// PC 0x00638B60 GOG 0x00638A50
+// PC 0x00638B60 GOG 0x00638A50 Xbox 0x0001A6F0
 CSoundSetList* CClientExoApp::GetSoundSetList()
 {
     return m_pcExoAppInternal->m_pSoundSetList;
 }
-// PC 0x00638B70 GOG 0x00638A60
+// PC 0x00638B70 GOG 0x00638A60 Xbox 0x0001A700
 CResRef CClientExoApp::GetItemDropSound(unsigned char nType)
 {
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
@@ -655,7 +655,7 @@ CResRef CClientExoApp::GetItemDropSound(unsigned char nType)
     }
     return CResRef("");
 }
-// PC 0x00638BC0 GOG 0x00638AB0
+// PC 0x00638BC0 GOG 0x00638AB0 Xbox 0x0001A750
 int CClientExoApp::GetLoadBarState()
 {
     return m_pcExoAppInternal->m_nLoadBarState;
@@ -697,7 +697,7 @@ void CClientExoApp::ReloadDynamicEventDescriptions()
     m_pcExoAppInternal->ReloadDynamicEventDescriptions();
 }
 #endif
-// PC 0x00638BE0 GOG 0x00638AD0
+// PC 0x00638BE0 GOG 0x00638AD0 Xbox 0x00171CC0
 int CClientExoApp::GetApplicationId()
 {
     return g_pAppManager->m_nAppId;
@@ -708,7 +708,7 @@ CGuiAreaLoadscreen* CClientExoApp::StartLoadBar(int nType, char* sImage, int bSh
 {
     return m_pcExoAppInternal->StartLoadBar(nType, sImage, bShow);
 }
-// PC 0x00638BF0 GOG 0x00638AE0
+// PC 0x00638BF0 GOG 0x00638AE0 Xbox 0x0001A760
 void CClientExoApp::AddObjectModelDirectlyToIgnoreList(
     unsigned long oidObject, List<CAurObject*>* pIgnoreList)
 {
@@ -727,32 +727,32 @@ void CClientExoApp::SetLastDialogSpeaker(unsigned long oidSpeaker)
 {
     m_pcExoAppInternal->m_oidLastDialogSpeaker = oidSpeaker;
 }
-// PC 0x00638C00 GOG 0x00638AF0
+// PC 0x00638C00 GOG 0x00638AF0 Xbox 0x0001A770
 void CClientExoApp::StartMenuMusic(int bCultTheme, int nVolume, int nPriorityGroup)
 {
     m_pcExoAppInternal->StartMenuMusic(bCultTheme, nVolume, nPriorityGroup);
 }
-// PC 0x00638C10 GOG 0x00638B00
+// PC 0x00638C10 GOG 0x00638B00 Xbox 0x0001A780
 void CClientExoApp::StopMenuMusic()
 {
     m_pcExoAppInternal->StopMenuMusic();
 }
-// PC 0x00638C20 GOG 0x00638B10
+// PC 0x00638C20 GOG 0x00638B10 Xbox 0x0001A790
 void CClientExoApp::StopLoadMusic()
 {
     m_pcExoAppInternal->StopLoadMusic();
 }
-// PC 0x00638C30 GOG 0x00638B20
+// PC 0x00638C30 GOG 0x00638B20 Xbox 0x0001A7A0
 CExoStreamingSoundSource* CClientExoApp::AquireLoadMusic(const CResRef& cResRef)
 {
     return m_pcExoAppInternal->AquireLoadMusic(cResRef);
 }
-// PC 0x00638C40 GOG 0x00638B30
+// PC 0x00638C40 GOG 0x00638B30 Xbox 0x0001A7B0
 void CClientExoApp::SetStartMenuMusicOnMovieEnd(int bValue)
 {
     m_pcExoAppInternal->m_bStartMenuMusicOnMovieEnd = bValue;
 }
-// PC 0x00638C50 GOG 0x00638B40
+// PC 0x00638C50 GOG 0x00638B40 Xbox 0x0001A7C0
 unsigned char CClientExoApp::GetActivePauseState()
 {
     return m_pcExoAppInternal->GetActivePauseState();
@@ -788,7 +788,7 @@ void CClientExoApp::SetWMCLOSEQuery(int bQuery)
     m_pcExoAppInternal->m_bExitGamePending = bQuery;
 }
 #endif
-// PC 0x00638C70 GOG 0x00638B60
+// PC 0x00638C70 GOG 0x00638B60 Xbox 0x0001A7D0
 void CClientExoApp::SetInputActive(int bActive, int bClearEvents)
 {
     m_pcExoAppInternal->SetInputActive(bActive, bClearEvents);
@@ -799,29 +799,29 @@ void CClientExoApp::InitializeClientOptions()
 {
     m_pcExoAppInternal->InitializeClientOptions();
 }
-// PC 0x00638C80 GOG 0x00638B70
+// PC 0x00638C80 GOG 0x00638B70 Xbox 0x0001A7E0
 void CClientExoApp::TurnOffKeyboardModal()
 {
     m_pcExoAppInternal->TurnOffKeyboardModal();
 }
-// PC 0x00638C90 GOG 0x00638B80
+// PC 0x00638C90 GOG 0x00638B80 Xbox 0x0001A7F0
 int CClientExoApp::IsPlayerCreature(CSWCCreature* pCreature)
 {
     return m_pcExoAppInternal->IsPlayerCreature(pCreature);
 }
-// PC 0x00638CA0 GOG 0x00638B90
+// PC 0x00638CA0 GOG 0x00638B90 Xbox 0x0001A800
 CSWGuiManager* CClientExoApp::GetSWGuiManager()
 {
     return m_pcExoAppInternal->m_pSWGuiManager;
 }
-// PC 0x00638CB0 GOG 0x00638BA0
+// PC 0x00638CB0 GOG 0x00638BA0 Xbox 0x0001A810
 unsigned long CClientExoApp::ServerToClientObjectId(unsigned long oidServer)
 {
     return m_pcExoAppInternal->ServerToClientObjectId(oidServer);
 }
 
 #ifdef _XBOX
-void CClientExoApp::SetInputClass(int nClass)
+void CClientExoApp::SetInputClass(int nClass)  // Xbox 0x0001A820
 {
     m_pcExoAppInternal->SetInputClass(nClass);
 }
@@ -831,19 +831,19 @@ void CClientExoApp::SetInputClass(int nClass, int bHideInterface)  // PC 0x00638
     m_pcExoAppInternal->SetInputClass(nClass, bHideInterface);
 }
 #endif
-// PC 0x00638CD0 GOG 0x00638BC0
+// PC 0x00638CD0 GOG 0x00638BC0 Xbox 0x0001A830
 int CClientExoApp::GetInputClass()
 {
     return m_pcExoAppInternal->m_nInputClass;
 }
-// PC 0x00638CE0 GOG 0x00638BD0
+// PC 0x00638CE0 GOG 0x00638BD0 Xbox 0x0001A840
 void CClientExoApp::ShowLoadScreen(int bFade, int bPlayMusic, int bSaving)
 {
     m_pcExoAppInternal->ShowLoadScreen(bFade, bPlayMusic, bSaving);
 }
 
 #ifdef _XBOX
-void CClientExoApp::HideLoadScreen(int bFade)
+void CClientExoApp::HideLoadScreen(int bFade)  // Xbox 0x0001A850
 {
     m_pcExoAppInternal->HideLoadScreen(bFade);
 }
@@ -860,37 +860,37 @@ int CClientExoApp::GetLoadScreenVisible()
     return m_pcExoAppInternal->GetLoadScreenVisible();
 }
 #endif
-// PC 0x00638D00 GOG 0x00638BF0
+// PC 0x00638D00 GOG 0x00638BF0 Xbox 0x0001A860
 CExoString& CClientExoApp::SetPlayerCharacterName(const CExoString& sName)
 {
     return m_pcExoAppInternal->SetPlayerCharacterName(sName);
 }
-// PC 0x00638D10 GOG 0x00638C00
+// PC 0x00638D10 GOG 0x00638C00 Xbox 0x0001A870
 CExoString& CClientExoApp::GetPlayerCharacterName()
 {
     return m_pcExoAppInternal->GetPlayerCharacterName();
 }
-// PC 0x00638D20 GOG 0x00638C10
+// PC 0x00638D20 GOG 0x00638C10 Xbox 0x0001A880
 int CClientExoApp::GetPlayerCharacterSet()
 {
     return m_pcExoAppInternal->m_bPlayerCharacterNameSet;
 }
-// PC 0x00638D30 GOG 0x00638C20
+// PC 0x00638D30 GOG 0x00638C20 Xbox 0x0001A890
 int CClientExoApp::GetAreaNotReadyToDisplay()
 {
     return m_pcExoAppInternal->m_nAreaNotReadyToDisplay;
 }
-// PC 0x00638D40 GOG 0x00638C30
+// PC 0x00638D40 GOG 0x00638C30 Xbox 0x0001A8A0
 void CClientExoApp::SetAreaNotReadyToDisplay(int bNotReady)
 {
     m_pcExoAppInternal->m_nAreaNotReadyToDisplay = bNotReady;
 }
-// PC 0x00638D50 GOG 0x00638C40
+// PC 0x00638D50 GOG 0x00638C40 Xbox 0x0001A8B0
 CSWMiniGameObjectArray* CClientExoApp::GetMGOArray()
 {
     return m_pcExoAppInternal->m_pMiniGameObjectArray;
 }
-// PC 0x00638D60 GOG 0x00638C50
+// PC 0x00638D60 GOG 0x00638C50 Xbox 0x0001A8C0
 CSWMiniGame* CClientExoApp::GetMiniGame()
 {
     CSWCModule* pModule = m_pcExoAppInternal->GetModule();
@@ -908,84 +908,84 @@ int CClientExoApp::PlayLoadModuleMovies()
 {
     return m_pcExoAppInternal->PlayLoadModuleMovies();
 }
-// PC 0x00638D90 GOG 0x00638C90
+// PC 0x00638D90 GOG 0x00638C90 Xbox 0x0001A8E0
 int CClientExoApp::PlayMovie(const CExoString& sMovie, int& nResult, int bAnyButtonSkips, int bNoMusic,
                              int nSoundModeFlags)
 {
     return m_pcExoAppInternal->PlayMovie(sMovie, nResult, bAnyButtonSkips, bNoMusic, nSoundModeFlags);
 }
-// PC 0x00638DA0 GOG 0x00638CA0
+// PC 0x00638DA0 GOG 0x00638CA0 Xbox 0x0001A8F0
 int CClientExoApp::IsMoviePlaying()
 {
     return m_pcExoAppInternal->IsMoviePlaying();
 }
-// PC 0x00638DB0 GOG 0x00638CB0
+// PC 0x00638DB0 GOG 0x00638CB0 Xbox 0x0001A900
 int CClientExoApp::AddMoveToModuleMovie(const CExoString& sMovie)
 {
     return m_pcExoAppInternal->AddMoveToModuleMovie(sMovie);
 }
-// PC 0x00638DC0 GOG 0x00638CC0
+// PC 0x00638DC0 GOG 0x00638CC0 Xbox 0x0001A910
 CExoArrayList<CExoString>* CClientExoApp::GetMoveToModuleMovies()
 {
     return &m_pcExoAppInternal->m_aMoveToModuleMovies;
 }
-// PC 0x00638DD0 GOG 0x00638CD0
+// PC 0x00638DD0 GOG 0x00638CD0 Xbox 0x0001A920
 void CClientExoApp::IndicateObject(CSWCObject* pObject, int nFlags)
 {
     m_pcExoAppInternal->IndicateObject(pObject, nFlags);
 }
-// PC 0x00638DE0 GOG 0x00638CE0
+// PC 0x00638DE0 GOG 0x00638CE0 Xbox 0x0001A930
 int CClientExoApp::ReattachCreatureToScene(unsigned long oidObject)
 {
     return oidObject != m_pcExoAppInternal->m_oidReattachedCreature;
 }
-// PC 0x00638E00 GOG 0x00638D00
+// PC 0x00638E00 GOG 0x00638D00 Xbox 0x0001A950
 void CClientExoApp::ResetDriveAcceleration()
 {
     m_pcExoAppInternal->ResetDriveAcceleration();
 }
-// PC 0x00638E10 GOG 0x00638D10
+// PC 0x00638E10 GOG 0x00638D10 Xbox 0x0001A960
 void CClientExoApp::BarkString(unsigned long oidObject, const CExoString& sText,
                               const CResRef& cSound, int nFlags)
 {
     m_pcExoAppInternal->BarkString(oidObject, sText, cSound, nFlags);
 }
-// PC 0x00638E20 GOG 0x00638D20
+// PC 0x00638E20 GOG 0x00638D20 Xbox 0x0001A970
 int CClientExoApp::IsSoundPlayingInDialog()
 {
     return m_pcExoAppInternal->IsSoundPlayingInDialog();
 }
-// PC 0x00638E30 GOG 0x00638D30
+// PC 0x00638E30 GOG 0x00638D30 Xbox 0x0001A980
 void CClientExoApp::StopSoundPlayingInDialog()
 {
     m_pcExoAppInternal->StopSoundPlayingInDialog();
 }
-// PC 0x00638E40 GOG 0x00638D40
+// PC 0x00638E40 GOG 0x00638D40 Xbox 0x0001A990
 void CClientExoApp::DisableInput()
 {
     m_pcExoAppInternal->DisableInput();
 }
-// PC 0x00638E50 GOG 0x00638D50
+// PC 0x00638E50 GOG 0x00638D50 Xbox 0x0001A9A0
 void CClientExoApp::EnableInput()
 {
     m_pcExoAppInternal->EnableInput();
 }
-// PC 0x00638E60 GOG 0x00638D60
+// PC 0x00638E60 GOG 0x00638D60 Xbox 0x0001A9B0
 int CClientExoApp::DismissInGameGUI()
 {
     return m_pcExoAppInternal->DismissInGameGUI();
 }
-// PC 0x00638E70 GOG 0x00638D70
+// PC 0x00638E70 GOG 0x00638D70 Xbox 0x0001A9C0
 int CClientExoApp::GetPausedByCombat()
 {
     return m_pcExoAppInternal->GetPausedByCombat();
 }
-// PC 0x00638E80 GOG 0x00638D80
+// PC 0x00638E80 GOG 0x00638D80 Xbox 0x0001A9D0
 void CClientExoApp::SetPausedByCombat(int bPaused, unsigned char nPauseType, int bForce)
 {
     m_pcExoAppInternal->SetPausedByCombat(bPaused, nPauseType, bForce);
 }
-// PC 0x00638E90 GOG 0x00638D90
+// PC 0x00638E90 GOG 0x00638D90 Xbox 0x0001A9E0
 void CClientExoApp::ChangeCharacter(int nCharacter, int bPlaySound)
 {
     m_pcExoAppInternal->ChangeCharacter(nCharacter, bPlaySound);
@@ -996,17 +996,17 @@ int CClientExoApp::GetControlledCharacterDead()
 {
     return m_pcExoAppInternal->GetControlledCharacterDead();
 }
-// PC 0x00638EA0 GOG 0x00638DA0
+// PC 0x00638EA0 GOG 0x00638DA0 Xbox 0x0001A9F0
 void CClientExoApp::RunDeathSequence()
 {
     m_pcExoAppInternal->RunDeathSequence();
 }
-// PC 0x00638EB0 GOG 0x00638DB0
+// PC 0x00638EB0 GOG 0x00638DB0 Xbox 0x0001AA00
 int CClientExoApp::SetGameOver(int bGameOver)
 {
     return m_pcExoAppInternal->SetGameOver(bGameOver);
 }
-// PC 0x00638EC0 GOG 0x00638DC0
+// PC 0x00638EC0 GOG 0x00638DC0 Xbox 0x0001AA10
 int CClientExoApp::GetGameOver()
 {
     return m_pcExoAppInternal->m_nGameOver;
@@ -1017,7 +1017,7 @@ void CClientExoApp::SetGameSpeed(float fSpeed)
 {
     m_pcExoAppInternal->SetGameSpeed(fSpeed);
 }
-// PC 0x00638ED0 GOG 0x00638DD0
+// PC 0x00638ED0 GOG 0x00638DD0 Xbox 0x0001AA20
 void CClientExoApp::SetLastPartyMemberTempKilled(unsigned long oidObject)
 {
     m_pcExoAppInternal->SetLastPartyMemberTempKilled(oidObject);
@@ -1028,18 +1028,18 @@ void CClientExoApp::HurryDeathSequence()
 {
     m_pcExoAppInternal->HurryDeathSequence();
 }
-// PC 0x00638EE0 GOG 0x00638DE0
+// PC 0x00638EE0 GOG 0x00638DE0 Xbox 0x0001AA30
 void CClientExoApp::SetCanSendDialog(int bCanSend)
 {
     m_pcExoAppInternal->SetCanSendDialog(bCanSend);
 }
-// PC 0x00638EF0 GOG 0x00638DF0
+// PC 0x00638EF0 GOG 0x00638DF0 Xbox 0x0001AA40
 int CClientExoApp::GetCanSendDialog(unsigned long oidSpeaker, unsigned long oidListener,
                                     CSWSDialog* pDialog)
 {
     return m_pcExoAppInternal->GetCanSendDialog(oidSpeaker, oidListener, pDialog);
 }
-// PC 0x00638F00 GOG 0x00638E00
+// PC 0x00638F00 GOG 0x00638E00 Xbox 0x0001AA50
 void CClientExoApp::SetDialogSent(int bSent)
 {
     m_pcExoAppInternal->m_bDialogSent = bSent;
@@ -1050,7 +1050,7 @@ int CClientExoApp::GetDialogSent()
 {
     return m_pcExoAppInternal->m_bDialogSent;
 }
-// PC 0x00638F10 GOG 0x00638E10
+// PC 0x00638F10 GOG 0x00638E10 Xbox 0x0001AA60
 void CClientExoApp::SetDialogModelsSent(int bSent)
 {
     m_pcExoAppInternal->m_bDialogModelsSent = bSent;
@@ -1061,60 +1061,60 @@ int CClientExoApp::GetDialogModelsSent()
 {
     return m_pcExoAppInternal->m_bDialogModelsSent;
 }
-// PC 0x00638F20 GOG 0x00638E20
+// PC 0x00638F20 GOG 0x00638E20 Xbox 0x0001AA70
 int CClientExoApp::GetClientRangedAnimation(unsigned long oidAttacker, int nAttackType, int bOverride,
                                             int nOverrideAnimation)
 {
     return m_pcExoAppInternal->GetClientRangedAnimation(oidAttacker, nAttackType, 0, 0);
 }
-// PC 0x00638F40 GOG 0x00638E40
+// PC 0x00638F40 GOG 0x00638E40 Xbox 0x0001AA90
 int CClientExoApp::GetClientMeleeAnimation(unsigned long oidAttacker, unsigned long oidTarget,
                                            unsigned short nAnimation, int nAttack, int bOverride,
                                            int nOverrideAnimation)
 {
     return m_pcExoAppInternal->GetClientMeleeAnimation(oidAttacker, oidTarget, nAnimation, nAttack, bOverride, nOverrideAnimation);
 }
-// PC 0x00638F50 GOG 0x00638E50
+// PC 0x00638F50 GOG 0x00638E50 Xbox 0x0001AAA0
 void CClientExoApp::SetLoadScreenByModuleName(const CExoString& sModule)
 {
     m_pcExoAppInternal->SetLoadScreenByModuleName(sModule);
 }
-// PC 0x00638F60 GOG 0x00638E60
+// PC 0x00638F60 GOG 0x00638E60 Xbox 0x0001AAB0
 CExoString CClientExoApp::GetLoadMusicByModuleName(const CExoString& sModule)
 {
     return m_pcExoAppInternal->GetLoadMusicByModuleName(sModule);
 }
-// PC 0x00638F90 GOG 0x00638E90
+// PC 0x00638F90 GOG 0x00638E90 Xbox 0x0001AAD0
 void CClientExoApp::SetLoadMusic(const CExoString& sMusic)
 {
     m_pcExoAppInternal->m_sLoadMusic = sMusic;
 }
-// PC 0x00638FA0 GOG 0x00638EA0
+// PC 0x00638FA0 GOG 0x00638EA0 Xbox 0x0001AAE0
 void CClientExoApp::SetLoadBarProgress(int nProgress, int bUpdateHint)
 {
     m_pcExoAppInternal->SetLoadBarProgress(nProgress, bUpdateHint);
 }
-// PC 0x00638FB0 GOG 0x00638EB0
+// PC 0x00638FB0 GOG 0x00638EB0 Xbox 0x0001AAF0
 void CClientExoApp::SetLoadFromIFO(int bValue)
 {
     m_pcExoAppInternal->m_nLoadFromIFO = bValue;
 }
-// PC 0x00638FC0 GOG 0x00638EC0
+// PC 0x00638FC0 GOG 0x00638EC0 Xbox 0x0001AB00
 int CClientExoApp::GetLoadFromIFO()
 {
     return m_pcExoAppInternal->m_nLoadFromIFO;
 }
-// PC 0x00638FD0 GOG 0x00638ED0
+// PC 0x00638FD0 GOG 0x00638ED0 Xbox 0x0001AB10
 void CClientExoApp::SetLastTarget(unsigned long oidObject, int bChanged)
 {
     m_pcExoAppInternal->SetLastTarget(oidObject, bChanged);
 }
-// PC 0x00638FE0 GOG 0x00638EE0
+// PC 0x00638FE0 GOG 0x00638EE0 Xbox 0x0001AB20
 int CClientExoApp::GetLastTarget()
 {
     return m_pcExoAppInternal->m_nLastTarget;
 }
-// PC 0x00638FF0 GOG 0x00638EF0
+// PC 0x00638FF0 GOG 0x00638EF0 Xbox 0x0001AB30
 void CClientExoApp::SetGuiGameSlow(int bSlow)
 {
     m_pcExoAppInternal->m_bGuiGameSlow = bSlow;
@@ -1127,25 +1127,25 @@ void CClientExoApp::SetRunScript(const CExoString& sScript)
     pInternal->m_bRunScript = 1;
     pInternal->m_sRunScript = sScript;
 }
-// PC 0x00639000 GOG 0x00638F00
+// PC 0x00639000 GOG 0x00638F00 Xbox 0x0001AB40
 void CClientExoApp::UpdateRoom(const Vector& vPosition)
 {
     m_pcExoAppInternal->UpdateRoom(vPosition);
 }
-// PC 0x00639010 GOG 0x00638F10
+// PC 0x00639010 GOG 0x00638F10 Xbox 0x0001AB50
 void CClientExoApp::StartPazaakGame(int nSideDeck, const CExoString& sEndScript, int nWager, int bTutorial,
                                    unsigned long oidOpponent)
 {
     m_pcExoAppInternal->StartPazaakGame(nSideDeck, sEndScript, nWager, bTutorial, oidOpponent);
 }
-// PC 0x00639020 GOG 0x00638F20
+// PC 0x00639020 GOG 0x00638F20 Xbox 0x0001AB60
 void CClientExoApp::EndPazaakGame(int nResult, int nWager, int bPlayAgain,
                                  unsigned long oidOpponent)
 {
     m_pcExoAppInternal->EndPazaakGame(nResult, nWager, bPlayAgain,
                                              oidOpponent);
 }
-// PC 0x00639030 GOG 0x00638F30
+// PC 0x00639030 GOG 0x00638F30 Xbox 0x0001AB70
 int CClientExoApp::GetPazaakResults(int* pnResult, int* pnWager)
 {
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
@@ -1155,7 +1155,7 @@ int CClientExoApp::GetPazaakResults(int* pnResult, int* pnWager)
     *pnWager = nWager;
     return nWager;
 }
-// PC 0x00639050 GOG 0x00638F50
+// PC 0x00639050 GOG 0x00638F50 Xbox 0x0001AB90
 void CClientExoApp::SetFutureLeader(unsigned long oidObject)
 {
     m_pcExoAppInternal->m_oidFutureLeader = oidObject;
@@ -1172,7 +1172,7 @@ int CClientExoApp::GetEndGamePending()
 {
     return m_pcExoAppInternal->m_bEndGamePending;
 }
-// PC 0x00639060 GOG 0x00638F60
+// PC 0x00639060 GOG 0x00638F60 Xbox 0x0001ABA0
 void CClientExoApp::SetEndGamePending(int bPending, float fDelay, int bShowDeathMessage)
 {
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
@@ -1180,53 +1180,53 @@ void CClientExoApp::SetEndGamePending(int bPending, float fDelay, int bShowDeath
     pInternal->m_fEndGamePendingDelay = fDelay;
     pInternal->m_bShowEndGameDeathMessage = bShowDeathMessage;
 }
-// PC 0x00639090 GOG 0x00638F90
+// PC 0x00639090 GOG 0x00638F90 Xbox 0x0001ABD0
 int CClientExoApp::PlayRumblePattern(int nPattern)
 {
     return m_pcExoAppInternal->PlayRumblePattern(nPattern);
 }
-// PC 0x006390A0 GOG 0x00638FA0
+// PC 0x006390A0 GOG 0x00638FA0 Xbox 0x0001ABE0
 int CClientExoApp::StopRumblePattern(int nPattern)
 {
     return m_pcExoAppInternal->StopRumblePattern(nPattern);
 }
-// PC 0x006390B0 GOG 0x00638FB0
+// PC 0x006390B0 GOG 0x00638FB0 Xbox 0x0001ABF0
 void CClientExoApp::TogglePartyFollow()
 {
     m_pcExoAppInternal->TogglePartyFollow();
 }
-// PC 0x006390C0 GOG 0x00638FC0
+// PC 0x006390C0 GOG 0x00638FC0 Xbox 0x0001AC00
 int CClientExoApp::GetCombatMode()
 {
     return m_pcExoAppInternal->m_nCombatMode;
 }
-// PC 0x006390D0 GOG 0x00638FD0
+// PC 0x006390D0 GOG 0x00638FD0 Xbox 0x0001AC10
 void CClientExoApp::SetCombatMode(int nMode)
 {
     m_pcExoAppInternal->SetCombatMode(nMode);
 }
-// PC 0x006390E0 GOG 0x00638FE0
+// PC 0x006390E0 GOG 0x00638FE0 Xbox 0x0001AC20
 void CClientExoApp::PlayerFlourishWeapons()
 {
     m_pcExoAppInternal->PlayerFlourishWeapons();
 }
-// PC 0x006390F0 GOG 0x00638FF0
+// PC 0x006390F0 GOG 0x00638FF0 Xbox 0x0001AC30
 void CClientExoApp::AddFloatyText(unsigned long oidObject, unsigned char nType,
                                int nValue)
 {
     m_pcExoAppInternal->AddFloatyText(oidObject, nType, nValue);
 }
-// PC 0x00639100 GOG 0x00639000
+// PC 0x00639100 GOG 0x00639000 Xbox 0x0001AC40
 CExoString CClientExoApp::GetGUIString(unsigned long nStrRef)
 {
     return m_pcExoAppInternal->GetGUIString(nStrRef);
 }
-// PC 0x00639130 GOG 0x00639030
+// PC 0x00639130 GOG 0x00639030 Xbox 0x0001AC60
 void CClientExoApp::SetAutoPaused(int bAuto, unsigned char nPauseType)
 {
     m_pcExoAppInternal->SetAutoPaused(bAuto, nPauseType);
 }
-// PC 0x00639140 GOG 0x00639040
+// PC 0x00639140 GOG 0x00639040 Xbox 0x0001AC70
 int CClientExoApp::GetAutoPaused()
 {
 #ifdef _XBOX
@@ -1235,49 +1235,49 @@ int CClientExoApp::GetAutoPaused()
     return m_pcExoAppInternal->m_AutoPauseFlags.m_Bits.m_bAutoPaused;
 #endif
 }
-// PC 0x00639150 GOG 0x00639050
+// PC 0x00639150 GOG 0x00639050 Xbox 0x0001AC80
 void CClientExoApp::SetLoadScreenHint(unsigned long nHint)
 {
     m_pcExoAppInternal->SetLoadScreenHint(nHint);
 }
 
 // Dead code: not in the PC executable
-unsigned long CClientExoApp::GetLoadScreenHint()
+unsigned long CClientExoApp::GetLoadScreenHint()  // Xbox 0x0001AC90
 {
     return m_pcExoAppInternal->GetLoadScreenHint();
 }
-// PC 0x00639160 GOG 0x00639060
+// PC 0x00639160 GOG 0x00639060 Xbox 0x0001ACA0
 void CClientExoApp::EnableVideoEffect(int nEffect)
 {
     m_pcExoAppInternal->EnableVideoEffect(nEffect);
 }
-// PC 0x00639170 GOG 0x00639070
+// PC 0x00639170 GOG 0x00639070 Xbox 0x0001ACB0
 void CClientExoApp::DisableVideoEffect()
 {
     m_pcExoAppInternal->DisableVideoEffect();
 }
-// PC 0x00639180 GOG 0x00639080
+// PC 0x00639180 GOG 0x00639080 Xbox 0x0001ACC0
 int CClientExoApp::GetVideoEffectType()
 {
     return m_pcExoAppInternal->m_nVideoEffect;
 }
-// PC 0x00639190 GOG 0x00639090
+// PC 0x00639190 GOG 0x00639090 Xbox 0x0001ACD0
 void CClientExoApp::DelayNextEnemyAutoPause()
 {
     m_pcExoAppInternal->DelayNextEnemyAutoPause();
 }
-// PC 0x006391A0 GOG 0x006390A0
+// PC 0x006391A0 GOG 0x006390A0 Xbox 0x0001ACE0
 int CClientExoApp::ShowTutorialWindow(unsigned char nTutorial, unsigned long nX,
                                       unsigned long nY, unsigned long nActionParam)
 {
     return m_pcExoAppInternal->ShowTutorialWindow(nTutorial, nX, nY, nActionParam);
 }
-// PC 0x006391B0 GOG 0x006390B0
+// PC 0x006391B0 GOG 0x006390B0 Xbox 0x0001ACF0
 int CClientExoApp::ClearCachedCreatures(CSWCCreature* pCreature)
 {
     return m_pcExoAppInternal->ClearCachedCreatures(pCreature);
 }
-// PC 0x006391C0 GOG 0x006390C0
+// PC 0x006391C0 GOG 0x006390C0 Xbox 0x0001AD00
 void CClientExoApp::LookUpAndPerformRumbleWithCutOff(int nEntry,
                                                      unsigned char nTable,
                                                      const Vector& vPosition)
@@ -1292,18 +1292,18 @@ int CClientExoApp::GetPlayerMovementInput()
     return m_pcExoAppInternal->GetPlayerMovementInput();
 }
 #endif
-// PC 0x00639220 GOG 0x00639120
+// PC 0x00639220 GOG 0x00639120 Xbox 0x0001AD60
 int CClientExoApp::SaveOptions()
 {
     return m_pcExoAppInternal->SaveOptions();
 }
 
-// PC 0x00639230 GOG 0x00639130
+// PC 0x00639230 GOG 0x00639130 Xbox 0x0001AD70
 int CClientExoApp::LoadOptions(int bSetAntiAliasing)
 {
     return m_pcExoAppInternal->LoadOptions(bSetAntiAliasing);
 }
-// PC 0x00639230 GOG 0x00639130
+// PC 0x00639230 GOG 0x00639130 Xbox 0x0001AD80
 int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound,
                                                           unsigned char nPartyMembers)
 {
@@ -1315,142 +1315,142 @@ void CClientExoApp::StopMovie()
 {
     m_pcExoAppInternal->StopMovie();
 }
-// PC 0x00639250 GOG 0x00639150
+// PC 0x00639250 GOG 0x00639150 Xbox 0x0001AD90
 void CClientExoApp::SetAttackMashTutorialTimer(unsigned long nTimer)
 {
     m_pcExoAppInternal->m_nAttackMashTutorialTimer = nTimer;
 }
-// PC 0x00639260 GOG 0x00639160
+// PC 0x00639260 GOG 0x00639160 Xbox 0x0001ADA0
 unsigned long CClientExoApp::GetAttackMashTutorialTimer()
 {
     return m_pcExoAppInternal->m_nAttackMashTutorialTimer;
 }
 
 #ifdef _XBOX
-void CClientExoApp::SetMinGlobalRim(int bMinGlobalRim)
+void CClientExoApp::SetMinGlobalRim(int bMinGlobalRim)  // Xbox 0x0001ADB0
 {
     m_pcExoAppInternal->m_bMinGlobalRim = bMinGlobalRim;
 }
 #endif
 
 // Dead code: not in the PC executable
-int CClientExoApp::GetLoadingSaveGame()
+int CClientExoApp::GetLoadingSaveGame()  // Xbox 0x0001ADC0
 {
     return m_pcExoAppInternal->m_nLoadingSaveGame;
 }
-// PC 0x00639270 GOG 0x00639170
+// PC 0x00639270 GOG 0x00639170 Xbox 0x0001ADD0
 void CClientExoApp::SetLoadingSaveGame(int bLoading)
 {
     m_pcExoAppInternal->m_nLoadingSaveGame = bLoading;
 }
-// PC 0x00639280 GOG 0x00639180
+// PC 0x00639280 GOG 0x00639180 Xbox 0x0001ADE0
 void CClientExoApp::SetLoadStep(int nStep, unsigned char cValue)
 {
     m_pcExoAppInternal->m_aLoadSteps[nStep] = cValue;
 }
-// PC 0x006392A0 GOG 0x006391A0
+// PC 0x006392A0 GOG 0x006391A0 Xbox 0x0001AE00
 unsigned char CClientExoApp::GetLoadStep(int nStep)
 {
     return m_pcExoAppInternal->m_aLoadSteps[nStep];
 }
-// PC 0x006392C0 GOG 0x006391C0
+// PC 0x006392C0 GOG 0x006391C0 Xbox 0x0001AE20
 void CClientExoApp::ClearEnemySighted()
 {
     m_pcExoAppInternal->m_bEnemySighted = 0;
 }
-// PC 0x006392D0 GOG 0x006391D0
+// PC 0x006392D0 GOG 0x006391D0 Xbox 0x0001AE30
 CExoString& CClientExoApp::GetLiveContentName(int nIndex)
 {
     return m_pcExoAppInternal->m_aLiveContentNames[nIndex].m_sName;
 }
 
 // Dead code: not in the PC executable
-int CClientExoApp::GetLiveContentExists(int nIndex)
+int CClientExoApp::GetLiveContentExists(int nIndex)  // Xbox 0x0001AE50
 {
     return m_pcExoAppInternal->m_aLiveContentNames[nIndex].m_bExists;
 }
 
 // Dead code: not in the PC executable
-int CClientExoApp::GetLiveContentCorrupt(int nIndex)
+int CClientExoApp::GetLiveContentCorrupt(int nIndex)  // Xbox 0x0001AE70
 {
     return m_pcExoAppInternal->m_aLiveContentNames[nIndex].m_bCorrupt;
 }
 
 // Dead code: not in the PC executable
-unsigned long CClientExoApp::GetLoadScreenHintUpdateTimer()
+unsigned long CClientExoApp::GetLoadScreenHintUpdateTimer()  // Xbox 0x0001AE90
 {
     return m_pcExoAppInternal->m_nLoadScreenHintUpdateTimer;
 }
-// PC 0x006392F0 GOG 0x006391F0
+// PC 0x006392F0 GOG 0x006391F0 Xbox 0x0001AEA0
 void CClientExoApp::SetLoadScreenHintUpdateTimer(unsigned long nTimer)
 {
     m_pcExoAppInternal->m_nLoadScreenHintUpdateTimer = nTimer;
 }
-// PC 0x00639300 GOG 0x00639200
+// PC 0x00639300 GOG 0x00639200 Xbox 0x0001AEB0
 unsigned char CClientExoApp::GetGamePlayHint()
 {
     return m_pcExoAppInternal->m_nGamePlayHint;
 }
-// PC 0x00639310 GOG 0x00639210
+// PC 0x00639310 GOG 0x00639210 Xbox 0x0001AEC0
 void CClientExoApp::SetGamePlayHint(unsigned char nHint)
 {
     m_pcExoAppInternal->m_nGamePlayHint = nHint;
 }
-// PC 0x00639320 GOG 0x00639220
+// PC 0x00639320 GOG 0x00639220 Xbox 0x0001AED0
 unsigned char CClientExoApp::GetStoryHint(unsigned char nArea)
 {
     return m_pcExoAppInternal->m_anStoryHint[nArea];
 }
-// PC 0x00639340 GOG 0x00639240
+// PC 0x00639340 GOG 0x00639240 Xbox 0x0001AEF0
 void CClientExoApp::SetStoryHint(unsigned char nHint, unsigned char nArea)
 {
     m_pcExoAppInternal->m_anStoryHint[nArea] = nHint;
 }
-// PC 0x00639360 GOG 0x00639260
+// PC 0x00639360 GOG 0x00639260 Xbox 0x0001AF10
 int CClientExoApp::GetNextLoadScreenHintSTRREF(const CExoString& sModule,
                                                unsigned char nHintType)
 {
     return m_pcExoAppInternal->GetNextLoadScreenHintSTRREF(sModule, nHintType);
 }
-// PC 0x00639370 GOG 0x00639270
+// PC 0x00639370 GOG 0x00639270 Xbox 0x0001AF20
 void CClientExoApp::SetModuleResourceLoaded(unsigned char nMask)
 {
     m_pcExoAppInternal->m_nModuleResourcesLoaded |= nMask;
 }
-// PC 0x00639390 GOG 0x00639290
+// PC 0x00639390 GOG 0x00639290 Xbox 0x0001AF40
 void CClientExoApp::ResetModuleResourcesLoaded()
 {
     m_pcExoAppInternal->m_nModuleResourcesLoaded = 0;
 }
-// PC 0x006393A0 GOG 0x006392A0
+// PC 0x006393A0 GOG 0x006392A0 Xbox 0x0001AF50
 int CClientExoApp::GetModuleResourceLoaded(unsigned char nMask)
 {
     unsigned char nLoaded =
         m_pcExoAppInternal->m_nModuleResourcesLoaded & nMask;
     return nLoaded > 0;
 }
-// PC 0x006393C0 GOG 0x006392C0
+// PC 0x006393C0 GOG 0x006392C0 Xbox 0x0001AF70
 int CClientExoApp::GetTargetChanging()
 {
     return m_pcExoAppInternal->m_fTargetChanging > 0.0f;
 }
-// PC 0x006393E0 GOG 0x006392E0
+// PC 0x006393E0 GOG 0x006392E0 Xbox 0x0001AF90
 int CClientExoApp::GetTogglePauseAtEndOfFrame()
 {
     return m_pcExoAppInternal->m_PauseFlags.m_Bits.m_bTogglePauseAtEndOfFrame !=
            0;
 }
-// PC 0x006393F0 GOG 0x006392F0
+// PC 0x006393F0 GOG 0x006392F0 Xbox 0x0001AFA0
 void CClientExoApp::BusyWaitMenuMusic()
 {
     m_pcExoAppInternal->BusyWaitMenuMusic();
 }
-// PC 0x00639400 GOG 0x00639300
+// PC 0x00639400 GOG 0x00639300 Xbox 0x0001AFB0
 void CClientExoApp::BusyWaitMuteSound()
 {
     m_pcExoAppInternal->BusyWaitMuteSound();
 }
-// PC 0x00639410 GOG 0x00639310
+// PC 0x00639410 GOG 0x00639310 Xbox 0x0001AFD0
 int CClientExoApp::GetPazaakIsRunning()
 {
     return m_pcExoAppInternal->m_PazaakState.m_bIsRunning;
@@ -1477,11 +1477,11 @@ void CClientExoApp::ShowMouse(int nFlags)
     m_pcExoAppInternal->ShowMouse(nFlags);
 }
 #endif
-int CClientExoApp::GetCharacterChangeInProgress()  // PC 0x00639460 GOG 0x00639360
+int CClientExoApp::GetCharacterChangeInProgress()  // PC 0x00639460 GOG 0x00639360 Xbox 0x0001AFE0
 {
     return m_pcExoAppInternal->m_bCharacterChangeInProgress;
 }
-// PC 0x00639470 GOG 0x00639370
+// PC 0x00639470 GOG 0x00639370 Xbox 0x0001AFF0
 void CClientExoApp::SetCharacterChangeInProgress(int bInProgress)
 {
     m_pcExoAppInternal->m_bCharacterChangeInProgress = bInProgress;
@@ -1556,7 +1556,7 @@ void CClientExoApp::ResumeStreamMusicForMovie()
 #ifdef _XBOX
 
 #include "swplayercontrol.h"
-int CClientExoApp::GetInFreeLook()
+int CClientExoApp::GetInFreeLook()  // Xbox 0x0001AD10
 {
     CClientExoAppInternal* pInternal = m_pcExoAppInternal;
     if (pInternal->m_pPlayerControl != 0 &&
@@ -1592,7 +1592,7 @@ int CClientExoApp::IsValidResolution(unsigned long nWidth,
 {
     return m_pcExoAppInternal->IsValidResolution(nWidth, nHeight);
 }
-void CClientExoApp::PlayerListChange(unsigned long, int, int)  // PC 0x006009E0 GOG 0x006009C0
+void CClientExoApp::PlayerListChange(unsigned long, int, int)  // PC 0x006009E0 GOG 0x006009C0 Xbox 0x0021F550
 {
 }
 #ifndef _XBOX
@@ -1607,7 +1607,7 @@ void CClientExoApp::SetSoundPausedByCombat(int nPaused)
     m_pcExoAppInternal->m_nSoundPausedByCombat = nPaused;
 }
 #endif
-// PC 0x006395B0 GOG 0x006394B0
+// PC 0x006395B0 GOG 0x006394B0 Xbox 0x0001B000
 void CClientExoApp::ClearMainMenuPointer()
 {
     if (m_pcExoAppInternal != NULL)
@@ -1615,7 +1615,7 @@ void CClientExoApp::ClearMainMenuPointer()
         m_pcExoAppInternal->m_pMainMenu = NULL;
     }
 }
-// PC 0x006395D0 GOG 0x006394D0
+// PC 0x006395D0 GOG 0x006394D0 Xbox 0x0001B020
 void CClientExoApp::EnableMainMenuIdleTimer()
 {
     if (m_pcExoAppInternal != NULL && m_pcExoAppInternal->m_pMainMenu != NULL)
@@ -1636,12 +1636,12 @@ void CClientExoApp::HandleExitGameButton()
     m_pcExoAppInternal->HandleExitGameButton(NULL);
 }
 #endif
-// PC 0x006395F0 GOG 0x006394F0
+// PC 0x006395F0 GOG 0x006394F0 Xbox 0x0001B080
 CClientExoApp::CClientExoApp()
 {
     m_pcExoAppInternal = new CClientExoAppInternal();
 }
-// PC 0x00639660 GOG 0x00639560
+// PC 0x00639660 GOG 0x00639560 Xbox 0x0001B0D0
 CClientExoApp::~CClientExoApp()
 {
     if (m_pcExoAppInternal != NULL)
@@ -1649,14 +1649,14 @@ CClientExoApp::~CClientExoApp()
         delete m_pcExoAppInternal;
     }
 }
-// PC 0x00639680 GOG 0x00639580
+// PC 0x00639680 GOG 0x00639580 Xbox 0x0001B260
 void CClientExoApp::RemoveMoveToModuleMovies()
 {
     m_pcExoAppInternal->m_aMoveToModuleMovies.RemoveAll(0);
 }
 
 #ifdef _XBOX
-int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound)
+int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bPlaySound)  // Xbox 0x0001AD80
 {
     return m_pcExoAppInternal->ChangeCharacterToNextLivingPartyMember(bCheckDead, bPlaySound);
 }
@@ -1664,7 +1664,7 @@ int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int bCheckDead, int bP
 
 #ifdef _XBOX
 
-void CClientExoApp::SetMissingFilePending(int bPending)
+void CClientExoApp::SetMissingFilePending(int bPending)  // Xbox 0x0001AFC0
 {
     m_pcExoAppInternal->m_bMissingFilePending = bPending;
 }
@@ -1672,7 +1672,7 @@ void CClientExoApp::SetMissingFilePending(int bPending)
 
 #ifdef _XBOX
 
-void CClientExoApp::StartServices(int nServices, const CExoString& sModule,
+void CClientExoApp::StartServices(int nServices, const CExoString& sModule,  // Xbox 0x0001A680
                                   const CExoString& sLoadMusic,
                                   const CExoString& sLoadScreen, unsigned long nPlayerId)
 {

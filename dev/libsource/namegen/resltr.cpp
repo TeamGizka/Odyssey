@@ -1,6 +1,6 @@
 #include <string.h>
 #include "exoresman.h"
-// PC 0x00785A50 GOG 0x00785820
+// PC 0x00785A50 GOG 0x00785820 Xbox 0x00294670
 CResLTR::CResLTR()
 {
     m_pLTRData = 0;
@@ -21,7 +21,7 @@ CResLTR::CResLTR()
 CResLTR::~CResLTR()
 {
 }
-// PC 0x00785AA0 GOG 0x00785870
+// PC 0x00785AA0 GOG 0x00785870 Xbox 0x002946B0
 int CResLTR::OnResourceFreed()
 {
     unsigned char i;
@@ -123,7 +123,7 @@ int CResLTR::OnResourceFreed()
     m_nDataSize = 0;
     return 1;
 }
-// PC 0x00785CB0 GOG 0x00785A80
+// PC 0x00785CB0 GOG 0x00785A80 Xbox 0x002948C0
 int CResLTR::OnResourceServiced()
 {
     LTRHeader* pHeader = (LTRHeader*)m_pResource;

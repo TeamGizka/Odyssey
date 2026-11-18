@@ -33,7 +33,7 @@ CScriptCompilerIdListEntry::CScriptCompilerIdListEntry()
     m_nBinaryDestinationStart = -1;
     m_nBinaryDestinationFinish = -1;
 }
-// PC 0x0061CEB0 GOG 0x0061CE80
+// PC 0x0061CEB0 GOG 0x0061CE80 Xbox 0x0016AA30
 CScriptCompilerIdListEntry::~CScriptCompilerIdListEntry()
 {
     if (m_pchParameters != NULL)
@@ -449,7 +449,7 @@ int CSourceScript::LoadScript(const CExoString& sFileName, char** ppScript,
     *pnScriptLength = m_pRes->GetNSSSize();
     return 0;
 }
-// PC 0x0061D010 GOG 0x0061CFE0
+// PC 0x0061D010 GOG 0x0061CFE0 Xbox 0x0016AB20
 void CScriptCompilerInternal::ShutDown()
 {
     if (m_pSRStack != NULL)
@@ -485,14 +485,14 @@ void CScriptCompilerInternal::ShutDown()
         m_pbEngineDefinedStructureValid = NULL;
     }
 }
-// PC 0x0061D120 GOG 0x0061D0F0
+// PC 0x0061D120 GOG 0x0061D0F0 Xbox 0x0016ACA0
 CScriptCompilerInternal::~CScriptCompilerInternal()
 {
     ShutDown();
 }
 
 // Dead code: not in the PC executable
-void CScriptCompilerInternal::SetCompileDebugLevel(int nValue)
+void CScriptCompilerInternal::SetCompileDebugLevel(int nValue)  // Xbox 0x00171F80
 {
     m_nCompileDebugLevel = nValue;
 }
@@ -535,7 +535,7 @@ void CScriptCompilerInternal::SetIdentifierSpecification(const CExoString& sLang
 }
 
 // Dead code: not in the PC executable
-void CScriptCompilerInternal::SetOutputAlias(const CExoString& sAlias)
+void CScriptCompilerInternal::SetOutputAlias(const CExoString& sAlias)  // Xbox 0x00130570
 {
     m_sOutputAlias = sAlias;
 }
@@ -547,7 +547,7 @@ void CScriptCompilerInternal::SetOptimizeBinaryCodeLength(BOOL bValue)
 }
 
 // Dead code: not in the PC executable
-void CScriptCompilerInternal::SetCompileConditionalFile(BOOL bValue)
+void CScriptCompilerInternal::SetCompileConditionalFile(BOOL bValue)  // Xbox 0x00043AB0
 {
     m_bCompileConditionalFile = bValue;
 }

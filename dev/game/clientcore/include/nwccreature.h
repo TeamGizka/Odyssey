@@ -200,7 +200,7 @@ public:
 
     void HandleConjuringCreature();
     void HandleSwitchWeapon();
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWCCreature* AsSWCCreature()
     {
         return this;
@@ -403,7 +403,7 @@ public:
     void SetAlignmentGoodEvil(short nAlignment);
     void UpdateShadowBlob();
     virtual int ApplyShadowBlob();
-    CSWCCreatureAppearance* GetAppearance() { return m_pAppearance; }
+    CSWCCreatureAppearance* GetAppearance() { return m_pAppearance; }  // Xbox 0x003065D0
     unsigned long GetEquippedItemID(unsigned long nSlot);
     void BlurWeapon(int bBlur);
 

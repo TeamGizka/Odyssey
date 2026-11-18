@@ -58,11 +58,11 @@ public:
     virtual ~CSWGuiObject()  // PC 0x0040A2A0 GOG 0x0040A270
     {
     }
-    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x0040A2B0 GOG 0x0040A280
+    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x0040A2B0 GOG 0x0040A280 Xbox 0x00049F00
     {
         m_cExtent = cExtent;
     }
-    virtual void SetActiveControl(CSWGuiControl* pControl, int bPlaySound)  // PC 0x006049D0 GOG 0x006049B0
+    virtual void SetActiveControl(CSWGuiControl* pControl, int bPlaySound)  // PC 0x006049D0 GOG 0x006049B0 Xbox 0x000C4DE0
     {
     }
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver)  // PC 0x005EE1C0 GOG 0x005EE1A0
@@ -92,12 +92,12 @@ public:
     SWGUI_PCVIRTUAL void HandleRMouseUp()
     {
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiPanel* AsSWGuiPanel()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiListBox* AsSWGuiListBox()
     {
         return 0;
@@ -156,12 +156,12 @@ public:
     {
         return this;
     }
-    // PC 0x004065B0 GOG 0x00406580
+    // PC 0x004065B0 GOG 0x00406580 Xbox 0x002CEDA0
     virtual int GetIdealHeight()
     {
         return m_cExtent.m_nHeight;
     }
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void Draw(float fElapsed)
     {
     }
@@ -172,26 +172,26 @@ public:
     virtual CSWGuiControl* HitCheckMouse(int nX, int nY);
 #endif
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    virtual CSWGuiNavigable* AsNavigable()  // PC 0x004065A0 GOG 0x00406570
+    virtual CSWGuiNavigable* AsNavigable()  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiLabel* AsLabel()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiLabelHilight* AsLabelHilight()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiButton* AsButton()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiButtonToggle* AsButtonToggle()
     {
         return 0;
@@ -201,22 +201,22 @@ public:
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiSlider* AsSlider()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiProgressBar* AsProgressBar()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiScrollBar* AsScrollBar()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CSWGuiListBox* AsListBox()
     {
         return 0;
@@ -340,7 +340,7 @@ public:
     }
 #endif
     virtual void SetExtent(const CSWGuiExtent& cExtent);
-    virtual void Draw(float fElapsed)  // PC 0x006D1490 GOG 0x006D0760
+    virtual void Draw(float fElapsed)  // PC 0x006D1490 GOG 0x006D0760 Xbox 0x000A0A80
     {
         m_cScene.Draw(fElapsed);
     }
@@ -366,7 +366,7 @@ public:
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver);
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiNavigable* AsNavigable()
     {
         return this;
@@ -398,7 +398,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiLabel* AsLabel()
     {
         return this;
@@ -479,7 +479,7 @@ public:
 #endif
 #endif
 #ifndef SWGUICONTROL_SOURCE
-    // PC 0x0041BB50 GOG 0x0041BB40
+    // PC 0x0041BB50 GOG 0x0041BB40 Xbox 0x00097B00
     CSWGuiButton()
     {
     }
@@ -491,7 +491,7 @@ public:
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void SetActive(int bActive);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiButton* AsButton()
     {
         return this;
@@ -529,7 +529,7 @@ public:
                             const CSWGuiBorderParams& cHilite,
                             const CSWGuiBorderParams& cToggleBorder,
                             const CSWGuiBorderParams& cToggleHilite);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiButtonToggle* AsButtonToggle()
     {
         return this;
@@ -577,7 +577,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiScrollBar* AsScrollBar()
     {
         return this;
@@ -634,7 +634,7 @@ public:
     SWGUI_PCVIRTUAL int HandleMouseCapturedMovement(int nX, int nY);
     SWGUI_PCVIRTUAL void HandleLMouseDown();
     SWGUI_PCVIRTUAL void HandleLMouseUp();
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiListBox* AsSWGuiListBox()
     {
         return this;
@@ -644,7 +644,7 @@ public:
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void SetActive(int bActive);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiListBox* AsListBox()
     {
         return this;
@@ -779,7 +779,7 @@ public:
 #endif
 };
 #ifndef SWGUICONTROL_SOURCE
-// PC 0x00419D90 GOG 0x00419D80
+// PC 0x00419D90 GOG 0x00419D80 Xbox 0x00049F50
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
@@ -809,7 +809,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     SWGUI_PCVIRTUAL int HandleMouseCapturedMovement(int nX, int nY);
     SWGUI_PCVIRTUAL void HandleLMouseDown();
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiSlider* AsSlider()
     {
         return this;
@@ -853,7 +853,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiProgressBar* AsProgressBar()
     {
         return this;

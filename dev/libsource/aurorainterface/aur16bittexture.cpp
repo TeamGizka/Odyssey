@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00783FA0 GOG 0x00783DA0
+// PC 0x00783FA0 GOG 0x00783DA0 Xbox 0x00331320
 int CAurora16BitTexture::GetTextureAttrib(unsigned long* pnWidth,
                                           unsigned long* pnHeight, float* pfAlpha,
                                           int* pnFormat)
@@ -10,7 +10,7 @@ int CAurora16BitTexture::GetTextureAttrib(unsigned long* pnWidth,
     }
     return 0;
 }
-// PC 0x00783FE0 GOG 0x00783400
+// PC 0x00783FE0 GOG 0x00783400 Xbox 0x00331360
 unsigned char* CAurora16BitTexture::GetTextureDataPtr()
 {
     if (m_pRes != 0 && m_pRes->GetDemands() >= 1)
@@ -19,7 +19,7 @@ unsigned char* CAurora16BitTexture::GetTextureDataPtr()
     }
     return 0;
 }
-// PC 0x00784010 GOG 0x00783DE0
+// PC 0x00784010 GOG 0x00783DE0 Xbox 0x00331390
 int CAurora16BitTexture::Load()
 {
     S16BitTextureDataTrailer* pTrailer;
@@ -33,7 +33,7 @@ int CAurora16BitTexture::Load()
     pTrailer->nType = 2059;
     return 1;
 }
-// PC 0x00783630 GOG 0x00783460
+// PC 0x00783630 GOG 0x00783460 Xbox 0x0032ED20
 void CAurora16BitTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -41,7 +41,7 @@ void CAurora16BitTexture::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x00784040 GOG 0x00783E10
+// PC 0x00784040 GOG 0x00783E10 Xbox 0x003313C0
 int CAurora16BitTexture::ReadTextureHeader(int* pnA, int* pnB, float* pfC,
                                            int* pnD)
 {
@@ -61,7 +61,7 @@ int CAurora16BitTexture::ReadTextureHeader(int* pnA, int* pnB, float* pfC,
     *pnD = textureHeader.nFormat;
     return 1;
 }
-// PC 0x007840A0 GOG 0x00783E70
+// PC 0x007840A0 GOG 0x00783E70 Xbox 0x00331420
 unsigned char* CAurora16BitTexture::GetPtrToResHelperInfo()
 {
     if (m_pRes == 0 || m_pRes->GetDemands() < 1)
@@ -70,13 +70,13 @@ unsigned char* CAurora16BitTexture::GetPtrToResHelperInfo()
     }
     return GetTextureDataPtr() - 22;
 }
-// PC 0x007842C0 GOG 0x00784090
+// PC 0x007842C0 GOG 0x00784090 Xbox 0x00331600
 CAurora16BitTexture::CAurora16BitTexture(CResRef cResRef, int bRequest)
     : CResHelper<CRes4PC, RESTYPE_4PC>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00784350 GOG 0x00784120
+// PC 0x00784350 GOG 0x00784120 Xbox 0x00331660
 CAurora16BitTexture::~CAurora16BitTexture()
 {
 }

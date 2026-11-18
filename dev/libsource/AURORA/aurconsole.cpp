@@ -23,19 +23,19 @@ List<char*> g_listHistory;
 funcholderbase::~funcholderbase()
 {
 }
-// PC 0x0045FF80 GOG 0x00460090
+// PC 0x0045FF80 GOG 0x00460090 Xbox 0x002CDC40
 template <> void funcholder<void (*)()>::Engage(char* sArguments)
 {
     m_pFunction();
     returnvalue[0] = 0;
 }
-// PC 0x0045FF90 GOG 0x004600A0
+// PC 0x0045FF90 GOG 0x004600A0 Xbox 0x002CDC50
 template <> void funcholder<void (*)(char*)>::Engage(char* sArguments)
 {
     m_pFunction(sArguments);
     returnvalue[0] = 0;
 }
-// PC 0x0045FFB0 GOG 0x004600C0
+// PC 0x0045FFB0 GOG 0x004600C0 Xbox 0x002CDC70
 template <> void funcholder<void (*)(int)>::Engage(char* sArguments)
 {
     int nValue;
@@ -44,7 +44,7 @@ template <> void funcholder<void (*)(int)>::Engage(char* sArguments)
     m_pFunction(nValue);
     returnvalue[0] = 0;
 }
-// PC 0x0045FFE0 GOG 0x004600F0
+// PC 0x0045FFE0 GOG 0x004600F0 Xbox 0x002CDCA0
 void ConsoleFuncs_Add(ConsoleFunc* pFunc)
 {
     ConsoleFunc* pTemp;
@@ -61,7 +61,7 @@ void ConsoleFuncs_Add(ConsoleFunc* pFunc)
 
     ConsoleFuncs[ConsoleFuncs_num++] = pFunc;
 }
-// PC 0x00460070 GOG 0x00460180
+// PC 0x00460070 GOG 0x00460180 Xbox 0x002CDD30
 void ConsoleFuncs_Remove(const char* sName)
 {
     int nCount = ConsoleFuncs_num;
@@ -82,7 +82,7 @@ void ConsoleFuncs_Remove(const char* sName)
 
     ConsoleFuncs_num--;
 }
-// PC 0x004600F0 GOG 0x00460200
+// PC 0x004600F0 GOG 0x00460200 Xbox 0x002CDDB0
 funcholderbase* FindConCallBack(char* sName)
 {
     static int i = -1;
@@ -103,7 +103,7 @@ funcholderbase* FindConCallBack(char* sName)
 
     return 0;
 }
-// PC 0x004601D0 GOG 0x004602E0
+// PC 0x004601D0 GOG 0x004602E0 Xbox 0x002CDE90
 char* FuncPreInterp(char* sLine)
 {
     char sName[128];
@@ -133,7 +133,7 @@ char* FuncPreInterp(char* sLine)
 
     return returnvalue;
 }
-// PC 0x00460250 GOG 0x00460360
+// PC 0x00460250 GOG 0x00460360 Xbox 0x002CDF10
 ConsoleFunc::~ConsoleFunc()
 {
     ConsoleFuncs_Remove(m_sName);
@@ -163,7 +163,7 @@ OpenResource::~OpenResource()
     }
 }
 #endif
-// PC 0x00460270 GOG 0x00460380
+// PC 0x00460270 GOG 0x00460380 Xbox 0x002CDF30
 char* AurResGetDataBytes(unsigned long nBytes, void* pResource)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -180,7 +180,7 @@ char* AurResGetDataBytes(unsigned long nBytes, void* pResource)
     fread(pData, 1, nBytes, pOpenResource->m_pFile);
     return pData;
 }
-// PC 0x004602B0 GOG 0x004603C0
+// PC 0x004602B0 GOG 0x004603C0 Xbox 0x002CDF70
 void AurResFreeDataBytes(void* pResource, unsigned char* pData)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -190,7 +190,7 @@ void AurResFreeDataBytes(void* pResource, unsigned char* pData)
         delete[] pData;
     }
 }
-// PC 0x004602D0 GOG 0x004603E0
+// PC 0x004602D0 GOG 0x004603E0 Xbox 0x002CDF90
 OpenResource* GetResource(void* pResource)
 {
     int i;
@@ -212,7 +212,7 @@ OpenResource* GetResource(void* pResource)
 }
 
 #ifdef _XBOX
-void AurResRemove(void* pResource)
+void AurResRemove(void* pResource)  // Xbox 0x002CDFE0
 {
     for (int nIndex = 0; nIndex < Resources.m_nCount; nIndex++)
     {
@@ -251,7 +251,7 @@ int AurResRemove(void* pResource)  // PC 0x00460320 GOG 0x00460430
     return nIndex;
 }
 #endif
-// PC 0x00460380 GOG 0x00460490
+// PC 0x00460380 GOG 0x00460490 Xbox 0x002CE040
 static char* getnextline_file(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -266,7 +266,7 @@ static char* getnextline_file(void* pResource)
 
     return fgets(pOpenResource->m_pBuffer, 4000, pOpenResource->m_pFile);
 }
-// PC 0x004603D0 GOG 0x004604E0
+// PC 0x004603D0 GOG 0x004604E0 Xbox 0x002CE090
 static char* getnextline_res(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -303,7 +303,7 @@ static char* getnextline_res(void* pResource)
     pOpenResource->m_pBuffer[i] = 0;
     return pOpenResource->m_pBuffer;
 }
-// PC 0x00460440 GOG 0x00460550
+// PC 0x00460440 GOG 0x00460550 Xbox 0x002CE100
 char* GetDataFromFile(int nBytes)
 {
     OpenResource* pOpenResource = Resources.m_pList[Resources.m_nCount - 1];
@@ -317,7 +317,7 @@ char* GetDataFromFile(int nBytes)
     fread(pOpenResource->m_pBuffer, 1, nBytes, pOpenResource->m_pFile);
     return pOpenResource->m_pBuffer;
 }
-// PC 0x00460490 GOG 0x004605A0
+// PC 0x00460490 GOG 0x004605A0 Xbox 0x002CE150
 static char* GetDataFromResource(int nBytes)
 {
     OpenResource* pOpenResource =
@@ -349,7 +349,7 @@ static char* GetDataFromResource(int nBytes)
     pOpenResource->m_pBuffer[i] = 0;
     return pOpenResource->m_pBuffer;
 }
-// PC 0x00460500 GOG 0x00460610
+// PC 0x00460500 GOG 0x00460610 Xbox 0x002CE1C0
 char* AurResGetNextLine()
 {
     if (Resources.m_nCount == 0)
@@ -364,7 +364,7 @@ char* AurResGetNextLine()
 
     return getnextline_res(0);
 }
-// PC 0x00460530 GOG 0x00460640
+// PC 0x00460530 GOG 0x00460640 Xbox 0x002CE1F0
 void* AurResGetData(int nBytes)
 {
     if (Resources.m_nCount == 0)
@@ -379,7 +379,7 @@ void* AurResGetData(int nBytes)
 
     return GetDataFromResource(nBytes);
 }
-// PC 0x004605A0 GOG 0x004606B0
+// PC 0x004605A0 GOG 0x004606B0 Xbox 0x002CE250
 char* CommandCompletion(char* sLine, List<char*>& lstCompletions)
 {
     char* sPartial;
@@ -473,7 +473,7 @@ char* AurResGetNextLine(void* pResource)
     return getnextline_res(pResource);
 #endif
 }
-// PC 0x00460750 GOG 0x00460860
+// PC 0x00460750 GOG 0x00460860 Xbox 0x002CE400
 char* FuncInterp(char* sLine)
 {
     char sName[128];
@@ -637,7 +637,7 @@ ConsoleFunc::ConsoleFunc(const char* sName, void (*pFunction)(int))
     m_pHolder = new funcholder<void (*)(int)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// PC 0x00460BE0 GOG 0x00460CF0
+// PC 0x00460BE0 GOG 0x00460CF0 Xbox 0x002CE880
 static OpenResource* GetOpenResource(char* sName, char* sExtension, int* pnSize)
 {
     int nSize;
@@ -682,7 +682,7 @@ static const int MISSING_FILE_NAME_LENGTH = 64;
 static char g_aMissingFiles[MAX_MISSING_FILES][MISSING_FILE_NAME_LENGTH];
 static int g_nMissingFiles;
 
-void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)
+void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // Xbox 0x002CE940
 {
     char sPath[MAX_PATH];
 
@@ -809,7 +809,7 @@ void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // PC 0x
     return pOpenResource;
 }
 #endif
-// PC 0x00460DD0 GOG 0x00460EE0
+// PC 0x00460DD0 GOG 0x00460EE0 Xbox 0x002CEB00
 void* AurResGet(FILE* pFile)
 {
     OpenResource* pOpenResource = new OpenResource(500000);
@@ -820,7 +820,7 @@ void* AurResGet(FILE* pFile)
     Resources.Add(pOpenResource);
     return pOpenResource;
 }
-// PC 0x00460E50 GOG 0x00460F60
+// PC 0x00460E50 GOG 0x00460F60 Xbox 0x002CEB80
 void AurResFree(void* pResource, int nSize)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -927,7 +927,7 @@ char* converttobinary(char* sArguments)
     return "Finished";
 }
 #endif
-// PC 0x00460EE0 GOG 0x00460FF0
+// PC 0x00460EE0 GOG 0x00460FF0 Xbox 0x002CEC10
 char* dofile(char* sFileName)
 {
     static char returnbuf[256];

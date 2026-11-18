@@ -117,12 +117,12 @@ public:
     void SetAnimationPercentage(char* sName, float fPercentage);
     int ShouldWeCheckVisibilityHACK();
     static int cm_nLastGobIndex;
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual CAurCamera* AsCAurCamera() { return 0; }
-    virtual Camera* AsCamera() { return 0; }  // PC 0x004065A0 GOG 0x00406570
-    virtual CAurObject* AsCAurObject() { return this; }  // PC 0x00698BD0 GOG 0x00698980
-    virtual StringGob* AsString() { return 0; }  // PC 0x004065A0 GOG 0x00406570
-    virtual char* GetName()  // PC 0x0045DCB0 GOG 0x0045DDF0
+    virtual Camera* AsCamera() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
+    virtual CAurObject* AsCAurObject() { return this; }  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
+    virtual StringGob* AsString() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
+    virtual char* GetName()  // PC 0x0045DCB0 GOG 0x0045DDF0 Xbox 0x002C0250
     {
         return m_sName;
     }
@@ -153,34 +153,34 @@ public:
     virtual void SetBehavior(CAurBehavior* pBehavior);
     virtual Vector SetPosition(Vector vPosition);
     virtual Quaternion SetOrientation(Quaternion qOrientation);
-    virtual Vector GetPosition()  // PC 0x0045DCC0 GOG 0x0045DE00
+    virtual Vector GetPosition()  // PC 0x0045DCC0 GOG 0x0045DE00 Xbox 0x002C0260
     {
         return m_vPosition;
     }
-    virtual Quaternion GetOrientation()  // PC 0x0045DCF0 GOG 0x0045DE30
+    virtual Quaternion GetOrientation()  // PC 0x0045DCF0 GOG 0x0045DE30 Xbox 0x002C0290
     {
         return m_qOrientation;
     }
-    virtual Vector GetPreviousPosition()  // PC 0x0045DD20 GOG 0x00471840
+    virtual Vector GetPreviousPosition()  // PC 0x0045DD20 GOG 0x00471840 Xbox 0x002C02C0
     {
         return m_vPreviousPosition;
     }
-    // PC 0x0045DD50 GOG 0x0045DE60
+    // PC 0x0045DD50 GOG 0x0045DE60 Xbox 0x002C02F0
     virtual void* GetExternalData()
     {
         return m_pExternalData;
     }
-    // PC 0x0045DE40 GOG 0x0045DF50
+    // PC 0x0045DE40 GOG 0x0045DF50 Xbox 0x002C0300
     virtual void SetExternalData(void* pData)
     {
         m_pExternalData = pData;
     }
-    // PC 0x0045DD70 GOG 0x0045DE80
+    // PC 0x0045DD70 GOG 0x0045DE80 Xbox 0x002C0310
     virtual int GetExternalDataType()
     {
         return m_nExternalDataType;
     }
-    // PC 0x0045DD80 GOG 0x0045DE90
+    // PC 0x0045DD80 GOG 0x0045DE90 Xbox 0x002C0320
     virtual void SetExternalDataType(int nType)
     {
         m_nExternalDataType = nType;
@@ -192,7 +192,7 @@ public:
                              Vector* pHit, CHitInfo* pInfo);
     virtual CAurObject* HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                                 CHitInfo* pInfo);
-    // PC 0x0045DD90 GOG 0x0045DEA0
+    // PC 0x0045DD90 GOG 0x0045DEA0 Xbox 0x002C0330
     virtual void SetIgnoreHitCheck(bool bIgnore)
     {
         m_bIgnoreHitCheck = bIgnore;
@@ -212,12 +212,12 @@ public:
     virtual int Amputate(char* sPart);
     virtual void SetColorShifting(Vector vColor, float fAlpha, int nFlags);
     virtual void SetIllumination(Vector vColor, int nFlags);
-    // PC 0x0045DDA0 GOG 0x0045DEB0
+    // PC 0x0045DDA0 GOG 0x0045DEB0 Xbox 0x002C0340
     virtual void TurnOffShadows()
     {
         m_bCastShadows = 0;
     }
-    // PC 0x0045DDB0 GOG 0x0045DEC0
+    // PC 0x0045DDB0 GOG 0x0045DEC0 Xbox 0x002C0350
     virtual void TurnOnShadows()
     {
         m_bCastShadows = 1;
@@ -225,19 +225,19 @@ public:
 
     virtual void DoEvent(char* sEvent, void* pData);
     virtual bool IsForceAnimated();
-    // PC 0x0045DDC0 GOG 0x0045DED0
+    // PC 0x0045DDC0 GOG 0x0045DED0 Xbox 0x002C0360
     virtual bool IsAnimating()
     {
         return m_bAnimating;
     }
 
     virtual void EnableInViewVolume();
-    // PC 0x0045DDD0 GOG 0x0045DEE0
+    // PC 0x0045DDD0 GOG 0x0045DEE0 Xbox 0x002C0370
     virtual void DisableInViewVolume()
     {
         m_bInViewVolume = 0;
     }
-    // PC 0x0045DDE0 GOG 0x0045DEF0
+    // PC 0x0045DDE0 GOG 0x0045DEF0 Xbox 0x002C0380
     virtual bool IsInViewVolume()
     {
         return m_bInViewVolume;
@@ -264,7 +264,7 @@ public:
     bool IsSceneHitExcluded();
     bool HasHitFilterOverride();
     bool IsVisibilityCheckDisabled();
-    // PC 0x0045DDF0 GOG 0x0045DF00
+    // PC 0x0045DDF0 GOG 0x0045DF00 Xbox 0x002C0390
     virtual void SetAsCharacter()
     {
         if (m_pModel)
@@ -272,7 +272,7 @@ public:
             ((GobModel*)m_pModel)->m_bCharacter = 1;
         }
     }
-    // PC 0x00692D70 GOG 0x00692AE0
+    // PC 0x00692D70 GOG 0x00692AE0 Xbox 0x002C03A0
     virtual CAurScene* GetScene()
     {
         return (CAurScene*)m_pScene;
@@ -281,7 +281,7 @@ public:
     virtual Part* GetPart(char* sName);
     virtual void EnumParts(int (*pFilter)(CAurPart*), List<CAurPart*>* pParts);
     void EnumParts(Part* pPart, int (*pFilter)(CAurPart*), List<CAurPart*>* pParts);
-    // PC 0x0045DE10 GOG 0x0045DF20
+    // PC 0x0045DE10 GOG 0x0045DF20 Xbox 0x002C03B0
     virtual void SetRenderPersonalSpace(bool bRender)
     {
         m_bRenderPersonalSpace = bRender;
@@ -303,12 +303,12 @@ public:
     virtual void EnableInCutscene();
     virtual void DisableInCutscene();
     virtual Vector GetCutsceneDummyPosition();
-    // PC 0x0045DE20 GOG 0x0045DF30
+    // PC 0x0045DE20 GOG 0x0045DF30 Xbox 0x002C03C0
     virtual void SetMotionBlurred(bool bBlurred)
     {
         m_bMotionBlurred = bBlurred;
     }
-    // PC 0x0045DE30 GOG 0x0045DF40
+    // PC 0x0045DE30 GOG 0x0045DF40 Xbox 0x002C03D0
     virtual bool GetMotionBlurred()
     {
         return m_bMotionBlurred;
@@ -318,47 +318,47 @@ public:
     virtual void EnableRenderBumpedOut(char* sTexture, float fHeight);
     virtual void DisableRenderBumpedOut();
 
-    virtual void SetMaxBlurLength(float fLength)
+    virtual void SetMaxBlurLength(float fLength)  // Xbox 0x002C03E0
     {
         m_fMaxBlurLength = fLength;
     }
-    // PC 0x0045DE50 GOG 0x0045DF60
+    // PC 0x0045DE50 GOG 0x0045DF60 Xbox 0x002C0400
     virtual float GetMaxBlurLength()
     {
         return m_fMaxBlurLength;
     }
-    // PC 0x0045DE60 GOG 0x0045DF70
+    // PC 0x0045DE60 GOG 0x0045DF70 Xbox 0x002C0410
     virtual void EnableDistortion()
     {
         m_bDistortion = 1;
     }
-    // PC 0x0045DE70 GOG 0x0045DF80
+    // PC 0x0045DE70 GOG 0x0045DF80 Xbox 0x002C0420
     virtual void DisableDistortion()
     {
         m_bDistortion = 0;
     }
     bool IsForcePushDistortion();
-    // PC 0x0045DE80 GOG 0x0045DF90
+    // PC 0x0045DE80 GOG 0x0045DF90 Xbox 0x002C0430
     virtual void SetForcePoints(short nForcePoints)
     {
         m_nForcePoints = nForcePoints;
     }
-    // PC 0x0045DE90 GOG 0x0045DFA0
+    // PC 0x0045DE90 GOG 0x0045DFA0 Xbox 0x002C0440
     virtual short GetForcePoints()
     {
         return m_nForcePoints;
     }
-    // PC 0x0045DEA0 GOG 0x0045DFB0
+    // PC 0x0045DEA0 GOG 0x0045DFB0 Xbox 0x002C0450
     virtual void SetAlignmentValue(short nAlignmentValue)
     {
         m_nAlignmentValue = nAlignmentValue;
     }
-    // PC 0x0045DEB0 GOG 0x0045DFC0
+    // PC 0x0045DEB0 GOG 0x0045DFC0 Xbox 0x002C0460
     virtual short GetAlignmentValue()
     {
         return m_nAlignmentValue;
     }
-    // PC 0x0045DEC0 GOG 0x0045DFD0
+    // PC 0x0045DEC0 GOG 0x0045DFD0 Xbox 0x002C0470
     virtual void SetForceGlowColor(float fRed, float fGreen, float fBlue, float fAlpha)
     {
         m_fForceGlowRed = fRed;
@@ -366,7 +366,7 @@ public:
         m_fForceGlowBlue = fBlue;
         m_fForceGlowAlpha = fAlpha;
     }
-    // PC 0x0045DEE0 GOG 0x0045DFF0
+    // PC 0x0045DEE0 GOG 0x0045DFF0 Xbox 0x002C04A0
     virtual void GetForceGlowColor(float& fRed, float& fGreen, float& fBlue, float& fAlpha)
     {
         fRed = m_fForceGlowRed;
@@ -374,64 +374,64 @@ public:
         fBlue = m_fForceGlowBlue;
         fAlpha = m_fForceGlowAlpha;
     }
-    // PC 0x0045DF10 GOG 0x0045E020
+    // PC 0x0045DF10 GOG 0x0045E020 Xbox 0x002C04D0
     virtual void EnableForceGlow(bool bEnable)
     {
         m_bForceGlow = bEnable;
     }
-    // PC 0x0045DF20 GOG 0x0045E030
+    // PC 0x0045DF20 GOG 0x0045E030 Xbox 0x002C04E0
     virtual bool IsForceGlowEnabled()
     {
         return m_bForceGlow;
     }
-    // PC 0x0045DF30 GOG 0x0045E040
+    // PC 0x0045DF30 GOG 0x0045E040 Xbox 0x002C04F0
     virtual void SetNonForceBlending(bool bNonForceBlending)
     {
         m_bNonForceBlending = bNonForceBlending;
     }
-    // PC 0x0045DF40 GOG 0x0045E050
+    // PC 0x0045DF40 GOG 0x0045E050 Xbox 0x002C0500
     virtual bool IsNonForceBlending()
     {
         return m_bNonForceBlending;
     }
-    // PC 0x0045DF50 GOG 0x0045E060
+    // PC 0x0045DF50 GOG 0x0045E060 Xbox 0x002C0510
     virtual bool IsHologramEnabled()
     {
         return m_bHologram;
     }
-    // PC 0x0045DF60 GOG 0x0045E070
+    // PC 0x0045DF60 GOG 0x0045E070 Xbox 0x002C0520
     virtual bool IsIlluminationEnable()
     {
         return m_bPerObjectIllumination;
     }
-    // PC 0x0045DF70 GOG 0x0045E080
+    // PC 0x0045DF70 GOG 0x0045E080 Xbox 0x002C0530
     virtual void GetIlluminationColor(float& fRed, float& fGreen, float& fBlue)
     {
         fRed = m_fIlluminationRed;
         fGreen = m_fIlluminationGreen;
         fBlue = m_fIlluminationBlue;
     }
-    // PC 0x0045DF90 GOG 0x0045E0A0
+    // PC 0x0045DF90 GOG 0x0045E0A0 Xbox 0x002C0550
     virtual void EnableRendering(bool bEnable)
     {
         m_bRenderingEnabled = bEnable;
     }
-    // PC 0x0045DFA0 GOG 0x0045E0B0
+    // PC 0x0045DFA0 GOG 0x0045E0B0 Xbox 0x002C0560
     virtual bool IsRenderingEnabled()
     {
         return m_bRenderingEnabled;
     }
-    // PC 0x0045DFB0 GOG 0x0045E0C0
+    // PC 0x0045DFB0 GOG 0x0045E0C0 Xbox 0x002C0570
     virtual void SetEmitterAsWeather(bool bWeather)
     {
         SetAllEmitterAsWeather(m_pRootPart, bWeather);
     }
-    // PC 0x0045DFD0 GOG 0x0045E0E0
+    // PC 0x0045DFD0 GOG 0x0045E0E0 Xbox 0x002C0590
     virtual void EnableHologram(bool bEnable)
     {
         EnableHologramRendering(m_pRootPart, bEnable);
     }
-    // PC 0x0045DFF0 GOG 0x0045E100
+    // PC 0x0045DFF0 GOG 0x0045E100 Xbox 0x002C05B0
     virtual void EnableIllumination(bool bEnable, float fRed, float fGreen, float fBlue)
     {
         m_fIlluminationRed = fRed;
@@ -1230,14 +1230,14 @@ public:
 
 class PartReference : public Part
 {
-public:
+public:  // Xbox 0x002BE410
     PartReference(MdlNode* pNode) : Part(pNode), m_pReferenceObject(0) {}
-    virtual ~PartReference()  // PC 0x0045BAB0 GOG 0x0045BC50
+    virtual ~PartReference()  // PC 0x0045BAB0 GOG 0x0045BC50 Xbox 0x002BE4B0
     {
         delete m_pReferenceObject;
     }
-    virtual PartReference* AsPartReference() { return this; }  // PC 0x00698BD0 GOG 0x00698980
-    virtual PartReference* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartReference* AsPartReference() { return this; }  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
+    virtual PartReference* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
 
     Gob* m_pReferenceObject;
 
@@ -1312,8 +1312,8 @@ public:
     PartDanglyMesh(MdlNode*);
     virtual void Draw(bool);
     virtual void Animate(float);
-    virtual PartDanglyMesh* AsPartDanglyMesh() { return this; }  // PC 0x00698BD0 GOG 0x00698980
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartDanglyMesh* AsPartDanglyMesh() { return this; }  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
 };
 
 class PartLight : public Part
@@ -1349,9 +1349,9 @@ public:
     float m_fShadowFade;
     Vector m_vWorldPosition;
     virtual ~PartLight();
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual PartLight* AsPartLight() { return this; }
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual void Draw(bool bRenderChildren);
     virtual void Mat();
     PartLight(MdlNode*);
@@ -1384,7 +1384,7 @@ public:
     PartLightsaber(MdlNode*);
     virtual void Draw(bool);
     virtual void Animate(float);
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
 };
 
 #define AUR_TILE_UNSET_BOUND 1000000.0f
@@ -1740,12 +1740,12 @@ public:
 extern Vector g_HitCheckBoxExpansion;
 bool AurControlPart(char* sCommand);
 extern List<Model*> Models;
-// PC 0x00453070 GOG 0x004531B0
+// PC 0x00453070 GOG 0x004531B0 Xbox 0x002B43C0
 inline CAurObject* Part::GetAurObject()
 {
     return m_pAurObject;
 }
-// PC 0x00453080 GOG 0x004531C0
+// PC 0x00453080 GOG 0x004531C0 Xbox 0x002B43D0
 inline char* Part::Name()
 {
 #ifdef _XBOX

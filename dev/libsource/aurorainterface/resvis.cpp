@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00784580 GOG 0x00784350
+// PC 0x00784580 GOG 0x00784350 Xbox 0x003318A0
 CResVIS::CResVIS()
 {
     m_bServiced = 0;
@@ -11,12 +11,12 @@ CResVIS::CResVIS()
 CResVIS::~CResVIS()
 {
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 unsigned char* CResVIS::GetVISDataPtr()
 {
     return m_pVISData;
 }
-// PC 0x007846A0 GOG 0x00784450
+// PC 0x007846A0 GOG 0x00784450 Xbox 0x0015B870
 unsigned long CResVIS::GetVISSize()
 {
     return m_nVISSize;
@@ -27,7 +27,7 @@ int CResVIS::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x007845C0 GOG 0x00784460
+// PC 0x007845C0 GOG 0x00784460 Xbox 0x00331990
 int CResVIS::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -35,7 +35,7 @@ int CResVIS::OnResourceFreed()
     m_pVISData = 0;
     return 1;
 }
-// PC 0x0077FE60 GOG 0x0062B5A0
+// PC 0x0077FE60 GOG 0x0062B5A0 Xbox 0x00161470
 int CResVIS::OnResourceServiced()
 {
     if (m_pResource == 0)

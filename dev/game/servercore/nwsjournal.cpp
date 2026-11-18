@@ -13,19 +13,19 @@
 
 #define NWSJOURNAL_DEBUG 0
 
-// PC 0x00600DB0 GOG 0x00600DC0
+// PC 0x00600DB0 GOG 0x00600DC0 Xbox 0x0021F750
 CSWSJournal::CSWSJournal()
 {
 }
-// PC 0x00600DC0 GOG 0x00600C80
+// PC 0x00600DC0 GOG 0x00600C80 Xbox 0x0021F760
 CSWSJournal::~CSWSJournal()
 {
 }
-// PC 0x006009E0 GOG 0x006009C0
+// PC 0x006009E0 GOG 0x006009C0 Xbox 0x0021F550
 void CSWSJournal::SetPicture(const CExoString& sName, int nPicture, int bLoading)
 {
 }
-// PC 0x00600AF0 GOG 0x00600AD0
+// PC 0x00600AF0 GOG 0x00600AD0 Xbox 0x0021F560
 void SJournalEntry::Update(SJournalEntry entry, unsigned short nFlags)
 {
     if (NWSJOURNAL_DEBUG)
@@ -55,7 +55,7 @@ void SJournalEntry::Update(SJournalEntry entry, unsigned short nFlags)
         m_nXP = entry.m_nXP;
     m_bNew = 1;
 }
-// PC 0x00600C00 GOG 0x00600BE0
+// PC 0x00600C00 GOG 0x00600BE0 Xbox 0x0021F650
 int CSWSJournal::GetQuestEntryXP(const CExoString& sName)
 {
     int nNum = m_lstEntries.num;
@@ -68,7 +68,7 @@ int CSWSJournal::GetQuestEntryXP(const CExoString& sName)
     }
     return 0;
 }
-// PC 0x00600C50 GOG 0x00600C30
+// PC 0x00600C50 GOG 0x00600C30 Xbox 0x0021F6A0
 int CSWSJournal::GetState(const CExoString& sName)
 {
     int nNum = m_lstEntries.num;
@@ -81,7 +81,7 @@ int CSWSJournal::GetState(const CExoString& sName)
     }
     return 0;
 }
-// PC 0x00600DF0 GOG 0x00600DD0
+// PC 0x00600DF0 GOG 0x00600DD0 Xbox 0x0021F770
 void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                            int bLoading)
 {
@@ -355,7 +355,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
         }
     }
 }
-// PC 0x006017A0 GOG 0x00601780
+// PC 0x006017A0 GOG 0x00601780 Xbox 0x002200B0
 void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
                           int bLoading)
 {
@@ -438,7 +438,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
         }
     }
 }
-// PC 0x00601A00 GOG 0x006019E0
+// PC 0x00601A00 GOG 0x006019E0 Xbox 0x00220370
 void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
                           int bLoading)
 {
@@ -521,7 +521,7 @@ void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
         }
     }
 }
-// PC 0x00601C60 GOG 0x00601C40
+// PC 0x00601C60 GOG 0x00601C40 Xbox 0x00220630
 void CSWSJournal::Destroy(const CExoString& sName)
 {
     int nNum = m_lstEntries.num;

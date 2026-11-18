@@ -21,14 +21,14 @@ public:
     Vector m_vDirection;
     unsigned long m_oidBlocker;
     int m_nIntersectionType;
-    // PC 0x004DF7E0 GOG 0x004DF900
+    // PC 0x004DF7E0 GOG 0x004DF900 Xbox 0x00036D80
     CWalkHitInfo()
     {
         m_nFailureReason = 0;
         m_nIntersectionType = 0;
         m_oidBlocker = OBJECT_INVALID;
     }
-    // PC 0x004FC0F0 GOG 0x004F41D0
+    // PC 0x004FC0F0 GOG 0x004F41D0 Xbox 0x0017C350
     void SetHitInfo(int nFailureReason, const Vector& vHitPosition,
                     const Vector& vNormal, const Vector& vVertex1,
                     const Vector& vVertex2, int nIntersectionType,
@@ -69,30 +69,30 @@ public:
 
     virtual int SaveBinaryMesh(const CExoString& sFileName);
     virtual void TransformToWorld(const Vector& vPosition);
-    virtual void GetResourceForBinaryWalkMesh(CResRef& cResRef)  // PC 0x00557090 GOG 0x00557A20
+    virtual void GetResourceForBinaryWalkMesh(CResRef& cResRef)  // PC 0x00557090 GOG 0x00557A20 Xbox 0x0017C3E0
     {
         cResRef = m_cResRef;
     }
-    virtual void GetResourceForTextWalkMesh(CResRef& cResRef)  // PC 0x00557090 GOG 0x00557A20
+    virtual void GetResourceForTextWalkMesh(CResRef& cResRef)  // PC 0x00557090 GOG 0x00557A20 Xbox 0x0017C3E0
     {
         cResRef = m_cResRef;
     }
-    // PC 0x00406590 GOG 0x00406560
+    // PC 0x00406590 GOG 0x00406560 Xbox 0x0017C400
     virtual int GetWalkCheckMaterialMask()
     {
         return -1;
     }
-    // PC 0x00406590 GOG 0x00406560
+    // PC 0x00406590 GOG 0x00406560 Xbox 0x0017C400
     virtual int GetLOSMaterialMask()
     {
         return -1;
     }
-    // PC 0x00406590 GOG 0x00406560
+    // PC 0x00406590 GOG 0x00406560 Xbox 0x0017C400
     virtual int GetWalkableMaterialMask()
     {
         return -1;
     }
-    // PC 0x00406590 GOG 0x00406560
+    // PC 0x00406590 GOG 0x00406560 Xbox 0x0017C400
     virtual int GetAllMaterialsMask()
     {
         return -1;

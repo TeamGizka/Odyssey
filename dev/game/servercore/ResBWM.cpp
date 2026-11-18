@@ -1,7 +1,7 @@
 #include <string.h>
 
 #include "ResBWM.h"
-// PC 0x006160B0 GOG 0x00616090
+// PC 0x006160B0 GOG 0x00616090 Xbox 0x002659A0
 CResBWM::CResBWM()
 {
     m_bServiced = 0;
@@ -10,17 +10,17 @@ CResBWM::CResBWM()
 CResBWM::~CResBWM()
 {
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 unsigned char* CResBWM::GetBWMDataPtr()
 {
     return m_pBWMData;
 }
-// PC 0x007846A0 GOG 0x00784450
+// PC 0x007846A0 GOG 0x00784450 Xbox 0x0015B870
 unsigned long CResBWM::GetBWMSize()
 {
     return m_nBWMSize;
 }
-// PC 0x006160E0 GOG 0x006160C0
+// PC 0x006160E0 GOG 0x006160C0 Xbox 0x002659E0
 int CResBWM::OnResourceServiced()
 {
     int nResult = (int)m_pResource;
@@ -42,7 +42,7 @@ int CResBWM::OnResourceServiced()
     m_bServiced = 1;
     return 1;
 }
-// PC 0x00784760 GOG 0x00784610
+// PC 0x00784760 GOG 0x00784610 Xbox 0x002659C0
 int CResBWM::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -51,7 +51,7 @@ int CResBWM::OnResourceFreed()
     m_pBWMHeader = 0;
     return 1;
 }
-// PC 0x00616130 GOG 0x00616110
+// PC 0x00616130 GOG 0x00616110 Xbox 0x00265A30
 int CResBWM::IsBinary()
 {
     return strncmp((const char*)m_pBWMData, "BWM V1.0", 8) == 0;

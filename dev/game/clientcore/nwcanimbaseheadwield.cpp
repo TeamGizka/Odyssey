@@ -3,12 +3,12 @@
 #include "clientexoapp.h"
 #include "nwcitem.h"
 
-// PC 0x006F36C0 GOG 0x006F32A0
+// PC 0x006F36C0 GOG 0x006F32A0 Xbox 0x000C21E0
 CSWCAnimBaseHeadWield::CSWCAnimBaseHeadWield()
 {
     m_nAnimationType = ANIMATION_TYPE_BTYPE;
 }
-// PC 0x006F3790 GOG 0x006F3370
+// PC 0x006F3790 GOG 0x006F3370 Xbox 0x000C2260
 Gob* CSWCAnimBaseHeadWield::GetModel(unsigned char nModel)
 {
     Gob* pModel;
@@ -34,7 +34,7 @@ Gob* CSWCAnimBaseHeadWield::GetModel(unsigned char nModel)
     }
     return pModel;
 }
-// PC 0x006F3800 GOG 0x006F33E0
+// PC 0x006F3800 GOG 0x006F33E0 Xbox 0x000C22D0
 int CSWCAnimBaseHeadWield::LoadModel(const CResRef& sModel,
                                      unsigned char nModel)
 {
@@ -56,7 +56,7 @@ int CSWCAnimBaseHeadWield::LoadModel(const CResRef& sModel,
     }
     return 0;
 }
-// PC 0x006F3880 GOG 0x006F3460
+// PC 0x006F3880 GOG 0x006F3460 Xbox 0x000C2350
 int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
                                           const CResRef& sOld,
                                           const CResRef& sNew, int nFlags)
@@ -70,14 +70,14 @@ int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
     }
     return 0;
 }
-// PC 0x006F38C0 GOG 0x006F34A0
+// PC 0x006F38C0 GOG 0x006F34A0 Xbox 0x000C2390
 int CSWCAnimBaseHeadWield::ReplaceTexture(const CResRef& sOld,
                                           const CResRef& sNew, int nFlags)
 {
     return CSWCAnimBaseTW::ReplaceTexture(sOld, sNew, nFlags) != 0 &&
            CSWCAnimBaseHead::ReplaceTexture(sOld, sNew, nFlags) != 0;
 }
-// PC 0x006F3920 GOG 0x006F3500
+// PC 0x006F3920 GOG 0x006F3500 Xbox 0x000C23F0
 int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
                                           const CResRef& sOld,
                                           const CResRef& sNew,
@@ -99,7 +99,7 @@ int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
     }
     return 0;
 }
-// PC 0x006F3980 GOG 0x006F3560
+// PC 0x006F3980 GOG 0x006F3560 Xbox 0x000C2450
 int CSWCAnimBaseHeadWield::ReplaceTexture(const CResRef& sOld,
                                           const CResRef& sNew,
                                           unsigned long nColor,
@@ -122,13 +122,13 @@ int CSWCAnimBaseHeadWield::RestoreTexture(unsigned char nModel)
 {
     return CSWCAnimBaseHead::RestoreTexture(nModel);
 }
-// PC 0x006F3A20 GOG 0x006F3600
+// PC 0x006F3A20 GOG 0x006F3600 Xbox 0x000C24F0
 void CSWCAnimBaseHeadWield::UnloadModel()
 {
     CSWCAnimBaseTW::UnloadModel();
     return CSWCAnimBaseHead::UnloadModel();
 }
-// PC 0x006F3A50 GOG 0x006F3630
+// PC 0x006F3A50 GOG 0x006F3630 Xbox 0x000C2520
 void CSWCAnimBaseHeadWield::UnloadModel(unsigned char nModel)
 {
     if (nModel == 0xFF)
@@ -158,7 +158,7 @@ void CSWCAnimBaseHeadWield::ShowWieldedItems()
 {
     return CSWCAnimBaseWield::ShowWieldedItems();
 }
-// PC 0x006F3AC0 GOG 0x006F3EC0
+// PC 0x006F3AC0 GOG 0x006F3EC0 Xbox 0x000C2E40
 void CSWCAnimBaseHeadWield::HideHeadItem()
 {
     CExoString sName;
@@ -175,7 +175,7 @@ void CSWCAnimBaseHeadWield::HideHeadItem()
     }
     m_bHeadItemHidden = 1;
 }
-// PC 0x006F3B70 GOG 0x006F3F70
+// PC 0x006F3B70 GOG 0x006F3F70 Xbox 0x000C2EC0
 void CSWCAnimBaseHeadWield::ShowHeadItem()
 {
     if (m_bHeadItemHidden != 0)
@@ -199,14 +199,14 @@ void CSWCAnimBaseHeadWield::SetWieldLimited(int bLimited)
 {
     CSWCAnimBaseWield::SetWieldLimited(bLimited);
 }
-// PC 0x006F3C00 GOG 0x006F36B0
+// PC 0x006F3C00 GOG 0x006F36B0 Xbox 0x000C25A0
 int CSWCAnimBaseHeadWield::SetEnvMap(int nType, int nFlags,
                                      const CResRef& sMap)
 {
     return CSWCAnimBaseTW::SetEnvMap(nType, nFlags, sMap) != 0 &&
            CSWCAnimBaseHead::SetEnvMap(nType, nFlags, sMap) != 0;
 }
-// PC 0x006F3C60 GOG 0x006F3710
+// PC 0x006F3C60 GOG 0x006F3710 Xbox 0x000C2600
 int CSWCAnimBaseHeadWield::SetEnvMap(unsigned char nModel, int nType,
                                      int nFlags, const CResRef& sMap)
 {
@@ -219,13 +219,13 @@ int CSWCAnimBaseHeadWield::SetEnvMap(unsigned char nModel, int nType,
         return CSWCAnimBaseTW::SetEnvMap(nModel, nType, nFlags, sMap);
     }
 }
-// PC 0x006F3CA0 GOG 0x006F3750
+// PC 0x006F3CA0 GOG 0x006F3750 Xbox 0x000C2640
 int CSWCAnimBaseHeadWield::RestoreEnvMap()
 {
     return CSWCAnimBaseTW::RestoreEnvMap() != 0 &&
            CSWCAnimBaseHead::RestoreEnvMap() != 0;
 }
-// PC 0x006F3CE0 GOG 0x006F3790
+// PC 0x006F3CE0 GOG 0x006F3790 Xbox 0x000C2680
 int CSWCAnimBaseHeadWield::SetAnimation(unsigned short nAnimation,
                                         float fSpeed, int nFlags, float fTime)
 {
@@ -235,7 +235,7 @@ int CSWCAnimBaseHeadWield::SetAnimation(unsigned short nAnimation,
            CSWCAnimBaseTW::SetAnimationInternal(m_pHeadModel, nAnimation,
                                                 fSpeed, nFlags, fTime) != 0;
 }
-// PC 0x006F3D50 GOG 0x006F3800
+// PC 0x006F3D50 GOG 0x006F3800 Xbox 0x000C26F0
 int CSWCAnimBaseHeadWield::SetOverlayAnimation(unsigned short nAnimation,
                                                int bLoop)
 {
@@ -248,7 +248,7 @@ int CSWCAnimBaseHeadWield::SetOverlayAnimation(unsigned short nAnimation,
            CSWCAnimBase::SetOverlayAnimation(m_pHeadModel, nAnimation,
                                              bLoop) != 0;
 }
-// PC 0x006F3DD0 GOG 0x006F3880
+// PC 0x006F3DD0 GOG 0x006F3880 Xbox 0x000C2770
 int CSWCAnimBaseHeadWield::SetAnimationVisemes(float* pfWeights,
                                                float* pfTimes, int nCount,
                                                float fLength)
@@ -279,7 +279,7 @@ int CSWCAnimBaseHeadWield::SetAnimationVisemes(float* pfWeights,
     }
     return 1;
 }
-// PC 0x006F3E90 GOG 0x006F3940
+// PC 0x006F3E90 GOG 0x006F3940 Xbox 0x000C2860
 void CSWCAnimBaseHeadWield::SetAlwaysRender(int bAlwaysRender)
 {
     if (bAlwaysRender != 0)
@@ -305,7 +305,7 @@ void CSWCAnimBaseHeadWield::SetAlwaysRender(int bAlwaysRender)
         }
     }
 }
-// PC 0x006F3F00 GOG 0x006F39B0
+// PC 0x006F3F00 GOG 0x006F39B0 Xbox 0x000C2900
 void CSWCAnimBaseHeadWield::SetInCutscene(int bInCutscene)
 {
     if (bInCutscene != 0)
@@ -331,7 +331,7 @@ void CSWCAnimBaseHeadWield::SetInCutscene(int bInCutscene)
         }
     }
 }
-// PC 0x006F3F70 GOG 0x006F3A20
+// PC 0x006F3F70 GOG 0x006F3A20 Xbox 0x000C29A0
 int CSWCAnimBaseHeadWield::SetAnimationOnSubObject(unsigned char nModel,
                                                    unsigned short nAnimation,
                                                    float fSpeed, int nFlags,
@@ -348,7 +348,7 @@ int CSWCAnimBaseHeadWield::SetAnimationOnSubObject(unsigned char nModel,
             m_pHeadModel, nModel, nAnimation, fSpeed, nFlags, fTime);
     }
 }
-// PC 0x006F3FE0 GOG 0x006F3A90
+// PC 0x006F3FE0 GOG 0x006F3A90 Xbox 0x000C2A10
 int CSWCAnimBaseHeadWield::SetAnimationInternal(CAurObject* pObject,
                                                 unsigned short nAnimation,
                                                 float fSpeed, int nFlags,
@@ -357,7 +357,7 @@ int CSWCAnimBaseHeadWield::SetAnimationInternal(CAurObject* pObject,
     return CSWCAnimBase::SetAnimationInternal(pObject, nAnimation, fSpeed,
                                               nFlags, fTime);
 }
-// PC 0x006F3FF0 GOG 0x006F3AA0
+// PC 0x006F3FF0 GOG 0x006F3AA0 Xbox 0x000C2A20
 int CSWCAnimBaseHeadWield::SetAnimationOnSubObjectInternal(
     CAurObject* pObject, unsigned char nModel, unsigned short nAnimation,
     float fSpeed, int nFlags, float fTime)
@@ -365,13 +365,13 @@ int CSWCAnimBaseHeadWield::SetAnimationOnSubObjectInternal(
     return CSWCAnimBase::SetAnimationOnSubObjectInternal(
         pObject, nModel, nAnimation, fSpeed, nFlags, fTime);
 }
-// PC 0x006F4000 GOG 0x006F3AB0
+// PC 0x006F4000 GOG 0x006F3AB0 Xbox 0x000C2A30
 int CSWCAnimBaseHeadWield::AddAnimationFlag(int nFlag)
 {
     return CSWCAnimBase::AddAnimationFlagInternal(m_pModel, nFlag) != 0 &&
            CSWCAnimBase::AddAnimationFlagInternal(m_pHeadModel, nFlag) != 0;
 }
-// PC 0x006F4060 GOG 0x006F3B10
+// PC 0x006F4060 GOG 0x006F3B10 Xbox 0x000C2A90
 int CSWCAnimBaseHeadWield::RemoveAnimationFlag(int nFlag)
 {
     return CSWCAnimBase::RemoveAnimationFlagInternal(m_pModel, nFlag) != 0 &&
@@ -395,7 +395,7 @@ void CSWCAnimBaseHeadWield::UpdateSound(int nEvent)
 {
     return CSWCAnimBaseWield::UpdateSound(nEvent);
 }
-// PC 0x006F4130 GOG 0x006F3FF0
+// PC 0x006F4130 GOG 0x006F3FF0 Xbox 0x000C2F40
 int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
 {
     if (m_pHeadModel != NULL)
@@ -444,7 +444,7 @@ void CSWCAnimBaseHeadWield::DisableDistortion()
     CSWCAnimBaseHead::DisableDistortion();
     return CSWCAnimBaseWield::DisableDistortion();
 }
-// PC 0x006F4290 GOG 0x006F40C0
+// PC 0x006F4290 GOG 0x006F40C0 Xbox 0x000C3020
 void CSWCAnimBaseHeadWield::SetHeadItem(unsigned long nItem)
 {
     CSWCAnimBaseHead::SetHeadItem(nItem);

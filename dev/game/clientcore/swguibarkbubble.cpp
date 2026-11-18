@@ -22,7 +22,7 @@
 #define BARK_MIN_SOUND_HEIGHT 0.5f
 #define BARK_MAX_TIME_STEP 1.5f
 
-// PC 0x00712BA0 GOG 0x00712460
+// PC 0x00712BA0 GOG 0x00712460 Xbox 0x000EA150
 CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -47,7 +47,7 @@ CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     m_nBarkY = -1;
 }
 
-// PC 0x00712CC0 GOG 0x00712580
+// PC 0x00712CC0 GOG 0x00712580 Xbox 0x000EA0D0
 CSWGuiBarkBubble::~CSWGuiBarkBubble()
 {
     if (m_pSoundSource != NULL)
@@ -58,7 +58,7 @@ CSWGuiBarkBubble::~CSWGuiBarkBubble()
     }
 }
 
-// PC 0x00712D50 GOG 0x00712610
+// PC 0x00712D50 GOG 0x00712610 Xbox 0x000E98F0
 void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
                                const CExoString& sBarkText,
                                const CResRef& cSound, int bForceVisible)
@@ -152,7 +152,7 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
 #endif
 }
 
-// PC 0x00712710 GOG 0x007129B0
+// PC 0x00712710 GOG 0x007129B0 Xbox 0x000E9C40
 void CSWGuiBarkBubble::Pause()
 {
     if (m_fTimeLeft > 0.0f || m_pSoundSource != NULL)
@@ -164,7 +164,7 @@ void CSWGuiBarkBubble::Pause()
         SetToBeRemoved(0);
     }
 }
-// PC 0x00712770 GOG 0x00712A10
+// PC 0x00712770 GOG 0x00712A10 Xbox 0x000E9CA0
 void CSWGuiBarkBubble::Resume()
 {
     if (m_fTimeLeft > 0.0f || m_pSoundSource != NULL)
@@ -180,7 +180,7 @@ void CSWGuiBarkBubble::Resume()
 #endif
     }
 }
-// PC 0x007127C0 GOG 0x00712A60
+// PC 0x007127C0 GOG 0x00712A60 Xbox 0x000E9CF0
 void CSWGuiBarkBubble::StopBark(int bStopSound)
 {
     if (bStopSound != 0)
@@ -195,7 +195,7 @@ void CSWGuiBarkBubble::StopBark(int bStopSound)
     m_fTimeLeft = 0.0f;
     SetToBeRemoved(0);
 }
-// PC 0x00712840 GOG 0x00712AE0
+// PC 0x00712840 GOG 0x00712AE0 Xbox 0x000E9D70
 void CSWGuiBarkBubble::Draw(float fElapsed)
 {
     CSWGuiExtent cExtent = m_cInitialExtent;
@@ -295,7 +295,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
             g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
     }
 }
-// PC 0x00712B10 GOG 0x00712DB0
+// PC 0x00712B10 GOG 0x00712DB0 Xbox 0x000EA050
 void CSWGuiBarkBubble::OnPanelAdded()
 {
     m_nStartTime = (__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal
@@ -305,7 +305,7 @@ void CSWGuiBarkBubble::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x00712B50 GOG 0x00712DF0
+// PC 0x00712B50 GOG 0x00712DF0 Xbox 0x000EA080
 void CSWGuiBarkBubble::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cTextExtent;

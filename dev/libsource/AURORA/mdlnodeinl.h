@@ -3,7 +3,7 @@
 
 #include "aurmodel.h"
 
-// PC 0x00448F30 GOG 0x00449080
+// PC 0x00448F30 GOG 0x00449080 Xbox 0x002AAAD0
 inline char* MdlNode::TranslateNodeName()
 {
     if (m_pModel->AsModel())

@@ -25,7 +25,7 @@ class CSWSArea;
 class CEncounterListEntry
 {
 public:
-    CEncounterListEntry()  // PC 0x0056B680 GOG 0x0056B7B0
+    CEncounterListEntry()  // PC 0x0056B680 GOG 0x0056B7B0 Xbox 0x0027A230
     {
         m_cResRef = "";
         m_fChallengeRating = 0.0f;
@@ -91,7 +91,7 @@ public:
 
     CSWSEncounter(unsigned long oidEncounter);
     virtual ~CSWSEncounter();
-    virtual CSWSEncounter* AsSWSEncounter() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual CSWSEncounter* AsSWSEncounter() { return this; }  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual void AIUpdate();
 
     int LineSegmentIntersectActivateArea(const Vector& vStart,
@@ -130,7 +130,7 @@ public:
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
     void RemoveFromActiveCreatureCount(float fChallengeRating, int bAddToPool);
-    virtual CExoLocString* GetFirstName()
+    virtual CExoLocString* GetFirstName()  // Xbox 0x0027D230
     {
         return &m_lsFirstName;
     }

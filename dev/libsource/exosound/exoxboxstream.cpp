@@ -7,7 +7,7 @@ enum { MAX_VOLUME = 127 };
 
 static DWORD s_nFreePackets;
 
-CExoXboxStream::~CExoXboxStream()
+CExoXboxStream::~CExoXboxStream()  // Xbox 0x00166A70
 {
     if (m_pFileObject != NULL)
     {
@@ -27,7 +27,7 @@ CExoXboxStream::~CExoXboxStream()
     }
 }
 
-int CExoXboxStream::OpenWaveFile(XBOXADPCMWAVEFORMAT* pFormat, int bCached)
+int CExoXboxStream::OpenWaveFile(XBOXADPCMWAVEFORMAT* pFormat, int bCached)  // Xbox 0x00166AC0
 {
     WAVEFORMATEX wfxFile;
     LPCWAVEFORMATEX pFileFormat = &wfxFile;
@@ -56,7 +56,7 @@ int CExoXboxStream::OpenWaveFile(XBOXADPCMWAVEFORMAT* pFormat, int bCached)
                   (double)pFileFormat->nChannels * 0.125));
 }
 
-int CExoXboxStream::OpenWMAFile(XBOXADPCMWAVEFORMAT* pFormat)
+int CExoXboxStream::OpenWMAFile(XBOXADPCMWAVEFORMAT* pFormat)  // Xbox 0x00166BD0
 {
     WMAXMOFileHeader cHeader;
 
@@ -75,7 +75,7 @@ int CExoXboxStream::OpenWMAFile(XBOXADPCMWAVEFORMAT* pFormat)
     return cHeader.dwDuration;
 }
 
-DWORD CExoXboxStream::GetPacketSize(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)
+DWORD CExoXboxStream::GetPacketSize(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)  // Xbox 0x00166C50
 {
     DWORD nBytes;
     DWORD nAlignment = max(pFormat->wfx.nBlockAlign * 512, 2048);
@@ -92,7 +92,7 @@ DWORD CExoXboxStream::GetPacketSize(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)
     return (nSize - 1 + nAlignment) / nAlignment * nAlignment;
 }
 
-int CExoXboxStream::GetPendingPackets(DWORD* pnPending)
+int CExoXboxStream::GetPendingPackets(DWORD* pnPending)  // Xbox 0x00166CB0
 {
     DWORD nPending = 0;
     int bFree = 0;
@@ -114,7 +114,7 @@ int CExoXboxStream::GetPendingPackets(DWORD* pnPending)
     return bFree;
 }
 
-HRESULT CExoXboxStream::ReadPacket(DWORD nPacket)
+HRESULT CExoXboxStream::ReadPacket(DWORD nPacket)  // Xbox 0x00166CE0
 {
     XMEDIAPACKET cPacket;
     DWORD nCompleted;
@@ -158,7 +158,7 @@ HRESULT CExoXboxStream::ReadPacket(DWORD nPacket)
     return S_OK;
 }
 
-HRESULT CExoXboxStream::SubmitPacket(DWORD nPacket)
+HRESULT CExoXboxStream::SubmitPacket(DWORD nPacket)  // Xbox 0x00166E00
 {
     XMEDIAPACKET cPacket;
     HRESULT hr = S_OK;
@@ -199,17 +199,17 @@ HRESULT CExoXboxStream::SubmitPacket(DWORD nPacket)
     return S_OK;
 }
 
-void CExoXboxStream::SetLooping(int bLooping)
+void CExoXboxStream::SetLooping(int bLooping)  // Xbox 0x00166F00
 {
     m_bLooping = bLooping;
 }
 
-void CExoXboxStream::Set3D(int b3D)
+void CExoXboxStream::Set3D(int b3D)  // Xbox 0x00166F10
 {
     m_b3D = b3D;
 }
 
-CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
+CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)  // Xbox 0x00166F20
 {
     m_bLooping = 0;
     m_pSoundInternal = pSoundInternal;
@@ -253,7 +253,7 @@ CExoXboxStream::CExoXboxStream(CExoSoundInternal* pSoundInternal)
     m_fPitchVariance = 0.0f;
 }
 
-int CExoXboxStream::CreateStream(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)
+int CExoXboxStream::CreateStream(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)  // Xbox 0x00167030
 {
     DSMIXBINVOLUMEPAIR aMixBinVolumePairs[6];
     DSMIXBINS cMixBins;
@@ -313,7 +313,7 @@ int CExoXboxStream::CreateStream(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)
     return 1;
 }
 
-HRESULT CExoXboxStream::Process()
+HRESULT CExoXboxStream::Process()  // Xbox 0x001671B0
 {
     DWORD nPacket = 0;
     DWORD nProcessed = 0;
@@ -389,7 +389,7 @@ HRESULT CExoXboxStream::Process()
     return S_OK;
 }
 
-int CExoXboxStream::IsPlaying()
+int CExoXboxStream::IsPlaying()  // Xbox 0x001672C0
 {
     DWORD nStatus = 0;
 
@@ -412,12 +412,12 @@ int CExoXboxStream::IsPlaying()
     return 0;
 }
 
-int CExoXboxStream::IsActive()
+int CExoXboxStream::IsActive()  // Xbox 0x00167310
 {
     return IsPlaying() || m_bStarting != 0;
 }
 
-void CExoXboxStream::Stop(int bKeepPlaying)
+void CExoXboxStream::Stop(int bKeepPlaying)  // Xbox 0x00167330
 {
     if (m_pStream != NULL)
     {
@@ -447,7 +447,7 @@ void CExoXboxStream::Stop(int bKeepPlaying)
     m_bPaused = 0;
 }
 
-void CExoXboxStream::FadeAndStop(unsigned long nFadeTime)
+void CExoXboxStream::FadeAndStop(unsigned long nFadeTime)  // Xbox 0x001673B0
 {
     if (nFadeTime <= EXOSOUND_MIN_FADE_TIME)
     {
@@ -473,7 +473,7 @@ void CExoXboxStream::FadeAndStop(unsigned long nFadeTime)
     }
 }
 
-void CExoXboxStream::Pause()
+void CExoXboxStream::Pause()  // Xbox 0x001674B0
 {
     if (m_pSoundInternal->m_bInitialized != 0)
     {
@@ -485,7 +485,7 @@ void CExoXboxStream::Pause()
     }
 }
 
-void CExoXboxStream::Resume()
+void CExoXboxStream::Resume()  // Xbox 0x001674E0
 {
     if (m_bPaused != 0)
     {
@@ -497,7 +497,7 @@ void CExoXboxStream::Resume()
     }
 }
 
-void CExoXboxStream::SetPosition(const Vector& vPosition)
+void CExoXboxStream::SetPosition(const Vector& vPosition)  // Xbox 0x00167510
 {
     m_vPosition = vPosition;
     if (m_b3D != 0)
@@ -509,7 +509,7 @@ void CExoXboxStream::SetPosition(const Vector& vPosition)
     }
 }
 
-void CExoXboxStream::SetObstruction(float fObstruction)
+void CExoXboxStream::SetObstruction(float fObstruction)  // Xbox 0x00167560
 {
     if (m_pStream != NULL)
     {
@@ -527,7 +527,7 @@ void CExoXboxStream::SetObstruction(float fObstruction)
     }
 }
 
-void CExoXboxStream::CalculatePitchVarianceFrequency()
+void CExoXboxStream::CalculatePitchVarianceFrequency()  // Xbox 0x001675E0
 {
     if (rand() % 2 != 0)
     {
@@ -549,7 +549,7 @@ void CExoXboxStream::CalculatePitchVarianceFrequency()
     }
 }
 
-void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fScale, int bDirect)
+void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fScale, int bDirect)  // Xbox 0x00167680
 {
     if (nVolume > MAX_VOLUME)
     {
@@ -580,7 +580,7 @@ void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fSc
     }
 }
 
-void CExoXboxStream::SetPriorityGroup(unsigned char nPriorityGroup)
+void CExoXboxStream::SetPriorityGroup(unsigned char nPriorityGroup)  // Xbox 0x00167780
 {
     CPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(nPriorityGroup);
     if (pGroup != NULL)
@@ -602,7 +602,7 @@ void CExoXboxStream::SetPriorityGroup(unsigned char nPriorityGroup)
     m_fMinVolumeDist = fMinVolumeDist;
 }
 
-int CExoXboxStream::SetFixedVariance(float fVariance)
+int CExoXboxStream::SetFixedVariance(float fVariance)  // Xbox 0x001677F0
 {
     if (fVariance <= 2.0f && fVariance >= 0.5f)
     {
@@ -619,7 +619,7 @@ int CExoXboxStream::SetFixedVariance(float fVariance)
     return 0;
 }
 
-void CExoXboxStream::SetPitchVariance(float fVariance)
+void CExoXboxStream::SetPitchVariance(float fVariance)  // Xbox 0x00167890
 {
     float fPitchVariance = min(1.0f, max(0.0f, fVariance));
 
@@ -633,7 +633,7 @@ void CExoXboxStream::SetPitchVariance(float fVariance)
     }
 }
 
-int CExoXboxStream::Play(const CExoString& sFileName, unsigned short nResourceType, int bVoice, int bMusic,
+int CExoXboxStream::Play(const CExoString& sFileName, unsigned short nResourceType, int bVoice, int bMusic,  // Xbox 0x00167910
                          int bCached, int bPaused)
 {
     XBOXADPCMWAVEFORMAT wfxFormat;

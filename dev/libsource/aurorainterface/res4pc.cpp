@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x007847E0 GOG 0x00784590
+// PC 0x007847E0 GOG 0x00784590 Xbox 0x00331AD0
 CRes4PC::CRes4PC()
 {
     m_bServiced = 0;
@@ -23,12 +23,12 @@ int CRes4PC::Copy4PCData(unsigned char* p4PCData)
     memcpy(p4PCData, m_pData, m_nReserved);
     return 1;
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 unsigned char* CRes4PC::Get4PCDataPtr()
 {
     return m_pData;
 }
-// PC 0x00784820 GOG 0x007845D0
+// PC 0x00784820 GOG 0x007845D0 Xbox 0x00331B00
 int CRes4PC::Get4PCAttrib(unsigned long* pnWidth, unsigned long* pnHeight, float* pfAlpha, int* pnFormat)
 {
     if (m_pHeader == 0)
@@ -59,7 +59,7 @@ int CRes4PC::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x00784760 GOG 0x00784610
+// PC 0x00784760 GOG 0x00784610 Xbox 0x002659C0
 int CRes4PC::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -68,7 +68,7 @@ int CRes4PC::OnResourceFreed()
     m_pHeader = 0;
     return 1;
 }
-// PC 0x00784860 GOG 0x00784630
+// PC 0x00784860 GOG 0x00784630 Xbox 0x00331B50
 int CRes4PC::OnResourceServiced()
 {
     unsigned char* pResource = (unsigned char*)m_pResource;

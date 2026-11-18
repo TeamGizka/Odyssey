@@ -15,7 +15,7 @@
 
 #define NWSSTORE_DEBUG 0
 
-// PC 0x00570AE0 GOG 0x00570C10
+// PC 0x00570AE0 GOG 0x00570C10 Xbox 0x0025DC60
 CSWSStore::CSWSStore(unsigned long oidStore)
     : CSWSObject(CGameObject::OBJECT_TYPE_STORE, oidStore, 0)
 {
@@ -26,7 +26,7 @@ CSWSStore::CSWSStore(unsigned long oidStore)
     m_nBuySellFlag = 3;
     g_pAppManager->m_pServerExoApp->GetServerAIMaster()->AddObject(this, 0);
 }
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void CSWSStore::AIUpdate()
 {
 }
@@ -66,12 +66,12 @@ unsigned long CSWSStore::CalculateItemSellPrice(CSWSItem* pItem,
     }
     return nCost;
 }
-// PC 0x00570BD0 GOG 0x00570D00
+// PC 0x00570BD0 GOG 0x00570D00 Xbox 0x0025DC10
 int CSWSStore::RemoveItem(CSWSItem* pItem)
 {
     return m_pItemRepository->RemoveItem(pItem);
 }
-// PC 0x00570BE0 GOG 0x00570D10
+// PC 0x00570BE0 GOG 0x00570D10 Xbox 0x0025DC20
 int CSWSStore::GetItemInInventory(unsigned long oidItem)
 {
     CServerExoApp* pServerExoApp;
@@ -83,7 +83,7 @@ int CSWSStore::GetItemInInventory(unsigned long oidItem)
     return pItem != NULL &&
            m_pItemRepository->GetItemInRepository(pItem, 0) != 0;
 }
-// PC 0x00570C20 GOG 0x00570D50
+// PC 0x00570C20 GOG 0x00570D50 Xbox 0x0025DD10
 CSWSStore::~CSWSStore()
 {
     delete m_pItemRepository;
@@ -98,7 +98,7 @@ CSWSStore::~CSWSStore()
         pModule->RemoveObjectFromLookupTable(m_sTag, oidObject);
     }
 }
-// PC 0x00570D00 GOG 0x00570E30
+// PC 0x00570D00 GOG 0x00570E30 Xbox 0x0025DDA0
 int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
 {
     if (NWSSTORE_DEBUG)
@@ -142,7 +142,7 @@ int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldFLOAT(pStruct, m_vOrientation.m_fZ, "ZOrientation");
     return 1;
 }
-// PC 0x00570EB0 GOG 0x00570FE0
+// PC 0x00570EB0 GOG 0x00570FE0 Xbox 0x0025DF50
 int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                          int bLoadingGame)
 {
@@ -167,7 +167,7 @@ int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 void CSWSStore::RemoveFromArea()
 {
 }
-// PC 0x00570F10 GOG 0x00571040
+// PC 0x00570F10 GOG 0x00571040 Xbox 0x0025DFC0
 void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                              void* pEventData, unsigned long nCalendarDay,
                              unsigned long nTimeOfDay)
@@ -194,7 +194,7 @@ void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         delete this;
     }
 }
-// PC 0x00570FA0 GOG 0x005710D0
+// PC 0x00570FA0 GOG 0x005710D0 Xbox 0x0025E050
 int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
 {
     if (NWSSTORE_DEBUG)
@@ -225,7 +225,7 @@ int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
 }
 
 // Dead code: not in the PC executable
-int CSWSStore::RemoveItemFromInventory(CSWSItem* pItem)
+int CSWSStore::RemoveItemFromInventory(CSWSItem* pItem)  // Xbox 0x0025DC10
 {
     return m_pItemRepository->RemoveItem(pItem);
 }
@@ -235,7 +235,7 @@ void CSWSStore::RemoveCustomer(CSWSPlayer* pPlayer)
 {
     m_oidCustomer = OBJECT_INVALID;
 }
-// PC 0x005711E0 GOG 0x00571310
+// PC 0x005711E0 GOG 0x00571310 Xbox 0x0025E230
 int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
 {
     CResStruct cItemStruct;
@@ -321,7 +321,7 @@ int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
         m_sTag, oidStore);
     return 1;
 }
-// PC 0x00571670 GOG 0x005717A0
+// PC 0x00571670 GOG 0x005717A0 Xbox 0x0025E630
 int CSWSStore::AcquireItem(CSWSItem* pItem, int bAppend)
 {
     if (pItem == NULL || pItem->m_bPlotObject != 0)
@@ -370,7 +370,7 @@ int CSWSStore::AcquireItem(CSWSItem* pItem, int bAppend)
         return AddItemToInventory(&pItem, bAppend);
     }
 }
-// PC 0x005710F0 GOG 0x00571220
+// PC 0x005710F0 GOG 0x00571220 Xbox 0x0025E140
 int CSWSStore::AddItemToInventory(CSWSItem** ppItem, int bAppend)
 {
     if (NWSSTORE_DEBUG)
@@ -411,7 +411,7 @@ int CSWSStore::AddItemToInventory(CSWSItem** ppItem, int bAppend)
     }
     return 0;
 }
-// PC 0x005717C0 GOG 0x005718F0
+// PC 0x005717C0 GOG 0x005718F0 Xbox 0x0025E780
 int CSWSStore::LoadFromTemplate(const CResRef& cResRef, int bFromTemplate)
 {
     CResStruct stTop;

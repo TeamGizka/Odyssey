@@ -19,7 +19,7 @@
 #include "serverexoapp.h"
 #include "partytables.h"
 #include "nwsvartable.h"
-// PC 0x0069F0D0 GOG 0x0069EEB0
+// PC 0x0069F0D0 GOG 0x0069EEB0 Xbox 0x0006A120
 unsigned char CSWTlkTable::GetObjectGender()
 {
     if (m_pObject != 0 && m_pObject->AsSWCObject() != 0 &&

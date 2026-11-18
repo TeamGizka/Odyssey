@@ -731,7 +731,7 @@ void dancedancemalak()  // PC 0x00657510 GOG 0x006573C0
     }
 }
 #endif
-// PC 0x00657540 GOG 0x006573F0
+// PC 0x00657540 GOG 0x006573F0 Xbox 0x00036D00
 int lockcamera(char* szValue)
 {
     static int bLockcamera = 1;

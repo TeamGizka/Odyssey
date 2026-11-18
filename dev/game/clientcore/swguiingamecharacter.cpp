@@ -18,13 +18,13 @@
 #include "swguilevelupchargen.h"
 #include "nwccreature.h"
 #include "nwseffectlist.h"
-// PC 0x0071B060 GOG 0x0071AD60
+// PC 0x0071B060 GOG 0x0071AD60 Xbox 0x000F5850
 inline void CSWGuiInGameCharacter::SetModText(CSWGuiLabel& lblMod, int nMod)
 {
     lblMod.m_cText.m_cParams.SetText(nMod > 0 ? CExoString("+") + nMod
                                               : CExoString(nMod));
 }
-// PC 0x0071CA10 GOG 0x0071B960
+// PC 0x0071CA10 GOG 0x0071B960 Xbox 0x000F7430
 CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -195,7 +195,7 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     m_sldAlign.SetFocusable(0);
 #endif
 }
-// PC 0x0071DC60 GOG 0x0071D950
+// PC 0x0071DC60 GOG 0x0071D950 Xbox 0x000F8980
 void CSWGuiInGameCharacter::OnPanelAdded()
 {
 #ifdef _XBOX
@@ -318,7 +318,7 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x0071B8C0 GOG 0x0071AFF0
+// PC 0x0071B8C0 GOG 0x0071AFF0 Xbox 0x000F5DD0
 CSWGuiInGameCharacter::~CSWGuiInGameCharacter()
 {
     delete m_pCreature;
@@ -618,14 +618,14 @@ void CSWGuiInGameCharacter::SetStats()
 void CSWGuiInGameCharacter::UpdatePortraits()
 {
 }
-// PC 0x0071C750 GOG 0x0071D690
+// PC 0x0071C750 GOG 0x0071D690 Xbox 0x000F7210
 void CSWGuiInGameCharacter::Draw(float fElapsed)
 {
     SetStats();
     m_sldAlign.SetCurValue(m_sldAlign.m_nCurValue);
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x0071C780 GOG 0x0071D6C0
+// PC 0x0071C780 GOG 0x0071D6C0 Xbox 0x000F7240
 int CSWGuiInGameCharacter::ShowLevelUpGUI(int bAutomatic)
 {
     int bLevelUpMode = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_LevelUpMode;
@@ -653,7 +653,7 @@ int CSWGuiInGameCharacter::ShowLevelUpGUI(int bAutomatic)
     return 0;
 #endif
 }
-// PC 0x0071C880 GOG 0x0071D7C0
+// PC 0x0071C880 GOG 0x0071D7C0 Xbox 0x000F72F0
 void CSWGuiInGameCharacter::StartAutoLevelup()
 {
     CSWCCreature* pPlayer =
@@ -691,7 +691,7 @@ void CSWGuiInGameCharacter::StartAutoLevelup()
         0);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x0071B190 GOG 0x0071AE90
+// PC 0x0071B190 GOG 0x0071AE90 Xbox 0x000F5900
 void CSWGuiBlackenedLabel::Draw(float fElapsed)
 {
     CSWGuiExtent cExtent = m_cText.m_cExtent;
@@ -717,7 +717,7 @@ void CSWGuiBlackenedLabel::Draw(float fElapsed)
     CSWGuiLabel::Draw(fElapsed);
 }
 
-// PC 0x0071B2C0 GOG 0x0071AD50
+// PC 0x0071B2C0 GOG 0x0071AD50 Xbox 0x000F5A30
 void CSWGuiInGameCharacter::OnPanelRemoved()
 {
     m_pShownCreature = 0;
@@ -725,7 +725,7 @@ void CSWGuiInGameCharacter::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x0071B2D0 GOG 0x0071B3A0
+// PC 0x0071B2D0 GOG 0x0071B3A0 Xbox 0x000F5A40
 void CSWGuiInGameCharacter::AttachModel()
 {
     if (g_bDo3DGUIs != 0)
@@ -741,7 +741,7 @@ void CSWGuiInGameCharacter::AttachModel()
         }
     }
 }
-// PC 0x0071B360 GOG 0x0071B430
+// PC 0x0071B360 GOG 0x0071B430 Xbox 0x000F5AD0
 void CSWGuiInGameCharacter::DoAutoLevelup(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -761,7 +761,7 @@ void CSWGuiInGameCharacter::DoAutoLevelup(CSWGuiControl* pControl)
 void CSWGuiInGameCharacter::OnChangeCharacter(CSWGuiControl* pControl)
 {
 }
-// PC 0x0071B3B0 GOG 0x0071B480
+// PC 0x0071B3B0 GOG 0x0071B480 Xbox 0x000F5B20
 void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
                                                        int nBonus)
 {
@@ -779,7 +779,7 @@ void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
     }
 }
 
-// PC 0x0071B400 GOG 0x0071B4D0
+// PC 0x0071B400 GOG 0x0071B4D0 Xbox 0x000F5B80
 void CSWGuiInGameCharacter::RotateCharacter(int nDirection)
 {
     m_pCreature->SetOrientation(

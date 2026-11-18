@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00784660 GOG 0x00784410
+// PC 0x00784660 GOG 0x00784410 Xbox 0x00331960
 CResMDX::CResMDX()
 {
     m_bServiced = 0;
@@ -11,12 +11,12 @@ CResMDX::CResMDX()
 CResMDX::~CResMDX()
 {
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 unsigned char* CResMDX::GetMDXDataPtr()
 {
     return m_pMDXData;
 }
-// PC 0x007846A0 GOG 0x00784450
+// PC 0x007846A0 GOG 0x00784450 Xbox 0x0015B870
 unsigned long CResMDX::GetMDXSize()
 {
     return m_nMDXSize;
@@ -27,7 +27,7 @@ int CResMDX::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x007845C0 GOG 0x00784460
+// PC 0x007845C0 GOG 0x00784460 Xbox 0x00331990
 int CResMDX::OnResourceFreed()
 {
     m_bServiced = 0;

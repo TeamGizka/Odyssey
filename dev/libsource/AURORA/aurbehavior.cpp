@@ -23,11 +23,11 @@ extern char sPropagateColorShifting[];
 extern char sPropagateIllumination[];
 extern char sPropagateRender[];
 extern char sPropagateViewVolume[];
-// PC 0x005EE1C0 GOG 0x005EE1A0
+// PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
 void CAurBehavior::Message(char* sMessage)
 {
 }
-// PC 0x004CBD30 GOG 0x004CBE40
+// PC 0x004CBD30 GOG 0x004CBE40 Xbox 0x00308420
 void UpdateScenesAttach(CAurObject* pObject, char* sEvent, void* pContext)
 {
     CAurBehaviorAttach* pBehavior = (CAurBehaviorAttach*)pContext;
@@ -42,7 +42,7 @@ void UpdateScenesAttach(CAurObject* pObject, char* sEvent, void* pContext)
         delete pBehavior->m_pObject;
     }
 }
-// PC 0x004CBD80 GOG 0x004CBE90
+// PC 0x004CBD80 GOG 0x004CBE90 Xbox 0x00308470
 void UpdateDependentPosition(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "UpdateDependentPosition") == 0)
@@ -50,7 +50,7 @@ void UpdateDependentPosition(CAurObject* pObject, char* sEvent, void* pContext)
         ((CAurBehaviorAttach*)pContext)->UpdateGobPosition();
     }
 }
-// PC 0x004CBDA0 GOG 0x004CBEB0
+// PC 0x004CBDA0 GOG 0x004CBEB0 Xbox 0x00308490
 void PropagateColorShifting(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "propagatecolorshift") == 0)
@@ -60,7 +60,7 @@ void PropagateColorShifting(CAurObject* pObject, char* sEvent, void* pContext)
             ->SetColorShifting(pSource->m_vColor, pSource->m_fAlpha, 1);
     }
 }
-// PC 0x004CBDF0 GOG 0x004CBF00
+// PC 0x004CBDF0 GOG 0x004CBF00 Xbox 0x003084E0
 void PropagateIllumination(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "propagateillumination") == 0)
@@ -69,7 +69,7 @@ void PropagateIllumination(CAurObject* pObject, char* sEvent, void* pContext)
         ((Gob*)pContext)->SetIllumination(pSource->m_vIllumination, 1);
     }
 }
-// PC 0x004CBE40 GOG 0x004CBF50
+// PC 0x004CBE40 GOG 0x004CBF50 Xbox 0x00308530
 void PropagateRender(CAurObject* pObject, char* sEvent, void* pContext)
 {
     Gob* pGob;
@@ -84,7 +84,7 @@ void PropagateRender(CAurObject* pObject, char* sEvent, void* pContext)
         pGob->Render(1);
     }
 }
-// PC 0x004CBE80 GOG 0x004CBF90
+// PC 0x004CBE80 GOG 0x004CBF90 Xbox 0x00308570
 void PropagateViewVolume(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "propagateviewvolume") == 0)
@@ -95,14 +95,14 @@ void PropagateViewVolume(CAurObject* pObject, char* sEvent, void* pContext)
         }
     }
 }
-// PC 0x004CBEC0 GOG 0x004CBFD0
+// PC 0x004CBEC0 GOG 0x004CBFD0 Xbox 0x003085B0
 void CAurBehaviorAttach::UpdateGobPosition()
 {
     Gob* pGob = (Gob*)m_pObject;
     m_pPart->GetWorld(pGob->m_vPosition, pGob->m_qOrientation);
     pGob->DoEvent("UpdateDependentPosition", 0);
 }
-// PC 0x004CBEF0 GOG 0x004CC000
+// PC 0x004CBEF0 GOG 0x004CC000 Xbox 0x003085E0
 void CAurBehaviorAttach::Message(char* sMessage)
 {
     if (stricmp("diewithoutparent", firstword(sMessage)) == 0)
@@ -110,7 +110,7 @@ void CAurBehaviorAttach::Message(char* sMessage)
         Parse(sMessage + 16, m_nDieWithoutParent);
     }
 }
-// PC 0x004CBF30 GOG 0x004CC040
+// PC 0x004CBF30 GOG 0x004CC040 Xbox 0x00308620
 void CAurBehaviorAttachTranslate::Message(char* sMessage)
 {
     CAurBehaviorAttach::Message(sMessage);
@@ -119,7 +119,7 @@ void CAurBehaviorAttachTranslate::Message(char* sMessage)
         Parse(sMessage + 14, m_vTranslation);
     }
 }
-// PC 0x004CBF90 GOG 0x004CC0A0
+// PC 0x004CBF90 GOG 0x004CC0A0 Xbox 0x00308680
 void CAurBehaviorAttachRotate::Message(char* sMessage)
 {
     CAurBehaviorAttach::Message(sMessage);
@@ -170,7 +170,7 @@ void CAurBehaviorCameraOnAStick::Message(char* sMessage)
         Parse(sMessage + 9, m_fHeight);
     }
 }
-// PC 0x004CBFF0 GOG 0x004CC100
+// PC 0x004CBFF0 GOG 0x004CC100 Xbox 0x003086E0
 void CAurBehaviorCameraFollow::Message(char* sMessage)
 {
     if (stricmp("turn", firstword(sMessage)) == 0)
@@ -242,7 +242,7 @@ void CAurBehaviorCameraFollow::Message(char* sMessage)
         Parse(sMessage + 9, m_fClampDistance);
     }
 }
-// PC 0x004CC2B0 GOG 0x004CC3C0
+// PC 0x004CC2B0 GOG 0x004CC3C0 Xbox 0x003089A0
 void CAurBehaviorAttach::SetScene()
 {
     if (m_pParent != 0)
@@ -250,7 +250,7 @@ void CAurBehaviorAttach::SetScene()
         ((Gob*)m_pObject)->SetScene(((Gob*)(CAurObject*)m_pParent)->m_pScene);
     }
 }
-// PC 0x004CC2D0 GOG 0x004CC3E0
+// PC 0x004CC2D0 GOG 0x004CC3E0 Xbox 0x003089C0
 Vector CAurBehaviorCameraFollow::GetTargetWorldPosition()
 {
     Gob* pTarget;
@@ -258,18 +258,18 @@ Vector CAurBehaviorCameraFollow::GetTargetWorldPosition()
     pTarget = (Gob*)(CAurObject*)m_pTarget;
     return pTarget->m_vPosition;
 }
-// PC 0x004CC300 GOG 0x004CC410
+// PC 0x004CC300 GOG 0x004CC410 Xbox 0x003089F0
 CAurBehavior::CAurBehavior(CAurObject* pObject)
 {
     m_pObject = pObject;
 }
 
-// PC 0x004CC320 GOG 0x004CC430
+// PC 0x004CC320 GOG 0x004CC430 Xbox 0x00308A10
 void CAurBehavior::AddDependency(CAurObject* pObject)
 {
     m_lstDependencies.Add(new SafePointer<CAurObject>(pObject));
 }
-// PC 0x004CCDC0 GOG 0x004CCED0
+// PC 0x004CCDC0 GOG 0x004CCED0 Xbox 0x003095E0
 CAurBehavior::~CAurBehavior()
 {
     int i;
@@ -285,7 +285,7 @@ CAurBehavior::~CAurBehavior()
 
     m_lstDependencies.SetSize(0);
 }
-// PC 0x004CC3B0 GOG 0x004CC4C0
+// PC 0x004CC3B0 GOG 0x004CC4C0 Xbox 0x00308A70
 void CAurBehavior::RemoveDependency(CAurObject* pObject)
 {
     int nIndex;
@@ -311,7 +311,7 @@ void CAurBehavior::RemoveDependency(CAurObject* pObject)
         }
     }
 }
-// PC 0x004CC430 GOG 0x004CC540
+// PC 0x004CC430 GOG 0x004CC540 Xbox 0x00308AF0
 int CAurBehavior::Control(float fTimeStep)
 {
     SafePointer<CAurObject> pObject(m_pObject);
@@ -352,7 +352,7 @@ int CAurBehavior::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x004CC580 GOG 0x004CC690
+// PC 0x004CC580 GOG 0x004CC690 Xbox 0x00308C00
 int CAurBehaviorAttach::Control(float fTimeStep)
 {
     Gob* pGob;
@@ -395,7 +395,7 @@ int CAurBehaviorAttach::Control(float fTimeStep)
     m_pPart->GetWorld(pGob->m_vPosition, pGob->m_qOrientation);
     return 1;
 }
-// PC 0x004CC6D0 GOG 0x004CC7E0
+// PC 0x004CC6D0 GOG 0x004CC7E0 Xbox 0x00308D20
 int CAurBehaviorAttachTranslate::Control(float fTimeStep)
 {
     int nResult = CAurBehaviorAttach::Control(fTimeStep);
@@ -414,7 +414,7 @@ int CAurBehaviorAttachTranslate::Control(float fTimeStep)
     }
     return nResult;
 }
-// PC 0x004CC8C0 GOG 0x004CC9D0
+// PC 0x004CC8C0 GOG 0x004CC9D0 Xbox 0x00308FC0
 int CAurBehaviorAttachRotate::Control(float fTimeStep)
 {
     int nResult = CAurBehaviorAttach::Control(fTimeStep);
@@ -425,7 +425,7 @@ int CAurBehaviorAttachRotate::Control(float fTimeStep)
     }
     return nResult;
 }
-// PC 0x004CC9C0 GOG 0x004CCAD0
+// PC 0x004CC9C0 GOG 0x004CCAD0 Xbox 0x00309120
 int CAurBehaviorAttachNoOrientation::Control(float fTimeStep)
 {
     Quaternion qOrientation = ((Gob*)m_pObject)->GetOrientation();
@@ -436,7 +436,7 @@ int CAurBehaviorAttachNoOrientation::Control(float fTimeStep)
     }
     return nResult;
 }
-// PC 0x004CCA20 GOG 0x004CCB30
+// PC 0x004CCA20 GOG 0x004CCB30 Xbox 0x00309180
 int CAurBehaviorCameraFollow::Control(float fTimeStep)
 {
     if (currentscene)
@@ -548,7 +548,7 @@ int CAurBehaviorCameraOnAStick::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x004CCE60 GOG 0x004CCF70
+// PC 0x004CCE60 GOG 0x004CCF70 Xbox 0x00309650
 CAurBehaviorAttach::CAurBehaviorAttach(CAurObject* pObject, CAurObject* pParent,
                                        CAurPart* pPart)
     : CAurBehavior(pObject)
@@ -592,7 +592,7 @@ CAurBehaviorAttach::CAurBehaviorAttach(CAurObject* pObject, CAurObject* pParent,
     m_nViewVolumeCallback = ((Gob*)(CAurObject*)m_pParent)->RegisterCallBack(
         PropagateViewVolume, "propagateviewvolume", m_pObject, AUR_CALLBACK_LONG_DELAY, 0);
 }
-// PC 0x004CD050 GOG 0x004CD160
+// PC 0x004CD050 GOG 0x004CD160 Xbox 0x00309800
 CAurBehaviorAttach::~CAurBehaviorAttach()
 {
     Gob* pParent = (Gob*)m_pParent.m_pObject;
@@ -623,21 +623,21 @@ CAurBehaviorAttach::~CAurBehaviorAttach()
         pParent->DeregisterCallback(m_nViewVolumeCallback);
     }
 }
-// PC 0x004CD130 GOG 0x004CD240
+// PC 0x004CD130 GOG 0x004CD240 Xbox 0x003098B0
 CAurBehaviorAttachTranslate::CAurBehaviorAttachTranslate(CAurObject* pObject,
                                                          CAurObject* pParent,
                                                          CAurPart* pPart)
     : CAurBehaviorAttach(pObject, pParent, pPart)
 {
 }
-// PC 0x004CD170 GOG 0x004CD280
+// PC 0x004CD170 GOG 0x004CD280 Xbox 0x00309900
 CAurBehaviorAttachRotate::CAurBehaviorAttachRotate(CAurObject* pObject,
                                                    CAurObject* pParent,
                                                    CAurPart* pPart)
     : CAurBehaviorAttach(pObject, pParent, pPart)
 {
 }
-// PC 0x004CD1B0 GOG 0x004CD2C0
+// PC 0x004CD1B0 GOG 0x004CD2C0 Xbox 0x00309950
 CAurBehaviorAttachNoOrientation::CAurBehaviorAttachNoOrientation(
     CAurObject* pObject, CAurObject* pParent, CAurPart* pPart)
     : CAurBehaviorAttach(pObject, pParent, pPart)
@@ -667,7 +667,7 @@ CAurBehaviorCameraOnAStick::CAurBehaviorCameraOnAStick(CAurObject* pCamera,
     m_fSpeed = 1.0f;
     m_fHeight = 1.0f;
 }
-// PC 0x004CD1F0 GOG 0x004CD300
+// PC 0x004CD1F0 GOG 0x004CD300 Xbox 0x00309990
 CAurBehaviorCameraFollow::CAurBehaviorCameraFollow(CAurObject* pCamera,
                                                    CAurObject* pTarget)
     : CAurBehavior(pCamera)

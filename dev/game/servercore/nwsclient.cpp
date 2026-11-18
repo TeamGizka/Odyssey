@@ -1,11 +1,11 @@
 #include "nwsclient.h"
-// PC 0x006173B0 GOG 0x00617390
+// PC 0x006173B0 GOG 0x00617390 Xbox 0x00280FE0
 CSWSClient::CSWSClient(unsigned long nPlayerId)
 {
     m_nPlayerId = nPlayerId;
     m_nLanguage = 0;
 }
-// PC 0x006173D0 GOG 0x006173B0
+// PC 0x006173D0 GOG 0x006173B0 Xbox 0x00281000
 CSWSClient::~CSWSClient()
 {
 }

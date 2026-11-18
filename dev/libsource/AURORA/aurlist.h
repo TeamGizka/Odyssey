@@ -62,7 +62,7 @@ public:
         return -1;
     }
 #endif
-    // PC 0x00448F20 GOG 0x00449070
+    // PC 0x00448F20 GOG 0x00449070 Xbox 0x002AA9A0
     T& operator[](int nIndex)
     {
         return m_pList[nIndex];
@@ -146,7 +146,7 @@ template <class T> List<T>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x004673E0 GOG 0x004AB840
+// PC 0x004673E0 GOG 0x004AB840 Xbox 0x003026B0
 template <class T> void List<T>::Remove(T item)
 {
     int i;
@@ -233,7 +233,7 @@ template <class T> void List<T>::Insert(T item, int nIndex)
     m_pList[nIndex] = item;
 }
 
-template <class T> void List<T>::DelIndex(int nIndex)
+template <class T> void List<T>::DelIndex(int nIndex)  // Xbox 0x001308E0
 {
     m_nCount--;
     while (nIndex < m_nCount)

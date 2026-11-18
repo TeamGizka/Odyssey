@@ -2,16 +2,16 @@
 #include <string.h>
 
 #include "SWCollisionMesh.h"
-// PC 0x00616BF0 GOG 0x00616BD0
+// PC 0x00616BF0 GOG 0x00616BD0 Xbox 0x00266510
 CSWPlaceableSurfaceMesh::CSWPlaceableSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, 0x805)
 {
 }
-// PC 0x00616C10 GOG 0x00616BF0
+// PC 0x00616C10 GOG 0x00616BF0 Xbox 0x00266530
 CSWPlaceableSurfaceMesh::~CSWPlaceableSurfaceMesh()
 {
 }
-// PC 0x00616C20 GOG 0x00616C00
+// PC 0x00616C20 GOG 0x00616C00 Xbox 0x00266540
 int CSWPlaceableSurfaceMesh::LoadMeshText(unsigned char* pData,
                                           unsigned long nDataSize)
 {

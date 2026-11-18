@@ -63,7 +63,7 @@ public:
     }
 #endif
 
-    T& operator[](int nIndex)
+    T& operator[](int nIndex)  // Xbox 0x002AA9A0
     {
         return m_pList[nIndex];
     }
@@ -146,7 +146,7 @@ template <class T> List<T>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x004673E0 GOG 0x004AB840
+// PC 0x004673E0 GOG 0x004AB840 Xbox 0x003026B0
 template <class T> void List<T>::Remove(T item)
 {
     int i;
@@ -160,7 +160,7 @@ template <class T> void List<T>::Remove(T item)
     DelIndex(i);
 }
 
-template <class T> void List<T>::allocate(int nAllocated)
+template <class T> void List<T>::allocate(int nAllocated)  // Xbox 0x0008C7C0
 {
     T* pOldList = m_pList;
     m_nAllocated = nAllocated;
@@ -188,7 +188,7 @@ template <class T> void List<T>::SetSize(int nSize)
     }
     m_nCount = nSize;
 }
-// PC 0x00567300 GOG 0x00482570
+// PC 0x00567300 GOG 0x00482570 Xbox 0x001E6B30
 template <class T> void List<T>::Add(T item)
 {
     if (m_nCount == m_nAllocated)
@@ -233,7 +233,7 @@ template <class T> void List<T>::Insert(T item, int nIndex)
     m_pList[nIndex] = item;
 }
 
-template <class T> void List<T>::DelIndex(int nIndex)
+template <class T> void List<T>::DelIndex(int nIndex)  // Xbox 0x001308E0
 {
     m_nCount--;
     while (nIndex < m_nCount)

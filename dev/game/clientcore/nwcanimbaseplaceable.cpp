@@ -6,7 +6,7 @@
 #include "twodimarrays.h"
 #include "nwcanimbase.h"
 
-// PC 0x00755B60 GOG 0x00755970
+// PC 0x00755B60 GOG 0x00755970 Xbox 0x00128BF0
 CSWCAnimBasePlaceable::CSWCAnimBasePlaceable()
 {
     m_nAnimationType = 10;
@@ -16,7 +16,7 @@ CSWCAnimBasePlaceable::~CSWCAnimBasePlaceable()
 {
     UnloadModel();
 }
-// PC 0x00755BD0 GOG 0x007559E0
+// PC 0x00755BD0 GOG 0x007559E0 Xbox 0x00128C10
 int CSWCAnimBasePlaceable::LoadModel(const CResRef& sResRef,
                                      unsigned char nType)
 {
@@ -33,7 +33,7 @@ int CSWCAnimBasePlaceable::LoadModel(const CResRef& sResRef,
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x00755C40 GOG 0x00755CC0
+// PC 0x00755C40 GOG 0x00755CC0 Xbox 0x00128ED0
 CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
 {
     unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
@@ -94,7 +94,7 @@ CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
 
     return sName;
 }
-// PC 0x00755EA0 GOG 0x00755A50
+// PC 0x00755EA0 GOG 0x00755A50 Xbox 0x00128C90
 int CSWCAnimBasePlaceable::SetAnimation(unsigned short nAnimation, float fSpeed,
                                         int nFlags, float fBlend)
 {
@@ -161,7 +161,7 @@ int CSWCAnimBasePlaceable::SetAnimation(unsigned short nAnimation, float fSpeed,
     }
     return 1;
 }
-// PC 0x007560F0 GOG 0x00755F20
+// PC 0x007560F0 GOG 0x00755F20 Xbox 0x001290B0
 unsigned short CSWCAnimBasePlaceable::ServerToClientAnimation(unsigned short nAnimation)
 {
     switch (nAnimation)

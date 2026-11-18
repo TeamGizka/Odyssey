@@ -1,19 +1,19 @@
 #include "exobase.h"
 
 #include "exomovieplayerinternal.h"
-// PC 0x0077F8F0 GOG 0x0077F710
+// PC 0x0077F8F0 GOG 0x0077F710 Xbox 0x0033A640
 CExoMoviePlayer::CExoMoviePlayer()
 {
     m_pInternal = new CExoMoviePlayerInternal();
 }
 
 #ifdef _XBOX
-int CExoMoviePlayer::Initialize(void* pParam)
+int CExoMoviePlayer::Initialize(void* pParam)  // Xbox 0x0033A670
 {
     return m_pInternal->Initialize(pParam);
 }
 
-void CExoMoviePlayer::CancelMovie()
+void CExoMoviePlayer::CancelMovie()  // Xbox 0x0033A680
 {
     m_pInternal->CancelMovie();
 }
@@ -28,30 +28,30 @@ int CExoMoviePlayer::CancelMovie(int nResult, int bForce)
     return m_pInternal->CancelMovie(nResult, bForce);
 }
 #endif
-// PC 0x0077F970 GOG 0x0077F790
+// PC 0x0077F970 GOG 0x0077F790 Xbox 0x0033A690
 int CExoMoviePlayer::IsMoviePlaying()
 {
     return m_pInternal->IsMoviePlaying();
 }
 
 #ifdef _XBOX
-int CExoMoviePlayer::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,
+int CExoMoviePlayer::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,  // Xbox 0x0033A6A0
                                      int nMode)
 {
     return m_pInternal->PlayMoviesAsync(lstMovies, nMode);
 }
 
-void CExoMoviePlayer::ShowFadePanel()
+void CExoMoviePlayer::ShowFadePanel()  // Xbox 0x0033A6B0
 {
     m_pInternal->ShowFadePanel();
 }
 
-void CExoMoviePlayer::HideFadePanel(int bWait)
+void CExoMoviePlayer::HideFadePanel(int bWait)  // Xbox 0x0033A6C0
 {
     m_pInternal->HideFadePanel(bWait);
 }
 
-void CExoMoviePlayer::SetFadeMsg(unsigned long nStrRef)
+void CExoMoviePlayer::SetFadeMsg(unsigned long nStrRef)  // Xbox 0x0033A6D0
 {
     m_pInternal->SetFadeMsg(nStrRef);
 }
@@ -87,7 +87,7 @@ int CExoMoviePlayer::RestartMoviesAsync()
     return m_pInternal->RestartMoviesAsync();
 }
 #endif
-// PC 0x0077F9D0 GOG 0x0077F7F0
+// PC 0x0077F9D0 GOG 0x0077F7F0 Xbox 0x0033A6E0
 CExoMoviePlayer::~CExoMoviePlayer()
 {
     if (m_pInternal != 0)

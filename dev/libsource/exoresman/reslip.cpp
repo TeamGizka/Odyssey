@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x0077FE30 GOG 0x0077FC30
+// PC 0x0077FE30 GOG 0x0077FC30 Xbox 0x00161450
 CResLIP::CResLIP()
 {
     m_bServiced = 0;
@@ -10,7 +10,7 @@ CResLIP::CResLIP()
 CResLIP::~CResLIP()
 {
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 char* CResLIP::GetLIPDataPtr()
 {
     return m_pLIPData;
@@ -27,7 +27,7 @@ int CResLIP::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x007845C0 GOG 0x00784460
+// PC 0x007845C0 GOG 0x00784460 Xbox 0x00331990
 int CResLIP::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -35,7 +35,7 @@ int CResLIP::OnResourceFreed()
     m_pLIPData = 0;
     return 1;
 }
-// PC 0x0077FE60 GOG 0x0062B5A0
+// PC 0x0077FE60 GOG 0x0062B5A0 Xbox 0x00161470
 int CResLIP::OnResourceServiced()
 {
     char* pData;

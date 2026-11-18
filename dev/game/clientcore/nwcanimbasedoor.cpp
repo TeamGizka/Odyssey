@@ -6,7 +6,7 @@
 #include "twodimarrays.h"
 #include <stdio.h>
 
-// PC 0x007563C0 GOG 0x007561D0
+// PC 0x007563C0 GOG 0x007561D0 Xbox 0x001292C0
 CSWCAnimBaseDoor::CSWCAnimBaseDoor()
 {
     m_nAnimationType = 5;
@@ -16,7 +16,7 @@ CSWCAnimBaseDoor::~CSWCAnimBaseDoor()
 {
     UnloadModel();
 }
-// PC 0x00756430 GOG 0x00756240
+// PC 0x00756430 GOG 0x00756240 Xbox 0x001292E0
 int CSWCAnimBaseDoor::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     Gob* pModel;
@@ -41,7 +41,7 @@ int CSWCAnimBaseDoor::LoadModel(const CResRef& sResRef, unsigned char nType)
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x007564D0 GOG 0x007564F0
+// PC 0x007564D0 GOG 0x007564F0 Xbox 0x00129580
 CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
 {
     unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
@@ -67,7 +67,7 @@ CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
 
     return sName;
 }
-// PC 0x007565E0 GOG 0x007562E0
+// PC 0x007565E0 GOG 0x007562E0 Xbox 0x001293B0
 int CSWCAnimBaseDoor::SetAnimationInternal(CAurObject* pObject,
                                            unsigned short nAnimation,
                                            float fSpeed, int nFlags,
@@ -112,7 +112,7 @@ int CSWCAnimBaseDoor::SetAnimationInternal(CAurObject* pObject,
     }
     return 0;
 }
-// PC 0x007567D0 GOG 0x00756600
+// PC 0x007567D0 GOG 0x00756600 Xbox 0x00129640
 unsigned short CSWCAnimBaseDoor::ServerToClientAnimation(
     unsigned short nAnimation)
 {

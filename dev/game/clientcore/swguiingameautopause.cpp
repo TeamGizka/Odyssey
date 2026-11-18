@@ -9,7 +9,7 @@ CSWGuiOptionsCheckbox::CSWGuiOptionsCheckbox()
 {
 }
 #endif
-// PC 0x0075A500 GOG 0x0075A320
+// PC 0x0075A500 GOG 0x0075A320 Xbox 0x001338E0
 void CSWGuiInGameAutoPause::SetupOptions()
 {
     CClientOptions* pOptions =
@@ -49,7 +49,7 @@ void CSWGuiInGameAutoPause::SetupOptions()
         pToggle5->m_bToggled = bNewTargetSelected;
     }
 }
-// PC 0x0075A650 GOG 0x0075A470
+// PC 0x0075A650 GOG 0x0075A470 Xbox 0x00133A50
 void CSWGuiInGameAutoPause::SaveOptions()
 {
     CClientOptions* pOptions =
@@ -88,7 +88,7 @@ void CSWGuiInGameAutoPause::ClosePanel()
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
 }
-// PC 0x0075A740 GOG 0x0075A560
+// PC 0x0075A740 GOG 0x0075A560 Xbox 0x00133B50
 void CSWGuiInGameAutoPause::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -123,7 +123,7 @@ void CSWGuiInGameAutoPause::OnDefault(CSWGuiControl* pControl)
     pOptions->SetDefaultAutopauseOptions();
     SetupOptions();
 }
-// PC 0x0075A820 GOG 0x0075A640
+// PC 0x0075A820 GOG 0x0075A640 Xbox 0x00133C00
 void CSWGuiInGameAutoPause::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -169,7 +169,7 @@ void CSWGuiInGameAutoPause::SetDescription(unsigned long nStrRef)
     m_lbxDetails.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x0075A930 GOG 0x0075A750
+// PC 0x0075A930 GOG 0x0075A750 Xbox 0x00133D30
 void CSWGuiInGameAutoPause::OnEnterSlot(CSWGuiControl* pControl)
 {
     SetDescription(pControl->m_nIndex);

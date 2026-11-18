@@ -2,7 +2,7 @@
 #ifndef _XBOX
 #include "mss.h"
 #endif
-// PC 0x0062B4B0 GOG 0x0062B380
+// PC 0x0062B4B0 GOG 0x0062B380 Xbox 0x00339DA0
 CResWave::CResWave()
 {
     m_bServiced = 0;
@@ -44,7 +44,7 @@ int CResWave::IsModifiedWav()
 
 #ifdef _XBOX
 
-int CResWave::OnResourceFreed()
+int CResWave::OnResourceFreed()  // Xbox 0x00339DC0
 {
     m_bServiced = 0;
     m_bDataOwned = 0;
@@ -53,13 +53,13 @@ int CResWave::OnResourceFreed()
     return 1;
 }
 
-int CResWave::OnResourceServiced()
+int CResWave::OnResourceServiced()  // Xbox 0x00339DE0
 {
     m_bServiced = 1;
     return 1;
 }
 
-void* CResWave::GetData()
+void* CResWave::GetData()  // Xbox 0x002CEDA0
 {
     return m_pResource;
 }

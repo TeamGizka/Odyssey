@@ -7,7 +7,7 @@
 #include "exotlktable.h"
 #include "swmain.h"
 
-// PC 0x0073DF70 GOG 0x0073DB20
+// PC 0x0073DF70 GOG 0x0073DB20 Xbox 0x00109030
 CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
 {
@@ -52,7 +52,7 @@ CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     return pButton;
 #endif
 }
-// PC 0x0073DDC0 GOG 0x0073DBE0
+// PC 0x0073DDC0 GOG 0x0073DBE0 Xbox 0x00108EB0
 void CSWGuiLoadModuleDebugMenu::Back()
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -60,7 +60,7 @@ void CSWGuiLoadModuleDebugMenu::Back()
     g_pAppManager->m_pClientExoApp->GetInGameGui()
         ->ShowDebugMenu();
 }
-// PC 0x0073DDF0 GOG 0x0073DC10
+// PC 0x0073DDF0 GOG 0x0073DC10 Xbox 0x00108EE0
 void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -74,7 +74,7 @@ void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
         g_pAppManager->m_pServerExoApp->SetMoveToModulePending(1);
     }
 }
-// PC 0x0073E030 GOG 0x0073DCB0
+// PC 0x0073E030 GOG 0x0073DCB0 Xbox 0x001090E0
 CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -170,7 +170,7 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
     SetActiveControl(pList, 0);
     CenterPanel();
 }
-// PC 0x0073DE90 GOG 0x0073E540
+// PC 0x0073DE90 GOG 0x0073E540 Xbox 0x00108F50
 void CSWGuiLoadModuleDebugMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)

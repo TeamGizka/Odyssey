@@ -15,21 +15,21 @@ public:
 
     CSWCMapPin();
     virtual ~CSWCMapPin();
-    // PC 0x004015A0 GOG 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     virtual void AIUpdate()
     {
     }
-    // PC 0x0069E520 GOG 0x0069E300
+    // PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
     virtual int LoadModel(const CResRef& cModel, unsigned char nModel,
                           unsigned char nFlags)
     {
         return 0;
     }
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void UnloadModel(unsigned char nModel)
     {
     }
-    // PC 0x004015A0 GOG 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     virtual void UnloadModel()
     {
     }

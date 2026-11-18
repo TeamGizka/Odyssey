@@ -186,7 +186,7 @@ public:
     CExoString GetRaceString();
 
     enum { WEAPON_SPECIALIZATION_DAMAGE_BONUS = 2 };
-    // PC 0x005ED200 GOG 0x005ED1E0
+    // PC 0x005ED200 GOG 0x005ED1E0 Xbox 0x0015C390
     CSWSCreature* GetCreature() { return m_pCreature; }
     void SetCurrentForcePoints(int nForcePoints) { m_nCurrentForcePoints = nForcePoints; }
     short GetCurrentForcePoints()
@@ -207,7 +207,7 @@ public:
                                         unsigned char nSpellLevel);
     int GetKnownSpell(unsigned char nClass, unsigned char nSpellLevel,
                       unsigned char nSpellIndex);
-    unsigned char GetClass(unsigned char nClass)
+    unsigned char GetClass(unsigned char nClass)  // Xbox 0x00036C90
     {
         if (nClass >= m_nClassCount)
         {
@@ -303,7 +303,7 @@ public:
     void CalcLevelUpNumberFeats(unsigned char nClass,
                                unsigned char& nNormalFeats,
                                unsigned char& nBonusFeats);
-    // PC 0x0050B730 GOG 0x0050B790
+    // PC 0x0050B730 GOG 0x0050B790 Xbox 0x0010CD90
     unsigned char GetSimpleAlignmentGoodEvil()
     {
         if (m_nGoodEvilAlignment <= 40)
@@ -622,7 +622,7 @@ public:
     CResRef m_cPortrait;
     short m_nGoodEvilAlignment;
     short GetGoodEvilAlignment() { return m_nGoodEvilAlignment; }
-    void SetGoodEvilAlignment(short nAlignment)
+    void SetGoodEvilAlignment(short nAlignment)  // Xbox 0x00180990
     {
         int nValue;
         if (nAlignment >= 0)

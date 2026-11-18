@@ -159,7 +159,7 @@ inline unsigned long CExoSoundSourceInternal::GetDelayStart()
 {
     return m_nDelayStart;
 }
-// PC 0x006222C0 GOG 0x00622290
+// PC 0x006222C0 GOG 0x00622290 Xbox 0x001618E0
 inline unsigned char CExoSoundSourceInternal::GetVolume()
 {
     return m_nVolume;
@@ -196,7 +196,7 @@ inline float CExoSoundInternal::GetDesiredAmbientScale()
 {
     return m_fDesiredAmbientScale;
 }
-// PC 0x00622320 GOG 0x006222F0
+// PC 0x00622320 GOG 0x006222F0 Xbox 0x00161560
 inline CPriorityGroup* CExoSoundInternal::GetPriorityGroup(unsigned char nGroup)
 {
     if (nGroup >= m_nPriorityGroups)
@@ -584,7 +584,7 @@ void CExoSoundInternal::SetEnvironment(unsigned char nEnvironment)  // PC 0x0062
 
 
 
-// PC 0x006225B0 GOG 0x00622580
+// PC 0x006225B0 GOG 0x00622580 Xbox 0x00162DF0
 void CExoSoundInternal::SetMusicVolume(float fVolume, int nTemporary,
                                       int bFade)
 {
@@ -605,7 +605,7 @@ void CExoSoundInternal::SetMusicVolume(float fVolume, int nTemporary,
         }
     }
 }
-// PC 0x00622650 GOG 0x00622620
+// PC 0x00622650 GOG 0x00622620 Xbox 0x00161660
 void CExoSoundInternal::SetSoundEffectVolume(float fVolume, int nTemporary)
 {
     if (nTemporary == 0)
@@ -614,7 +614,7 @@ void CExoSoundInternal::SetSoundEffectVolume(float fVolume, int nTemporary)
     }
     m_fTempSoundEffectVolume = fVolume;
 }
-// PC 0x00622670 GOG 0x00622640
+// PC 0x00622670 GOG 0x00622640 Xbox 0x00161680
 void CExoSoundInternal::SetDialogVolume(float fVolume, int nTemporary)
 {
     if (nTemporary == 0)
@@ -666,7 +666,7 @@ int CExoSoundInternal::GetMutable(CExoStreamingSoundSourceInternal* pSource)  //
     return 1;
 }
 #endif
-// PC 0x00622710 GOG 0x006226E0
+// PC 0x00622710 GOG 0x006226E0 Xbox 0x00163250
 int CExoSoundInternal::GetSliderType(CExoSoundSourceInternal* pSource)
 {
     unsigned char nGroup = pSource->m_nPriorityGroup;
@@ -728,7 +728,7 @@ float CExoSoundInternal::GetSliderVolume(int nSlider, int nTemporary)  // PC 0x0
     return 1.0f;
 }
 #endif
-// PC 0x006227F0 GOG 0x006227C0
+// PC 0x006227F0 GOG 0x006227C0 Xbox 0x00163370
 int CExoSoundInternal::GetPauseable(CExoSoundSourceInternal* pSource)
 {
     int nMode = m_anSoundMode[m_nSoundMode];
@@ -752,7 +752,7 @@ int CExoSoundInternal::GetPauseable(CExoSoundSourceInternal* pSource)
     }
     return 1;
 }
-// PC 0x00622840 GOG 0x00622810
+// PC 0x00622840 GOG 0x00622810 Xbox 0x001633C0
 int CExoSoundInternal::GetPauseable(CExoStreamingSoundSourceInternal* pSource)
 {
     int nMode = m_anSoundMode[m_nSoundMode];
@@ -846,7 +846,7 @@ void CExoSoundInternal::ShutDown()  // PC 0x00622A00 GOG 0x00622980
     AIL_quick_shutdown();
 }
 #endif
-// PC 0x00622BC0 GOG 0x00622B40
+// PC 0x00622BC0 GOG 0x00622B40 Xbox 0x00161B30
 int CExoSoundInternal::GetClosestRecentSound(
     const Vector& vPosition, Vector& vListenerPosition,
     unsigned long& nTime, float& fObstruction)
@@ -1030,7 +1030,7 @@ void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,  /
     AIL_resume_sample(p2DVoice->m_hSample);
 }
 #endif
-// PC 0x00623230 GOG 0x006231B0
+// PC 0x00623230 GOG 0x006231B0 Xbox 0x00162340
 int CExoSoundInternal::PlayOneShotSound(CResRef const& sResRef,
                                         unsigned char nPriorityGroup,
                                         unsigned long nOneShotDelay,
@@ -1219,7 +1219,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromNonPlayingLoopingList(  // PC 0
     return pNext;
 }
 #endif
-// PC 0x00623700 GOG 0x00623680
+// PC 0x00623700 GOG 0x00623680 Xbox 0x00162690
 CExoLinkedListNode* CExoSoundInternal::RemoveFromNonPlayingStreamingLoopingList(
     CExoStreamingSoundSourceInternal* pSource)
 {
@@ -1290,7 +1290,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromStreamingList(  // PC 0x006237B
     return pPosition;
 }
 #endif
-// PC 0x00623850 GOG 0x006237D0
+// PC 0x00623850 GOG 0x006237D0 Xbox 0x00162830
 void CExoSoundInternal::AddToPlayingList(CExoSoundSourceInternal* pSource)
 {
     pSource->m_nListType = 1;
@@ -1438,7 +1438,7 @@ C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)  // PC
     return NULL;
 }
 #endif
-// PC 0x00623890 GOG 0x00623810
+// PC 0x00623890 GOG 0x00623810 Xbox 0x00162870
 CExoLinkedListNode* CExoSoundInternal::AddToNonPlayingLoopingList(
     CExoSoundSourceInternal* pSource)
 {
@@ -1446,13 +1446,13 @@ CExoLinkedListNode* CExoSoundInternal::AddToNonPlayingLoopingList(
     pSource->m_pListNode = m_lstNonPlayingLooping.AddHead(pSource);
     return pSource->m_pListNode;
 }
-// PC 0x006238B0 GOG 0x00623830
+// PC 0x006238B0 GOG 0x00623830 Xbox 0x00162890
 CExoLinkedListNode* CExoSoundInternal::AddToNonPlayingStreamingLoopingList(
     CExoStreamingSoundSourceInternal* pSource)
 {
     return m_lstNonPlayingStreamingLooping.AddHead(pSource);
 }
-// PC 0x006238C0 GOG 0x00623840
+// PC 0x006238C0 GOG 0x00623840 Xbox 0x001628A0
 CExoLinkedListNode* CExoSoundInternal::AddToDelayedOneShotList(
     CExoSoundSourceInternal* pSource)
 {
@@ -1460,7 +1460,7 @@ CExoLinkedListNode* CExoSoundInternal::AddToDelayedOneShotList(
     pSource->m_pListNode = m_lstDelayedOneShots.AddHead(pSource);
     return pSource->m_pListNode;
 }
-// PC 0x006238E0 GOG 0x00623860
+// PC 0x006238E0 GOG 0x00623860 Xbox 0x001628C0
 void CExoSoundInternal::LoadPriorityGroups()
 {
     int nValue;
@@ -1520,7 +1520,7 @@ void CExoSoundInternal::LoadPriorityGroups()
 
 
 
-// PC 0x00622890 GOG 0x00622860
+// PC 0x00622890 GOG 0x00622860 Xbox 0x001616A0
 CPriorityGroup::CPriorityGroup()
 {
     m_nPriority = 0;
@@ -1533,7 +1533,7 @@ CPriorityGroup::CPriorityGroup()
     m_nPlaying = 0;
     m_fPitchVariance = 0.0f;
 }
-// PC 0x00623CF0 GOG 0x00623C70
+// PC 0x00623CF0 GOG 0x00623C70 Xbox 0x00162C00
 void CExoSoundInternal::InterruptPlayingSound(unsigned char nPriorityGroup)
 {
     CExoLinkedListNode* pPosition;
@@ -1728,7 +1728,7 @@ int CExoSoundInternal::PauseAllSounds(int bPauseAll)  // PC 0x00623FD0 GOG 0x006
     return 1;
 }
 #endif
-// PC 0x00624100 GOG 0x00624080
+// PC 0x00624100 GOG 0x00624080 Xbox 0x00162F20
 int CExoSoundInternal::ResumeAllSounds()
 {
     CExoLinkedListNode* pPosition;
@@ -1752,7 +1752,7 @@ int CExoSoundInternal::ResumeAllSounds()
     }
     return 1;
 }
-// PC 0x00624180 GOG 0x00624100
+// PC 0x00624180 GOG 0x00624100 Xbox 0x00164360
 void CExoSoundInternal::PauseAllButStreamingMusicForMovie()
 {
     CExoLinkedListNode* pPosition;
@@ -2756,7 +2756,7 @@ float g_fSoundRenderTime;
 #endif
 
 #ifdef _XBOX
-void CExoSoundInternal::SetListenerOrientation(const Vector& vOrientation,
+void CExoSoundInternal::SetListenerOrientation(const Vector& vOrientation,  // Xbox 0x00162260
                                                const Vector& vUp)
 {
     if (equal(m_vListenerOrientation, vOrientation) == 0 ||
@@ -2771,7 +2771,7 @@ void CExoSoundInternal::SetListenerOrientation(const Vector& vOrientation,
 #endif
 
 #ifdef _XBOX
-void CExoSoundInternal::SetListenerPosition(const Vector& vPosition)
+void CExoSoundInternal::SetListenerPosition(const Vector& vPosition)  // Xbox 0x001622F0
 {
     if (equal(m_vListenerPosition, vPosition) == 0)
     {
@@ -2791,18 +2791,18 @@ void CExoSoundInternal::SetRollOffFactor(float fFactor)
 
 
 
-void CExoSoundInternal::SetSpeakerType(char nSpeakerType)
+void CExoSoundInternal::SetSpeakerType(char nSpeakerType)  // Xbox 0x00149D70
 {
 }
 
-void CExoSoundInternal::EnableEnvironmentEffects(int bEnabled)
+void CExoSoundInternal::EnableEnvironmentEffects(int bEnabled)  // Xbox 0x00171F80
 {
     m_bEnvironmentEffects = bEnabled;
 }
 #endif
 
 #ifdef _XBOX
-CExoSoundInternal::CExoSoundInternal()
+CExoSoundInternal::CExoSoundInternal()  // Xbox 0x00163410
 {
     m_p3DVoices = NULL;
     m_p2DVoices = NULL;
@@ -2855,7 +2855,7 @@ CExoSoundInternal::CExoSoundInternal()
 #endif
 
 #ifdef _XBOX
-inline void CExoSoundInternal::SetEnvironment(unsigned char nEnvironment)
+inline void CExoSoundInternal::SetEnvironment(unsigned char nEnvironment)  // Xbox 0x00162DB0
 {
     m_nCurrentEnvironment = nEnvironment;
     if (nEnvironment >= 24)
@@ -2900,14 +2900,14 @@ inline void CExoSoundInternal::UnMuteSound()
 #endif
 
 #ifdef _XBOX
-int CExoSoundInternal::GetMutable(CExoXboxStream* pSource)
+int CExoSoundInternal::GetMutable(CExoXboxStream* pSource)  // Xbox 0x001500F0
 {
     return 1;
 }
 #endif
 
 #ifdef _XBOX
-int CExoSoundInternal::GetSliderType(CExoXboxStream* pSource)
+int CExoSoundInternal::GetSliderType(CExoXboxStream* pSource)  // Xbox 0x00163290
 {
     unsigned char nGroup = pSource->m_nPriorityGroup;
 
@@ -2925,7 +2925,7 @@ int CExoSoundInternal::GetSliderType(CExoXboxStream* pSource)
 #endif
 
 #ifdef _XBOX
-float CExoSoundInternal::GetSliderVolume(int nSlider, int nTemporary)
+float CExoSoundInternal::GetSliderVolume(int nSlider, int nTemporary)  // Xbox 0x001632D0
 {
     switch (nSlider)
     {
@@ -2941,7 +2941,7 @@ float CExoSoundInternal::GetSliderVolume(int nSlider, int nTemporary)
 #endif
 
 #ifdef _XBOX
-void CExoSoundInternal::ShutDown()
+void CExoSoundInternal::ShutDown()  // Xbox 0x00161970
 {
     delete m_pStreamManager;
     m_pStreamManager = NULL;
@@ -2989,7 +2989,7 @@ void CExoSoundInternal::ShutDown()
 #endif
 
 #ifdef _XBOX
-void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,
+void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,  // Xbox 0x00161E50
                                             C3DVoice* p3DVoice)
 {
     int bOneShot = pSource->m_bLooping == 0;
@@ -3077,7 +3077,7 @@ void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,
 #endif
 
 #ifdef _XBOX
-void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,
+void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,  // Xbox 0x00162150
                                             C2DVoice* p2DVoice)
 {
     int bOneShot = pSource->m_bLooping == 0;
@@ -3122,7 +3122,7 @@ void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,
 
 #ifdef _XBOX
 
-int CExoSoundInternal::Play3DOneShotSound(CResRef const& sResRef,
+int CExoSoundInternal::Play3DOneShotSound(CResRef const& sResRef,  // Xbox 0x00162430
                                          Vector vPosition,
                                          unsigned char nPriorityGroup,
                                          unsigned long nOneShotDelay,
@@ -3177,7 +3177,7 @@ int CExoSoundInternal::Play3DOneShotSound(CResRef const& sResRef,
 #endif
 
 #ifdef _XBOX
-CExoLinkedListNode* CExoSoundInternal::RemoveFromPlayingList(
+CExoLinkedListNode* CExoSoundInternal::RemoveFromPlayingList(  // Xbox 0x00162560
     CExoSoundSourceInternal* pSource)
 {
     CExoLinkedListNode* pPosition = m_lstPlaying.GetHeadPos();
@@ -3219,7 +3219,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromPlayingList(
 #endif
 
 #ifdef _XBOX
-CExoLinkedListNode* CExoSoundInternal::RemoveFromNonPlayingLoopingList(
+CExoLinkedListNode* CExoSoundInternal::RemoveFromNonPlayingLoopingList(  // Xbox 0x00162640
     CExoSoundSourceInternal* pSource)
 {
     CExoLinkedListNode* pNext = pSource->m_pListNode;
@@ -3234,7 +3234,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromNonPlayingLoopingList(
 #endif
 
 #ifdef _XBOX
-CExoLinkedListNode* CExoSoundInternal::RemoveFromDelayedOneShotList(
+CExoLinkedListNode* CExoSoundInternal::RemoveFromDelayedOneShotList(  // Xbox 0x00162700
     CExoSoundSourceInternal* pSource)
 {
     CExoLinkedListNode* pNext = pSource->m_pListNode;
@@ -3250,7 +3250,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromDelayedOneShotList(
 
 #ifdef _XBOX
 
-CExoLinkedListNode* CExoSoundInternal::RemoveFromStreamingList(
+CExoLinkedListNode* CExoSoundInternal::RemoveFromStreamingList(  // Xbox 0x00162750
     CExoStreamingSoundSourceInternal* pSource)
 {
     CExoLinkedListNode* pPosition = m_lstStreaming.GetHeadPos();
@@ -3298,7 +3298,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromStreamingList(
 #endif
 
 #ifdef _XBOX
-C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)
+C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)  // Xbox 0x00163F30
 {
     unsigned char nPriority = 0;
     CPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
@@ -3365,7 +3365,7 @@ C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)
 #endif
 
 #ifdef _XBOX
-C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)
+C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)  // Xbox 0x00164090
 {
     unsigned char nPriority = 0;
     CPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
@@ -3433,7 +3433,7 @@ C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)
 #endif
 
 #ifdef _XBOX
-void CExoSoundInternal::ApplyNewVolume(int nTemporary)
+void CExoSoundInternal::ApplyNewVolume(int nTemporary)  // Xbox 0x00162E80
 {
     CExoLinkedListNode* pPosition;
     CExoStreamingSoundSourceInternal* pStream;
@@ -3465,7 +3465,7 @@ void CExoSoundInternal::ApplyNewVolume(int nTemporary)
 #endif
 
 #ifdef _XBOX
-int CExoSoundInternal::PauseAllSounds()
+int CExoSoundInternal::PauseAllSounds()  // Xbox 0x00164230
 {
     CExoLinkedListNode* pPosition;
     CExoStreamingSoundSourceInternal* pStream;
@@ -3500,7 +3500,7 @@ int CExoSoundInternal::PauseAllSounds()
 #endif
 
 #ifdef _XBOX
-void CExoSoundInternal::AddToStreamingList(
+void CExoSoundInternal::AddToStreamingList(  // Xbox 0x00162FA0
     CExoStreamingSoundSourceInternal* pSource)
 {
     m_lstStreaming.AddHead(pSource);
@@ -3516,7 +3516,7 @@ void CExoSoundInternal::AddToStreamingList(
 
 
 
-void CExoSoundInternal::DetachReleasingVoices(CExoSoundSourceInternal* pSource)
+void CExoSoundInternal::DetachReleasingVoices(CExoSoundSourceInternal* pSource)  // Xbox 0x00162FE0
 {
     CExoLinkedListNode* pPosition;
 
@@ -3544,12 +3544,12 @@ void CExoSoundInternal::DetachReleasingVoices(CExoSoundSourceInternal* pSource)
     }
 }
 
-int CExoSoundInternal::IsReleasing2DVoice(C2DVoice* pVoice)
+int CExoSoundInternal::IsReleasing2DVoice(C2DVoice* pVoice)  // Xbox 0x00163070
 {
     return m_lstReleasing2DVoices.Contains(pVoice);
 }
 
-void CExoSoundInternal::AddReleasing2DVoice(C2DVoice* pVoice)
+void CExoSoundInternal::AddReleasing2DVoice(C2DVoice* pVoice)  // Xbox 0x00163080
 {
     m_lstReleasing2DVoices.AddHead(pVoice);
     pVoice->m_bReleasing = 1;
@@ -3593,12 +3593,12 @@ void CExoSoundInternal::ForceRelease2DVoice(C2DVoice* pVoice)
     }
 }
 
-int CExoSoundInternal::IsReleasing3DVoice(C3DVoice* pVoice)
+int CExoSoundInternal::IsReleasing3DVoice(C3DVoice* pVoice)  // Xbox 0x00163160
 {
     return m_lstReleasing3DVoices.Contains(pVoice);
 }
 
-void CExoSoundInternal::AddReleasing3DVoice(C3DVoice* pVoice)
+void CExoSoundInternal::AddReleasing3DVoice(C3DVoice* pVoice)  // Xbox 0x00163170
 {
     m_lstReleasing3DVoices.AddHead(pVoice);
     pVoice->m_bReleasing = 1;
@@ -3645,7 +3645,7 @@ void CExoSoundInternal::ForceRelease3DVoice(C3DVoice* pVoice)
 
 #ifdef _XBOX
 
-void CExoSoundInternal::SetEnvironmentEffectLevel(float fLevel)
+void CExoSoundInternal::SetEnvironmentEffectLevel(float fLevel)  // Xbox 0x001641F0
 {
     if (fLevel != -1.0f)
     {
@@ -3656,7 +3656,7 @@ void CExoSoundInternal::SetEnvironmentEffectLevel(float fLevel)
 }
 
 
-void CExoSoundInternal::SetSoundMode(int nMode, int bMovie)
+void CExoSoundInternal::SetSoundMode(int nMode, int bMovie)  // Xbox 0x00164480
 {
     if (nMode != CExoSound::CEXOSOUND_MODE_GENERIC &&
         nMode == m_anSoundMode[m_nSoundMode])
@@ -3716,7 +3716,7 @@ void CExoSoundInternal::SetSoundMode(int nMode, int bMovie)
 #endif
 
 #ifdef _XBOX
-CExoSoundInternal::~CExoSoundInternal()
+CExoSoundInternal::~CExoSoundInternal()  // Xbox 0x00163680
 {
     ShutDown();
     if (m_pPriorityGroups != NULL)
@@ -3731,7 +3731,7 @@ CExoSoundInternal::~CExoSoundInternal()
 
 
 
-void CExoSoundInternal::Render()
+void CExoSoundInternal::Render()  // Xbox 0x001645E0
 {
     unsigned __int64 nStartTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
 
@@ -4084,7 +4084,7 @@ void CExoSoundInternal::Render()
 #ifdef _XBOX
 
 
-int CExoSoundInternal::Initialize(const CExoString& s3DProvider, unsigned char n2DVoices, unsigned char n3DVoices)
+int CExoSoundInternal::Initialize(const CExoString& s3DProvider, unsigned char n2DVoices, unsigned char n3DVoices)  // Xbox 0x00163760
 {
     CExoString sCopy = s3DProvider;
     int nVoice;
@@ -4138,7 +4138,7 @@ int CExoSoundInternal::Initialize(const CExoString& s3DProvider, unsigned char n
 
 
 
-long ExoSoundVolumeToMillibels(unsigned char nVolume, long nMinVolume)
+long ExoSoundVolumeToMillibels(unsigned char nVolume, long nMinVolume)  // Xbox 0x001614D0
 {
     float fMinVolume = (float)nMinVolume;
     float fVolume = (float)(unsigned long)(nVolume + 1);
@@ -4158,7 +4158,7 @@ unsigned char ExoSoundMillibelsToVolume(long nMillibels, long nMinVolume)
 
 
 
-DWORD CExoSoundInternal::ParseWaveData(void* pWaveFile, XBOXADPCMWAVEFORMAT* pFormat, void** ppData)
+DWORD CExoSoundInternal::ParseWaveData(void* pWaveFile, XBOXADPCMWAVEFORMAT* pFormat, void** ppData)  // Xbox 0x00161580
 {
     DWORD* pChunk = (DWORD*)pWaveFile;
     WAVEFORMATEX* pFileFormat = NULL;
@@ -4214,7 +4214,7 @@ DWORD CExoSoundInternal::ParseWaveData(void* pWaveFile, XBOXADPCMWAVEFORMAT* pFo
 #ifdef _XBOX
 
 
-HRESULT CExoSoundInternal::LoadEffectsImage(const char* pszFileName)
+HRESULT CExoSoundInternal::LoadEffectsImage(const char* pszFileName)  // Xbox 0x00162CC0
 {
     BYTE* pBuffer = NULL;
     HRESULT hr = S_OK;
@@ -4260,7 +4260,7 @@ HRESULT CExoSoundInternal::LoadEffectsImage(const char* pszFileName)
 #ifdef _XBOX
 
 
-void CExoSoundInternal::DeleteStoppedStreams()
+void CExoSoundInternal::DeleteStoppedStreams()  // Xbox 0x00161AD0
 {
     CExoXboxStream* pStream;
 

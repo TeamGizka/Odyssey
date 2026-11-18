@@ -9,7 +9,7 @@
 #endif
 #include "reswok.h"
 
-// PC 0x00761970 GOG 0x00761790
+// PC 0x00761970 GOG 0x00761790 Xbox 0x0013C1F0
 void CSWGuiQuickOrCustomPanel::HandleCancelButton()
 {
     if (m_pMainCharGen != NULL)
@@ -19,7 +19,7 @@ void CSWGuiQuickOrCustomPanel::HandleCancelButton()
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
 }
-// PC 0x007619A0 GOG 0x007617C0
+// PC 0x007619A0 GOG 0x007617C0 Xbox 0x0013C220
 void CSWGuiQuickOrCustomPanel::OnSelectQuickCharacterButton(
     CSWGuiControl* pControl)
 {
@@ -31,7 +31,7 @@ void CSWGuiQuickOrCustomPanel::OnSelectQuickCharacterButton(
         }
     }
 }
-// PC 0x007619D0 GOG 0x007617F0
+// PC 0x007619D0 GOG 0x007617F0 Xbox 0x0013C250
 void CSWGuiQuickOrCustomPanel::OnSelectCustomCharacterButton(
     CSWGuiControl* pControl)
 {
@@ -43,7 +43,7 @@ void CSWGuiQuickOrCustomPanel::OnSelectCustomCharacterButton(
         }
     }
 }
-// PC 0x00761A00 GOG 0x00761D40
+// PC 0x00761A00 GOG 0x00761D40 Xbox 0x0013C400
 void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -74,7 +74,7 @@ void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00761AD0 GOG 0x00761820
+// PC 0x00761AD0 GOG 0x00761820 Xbox 0x0013C280
 void CSWGuiQuickOrCustomPanel::SetDescription(unsigned long nStrRef)
 {
     STR_RES strRes;
@@ -198,7 +198,7 @@ int CResWOK::IsLoaded()
 }
 
 // Dead code: not in the PC executable
-int CResWOK::OnResourceFreed()
+int CResWOK::OnResourceFreed()  // Xbox 0x00331990
 {
     m_bServiced = 0;
     m_nWOKSize = 0;
@@ -207,7 +207,7 @@ int CResWOK::OnResourceFreed()
 }
 
 // Dead code: not in the PC executable
-int CResWOK::OnResourceServiced()
+int CResWOK::OnResourceServiced()  // Xbox 0x00161470
 {
     unsigned char* pData;
 

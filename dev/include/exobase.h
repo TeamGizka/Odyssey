@@ -61,7 +61,7 @@ public:
 
     char* CStr() const;
     void Format(char* szFormat, ...);
-    int GetLength() const
+    int GetLength() const  // Xbox 0x00011950
     {
         if (m_sString != NULL)
         {
@@ -71,7 +71,7 @@ public:
         return 0;
     }
     void Insert(const CExoString& sString, int nPosition);
-    BOOL IsEmpty() const
+    BOOL IsEmpty() const  // Xbox 0x0001B370
     {
         if (m_sString == NULL || m_sString[0] == 0)
         {
@@ -80,7 +80,7 @@ public:
 
         return FALSE;
     }
-    int AsINT() const
+    int AsINT() const  // Xbox 0x00011930
     {
         if (m_sString != NULL)
         {
@@ -89,7 +89,7 @@ public:
 
         return 0;
     }
-    float AsFLOAT() const
+    float AsFLOAT() const  // Xbox 0x0001B350
     {
         if (m_sString != NULL)
         {
@@ -249,7 +249,7 @@ public:
     CExoLinkedListInternal* m_pInternal;
 };
 
-template <class T> inline CExoLinkedList<T>::CExoLinkedList()
+template <class T> inline CExoLinkedList<T>::CExoLinkedList()  // Xbox 0x001495D0
 {
     m_pInternal = new CExoLinkedListInternal;
 }
@@ -264,7 +264,7 @@ template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::AddHead(T* pDat
     return m_pInternal->AddHead(pData);
 }
 
-template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::AddTail(T* pData)
+template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::AddTail(T* pData)  // Xbox 0x00149700
 {
     return m_pInternal->AddTail(pData);
 }
@@ -283,7 +283,7 @@ template <class T> inline int CExoLinkedList<T>::Contains(T* pData)
 {
     return m_pInternal->Contains(pData);
 }
-// PC 0x00622950 GOG 0x00622920
+// PC 0x00622950 GOG 0x00622920 Xbox 0x00161850
 template <class T> inline T* CExoLinkedList<T>::GetHead()
 {
     return (T*)m_pInternal->GetHead();
@@ -299,7 +299,7 @@ template <class T> inline T* CExoLinkedList<T>::GetTail()
     return (T*)m_pInternal->GetTail();
 }
 
-template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::GetTailPos()
+template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::GetTailPos()  // Xbox 0x00168B90
 {
     return m_pInternal->m_pTail;
 }
@@ -612,12 +612,12 @@ public:
     void SetSize(int nSize);
     CExoArrayList(const CExoArrayList<T>& list);
     CExoArrayList<T>& operator=(const CExoArrayList<T>& list);
-    T& operator[](int nIndex)
+    T& operator[](int nIndex)  // Xbox 0x002AA9A0
     {
         return element[nIndex];
     }
 
-    const T& operator[](int nIndex) const
+    const T& operator[](int nIndex) const  // Xbox 0x002AA9A0
     {
         return element[nIndex];
     }
@@ -807,7 +807,7 @@ template <class T> int CExoArrayList<T>::Contains(T value) const
     return nCount;
 }
 
-// PC 0x00506110 GOG 0x004FE1F0
+// PC 0x00506110 GOG 0x004FE1F0 Xbox 0x001B5170
 template <class T> int CExoArrayList<T>::DerefContains(T value) const
 {
     for (int i = 0; i < num; i++)

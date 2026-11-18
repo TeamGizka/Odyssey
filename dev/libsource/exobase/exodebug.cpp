@@ -5,17 +5,17 @@
 #include <stdarg.h>
 #endif
 
-// PC 0x006356C0 GOG 0x006355B0
+// PC 0x006356C0 GOG 0x006355B0 Xbox 0x00149C70
 void* EXOMALLOC(unsigned long nSize, const char* szFile, int nLine)
 {
     return malloc(nSize);
 }
-// PC 0x006356D0 GOG 0x006355C0
+// PC 0x006356D0 GOG 0x006355C0 Xbox 0x00149C80
 void EXOFREE(void* pMemory, const char* szFile, int nLine)
 {
     free(pMemory);
 }
-// PC 0x006356E0 GOG 0x006355D0
+// PC 0x006356E0 GOG 0x006355D0 Xbox 0x00149C90
 CExoDebug::CExoDebug()
 {
     m_pInternal = new CExoDebugInternal;
@@ -36,7 +36,7 @@ void CExoDebug::FlushErrorFile()
 void CExoDebug::FlushLogFile()
 {
 }
-// PC 0x00635750 GOG 0x00635640
+// PC 0x00635750 GOG 0x00635640 Xbox 0x00149CD0
 void CExoDebug::FlushScriptLogFile()
 {
     if (m_pInternal)
@@ -46,7 +46,7 @@ void CExoDebug::FlushScriptLogFile()
 }
 
 // Dead code: not in the PC executable
-void CExoDebug::FlushResourcesLogFile()
+void CExoDebug::FlushResourcesLogFile()  // Xbox 0x00149CD0
 {
     if (m_pInternal)
     {
@@ -55,7 +55,7 @@ void CExoDebug::FlushResourcesLogFile()
 }
 
 // Dead code: not in the PC executable
-void CExoDebug::FlushVOTestFile()
+void CExoDebug::FlushVOTestFile()  // Xbox 0x00149CD0
 {
     if (m_pInternal)
     {
@@ -86,7 +86,7 @@ unsigned long CExoDebug::GetCurrentMemoryAllocations()
 {
     return 0;
 }
-// PC 0x00635760 GOG 0x00635650
+// PC 0x00635760 GOG 0x00635650 Xbox 0x00149CE0
 void CExoDebug::OpenLogFiles(const CExoString& path)
 {
     if (m_pInternal)
@@ -94,7 +94,7 @@ void CExoDebug::OpenLogFiles(const CExoString& path)
         m_pInternal->OpenLogFiles(path);
     }
 }
-// PC 0x00635770 GOG 0x00635660
+// PC 0x00635770 GOG 0x00635660 Xbox 0x00149CF0
 void CExoDebug::Warning(int line, char* file, const char* message)
 {
     if (m_pInternal)
@@ -178,7 +178,7 @@ void CExoDebug::Assert(int line, char* file, const char* message)
 
     printf("%s", sAssert.CStr());
 }
-// PC 0x00635780 GOG 0x00635670
+// PC 0x00635780 GOG 0x00635670 Xbox 0x00149D00
 void CExoDebug::GetCurrentTimestamp(CExoString& timestamp)
 {
     if (m_pInternal)
@@ -186,7 +186,7 @@ void CExoDebug::GetCurrentTimestamp(CExoString& timestamp)
         m_pInternal->GetCurrentTimestamp(timestamp);
     }
 }
-// PC 0x00635790 GOG 0x00635680
+// PC 0x00635790 GOG 0x00635680 Xbox 0x00149D10
 void CExoDebug::WriteToScriptLogFile(const CExoString& text)
 {
     if (m_pInternal)
@@ -194,7 +194,7 @@ void CExoDebug::WriteToScriptLogFile(const CExoString& text)
         m_pInternal->WriteToScriptLogFile(text);
     }
 }
-// PC 0x006357A0 GOG 0x00635690
+// PC 0x006357A0 GOG 0x00635690 Xbox 0x00149D20
 CExoDebug::~CExoDebug()
 {
     if (m_pInternal != NULL)

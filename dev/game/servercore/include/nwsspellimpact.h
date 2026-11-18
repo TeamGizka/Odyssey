@@ -27,16 +27,16 @@ public:
         SCRIPT_ON_EXIT = 3
     };
     virtual ~CSWSAreaOfEffectObject();
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject() { return this; }  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual void AIUpdate();
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    virtual unsigned long GetEffectSpellId()  // PC 0x00571A40 GOG 0x00571B70
+    virtual unsigned long GetEffectSpellId()  // PC 0x00571A40 GOG 0x00571B70 Xbox 0x00278D90
     {
         return m_EffectSpellId;
     }
-    virtual void SetEffectSpellId(unsigned long nSpellId)  // PC 0x00571A50 GOG 0x00571B80
+    virtual void SetEffectSpellId(unsigned long nSpellId)  // PC 0x00571A50 GOG 0x00571B80 Xbox 0x00278DA0
     {
         m_EffectSpellId = nSpellId;
     }

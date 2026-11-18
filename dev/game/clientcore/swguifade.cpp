@@ -7,7 +7,7 @@
 #include "exoresman.h"
 #include "guiingame.h"
 #include "swguifade.h"
-// PC 0x00674EF0 GOG 0x00674CC0
+// PC 0x00674EF0 GOG 0x00674CC0 Xbox 0x000EA2B0
 void CSWGuiFade::SetFade(int bFadeIn, float fFadeStart, float fFadeLength,
                          Vector const& vColor)
 {
@@ -33,7 +33,7 @@ void CSWGuiFade::SetFade(int bFadeIn, float fFadeStart, float fFadeLength,
                   1000;
 }
 
-// PC 0x00674F80 GOG 0x00674C90
+// PC 0x00674F80 GOG 0x00674C90 Xbox 0x000EA280
 int CSWGuiFade::IsFadeDone()
 {
     if (m_fFadeElapsed == 0.0f)
@@ -42,7 +42,7 @@ int CSWGuiFade::IsFadeDone()
     }
     return m_fFadeLength + m_fFadeStart < m_fFadeElapsed;
 }
-// PC 0x00674FB0 GOG 0x00674D50
+// PC 0x00674FB0 GOG 0x00674D50 Xbox 0x000EA350
 void CSWGuiFade::Draw(float fElapsed)
 {
     unsigned long nTime = (unsigned long)((__int64)g_pAppManager->m_pClientExoApp
@@ -105,7 +105,7 @@ CSWGuiControl* CSWGuiFade::HitCheckMouse(int nX, int nY)  // PC 0x006750E0 GOG 0
     return 0;
 }
 #endif
-void CSWGuiFade::SetMsg(unsigned long nStrRef)  // PC 0x00675100 GOG 0x00674EA0
+void CSWGuiFade::SetMsg(unsigned long nStrRef)  // PC 0x00675100 GOG 0x00674EA0 Xbox 0x000EA460
 {
     CExoString sText;
     if (nStrRef != 0)
@@ -120,7 +120,7 @@ void CSWGuiFade::SetMsg(unsigned long nStrRef)  // PC 0x00675100 GOG 0x00674EA0
         m_lblMessage.m_cText.m_cParams.SetText(sText);
     }
 }
-// PC 0x006751E0 GOG 0x00674F80
+// PC 0x006751E0 GOG 0x00674F80 Xbox 0x000EA510
 void CSWGuiFade::ResetFade()
 {
     m_fAlpha = 0.0f;
@@ -134,7 +134,7 @@ void CSWGuiFade::ResetFade()
                       ->m_pPauseTimer->GetSnapshotTime() /
                   1000;
 }
-// PC 0x00675250 GOG 0x00674FF0
+// PC 0x00675250 GOG 0x00674FF0 Xbox 0x000EA5D0
 CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

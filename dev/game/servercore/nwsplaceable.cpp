@@ -38,7 +38,7 @@
 #define DATAPAD_READ_BOOLEAN 94
 
 int RenderPlaceableBBox = 0;
-// PC 0x0058A400 GOG 0x0058A480
+// PC 0x0058A400 GOG 0x0058A480 Xbox 0x00223A40
 CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     : CSWSObject(CGameObject::OBJECT_TYPE_PLACEABLE, oidSelf, 0)
 {
@@ -91,7 +91,7 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_bInventoryOpening = 0;
     m_pTrapTrigger = NULL;
 }
-// PC 0x0058A6B0 GOG 0x0058A730
+// PC 0x0058A6B0 GOG 0x0058A730 Xbox 0x00223CB0
 int CSWSPlaceable::LoadFromTemplate(const CResRef& cResRef, int bLoadState)
 {
     CResStruct stTop;
@@ -114,14 +114,14 @@ int CSWSPlaceable::LoadFromTemplate(const CResRef& cResRef, int bLoadState)
         return 1;
     }
 }
-// PC 0x0057F480 GOG 0x0057F500
+// PC 0x0057F480 GOG 0x0057F500 Xbox 0x00224EF0
 int CSWSPlaceable::GetDead()
 {
     if (m_bPlotObject != 0)
         return 0;
     return CSWSObject::GetDead();
 }
-// PC 0x00587DD0 GOG 0x00587E50
+// PC 0x00587DD0 GOG 0x00587E50 Xbox 0x00221680
 CSWSPlaceable::~CSWSPlaceable()
 {
     if (m_pcItemRepository != NULL)
@@ -152,7 +152,7 @@ CSWSPlaceable::~CSWSPlaceable()
             pCreature->m_oidParentCorpse = OBJECT_INVALID;
     }
 }
-// PC 0x00587F90 GOG 0x00588010
+// PC 0x00587F90 GOG 0x00588010 Xbox 0x002217F0
 int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadState)
 {
     CExoString sScript;
@@ -340,7 +340,7 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     PostProcess();
     return 1;
 }
-// PC 0x00588EE0 GOG 0x00588F60
+// PC 0x00588EE0 GOG 0x00588F60 Xbox 0x00222680
 int CSWSPlaceable::LoadBodyBag(int nAppearance)
 {
     CExoLocString lsName;
@@ -470,7 +470,7 @@ int CSWSPlaceable::LoadBodyBag(int nAppearance)
     PostProcess();
     return 1;
 }
-// PC 0x00586EA0 GOG 0x00586F20
+// PC 0x00586EA0 GOG 0x00586F20 Xbox 0x002207E0
 void CSWSPlaceable::PostProcess()
 {
     if (m_nHardness > 0)
@@ -487,7 +487,7 @@ void CSWSPlaceable::PostProcess()
         m_bApplyingInnateEffect = 0;
     }
 }
-// PC 0x005894A0 GOG 0x00589520
+// PC 0x005894A0 GOG 0x00589520 Xbox 0x00222B80
 int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstItems;
@@ -632,7 +632,7 @@ int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_nPCLevelAtSpawn, "PCLevelAtSpawn");
     return 1;
 }
-// PC 0x00589C60 GOG 0x00589CE0
+// PC 0x00589C60 GOG 0x00589CE0 Xbox 0x00223340
 void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
                             int bLoadingGame)
 {
@@ -692,7 +692,7 @@ void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
         GetArea()->AddObjectToArea(m_nId, 1);
     }
 }
-// PC 0x00589F00 GOG 0x00589F80
+// PC 0x00589F00 GOG 0x00589F80 Xbox 0x002235B0
 void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
 {
     if (m_bOpen == 0 && m_bHasInventory != 0)
@@ -734,7 +734,7 @@ void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
         }
     }
 }
-// PC 0x0058A060 GOG 0x0058A0E0
+// PC 0x0058A060 GOG 0x0058A0E0 Xbox 0x002236C0
 void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 {
     if (m_bOpen)
@@ -803,7 +803,7 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
         }
     }
 }
-// PC 0x00586F80 GOG 0x00587000
+// PC 0x00586F80 GOG 0x00587000 Xbox 0x00220880
 void CSWSPlaceable::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -821,7 +821,7 @@ void CSWSPlaceable::RemoveFromArea()
     Vector vPosition;
     SetPosition(vPosition, 1, 1, 0);
 }
-// PC 0x00587000 GOG 0x00587080
+// PC 0x00587000 GOG 0x00587080 Xbox 0x00220900
 void CSWSPlaceable::AIUpdate()
 {
     unsigned long nCalendarDay;
@@ -862,7 +862,7 @@ void CSWSPlaceable::AIUpdate()
     UpdateEffectList(nCalendarDay, nTimeOfDay);
     RunActions(nCalendarDay, nTimeOfDay, nTimer);
 }
-// PC 0x005871B0 GOG 0x00587230
+// PC 0x005871B0 GOG 0x00587230 Xbox 0x00220A70
 int CSWSPlaceable::RemoveItem(CSWSItem* pItem)
 {
     CItemRepository* pRepository = m_pcItemRepository;
@@ -875,7 +875,7 @@ int CSWSPlaceable::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x00587200 GOG 0x00587280
+// PC 0x00587200 GOG 0x00587280 Xbox 0x00220AC0
 int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
                                int bDisplayFeedback)
 {
@@ -934,7 +934,7 @@ int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
     }
     return 0;
 }
-// PC 0x005873C0 GOG 0x00587440
+// PC 0x005873C0 GOG 0x00587440 Xbox 0x00220C80
 unsigned char CSWSPlaceable::GetDetectDC()
 {
     unsigned char nDC = m_nTrapDetectDC;
@@ -955,7 +955,7 @@ unsigned char CSWSPlaceable::GetDetectDC()
     }
     return nDC;
 }
-// PC 0x00587410 GOG 0x00587490
+// PC 0x00587410 GOG 0x00587490 Xbox 0x00220CD0
 unsigned char CSWSPlaceable::GetDisarmDC()
 {
     unsigned char nDC = m_nDisarmDC;
@@ -976,7 +976,7 @@ unsigned char CSWSPlaceable::GetDisarmDC()
     }
     return nDC;
 }
-// PC 0x00587460 GOG 0x005874E0
+// PC 0x00587460 GOG 0x005874E0 Xbox 0x00220D20
 unsigned char CSWSPlaceable::GetOpenLockDC()
 {
     unsigned char nDC = 0;
@@ -1039,7 +1039,7 @@ unsigned char CSWSPlaceable::GetOpenLockDC()
     }
     return nDC;
 }
-// PC 0x00587550 GOG 0x005875D0
+// PC 0x00587550 GOG 0x005875D0 Xbox 0x00220E00
 Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)
 {
     Vector vActionPoint;
@@ -1057,7 +1057,7 @@ Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)
         vActionPoint = m_vPosition;
     return vActionPoint;
 }
-// PC 0x005876E0 GOG 0x00587760
+// PC 0x005876E0 GOG 0x00587760 Xbox 0x00220FD0
 int CSWSPlaceable::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
                                        const Vector& vTarget,
                                        unsigned long oidTarget, int bFake,
@@ -1092,7 +1092,7 @@ int CSWSPlaceable::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
               &nPathType, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-// PC 0x005877F0 GOG 0x00587870
+// PC 0x005877F0 GOG 0x00587870 Xbox 0x002210E0
 int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
 {
     Vector vTarget;
@@ -1159,7 +1159,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x005879B0 GOG 0x00587A3
     }
 }
 #endif
-int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60 GOG 0x00587AE0
+int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60 GOG 0x00587AE0 Xbox 0x00221350
 {
     int nLightColor;
     bool bFailed;
@@ -1175,7 +1175,7 @@ int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60 GOG 0x00587AE0
 
     return m_bLightIsOn;
 }
-// PC 0x00587B00 GOG 0x00587B80
+// PC 0x00587B00 GOG 0x00587B80 Xbox 0x002213C0
 int CSWSPlaceable::GetBodyBagAppearance()
 {
     int nAppearance;
@@ -1212,7 +1212,7 @@ int CSWSPlaceable::GetBodyBagAppearance()
 
     return (unsigned char)nAppearance;
 }
-// PC 0x00587C70 GOG 0x00587CF0
+// PC 0x00587C70 GOG 0x00587CF0 Xbox 0x002214F0
 int CSWSPlaceable::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                                   const float& fDistance, const float& fWidth,
                                   const float& fHeight,
@@ -1223,7 +1223,7 @@ int CSWSPlaceable::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
     return m_cSurfaceMesh.NoNonWalkPolys(vStart, vEnd, fDistance, fWidth,
                                          fHeight, pWalkHitInfo);
 }
-// PC 0x00587CE0 GOG 0x00587D60
+// PC 0x00587CE0 GOG 0x00587D60 Xbox 0x00221560
 void CSWSPlaceable::SetOrientation(const Quaternion& qOrientation)
 {
     m_qOrientation = qOrientation;
@@ -1237,14 +1237,14 @@ void CSWSPlaceable::SetOrientation(const Quaternion& qOrientation)
     vOrientation = normalize(vOrientation);
     CSWSObject::SetOrientation(vOrientation);
 }
-// PC 0x00587D80 GOG 0x00587E00
+// PC 0x00587D80 GOG 0x00587E00 Xbox 0x00221630
 void CSWSPlaceable::OnEndDialog(CSWSObject* pObject)
 {
     g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONENDDIALOGUE], m_nId,
                                  1);
     m_nComputerUseBonus = 0;
 }
-// PC 0x00587DB0 GOG 0x00587E30
+// PC 0x00587DB0 GOG 0x00587E30 Xbox 0x00221660
 CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
 {
     if (GetClientObject() != NULL)
@@ -1252,7 +1252,7 @@ CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
 
     return NULL;
 }
-// PC 0x0058A330 GOG 0x0058A3B0
+// PC 0x0058A330 GOG 0x0058A3B0 Xbox 0x00223970
 int CSWSPlaceable::GetItemCount(int bDropableOnly)
 {
     if (m_bHasInventory == 0)
@@ -1277,7 +1277,7 @@ int CSWSPlaceable::GetItemCount(int bDropableOnly)
 
     return nCount;
 }
-// PC 0x0058A390 GOG 0x0058A410
+// PC 0x0058A390 GOG 0x0058A410 Xbox 0x002239D0
 void CSWSPlaceable::ClosePlaceableForAllPlayers()
 {
     CExoLinkedList<CSWSClient>* pPlayerList;
@@ -1301,7 +1301,7 @@ void CSWSPlaceable::ClosePlaceableForAllPlayers()
         }
     }
 }
-// PC 0x0058A7E0 GOG 0x0058A860
+// PC 0x0058A7E0 GOG 0x0058A860 Xbox 0x00223D80
 void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                                  void* pEventData, unsigned long nCalendarDay,
                                  unsigned long nTimeOfDay)
@@ -1729,7 +1729,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
     }
     return;
 }
-// PC 0x0058B510 GOG 0x0058B590
+// PC 0x0058B510 GOG 0x0058B590 Xbox 0x00224AB0
 int CSWSPlaceable::AcquireItemsFromObject(unsigned long oidSource,
                                         int bDropableOnly)
 {
@@ -1796,7 +1796,7 @@ int CSWSPlaceable::AcquireItemsFromObject(unsigned long oidSource,
     }
     return nCount;
 }
-// PC 0x0057F6F0 GOG 0x0057F770
+// PC 0x0057F6F0 GOG 0x0057F770 Xbox 0x00225150
 void CSWSPlaceable::DoDamage(int nDamage)
 {
     if (m_bPlotObject == 0)
@@ -1829,7 +1829,7 @@ void CSWSPlaceable::DropItemsIntoArea()
 
 #ifdef _XBOX
 
-void CSWSPlaceable::SetLightIsOn(int bLightIsOn)
+void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // Xbox 0x002212C0
 {
     int nLightColor;
     if (m_bLightIsOn == bLightIsOn ||

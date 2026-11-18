@@ -93,7 +93,7 @@ public:
     }
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x0068E8A0 GOG 0x0068E610
+    virtual int GetType()  // PC 0x0068E8A0 GOG 0x0068E610 Xbox 0x000AEB70
     {
         return AUR_BEHAVIOR_CAMERA_NAVIGATE;
     }
@@ -134,13 +134,13 @@ public:
     virtual ~CSWCameraOnAStick();
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x00690FC0 GOG 0x00690D30
+    virtual int GetType()  // PC 0x00690FC0 GOG 0x00690D30 Xbox 0x000B1480
     {
         return AUR_BEHAVIOR_CAMERA_ONASTICK;
     }
 
     void ClearLookAtTarget();
-    Vector GetTargetHeadPosition()  // PC 0x00640B20 GOG 0x006409D0
+    Vector GetTargetHeadPosition()  // PC 0x00640B20 GOG 0x006409D0 Xbox 0x00021CA0
     {
         Vector vPosition = static_cast<Gob*>((CAurObject*)m_pTarget)->GetPosition();
         vPosition.m_fZ += m_fPitch;
@@ -248,7 +248,7 @@ public:
     CSWCameraFreeLook(CCameraSettings& settings);
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x00691360 GOG 0x006910D0
+    virtual int GetType()  // PC 0x00691360 GOG 0x006910D0 Xbox 0x000B1800
     {
         return AUR_BEHAVIOR_CAMERA_FREELOOK;
     }
@@ -286,7 +286,7 @@ public:
     virtual ~CSWCameraDeath();
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x00691410 GOG 0x00691180
+    virtual int GetType()  // PC 0x00691410 GOG 0x00691180 Xbox 0x000B1810
     {
         return AUR_BEHAVIOR_CAMERA_DEATH;
     }

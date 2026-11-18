@@ -11,7 +11,7 @@ Vector CSWGuiDrawable::NO_COLOURING(-1.0f, -1.0f, -1.0f);
 float CSWGuiDrawable::m_fAlphaPulseTimer = 0.75f;
 float CSWGuiDrawable::m_fPulsingAlpha = 1.0f;
 int CSWGuiDrawable::m_bAlphaPulsingUp;
-// PC 0x00414270 GOG 0x00414220
+// PC 0x00414270 GOG 0x00414220 Xbox 0x003375C0
 void CSWGuiDrawable::UpdatePulsing(float fElapsed)
 {
     float fStartAlpha;
@@ -37,7 +37,7 @@ void CSWGuiDrawable::UpdatePulsing(float fElapsed)
                                       ((0.75f - m_fAlphaPulseTimer) * 1.3333334f);
 }
 
-// PC 0x00414300 GOG 0x004142B0
+// PC 0x00414300 GOG 0x004142B0 Xbox 0x00337650
 void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cCornerImage || bForceReload != 0)
@@ -60,7 +60,7 @@ void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage, int bForceReload)
         }
     }
 }
-// PC 0x00414390 GOG 0x00414340
+// PC 0x00414390 GOG 0x00414340 Xbox 0x003376E0
 void CSWGuiBorderParams::SetEdgeImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cEdgeImage || bForceReload != 0)
@@ -83,7 +83,7 @@ void CSWGuiBorderParams::SetEdgeImage(const CResRef& cImage, int bForceReload)
         }
     }
 }
-// PC 0x00414420 GOG 0x004143D0
+// PC 0x00414420 GOG 0x004143D0 Xbox 0x00337770
 void CSWGuiBorderParams::SetFillImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cFillImage || bForceReload != 0)
@@ -117,7 +117,7 @@ void CSWGuiBorderParams::SetBorder(CSWGuiBorder* pBorder)
         SetFillImage(m_cFillImage, 1);
     }
 }
-// PC 0x004144F0 GOG 0x004144A0
+// PC 0x004144F0 GOG 0x004144A0 Xbox 0x00337800
 int CSWGuiBorderParams::GetBorderDim() const
 {
     int nBorderDim = 0;
@@ -133,7 +133,7 @@ int CSWGuiBorderParams::GetBorderDim() const
     }
     return nBorderDim;
 }
-// PC 0x00414520 GOG 0x004144D0
+// PC 0x00414520 GOG 0x004144D0 Xbox 0x00337830
 void CSWGuiBorderParams::SetPulsingAlpha(int bPulsing, int bLowAlpha,
                                          int bHighAlpha)
 {
@@ -141,7 +141,7 @@ void CSWGuiBorderParams::SetPulsingAlpha(int bPulsing, int bLowAlpha,
     m_bLowAlpha = bLowAlpha;
     m_bHighAlpha = bHighAlpha;
 }
-// PC 0x00414550 GOG 0x00414500
+// PC 0x00414550 GOG 0x00414500 Xbox 0x00338400
 CSWGuiImageParams::CSWGuiImageParams(const CResRef& cImage, int bTiled,
                                    int nDrawStyle, float fRotation,
                                    int nAlignment, float fAlpha,
@@ -159,7 +159,7 @@ CSWGuiImageParams::CSWGuiImageParams(const CResRef& cImage, int bTiled,
 }
 
 #include "clientexoappinternal.h"
-// PC 0x00414630 GOG 0x004145E0
+// PC 0x00414630 GOG 0x004145E0 Xbox 0x00337860
 void CSWGuiTextParams::SetColor(const Vector& vColor)
 {
     m_vColor = vColor;
@@ -168,13 +168,13 @@ void CSWGuiTextParams::SetColor(const Vector& vColor)
         m_pText->m_pString->SetColor(m_vColor);
     }
 }
-// PC 0x00414670 GOG 0x00414620
+// PC 0x00414670 GOG 0x00414620 Xbox 0x003378A0
 void CSWGuiTextParams::SetDefaultColor(const Vector& vColor)
 {
     m_vOriginalColor = vColor;
     SetColor(vColor);
 }
-// PC 0x004146A0 GOG 0x00414650
+// PC 0x004146A0 GOG 0x00414650 Xbox 0x003378F0
 void CSWGuiTextParams::RestoreDefaultColor()
 {
     SetColor(m_vOriginalColor);
@@ -260,7 +260,7 @@ CSWGuiExtent CSWGuiText::GetIdealWidthAndHeight()  // PC 0x00414730 GOG 0x004146
 inline CSWGuiDrawable::~CSWGuiDrawable()
 {
 }
-// PC 0x00416CC0 GOG 0x00416CF0
+// PC 0x00416CC0 GOG 0x00416CF0 Xbox 0x00339C20
 CSWGuiScene::CSWGuiScene() : m_lModels(0)
 {
     m_pScene = NewCAurScene("scene");
@@ -275,7 +275,7 @@ CSWGuiScene::CSWGuiScene() : m_lModels(0)
         m_vColor = CSWGuiDrawable::NO_COLOURING;
     }
 }
-// PC 0x004147D0 GOG 0x00414780
+// PC 0x004147D0 GOG 0x00414780 Xbox 0x00337970
 void CSWGuiScene::Draw(float fElapsed)
 {
     m_pScene->Animate(fElapsed);
@@ -287,7 +287,7 @@ void CSWGuiScene::Draw(float fElapsed)
         AurGUICloseViewport();
     }
 }
-// PC 0x00415E70 GOG 0x00415E20
+// PC 0x00415E70 GOG 0x00415E20 Xbox 0x00338F30
 CSWGuiScene::~CSWGuiScene()
 {
     for (int nModel = 0; nModel < m_lModels.num; ++nModel)
@@ -316,7 +316,7 @@ CSWGuiScene::~CSWGuiScene()
     }
 #endif
 }
-// PC 0x00415FA0 GOG 0x00415F50
+// PC 0x00415FA0 GOG 0x00415F50 Xbox 0x00338FA0
 int CSWGuiScene::RemoveModel(int nModel, int bDestroy)
 {
     CAurObject* pModel;
@@ -357,7 +357,7 @@ int CSWGuiScene::AddModel(CAurObject* pModel, int nModel, int bAttach)
 
     return 1;
 }
-// PC 0x00415FE0 GOG 0x00415F90
+// PC 0x00415FE0 GOG 0x00415F90 Xbox 0x00338FE0
 CAurObject* CSWGuiScene::GetModel(int nModel)
 {
     if (nModel >= 0 && nModel < m_lModels.num)
@@ -366,7 +366,7 @@ CAurObject* CSWGuiScene::GetModel(int nModel)
     }
     return NULL;
 }
-// PC 0x00416E30 GOG 0x00416E60
+// PC 0x00416E30 GOG 0x00416E60 Xbox 0x00339D00
 CAurObject* CSWGuiScene::AddModel(const CExoString& sModel, int nFlags)
 {
     CAurObject* pModel;
@@ -378,7 +378,7 @@ CAurObject* CSWGuiScene::AddModel(const CExoString& sModel, int nFlags)
     }
     return NULL;
 }
-// PC 0x00416000 GOG 0x00416030
+// PC 0x00416000 GOG 0x00416030 Xbox 0x00339000
 CSWGuiBorder::CSWGuiBorder()
     : m_cParams(CResRef(), CResRef(), CResRef(), 0, 0, 1.0f,
                 Vector(1.0f, 1.0f, 1.0f), 0)
@@ -388,7 +388,7 @@ CSWGuiBorder::CSWGuiBorder()
     m_pFillImage = NULL;
     m_cParams.SetBorder(this);
 }
-// PC 0x00414820 GOG 0x004147D0
+// PC 0x00414820 GOG 0x004147D0 Xbox 0x003379E0
 CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner,
                                        const CResRef& cEdge,
                                        const CResRef& cFill, int nFillMode,
@@ -432,14 +432,14 @@ CSWGuiBorderParams& CSWGuiBorderParams::operator=(const CSWGuiBorderParams& cPar
     SetBorder(m_pBorder);
     return *this;
 }
-// PC 0x004149D0 GOG 0x00414980
+// PC 0x004149D0 GOG 0x00414980 Xbox 0x00337BE0
 void CSWGuiBorder::Initialize(const CSWGuiExtent& cExtent,
                               const CSWGuiBorderParams& cParams)
 {
     m_cExtent = cExtent;
     m_cParams = cParams;
 }
-// PC 0x00414A00 GOG 0x004149B0
+// PC 0x00414A00 GOG 0x004149B0 Xbox 0x00337C10
 CSWGuiBorder::~CSWGuiBorder()
 {
     if (m_pCornerImage != NULL)
@@ -458,7 +458,7 @@ CSWGuiBorder::~CSWGuiBorder()
         m_pFillImage = NULL;
     }
 }
-// PC 0x00414A80 GOG 0x00414A30
+// PC 0x00414A80 GOG 0x00414A30 Xbox 0x00337C60
 CSWGuiExtent CSWGuiBorder::GetInnerExtent()
 {
     int nCornerHeight;
@@ -524,23 +524,23 @@ CSWGuiExtent CSWGuiBorder::GetInnerExtent()
     return cInner;
 }
 
-inline void CSWGuiImageParams::SetImage(const CResRef& cImage)
+inline void CSWGuiImageParams::SetImage(const CResRef& cImage)  // Xbox 0x000EBE70
 {
     SetImage(cImage, 0);
 }
-static inline void BorderSetCornerImage(CSWGuiBorderParams* pParams, const CResRef& cImage)
+static inline void BorderSetCornerImage(CSWGuiBorderParams* pParams, const CResRef& cImage)  // Xbox 0x000D6F40
 {
     pParams->SetCornerImage(cImage, 0);
 }
-static inline void BorderSetEdgeImage(CSWGuiBorderParams* pParams, const CResRef& cImage)
+static inline void BorderSetEdgeImage(CSWGuiBorderParams* pParams, const CResRef& cImage)  // Xbox 0x000D6F50
 {
     pParams->SetEdgeImage(cImage, 0);
 }
-static inline void BorderSetFillImage(CSWGuiBorderParams* pParams, const CResRef& cImage)
+static inline void BorderSetFillImage(CSWGuiBorderParams* pParams, const CResRef& cImage)  // Xbox 0x00049F40
 {
     pParams->SetFillImage(cImage, 0);
 }
-// PC 0x00414C20 GOG 0x00414BD0
+// PC 0x00414C20 GOG 0x00414BD0 Xbox 0x00337ED0
 void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
                        const CExoString& sName)
 {
@@ -573,7 +573,7 @@ void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
                                   (nPulsing >> 1) & 1);
     }
 }
-// PC 0x00414E00 GOG 0x00414DB0
+// PC 0x00414E00 GOG 0x00414DB0 Xbox 0x003380B0
 void CSWGuiBorder::FillTile(int nHeight, int nWidth, int nX, int nY,
                             float fAlpha, const Vector& vColor)
 {
@@ -658,7 +658,7 @@ void CSWGuiBorder::FillTile(int nHeight, int nWidth, int nX, int nY,
         }
     }
 }
-// PC 0x004160D0 GOG 0x00416100
+// PC 0x004160D0 GOG 0x00416100 Xbox 0x003390D0
 void CSWGuiBorder::Draw(float fElapsed)
 {
     if (m_cExtent.m_nWidth == 0 || m_cExtent.m_nHeight == 0)
@@ -842,7 +842,7 @@ void CSWGuiBorder::Draw(float fElapsed)
     }
     CAurGUIImage::FlushBuffer(CAurGUIImage::cm_fAlpha);
 }
-// PC 0x00415040 GOG 0x00414FF0
+// PC 0x00415040 GOG 0x00414FF0 Xbox 0x003382F0
 void CSWGuiBorder::FillCenter(int nHeight, int nWidth, int nX, int nY,
                               float fAlpha, const Vector& vColor)
 {
@@ -873,7 +873,7 @@ void CSWGuiBorder::FillCenter(int nHeight, int nWidth, int nX, int nY,
                           0, fRotation, vColor, fAlpha);
     }
 }
-// PC 0x00415150 GOG 0x00415100
+// PC 0x00415150 GOG 0x00415100 Xbox 0x003384A0
 void CSWGuiImageParams::SetImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cImage || bForceReload != 0)
@@ -900,7 +900,7 @@ void CSWGuiImageParams::SetImage(const CResRef& cImage, int bForceReload)
         }
     }
 }
-// PC 0x004151E0 GOG 0x00415190
+// PC 0x004151E0 GOG 0x00415190 Xbox 0x00338540
 void CSWGuiImageParams::SetAlignment(int nAlignment)
 {
     m_nAlignment = nAlignment;
@@ -925,7 +925,7 @@ CSWGuiImageParams& CSWGuiImageParams::operator=(const CSWGuiImageParams& cParams
     SetImageObject(m_pImage);
     return *this;
 }
-// PC 0x00415210 GOG 0x004151C0
+// PC 0x00415210 GOG 0x004151C0 Xbox 0x00338570
 void CSWGuiImageParams::SetDrawStyle(int nDrawStyle)
 {
     m_bTiled = nDrawStyle;
@@ -945,7 +945,7 @@ void CSWGuiImageParams::SetImageObject(CSWGuiImage* pImage)
         SetDrawStyle(m_bTiled);
     }
 }
-// PC 0x00415280 GOG 0x00415230
+// PC 0x00415280 GOG 0x00415230 Xbox 0x003385A0
 CSWGuiImage::CSWGuiImage()
     : m_cParams(CResRef(), 0, 0, 0.0f,
                 CSWGuiImageParams::ALIGNMENT_DEFAULT, 1.0f,
@@ -954,14 +954,14 @@ CSWGuiImage::CSWGuiImage()
     m_pImageObject = NULL;
     m_cParams.SetImageObject(this);
 }
-// PC 0x004166A0 GOG 0x004166D0
+// PC 0x004166A0 GOG 0x004166D0 Xbox 0x00339710
 void CSWGuiImage::Initialize(const CSWGuiExtent& cExtent,
                             const CSWGuiImageParams& cParams)
 {
     m_cExtent = cExtent;
     m_cParams = cParams;
 }
-// PC 0x004166D0 GOG 0x00416700
+// PC 0x004166D0 GOG 0x00416700 Xbox 0x00339740
 void CSWGuiImage::Load(CResGFF* pGFF, CResStruct& cStruct,
                       const CExoString& sName)
 {
@@ -1003,7 +1003,7 @@ void CSWGuiImage::Load(CResGFF* pGFF, CResStruct& cStruct,
         m_cParams.m_fRotation = fRotation;
     }
 }
-// PC 0x00415320 GOG 0x004152D0
+// PC 0x00415320 GOG 0x004152D0 Xbox 0x00338650
 CSWGuiImage::~CSWGuiImage()
 {
     if (m_pImageObject != NULL)
@@ -1012,7 +1012,7 @@ CSWGuiImage::~CSWGuiImage()
         m_pImageObject = NULL;
     }
 }
-// PC 0x00415380 GOG 0x00415330
+// PC 0x00415380 GOG 0x00415330 Xbox 0x00338680
 CSWGuiExtent CSWGuiImage::GetImageExtent()
 {
     CSWGuiExtent cExtent;
@@ -1025,7 +1025,7 @@ CSWGuiExtent CSWGuiImage::GetImageExtent()
 
     return cExtent;
 }
-// PC 0x004153C0 GOG 0x00415370
+// PC 0x004153C0 GOG 0x00415370 Xbox 0x003386C0
 void CSWGuiImage::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -1087,7 +1087,7 @@ void CSWGuiImage::SetExtent(const CSWGuiExtent& cExtent)
         }
     }
 }
-// PC 0x004154E0 GOG 0x00415490
+// PC 0x004154E0 GOG 0x00415490 Xbox 0x003387E0
 void CSWGuiImage::Draw(float fElapsed)
 {
     float fAlpha;
@@ -1191,7 +1191,7 @@ void CSWGuiTextParams::ReSetFont()
 {
     SetFontRename();
 }
-// PC 0x00415650 GOG 0x00415600
+// PC 0x00415650 GOG 0x00415600 Xbox 0x003389D0
 void CSWGuiTextParams::SetText(const CExoString& sText)
 {
     m_sText = sText;
@@ -1210,7 +1210,7 @@ void CSWGuiTextParams::SetLocString(CExoLocString& lsText, int nStrRef)
     lsText.GetString(nStrRef, &sText, 0);
     SetText(sText);
 }
-// PC 0x004156A0 GOG 0x00415650
+// PC 0x004156A0 GOG 0x00415650 Xbox 0x00338A40
 void CSWGuiTextParams::SetStrRef(unsigned long nStrRef)
 {
     m_nStrRef = nStrRef;
@@ -1227,7 +1227,7 @@ void CSWGuiTextParams::SetStrRef(unsigned long nStrRef)
         }
     }
 }
-// PC 0x00415770 GOG 0x00415720
+// PC 0x00415770 GOG 0x00415720 Xbox 0x00338AF0
 void CSWGuiTextParams::SetAlignment(int nAlignment)
 {
     m_nAlignment = nAlignment;
@@ -1284,7 +1284,7 @@ void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
     }
 }
 #endif
-CSWGuiText::CSWGuiText()  // PC 0x00416A90 GOG 0x00416AC0
+CSWGuiText::CSWGuiText()  // PC 0x00416A90 GOG 0x00416AC0 Xbox 0x00338C00
 {
     m_pString = NULL;
     m_cParams.SetTextObject(this);
@@ -1292,7 +1292,7 @@ CSWGuiText::CSWGuiText()  // PC 0x00416A90 GOG 0x00416AC0
     m_nWrapWidth = 400;
 #endif
 }
-// PC 0x00415840 GOG 0x004157F0
+// PC 0x00415840 GOG 0x004157F0 Xbox 0x00338C40
 CSWGuiText::~CSWGuiText()
 {
     if (m_pString != NULL)
@@ -1301,7 +1301,7 @@ CSWGuiText::~CSWGuiText()
         m_pString = NULL;
     }
 }
-// PC 0x004158B0 GOG 0x00415860
+// PC 0x004158B0 GOG 0x00415860 Xbox 0x00338C70
 void CSWGuiText::Load(CResGFF* pGFF, CResStruct& cStruct,
                      const CExoString& sName)
 {
@@ -1335,7 +1335,7 @@ void CSWGuiText::Load(CResGFF* pGFF, CResStruct& cStruct,
         cParams.SetTextObject(this);
     }
 }
-// PC 0x00415AA0 GOG 0x00415A50
+// PC 0x00415AA0 GOG 0x00415A50 Xbox 0x00338E80
 void CSWGuiText::Draw(float fElapsed)
 {
     float fAlpha;
@@ -1350,7 +1350,7 @@ void CSWGuiText::Draw(float fElapsed)
         m_pString->Draw(fAlpha);
     }
 }
-// PC 0x00415AE0 GOG 0x00415A90
+// PC 0x00415AE0 GOG 0x00415A90 Xbox 0x00338EC0
 void CSWGuiText::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -1433,7 +1433,7 @@ void CSWGuiEditText::SetCaretVisible(int bVisible)
 }
 // PC 0x00416B20 GOG 0x00416B50
 #ifdef _XBOX
-void CSWGuiText::Initialize(const CSWGuiExtent& cExtent,
+void CSWGuiText::Initialize(const CSWGuiExtent& cExtent,  // Xbox 0x00339B50
                             const CSWGuiTextParams& cParams)
 #else
 void CSWGuiText::Initialize(const CSWGuiExtent& cExtent,
@@ -1473,7 +1473,7 @@ CSWGuiEditText::CSWGuiEditText()
 }
 
 #ifdef _XBOX
-int CSWGuiText::GetIdealHeight()
+int CSWGuiText::GetIdealHeight()  // Xbox 0x00337930
 {
     if (m_pString != NULL)
     {
@@ -1482,7 +1482,7 @@ int CSWGuiText::GetIdealHeight()
     return 0;
 }
 
-int CSWGuiText::GetFontHeight()
+int CSWGuiText::GetFontHeight()  // Xbox 0x00337950
 {
     if (m_pString != NULL)
     {
@@ -1497,7 +1497,7 @@ int CSWGuiText::GetFontHeight()
 CResRef CSWGuiTextParams::s_cDefaultFont("dialogfont16x16");
 CResRef CSWGuiTextParams::s_cConsoleFont("fnt_console");
 
-void CSWGuiTextParams::SetFont(const CResRef& cFont)
+void CSWGuiTextParams::SetFont(const CResRef& cFont)  // Xbox 0x00338930
 {
     if (cFont == s_cConsoleFont)
     {
@@ -1517,7 +1517,7 @@ void CSWGuiTextParams::SetFont(const CResRef& cFont)
     }
 }
 
-CSWGuiTextParams::CSWGuiTextParams()
+CSWGuiTextParams::CSWGuiTextParams()  // Xbox 0x00338850
 {
     m_nAlignment = SWGUI_TEXT_ALIGNMENT_DEFAULT;
     m_vColor = Vector(1.0f, 1.0f, 1.0f);
@@ -1543,7 +1543,7 @@ CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
     return *this;
 }
 
-void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
+void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)  // Xbox 0x00338B60
 {
     m_pText = pText;
     if (pText != NULL)

@@ -57,7 +57,7 @@ public:
     void SetEndX(float fX) { m_fEndX = fX; }
     void SetEndY(float fY) { m_fEndY = fY; }
     void SetEndZ(float fZ) { m_fEndZ = fZ; }
-    void SetPathPointPath(unsigned long* pPath)  // PC 0x004FBEC0 GOG 0x004F3FA0
+    void SetPathPointPath(unsigned long* pPath)  // PC 0x004FBEC0 GOG 0x004F3FA0 Xbox 0x0016E580
     {
         if (m_pPathPointDFSPath != 0)
         {
@@ -66,31 +66,31 @@ public:
         }
         m_pPathPointDFSPath = pPath;
     }
-    void GetPathPointEndpoints(Vector& vStart, Vector& vEnd)  // PC 0x004FBF00 GOG 0x004F3FE0
+    void GetPathPointEndpoints(Vector& vStart, Vector& vEnd)  // PC 0x004FBF00 GOG 0x004F3FE0 Xbox 0x001AA210
     {
         vStart = m_vPathPointEndpointStart;
         vEnd = m_vPathPointEndpointEnd;
     }
-    void SetPathPointEndpoints(const Vector& vStart, const Vector& vEnd)  // PC 0x004FBF40 GOG 0x004F4020
+    void SetPathPointEndpoints(const Vector& vStart, const Vector& vEnd)  // PC 0x004FBF40 GOG 0x004F4020 Xbox 0x001AA250
     {
         m_vPathPointEndpointStart = vStart;
         m_vPathPointEndpointEnd = vEnd;
     }
-    void SetPathNodeStartPath(int nCount, float* pfPoints)  // PC 0x004FBF80 GOG 0x004F4060
+    void SetPathNodeStartPath(int nCount, float* pfPoints)  // PC 0x004FBF80 GOG 0x004F4060 Xbox 0x001AA290
     {
         m_nPathPointStartCount = nCount;
         if (m_pfPathPointStartPoints != 0)
             delete m_pfPathPointStartPoints;
         m_pfPathPointStartPoints = pfPoints;
     }
-    void SetPathNodeEndPath(int nCount, float* pfPoints)  // PC 0x004FBFC0 GOG 0x004F40A0
+    void SetPathNodeEndPath(int nCount, float* pfPoints)  // PC 0x004FBFC0 GOG 0x004F40A0 Xbox 0x001AA2D0
     {
         m_nPathPointEndCount = nCount;
         if (m_pfPathPointEndPoints != 0)
             delete m_pfPathPointEndPoints;
         m_pfPathPointEndPoints = pfPoints;
     }
-    // PC 0x004FC000 GOG 0x004F40E0
+    // PC 0x004FC000 GOG 0x004F40E0 Xbox 0x0016E5C0
     void SetSmoothingFirstWayPoints(float* pfPoints)
     {
         if (m_pfSmoothFirstPoints == 0 && pfPoints != 0)
@@ -108,7 +108,7 @@ public:
             m_pfSmoothFirstPoints = pfPoints;
         }
     }
-    void SetSmoothingSecondWayPoints(float* pfPoints)  // PC 0x004FC050 GOG 0x004F4130
+    void SetSmoothingSecondWayPoints(float* pfPoints)  // PC 0x004FC050 GOG 0x004F4130 Xbox 0x0016E610
     {
         if (m_pfSmoothSecondPoints == 0 && pfPoints != 0)
         {
@@ -125,7 +125,7 @@ public:
             m_pfSmoothSecondPoints = pfPoints;
         }
     }
-    void SetSmoothingThirdWayPoints(float* pfPoints)  // PC 0x004FC0A0 GOG 0x004F4180
+    void SetSmoothingThirdWayPoints(float* pfPoints)  // PC 0x004FC0A0 GOG 0x004F4180 Xbox 0x0016E660
     {
         if (m_pfSmoothFinalPoints == 0 && pfPoints != 0)
         {
@@ -298,7 +298,7 @@ public:
     int m_bForceLocationUpdate;
     int m_bStopAtUseRange;
     int m_nAvoidSide;
-    // PC 0x00541EB0 GOG 0x00541FD0
+    // PC 0x00541EB0 GOG 0x00541FD0 Xbox 0x001CA960
     void SetTargetPosition(const Vector& vPosition) { m_vTargetPosition = vPosition; }
     Vector m_vTargetPosition;
     unsigned long m_oidBlockingCreature;
@@ -324,7 +324,7 @@ public:
         PATH_CLEAR = 2
     };
     CAvoidCreature();
-    void Reset()  // PC 0x00541ED0 GOG 0x00541FF0
+    void Reset()  // PC 0x00541ED0 GOG 0x00541FF0 Xbox 0x0016E6B0
     {
         m_vHexPoints[0] = Vector();
         m_vHexPoints[1] = Vector();

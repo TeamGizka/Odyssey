@@ -59,12 +59,12 @@ float randVal = 0.3f;
 int EmitterBounceType = 1;
 int renderemitterspheres = 0;
 int useoldlightninginterp = 0;
-// PC 0x004B82A0 GOG 0x004B83B0
+// PC 0x004B82A0 GOG 0x004B83B0 Xbox 0x002ED3B0
 void Detonate(CAurObject* pObject, char* sEvent, void* pData)
 {
     static_cast<PartEmitter*>(pData)->m_bDetonated = 1;
 }
-// PC 0x004B82B0 GOG 0x004B83C0
+// PC 0x004B82B0 GOG 0x004B83C0 Xbox 0x002ED3C0
 unsigned char MdlNodeEmitter::IsAffectedByWind()
 {
     unsigned char bAffectedByWind = m_EmitterFlags.m_bAffectedByWind;
@@ -81,67 +81,67 @@ unsigned char MdlNodeEmitter::IsRandom()
     return (unsigned char)m_EmitterFlags.m_bRandom;
 #endif
 }
-// PC 0x004B82C0 GOG 0x004B83D0
+// PC 0x004B82C0 GOG 0x004B83D0 Xbox 0x002ED3D0
 void MdlNodeEmitter::EnablePointToPoint()
 {
     m_EmitterFlags.m_bPointToPoint = 1;
 }
-// PC 0x004B82D0 GOG 0x004B83E0
+// PC 0x004B82D0 GOG 0x004B83E0 Xbox 0x002ED3E0
 void MdlNodeEmitter::EnablePointToPointSel()
 {
     m_EmitterFlags.m_bPointToPointSel = 1;
 }
-// PC 0x004B82E0 GOG 0x004B83F0
+// PC 0x004B82E0 GOG 0x004B83F0 Xbox 0x002ED3F0
 void MdlNodeEmitter::EnableAffectedByWind()
 {
     m_EmitterFlags.m_bAffectedByWind = 1;
 }
-// PC 0x004B82F0 GOG 0x004B8400
+// PC 0x004B82F0 GOG 0x004B8400 Xbox 0x002ED400
 void MdlNodeEmitter::EnableTinted()
 {
     m_EmitterFlags.m_bTinted = 1;
 }
-// PC 0x004B8300 GOG 0x004B8410
+// PC 0x004B8300 GOG 0x004B8410 Xbox 0x002ED410
 void MdlNodeEmitter::EnableBouncing()
 {
     m_EmitterFlags.m_bBouncing = 1;
 }
-// PC 0x004B8310 GOG 0x004B8420
+// PC 0x004B8310 GOG 0x004B8420 Xbox 0x002ED420
 void MdlNodeEmitter::EnableRandom()
 {
     m_EmitterFlags.m_bRandom = 1;
 }
-// PC 0x004B8320 GOG 0x004B8430
+// PC 0x004B8320 GOG 0x004B8430 Xbox 0x002ED430
 void MdlNodeEmitter::EnableRandomOrder()
 {
     m_EmitterFlags.m_bRandomOrder = 1;
 }
-// PC 0x004B8330 GOG 0x004B8440
+// PC 0x004B8330 GOG 0x004B8440 Xbox 0x002ED440
 void MdlNodeEmitter::EnableInheriting()
 {
     m_EmitterFlags.m_bInheriting = 1;
 }
-// PC 0x004B8340 GOG 0x004B8450
+// PC 0x004B8340 GOG 0x004B8450 Xbox 0x002ED450
 void MdlNodeEmitter::EnableInheritingVelocity()
 {
     m_EmitterFlags.m_bInheritingVelocity = 1;
 }
-// PC 0x004B8350 GOG 0x004B8460
+// PC 0x004B8350 GOG 0x004B8460 Xbox 0x002ED460
 void MdlNodeEmitter::EnableInheritingLocal()
 {
     m_EmitterFlags.m_bInheritingLocal = 1;
 }
-// PC 0x004B8360 GOG 0x004B8470
+// PC 0x004B8360 GOG 0x004B8470 Xbox 0x002ED470
 void MdlNodeEmitter::EnableSplat()
 {
     m_EmitterFlags.m_bSplat = 1;
 }
-// PC 0x004B8370 GOG 0x004B8480
+// PC 0x004B8370 GOG 0x004B8480 Xbox 0x002ED480
 void MdlNodeEmitter::EnableInheritingPart()
 {
     m_EmitterFlags.m_bInheritingPart = 1;
 }
-// PC 0x004B8380 GOG 0x004B8490
+// PC 0x004B8380 GOG 0x004B8490 Xbox 0x002ED490
 void MdlNodeEmitter::EnableDepthTexture()
 {
     m_EmitterFlags.m_bDepthTexture = 1;
@@ -151,7 +151,7 @@ Particle::~Particle()
 {
     --totalparticles;
 }
-// PC 0x004B83A0 GOG 0x004B84B0
+// PC 0x004B83A0 GOG 0x004B84B0 Xbox 0x002ED4A0
 void Particle::randomPosition(int nWidth, int nHeight)
 {
     int nX;
@@ -244,12 +244,12 @@ float PartEmitter::GetTileAlpha()
 
     return fAlpha;
 }
-// PC 0x004B85C0 GOG 0x004B86D0
+// PC 0x004B85C0 GOG 0x004B86D0 Xbox 0x002ED600
 void PartEmitter::Animate(float fTimeStep)
 {
     Part::Animate(fTimeStep);
 }
-// PC 0x004B85D0 GOG 0x004B86E0
+// PC 0x004B85D0 GOG 0x004B86E0 Xbox 0x002ED610
 void PartEmitter::chkRandom(Particle* pParticle)
 {
     MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
@@ -295,7 +295,7 @@ int PartEmitter::GetPreviousParticleFrame(int nFrame)
     }
     return -1;
 }
-// PC 0x004B8680 GOG 0x004B8790
+// PC 0x004B8680 GOG 0x004B8790 Xbox 0x002ED660
 static RenderVertexVTC* ResizeEmitterPool(RenderVertexVTC* pVertices,
                                    unsigned long nCurrentSize,
                                    unsigned long nNewSize)
@@ -345,7 +345,7 @@ void PartEmitter::moveParticle(Particle* pParticle, float fTimeStep,
 }
 
 #define EMITTER_DEADSPACE_DEBUG 0
-// PC 0x004B86F0 GOG 0x004B8800
+// PC 0x004B86F0 GOG 0x004B8800 Xbox 0x002ED6D0
 void Particle::randomDirection(int nWidth, int nHeight)
 {
     float fSpread = m_pEmitter->m_fSpread * 0.5f;
@@ -403,7 +403,7 @@ void Particle::randomDirection(int nWidth, int nHeight)
     }
 }
 
-// PC 0x004B8B90 GOG 0x004B8CA0
+// PC 0x004B8B90 GOG 0x004B8CA0 Xbox 0x002EDD90
 void Particle::inheritVelocity(float fTime)
 {
     Quaternion& qOrientation = m_pEmitter->m_qWorldOrientation;
@@ -441,7 +441,7 @@ void Particle::inheritVelocity(float fTime)
         m_vVelocity = Vector(0.0f, 0.0f, 0.0f);
     }
 }
-// PC 0x004B8E00 GOG 0x004B8F10
+// PC 0x004B8E00 GOG 0x004B8F10 Xbox 0x002EE090
 void PartEmitter::CalculateRadius()
 {
     if (m_pAurObject && m_pAurObject->m_pModel &&
@@ -508,7 +508,7 @@ void PartEmitter::CalculateRadius()
     }
     birth = m_fBirthRate;
 }
-// PC 0x004B90B0 GOG 0x004B91C0
+// PC 0x004B90B0 GOG 0x004B91C0 Xbox 0x002EE3B0
 void PartEmitter::updateParticleFrame(float fTimeStep)
 {
     bool bRandom = false;
@@ -627,7 +627,7 @@ void PartEmitter::updateParticleFrame(float fTimeStep)
         }
     }
 }
-// PC 0x004B9390 GOG 0x004B94A0
+// PC 0x004B9390 GOG 0x004B94A0 Xbox 0x002EE6A0
 void PartEmitter::RecursiveFractal(int nIndex, int nStep, int nCount,
                                   Vector vDirection, Vector vOffset, float fRange)
 {
@@ -646,7 +646,7 @@ void PartEmitter::RecursiveFractal(int nIndex, int nStep, int nCount,
         RecursiveFractal(nIndex + nHalfStep, nHalfStep, nCount, vDirection, vOffset, fRange * 0.5f);
     }
 }
-// PC 0x004B9BD0 GOG 0x004B9CE0
+// PC 0x004B9BD0 GOG 0x004B9CE0 Xbox 0x002EF040
 void PartEmitter::RenderBoundingSphere()
 {
     Vector vPosition;
@@ -658,7 +658,7 @@ void PartEmitter::RenderBoundingSphere()
 
     GLRender::DrawSphereBound(GetRadius(), vPosition, vColor, 1.0f, true);
 }
-// PC 0x004B9C60 GOG 0x004B9D70
+// PC 0x004B9C60 GOG 0x004B9D70 Xbox 0x002EF0E0
 void PartEmitter::StartEmitterLayer()
 {
     GLRender_SetDepthMask(0);
@@ -694,7 +694,7 @@ int PartEmitter::GetNextParticleFrame(int nFrame)
     return -1;
 }
 #endif
-// PC 0x004B9CC0 GOG 0x004B9DD0
+// PC 0x004B9CC0 GOG 0x004B9DD0 Xbox 0x002EF130
 void PartEmitter::StopEmitterLayer()
 {
     GLRender_SetDepthMask(1);
@@ -1078,7 +1078,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
     if (bFog) GLRender_Enable(ENABLE_FOG);
 }
 #endif
-void PartEmitter::RenderNothing()  // PC 0x004BB510 GOG 0x004BB620
+void PartEmitter::RenderNothing()  // PC 0x004BB510 GOG 0x004BB620 Xbox 0x002F0F10
 {
     if (m_pAurObject != 0 &&
         static_cast<Gob*>(m_pAurObject)->m_pTileData != 0 &&
@@ -1418,7 +1418,7 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630 GOG 0x004BB740
         GLRender_Enable(ENABLE_FOG);
 }
 #endif
-void LightningEmitter::UpdateBranches()  // PC 0x004BC730 GOG 0x004BC840
+void LightningEmitter::UpdateBranches()  // PC 0x004BC730 GOG 0x004BC840 Xbox 0x002F2430
 {
     MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
     if (pNode->m_nNumBranches != 0)
@@ -1499,7 +1499,7 @@ void LightningEmitter::UpdateBranches()  // PC 0x004BC730 GOG 0x004BC840
         }
     }
 }
-// PC 0x004BD310 GOG 0x004BD420
+// PC 0x004BD310 GOG 0x004BD420 Xbox 0x002F3270
 void ChunkyParticle::initialize(float fTime, float fScale)
 {
     Particle::initialize(fTime, 1.0f);
@@ -1511,7 +1511,7 @@ void ChunkyParticle::initialize(float fTime, float fScale)
         m_pGob->PlayAnimation("impact", 1.0f, 1, 0.0f);
     }
 }
-// PC 0x004BD360 GOG 0x004BD470
+// PC 0x004BD360 GOG 0x004BD470 Xbox 0x002F32D0
 void PartEmitter::moveParticleStandard(float fTimeStep)
 {
     MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
@@ -1677,7 +1677,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
     }
 }
 #define EMITTER_P2P_DEBUG 0
-// PC 0x004BE2E0 GOG 0x004BE3F0
+// PC 0x004BE2E0 GOG 0x004BE3F0 Xbox 0x002F4460
 void PartEmitter::moveParticleP2PBezier(float fTimeStep)
 {
     Vector vPosition;
@@ -1796,7 +1796,7 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
     EXOLOG("moveParticleP2PBezier: %f %f %f %f %f %f\n", vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ,
         vTarget.m_fX, vTarget.m_fY, vTarget.m_fZ);
 }
-// PC 0x004BF280 GOG 0x004BF390
+// PC 0x004BF280 GOG 0x004BF390 Xbox 0x002F55B0
 void PartEmitter::moveParticleP2PGrav(float fTimeStep)
 {
     MdlNodeEmitter* pNode = (MdlNodeEmitter*)m_pNode;
@@ -1967,7 +1967,7 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
         m_qInheritOrientation = m_pAurObject->m_qOrientation;
     }
 }
-// PC 0x004C1590 GOG 0x004C16A0
+// PC 0x004C1590 GOG 0x004C16A0 Xbox 0x002F8150
 void PartEmitter::chkParticleLife(float fTimeStep)
 {
     int i;
@@ -2008,14 +2008,14 @@ void PartEmitter::chkParticleLife(float fTimeStep)
         }
     }
 }
-// PC 0x004C16A0 GOG 0x004C17B0
+// PC 0x004C16A0 GOG 0x004C17B0 Xbox 0x002F8260
 Particle::Particle(PartEmitter* pEmitter, float fTime)
 {
     m_pEmitter = pEmitter;
     Particle::initialize(fTime, 1.0f);
     ++totalparticles;
 }
-// PC 0x004BD0E0 GOG 0x004BD1F0
+// PC 0x004BD0E0 GOG 0x004BD1F0 Xbox 0x002F2FF0
 void Particle::initialize(float fTime, float fScale)
 {
     int nJitter;
@@ -2074,7 +2074,7 @@ void Particle::initialize(float fTime, float fScale)
 
     m_vDrift = m_vHeading * (nJitter * 0.01f + m_pEmitter->m_fVelocity);
 }
-// PC 0x004C1710 GOG 0x004C1820
+// PC 0x004C1710 GOG 0x004C1820 Xbox 0x002F8300
 ChunkyParticle::ChunkyParticle(PartEmitter* pEmitter, float fTime)
     : Particle(pEmitter, fTime)
 {
@@ -2099,7 +2099,7 @@ unsigned char MdlNodeEmitter::IsBouncing() { return (unsigned char)m_EmitterFlag
 #endif
 inline void PartEmitter::SetLastOrigin(Vector v) { m_vLastOrigin = v; }
 inline void LightningEmitter::SetTargetDirection(Vector v) { m_vTargetDirection = v; }
-// PC 0x004C1800 GOG 0x004C1910
+// PC 0x004C1800 GOG 0x004C1910 Xbox 0x002F8440
 void PartEmitter::AnimateParticles(float fTimeStep)
 {
     if (m_pAurObject != 0 && m_pAurObject->m_pTileData != 0 &&
@@ -2510,7 +2510,7 @@ void PartEmitter::RenderLinked()  // PC 0x004C2590 GOG 0x004C26A0
         GLRender_Enable(ENABLE_FOG);
 }
 #endif
-void FountainEmitter::Update(float fTimeStep)  // PC 0x004C37E0 GOG 0x004C38F0
+void FountainEmitter::Update(float fTimeStep)  // PC 0x004C37E0 GOG 0x004C38F0 Xbox 0x002FA800
 {
     MdlNodeEmitter* pNode = (MdlNodeEmitter*)m_pNode;
     float fBirthRate = m_fBirthRate;
@@ -2624,7 +2624,7 @@ void FountainEmitter::Update(float fTimeStep)  // PC 0x004C37E0 GOG 0x004C38F0
         }
     }
 }
-// PC 0x004C3FE0 GOG 0x004C40F0
+// PC 0x004C3FE0 GOG 0x004C40F0 Xbox 0x002FAFA0
 void ExplosionEmitter::Update(float fTimeStep)
 {
     int nParticles = (int)m_fBirthRate;
@@ -2694,7 +2694,7 @@ void ExplosionEmitter::Update(float fTimeStep)
     m_fLightningElapsed = m_bDetonated ? 1.0f : 0.0f;
     m_bDetonated = 0;
 }
-// PC 0x004C4360 GOG 0x004C4470
+// PC 0x004C4360 GOG 0x004C4470 Xbox 0x002FB320
 void SingleEmitter::Update(float fTimeStep)
 {
     MdlNodeEmitter* pNode = (MdlNodeEmitter*)m_pNode;
@@ -2766,7 +2766,7 @@ unsigned char MdlNodeEmitter::IsPointToPointSel()
     return (unsigned char)m_EmitterFlags.m_bPointToPointSel;
 #endif
 }
-// PC 0x004C17A0 GOG 0x004C18B0
+// PC 0x004C17A0 GOG 0x004C18B0 Xbox 0x002F83E0
 void PartEmitter::MoveFunc(float fTimeStep)
 {
     MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
@@ -2790,7 +2790,7 @@ void PartEmitter::MoveFunc(float fTimeStep)
         moveParticleStandard(fTimeStep);
     }
 }
-// PC 0x004C4600 GOG 0x004C4710
+// PC 0x004C4600 GOG 0x004C4710 Xbox 0x002FB580
 void LightningEmitter::UpdateControlPoints()
 {
     int nInterpolationPoint;
@@ -2969,7 +2969,7 @@ inline void LightningDebugStep()
     float fScale = 1.0f;
 }
 #define LIGHTNING_BRANCH_DEBUG 0
-// PC 0x004C5730 GOG 0x004C5840
+// PC 0x004C5730 GOG 0x004C5840 Xbox 0x002FC8D0
 void LightningEmitter::Update(float fTimeStep)
 {
     int nParticles = (int)m_fBirthRate;
@@ -3347,7 +3347,7 @@ void LightningEmitter::Update(float fTimeStep)
         }
     }
 }
-// PC 0x004C8360 GOG 0x004C8470
+// PC 0x004C8360 GOG 0x004C8470 Xbox 0x002FF6C0
 void SetEmitterTarget(CAurObject* pObject, char* sEvent, void* pData)
 {
     PartEmitter* pEmitter = static_cast<PartEmitter*>(pData);
@@ -3383,7 +3383,7 @@ ExplosionEmitter::ExplosionEmitter(MdlNode* pNode) : PartEmitter(pNode) {}
 SingleEmitter::SingleEmitter(MdlNode* pNode) : PartEmitter(pNode) {}
 
 #endif
-LightningEmitter::LightningEmitter(MdlNode* pNode)  // PC 0x004CA3C0 GOG 0x004CA4D0
+LightningEmitter::LightningEmitter(MdlNode* pNode)  // PC 0x004CA3C0 GOG 0x004CA4D0 Xbox 0x00300560
     : PartEmitter(pNode),
       m_lstControlPoints(0),
       m_lstPreviousPoints(0),
@@ -3399,7 +3399,7 @@ LightningEmitter::LightningEmitter(MdlNode* pNode)  // PC 0x004CA3C0 GOG 0x004CA
     m_nBranches = 0;
     m_bBranch = false;
 }
-// PC 0x004CA4F0 GOG 0x004CA600
+// PC 0x004CA4F0 GOG 0x004CA600 Xbox 0x00300680
 LightningEmitter::~LightningEmitter()
 {
     MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
@@ -3412,7 +3412,7 @@ LightningEmitter::~LightningEmitter()
         }
     }
 }
-// PC 0x004CA670 GOG 0x004CA780
+// PC 0x004CA670 GOG 0x004CA780 Xbox 0x003007A0
 void LightningEmitter::Initialize()
 {
     PartEmitter::Initialize();
@@ -3431,7 +3431,7 @@ void LightningEmitter::Initialize()
         m_lstBranches[i]->InitializeBranch();
     }
 }
-// PC 0x004CA7B0 GOG 0x004CA8C0
+// PC 0x004CA7B0 GOG 0x004CA8C0 Xbox 0x003008B0
 Part* MdlNodeEmitter::InternalCreateInstance(Gob* pGob)
 {
     PartEmitter* pEmitter;
@@ -3458,7 +3458,7 @@ Part* MdlNodeEmitter::InternalCreateInstance(Gob* pGob)
     pEmitter->Initialize();
     return pEmitter;
 }
-// PC 0x004C84B0 GOG 0x004C85C0
+// PC 0x004C84B0 GOG 0x004C85C0 Xbox 0x002FF820
 PartEmitter::PartEmitter(MdlNode* pNode)
     : Part(pNode)
 {
@@ -3521,7 +3521,7 @@ PartEmitter::PartEmitter(MdlNode* pNode)
 
 #define AUREMITTER_DEBUG_CONTROL_POINTS 0
 extern unsigned int ATI_FRAGMENT_SHADER_BIT;
-// PC 0x004C87B0 GOG 0x004C88C0
+// PC 0x004C87B0 GOG 0x004C88C0 Xbox 0x002FFBB0
 void PartEmitter::RenderFunc()
 {
     if (m_pAurObject != 0)
@@ -3948,7 +3948,7 @@ void PartEmitter::Initialize()
     m_vYAxis = m_qOrientation.ydir();
     m_vDirection = m_qOrientation.zdir();
 }
-// PC 0x004CA020 GOG 0x004CA130
+// PC 0x004CA020 GOG 0x004CA130 Xbox 0x00300220
 void LightningEmitter::InitializeBranch()
 {
     PartEmitter::Initialize();
@@ -3969,7 +3969,7 @@ void LightningEmitter::InitializeBranch()
     m_fLightningElapsed = m_fLightningDelay;
     m_fControlPointElapsed = m_fControlPointDelay;
 }
-// PC 0x004CA190 GOG 0x004CA2A0
+// PC 0x004CA190 GOG 0x004CA2A0 Xbox 0x00300370
 PartEmitter::~PartEmitter()
 {
     delete m_pHitInfo;
@@ -4089,7 +4089,7 @@ char* aurstartlog(char* sArguments)
 #endif
 
 #ifdef _XBOX
-void PartEmitter::RenderLinked()
+void PartEmitter::RenderLinked()  // Xbox 0x002F9330
 {
     static unsigned long poolSize = 1000;
     static RenderVertexVTC* particlePool =
@@ -4365,7 +4365,7 @@ void PartEmitter::RenderLinked()
 #endif
 
 #ifdef _XBOX
-void PartEmitter::RenderMotionBlurred()
+void PartEmitter::RenderMotionBlurred()  // Xbox 0x002F1030
 {
 
     static unsigned long poolSize = 1000;
@@ -4672,7 +4672,7 @@ void PartEmitter::RenderMotionBlurred()
 #define AUR_EMITTER_VP_DEPTH_SCALE 18
 #define AUR_EMITTER_VP_PARTICLE_POSITION 19
 #define AUR_EMITTER_VP_PARTICLE_NEAR 20
-void PartEmitter::RenderStandard()
+void PartEmitter::RenderStandard()  // Xbox 0x002EF170
 {
     static unsigned long poolSize = 1000;
     static RenderVertexVTC* particlePool =

@@ -105,7 +105,7 @@ static char* CMessageServerAdmin_Control_Ban = "Ban";
 static char* CMessageServerAdmin_Control_ChangeSAPassword = "SAPass";
 static char* CMessageServerAdmin_Control_ChangeGMPassword = "GMPass";
 static char* CMessageServerAdmin_Control_Say = "Say";
-// PC 0x005D5AE0 GOG 0x005D5B50
+// PC 0x005D5AE0 GOG 0x005D5B50 Xbox 0x000B4E00
 int CServerInfo::FindOptionIndex(CExoString const& sCategory,
                                  CExoString const& sName)
 {
@@ -120,7 +120,7 @@ int CServerInfo::FindOptionIndex(CExoString const& sCategory,
     }
     return nIndex;
 }
-// PC 0x005D5B80 GOG 0x005D5BF0
+// PC 0x005D5B80 GOG 0x005D5BF0 Xbox 0x000B4EA0
 void CServerInfo::SetDifficultyLevel(int nDifficultyLevel)
 {
     if (nDifficultyLevel > 4)
@@ -142,7 +142,7 @@ void CServerInfo::SetModuleName(const CExoString& sModuleName)
                     m_sModuleName == "tar_m02af" ||
                     m_sModuleName == "ebo_m40ad";
 }
-// PC 0x005D5BB0 GOG 0x005D5C20
+// PC 0x005D5BB0 GOG 0x005D5C20 Xbox 0x000B4ED0
 CServerInfo::CServerInfo()
 {
     m_nDataChangedFlags = 0;

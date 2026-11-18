@@ -16,7 +16,7 @@ const unsigned short CGameEffect::SUBTYPE_MAGICAL = 8;
 const unsigned short CGameEffect::SUBTYPE_SUPERNATURAL = 16;
 const unsigned short CGameEffect::SUBTYPE_EXTRAORDINARY = 24;
 unsigned __int64 CGameEffect::m_nNextID = 1;
-// PC 0x00540BF0 GOG 0x00540D10
+// PC 0x00540BF0 GOG 0x00540D10 Xbox 0x0020E360
 CGameEffect::~CGameEffect()
 {
     if (m_pLinkLeft != NULL)
@@ -37,7 +37,7 @@ CGameEffect::~CGameEffect()
         m_pIntegers = NULL;
     }
 }
-// PC 0x00540C90 GOG 0x00540DB0
+// PC 0x00540C90 GOG 0x00540DB0 Xbox 0x0020E3D0
 void CGameEffect::SetNumIntegers(int nNumIntegers)
 {
     m_nNumIntegers = nNumIntegers;
@@ -51,66 +51,66 @@ void CGameEffect::SetNumIntegers(int nNumIntegers)
     m_pIntegers = new int[m_nNumIntegers];
     memset(m_pIntegers, 0, m_nNumIntegers * 4);
 }
-// PC 0x00540CF0 GOG 0x00540E10
+// PC 0x00540CF0 GOG 0x00540E10 Xbox 0x0020E430
 int CGameEffect::GetInteger(int nIndex)
 {
     return m_pIntegers[nIndex];
 }
-// PC 0x00540D00 GOG 0x00540E20
+// PC 0x00540D00 GOG 0x00540E20 Xbox 0x0020E440
 void CGameEffect::SetInteger(int nIndex, int nValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < m_nNumIntegers);
     m_pIntegers[nIndex] = nValue;
 }
-// PC 0x00540D20 GOG 0x00540E40
+// PC 0x00540D20 GOG 0x00540E40 Xbox 0x0020E480
 float CGameEffect::GetFloat(int nIndex)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     return m_fFloat[nIndex];
 }
-// PC 0x00540D30 GOG 0x00540E50
+// PC 0x00540D30 GOG 0x00540E50 Xbox 0x0020E4A0
 void CGameEffect::SetFloat(int nIndex, float fValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     m_fFloat[nIndex] = fValue;
 }
-// PC 0x00540D40 GOG 0x00540E60
+// PC 0x00540D40 GOG 0x00540E60 Xbox 0x0020E4D0
 unsigned long CGameEffect::GetObjectID(int nIndex)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     return m_oidObject[nIndex];
 }
-// PC 0x00540D50 GOG 0x00540E70
+// PC 0x00540D50 GOG 0x00540E70 Xbox 0x0020E4F0
 void CGameEffect::SetObjectID(int nIndex, unsigned long oidValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     m_oidObject[nIndex] = oidValue;
 }
-// PC 0x00540D60 GOG 0x00540E80
+// PC 0x00540D60 GOG 0x00540E80 Xbox 0x0020E520
 CExoString CGameEffect::GetString(int nIndex)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 6);
     return m_sString[nIndex];
 }
-// PC 0x00540D90 GOG 0x00540EB0
+// PC 0x00540D90 GOG 0x00540EB0 Xbox 0x0020E550
 void CGameEffect::SetString(int nIndex, const CExoString& sValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 6);
     m_sString[nIndex] = sValue;
 }
-// PC 0x00540DB0 GOG 0x00540ED0
+// PC 0x00540DB0 GOG 0x00540ED0 Xbox 0x0020E580
 void CGameEffect::SetExpiryTime(unsigned long nDay, unsigned long nTime)
 {
     m_nExpireDay = nDay;
     m_nExpireTime = nTime;
 }
-// PC 0x00540DD0 GOG 0x00540EF0
+// PC 0x00540DD0 GOG 0x00540EF0 Xbox 0x0020E5A0
 void CGameEffect::GetExpiryTime(unsigned long* pnDay, unsigned long* pnTime)
 {
     *pnDay = m_nExpireDay;
     *pnTime = m_nExpireTime;
 }
-// PC 0x00540DF0 GOG 0x00540F10
+// PC 0x00540DF0 GOG 0x00540F10 Xbox 0x0020E5C0
 int CGameEffect::SaveGameEffect(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -187,7 +187,7 @@ int CGameEffect::SaveGameEffect(CResGFF* pRes, CResStruct* pStruct)
 
     return result;
 }
-// PC 0x00541060 GOG 0x00541180
+// PC 0x00541060 GOG 0x00541180 Xbox 0x0020E840
 void CGameEffect::SetCreator(unsigned long oidCreator)
 {
     CGameObject* pObject =
@@ -209,7 +209,7 @@ void CGameEffect::SetCreator(unsigned long oidCreator)
         }
     }
 }
-// PC 0x005410D0 GOG 0x005411F0
+// PC 0x005410D0 GOG 0x005411F0 Xbox 0x0020E8B0
 int CGameEffect::GetEffectTypeScriptConstant()
 {
     int nResult = 0;
@@ -483,7 +483,7 @@ int CGameEffect::GetEffectTypeScriptConstant()
 
     return nResult;
 }
-// PC 0x005414E0 GOG 0x00541600
+// PC 0x005414E0 GOG 0x00541600 Xbox 0x0020ECC0
 CGameEffect::CGameEffect(int bDynamic)
 {
     if (bDynamic == 1)
@@ -524,7 +524,7 @@ CGameEffect::CGameEffect(int bDynamic)
         m_oidObject[nObject] = OBJECT_INVALID;
     }
 }
-// PC 0x00541610 GOG 0x00541730
+// PC 0x00541610 GOG 0x00541730 Xbox 0x0020EDD0
 CGameEffect::CGameEffect(CGameEffect* pEffect)
 {
     m_nID = 0;
@@ -563,7 +563,7 @@ CGameEffect::CGameEffect(CGameEffect* pEffect)
     m_nSpellId = pEffect->m_nSpellId;
     m_bSkipOnLoad = 0;
 }
-// PC 0x00541730 GOG 0x00541850
+// PC 0x00541730 GOG 0x00541850 Xbox 0x0020EEC0
 void CGameEffect::CopyEffect(CGameEffect* pEffect, int bSkipIntegers)
 {
     if (pEffect != NULL)
@@ -728,7 +728,7 @@ int CGameEffect::operator!=(const CGameEffect& cEffect) const
 {
     return !(*this == cEffect);
 }
-// PC 0x005418E0 GOG 0x00541A00
+// PC 0x005418E0 GOG 0x00541A00 Xbox 0x0020F020
 void CGameEffect::UpdateLinked()
 {
     if (m_pLinkLeft != NULL)
@@ -793,7 +793,7 @@ void CGameEffect::UpdateLinked()
         m_pLinkRight->m_nID = m_nID;
     }
 }
-// PC 0x00541A40 GOG 0x00541B60
+// PC 0x00541A40 GOG 0x00541B60 Xbox 0x0020F180
 void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -945,7 +945,7 @@ void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x00541E90 GOG 0x00541FB0
+// PC 0x00541E90 GOG 0x00541FB0 Xbox 0x0020F610
 void CGameEffect::SetLinked(CGameEffect* pLeft, CGameEffect* pRight)
 {
     m_pLinkLeft = pLeft;

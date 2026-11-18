@@ -123,7 +123,7 @@ class CAurTexture : public SafePointerList<CAurTexture>
 public:
     CAurTexture();
     virtual ~CAurTexture();
-    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x004065A0 GOG 0x00406570
+    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     {
         return 0;
     }
@@ -190,12 +190,12 @@ class CAurTextureBasic : public CAurTexture
 public:
     CAurTextureBasic(char* sName, char* sExtra);
     virtual ~CAurTextureBasic();
-    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x00698BD0 GOG 0x00698980
+    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     {
         return this;
     }
     virtual void FreeImage();
-    virtual TextureController* GetController()
+    virtual TextureController* GetController()  // Xbox 0x0029A270
     {
         return m_pController;
     }

@@ -194,7 +194,7 @@ char* setfadetoalways(char* sArguments)
     return "SUCCESS";
 }
 #endif
-// PC 0x004808F0 GOG 0x00480A70
+// PC 0x004808F0 GOG 0x00480A70 Xbox 0x00300A40
 int AurClearActiveBins()
 {
     if (AURSCENEMANAGER_DEBUG)
@@ -218,7 +218,7 @@ int AurClearActiveBins()
     g_pOldActiveBins.m_nCount = 0;
     return 0;
 }
-// PC 0x00480940 GOG 0x00480AC0
+// PC 0x00480940 GOG 0x00480AC0 Xbox 0x00300A50
 static int NodeHasAABB(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -227,7 +227,7 @@ static int NodeHasAABB(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_pAABB == pData;
 }
-// PC 0x00480960 GOG 0x00480AE0
+// PC 0x00480960 GOG 0x00480AE0 Xbox 0x00300A70
 TileData* SceneBSPGetTileData(Scene* pScene, const Vector& vPosition)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -237,7 +237,7 @@ TileData* SceneBSPGetTileData(Scene* pScene, const Vector& vPosition)
     return BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)
         ->m_pData->m_pTileData;
 }
-// PC 0x00480990 GOG 0x00480B10
+// PC 0x00480990 GOG 0x00480B10 Xbox 0x00300AA0
 int PartOutside(PartTriMesh* pTriMesh, List<Plane>& lstPlanes)
 {
     static int lastClipped = 0;
@@ -255,7 +255,7 @@ int PartOutside(PartTriMesh* pTriMesh, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x00480A10 GOG 0x00480B90
+// PC 0x00480A10 GOG 0x00480B90 Xbox 0x00300B20
 int PartOutside(PartEmitter* pEmitter, List<Plane>& lstPlanes)
 {
     Vector vPosition;
@@ -274,7 +274,7 @@ int PartOutside(PartEmitter* pEmitter, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x00480AC0 GOG 0x00480C40
+// PC 0x00480AC0 GOG 0x00480C40 Xbox 0x00300BD0
 int PartOutside(PartProjection* pProjection, List<Plane>& lstPlanes)
 {
     static int lastClipped = 0;
@@ -292,7 +292,7 @@ int PartOutside(PartProjection* pProjection, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x00480B30 GOG 0x00480CB0
+// PC 0x00480B30 GOG 0x00480CB0 Xbox 0x00300C40
 int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
 {
     static int lastClipped = 0;
@@ -308,7 +308,7 @@ int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
     }
     return 0;
 }
-// PC 0x00480BA0 GOG 0x00480D20
+// PC 0x00480BA0 GOG 0x00480D20 Xbox 0x00300CB0
 int GobOutside(Gob* pGob, List<Plane>& lstPlanes)
 {
     if (pGob->IsInViewVolume())
@@ -334,7 +334,7 @@ int GobOutside(Gob* pGob, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x00480DC0 GOG 0x00480F40
+// PC 0x00480DC0 GOG 0x00480F40 Xbox 0x00300F70
 int BinOutside(CAurTriangleBin* pBin, List<Plane>& lstPlanes)
 {
     for (int i = 0; i < lstPlanes.m_nCount; i++)
@@ -347,7 +347,7 @@ int BinOutside(CAurTriangleBin* pBin, List<Plane>& lstPlanes)
     }
     return 0;
 }
-// PC 0x00480E20 GOG 0x00480FA0
+// PC 0x00480E20 GOG 0x00480FA0 Xbox 0x00300FD0
 void LightPartTriMesh(PartTriMesh* pPart, List<PartLight*> lstLights, Scene* pScene)
 {
     if (pPart == 0)
@@ -505,7 +505,7 @@ List<Gob*> blurbucket;
 List<Gob*> fadinginbucket;
 List<Gob*> fadingoutbucket;
 List<CAurTriangleBin*> g_pActiveBins, g_pOldActiveBins;
-// PC 0x00481940 GOG 0x00481AC0
+// PC 0x00481940 GOG 0x00481AC0 Xbox 0x00301B30
 nodedata::~nodedata()
 {
     if (m_pTileData != 0)
@@ -513,7 +513,7 @@ nodedata::~nodedata()
         delete m_pTileData;
     }
 }
-// PC 0x00481AA0 GOG 0x00481C20
+// PC 0x00481AA0 GOG 0x00481C20 Xbox 0x00301C20
 static int NodeHasLight(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -522,7 +522,7 @@ static int NodeHasLight(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstLights.Contains((PartLight*)pData);
 }
-// PC 0x00481AD0 GOG 0x00481C50
+// PC 0x00481AD0 GOG 0x00481C50 Xbox 0x00301C50
 static int NodeHasEmitter(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -531,7 +531,7 @@ static int NodeHasEmitter(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstEmitters.Contains((PartEmitter*)pData);
 }
-// PC 0x00481B00 GOG 0x00481C80
+// PC 0x00481B00 GOG 0x00481C80 Xbox 0x00301C80
 static int NodeHasProjection(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -542,7 +542,7 @@ static int NodeHasProjection(BSPNode* pNode, void* pData)
     return pNodeData->m_lstShadowProjections.Contains((PartShadow*)pData) ||
            pNodeData->m_lstBeamProjections.Contains((PartBeam*)pData);
 }
-// PC 0x00481B60 GOG 0x00481CE0
+// PC 0x00481B60 GOG 0x00481CE0 Xbox 0x00301CE0
 static int NodeHasTriMesh(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -551,7 +551,7 @@ static int NodeHasTriMesh(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstTriMeshes.Contains((PartTriMesh*)pData);
 }
-// PC 0x00481B90 GOG 0x00481D10
+// PC 0x00481B90 GOG 0x00481D10 Xbox 0x00301D10
 static int NodeHasTrigger(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -560,7 +560,7 @@ static int NodeHasTrigger(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstTriggers.Contains((PartTrigger*)pData);
 }
-// PC 0x00481BC0 GOG 0x00481D40
+// PC 0x00481BC0 GOG 0x00481D40 Xbox 0x00301D40
 static int NodeHasOther(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -569,7 +569,7 @@ static int NodeHasOther(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstOthers.Contains((Part*)pData);
 }
-// PC 0x00481BF0 GOG 0x00481D70
+// PC 0x00481BF0 GOG 0x00481D70 Xbox 0x00301D70
 static int NodeHasGob(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -578,7 +578,7 @@ static int NodeHasGob(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstGobs.Contains((Gob*)pData);
 }
-// PC 0x00481C20 GOG 0x00481DA0
+// PC 0x00481C20 GOG 0x00481DA0 Xbox 0x00301DA0
 int HitPartOnBSPNode(BSPNode* pNode, Vector vStart, Vector vEnd, Vector* pHit)
 {
     counthitcheckscenebspnode++;
@@ -650,7 +650,7 @@ int HitPartOnBSPNode(BSPNode* pNode, Vector vStart, Vector vEnd, Vector* pHit)
     }
     return bHit;
 }
-// PC 0x00481EF0 GOG 0x00482070
+// PC 0x00481EF0 GOG 0x00482070 Xbox 0x00302060
 void LightBins(BSPNode* pNode, void* pData)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -660,7 +660,7 @@ void LightBins(BSPNode* pNode, void* pData)
         pNodeData->m_lstBins[i]->ReloadColor();
     }
 }
-// PC 0x00481F20 GOG 0x004820A0
+// PC 0x00481F20 GOG 0x004820A0 Xbox 0x00302090
 static void ConstructCameraFadePlane(Scene* pScene)
 {
     CAurBehaviorCameraFollow* pFollow = 0;
@@ -708,7 +708,7 @@ static void ConstructCameraFadePlane(Scene* pScene)
         }
     }
 }
-// PC 0x00482330 GOG 0x004824B0
+// PC 0x00482330 GOG 0x004824B0 Xbox 0x003025F0
 void AurProcessActiveBins()
 {
     for (int i = 0; i < g_pActiveBins.m_nCount; i++)
@@ -734,7 +734,7 @@ void AurProcessActiveBins()
         }
     }
 }
-// PC 0x004823B0 GOG 0x00482530
+// PC 0x004823B0 GOG 0x00482530 Xbox 0x00302670
 void ClearSceneRooms(Scene* pScene)
 {
     for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
@@ -751,7 +751,7 @@ void ClearSceneRooms(Scene* pScene)
 #endif
     }
 }
-// PC 0x00482450 GOG 0x004825B0
+// PC 0x00482450 GOG 0x004825B0 Xbox 0x00302780
 void AddPartToMeshBuckets(PartTriMesh* pTriMesh)
 {
     PartDanglyMesh* pDanglyMesh = pTriMesh->AsPartDanglyMesh();
@@ -771,7 +771,7 @@ void AddPartToMeshBuckets(PartTriMesh* pTriMesh)
         meshshadowbucket.Add(pTriMesh);
     }
 }
-// PC 0x00482550 GOG 0x004826B0
+// PC 0x00482550 GOG 0x004826B0 Xbox 0x00302880
 void ClearBuckets(Scene* pScene)
 {
     int nMaxTexID = AurTextureGetMaxTexID();
@@ -806,7 +806,7 @@ void ClearBuckets(Scene* pScene)
     countactivebins = 0;
     countmodels = Models.m_nCount;
 }
-// PC 0x00482600 GOG 0x00482760
+// PC 0x00482600 GOG 0x00482760 Xbox 0x00302930
 nodedata::nodedata()
     : m_lstLights(0),
       m_lstGobs(0),
@@ -826,7 +826,7 @@ nodedata::nodedata()
     m_pAABB = 0;
     m_pTileData = pTileData;
 }
-// PC 0x004826B0 GOG 0x00482810
+// PC 0x004826B0 GOG 0x00482810 Xbox 0x003029C0
 void SceneBSPGetObjectTextures(Part* pPart, List<CAurTexture*>& lstTextures)
 {
     if (pPart != 0)
@@ -842,7 +842,7 @@ void SceneBSPGetObjectTextures(Part* pPart, List<CAurTexture*>& lstTextures)
         }
     }
 }
-// PC 0x004829D0 GOG 0x00482B30
+// PC 0x004829D0 GOG 0x00482B30 Xbox 0x00302CE0
 void SceneBSPGetTileTextures(Scene* pScene, const Vector& vPosition,
                              List<CAurTexture*>& lstTextures)
 {
@@ -864,7 +864,7 @@ void SceneBSPGetTileTextures(Scene* pScene, const Vector& vPosition,
         }
     }
 }
-// PC 0x00483A00 GOG 0x00483AC0
+// PC 0x00483A00 GOG 0x00483AC0 Xbox 0x003041E0
 void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -899,7 +899,7 @@ void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
     delete pNodeData->m_pTileData;
     pNodeData->m_pTileData = 0;
 }
-// PC 0x00482A70 GOG 0x00482BD0
+// PC 0x00482A70 GOG 0x00482BD0 Xbox 0x00302D80
 void SceneBSPAddGob(Scene* pScene, Gob* pGob)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -914,7 +914,7 @@ void SceneBSPAddGob(Scene* pScene, Gob* pGob)
         pNode->m_pData->m_lstGobs.Add(pGob);
     }
 }
-// PC 0x00482AF0 GOG 0x00482C50
+// PC 0x00482AF0 GOG 0x00482C50 Xbox 0x00302E00
 void SceneBSPRemoveGob(Scene* pScene, Gob* pGob)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -932,7 +932,7 @@ void SceneBSPRemoveGob(Scene* pScene, Gob* pGob)
         pNode->m_pData->m_lstGobs.Remove(pGob);
     }
 }
-// PC 0x00482B60 GOG 0x00482CC0
+// PC 0x00482B60 GOG 0x00482CC0 Xbox 0x00302E70
 void SceneBSPRemovePart(Scene* pScene, Part* pPart)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -1039,7 +1039,7 @@ void SceneBSPRemovePart(Scene* pScene, Part* pPart)
         pNodeData->m_lstOthers.Remove(pPart);
     }
 }
-// PC 0x00482EA0 GOG 0x00483000
+// PC 0x00482EA0 GOG 0x00483000 Xbox 0x003031B0
 void DeleteNonGobParts(BSPNode* pNode, void* pData)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -1303,7 +1303,7 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
         }
     }
 }
-// PC 0x004847D0 GOG 0x00484890
+// PC 0x004847D0 GOG 0x00484890 Xbox 0x003050A0
 void LightNodeTile(BSPNode* pNode, void* pData)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -1339,7 +1339,7 @@ void LightNodeTile(BSPNode* pNode, void* pData)
         }
     }
 }
-// PC 0x00484B50 GOG 0x00484C10
+// PC 0x00484B50 GOG 0x00484C10 Xbox 0x00305460
 void DoStaticLightBuckets(Scene* pScene)
 {
     for (int i = 0; i < staticlightbucket.m_nCount; i++)
@@ -1352,12 +1352,12 @@ void DoStaticLightBuckets(Scene* pScene)
         BSPTraverse(pScene->m_pBSPRoot, LightBins, pScene);
     }
 }
-// PC 0x00484BA0 GOG 0x00484C60
+// PC 0x00484BA0 GOG 0x00484C60 Xbox 0x003054B0
 void AnimateStaticLight(CAurObject* pObject, char* sEvent, void* pData)
 {
     UpdateStaticLighting(((Gob*)pObject)->m_pScene, (PartLight*)pData);
 }
-// PC 0x00483080 GOG 0x004831E0
+// PC 0x00483080 GOG 0x004831E0 Xbox 0x00303390
 void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
 {
     if (pLight->m_nLightType == PartLight::LIGHTTYPE_STATIC)
@@ -1374,7 +1374,7 @@ void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
         }
     }
 }
-// PC 0x00483130 GOG 0x00483290
+// PC 0x00483130 GOG 0x00483290 Xbox 0x00303420
 void CollectBins(BSPNode* pNode, const Vector& vPosition, float fRangeSquared)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -1409,7 +1409,7 @@ void CollectBins(BSPNode* pNode, const Vector& vPosition, float fRangeSquared)
 #endif
     }
 }
-// PC 0x00484BC0 GOG 0x00484C80
+// PC 0x00484BC0 GOG 0x00484C80 Xbox 0x00303550
 void AddLightToRooms(Scene* pScene, PartLight* pLight)
 {
     int nRooms = 0;
@@ -1433,7 +1433,7 @@ void AddLightToRooms(Scene* pScene, PartLight* pLight)
         }
     }
 }
-// PC 0x00484D30 GOG 0x00484DF0
+// PC 0x00484D30 GOG 0x00484DF0 Xbox 0x003036B0
 void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
 {
     if (pEmitter->m_pAurObject == 0)
@@ -1476,7 +1476,7 @@ void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
 }
 
 static const int AUR_ROOM_INDEX_ALL = 999;
-// PC 0x00484E30 GOG 0x00484EF0
+// PC 0x00484E30 GOG 0x00484EF0 Xbox 0x003037A0
 void AddObjectToRooms(Scene* pScene, Gob* pGob)
 {
     int nRooms = 0;
@@ -1518,7 +1518,7 @@ void AddObjectToRooms(Scene* pScene, Gob* pGob)
         crap = AUR_ROOM_INDEX_ALL;
     }
 }
-// PC 0x00483250 GOG 0x004833B0
+// PC 0x00483250 GOG 0x004833B0 Xbox 0x00303BB0
 void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
 {
     m_lstNearbyLights.m_nCount = 0;
@@ -1565,7 +1565,7 @@ void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
         }
     }
 }
-// PC 0x00483670 GOG 0x004837D0
+// PC 0x00483670 GOG 0x004837D0 Xbox 0x00303F90
 void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
 {
     if (pScene->m_pCurrentRoom == 0)
@@ -1608,7 +1608,7 @@ void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
         lstRooms = pScene->m_lstRooms;
     }
 }
-// PC 0x004837C0 GOG 0x00483920
+// PC 0x004837C0 GOG 0x00483920 Xbox 0x003040E0
 void SceneAddPartToRooms(Scene* pScene, Part* pPart)
 {
     PartTrigger* pTrigger = pPart->AsPartTrigger();
@@ -1628,7 +1628,7 @@ void SceneAddPartToRooms(Scene* pScene, Part* pPart)
         }
     }
 }
-// PC 0x00483870 GOG 0x004839D0
+// PC 0x00483870 GOG 0x004839D0 Xbox 0x00304170
 void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
 {
     PartTrigger* pTrigger = pPart->AsPartTrigger();
@@ -1644,12 +1644,12 @@ void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
         }
     }
 }
-// PC 0x004838E0 GOG 0x00483A40
+// PC 0x004838E0 GOG 0x00483A40 Xbox 0x00302700
 void nodedata::AddMovingObject(Gob* pGob)
 {
     m_lstMovingObjects.Add(pGob);
 }
-// PC 0x00483920 GOG 0x00483A80
+// PC 0x00483920 GOG 0x00483A80 Xbox 0x00302740
 void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
 {
     m_lstMovingEmitters.Add(pEmitter);
@@ -1660,7 +1660,7 @@ void nodedata::AddMovingLight(PartLight* pLight)
 {
     m_lstMovingLights.Add(pLight);
 }
-// PC 0x004851C0 GOG 0x00485280
+// PC 0x004851C0 GOG 0x00485280 Xbox 0x003054D0
 int SceneBSPAddPart(Scene* pScene, Part* pPart, Model* pModel)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -1754,7 +1754,7 @@ int SceneBSPAddPart(Scene* pScene, Part* pPart, Model* pModel)
     }
     return 1;
 }
-// PC 0x004854F0 GOG 0x004855B0
+// PC 0x004854F0 GOG 0x004855B0 Xbox 0x003057F0
 void ManageSceneBSP(Scene* pScene)
 {
     LightManager::cm_bLightManagerUpdated = 1;
@@ -1928,7 +1928,7 @@ void ManageSceneBSP(Scene* pScene)
     lastcameraclipfar = CurrentCamera->m_fFarClip;
     firsttime = 0;
 }
-// PC 0x00485D00 GOG 0x00485DC0
+// PC 0x00485D00 GOG 0x00485DC0 Xbox 0x00305FE0
 void SceneBSPAddTileData(Scene* pScene, TileData* pTileData, Vector vPosition)
 {
     if (pScene->m_pBSPRoot == 0)

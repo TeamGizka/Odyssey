@@ -218,17 +218,17 @@ public:
     CExoString GetNameText();
     CExoString GetDescriptionText();
 
-    void SetSuccessor(long nFeat)
+    void SetSuccessor(long nFeat)  // Xbox 0x00171F80
     {
         m_nSuccessor = nFeat;
     }
 
-    void SetSpellId(long nSpellId)
+    void SetSpellId(long nSpellId)  // Xbox 0x00043AB0
     {
         m_nSpellId = nSpellId;
     }
 
-    void SetNameStrRef(unsigned long nStrRef)
+    void SetNameStrRef(unsigned long nStrRef)  // Xbox 0x0008EE90
     {
         m_nNameStrRef = nStrRef;
     }
@@ -355,7 +355,7 @@ public:
         m_nRequiredSkill = nSkill;
     }
 
-    void SetHandmaiden(unsigned char nLevel)
+    void SetHandmaiden(unsigned char nLevel)  // Xbox 0x002C0550
     {
         m_bHandmaiden = nLevel;
     }

@@ -56,7 +56,7 @@ unsigned long CObjectLookupTable::AddID(unsigned long nID)
 }
 
 // Dead code: not in the PC executable
-unsigned long CObjectLookupTable::GetIDFromIndex(unsigned long nIndex)
+unsigned long CObjectLookupTable::GetIDFromIndex(unsigned long nIndex)  // Xbox 0x0014A270
 {
     return m_pTable[nIndex];
 }
@@ -154,18 +154,18 @@ void CObjectLookupTable::Update(void* pData, unsigned long nSize)
     memcpy(m_pTable, (unsigned long*)pData + 1, nSize);
     delete[] (unsigned long*)pData;
 }
-// PC 0x004DBD60 GOG 0x004DBEA0
+// PC 0x004DBD60 GOG 0x004DBEA0 Xbox 0x0001B270
 CObjectTableManager::CObjectTableManager()
 {
     m_nTables = 0;
     memset(m_apTables, 0, sizeof(m_apTables));
 }
-// PC 0x004DBDD0 GOG 0x004DBF10
+// PC 0x004DBDD0 GOG 0x004DBF10 Xbox 0x0001B2E0
 CObjectTableManager::~CObjectTableManager()
 {
     ClearAll();
 }
-// PC 0x004DBDE0 GOG 0x004DBF20
+// PC 0x004DBDE0 GOG 0x004DBF20 Xbox 0x0001B2F0
 BOOL CObjectTableManager::RemovePlayer(unsigned long nPlayerId)
 {
     if (nPlayerId == 0xFFFFFFFF)
@@ -190,7 +190,7 @@ BOOL CObjectTableManager::RemovePlayer(unsigned long nPlayerId)
     m_apTables[nPlayerId] = NULL;
     return TRUE;
 }
-// PC 0x004DBD80 GOG 0x004DBEC0
+// PC 0x004DBD80 GOG 0x004DBEC0 Xbox 0x0001B290
 void CObjectTableManager::ClearAll()
 {
     for (unsigned long i = 0; i < m_nTables; i++)

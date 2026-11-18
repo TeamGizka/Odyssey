@@ -255,7 +255,7 @@ void LogLevelStats()
 #endif
 #ifdef _XBOX
 
-void ExoXboxRestart()
+void ExoXboxRestart()  // Xbox 0x000114A0
 {
     XLaunchNewImage("d:\\default.xbe", NULL);
 }
@@ -405,7 +405,7 @@ void SetBlendMode(int nSource, int nDestination)
 {
     GLRender_SetBlendFunc(nSource, nDestination);
 }
-// PC 0x004016B0 GOG 0x004016B0
+// PC 0x004016B0 GOG 0x004016B0 Xbox 0x00011B70
 void SetClearColor(char* sColor)
 {
     GLclampf fRed = 0.0f;
@@ -719,7 +719,7 @@ void SetupOpenGL()
 #ifdef _XBOX
 extern void AurSetFrameBufferMode(int nMode);
 
-void messagepump(int nUnused)
+void messagepump(int nUnused)  // Xbox 0x00011CA0
 {
     UINT nResult;
     for (int i = 0; i < g_lstVisibilityTests.m_nCount; i++)
@@ -741,7 +741,7 @@ void messagepump(int nUnused)
     g_nRenderStartTime = AurGetHighResolutionTime();
 }
 
-void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)
+void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // Xbox 0x00012250
 {
     AurMakeCurrent();
 
@@ -923,7 +923,7 @@ void NotifyModeChangeActivate(int bActive, int bMinimized)
 #ifdef _XBOX
 #define VK_ESCAPE 0x1B
 #endif
-// PC 0x00401F30 GOG 0x00401F30
+// PC 0x00401F30 GOG 0x00401F30 Xbox 0x00011E30
 void DoConsole(char cChar)
 {
     static int nOffset;
@@ -2295,7 +2295,7 @@ void RestoreResolutionFromMovie()  // PC 0x00403E30 GOG 0x00403E30
 
 #ifdef _XBOX
 
-int HandleWMCharMessage(unsigned short nChar)
+int HandleWMCharMessage(unsigned short nChar)  // Xbox 0x000123C0
 {
     if (g_pAppManager->m_pClientExoApp->GetCaptureEvents() != 0 &&
         g_pAppManager->m_pClientExoApp->GetCaptureEventFile() != NULL)
@@ -2563,7 +2563,7 @@ char* ClearLogCounters(char* sBuffer)
 }
 ConsoleFunc ConFClearLogCounters("ClearLogCounters", ClearLogCounters);
 
-char* DumpLogCounters(char* sBuffer)
+char* DumpLogCounters(char* sBuffer)  // Xbox 0x00011480
 {
     return "NOT ENABLED";
 }
@@ -2611,16 +2611,16 @@ int g_nOldFrameBufferMode = antialiasmode;
 int g_bLowDiskMode = 0;
 unsigned char g_nBootFlags = 0;
 
-void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName)
+void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName)  // Xbox 0x00011490
 {
     XLaunchNewImage("d:\\default.xbe", (PLAUNCH_DATA)pParams);
 }
 
-void SetWindowTitle()
+void SetWindowTitle()  // Xbox 0x001A2B40
 {
 }
 
-int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)
+int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // Xbox 0x00316120
 {
     return 0;
 }
@@ -2968,7 +2968,7 @@ int main()
 #ifdef _XBOX
 #include "swguiingame.h"
 
-void HandleLoadError(unsigned long nError)
+void HandleLoadError(unsigned long nError)  // Xbox 0x00011C30
 {
     CSWGuiMessageBox* pBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
     pBox->ShowLoadError(nError);

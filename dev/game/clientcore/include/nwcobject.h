@@ -85,16 +85,16 @@ public:
 
     CSWCObject(unsigned char nObjectType);
     virtual ~CSWCObject();
-    virtual void SetId(unsigned long nId)  // PC 0x00664830 GOG 0x006645E0
+    virtual void SetId(unsigned long nId)  // PC 0x00664830 GOG 0x006645E0 Xbox 0x00043AB0
     {
         m_nId = nId;
     }
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWCObject* AsSWCObject()
     {
         return this;
     }
-    // PC 0x00695520 GOG 0x006952C0
+    // PC 0x00695520 GOG 0x006952C0 Xbox 0x00094060
     virtual CExoString GetName()
     {
         return CExoString("");
@@ -107,7 +107,7 @@ public:
     virtual void SetArea(CSWCArea* pArea);
     virtual void SetOrientation(const Vector& vOrientation);
     virtual void SetPosition(const Vector& vPosition);
-    // PC 0x004015A0 GOG 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     virtual void UpdateWalkMesh()
     {
     }
@@ -133,16 +133,16 @@ public:
     virtual void UpdateVisualEffectsList();
     virtual void StopAllVisualEffects();
     virtual int HasVisualEffectApplied(unsigned long nEffect);
-    virtual CAurObject* GetCameraFollowPart()  // PC 0x00695550 GOG 0x006952F0
+    virtual CAurObject* GetCameraFollowPart()  // PC 0x00695550 GOG 0x006952F0 Xbox 0x00094080
     {
         return m_pAnimBase->GetModel(CSWCObject::MODEL_SLOT_DEFAULT);
     }
-    // PC 0x0065D0F0 GOG 0x0065CF00
+    // PC 0x0065D0F0 GOG 0x0065CF00 Xbox 0x000A7970
     virtual int GetFollowingBody()
     {
         return 1;
     }
-    // PC 0x00664870 GOG 0x00695300
+    // PC 0x00664870 GOG 0x00695300 Xbox 0x00043B00
     virtual float GetHeadHeightOffset()
     {
         return 1.5f;
@@ -155,24 +155,24 @@ public:
     virtual void UpdatePopUpBubble();
 
     virtual void SetPortrait(const CResRef& cPortrait);
-    virtual CResRef GetPortrait(unsigned char nSize)  // PC 0x00695560 GOG 0x00695310
+    virtual CResRef GetPortrait(unsigned char nSize)  // PC 0x00695560 GOG 0x00695310 Xbox 0x00094090
     {
         return m_cPortrait.GetPortrait(nSize);
     }
     virtual void SetPortraitId(unsigned short nPortraitId);
-    // PC 0x00695580 GOG 0x00695330
+    // PC 0x00695580 GOG 0x00695330 Xbox 0x000940B0
     virtual unsigned short GetPortraitId()
     {
         return m_nPortraitId;
     }
-    // PC 0x0065D0F0 GOG 0x0065CF00
+    // PC 0x0065D0F0 GOG 0x0065CF00 Xbox 0x000A7970
     virtual int ApplyShadowBlob()
     {
         return 1;
     }
 
     virtual void RemoveShadowBlob();
-    // PC 0x00664840 GOG 0x006645F0
+    // PC 0x00664840 GOG 0x006645F0 Xbox 0x00043AC0
     virtual void ShowShadowBlob()
     {
         if (m_pAnimBase != NULL)
@@ -180,7 +180,7 @@ public:
             m_pAnimBase->ShowShadowBlob(0);
         }
     }
-    // PC 0x00664860 GOG 0x00664610
+    // PC 0x00664860 GOG 0x00664610 Xbox 0x00043AE0
     virtual void HideShadowBlob()
     {
         if (m_pAnimBase != NULL)
@@ -190,7 +190,7 @@ public:
     }
 
     virtual void SetGroundNormal(const Vector& vNormal);
-    // PC 0x006575B0 GOG 0x00657460
+    // PC 0x006575B0 GOG 0x00657460 Xbox 0x00036E50
     virtual void TurnOnShadows()
     {
         if (m_pAnimBase != NULL)
@@ -198,7 +198,7 @@ public:
             m_pAnimBase->TurnOnShadows();
         }
     }
-    // PC 0x006575C0 GOG 0x00657470
+    // PC 0x006575C0 GOG 0x00657470 Xbox 0x00036E70
     virtual void TurnOffShadows()
     {
         if (m_pAnimBase != NULL)
@@ -206,16 +206,16 @@ public:
             m_pAnimBase->TurnOffShadows();
         }
     }
-    // PC 0x004015A0 GOG 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     virtual void SetQuededAnimationCallback()
     {
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual int ClearQuededAnimationCallback()
     {
         return 0;
     }
-    // PC 0x00695590 GOG 0x00695340
+    // PC 0x00695590 GOG 0x00695340 Xbox 0x000940C0
     virtual int BarkString(unsigned long nStrRef, const CExoString& sText,
                                const CResRef& cSound, int bFlag)
     {
@@ -223,24 +223,24 @@ public:
     }
     virtual int BarkBubble(unsigned long nStrRef, const CExoString& sText,
                            const CResRef& cSound, int bFlag);
-    // PC 0x006955A0 GOG 0x00695350
+    // PC 0x006955A0 GOG 0x00695350 Xbox 0x0031ADD0
     virtual int LipSync(const CResRef& cLip)
     {
         return 0;
     }
-    // PC 0x006955B0 GOG 0x00695360
+    // PC 0x006955B0 GOG 0x00695360 Xbox 0x000940D0
     virtual void ClientServerSyncHandler_Position(const Vector& vPosition,
                                                       int nFlags, float fTime)
     {
         SetPosition(vPosition);
     }
-    virtual void ClientServerSyncHandler_Orientation(const Vector& vOrientation)  // PC 0x006955C0 GOG 0x00695370
+    virtual void ClientServerSyncHandler_Orientation(const Vector& vOrientation)  // PC 0x006955C0 GOG 0x00695370 Xbox 0x000940E0
     {
         SetOrientation(vOrientation);
     }
     virtual void ClientServerSyncHandler_Animation(int nAnimation,
                                                    float fSpeed);
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual int IsHostile()
     {
         return 0;
@@ -253,7 +253,7 @@ public:
         RETICLE_POINT_BEHIND = 2
     };
     virtual unsigned char GetReticlePoint(Vector& vPoint);
-    virtual float GetCanSeeHeight()  // PC 0x00664870 GOG 0x00695300
+    virtual float GetCanSeeHeight()  // PC 0x00664870 GOG 0x00695300 Xbox 0x00043B00
     {
         return 1.5f;
     }

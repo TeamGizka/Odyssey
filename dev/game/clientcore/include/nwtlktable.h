@@ -33,7 +33,7 @@ public:
 
     unsigned long m_nPlayerId;
     unsigned char GetObjectGender();
-    CExoString Fetch(unsigned long nStrRef, CGameObject* pObject, int nGender,
+    CExoString Fetch(unsigned long nStrRef, CGameObject* pObject, int nGender,  // Xbox 0x0001B4B0
                      int nFlags)
     {
         m_pObject = pObject;
@@ -44,7 +44,7 @@ public:
     }
 
 #ifndef NWCCREATURE_PARSESTR
-    void ParseStr(CExoString& sText, CGameObject* pObject, int nGender,
+    void ParseStr(CExoString& sText, CGameObject* pObject, int nGender,  // Xbox 0x00036F60
                   int nFlags)
     {
         m_pObject = pObject;

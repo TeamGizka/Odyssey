@@ -6,7 +6,7 @@
 inline _CSWWalkMeshHeader::_CSWWalkMeshHeader()
 {
 }
-// PC 0x006161D0 GOG 0x006161B0
+// PC 0x006161D0 GOG 0x006161B0 Xbox 0x00265A80
 void CSWCollisionMesh::SetActionPoint(int nIndex, const Vector& vPosition)
 {
     m_avUsePoints[nIndex] = WorldToLocal(vPosition);
@@ -15,22 +15,22 @@ void CSWCollisionMesh::SetActionPoint(int nIndex, const Vector& vPosition)
 const int CSWDoorSurfaceMesh::DOOR_STATE_CLOSED = 0;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN1 = 1;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN2 = 2;
-// PC 0x00616210 GOG 0x006161F0
+// PC 0x00616210 GOG 0x006161F0 Xbox 0x00265AC0
 void CSWDoorSurfaceMesh::SetOpenLocation(unsigned char nIndex,
                                          Vector vPosition)
 {
     EXOXBOXASSERT(nIndex <= 1); m_avUsePoints[nIndex] = WorldToLocal(vPosition);
 }
-// PC 0x00616250 GOG 0x00616230
+// PC 0x00616250 GOG 0x00616230 Xbox 0x00265B10
 CSWDoorSurfaceMesh::CSWDoorSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, 0x804)
 {
 }
-// PC 0x00616270 GOG 0x00616250
+// PC 0x00616270 GOG 0x00616250 Xbox 0x00265B30
 CSWDoorSurfaceMesh::~CSWDoorSurfaceMesh()
 {
 }
-// PC 0x00616280 GOG 0x00616260
+// PC 0x00616280 GOG 0x00616260 Xbox 0x00265B40
 void CSWDoorSurfaceMesh::SetDoorType(int nType)
 {
     m_nDoorType = nType;
@@ -50,7 +50,7 @@ void CSWDoorSurfaceMesh::SetDoorType(int nType)
         break;
     }
 }
-// PC 0x00616300 GOG 0x006162E0
+// PC 0x00616300 GOG 0x006162E0 Xbox 0x00265BC0
 int CSWDoorSurfaceMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
 {
     char* pLine = new char[256];
@@ -239,7 +239,7 @@ int CSWDoorSurfaceMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
     }
     return 1;
 }
-// PC 0x00616910 GOG 0x006168F0
+// PC 0x00616910 GOG 0x006168F0 Xbox 0x00266200
 int CSWDoorSurfaceMesh::LoadMeshBinary(CResBWM* pResBWM)
 {
     CSWCollisionMesh::LoadMeshBinary(pResBWM);
@@ -255,7 +255,7 @@ int CSWDoorSurfaceMesh::LoadMeshBinary(CResBWM* pResBWM)
 
     return 1;
 }
-// PC 0x00616A50 GOG 0x00616A30
+// PC 0x00616A50 GOG 0x00616A30 Xbox 0x00266350
 inline void CSWDoorSurfaceMesh::GetResourceForBinaryWalkMesh(CResRef& cResRef)
 {
     CExoString sResRef;
@@ -264,7 +264,7 @@ inline void CSWDoorSurfaceMesh::GetResourceForBinaryWalkMesh(CResRef& cResRef)
     sSuffix.Format("%s%d", sResRef.CStr(), m_nDoorType);
     cResRef = sSuffix;
 }
-// PC 0x00616B00 GOG 0x00616AE0
+// PC 0x00616B00 GOG 0x00616AE0 Xbox 0x002663D0
 int CSWDoorSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
     int nResult = CSWCollisionMesh::SaveBinaryMesh(sFileName);

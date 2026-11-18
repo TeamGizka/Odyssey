@@ -15,7 +15,7 @@
 #include "guiingame.h"
 #include "aurscene.h"
 
-// PC 0x00756EA0 GOG 0x00756CB0
+// PC 0x00756EA0 GOG 0x00756CB0 Xbox 0x00134550
 void CSWGuiLevelUpCharGen::OnPanelAdded()
 {
 #ifdef _XBOX
@@ -27,7 +27,7 @@ void CSWGuiLevelUpCharGen::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x00756EE0 GOG 0x00756FA0
+// PC 0x00756EE0 GOG 0x00756FA0 Xbox 0x00134580
 void CSWGuiLevelUpCharGen::DetermineClass()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
@@ -54,7 +54,7 @@ void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
     m_lblClass.m_cText.m_cParams.SetText(m_sClass);
     m_lblLevelValue.m_cText.m_cParams.SetText(sLevel);
 }
-// PC 0x007570E0 GOG 0x007571A0
+// PC 0x007570E0 GOG 0x007571A0 Xbox 0x001346F0
 void CSWGuiLevelUpCharGen::AbilitiesChanged()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -201,7 +201,7 @@ void CSWGuiLevelUpCharGen::NewAbilityScores(int nStr, int nCha, int nInt,
         pCreature->m_pStats->m_nCreationStage = nPoints;
     }
 }
-// PC 0x007576C0 GOG 0x00757780
+// PC 0x007576C0 GOG 0x00757780 Xbox 0x00134C20
 void CSWGuiLevelUpCharGen::ClearAbilities()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -234,7 +234,7 @@ void CSWGuiLevelUpCharGen::ClearAbilities()
             m_pCreature->m_pStats->m_nForcePointBonus;
     }
 }
-// PC 0x00757850 GOG 0x00757910
+// PC 0x00757850 GOG 0x00757910 Xbox 0x00134DB0
 void CSWGuiLevelUpCharGen::ClearSkills()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -320,13 +320,13 @@ void CSWGuiLevelUpCharGen::BeginPlayGame()
     }
     g_pAppManager->m_pClientExoApp->SetInputClass(m_nInputClass, 1);
 }
-// PC 0x00757AF0 GOG 0x00756CF0
+// PC 0x00757AF0 GOG 0x00756CF0 Xbox 0x00135050
 CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen()
 {
     delete m_pCreature;
     m_pCreature = 0;
 }
-// PC 0x00757DC0 GOG 0x00758F30
+// PC 0x00757DC0 GOG 0x00758F30 Xbox 0x00136E30
 void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0 && (nEvent == 40 || nEvent == 46))
@@ -447,7 +447,7 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->m_nDefenseBase = pOldStats->GetArmorClass(0);
     return 1;
 }
-// PC 0x00758350 GOG 0x007580F0
+// PC 0x00758350 GOG 0x007580F0 Xbox 0x00135C90
 void CSWGuiLevelUpCharGen::ClearFeats()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -465,7 +465,7 @@ void CSWGuiLevelUpCharGen::ClearFeats()
         }
     }
 }
-// PC 0x007583C0 GOG 0x00758160
+// PC 0x007583C0 GOG 0x00758160 Xbox 0x00135D00
 void CSWGuiLevelUpCharGen::CancelLevelUp()
 {
     if (m_nInputClass != 0)

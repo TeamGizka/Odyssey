@@ -81,7 +81,7 @@ union CVirtualMachineStackValue
 
 class CVirtualMachineStack
 {
-public:
+public:  // Xbox 0x0014A1B0
     CVirtualMachineStack()
     {
         m_nStackPointer = 0;

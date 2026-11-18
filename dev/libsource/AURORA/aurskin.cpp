@@ -149,7 +149,7 @@ inline MdlNodeTriMesh* VertexPrimitive::GetNode() { return m_pNode; }
 #define DEBUG_SKINPOOLS 0
 // PC 0x004A0900 GOG 0x004A09C0
 #ifdef _XBOX
-void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
+void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,  // Xbox 0x002CFAB0
                            List<Matrix>& rbones,
                            VertexPrimitiveSkinned* pPrimitive)
 #else
@@ -437,7 +437,7 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
     }
 #endif
 }
-// PC 0x004A1590 GOG 0x004A1650
+// PC 0x004A1590 GOG 0x004A1650 Xbox 0x002D06F0
 void MakeInlinePartList(Part* pPart, List<Part*>& lstParts)
 {
     lstParts.Add(pPart);
@@ -447,7 +447,7 @@ void MakeInlinePartList(Part* pPart, List<Part*>& lstParts)
         MakeInlinePartList(pPart->m_lstChildren[i], lstParts);
     }
 }
-// PC 0x004A1870 GOG 0x004A1930
+// PC 0x004A1870 GOG 0x004A1930 Xbox 0x002D09D0
 int FindPartIndexDFS(Part* pPart, char* sPartName)
 {
     List<Part*> lstParts;
@@ -519,7 +519,7 @@ void MdlNodeSkin::InternalGenVertices()
 
     m_lstSkinWeights = lstSkinWeights;
 }
-// PC 0x004A1CD0 GOG 0x004A1D90
+// PC 0x004A1CD0 GOG 0x004A1D90 Xbox 0x002D0DE0
 void GatherBones(Part* pPart, List<Vector>& tbones, List<Quaternion>& qbones,
                  Vector vTranslation, Quaternion qRotation)
 {

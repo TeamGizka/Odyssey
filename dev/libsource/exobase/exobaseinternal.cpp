@@ -70,7 +70,7 @@ void GetGameVersionInfo()  // PC 0x00632460 GOG 0x00632350
     }
 }
 #endif
-// PC 0x00632620 GOG 0x00632510
+// PC 0x00632620 GOG 0x00632510 Xbox 0x0014BAB0
 void CExoBaseInternal::CreateResourceExtensionTable()
 {
     m_nResourceTypeCount = 87;
@@ -313,7 +313,7 @@ int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x00633100
         return 0;
     }
 }
-// PC 0x006332F0 GOG 0x006331E0
+// PC 0x006332F0 GOG 0x006331E0 Xbox 0x0014AC40
 const CExoString& CExoBaseInternal::GetResourceExtension(
     unsigned short resourceType)
 {
@@ -324,7 +324,7 @@ const CExoString& CExoBaseInternal::GetResourceExtension(
     }
     return m_pResourceExtensions[86];
 }
-// PC 0x00633330 GOG 0x00633220
+// PC 0x00633330 GOG 0x00633220 Xbox 0x0014AC80
 unsigned short CExoBaseInternal::GetResTypeFromExtension(
     const CExoString& extension)
 {
@@ -649,7 +649,7 @@ void CExoBaseInternal::SpawnExternalApplication(const CExoString& sApplication,
     }
 }
 #endif
-// PC 0x00634510 GOG 0x00634400
+// PC 0x00634510 GOG 0x00634400 Xbox 0x0014BA30
 int CExoBaseInternal::WcsToMbs(char* sDest, const wchar_t* sSource,
                                unsigned long nLength)
 {
@@ -673,12 +673,12 @@ int CExoBaseInternal::WcsToMbs(char* sDest, const wchar_t* sSource,
 
     return 1;
 }
-// PC 0x00634590 GOG 0x00634480
+// PC 0x00634590 GOG 0x00634480 Xbox 0x0014C510
 CExoBaseInternal::CExoBaseInternal()
 {
     CreateResourceExtensionTable();
 }
-// PC 0x006345A0 GOG 0x00634490
+// PC 0x006345A0 GOG 0x00634490 Xbox 0x0014C520
 CExoBaseInternal::~CExoBaseInternal()
 {
     if (m_pResourceTypes)
@@ -687,7 +687,7 @@ CExoBaseInternal::~CExoBaseInternal()
 }
 
 static inline int GetListCount(const CExoArrayList<CExoString>* pList);
-// PC 0x006346E0 GOG 0x006345D0
+// PC 0x006346E0 GOG 0x006345D0 Xbox 0x0014C570
 int CExoBaseInternal::GetDirectoryList(CExoArrayList<CExoString>* pList,
                                        const CExoString& sDir,
                                        unsigned short nResType,
@@ -1028,7 +1028,7 @@ int CExoBaseInternal::GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList,
 }
 #ifdef _XBOX
 
-void CExoBaseInternal::AddAlias(const CExoString& sFile,
+void CExoBaseInternal::AddAlias(const CExoString& sFile,  // Xbox 0x0014ABB0
                                 const CExoString& sAlias,
                                 const CExoString& sDefault,
                                 const CExoString& sXboxPath)
@@ -1043,7 +1043,7 @@ void CExoBaseInternal::AddAlias(const CExoString& sFile,
     g_pExoBase->m_pExoAliasList->Add(sAlias, sPath);
 }
 
-void CExoBaseInternal::LoadAliases(const CExoString& sFile)
+void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // Xbox 0x0014ACD0
 {
     CExoString sAliasFile;
 

@@ -52,7 +52,7 @@ int AurPixelShadersAvailable()  // PC 0x00485DA0 GOG 0x00485E60
 }
 #else
 
-int AurPixelShadersAvailable()
+int AurPixelShadersAvailable()  // Xbox 0x0031B490
 {
     static int returnval = -1;
 

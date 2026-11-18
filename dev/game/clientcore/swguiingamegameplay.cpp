@@ -51,7 +51,7 @@ void CSWGuiInGameGameplay::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x007592B0 GOG 0x007590D0
+// PC 0x007592B0 GOG 0x007590D0 Xbox 0x001324F0
 void CSWGuiInGameGameplay::OnAutoLevelUp(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -62,7 +62,7 @@ void CSWGuiInGameGameplay::OnAutoLevelUp(CSWGuiControl* pControl)
             bAutoLevelUp);
     }
 }
-// PC 0x007592F0 GOG 0x00759110
+// PC 0x007592F0 GOG 0x00759110 Xbox 0x00132530
 void CSWGuiInGameGameplay::OnAutoSave(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -74,7 +74,7 @@ void CSWGuiInGameGameplay::OnAutoSave(CSWGuiControl* pControl)
         pOptions->m_bAutoSave = bAutoSave;
     }
 }
-// PC 0x00759340 GOG 0x00759160
+// PC 0x00759340 GOG 0x00759160 Xbox 0x00132580
 void CSWGuiInGameGameplay::OnInvertCam(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -86,7 +86,7 @@ void CSWGuiInGameGameplay::OnInvertCam(CSWGuiControl* pControl)
         pOptions->m_bMouseLook = bInvertCam;
     }
 }
-// PC 0x00759390 GOG 0x007591B0
+// PC 0x00759390 GOG 0x007591B0 Xbox 0x001325D0
 void CSWGuiInGameGameplay::OnReverse(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -98,7 +98,7 @@ void CSWGuiInGameGameplay::OnReverse(CSWGuiControl* pControl)
         pOptions->m_bReverseMinigameYAxis = bReverse;
     }
 }
-// PC 0x007593E0 GOG 0x00759200
+// PC 0x007593E0 GOG 0x00759200 Xbox 0x00132620
 void CSWGuiInGameGameplay::OnReverseIngame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -111,7 +111,7 @@ void CSWGuiInGameGameplay::OnReverseIngame(CSWGuiControl* pControl)
         pOptions->m_bReverseIngame = bReverse;
     }
 }
-// PC 0x00759430 GOG 0x00759250
+// PC 0x00759430 GOG 0x00759250 Xbox 0x00132670
 void CSWGuiInGameGameplay::OnCombatMovement(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -147,7 +147,7 @@ void CSWGuiInGameGameplay::OnMouse(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x00759580 GOG 0x007593A0
+// PC 0x00759580 GOG 0x007593A0 Xbox 0x00132710
 void CSWGuiInGameGameplay::SetDifficultyText()
 {
     int nNameStrRef;
@@ -196,7 +196,7 @@ void CSWGuiInGameGameplay::SetDifficultyText()
     }
 #endif
 }
-// PC 0x00759680 GOG 0x007594A0
+// PC 0x00759680 GOG 0x007594A0 Xbox 0x001327E0
 void CSWGuiInGameGameplay::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -298,7 +298,7 @@ void CSWGuiInGameGameplay::SetUpOptions()
         pToggle->m_bToggled = bValue;
     }
 }
-// PC 0x00759940 GOG 0x00759760
+// PC 0x00759940 GOG 0x00759760 Xbox 0x00132980
 void CSWGuiInGameGameplay::OnEnterSlot(CSWGuiControl* pControl)
 {
     SetDescription(pControl->m_nIndex);
@@ -561,7 +561,7 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
 
 #ifdef _XBOX
 
-void CSWGuiInGameGameplay::FlashLabel(CSWGuiLabel* pLabel)
+void CSWGuiInGameGameplay::FlashLabel(CSWGuiLabel* pLabel)  // Xbox 0x00132990
 {
     int nCount = m_aFlashes.num;
     for (int i = 0; i < nCount; i++)
@@ -578,7 +578,7 @@ void CSWGuiInGameGameplay::FlashLabel(CSWGuiLabel* pLabel)
     pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
 }
 
-void CSWGuiInGameGameplay::Draw(float fElapsed)
+void CSWGuiInGameGameplay::Draw(float fElapsed)  // Xbox 0x00132440
 {
     for (int i = m_aFlashes.num - 1; i >= 0; i--)
     {

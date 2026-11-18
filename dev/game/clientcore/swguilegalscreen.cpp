@@ -19,7 +19,7 @@ CSWGuiLegalScreen::CSWGuiLegalScreen(CSWGuiManager* pManager,
     m_nMinShowTime = nMinShowTime;
 }
 
-void CSWGuiLegalScreen::SetImage(const CResRef& cImage)
+void CSWGuiLegalScreen::SetImage(const CResRef& cImage)  // Xbox 0x0006F160
 {
     float fAlpha = m_fAlpha;
 
@@ -66,7 +66,7 @@ void CSWGuiLegalScreen::SetImage(const CResRef& cImage)
     m_nShowTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
 }
 
-// PC 0x006CA770 GOG 0x006CA690
+// PC 0x006CA770 GOG 0x006CA690 Xbox 0x0006F390
 void CSWDemoScreen::SetImage(const CResRef& cImage)
 {
     float fAlpha = 1.0f;
@@ -75,7 +75,7 @@ void CSWDemoScreen::SetImage(const CResRef& cImage)
     m_nShowTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
 }
 
-// PC 0x006CA7A0 GOG 0x006CA6C0
+// PC 0x006CA7A0 GOG 0x006CA6C0 Xbox 0x0006F3C0
 void CSWDemoScreen::HandleInputEvent(int nEvent, int nState)
 {
     if (g_pExoBase->m_pExoTimers->GetLowResolutionTimer() >= m_nShowTime + m_nMinShowTime)
@@ -86,7 +86,7 @@ void CSWDemoScreen::HandleInputEvent(int nEvent, int nState)
     }
 }
 
-// PC 0x006CA820 GOG 0x006CA740
+// PC 0x006CA820 GOG 0x006CA740 Xbox 0x0006F440
 void CSWDemoScreen::Update(float fElapsed)
 {
     if (g_pExoBase->m_pExoTimers->GetLowResolutionTimer() >= m_nShowTime + m_nMinShowTime * 2)
@@ -99,7 +99,7 @@ void CSWDemoScreen::Update(float fElapsed)
     }
 }
 
-// PC 0x006CA8F0 GOG 0x006CA4A0
+// PC 0x006CA8F0 GOG 0x006CA4A0 Xbox 0x0006F4D0
 CSWDemoScreen::CSWDemoScreen(CSWGuiManager* pManager, unsigned long nMinShowTime, unsigned long nStrRef,
                              unsigned long nLeft, unsigned long nTop)
     : CSWGuiPanel(pManager)

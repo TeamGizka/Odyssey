@@ -140,14 +140,14 @@ public:
                                 unsigned char nIndex);
     void ClearSkills();
     char GetSkillRank(unsigned short nSkill);
-    void SetSkillRank(unsigned short nSkill, char nRank)  // PC 0x0069FD50 GOG 0x0069FB30
+    void SetSkillRank(unsigned short nSkill, char nRank)  // PC 0x0069FD50 GOG 0x0069FB30 Xbox 0x0006FF40
     {
         if (nSkill < g_pRules->m_nNumSkills)
         {
             m_pSkillRanksTotal[nSkill] = nRank;
         }
     }
-    void SetSkillRankBase(unsigned short nSkill, char nRank)  // PC 0x0069FD80 GOG 0x0069FB60
+    void SetSkillRankBase(unsigned short nSkill, char nRank)  // PC 0x0069FD80 GOG 0x0069FB60 Xbox 0x0006FF70
     {
         if (nSkill < g_pRules->m_nNumSkills)
         {
@@ -155,7 +155,7 @@ public:
         }
     }
 
-    char GetSkillRankBase(unsigned short nSkill)
+    char GetSkillRankBase(unsigned short nSkill)  // Xbox 0x00036EB0
     {
         if (nSkill >= g_pRules->m_nNumSkills)
         {
@@ -165,7 +165,7 @@ public:
     }
 
     int GetCanUseSkill(unsigned short nSkill);
-    // PC 0x006575D0 GOG 0x00657480
+    // PC 0x006575D0 GOG 0x00657480 Xbox 0x00036E90
     unsigned char GetSimpleAlignmentGoodEvil()
     {
         return m_nGoodEvilAlignment <= 40 ? 3 : (m_nGoodEvilAlignment >= 60) + 1;
@@ -208,7 +208,7 @@ public:
     static int CheckCustomPortrait(CResRef* pResRef, int bFemale);
     CExoString GetFirstName();
     CExoString GetLastName();
-    CExoString GetTag()
+    CExoString GetTag()  // Xbox 0x000CA340
     {
         return m_sTag;
     }
@@ -408,7 +408,7 @@ public:
     unsigned char ComputeNumberKnownSpellsLeft();
 
     unsigned char& MainCharGenAbility(int nAbility);
-    // PC 0x006575F0 GOG 0x006574A0
+    // PC 0x006575F0 GOG 0x006574A0 Xbox 0x00036EB0
     char GetSkillRank(unsigned short nSkill)
     {
         unsigned char nNumSkills = g_pRules->m_nNumSkills;

@@ -18,7 +18,7 @@
 #include "../../libsource/AURORA/aurpointer.h"
 #include <math.h>
 #include "nwrules.h"
-// PC 0x007460D0 GOG 0x00745F70
+// PC 0x007460D0 GOG 0x00745F70 Xbox 0x00124A90
 CSWCAreaOfEffectObject::CSWCAreaOfEffectObject()
     : CSWCObject(0xB)
 {
@@ -61,7 +61,7 @@ CSWCAreaOfEffectObject::CSWCAreaOfEffectObject()
     m_oidCreator = OBJECT_INVALID;
     m_nAreaEffectId = -1;
 }
-// PC 0x00746250 GOG 0x007460F0
+// PC 0x00746250 GOG 0x007460F0 Xbox 0x00125350
 int CSWCAreaOfEffectObject::LoadEffect(unsigned long nAreaEffectId)
 {
     CExoString asModels[3];
@@ -446,7 +446,7 @@ int CSWCAreaOfEffectObject::LoadEffect(unsigned long nAreaEffectId)
     m_nAreaEffectId = nAreaEffectId;
     return 1;
 }
-// PC 0x00746E80 GOG 0x00746D20
+// PC 0x00746E80 GOG 0x00746D20 Xbox 0x00124CA0
 void CSWCAreaOfEffectObject::UnloadModel()
 {
     if (m_pnAnimTimer != NULL)
@@ -489,7 +489,7 @@ void CSWCAreaOfEffectObject::UnloadModel()
         m_pVisualEffect = NULL;
     }
 }
-// PC 0x00746F80 GOG 0x00746E20
+// PC 0x00746F80 GOG 0x00746E20 Xbox 0x00124DA0
 void CSWCAreaOfEffectObject::UnloadModel(unsigned char nModel)
 {
     if (nModel == 0xFF)
@@ -497,7 +497,7 @@ void CSWCAreaOfEffectObject::UnloadModel(unsigned char nModel)
         UnloadModel();
     }
 }
-// PC 0x00746FA0 GOG 0x00746E40
+// PC 0x00746FA0 GOG 0x00746E40 Xbox 0x00124DC0
 int CSWCAreaOfEffectObject::SetAnimation(unsigned short nAnimation,
                                          unsigned char nInstance)
 {
@@ -532,7 +532,7 @@ int CSWCAreaOfEffectObject::SetAnimation(unsigned short nAnimation,
         return m_pAnimBase[nInstance].SetAnimation(nAnimation, 1.0f, 0, 0);
     }
 }
-// PC 0x007470B0 GOG 0x00746F50
+// PC 0x007470B0 GOG 0x00746F50 Xbox 0x00124ED0
 void CSWCAreaOfEffectObject::ResetTimer(int nIndex)
 {
     if (m_pAnimBase != NULL)
@@ -553,7 +553,7 @@ void CSWCAreaOfEffectObject::ResetTimer(int nIndex)
         }
     }
 }
-// PC 0x00747100 GOG 0x00746FA0
+// PC 0x00747100 GOG 0x00746FA0 Xbox 0x00124F20
 void CSWCAreaOfEffectObject::StopEffect()
 {
     CExoString sSoundCessation;
@@ -593,7 +593,7 @@ void CSWCAreaOfEffectObject::StopEffect()
     }
     m_nEndTimer = 3000;
 }
-// PC 0x007472D0 GOG 0x00747170
+// PC 0x007472D0 GOG 0x00747170 Xbox 0x001250B0
 void CSWCAreaOfEffectObject::SetMoveTimer(unsigned long nTime,
                                           CAurObject* pObject)
 {
@@ -614,7 +614,7 @@ void CSWCAreaOfEffectObject::SetMoveTimer(unsigned long nTime,
         }
     }
 }
-// PC 0x00747340 GOG 0x007471E0
+// PC 0x00747340 GOG 0x007471E0 Xbox 0x00125120
 int CSWCAreaOfEffectObject::SetEnvMap(int nType, int nFlags,
                                      const CResRef& cEnvMap)
 {
@@ -653,7 +653,7 @@ int CSWCAreaOfEffectObject::SetEnvMap(int nType, int nFlags,
     }
     return 1;
 }
-// PC 0x007474A0 GOG 0x00747340
+// PC 0x007474A0 GOG 0x00747340 Xbox 0x00125240
 int CSWCAreaOfEffectObject::SetEnvMap(unsigned char nModel, int nType,
                                      int nFlags, const CResRef& cEnvMap)
 {
@@ -697,7 +697,7 @@ CSWCAreaOfEffectObject::~CSWCAreaOfEffectObject()
     }
     UnloadModel();
 }
-// PC 0x00747680 GOG 0x00747520
+// PC 0x00747680 GOG 0x00747520 Xbox 0x00125F30
 int CSWCAreaOfEffectObject::SetInstanceRandomPosition(unsigned char nInstance)
 {
     Vector vPosition;
@@ -897,7 +897,7 @@ int CSWCAreaOfEffectObject::SetInstanceRandomPosition(unsigned char nInstance)
     }
     return 1;
 }
-// PC 0x00748200 GOG 0x007480A0
+// PC 0x00748200 GOG 0x007480A0 Xbox 0x00126B10
 void CSWCAreaOfEffectObject::UpdateInstancePosition()
 {
     int nFinishedInstances = 0;
@@ -966,7 +966,7 @@ void CSWCAreaOfEffectObject::UpdateInstancePosition()
         m_bFinished = 1;
     }
 }
-// PC 0x007483F0 GOG 0x00748290
+// PC 0x007483F0 GOG 0x00748290 Xbox 0x00126D70
 void CSWCAreaOfEffectObject::SetPosition(const Vector& vPosition)
 {
     CHitInfo cHitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
@@ -1026,7 +1026,7 @@ void CSWCAreaOfEffectObject::SetPosition(const Vector& vPosition)
     }
     m_vPosition = vPosition;
 }
-// PC 0x00748880 GOG 0x00748720
+// PC 0x00748880 GOG 0x00748720 Xbox 0x00127230
 void CSWCAreaOfEffectObject::AIUpdate()
 {
     unsigned long nDay;

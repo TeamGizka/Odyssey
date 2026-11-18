@@ -40,7 +40,7 @@ CSWGuiClassType CSWGuiClassSelection::CHAR_TYPES[6] = {
     {CSWClass::CCLASS_JEDICONSULAR, CCAppearanceInfo::GENDER_FEMALE, SOUNDSET_PLAYER_FEMALE, 0,
      STRREF_JEDI_CONSULAR_DESCRIPTION}
 };
-// PC 0x007499E0 GOG 0x00749A50
+// PC 0x007499E0 GOG 0x00749A50 Xbox 0x00129820
 void CSWGuiClassSelection::OnPanelAdded()
 {
     {
@@ -53,7 +53,7 @@ void CSWGuiClassSelection::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 0, 1);
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x00749A90 GOG 0x00749B00
+// PC 0x00749A90 GOG 0x00749B00 Xbox 0x00129890
 void CSWGuiClassSelection::HandleCancelButton()
 {
     m_bDeferredRemoval = 0;
@@ -63,7 +63,7 @@ void CSWGuiClassSelection::HandleCancelButton()
     g_pAppManager->m_pClientExoApp->DisplayMainMenu(0);
     g_pAppManager->DestroyServer();
 }
-// PC 0x00749AE0 GOG 0x00749B50
+// PC 0x00749AE0 GOG 0x00749B50 Xbox 0x001298E0
 void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -97,7 +97,7 @@ void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 
 }
 
-// PC 0x00749BA0 GOG 0x00749C10
+// PC 0x00749BA0 GOG 0x00749C10 Xbox 0x00129970
 void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -147,7 +147,7 @@ void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
         m_lblClass.m_cText.m_cParams.SetText(sClass);
     }
 }
-// PC 0x00749E60 GOG 0x00749ED0
+// PC 0x00749E60 GOG 0x00749ED0 Xbox 0x00129B40
 void CSWGuiClassSelection::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -169,7 +169,7 @@ void CSWGuiClassSelection::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00749F00 GOG 0x00749F70
+// PC 0x00749F00 GOG 0x00749F70 Xbox 0x00129BE0
 void CSWGuiClassSelection::BeginPlayGame()
 {
     g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
@@ -224,7 +224,7 @@ void CSWGuiClassSelection::BeginPlayGame()
     pClientExoApp->SetLoadScreenHint(
         pClientExoApp->GetNextLoadScreenHintSTRREF(m_sModule, 0));
 }
-// PC 0x0074A220 GOG 0x0074A290
+// PC 0x0074A220 GOG 0x0074A290 Xbox 0x00129E90
 void CSWGuiClassSelection::Draw(float fElapsed)
 {
     float fScale = 1.0f;
@@ -367,7 +367,7 @@ void CSWGuiClassSelection::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x0074A650 GOG 0x00749880
+// PC 0x0074A650 GOG 0x00749880 Xbox 0x0012A1D0
 CSWGuiClassSelection::~CSWGuiClassSelection()
 {
     for (int i = 0; i < 6; i++)
@@ -393,7 +393,7 @@ CSWGuiClassSelection::~CSWGuiClassSelection()
 CSWGuiClassSelChar::CSWGuiClassSelChar()
 {
 }
-// PC 0x0074A8B0 GOG 0x0074A700
+// PC 0x0074A8B0 GOG 0x0074A700 Xbox 0x0012A470
 CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
                                          const CExoString& sModule)
     : CSWGuiPanel(pManager)

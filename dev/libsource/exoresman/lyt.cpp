@@ -4,17 +4,17 @@
 #include <stdio.h>
 
 #include "math3d.h"
-// PC 0x005ED200 GOG 0x005ED1E0
+// PC 0x005ED200 GOG 0x005ED1E0 Xbox 0x0015C390
 int CLYT::GetRoomCount()
 {
     return m_nRoomCount;
 }
-// PC 0x00622290 GOG 0x00622260
+// PC 0x00622290 GOG 0x00622260 Xbox 0x0015B800
 int CLYT::GetTrackCount()
 {
     return m_nTrackCount;
 }
-// PC 0x007846A0 GOG 0x00784450
+// PC 0x007846A0 GOG 0x00784450 Xbox 0x0015B870
 int CLYT::GetObstacleCount()
 {
     return m_nObstacleCount;
@@ -25,7 +25,7 @@ int CLYT::GetDoorHookCount()
 {
     return m_nDoorHookCount;
 }
-// PC 0x0077FA00 GOG 0x00628FE0
+// PC 0x0077FA00 GOG 0x00628FE0 Xbox 0x0015C370
 int CLYT::UnloadLayout()
 {
     int nResult = m_bLayoutLoaded;
@@ -36,37 +36,37 @@ int CLYT::UnloadLayout()
     }
     return nResult;
 }
-// PC 0x00629130 GOG 0x00629000
+// PC 0x00629130 GOG 0x00629000 Xbox 0x0015B740
 CResRef CLYT::GetRoomName(int nRoom)
 {
     return m_pRoomNames[nRoom];
 }
-// PC 0x00629160 GOG 0x00629030
+// PC 0x00629160 GOG 0x00629030 Xbox 0x0015B770
 Vector CLYT::GetRoomPosition(int nRoom)
 {
     return m_pRoomPositions[nRoom];
 }
-// PC 0x00629190 GOG 0x00629060
+// PC 0x00629190 GOG 0x00629060 Xbox 0x0015B7A0
 CResRef CLYT::GetTrackName(int nTrack)
 {
     return m_pTrackNames[nTrack];
 }
-// PC 0x006291C0 GOG 0x00629090
+// PC 0x006291C0 GOG 0x00629090 Xbox 0x0015B7D0
 Vector CLYT::GetTrackPosition(int nTrack)
 {
     return m_pTrackPositions[nTrack];
 }
-// PC 0x006291F0 GOG 0x006290C0
+// PC 0x006291F0 GOG 0x006290C0 Xbox 0x0015B810
 CResRef CLYT::GetObstacleName(int nObstacle)
 {
     return m_pObstacleNames[nObstacle];
 }
-// PC 0x00629220 GOG 0x006290F0
+// PC 0x00629220 GOG 0x006290F0 Xbox 0x0015B840
 Vector CLYT::GetObstaclePosition(int nObstacle)
 {
     return m_pObstaclePositions[nObstacle];
 }
-// PC 0x00629430 GOG 0x00629300
+// PC 0x00629430 GOG 0x00629300 Xbox 0x0015BA20
 CLYT::CLYT()
 {
     m_nRoomCount = 0;
@@ -85,7 +85,7 @@ CLYT::CLYT()
     m_pDoorHookOrientations = 0;
     m_pDoorHookIds = 0;
 }
-// PC 0x006294A0 GOG 0x00629370
+// PC 0x006294A0 GOG 0x00629370 Xbox 0x0015C1F0
 CLYT::~CLYT()
 {
     UnloadLayout();
@@ -112,14 +112,14 @@ CLYT::~CLYT()
     delete[] m_pDoorHookIds;
     m_pDoorHookIds = 0;
 }
-// PC 0x00629E00 GOG 0x00629CD0
+// PC 0x00629E00 GOG 0x00629CD0 Xbox 0x0015C310
 int CLYT::LoadLayout(const CResRef& cResRef)
 {
     CExoString sLayout;
     cResRef.CopyToString(sLayout);
     return LoadLayout(sLayout);
 }
-// PC 0x006295C0 GOG 0x00629490
+// PC 0x006295C0 GOG 0x00629490 Xbox 0x0015BA90
 int CLYT::LoadLayout(const CExoString& sLayout)
 {
     char* pBuffer;

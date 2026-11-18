@@ -732,7 +732,7 @@ public:
     void SetLockHeadFollowInDialog(unsigned long oidObject, int bLock);
     int IsAnimationPlayingInDialog();
     int IsFadingInDialog();
-    void AddReceivedItemToList(const CExoLocString& sName) { m_aItemsReceived.Add(sName); }
+    void AddReceivedItemToList(const CExoLocString& sName) { m_aItemsReceived.Add(sName); }  // Xbox 0x00203660
     void SetKeepStealthInDialog(int bKeep) { m_bKeepStealthInDialog = bKeep; }
 };
 

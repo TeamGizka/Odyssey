@@ -34,7 +34,7 @@ extern int g_bVertexProgramBound;
 
 struct DXTextureState
 {
-    DXTextureState()
+    DXTextureState()  // Xbox 0x00296CF0
     {
         m_nComponents = 0;
         m_nType = 0;
@@ -622,7 +622,7 @@ public:
     static void SetStencilFunc(int nFunc, int nReference, unsigned int nMask);
     static void SetColorMask(unsigned char bRed, unsigned char bGreen, unsigned char bBlue, unsigned char bAlpha);
 
-    static bool IsEnabled(Aurora::AuroraEnableEnums nCap)
+    static bool IsEnabled(Aurora::AuroraEnableEnums nCap)  // Xbox 0x002C3240
     {
         if (enableTranslationTable[nCap] == 0x7fffffff)
         {
@@ -809,7 +809,7 @@ extern int g_nTexturingDisabled;
 extern int g_nCurrentBlendSource;
 extern int g_nCurrentBlendDestination;
 
-inline void GLRender::Enable(Aurora::AuroraEnableEnums nCap)
+inline void GLRender::Enable(Aurora::AuroraEnableEnums nCap)  // Xbox 0x00011520
 {
     unsigned long nState = enableTranslationTable[nCap];
     if (nState == AUR_ENABLE_SPECIAL)
@@ -838,7 +838,7 @@ inline void GLRender::Enable(Aurora::AuroraEnableEnums nCap)
     }
 }
 
-inline void GLRender::Disable(Aurora::AuroraEnableEnums nCap)
+inline void GLRender::Disable(Aurora::AuroraEnableEnums nCap)  // Xbox 0x00296D20
 {
     unsigned long nState = enableTranslationTable[nCap];
     if (nState == AUR_ENABLE_SPECIAL)
@@ -875,7 +875,7 @@ inline int GLRender::SetCurrentStageTID(unsigned long nStage, unsigned int nTID)
     return nTID;
 }
 
-inline void GLRender::SetBlendFunc(Aurora::AuroraBlendModes nSource, Aurora::AuroraBlendModes nDestination)
+inline void GLRender::SetBlendFunc(Aurora::AuroraBlendModes nSource, Aurora::AuroraBlendModes nDestination)  // Xbox 0x00011890
 {
     if (nSource != g_nCurrentBlendSource || nDestination != g_nCurrentBlendDestination)
     {
@@ -888,7 +888,7 @@ inline void GLRender::SetBlendFunc(Aurora::AuroraBlendModes nSource, Aurora::Aur
 
 extern int enablecolor;
 
-inline void GLRender::SetAlphaFunc(int nFunc, float fReference)
+inline void GLRender::SetAlphaFunc(int nFunc, float fReference)  // Xbox 0x002C3270
 {
     unsigned long nReference = (unsigned long)(fReference * 255.0f);
     g_pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, cmpTranslationTable[nFunc]);
@@ -900,14 +900,14 @@ inline void GLRender::SetStencilMask(unsigned int nMask)
     g_pD3DDevice->SetRenderState(D3DRS_STENCILWRITEMASK, nMask);
 }
 
-inline void GLRender::SetStencilFunc(int nFunc, int nReference, unsigned int nMask)
+inline void GLRender::SetStencilFunc(int nFunc, int nReference, unsigned int nMask)  // Xbox 0x0029C270
 {
     g_pD3DDevice->SetRenderState(D3DRS_STENCILFUNC, cmpTranslationTable[nFunc]);
     g_pD3DDevice->SetRenderState(D3DRS_STENCILREF, nReference);
     g_pD3DDevice->SetRenderState(D3DRS_STENCILMASK, nMask);
 }
 
-inline void AurSetVertexProgramParameter4f(unsigned int nIndex, float x, float y, float z, float w)
+inline void AurSetVertexProgramParameter4f(unsigned int nIndex, float x, float y, float z, float w)  // Xbox 0x0029C220
 {
     float fParameter[4];
     fParameter[0] = x;
@@ -930,20 +930,20 @@ inline void GLRender::SetColorMask(unsigned char bRed, unsigned char bGreen, uns
     }
 }
 
-inline void GLRender::SetFogf(Aurora::AuroraEnableEnums nMode, float fValue)
+inline void GLRender::SetFogf(Aurora::AuroraEnableEnums nMode, float fValue)  // Xbox 0x002C2C50
 {
     fValue = 0.0f - fValue;
     g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)enableTranslationTable[nMode], *(unsigned long*)&fValue);
 }
 
-inline void GLRender::SetFogfv(Aurora::AuroraEnableEnums nMode, Vector& vValue)
+inline void GLRender::SetFogfv(Aurora::AuroraEnableEnums nMode, Vector& vValue)  // Xbox 0x002C2F10
 {
     g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)enableTranslationTable[nMode],
                                  D3DCOLOR_ARGB(0, (int)(vValue.m_fX * 255.0f), (int)(vValue.m_fY * 255.0f),
                                                (int)(vValue.m_fZ * 255.0f)));
 }
 
-inline void GLRender::SetLightModel(const float* pfColor)
+inline void GLRender::SetLightModel(const float* pfColor)  // Xbox 0x002C31C0
 {
     g_pD3DDevice->SetRenderState(D3DRS_AMBIENT,
                                  D3DCOLOR_ARGB((int)(pfColor[3] * 255.0f), (int)(pfColor[0] * 255.0f),
@@ -1004,7 +1004,7 @@ inline void GLRender::SetMaterialv(int nFace, int nMaterial, const float* pfPara
     }
 }
 
-inline void GLRender::SetLightProperties(unsigned long nLight, int nParameter, const float* pfParams)
+inline void GLRender::SetLightProperties(unsigned long nLight, int nParameter, const float* pfParams)  // Xbox 0x003295F0
 {
     D3DLIGHT8 light;
     if (!g_lstLights.Contains(nLight))
@@ -1234,7 +1234,7 @@ inline void GLRender::GetViewPort(int* pViewport)
     pViewport[3] = nHeight;
 }
 
-inline void GLRender::LoadMatrixIdentity()
+inline void GLRender::LoadMatrixIdentity()  // Xbox 0x000117D0
 {
     switch (g_nMatrixMode)
     {
@@ -1259,7 +1259,7 @@ inline void GLRender::LoadMatrixIdentity()
     }
 }
 
-inline void GLRender::LoadViewIdentity()
+inline void GLRender::LoadViewIdentity()  // Xbox 0x00011DF0
 {
     g_nMatrixMode = 1;
     LoadMatrixIdentity();
@@ -1276,7 +1276,7 @@ inline int AurCubeMapAvailable()
 extern int g_bHighResolutionTimer;
 extern int g_bTimerScaled;
 extern float g_fTimerScale;
-inline __int64 AurGetHighResolutionTime()
+inline __int64 AurGetHighResolutionTime()  // Xbox 0x000118F0
 {
     if (g_bHighResolutionTimer == 1)
     {
@@ -1291,7 +1291,7 @@ inline __int64 AurGetHighResolutionTime()
     return (unsigned __int64)GetTickCount() * 1000;
 }
 
-inline void GLRender::SetClearColor(float fRed, float fGreen, float fBlue, float fAlpha)
+inline void GLRender::SetClearColor(float fRed, float fGreen, float fBlue, float fAlpha)  // Xbox 0x000114B0
 {
     g_nClearColor = D3DCOLOR_ARGB((int)(fAlpha * 255.0f), (int)(fRed * 255.0f), (int)(fGreen * 255.0f),
                                   (int)(fBlue * 255.0f));
@@ -1329,7 +1329,7 @@ inline void GLRender::ApplyMatrix(int nMode)
     }
 }
 
-inline void GLRender::BeginImmediatePrimitive(Aurora::AuroraPrimitiveTypes nType)
+inline void GLRender::BeginImmediatePrimitive(Aurora::AuroraPrimitiveTypes nType)  // Xbox 0x002DA850
 {
     int nMode = g_nMatrixMode;
     ApplyMatrix(1);
@@ -1361,13 +1361,13 @@ inline void GLRender::SetTextureCoordGenerationState(
     }
 }
 
-inline void GLRender::SetPixelShaderAmbientColor(Vector& vColor, float fAlpha)
+inline void GLRender::SetPixelShaderAmbientColor(Vector& vColor, float fAlpha)  // Xbox 0x002CFA10
 {
     float fW = fAlpha;
     g_pD3DDevice->SetPixelShaderConstant(0, Homogenize(vColor, fW), 1);
 }
 
-inline void GLRender::SetBumpLightColor(Vector& vColor)
+inline void GLRender::SetBumpLightColor(Vector& vColor)  // Xbox 0x002CFA40
 {
     g_pD3DDevice->SetPixelShaderConstant(1, Homogenize(vColor, 1.0f), 1);
 }

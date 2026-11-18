@@ -52,7 +52,7 @@ template <> List<Aurora::AuroraBlendModes>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x004AB240 GOG 0x004AB300
+// PC 0x004AB240 GOG 0x004AB300 Xbox 0x0031B4C0
 void Material::ParseField(char* sField)
 {
     char sBlending[32];
@@ -144,7 +144,7 @@ void Material::PurgeBadTexture(SafePointer<CAurTexture>& pTexture)
         }
     }
 }
-// PC 0x004AB460 GOG 0x004AB520
+// PC 0x004AB460 GOG 0x004AB520 Xbox 0x0031B6E0
 int Material::BindTexture0()
 {
     PurgeBadTexture(m_pTexture0);
@@ -160,7 +160,7 @@ int Material::BindTexture0()
         return AurTextureGetTID(AsTexture(m_pTexture0));
     }
 }
-// PC 0x004AB4D0 GOG 0x004AB590
+// PC 0x004AB4D0 GOG 0x004AB590 Xbox 0x0031B750
 int Material::BindTexture1()
 {
     PurgeBadTexture(m_pTexture1);
@@ -195,14 +195,14 @@ int Material::BindBumpMap()
 }
 
 // Dead code: not in the PC executable
-int Material::BindBumpyShinyMap()
+int Material::BindBumpyShinyMap()  // Xbox 0x0031B7A0
 {
     PurgeBadTexture(m_pEnvMap);
 
     AsTexture(m_pEnvMap)->Bind();
     return AurTextureGetTID(AsTexture(m_pEnvMap));
 }
-// PC 0x004AB520 GOG 0x004AB5E0
+// PC 0x004AB520 GOG 0x004AB5E0 Xbox 0x0031B7A0
 int Material::BindEnvMap()
 {
     PurgeBadTexture(m_pEnvMap);
@@ -210,7 +210,7 @@ int Material::BindEnvMap()
     AsTexture(m_pEnvMap)->Bind();
     return AurTextureGetTID(AsTexture(m_pEnvMap));
 }
-// PC 0x004AB570 GOG 0x004AB630
+// PC 0x004AB570 GOG 0x004AB630 Xbox 0x0031B7F0
 int Material::GetTextureTID()
 {
     return AurTextureGetTID(AsTexture(m_pTexture0));
@@ -233,7 +233,7 @@ int Material::GetEnvMapTID()
 {
     return AurTextureGetTID(AsTexture(m_pEnvMap));
 }
-// PC 0x004AB580 GOG 0x004AB640
+// PC 0x004AB580 GOG 0x004AB640 Xbox 0x0031B800
 int Material::SetDownSampling(int nMax)
 {
     char sCommand[20];
@@ -254,7 +254,7 @@ int Material::BumpMapIsDiffuse()
         return 0;
     }
 }
-// PC 0x004AB5C0 GOG 0x004AB680
+// PC 0x004AB5C0 GOG 0x004AB680 Xbox 0x0031B840
 int Material::BumpMapIsSpecular()
 {
     if (AsTexture(m_pBumpMap) != 0)
@@ -266,7 +266,7 @@ int Material::BumpMapIsSpecular()
         return 0;
     }
 }
-// PC 0x004AB5E0 GOG 0x004AB6A0
+// PC 0x004AB5E0 GOG 0x004AB6A0 Xbox 0x0031B860
 void Material::SetBlendingMode(int nIndex)
 {
     GLRender_SetBlendFunc(m_lstBlendSrc.m_pList[nIndex], m_lstBlendDst.m_pList[nIndex]);
@@ -294,7 +294,7 @@ void Material::SetBlendingMode(int nIndex)
         }
     }
 }
-// PC 0x004AB670 GOG 0x004AB730
+// PC 0x004AB670 GOG 0x004AB730 Xbox 0x0031B930
 void Material::SetGUIBlendingMode()
 {
     GLRender_SetBlendFunc(*m_lstBlendSrc.m_pList, *m_lstBlendDst.m_pList);
@@ -311,7 +311,7 @@ void Material::SetGUIBlendingMode()
         }
     }
 }
-// PC 0x004AB6E0 GOG 0x004AB7A0
+// PC 0x004AB6E0 GOG 0x004AB7A0 Xbox 0x0031B9B0
 void Material::SetMaterialColor(Vector vColor, float fAlpha)
 {
     if (AsTexture(m_pTexture0)->IsUsingGlobalAlpha())
@@ -320,18 +320,18 @@ void Material::SetMaterialColor(Vector vColor, float fAlpha)
         GLRender_SetMaterialv(0, MATERIAL_DIFFUSE, Homogenize(vColor, fAlpha));
     }
 }
-// PC 0x004AB730 GOG 0x004AB7F0
+// PC 0x004AB730 GOG 0x004AB7F0 Xbox 0x0031BA30
 unsigned char Material::HasBumpyShinyMap()
 {
     return AsTexture(m_pEnvMap) != 0 && AsTexture(m_pEnvMap)->IsCubeMap() != 0;
 }
-// PC 0x004AB750 GOG 0x004AB810
+// PC 0x004AB750 GOG 0x004AB810 Xbox 0x0031BA50
 unsigned char Material::HasEnvMap()
 {
     return AsTexture(m_pEnvMap) != 0 && AsTexture(m_pEnvMap)->IsNull() == 0 &&
            AsTexture(m_pEnvMap)->IsInvalid() == 0;
 }
-// PC 0x004AB780 GOG 0x004AB890
+// PC 0x004AB780 GOG 0x004AB890 Xbox 0x0031BA80
 void Material::Init(char* sName)
 {
     char sLine[8192];
@@ -403,7 +403,7 @@ void Material::Init(char* sName)
         }
     }
 }
-// PC 0x004AB900 GOG 0x004ABA10
+// PC 0x004AB900 GOG 0x004ABA10 Xbox 0x0031BC00
 Material::Material()
 {
     m_sBumpMapName = 0;
@@ -424,7 +424,7 @@ Material::Material()
     materials.Add(this);
     m_fWaterAlpha = 1.0f;
 }
-// PC 0x004ABAB0 GOG 0x004ABBC0
+// PC 0x004ABAB0 GOG 0x004ABBC0 Xbox 0x0031BD80
 void Material::ClearTextures()
 {
     CAurTexture* pTexture;
@@ -477,7 +477,7 @@ static inline bool IsTextureName(char* sName)
 {
     return sName != 0 && *sName != 0 && strcmp("NULL", sName) != 0;
 }
-// PC 0x004ABBD0 GOG 0x004ABCE0
+// PC 0x004ABBD0 GOG 0x004ABCE0 Xbox 0x0031BEA0
 void Material::InitializeTextures(char* sTexture0, char* sTexture1,
                                   char* sTexture2, char* sTexture3)
 {
@@ -573,7 +573,7 @@ void Material::InitializeTextures(char* sTexture0, char* sTexture1,
         m_sEnvMapName = 0;
     }
 }
-// PC 0x004ABDE0 GOG 0x004ABEF0
+// PC 0x004ABDE0 GOG 0x004ABEF0 Xbox 0x0031C0B0
 void Material::LoadTextures(Part* pPart)
 {
     char* sTexture0;
@@ -598,7 +598,7 @@ void Material::LoadTextures(Part* pPart)
 
     InitializeTextures(sTexture0, sTexture1, 0, 0);
 }
-// PC 0x004ABE50 GOG 0x004ABF60
+// PC 0x004ABE50 GOG 0x004ABF60 Xbox 0x0031C120
 void Material::ReplaceTexture(char* sOld, char* sNew, char* sLayer, int* pTXI,
                               int nFlags)
 {
@@ -626,7 +626,7 @@ void Material::ReplaceTexture(char* sOld, char* sNew, char* sLayer, int* pTXI,
         AurTextureSetLayered(AsTexture(m_pTexture0), sNew, pTXI, nFlags);
     }
 }
-// PC 0x004ABF00 GOG 0x004AC010
+// PC 0x004ABF00 GOG 0x004AC010 Xbox 0x0031C1D0
 void Material::ReplaceTexture(char* sOld, char* sNew)
 {
     if (AsTexture(m_pTexture0) != 0 && AsTexture(m_pTexture0)->IsNull() == 0)
@@ -657,7 +657,7 @@ unsigned char Material::HasNormalMap()
 
 void AurReportError(int nLine, const char* sFile, const char* sMessage);
 #endif
-// PC 0x004ABF80 GOG 0x004AC090
+// PC 0x004ABF80 GOG 0x004AC090 Xbox 0x0031C250
 unsigned char Material::HasBumpMap()
 {
     char sMessage[256];
@@ -684,7 +684,7 @@ unsigned char Material::HasBumpMap()
     }
     return 0;
 }
-// PC 0x004AC010 GOG 0x004AC120
+// PC 0x004AC010 GOG 0x004AC120 Xbox 0x0031C2E0
 Material::~Material()
 {
     ClearTextures();

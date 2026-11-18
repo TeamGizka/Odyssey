@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00783630 GOG 0x00783460
+// PC 0x00783630 GOG 0x00783460 Xbox 0x0032ED20
 void CAuroraCompressedTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -7,7 +7,7 @@ void CAuroraCompressedTexture::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x00783FE0 GOG 0x00783400
+// PC 0x00783FE0 GOG 0x00783400 Xbox 0x00331360
 unsigned char* CAuroraCompressedTexture::GetCompressedTextureDataPtr()
 {
     if (m_pRes != 0 && m_pRes->GetDemands() >= 1)
@@ -16,7 +16,7 @@ unsigned char* CAuroraCompressedTexture::GetCompressedTextureDataPtr()
     }
     return 0;
 }
-// PC 0x00783BF0 GOG 0x007839F0
+// PC 0x00783BF0 GOG 0x007839F0 Xbox 0x00330FC0
 int CAuroraCompressedTexture::GetCompressedTextureAttrib(
     unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnBpp,
     unsigned long* pnSize, float* pfAlpha)
@@ -40,7 +40,7 @@ int CAuroraCompressedTexture::GetCompressedTextureDataSize()
     }
     return 0;
 }
-// PC 0x00783C30 GOG 0x00783A30
+// PC 0x00783C30 GOG 0x00783A30 Xbox 0x00331000
 int CAuroraCompressedTexture::Load()
 {
     SCompressedTextureDataTrailer* pInfo;
@@ -54,7 +54,7 @@ int CAuroraCompressedTexture::Load()
     pInfo->nType = 2033;
     return 1;
 }
-// PC 0x00783C60 GOG 0x00783A60
+// PC 0x00783C60 GOG 0x00783A60 Xbox 0x00331030
 int CAuroraCompressedTexture::ReadTextureHeader(int* pnWidth, int* pnHeight,
                                                 int* pnBpp, int* pnSize,
                                                 float* pfAlpha)
@@ -83,7 +83,7 @@ int CAuroraCompressedTexture::ReadTextureHeader(int* pnWidth, int* pnHeight,
     *pfAlpha = header.fAlpha;
     return 1;
 }
-// PC 0x00783CC0 GOG 0x00783AC0
+// PC 0x00783CC0 GOG 0x00783AC0 Xbox 0x003310A0
 unsigned char* CAuroraCompressedTexture::GetPtrToResHelperInfo()
 {
     if (m_pRes == 0 || m_pRes->GetDemands() < 1)
@@ -92,12 +92,12 @@ unsigned char* CAuroraCompressedTexture::GetPtrToResHelperInfo()
     }
     return (GetCompressedTextureDataPtr() - 26);
 }
-// PC 0x00783EE0 GOG 0x00783CE0
+// PC 0x00783EE0 GOG 0x00783CE0 Xbox 0x00331280
 CAuroraCompressedTexture::CAuroraCompressedTexture(CResRef cResRef, int bRequest)
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00783F70 GOG 0x00783D70
+// PC 0x00783F70 GOG 0x00783D70 Xbox 0x003312E0
 CAuroraCompressedTexture::~CAuroraCompressedTexture()
 {
 }

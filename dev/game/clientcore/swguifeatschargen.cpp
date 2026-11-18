@@ -12,7 +12,7 @@
 #define SWGUIFEATSCHARGEN_DEBUG 0
 
 
-// PC 0x00765200 GOG 0x00765020
+// PC 0x00765200 GOG 0x00765020 Xbox 0x0013F7D0
 CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
                                      CSWCCreature* pCreature,
                                      int bLevelUp, int bBonusFeatSelection)
@@ -100,14 +100,14 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbFeats, 0);
 }
-// PC 0x00764000 GOG 0x00763CF0
+// PC 0x00764000 GOG 0x00763CF0 Xbox 0x0013EA40
 CSWGuiFeatsCharGen::~CSWGuiFeatsCharGen()
 {
     m_lbDesc.ClearItems();
     m_lbFeats.ClearItems();
 }
 
-// PC 0x00764200 GOG 0x00764230
+// PC 0x00764200 GOG 0x00764230 Xbox 0x0013EE60
 void CSWGuiFeatsCharGen::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -130,7 +130,7 @@ void CSWGuiFeatsCharGen::OnPanelAdded()
         }
     }
 }
-// PC 0x00763EA0 GOG 0x00763EF0
+// PC 0x00763EA0 GOG 0x00763EF0 Xbox 0x0013E760
 void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
 {
     if (!m_bLevelUp)
@@ -140,7 +140,7 @@ void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x00763EF0 GOG 0x00763F40
+// PC 0x00763EF0 GOG 0x00763F40 Xbox 0x0013E7B0
 void CSWGuiFeatsCharGen::HandleCancelButton()
 {
     if (m_pCreature != 0 && m_pCreature->m_pStats != 0 && !m_bLevelUp)
@@ -199,7 +199,7 @@ void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60 GOG 0x00763FB0
 #endif
 #ifndef _XBOX
 #endif
-// PC 0x00764470 GOG 0x00764290
+// PC 0x00764470 GOG 0x00764290 Xbox 0x0013EEC0
 void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
 {
 #ifdef _XBOX
@@ -288,7 +288,7 @@ void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
     m_lblName.m_cText.m_cParams.SetStrRef(pFeat->m_nNameStrRef);
     SetDescription(pFeat->m_nDescriptionStrRef);
 }
-// PC 0x007645C0 GOG 0x007643E0
+// PC 0x007645C0 GOG 0x007643E0 Xbox 0x0013EF90
 void CSWGuiFeatsCharGen::BuildButtons()
 {
     int i;
@@ -331,7 +331,7 @@ void CSWGuiFeatsCharGen::BuildButtons()
     CExoString sRemaining(m_nFeatsRemaining);
     m_lblStdRemainingSelections.m_cText.m_cParams.SetText(sRemaining);
 }
-// PC 0x00764760 GOG 0x00764580
+// PC 0x00764760 GOG 0x00764580 Xbox 0x0013F0F0
 void CSWGuiFeatsCharGen::BuildAvailableList()
 {
     CExoString sFeat;
@@ -373,7 +373,7 @@ void CSWGuiFeatsCharGen::OnFeatSelectionChanged(CSWGuiControl* pControl)  // PC 
 #endif
 }
 #endif
-// PC 0x00764930 GOG 0x00764750
+// PC 0x00764930 GOG 0x00764750 Xbox 0x0013F270
 void CSWGuiFeatsCharGen::InitiateFeats()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
@@ -446,7 +446,7 @@ void CSWGuiFeatsCharGen::InitiateFeats()
         BuildButtons();
     }
 }
-// PC 0x00764C80 GOG 0x00764AA0
+// PC 0x00764C80 GOG 0x00764AA0 Xbox 0x0013F570
 void CSWGuiFeatsCharGen::AddChosenFeat(unsigned short nFeat)
 {
     int nIndex = m_lAvailable.IndexOf(nFeat);
@@ -482,7 +482,7 @@ void CSWGuiFeatsCharGen::AddChosenFeat(unsigned short nFeat)
     }
     BuildAvailableList();
 }
-// PC 0x00764E30 GOG 0x00764C50
+// PC 0x00764E30 GOG 0x00764C50 Xbox 0x0013F6E0
 void CSWGuiFeatsCharGen::RemoveChosenFeat(unsigned short nFeat)
 {
     int nIndex = m_lChosen.IndexOf(nFeat);
@@ -511,7 +511,7 @@ void CSWGuiFeatsCharGen::RemoveChosenFeat(unsigned short nFeat)
         BuildAvailableList();
     }
 }
-// PC 0x00764F20 GOG 0x00764D40
+// PC 0x00764F20 GOG 0x00764D40 Xbox 0x001401B0
 void CSWGuiFeatsCharGen::OnRecommendButton()
 {
     CExoArrayList<unsigned short> lRecommended;
@@ -542,7 +542,7 @@ void CSWGuiFeatsCharGen::OnRecommendButton()
     m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     BuildButtons();
 }
-// PC 0x007650C0 GOG 0x00764EE0
+// PC 0x007650C0 GOG 0x00764EE0 Xbox 0x00140320
 void CSWGuiFeatsCharGen::OnFeatPicked(unsigned short nFeat)
 {
     unsigned char nState;
@@ -600,7 +600,7 @@ void CSWGuiFeatsCharGen::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x0076519
     }
 }
 #endif
-// PC 0x007659D0 GOG 0x007657F0
+// PC 0x007659D0 GOG 0x007657F0 Xbox 0x00140050
 void CSWGuiFeatsCharGen::OnAcceptButton()
 {
     if (m_nFeatsRemaining > 0 && m_lAvailable.num > 0)
@@ -653,7 +653,7 @@ void CSWGuiFeatsCharGen::OnAcceptButton()
             ->FeatCreationCompleted();
     }
 }
-// PC 0x00765B90 GOG 0x007659B0
+// PC 0x00765B90 GOG 0x007659B0 Xbox 0x001403F0
 void CSWGuiFeatsCharGen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -698,7 +698,7 @@ void CSWGuiFeatsCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00764260 GOG 0x00764020
+// PC 0x00764260 GOG 0x00764020 Xbox 0x0013E820
 void CSWGuiFeatsCharGen::DetermineFeat(unsigned short nFeat,
                                       unsigned char& nState)
 {
@@ -724,7 +724,7 @@ void CSWGuiFeatsCharGen::DetermineFeat(unsigned short nFeat,
     }
 }
 
-// PC 0x00764320 GOG 0x007640E0
+// PC 0x00764320 GOG 0x007640E0 Xbox 0x0013E8E0
 void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 {
     STR_RES strRes;

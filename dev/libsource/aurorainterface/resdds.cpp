@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x007846D0 GOG 0x007844A0
+// PC 0x007846D0 GOG 0x007844A0 Xbox 0x003319E0
 CResDDS::CResDDS()
 {
     m_bServiced = 0;
@@ -23,12 +23,12 @@ int CResDDS::CopyDDSData(unsigned char* pDDSData)
     memcpy(pDDSData, m_pData, m_nReserved);
     return 1;
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 unsigned char* CResDDS::GetDDSDataPtr()
 {
     return m_pData;
 }
-// PC 0x00784710 GOG 0x007844E0
+// PC 0x00784710 GOG 0x007844E0 Xbox 0x00331A10
 int CResDDS::GetDDSAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnBpp, unsigned long* pnSize, float* pfAlpha)
 {
     if (m_pHeader == 0)
@@ -60,7 +60,7 @@ int CResDDS::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x00784760 GOG 0x00784610
+// PC 0x00784760 GOG 0x00784610 Xbox 0x002659C0
 int CResDDS::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -69,7 +69,7 @@ int CResDDS::OnResourceFreed()
     m_pHeader = 0;
     return 1;
 }
-// PC 0x00784780 GOG 0x00784530
+// PC 0x00784780 GOG 0x00784530 Xbox 0x00331A60
 int CResDDS::OnResourceServiced()
 {
     unsigned char* pResource = (unsigned char*)m_pResource;

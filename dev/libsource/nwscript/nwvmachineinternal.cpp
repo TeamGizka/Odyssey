@@ -12,7 +12,7 @@
     (((p)[2] << 8) & 0x0000ff00) + ((p)[3] & 0x000000ff))
 #define VM_CODE_SHORT(p) ((short)((((p)[0] << 8) & 0xff00) + ((p)[1] & 0x00ff)))
 
-// PC 0x0061D890 GOG 0x0061D860
+// PC 0x0061D890 GOG 0x0061D860 Xbox 0x0016B430
 void CVirtualMachineStack::AssignLocationToLocation(int nSource, int nDestination)
 {
     CExoString* pSourceString;
@@ -54,7 +54,7 @@ void CVirtualMachineStack::AssignLocationToLocation(int nSource, int nDestinatio
         m_pTypes[nDestination] = m_pTypes[nSource];
     }
 }
-// PC 0x0061D9D0 GOG 0x0061D9A0
+// PC 0x0061D9D0 GOG 0x0061D9A0 Xbox 0x0016B560
 int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 {
     if (NWVMACHINEINTERNAL_DEBUG)
@@ -104,7 +104,7 @@ int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x0061DB40 GOG 0x0061DB10
+// PC 0x0061DB40 GOG 0x0061DB10 Xbox 0x0016B6D0
 int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 {
     if (NWVMACHINEINTERNAL_DEBUG)
@@ -165,7 +165,7 @@ int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x0061DD90 GOG 0x0061DD60
+// PC 0x0061DD90 GOG 0x0061DD60 Xbox 0x0016B900
 void CVirtualMachineStack::ClearStack()
 {
     if (NWVMACHINEINTERNAL_DEBUG)
@@ -215,7 +215,7 @@ void CVirtualMachineStack::InitializeStack()
 {
     ClearStack();
 }
-// PC 0x0061D1F0 GOG 0x0061D1C0
+// PC 0x0061D1F0 GOG 0x0061D1C0 Xbox 0x0016AD90
 void CVirtualMachineStack::AddToTopOfStack(int nType)
 {
     CVirtualMachineStackValue* pValues;
@@ -278,7 +278,7 @@ void CVirtualMachineStack::AddToTopOfStack(int nType)
         }
     }
 }
-// PC 0x0061D310 GOG 0x0061D2E0
+// PC 0x0061D310 GOG 0x0061D2E0 Xbox 0x0016AEC0
 void CVirtualMachineStack::ModifyIntegerAtLocation(int nLocation, int nValue)
 {
     if (nLocation >= 0 && m_pVirtualMachine != 0 &&
@@ -287,7 +287,7 @@ void CVirtualMachineStack::ModifyIntegerAtLocation(int nLocation, int nValue)
         m_pValues[nLocation].m_nInteger += nValue;
     }
 }
-// PC 0x0061D340 GOG 0x0061D310
+// PC 0x0061D340 GOG 0x0061D310 Xbox 0x0016AF60
 void CVirtualMachineInternal::InitializeScript(CVirtualMachineScript* pScript,
                                                char* pCode, int nCodeSize)
 {
@@ -321,7 +321,7 @@ inline CVirtualMachineScript::CVirtualMachineScript()
     m_bLoaded = 0;
     m_nObjectId = 0;
 }
-// PC 0x0061D400 GOG 0x0061D3D0
+// PC 0x0061D400 GOG 0x0061D3D0 Xbox 0x0016AF90
 int CVirtualMachineInternal::PopInstructionPtr(int* pnInstructionPtr)
 {
     if (--m_nReturnStackPointer < 0)
@@ -333,14 +333,14 @@ int CVirtualMachineInternal::PopInstructionPtr(int* pnInstructionPtr)
     *pnInstructionPtr = m_anReturnStack[m_nReturnStackPointer];
     return 1;
 }
-// PC 0x0061D440 GOG 0x0061D410
+// PC 0x0061D440 GOG 0x0061D410 Xbox 0x0016AFD0
 int CVirtualMachineInternal::PushInstructionPtr(int nInstructionPtr)
 {
     m_anReturnStack[m_nReturnStackPointer] = nInstructionPtr;
     m_nReturnStackPointer++;
     return m_nReturnStackPointer < 128;
 }
-// PC 0x0061D470 GOG 0x0061D440
+// PC 0x0061D470 GOG 0x0061D440 Xbox 0x0016B000
 int CVirtualMachineInternal::GetRunScriptReturnValue(int* pnType,
                                                      void** ppValue)
 {
@@ -353,7 +353,7 @@ int CVirtualMachineInternal::GetRunScriptReturnValue(int* pnType,
     *ppValue = (void*)m_nReturnValue;
     return 1;
 }
-// PC 0x0061D4A0 GOG 0x0061D470
+// PC 0x0061D4A0 GOG 0x0061D470 Xbox 0x0016B030
 int CVirtualMachineInternal::StackPushInteger(int nValue)
 {
     CVirtualMachineStack* pStack;
@@ -363,7 +363,7 @@ int CVirtualMachineInternal::StackPushInteger(int nValue)
     m_cStack.m_pValues[m_cStack.m_nStackPointer - 1].m_nInteger = nValue;
     return 1;
 }
-// PC 0x0061D4D0 GOG 0x0061D4A0
+// PC 0x0061D4D0 GOG 0x0061D4A0 Xbox 0x0016B060
 int CVirtualMachineInternal::StackPushFloat(float fValue)
 {
     CVirtualMachineStack* pStack;
@@ -376,7 +376,7 @@ int CVirtualMachineInternal::StackPushFloat(float fValue)
            sizeof(fValue));
     return 1;
 }
-// PC 0x0061D500 GOG 0x0061D4D0
+// PC 0x0061D500 GOG 0x0061D4D0 Xbox 0x0016B090
 int CVirtualMachineInternal::StackPushVector(Vector vValue)
 {
     float fValue;
@@ -389,7 +389,7 @@ int CVirtualMachineInternal::StackPushVector(Vector vValue)
     StackPushFloat(fValue);
     return 1;
 }
-// PC 0x0061D580 GOG 0x0061D550
+// PC 0x0061D580 GOG 0x0061D550 Xbox 0x0016B120
 int CVirtualMachineInternal::StackPushString(const CExoString& sValue)
 {
     CExoString* pString;
@@ -399,7 +399,7 @@ int CVirtualMachineInternal::StackPushString(const CExoString& sValue)
     m_cStack.m_pValues[m_cStack.m_nStackPointer - 1].m_pString = pString;
     return 1;
 }
-// PC 0x0061D610 GOG 0x0061D5E0
+// PC 0x0061D610 GOG 0x0061D5E0 Xbox 0x0016B180
 int CVirtualMachineInternal::StackPushEngineStructure(int nType, void* pValue)
 {
     void* pStructure;
@@ -415,7 +415,7 @@ int CVirtualMachineInternal::StackPushEngineStructure(int nType, void* pValue)
         pStructure;
     return 1;
 }
-// PC 0x0061D660 GOG 0x0061D630
+// PC 0x0061D660 GOG 0x0061D630 Xbox 0x0016B1E0
 int CVirtualMachineInternal::StackPushObject(unsigned long nValue)
 {
     CVirtualMachineStack* pStack;
@@ -425,7 +425,7 @@ int CVirtualMachineInternal::StackPushObject(unsigned long nValue)
     m_cStack.m_pValues[m_cStack.m_nStackPointer - 1].m_oidObject = nValue;
     return 1;
 }
-// PC 0x0061D690 GOG 0x0061D660
+// PC 0x0061D690 GOG 0x0061D660 Xbox 0x0016B210
 void CVirtualMachineInternal::SetCommandImplementer(
     CVirtualMachineCmdImplementer* pImplementer)
 {
@@ -443,7 +443,7 @@ int CVirtualMachineStack::GetBasePointer()
 }
 
 // Dead code: not in the PC executable
-void CVirtualMachineStack::SetBasePointer(int nBasePointer)
+void CVirtualMachineStack::SetBasePointer(int nBasePointer)  // Xbox 0x00043AB0
 {
     m_nBasePointer = nBasePointer;
 }
@@ -453,7 +453,7 @@ int CVirtualMachineStack::GetStackPointer()
 {
     return m_nStackPointer;
 }
-// PC 0x0061DE40 GOG 0x0061DE10
+// PC 0x0061DE40 GOG 0x0061DE10 Xbox 0x0016B9B0
 void CVirtualMachineStack::SetStackPointer(int nStackPointer)
 {
     if (NWVMACHINEINTERNAL_DEBUG)
@@ -595,7 +595,7 @@ int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)  // PC 0x0061D
     return -96;
 }
 #endif
-int CVirtualMachineInternal::SetUpScriptSituation(  // PC 0x0061E030 GOG 0x0061E000
+int CVirtualMachineInternal::SetUpScriptSituation(  // PC 0x0061E030 GOG 0x0061E000 Xbox 0x0016BB50
     CVirtualMachineScript* pScript)
 {
     int nCRC;
@@ -640,7 +640,7 @@ int CVirtualMachineInternal::SetUpScriptSituation(  // PC 0x0061E030 GOG 0x0061E
     pScript->m_pCode = 0;
     return 0;
 }
-// PC 0x0061E110 GOG 0x0061E0E0
+// PC 0x0061E110 GOG 0x0061E0E0 Xbox 0x0016BC50
 int CVirtualMachineInternal::StackPopInteger(int* pnValue)
 {
     int nStackPointer;
@@ -661,7 +661,7 @@ int CVirtualMachineInternal::StackPopInteger(int* pnValue)
     m_cStack.SetStackPointer(nStackPointer);
     return 1;
 }
-// PC 0x0061E160 GOG 0x0061E130
+// PC 0x0061E160 GOG 0x0061E130 Xbox 0x0016BCA0
 int CVirtualMachineInternal::StackPopFloat(float* pfValue)
 {
     int nStackPointer;
@@ -682,7 +682,7 @@ int CVirtualMachineInternal::StackPopFloat(float* pfValue)
     m_cStack.SetStackPointer(nStackPointer);
     return 1;
 }
-// PC 0x0061E1B0 GOG 0x0061E180
+// PC 0x0061E1B0 GOG 0x0061E180 Xbox 0x0016BCF0
 int CVirtualMachineInternal::StackPopVector(Vector* pvValue)
 {
     float fValue;
@@ -717,7 +717,7 @@ int CVirtualMachineInternal::StackPopVector(Vector* pvValue)
 
     return nResult;
 }
-// PC 0x0061E230 GOG 0x0061E200
+// PC 0x0061E230 GOG 0x0061E200 Xbox 0x0016BD80
 int CVirtualMachineInternal::StackPopString(CExoString* psValue)
 {
     int nStackPointer;
@@ -738,7 +738,7 @@ int CVirtualMachineInternal::StackPopString(CExoString* psValue)
     m_cStack.SetStackPointer(nStackPointer);
     return 1;
 }
-// PC 0x0061E280 GOG 0x0061E250
+// PC 0x0061E280 GOG 0x0061E250 Xbox 0x0016BDD0
 int CVirtualMachineInternal::StackPopEngineStructure(int nType, void** ppValue)
 {
     CVirtualMachineStack* pStack;
@@ -769,7 +769,7 @@ int CVirtualMachineInternal::StackPopEngineStructure(int nType, void** ppValue)
     pStack->SetStackPointer(nStackPointer);
     return 1;
 }
-// PC 0x0061E2F0 GOG 0x0061E2C0
+// PC 0x0061E2F0 GOG 0x0061E2C0 Xbox 0x0016BE40
 int CVirtualMachineInternal::StackPopObject(unsigned long* pnValue)
 {
     int nStackPointer;
@@ -838,7 +838,7 @@ inline CVirtualMachineStack::~CVirtualMachineStack()  // PC 0x0061E530 GOG 0x006
 {
     ClearStack();
 }
-// PC 0x0061E540 GOG 0x0061E510
+// PC 0x0061E540 GOG 0x0061E510 Xbox 0x0016C030
 void CVirtualMachineStack::CopyFromStack(CVirtualMachineStack* pStack,
                                         int nStackSize, int nBaseSize)
 {
@@ -945,7 +945,7 @@ void CVirtualMachineStack::CopyFromStack(CVirtualMachineStack* pStack,
         }
     }
 }
-// PC 0x0061E820 GOG 0x0061E7F0
+// PC 0x0061E820 GOG 0x0061E7F0 Xbox 0x0016C2C0
 int CVirtualMachineInternal::ExecuteCode(int* pnInstructionPtr, char* pCode,
                                          int nCodeSize)
 {
@@ -1561,7 +1561,7 @@ int CVirtualMachineInternal::ExecuteCode(int* pnInstructionPtr, char* pCode,
     }
     return 0;
 }
-// PC 0x0061FEC0 GOG 0x0061FE90
+// PC 0x0061FEC0 GOG 0x0061FE90 Xbox 0x0016D9A0
 int CVirtualMachineInternal::RunScriptFile(int nStartInstructionPtr)
 {
     int nStackPointer;
@@ -1630,7 +1630,7 @@ int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand) 
     return 1;
 }
 #endif
-int CVirtualMachineInternal::RunScript(CExoString* psScript,  // PC 0x00620220 GOG 0x006201F0
+int CVirtualMachineInternal::RunScript(CExoString* psScript,  // PC 0x00620220 GOG 0x006201F0 Xbox 0x0016DBF0
                                        unsigned long nObjectId,
                                        int bValidObjectRunScript)
 {
@@ -1782,7 +1782,7 @@ int CVirtualMachineInternal::SaveScriptSituation(  // PC 0x006203F0 GOG 0x006203
     return 1;
 }
 #endif
-int CVirtualMachineInternal::DeleteScript(CVirtualMachineScript* pScript)  // PC 0x00620140 GOG 0x00620110
+int CVirtualMachineInternal::DeleteScript(CVirtualMachineScript* pScript)  // PC 0x00620140 GOG 0x00620110 Xbox 0x0016DBB0
 {
     CVirtualMachineStack* pStack;
 
@@ -1858,12 +1858,12 @@ int CVirtualMachineInternal::RunScriptSituation(  // PC 0x00620720 GOG 0x006206F
     return 0;
 }
 #endif
-void CVirtualMachineInternal::DeleteScriptSituation(  // PC 0x00620530 GOG 0x00620500
+void CVirtualMachineInternal::DeleteScriptSituation(  // PC 0x00620530 GOG 0x00620500 Xbox 0x0016E1A0
     CVirtualMachineScript* pScript)
 {
     delete pScript;
 }
-// PC 0x00620550 GOG 0x00620520
+// PC 0x00620550 GOG 0x00620520 Xbox 0x0016DFB0
 CVirtualMachineInternal::CVirtualMachineInternal()
 {
     m_nCurrentScript = -1;
@@ -1874,7 +1874,7 @@ CVirtualMachineInternal::CVirtualMachineInternal()
     InitializeCRCTable();
 #endif
 }
-// PC 0x00620600 GOG 0x006205D0
+// PC 0x00620600 GOG 0x006205D0 Xbox 0x0016E0A0
 CVirtualMachineInternal::~CVirtualMachineInternal()
 {
     for (int nScript = 0; nScript < VM_MAX_SCRIPTS; nScript++)
@@ -1885,7 +1885,7 @@ CVirtualMachineInternal::~CVirtualMachineInternal()
 
 #ifdef _XBOX
 
-void CVirtualMachineInternal::InitializeCRCTable()
+void CVirtualMachineInternal::InitializeCRCTable()  // Xbox 0x0016AEF0
 {
     unsigned long nCRC;
     int nBit;
@@ -1909,7 +1909,7 @@ void CVirtualMachineInternal::InitializeCRCTable()
 }
 
 
-unsigned long CVirtualMachineInternal::ComputeCRC(char* pData, unsigned long nSize)
+unsigned long CVirtualMachineInternal::ComputeCRC(char* pData, unsigned long nSize)  // Xbox 0x0016AF30
 {
     unsigned long nCRC = 0;
     for (unsigned long nByte = 0; nByte < nSize; nByte++)
@@ -1920,7 +1920,7 @@ unsigned long CVirtualMachineInternal::ComputeCRC(char* pData, unsigned long nSi
 }
 
 
-int CVirtualMachineFile::LoadFile(CExoString* psFileName, char** ppData, unsigned long* pnSize)
+int CVirtualMachineFile::LoadFile(CExoString* psFileName, char** ppData, unsigned long* pnSize)  // Xbox 0x0016B3B0
 {
     if (psFileName == NULL)
     {
@@ -1946,7 +1946,7 @@ int CVirtualMachineFile::LoadFile(CExoString* psFileName, char** ppData, unsigne
 void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
 
 
-int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)
+int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)  // Xbox 0x0016BA20
 {
     char* pNCSData;
     unsigned long nNCSSize;
@@ -2007,7 +2007,7 @@ int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)
 }
 
 
-int CVirtualMachineInternal::LoadScriptSituation(
+int CVirtualMachineInternal::LoadScriptSituation(  // Xbox 0x0016BE90
     CVirtualMachineScript** ppScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -2035,7 +2035,7 @@ int CVirtualMachineInternal::LoadScriptSituation(
 }
 
 
-int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand)
+int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand)  // Xbox 0x0016DA90
 {
     *ppCommand = new CVirtualMachineScript();
     if (m_aScripts[m_nCurrentScript].m_bLoaded == 0)
@@ -2063,7 +2063,7 @@ int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand)
 }
 
 
-int CVirtualMachineInternal::SaveScriptSituation(
+int CVirtualMachineInternal::SaveScriptSituation(  // Xbox 0x0016DE00
     CVirtualMachineScript* pScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     CResStruct cStack;
@@ -2106,7 +2106,7 @@ int CVirtualMachineInternal::SaveScriptSituation(
 
 
 
-int CVirtualMachineInternal::RunScriptSituation(
+int CVirtualMachineInternal::RunScriptSituation(  // Xbox 0x0016E1E0
     CVirtualMachineScript* pScript, unsigned long nObjectId,
     int bOneInstruction)
 {

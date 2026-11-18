@@ -1,10 +1,10 @@
 #include "exobase.h"
-// PC 0x006379F0 GOG 0x006378F0
+// PC 0x006379F0 GOG 0x006378F0 Xbox 0x0014D940
 CExoCriticalSectionInternal::CExoCriticalSectionInternal()
 {
     ::InitializeCriticalSection(&m_CriticalSection);
 }
-// PC 0x00637A00 GOG 0x00637900
+// PC 0x00637A00 GOG 0x00637900 Xbox 0x001A2B40
 CExoCriticalSectionInternal::~CExoCriticalSectionInternal()
 {
     DeleteCriticalSection(&m_CriticalSection);

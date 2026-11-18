@@ -55,7 +55,7 @@ public:
 
 template <class T> class SafePointerList
 {
-public:
+public:  // Xbox 0x0021F750
     SafePointerList() {}
     void AddPointer(SafePointer<T>* pPointer); void RemovePointer(SafePointer<T>* pPointer);
     ~SafePointerList();
@@ -64,7 +64,7 @@ public:
 };
 
 
-template <class T> SafePointer<T>::SafePointer(T* pObject)
+template <class T> SafePointer<T>::SafePointer(T* pObject)  // Xbox 0x000B1070
     : m_pObject(pObject)
 {
     if (m_pObject)
@@ -120,7 +120,7 @@ template <class T> void SafePointerList<T>::AddPointer(SafePointer<T>* pPointer)
 
 
 
-template <class T> SafePointer<T>::SafePointer(const SafePointer& other)
+template <class T> SafePointer<T>::SafePointer(const SafePointer& other)  // Xbox 0x002E9F30
     : m_pObject(other.m_pObject)
 {
     if (m_pObject)

@@ -100,7 +100,7 @@ public:
     void Combine(const NvFaceInfoList& lstForward,
                  const NvFaceInfoList& lstBackward);
     void Build(NvEdgeInfoList& lstEdges, NvFaceInfoList& lstFaces);
-    bool IsInStrip(const NvFaceInfo* pFace) const  // PC 0x004AC100 GOG 0x004AC210
+    bool IsInStrip(const NvFaceInfo* pFace) const  // PC 0x004AC100 GOG 0x004AC210 Xbox 0x0031C3A0
     {
         if (pFace == 0)
         {

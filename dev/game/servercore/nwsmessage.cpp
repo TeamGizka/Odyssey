@@ -7,7 +7,7 @@
 #include "gameobjectarray.h"
 #include "nwmessage.h"
 #define NWSMESSAGE_DEBUG 0
-// PC 0x005A0AF0 GOG 0x005A0B60
+// PC 0x005A0AF0 GOG 0x005A0B60 Xbox 0x0027DC00
 unsigned long CSWSMessage::ReadOBJECTIDServer()
 {
     unsigned long nOldIndex = m_nReadIndex;
@@ -26,7 +26,7 @@ unsigned long CSWSMessage::ReadOBJECTIDServer()
     m_nReadIndex = nNewIndex;
     return oidObject;
 }
-// PC 0x005A0B20 GOG 0x005A0B90
+// PC 0x005A0B20 GOG 0x005A0B90 Xbox 0x0027DC30
 void CSWSMessage::WriteOBJECTIDServer(unsigned long oidObject)
 {
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)
@@ -42,7 +42,7 @@ void CSWSMessage::WriteOBJECTIDServer(unsigned long oidObject)
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
 }
-// PC 0x005A0B70 GOG 0x005A0BE0
+// PC 0x005A0B70 GOG 0x005A0BE0 Xbox 0x0027DC80
 void CSWSMessage::WriteCExoLocStringServer(CExoLocString& lsString,
                                            unsigned char nGender)
 {
@@ -121,7 +121,7 @@ void CSWSMessage::WriteCExoLocStringServer(CExoLocString& lsString,
         WriteCExoString(sString, 32);
     }
 }
-// PC 0x005A0E70 GOG 0x005A0EE0
+// PC 0x005A0E70 GOG 0x005A0EE0 Xbox 0x0027DEE0
 int CSWSMessage::GetLocStringServer(unsigned long nPlayerId,
                                     CExoLocString& lsFirst,
                                     CExoLocString& lsSecond,
@@ -151,7 +151,7 @@ int CSWSMessage::GetLocStringServer(unsigned long nPlayerId,
     }
     return 1;
 }
-// PC 0x005A1020 GOG 0x005A1090
+// PC 0x005A1020 GOG 0x005A1090 Xbox 0x0027E010
 int CSWSMessage::GetLocStringServerTime(unsigned long nPlayerId,
                                         CExoLocString& lsString,
                                         CExoString& sResult, float& fTime,

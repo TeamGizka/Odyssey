@@ -19,7 +19,7 @@ void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
             ->ShowItemCreateMenu();
     }
 }
-// PC 0x007131B0 GOG 0x00713070
+// PC 0x007131B0 GOG 0x00713070 Xbox 0x00107B40
 void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
 {
     CClientExoApp* pApp;
@@ -39,7 +39,7 @@ void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
         pGui->HideSubItemCreateMenu();
     }
 }
-// PC 0x00713230 GOG 0x00712E60
+// PC 0x00713230 GOG 0x00712E60 Xbox 0x001079F0
 void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -102,7 +102,7 @@ void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00713340 GOG 0x00712F70
+// PC 0x00713340 GOG 0x00712F70 Xbox 0x001085C0
 CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
                                                     CSWGuiHandler pHandler,
                                                     CSWGuiButton* pPrototype)
@@ -117,7 +117,7 @@ CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
     pButton->AddEvent(45, this, pHandler);
     return pButton;
 }
-// PC 0x00713400 GOG 0x007130F0
+// PC 0x00713400 GOG 0x007130F0 Xbox 0x00107C30
 CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -130,7 +130,7 @@ CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     m_lblBuild.m_cText.m_cParams.SetText(sBuild);
     CenterPanel();
 }
-// PC 0x00713650 GOG 0x00713340
+// PC 0x00713650 GOG 0x00713340 Xbox 0x00107E20
 void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
 {
     CSWGuiControl* pPrototype = m_lstOptions.m_pProtoItem;
@@ -242,7 +242,7 @@ void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
     m_nSelection = 0;
     SetActiveControl(pListBox, 0);
 }
-// PC 0x00713C20 GOG 0x00713910
+// PC 0x00713C20 GOG 0x00713910 Xbox 0x00107BD0
 void CSWGuiCreateItemSubMenu::ClearItems()
 {
     m_lstOptions.ClearItems();

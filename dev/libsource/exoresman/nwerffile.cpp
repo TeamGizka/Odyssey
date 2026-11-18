@@ -18,7 +18,7 @@ int CERFRes::Read(CExoFile& file)
     file.Read(&m_nSize, 4, 1);
     return 1;
 }
-// PC 0x0062AFA0 GOG 0x0062AE70
+// PC 0x0062AFA0 GOG 0x0062AE70 Xbox 0x0015D720
 void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
                                  const CExoString& sDirectory, void* hSignature,
                                  int (*pfnProgress)(int, int, int, int),
@@ -63,7 +63,7 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
         return;
     }
 }
-// PC 0x0062B200 GOG 0x0062B0D0
+// PC 0x0062B200 GOG 0x0062B0D0 Xbox 0x0015DA00
 void CERFFile::ImportFiles(const CExoString& sDirectory, void* hSignature,
                           int (*pfnProgress)(int, int, int, int), int nBase,
                           int nRange)
@@ -89,7 +89,7 @@ void CERFFile::ImportFiles(const CExoString& sDirectory, void* hSignature,
 
 #ifdef _XBOX
 
-int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)
+int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)  // Xbox 0x0015CB30
 {
     CExoFile file(sFileName, 2057, "rb");
     HANDLE hSignature = INVALID_HANDLE_VALUE;
@@ -194,7 +194,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName)  // PC 0x0062A3E0 
     return 1;
 }
 #endif
-// PC 0x0062A5C0 GOG 0x0062A490
+// PC 0x0062A5C0 GOG 0x0062A490 Xbox 0x0015CE10
 int CERFFile::WriteStringTable()
 {
     CExoFile* pFile = m_pFile;
@@ -231,7 +231,7 @@ int CERFFile::WriteStringTable()
 
     return 0;
 }
-// PC 0x0062B320 GOG 0x0062B1F0
+// PC 0x0062B320 GOG 0x0062B1F0 Xbox 0x0015D920
 int CERFFile::Reset()
 {
     memset(this, 0, 160);
@@ -268,7 +268,7 @@ int CERFFile::Reset()
 
     return 1;
 }
-// PC 0x0062B400 GOG 0x0062B2D0
+// PC 0x0062B400 GOG 0x0062B2D0 Xbox 0x0015DAF0
 CERFFile::~CERFFile()
 {
     Reset();
@@ -335,7 +335,7 @@ int CERFRes::Reset()
     m_nSize = 0;
     return 1;
 }
-// PC 0x0062A7F0 GOG 0x0062A6C0
+// PC 0x0062A7F0 GOG 0x0062A6C0 Xbox 0x0015D000
 CERFFile::CERFFile()
 {
     memset(this, 0, 160);
@@ -343,7 +343,7 @@ CERFFile::CERFFile()
     m_nNumEntries = 0;
     m_nCurEntry = 0;
 }
-// PC 0x0062A880 GOG 0x0062A750
+// PC 0x0062A880 GOG 0x0062A750 Xbox 0x0015D090
 int CERFFile::SetNumEntries(unsigned long nEntries)
 {
     CERFKey key;
@@ -384,7 +384,7 @@ int CERFFile::SetNumEntries(unsigned long nEntries)
     }
     return 0;
 }
-// PC 0x0062A9F0 GOG 0x0062A8C0
+// PC 0x0062A9F0 GOG 0x0062A8C0 Xbox 0x0015D1D0
 int CERFFile::WriteResource(const CExoString& sFileName, void* hSignature)
 {
     if (NWERFFILE_DEBUG)
@@ -453,7 +453,7 @@ int CERFFile::WriteResource(const CExoString& sFileName, void* hSignature)
 
     return 0;
 }
-// PC 0x00629E70 GOG 0x00629D40
+// PC 0x00629E70 GOG 0x00629D40 Xbox 0x0015C6F0
 void CERFFile::SetVersion(char* sVersion)
 {
     memcpy(m_sFileType, sVersion, 4);
@@ -566,7 +566,7 @@ int CERFFile::AddString(CERFString* pString)
 // PC 0x00629E90 GOG 0x00629D60
 #ifdef _XBOX
 
-int CERFFile::Read(const CExoString& sFileName, void* pSignature)
+int CERFFile::Read(const CExoString& sFileName, void* pSignature)  // Xbox 0x0015C710
 #else
 int CERFFile::Read(const CExoString& sFileName)
 #endif
@@ -606,13 +606,13 @@ int CERFFile::Read(const CExoString& sFileName)
 
     return 1;
 }
-// PC 0x0062A000 GOG 0x00629ED0
+// PC 0x0062A000 GOG 0x00629ED0 Xbox 0x0015C880
 int CERFFile::Create(CExoString& sFileName)
 {
     m_pFile = new CExoFile(sFileName, RESTYPE_SAV, "wb");
     return m_pFile->FileOpened() != 0;
 }
-// PC 0x0062A0C0 GOG 0x00629F90
+// PC 0x0062A0C0 GOG 0x00629F90 Xbox 0x0015C900
 int CERFFile::WriteHeader()
 {
     if (m_pFile != NULL)
@@ -634,7 +634,7 @@ int CERFFile::WriteHeader()
 
     return 0;
 }
-// PC 0x0062A120 GOG 0x00629FF0
+// PC 0x0062A120 GOG 0x00629FF0 Xbox 0x0015C960
 int CERFFile::Finish()
 {
     m_pFile->Flush();
@@ -824,7 +824,7 @@ int CERFFile::ReadModuleDescription(const CExoString& sFileName,
 }
 
 // Dead code: not in the PC executable
-int CERFKey::Read(CExoFile& file)
+int CERFKey::Read(CExoFile& file)  // Xbox 0x0015C9F0
 {
     EXOXBOXASSERT(file.FileOpened());
     file.Read(this, 16, 1);
@@ -833,13 +833,13 @@ int CERFKey::Read(CExoFile& file)
     file.Read(&m_nUnused, 2, 1);
     return 1;
 }
-// PC 0x0062A160 GOG 0x0062A030
+// PC 0x0062A160 GOG 0x0062A030 Xbox 0x0015C9A0
 void CERFKey::SetName(CExoString& sName)
 {
     memset(m_sResRef, 0, 16);
     memcpy(m_sResRef, sName.CStr(), sName.GetLength());
 }
-// PC 0x0062A1B0 GOG 0x0062A080
+// PC 0x0062A1B0 GOG 0x0062A080 Xbox 0x0015C9F0
 int CERFKey::Write(CExoFile& file)
 {
     EXOXBOXASSERT(file.FileOpened());
@@ -849,7 +849,7 @@ int CERFKey::Write(CExoFile& file)
     file.Write(&m_nUnused, 2, 1);
     return 1;
 }
-// PC 0x0062A780 GOG 0x0062A650
+// PC 0x0062A780 GOG 0x0062A650 Xbox 0x0015CF80
 int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 {
     if (NWERFFILE_DEBUG)
@@ -891,7 +891,7 @@ int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 
     return 1;
 }
-// PC 0x0062AD60 GOG 0x0062AC30
+// PC 0x0062AD60 GOG 0x0062AC30 Xbox 0x0015D4D0
 int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
                             int bIsGFF, void* hSignature)
 {
@@ -955,7 +955,7 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
     m_nCurEntry++;
     return 1;
 }
-// PC 0x0062A200 GOG 0x0062A0D0
+// PC 0x0062A200 GOG 0x0062A0D0 Xbox 0x0015CA50
 int CERFRes::Write(CExoFile& file, unsigned long nTableOffset)
 {
     m_nOffset = file.GetOffset();
@@ -986,7 +986,7 @@ CExoString CERFString::GetText()
 {
     return CExoString(m_pText, m_nLength);
 }
-// PC 0x0062A260 GOG 0x0062A130
+// PC 0x0062A260 GOG 0x0062A130 Xbox 0x0015CAB0
 int CERFString::SetText(CExoString& sText)
 {
     if (m_pText != NULL)

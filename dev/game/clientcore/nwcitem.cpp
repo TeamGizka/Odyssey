@@ -19,7 +19,7 @@
 #include "appmanager.h"
 
 static int enableitemgroundalignment = 0;
-// PC 0x0069CAB0 GOG 0x0069C860
+// PC 0x0069CAB0 GOG 0x0069C860 Xbox 0x0009EE10
 CSWCItem::CSWCItem(unsigned long nBaseItem)
     : CSWItem(), CSWCObject(CGameObject::OBJECT_TYPE_ITEM)
 {
@@ -55,7 +55,7 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
     m_bPowered = 0;
     m_bPowerSoundPlaying = 0;
 }
-// PC 0x0069D650 GOG 0x0069D430
+// PC 0x0069D650 GOG 0x0069D430 Xbox 0x0009F9A0
 CSWCItem::~CSWCItem()
 {
     if (m_pAnimBase != NULL)
@@ -93,7 +93,7 @@ void CSWCItem::UnloadVisualEffect()
 
 #define NWCITEM_DEBUG 0
 
-// PC 0x0069CC10 GOG 0x0069C9C0
+// PC 0x0069CC10 GOG 0x0069C9C0 Xbox 0x0009EF30
 void CSWCItem::AIUpdate()
 {
     unsigned long nDay;
@@ -142,7 +142,7 @@ void CSWCItem::AIUpdate()
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
 }
-// PC 0x0069CD80 GOG 0x0069CB30
+// PC 0x0069CD80 GOG 0x0069CB30 Xbox 0x0009F0A0
 int CSWCItem::LoadModel(const CResRef& cModel, unsigned char nModel,
                         unsigned char nFlags)
 {
@@ -175,7 +175,7 @@ int CSWCItem::LoadModel(const CResRef& cModel, unsigned char nModel,
 
     return 1;
 }
-// PC 0x0069CE80 GOG 0x0069CC30
+// PC 0x0069CE80 GOG 0x0069CC30 Xbox 0x0009F150
 void CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
 {
     Gob* pModel = GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
@@ -213,7 +213,7 @@ void CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
         }
     }
 }
-// PC 0x0069CF30 GOG 0x0069CCE0
+// PC 0x0069CF30 GOG 0x0069CCE0 Xbox 0x0009F200
 CSWCCreature* CSWCItem::GetEquippedBy()
 {
     unsigned long nEquippedBy = m_oidEquippedBy;
@@ -224,7 +224,7 @@ CSWCCreature* CSWCItem::GetEquippedBy()
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     return pClientExoApp->GetCreatureByGameObjectID(nEquippedBy);
 }
-// PC 0x006DB7A0 GOG 0x0069CD00
+// PC 0x006DB7A0 GOG 0x0069CD00 Xbox 0x0009D4B0
 void CSWCItem::UnloadModel()
 {
     if (m_pAnimBase != NULL)
@@ -234,7 +234,7 @@ void CSWCItem::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x0069CF50 GOG 0x0069CD30
+// PC 0x0069CF50 GOG 0x0069CD30 Xbox 0x0009F220
 void CSWCItem::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -242,7 +242,7 @@ void CSWCItem::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x0069CF60 GOG 0x0069CD40
+// PC 0x0069CF60 GOG 0x0069CD40 Xbox 0x0009F240
 void CSWCItem::SetNumActiveProperties(int nNumActiveProperties)
 {
     m_nNumActiveProperties = nNumActiveProperties;
@@ -252,7 +252,7 @@ void CSWCItem::SetNumActiveProperties(int nNumActiveProperties)
     }
     m_pActiveProperties = new CSWItemProperty[m_nNumActiveProperties];
 }
-// PC 0x0069CFA0 GOG 0x0069CD80
+// PC 0x0069CFA0 GOG 0x0069CD80 Xbox 0x0009F280
 CSWItemProperty* CSWCItem::GetActiveProperty(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_nNumActiveProperties)
@@ -261,7 +261,7 @@ CSWItemProperty* CSWCItem::GetActiveProperty(int nIndex)
     }
     return m_pActiveProperties + nIndex;
 }
-// PC 0x0069CFD0 GOG 0x0069CDB0
+// PC 0x0069CFD0 GOG 0x0069CDB0 Xbox 0x0009F2B0
 void CSWCItem::PlayDropSound()
 {
     CResRef cSound;
@@ -294,7 +294,7 @@ void CSWCItem::PlayDropSound()
     g_pExoSound->PlayOneShotSound(cSound, CExoSound::SOUND_TYPE_GUI,
                                  0, 0, 0.0f, 0.0f);
 }
-// PC 0x0069D0E0 GOG 0x0069CEC0
+// PC 0x0069D0E0 GOG 0x0069CEC0 Xbox 0x0009F3D0
 int CSWCItem::GetActivePropertySpellID(int nIndex)
 {
     if (nIndex >= m_nNumActiveProperties)
@@ -307,7 +307,7 @@ int CSWCItem::GetActivePropertySpellID(int nIndex)
     }
     return m_pActiveProperties[nIndex].m_nSubtype;
 }
-// PC 0x0069D750 GOG 0x0069D530
+// PC 0x0069D750 GOG 0x0069D530 Xbox 0x0009FA60
 void CSWCItem::SetOrientation(const Vector& vOrientation)
 {
     m_vOrientation = vOrientation;
@@ -320,7 +320,7 @@ void CSWCItem::SetOrientation(const Vector& vOrientation)
     }
     UpdateOrientation(vNormal);
 }
-// PC 0x0069D110 GOG 0x0069CEF0
+// PC 0x0069D110 GOG 0x0069CEF0 Xbox 0x0009F400
 void CSWCItem::SetStackSize(int nStackSize)
 {
     m_nStackSize = nStackSize;
@@ -385,7 +385,7 @@ int CSWCItem::LoadVisualEffect(unsigned char nEffect)
     m_bVisualEffectLoaded = 1;
     return 1;
 }
-// PC 0x0069D130 GOG 0x0069CF10
+// PC 0x0069D130 GOG 0x0069CF10 Xbox 0x0009F420
 void CSWCItem::ShowVisualEffect()
 {
     if (m_pAnimBase != NULL)
@@ -414,7 +414,7 @@ inline void CSWCItem::HideVisualEffect()
         }
     }
 }
-// PC 0x0069D180 GOG 0x0069CF60
+// PC 0x0069D180 GOG 0x0069CF60 Xbox 0x0009F470
 void CSWCItem::SpawnVisualEffect(const CExoString& sModel,
                                  const CExoString& sHook)
 {
@@ -445,7 +445,7 @@ inline void CSWCItem::ComputeZValue(Vector* pPosition, float fOffset,
     }
     pPosition->m_fZ = fZ + fOffset;
 }
-// PC 0x0069D230 GOG 0x0069D010
+// PC 0x0069D230 GOG 0x0069D010 Xbox 0x0009F520
 void CSWCItem::SetArea(CSWCArea* pArea)
 {
     if (pArea != NULL)
@@ -463,7 +463,7 @@ void CSWCItem::SetArea(CSWCArea* pArea)
         SetPosition(m_vPosition);
     }
 }
-// PC 0x0069D7F0 GOG 0x0069D5D0
+// PC 0x0069D7F0 GOG 0x0069D5D0 Xbox 0x0009FB00
 CExoString CSWCItem::GetName(int bFullName)
 {
     if (NWCITEM_DEBUG)
@@ -498,7 +498,7 @@ CExoString CSWCItem::GetName(int bFullName)
 
     return sName;
 }
-// PC 0x0069D2B0 GOG 0x0069D090
+// PC 0x0069D2B0 GOG 0x0069D090 Xbox 0x0009F5A0
 void CSWCItem::SetItemPropertyUsesLeft(int nIndex, unsigned short nUsesLeft)
 {
     if (nIndex < 8)
@@ -524,7 +524,7 @@ void CSWCItem::SetItemPropertyUsesLeft(int nIndex, unsigned short nUsesLeft)
         }
     }
 }
-// PC 0x0069D9D0 GOG 0x0069D7B0
+// PC 0x0069D9D0 GOG 0x0069D7B0 Xbox 0x0009FC60
 void CSWCItem::SetPosition(const Vector& vPosition)
 {
     Vector vNormal(0.0f, 0.0f, 1.0f);
@@ -554,7 +554,7 @@ void CSWCItem::SetPosition(const Vector& vPosition)
         }
     }
 }
-// PC 0x0069DAD0 GOG 0x0069D8B0
+// PC 0x0069DAD0 GOG 0x0069D8B0 Xbox 0x0009FD90
 void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
                          int bSilent)
 {
@@ -659,7 +659,7 @@ void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
     }
     m_bPowered = bPower;
 }
-// PC 0x0069D330 GOG 0x0069D110
+// PC 0x0069D330 GOG 0x0069D110 Xbox 0x0009F620
 void CSWCItem::UpdateOrientation(const Vector& vNormal)
 {
     Quaternion qOrientation;
@@ -689,7 +689,7 @@ void CSWCItem::UpdateOrientation(const Vector& vNormal)
         pAnimBase->SetOrientation(qOrientation);
     }
 }
-// PC 0x0069D520 GOG 0x0069D300
+// PC 0x0069D520 GOG 0x0069D300 Xbox 0x0009F870
 void CSWCItem::ResolveCreaturePoweredAnimations(int bPower)
 {
     CSWCCreature* pCreature = g_pAppManager->GetClientExoApp()->
@@ -736,7 +736,7 @@ void CSWCItem::ResolveCreaturePoweredAnimations(int bPower)
         }
     }
 }
-// PC 0x0069D610 GOG 0x0069D3F0
+// PC 0x0069D610 GOG 0x0069D3F0 Xbox 0x0009F960
 CSWSItem* CSWCItem::GetServerItem()
 {
     if (GetServerObject() != NULL)

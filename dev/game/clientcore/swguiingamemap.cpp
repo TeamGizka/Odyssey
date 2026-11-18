@@ -30,7 +30,7 @@
 int g_bEnableFogOfWar = 1;
 int g_bShowFogOfWar = 1;
 
-// PC 0x006EC250 GOG 0x006EBED0
+// PC 0x006EC250 GOG 0x006EBED0 Xbox 0x000EBEA0
 void CSWGuiInGameMap::Draw(float fElapsed)
 {
     CSWGuiExtent cExtent = m_lblMapNote.m_cExtent;
@@ -75,7 +75,7 @@ CSWGuiControl* CSWGuiInGameMap::HitCheckMouse(int nX, int nY)  // PC 0x006EC310 
     return pControl;
 }
 #endif
-// PC 0x006EC390 GOG 0x006EC010
+// PC 0x006EC390 GOG 0x006EC010 Xbox 0x000EBF30
 void CSWGuiInGameMap::SetMapNote(const CExoString& sNote)
 {
     CExoString sText;
@@ -90,7 +90,7 @@ void CSWGuiInGameMap::SetMapNote(const CExoString& sNote)
         m_lblTitle.m_cText.m_cParams.SetText(sText);
     }
 }
-// PC 0x006EC4E0 GOG 0x006EC0D0
+// PC 0x006EC4E0 GOG 0x006EC0D0 Xbox 0x000EC030
 void CSWGuiInGameMap::ReturnToEbonHawk(CSWGuiControl* pControl)
 {
     CSWGuiMessageBox* pMessageBox =
@@ -118,7 +118,7 @@ void CSWGuiInGameMap::OnDownArrowPressed(CSWGuiControl* pControl)
 {
     HandleInputEvent(GUIEVENT_DOWN, 1);
 }
-// PC 0x006EC5C0 GOG 0x006EC1B0
+// PC 0x006EC5C0 GOG 0x006EC1B0 Xbox 0x000EC0C0
 void CSWGuiInGameMap::OnXButton(CSWGuiControl* pControl)
 {
     CSWGuiMessageBox* pMessageBox;
@@ -148,7 +148,7 @@ void CSWGuiInGameMap::OnXButton(CSWGuiControl* pControl)
     }
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x006EC670 GOG 0x006EC260
+// PC 0x006EC670 GOG 0x006EC260 Xbox 0x000ECC00
 void CSWGuiInGameGalaxyMap::OnPanelRemoved()
 {
 #ifdef _XBOX
@@ -343,7 +343,7 @@ void CSWGuiInGameMap::OnPanelAdded()
     g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
         CClientExoApp::TUTORIAL_MAP, OBJECT_INVALID, OBJECT_INVALID, 0);
 }
-// PC 0x006EC6F0 GOG 0x006EC2E0
+// PC 0x006EC6F0 GOG 0x006EC2E0 Xbox 0x000EC6D0
 CExoString CSWGuiMapHider::InitializeMapNotes(int nMapMode)
 {
     m_nMapMode = nMapMode;
@@ -383,7 +383,7 @@ CExoString CSWGuiMapHider::InitializeMapNotes(int nMapMode)
     }
     return sMapNote;
 }
-// PC 0x006ED670 GOG 0x006ED260
+// PC 0x006ED670 GOG 0x006ED260 Xbox 0x000ED310
 void CSWGuiInGameMap::OnPanelRemoved()
 {
     m_cMapHider.ClearMapNotes();
@@ -391,7 +391,7 @@ void CSWGuiInGameMap::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x006EC8B0 GOG 0x006EC4A0
+// PC 0x006EC8B0 GOG 0x006EC4A0 Xbox 0x000EC840
 void CSWGuiMapHider::ClearMapNotes()
 {
     while (m_lstMapNotes.m_pInternal->m_pHead != 0)
@@ -401,7 +401,7 @@ void CSWGuiMapHider::ClearMapNotes()
     }
     m_pCurrentNote = 0;
 }
-// PC 0x006EC900 GOG 0x006EC4F0
+// PC 0x006EC900 GOG 0x006EC4F0 Xbox 0x000EC880
 CExoString CSWGuiMapHider::GetNextMapNote()
 {
     CExoString sNote("");
@@ -532,7 +532,7 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006ECB20 GOG 0x006EC710
+// PC 0x006ECB20 GOG 0x006EC710 Xbox 0x000ECA40
 CExoString CSWGuiMapHider::GetPrevMapNote()
 {
     CExoString sNote("");
@@ -661,7 +661,7 @@ CSWGuiControl* CSWGuiMapHider::HitCheckMouse(int nX, int nY)  // PC 0x006ECDA0 G
     return 0;
 }
 #endif
-// PC 0x006ED9F0 GOG 0x006ED5E0
+// PC 0x006ED9F0 GOG 0x006ED5E0 Xbox 0x000ED420
 CSWGuiMapHider::CSWGuiMapHider()
 {
     ClearMapNotes();
@@ -721,7 +721,7 @@ CSWGuiMapHider::CSWGuiMapHider()
     m_btnHider.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
 #endif
 }
-// PC 0x006EDD60 GOG 0x006ED950
+// PC 0x006EDD60 GOG 0x006ED950 Xbox 0x000ED710
 CSWGuiMapHider::~CSWGuiMapHider()
 {
     ClearMapNotes();
@@ -758,7 +758,7 @@ CSWGuiMapHider::~CSWGuiMapHider()
     }
 #endif
 }
-// PC 0x006EDE60 GOG 0x006EDA50
+// PC 0x006EDE60 GOG 0x006EDA50 Xbox 0x000EC170
 void CSWGuiMapHider::Draw(float fElapsed)
 {
     if (m_nMapMode == 0)
@@ -1008,7 +1008,7 @@ void CSWGuiMapHider::Draw(float fElapsed)
     }
     AurGUICloseViewport();
 }
-// PC 0x006EE720 GOG 0x006EE310
+// PC 0x006EE720 GOG 0x006EE310 Xbox 0x000EDF70
 CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1131,7 +1131,7 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     m_nCurrentPlanet = -1;
 #endif
 }
-// PC 0x006EF000 GOG 0x006EEBF0
+// PC 0x006EF000 GOG 0x006EEBF0 Xbox 0x000ED7B0
 void CSWGuiInGameGalaxyMap::OnPanelAdded()
 {
     CSWPartyTable* pPartyTable =
@@ -1267,7 +1267,7 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x006EF0C0 GOG 0x006EECB0
+// PC 0x006EF0C0 GOG 0x006EECB0 Xbox 0x000ED870
 void CSWGuiInGameGalaxyMap::NextPlanet()
 {
     CSWPartyTable* pPartyTable =
@@ -1300,7 +1300,7 @@ void CSWGuiInGameGalaxyMap::NextPlanet()
     m_aPlanetButtons[pPartyTable->m_nSelectedPlanet].SetActive(1);
     DisplayPlanet(pPartyTable->m_nSelectedPlanet, 1);
 }
-// PC 0x006EF160 GOG 0x006EED50
+// PC 0x006EF160 GOG 0x006EED50 Xbox 0x000ED910
 void CSWGuiInGameGalaxyMap::PrevPlanet()
 {
     CSWPartyTable* pPartyTable =
@@ -1333,7 +1333,7 @@ void CSWGuiInGameGalaxyMap::PrevPlanet()
     m_aPlanetButtons[pPartyTable->m_nSelectedPlanet].SetActive(1);
     DisplayPlanet(pPartyTable->m_nSelectedPlanet, 1);
 }
-// PC 0x006EF200 GOG 0x006EEDF0
+// PC 0x006EF200 GOG 0x006EEDF0 Xbox 0x000ED9B0
 CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1405,7 +1405,7 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     m_btnReturn.m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
 #endif
 }
-// PC 0x006ECE40 GOG 0x006ECA30
+// PC 0x006ECE40 GOG 0x006ECA30 Xbox 0x000ECC30
 void CSWGuiInGameGalaxyMap::DisplayPlanet(int nPlanet, int bZoom)
 {
     CExoString sName;

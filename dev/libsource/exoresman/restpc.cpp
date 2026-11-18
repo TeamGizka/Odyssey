@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00786740 GOG 0x00786510
+// PC 0x00786740 GOG 0x00786510 Xbox 0x0033A2F0
 CResTPC::CResTPC()
 {
     m_bCompressed = 0;
@@ -16,7 +16,7 @@ CResTPC::CResTPC()
 CResTPC::~CResTPC()
 {
 }
-// PC 0x00786790 GOG 0x00786560
+// PC 0x00786790 GOG 0x00786560 Xbox 0x0033A330
 int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
                            int* pnCompressedSize, int* pnUncompressedSize,
                            int* pnRemainingSize, float* pfAlphaBlending,
@@ -59,7 +59,7 @@ int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
         }
     }
 }
-// PC 0x00786830 GOG 0x00786600
+// PC 0x00786830 GOG 0x00786600 Xbox 0x0033A3D0
 unsigned char* CResTPC::GetTPCDataPtr()
 {
     return m_pData;
@@ -70,12 +70,12 @@ TPCHeader* CResTPC::GetTPCHeaderPtr()
 {
     return m_pHeader;
 }
-// PC 0x00786840 GOG 0x00786610
+// PC 0x00786840 GOG 0x00786610 Xbox 0x0033A3E0
 unsigned char* CResTPC::GetTPCTXIPtr()
 {
     return m_pEnd;
 }
-// PC 0x00786850 GOG 0x00786620
+// PC 0x00786850 GOG 0x00786620 Xbox 0x0033A3F0
 int CResTPC::GetTPCSize()
 {
     if (m_bCompressed != 0)
@@ -87,7 +87,7 @@ int CResTPC::GetTPCSize()
         return m_nUncompressedSize;
     }
 }
-// PC 0x00786860 GOG 0x00786630
+// PC 0x00786860 GOG 0x00786630 Xbox 0x0033A710
 int CResTPC::GetTPCTXISize()
 {
     return m_nRemainingSize;
@@ -104,7 +104,7 @@ int CResTPC::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x00786870 GOG 0x00786640
+// PC 0x00786870 GOG 0x00786640 Xbox 0x0033A400
 int CResTPC::OnResourceFreed()
 {
     m_bCompressed = 0;
@@ -117,7 +117,7 @@ int CResTPC::OnResourceFreed()
     m_pEnd = 0;
     return 1;
 }
-// PC 0x00786890 GOG 0x00786660
+// PC 0x00786890 GOG 0x00786660 Xbox 0x0033A420
 int CResTPC::OnResourceServiced()
 {
     TPCHeader* pTPC;

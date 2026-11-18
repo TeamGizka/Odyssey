@@ -69,7 +69,7 @@ public:
         return -1;
     }
 #endif
-    // PC 0x00448F20 GOG 0x00449070
+    // PC 0x00448F20 GOG 0x00449070 Xbox 0x002AA9A0
     T& operator[](int nIndex)
     {
         return m_pList[nIndex];
@@ -110,7 +110,7 @@ template <class T> List<T>::List(List<T>& other)
     }
 }
 
-template <class T> int List<T>::Contains(T item)
+template <class T> int List<T>::Contains(T item)  // Xbox 0x002B3910
 {
     int nFound = 0;
     for (int i = 0; i < m_nCount; i++)
@@ -123,7 +123,7 @@ template <class T> int List<T>::Contains(T item)
     return nFound;
 }
 
-template <class T> int List<T>::IndexOf(T item)
+template <class T> int List<T>::IndexOf(T item)  // Xbox 0x0010CCE0
 {
     for (int i = 0; i < m_nCount; i++)
     {
@@ -147,14 +147,14 @@ template <class T> List<T>::List(int nAllocated)
     }
 }
 
-template <class T> List<T>::~List()
+template <class T> List<T>::~List()  // Xbox 0x0033FCF0
 {
     if (m_pList != 0)
     {
         delete[] m_pList;
     }
 }
-// PC 0x004673E0 GOG 0x004AB840
+// PC 0x004673E0 GOG 0x004AB840 Xbox 0x003026B0
 template <class T> void List<T>::Remove(T item)
 {
     int i;
@@ -216,7 +216,7 @@ template <class T> List<T>& List<T>::operator=(List<T>& other)
     return *this;
 }
 
-template <class T> void List<T>::AddUnique(T item)
+template <class T> void List<T>::AddUnique(T item)  // Xbox 0x000EF480
 {
     if (!Contains(item))
     {

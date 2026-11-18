@@ -41,18 +41,18 @@ public:
     virtual ~PartTriMesh();
     virtual int HitCheckGeom(const Vector& vStart, Vector& vEnd,
                              Vector* pHit, CHitInfo* pHitInfo, float fRadius);
-    virtual PartTriMesh* AsPartTriMesh()  // PC 0x00698BD0 GOG 0x00698980
+    virtual PartTriMesh* AsPartTriMesh()  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     {
         return this;
     }
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual void Project(const Vector& vPoint, float fDistance,
                          const Plane& cPlane, CAurShadowData* pShadowData);
     virtual void Mat();
     virtual void GetMinimumSphere(Vector& vPosition, float& fRadius);
     virtual void RotateTexture(float fAngle);
     virtual int WithinRange(Vector vPosition, float fRange);
-    virtual float GetTextureAngle()  // PC 0x00453160 GOG 0x004532A0
+    virtual float GetTextureAngle()  // PC 0x00453160 GOG 0x004532A0 Xbox 0x002B4480
     {
         return m_fTextureAngle;
     }

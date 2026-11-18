@@ -31,18 +31,18 @@ int enablepointwind = 1;
 int dowindstuff = 1;
 
 List<CAurGrassInfo> g_GrassInfo;
-// PC 0x004D2EA0 GOG 0x004D2FE0
+// PC 0x004D2EA0 GOG 0x004D2FE0 Xbox 0x002E94C0
 void AurGrassClearInfo()
 {
     g_GrassInfo.m_nCount = 0;
 }
-// PC 0x004D2EB0 GOG 0x004D2FF0
+// PC 0x004D2EB0 GOG 0x004D2FF0 Xbox 0x002E9570
 void CAurTriangleBin::FinishGeometry()
 {
     m_vMaximum = (m_vBoundingBoxMinimum + m_vBoundingBoxMaximum) / 2.0f;
     m_fRadius = magnitude(m_vBoundingBoxMinimum - m_vBoundingBoxMaximum) * 0.5f;
 }
-// PC 0x004D2F40 GOG 0x004D3080
+// PC 0x004D2F40 GOG 0x004D3080 Xbox 0x002E94E0
 char AurGrassMaterialInUse(int nMaterial)
 {
     if (nMaterial > g_GrassInfo.m_nCount - 1)
@@ -52,7 +52,7 @@ char AurGrassMaterialInUse(int nMaterial)
 
     return g_GrassInfo[nMaterial].m_bInUse;
 }
-// PC 0x004D2F70 GOG 0x004D30B0
+// PC 0x004D2F70 GOG 0x004D30B0 Xbox 0x002E9510
 CAurGrassInfo::CAurGrassInfo()
 {
     m_szTextureName[0] = 0;
@@ -64,7 +64,7 @@ CAurGrassInfo::CAurGrassInfo()
         m_afProbability[i] = 0.25f;
     }
 }
-// PC 0x004D2FB0 GOG 0x004D30F0
+// PC 0x004D2FB0 GOG 0x004D30F0 Xbox 0x002E9620
 void CAurTriangleBin::UpdateGrassForWind(WindManager* pWindManager)
 {
     if (!(~m_nFlags & GRASS_POLYS_BUILT))
@@ -128,7 +128,7 @@ extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 
 int maxgrass = 0;
 int newstuff = 0;
-// PC 0x004D3430 GOG 0x004D3570
+// PC 0x004D3430 GOG 0x004D3570 Xbox 0x002E9AF0
 void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
                                       WindManager* pWindManager)
 {
@@ -368,11 +368,11 @@ CAurTriangleListElem::~CAurTriangleListElem()
     m_pTriMesh = 0;
     m_nTriangle = 0;
 }
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void CAurTriangleBin::ReloadColor()
 {
 }
-// PC 0x004D3DD0 GOG 0x004D3F10
+// PC 0x004D3DD0 GOG 0x004D3F10 Xbox 0x002EA120
 void AurGrassAddInfo(int nMaterial, const CAurGrassInfo& info)
 {
     while (nMaterial >= g_GrassInfo.m_nCount)
@@ -402,7 +402,7 @@ void AurGrassAddInfo(int nMaterial, const CAurGrassInfo& info)
     strcpy(g_GrassInfo[nMaterial].m_szTextureName, info.m_szTextureName);
     g_GrassInfo[nMaterial].m_bInUse = 1;
 }
-// PC 0x004D3FA0 GOG 0x004D40E0
+// PC 0x004D3FA0 GOG 0x004D40E0 Xbox 0x002EA300
 int GrassSortTris(const void* pFirst, const void* pSecond)
 {
     CAurTriangleListElem first(*(CAurTriangleListElem*)pFirst);
@@ -416,7 +416,7 @@ int GrassSortTris(const void* pFirst, const void* pSecond)
 }
 
 extern int enablelightmap;
-// PC 0x004D4170 GOG 0x004D42B0
+// PC 0x004D4170 GOG 0x004D42B0 Xbox 0x002EA420
 void CAurTriangleBin::AddTriangle(const MaxFace& face, PartTriMesh* pTriMesh,
                                   MdlNodeTriMesh* pNode)
 {
@@ -518,7 +518,7 @@ void CAurTriangleBin::AddTriangle(const MaxFace& face, PartTriMesh* pTriMesh,
         m_vMaximum = (m_vBoundingBoxMinimum + m_vBoundingBoxMaximum) * 0.5f;
     }
 }
-// PC 0x004D4F60 GOG 0x004D50A0
+// PC 0x004D4F60 GOG 0x004D50A0 Xbox 0x002EB390
 template <>
 inline List<CAurTriangleListElem>::List(List<CAurTriangleListElem>& other)
 {
@@ -534,7 +534,7 @@ inline List<CAurTriangleListElem>::List(List<CAurTriangleListElem>& other)
         Add(other.m_pList[i]);
     }
 }
-// PC 0x004D5060 GOG 0x004D51A0
+// PC 0x004D5060 GOG 0x004D51A0 Xbox 0x002EB4F0
 CAurTriangleBin::CAurTriangleBin()
 {
     m_nTriangles = 0;
@@ -550,7 +550,7 @@ CAurTriangleBin::CAurTriangleBin()
     m_nVertexOffset = 0;
     m_nIndexOffset = 0;
 }
-// PC 0x004D5100 GOG 0x004D5240
+// PC 0x004D5100 GOG 0x004D5240 Xbox 0x002EB580
 CAurTriangleBin::~CAurTriangleBin()
 {
     if (m_nFlags & HAS_VERTEX_DATA)
@@ -577,7 +577,7 @@ CAurTriangleBin::~CAurTriangleBin()
     m_pTexture = 0;
     AurTextureRelease(pTexture);
 }
-// PC 0x004D5210 GOG 0x004D5350
+// PC 0x004D5210 GOG 0x004D5350 Xbox 0x002EB640
 void CAurTriangleBin::DestroyGrassPolys()
 {
     if (!(~m_nFlags & GRASS_POLYS_BUILT))
@@ -609,12 +609,12 @@ void CAurTriangleBin::DestroyGrassPolys()
         m_nFlags ^= GRASS_POLYS_BUILT;
     }
 }
-// PC 0x00664830 GOG 0x006645E0
+// PC 0x00664830 GOG 0x006645E0 Xbox 0x002E94D0
 void CAurTriangleBin::SetMinDistanceSquared(float fDistanceSquared)
 {
     m_fDistance = fDistanceSquared;
 }
-// PC 0x004D52A0 GOG 0x004D53E0
+// PC 0x004D52A0 GOG 0x004D53E0 Xbox 0x002EB6E0
 void CAurTriangleBin::SortTriangles()
 {
     if (m_lstTriangles.m_nCount == 1)
@@ -866,7 +866,7 @@ void CAurTriangleBin::CreateArrays()
     m_nFlags |= GRASS_POLYS_BUILT;
 }
 #endif
-void CAurTriangleBin::BuildGrassPolys()  // PC 0x004D68C0 GOG 0x004D6A00
+void CAurTriangleBin::BuildGrassPolys()  // PC 0x004D68C0 GOG 0x004D6A00 Xbox 0x002ED360
 {
     if (!(m_nFlags & GRASS_POLYS_BUILT) && m_nTriangles != 0)
     {
@@ -909,7 +909,7 @@ void CAurTriangleBin::BuildGrassPolys()  // PC 0x004D68C0 GOG 0x004D6A00
 
 #ifdef _XBOX
 
-void CAurTriangleBin::CreateArrays()
+void CAurTriangleBin::CreateArrays()  // Xbox 0x002EBA20
 {
     int nVertices = 4 * m_nTriangles;
     GLRender::RequestPool(Aurora::POOL_VERTEX, nVertices * m_nVertexSize,

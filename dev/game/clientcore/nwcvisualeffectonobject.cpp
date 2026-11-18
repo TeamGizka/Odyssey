@@ -30,7 +30,7 @@
 #include "twodimarrays.h"
 
 short CSWCVisualEffectOnObject::m_nMotionBlurVFXCount;
-// PC 0x00700810 GOG 0x00700990
+// PC 0x00700810 GOG 0x00700990 Xbox 0x000D1060
 CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
 {
     int i;
@@ -83,14 +83,14 @@ CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
     m_bHardCodedEffectApplied = 0;
     m_bAttachToHead = 0;
 }
-// PC 0x00700A20 GOG 0x00700400
+// PC 0x00700A20 GOG 0x00700400 Xbox 0x000D0BF0
 int CSWCVisualEffectOnObject::IsDone()
 {
     return m_bSelfIlluminationPulseDone != 0 && m_bAlphaDone != 0 &&
            m_bFOVDone != 0 && m_bVisualEffectDone != 0 &&
            m_nVisualEffectState == 0;
 }
-// PC 0x00700A60 GOG 0x00700440
+// PC 0x00700A60 GOG 0x00700440 Xbox 0x000D12D0
 void CSWCVisualEffectOnObject::ApplySelfIlluminationPulse(
     unsigned short nVisualEffect)
 {
@@ -107,7 +107,7 @@ void CSWCVisualEffectOnObject::ApplySelfIlluminationPulse(
         break;
     }
 }
-// PC 0x00700B50 GOG 0x00700530
+// PC 0x00700B50 GOG 0x00700530 Xbox 0x000D0C30
 void CSWCVisualEffectOnObject::RemoveBeam(unsigned short nVisualEffect)
 {
     if (m_pEffectModel != 0)
@@ -116,7 +116,7 @@ void CSWCVisualEffectOnObject::RemoveBeam(unsigned short nVisualEffect)
         static_cast<Gob*>(m_pEffectModel)->AttachToScene(0);
     }
 }
-// PC 0x00700B80 GOG 0x00700560
+// PC 0x00700B80 GOG 0x00700560 Xbox 0x000D0C70
 void CSWCVisualEffectOnObject::SetEffectDone(CAurObject* pEffectModel)
 {
     if (pEffectModel == m_apAttachedModels[0])
@@ -143,7 +143,7 @@ int CSWCVisualEffectOnObject::GetHardCodedCessationLength(
     }
     return HARDCODED_CESSATION_TIME;
 }
-// PC 0x00700BC0 GOG 0x007005A0
+// PC 0x00700BC0 GOG 0x007005A0 Xbox 0x000D0CB0
 int CSWCVisualEffectOnObject::GetHardCodedImpactLength(
     unsigned short nVisualEffect)
 {
@@ -162,7 +162,7 @@ int CSWCVisualEffectOnObject::GetHardCodedImpactLength(
     }
     return 1000;
 }
-// PC 0x00700C20 GOG 0x00700600
+// PC 0x00700C20 GOG 0x00700600 Xbox 0x000D0D10
 int CSWCVisualEffectOnObject::LoadBeam(unsigned short nVisualEffect)
 {
     CExoString sModel;
@@ -227,7 +227,7 @@ int CSWCVisualEffectOnObject::LoadBeam(unsigned short nVisualEffect)
     static_cast<Gob*>(m_pEffectModel)->DisableFog();
     return 1;
 }
-// PC 0x00700DB0 GOG 0x00700790
+// PC 0x00700DB0 GOG 0x00700790 Xbox 0x000D0E60
 int CSWCVisualEffectOnObject::LoadSpellVisual(unsigned short nVisualEffect)
 {
     nVisualEffect -= VFX_SPELL_VISUAL_BEGIN;
@@ -245,7 +245,7 @@ int CSWCVisualEffectOnObject::LoadSpellVisual(unsigned short nVisualEffect)
     }
     return m_pEffectModel != 0;
 }
-// PC 0x00700E10 GOG 0x007007F0
+// PC 0x00700E10 GOG 0x007007F0 Xbox 0x000D0EC0
 int CSWCVisualEffectOnObject::LoadModelAttachment(unsigned short nVisualEffect)
 {
     nVisualEffect -= VFX_MODEL_ATTACHMENT_BEGIN;
@@ -266,7 +266,7 @@ int CSWCVisualEffectOnObject::LoadModelAttachment(unsigned short nVisualEffect)
     }
     return m_pEffectModel != 0;
 }
-// PC 0x00700EA0 GOG 0x00700880
+// PC 0x00700EA0 GOG 0x00700880 Xbox 0x000D0F50
 void CSWCVisualEffectOnObject::UnloadHardCodedVisualEffect()
 {
     if (m_pEffectModel != 0)
@@ -312,12 +312,12 @@ void CSWCVisualEffectOnObject::DoVFXRumble()
             m_nVisualEffect, 1, pObject->m_vPosition);
     }
 }
-// PC 0x00700EF0 GOG 0x007008D0
+// PC 0x00700EF0 GOG 0x007008D0 Xbox 0x000D0FA0
 char CSWCVisualEffectOnObject::GetHardCodedEffectClass()
 {
     return m_HardCodedEffectClass;
 }
-// PC 0x00700F00 GOG 0x007008E0
+// PC 0x00700F00 GOG 0x007008E0 Xbox 0x000D0FB0
 char CSWCVisualEffectOnObject::GetHardCodedEffectClass(
     unsigned short nVisualEffect)
 {
@@ -392,7 +392,7 @@ void CSWCVisualEffectOnObject::EnableHardCodedEffectShadow(int bEnable)
         m_bLightSourceDynamic = bEnable != 0;
     }
 }
-// PC 0x00700FB0 GOG 0x00700C20
+// PC 0x00700FB0 GOG 0x00700C20 Xbox 0x000D13B0
 void CSWCVisualEffectOnObject::DetachVisualEffect()
 {
     int i;
@@ -429,7 +429,7 @@ void CSWCVisualEffectOnObject::DetachVisualEffect()
         static_cast<Gob*>(m_pEffectModel)->AttachToScene(0);
     }
 }
-// PC 0x00701070 GOG 0x00700CE0
+// PC 0x00701070 GOG 0x00700CE0 Xbox 0x000D1470
 void CSWCVisualEffectOnObject::AttachBeam()
 {
     CSWCObject* pTarget = GetTargetCSWCObject();
@@ -456,7 +456,7 @@ CSWCObject* CSWCVisualEffectOnObject::GetOwnerCSWCObject()
     }
     return pObject->AsSWCObject();
 }
-// PC 0x00701130 GOG 0x00700DA0
+// PC 0x00701130 GOG 0x00700DA0 Xbox 0x000D1530
 void CSWCVisualEffectOnObject::AttachLight()
 {
     Quaternion qOrientation;
@@ -526,7 +526,7 @@ void CSWCVisualEffectOnObject::AttachLight()
         }
     }
 }
-// PC 0x00701560 GOG 0x007011D0
+// PC 0x00701560 GOG 0x007011D0 Xbox 0x000D18E0
 void CSWCVisualEffectOnObject::ApplyBumpedOutShell(unsigned short nVisualEffect)
 {
     CExoString sTexture;
@@ -632,7 +632,7 @@ void CSWCVisualEffectOnObject::ApplyBumpedOutShell(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x007017B0 GOG 0x00701420
+// PC 0x007017B0 GOG 0x00701420 Xbox 0x000D1AE0
 void CSWCVisualEffectOnObject::RemoveBumpedOutShell()
 {
     CSWCObject* pObject = GetTargetCSWCObject();
@@ -652,7 +652,7 @@ void CSWCVisualEffectOnObject::RemoveBumpedOutShell()
         }
     }
 }
-// PC 0x00701820 GOG 0x00701490
+// PC 0x00701820 GOG 0x00701490 Xbox 0x000D1B50
 void CSWCVisualEffectOnObject::ApplyMotionBlur(unsigned short nVisualEffect)
 {
     CSWCObject* pGameObject;
@@ -693,7 +693,7 @@ void CSWCVisualEffectOnObject::ApplyMotionBlur(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x007018B0 GOG 0x00701520
+// PC 0x007018B0 GOG 0x00701520 Xbox 0x000D1BE0
 void CSWCVisualEffectOnObject::RemoveMotionBlur()
 {
     CSWCObject* pGameObject;
@@ -715,7 +715,7 @@ void CSWCVisualEffectOnObject::RemoveMotionBlur()
         }
     }
 }
-// PC 0x00701910 GOG 0x00701580
+// PC 0x00701910 GOG 0x00701580 Xbox 0x000D1C40
 void CSWCVisualEffectOnObject::ApplyDistortion(unsigned short nVisualEffect)
 {
     CSWCObject* pGameObject;
@@ -730,7 +730,7 @@ void CSWCVisualEffectOnObject::ApplyDistortion(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00701950 GOG 0x007015C0
+// PC 0x00701950 GOG 0x007015C0 Xbox 0x000D49B0
 void CSWCVisualEffectOnObject::RemoveDistortion(unsigned short nVisualEffect)
 {
     CSWCObject* pGameObject;
@@ -745,7 +745,7 @@ void CSWCVisualEffectOnObject::RemoveDistortion(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00701990 GOG 0x00701600
+// PC 0x00701990 GOG 0x00701600 Xbox 0x000D1CC0
 void CSWCVisualEffectOnObject::AttachVFXModelToTargetModel(
     CAurObject* pEffectModel, CAurObject* pTargetModel,
     CExoString const& sNode)
@@ -774,7 +774,7 @@ void CSWCVisualEffectOnObject::AttachVFXModelToTargetModel(
             pTargetModel, (char*)sNode.CStr(), Gob::ATTACH_NORMAL);
     }
 }
-// PC 0x00701B50 GOG 0x00701870
+// PC 0x00701B50 GOG 0x00701870 Xbox 0x000D1EB0
 int CSWCVisualEffectOnObject::LoadVisualEffect(
     unsigned short nEffect, int bImpactOnly, unsigned long oidObject,
     unsigned long oidCreator, unsigned long oidTarget,
@@ -1202,7 +1202,7 @@ int CSWCVisualEffectOnObject::LoadVisualEffect(
     return 1;
 }
 
-// PC 0x00702DE0 GOG 0x00700BA0
+// PC 0x00702DE0 GOG 0x00700BA0 Xbox 0x000D1250
 void CSWCVisualEffectOnObject::UnloadVisualEffect()
 {
     int i;
@@ -1222,7 +1222,7 @@ void CSWCVisualEffectOnObject::UnloadVisualEffect()
         }
     }
 }
-// PC 0x00702E60 GOG 0x00702B00
+// PC 0x00702E60 GOG 0x00702B00 Xbox 0x000D2C00
 void CSWCVisualEffectOnObject::ApplyCheat(unsigned short nVisualEffect)
 {
     CExoString sModel;
@@ -1283,7 +1283,7 @@ void CSWCVisualEffectOnObject::ApplyCheat(unsigned short nVisualEffect)
     }
     }
 }
-// PC 0x00703180 GOG 0x00702E20
+// PC 0x00703180 GOG 0x00702E20 Xbox 0x000D2F00
 void CSWCVisualEffectOnObject::ApplySpellVisual(unsigned short nVisualEffect)
 {
     nVisualEffect -= VFX_SPELL_VISUAL_BEGIN;
@@ -1338,7 +1338,7 @@ void CSWCVisualEffectOnObject::ApplySpellVisual(unsigned short nVisualEffect)
             "impact", 1.0f, AnimRun::FLAG_SUPPRESS_KEY_REPORTS, 0.0f);
     }
 }
-// PC 0x00703450 GOG 0x007030F0
+// PC 0x00703450 GOG 0x007030F0 Xbox 0x000D31F0
 void CSWCVisualEffectOnObject::ApplyLightsaberThrow(unsigned short nVisualEffect)
 {
     CSWCObject* pTarget = GetTargetCSWCObject();
@@ -1406,7 +1406,7 @@ void CSWCVisualEffectOnObject::ApplyLightsaberThrow(unsigned short nVisualEffect
         }
     }
 }
-// PC 0x00703990 GOG 0x00703630
+// PC 0x00703990 GOG 0x00703630 Xbox 0x000D3720
 void CSWCVisualEffectOnObject::ApplyTextureReplace(unsigned short nVisualEffect)
 {
     CExoString sTexture;
@@ -1452,7 +1452,7 @@ void CSWCVisualEffectOnObject::ApplyTextureReplace(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00703B40 GOG 0x007037E0
+// PC 0x00703B40 GOG 0x007037E0 Xbox 0x000D38B0
 void CSWCVisualEffectOnObject::ApplyEnvironmentMap(unsigned short nVisualEffect)
 {
     CExoString sEnvMap;
@@ -1465,7 +1465,7 @@ void CSWCVisualEffectOnObject::ApplyEnvironmentMap(unsigned short nVisualEffect)
         pObject->SetEnvMap(1, 0, sEnvMap);
     }
 }
-// PC 0x00703C20 GOG 0x007038C0
+// PC 0x00703C20 GOG 0x007038C0 Xbox 0x000D3960
 void CSWCVisualEffectOnObject::ApplySelfIllumination(unsigned short nVisualEffect)
 {
     Vector vColor;
@@ -1502,7 +1502,7 @@ void CSWCVisualEffectOnObject::ApplySelfIllumination(unsigned short nVisualEffec
                         0.0f, 1);
     }
 }
-// PC 0x00703DC0 GOG 0x00703A60
+// PC 0x00703DC0 GOG 0x00703A60 Xbox 0x000D3B00
 void CSWCVisualEffectOnObject::ApplyLightSource(unsigned short nVisualEffect)
 {
     CExoString sAnimation;
@@ -1723,7 +1723,7 @@ void CSWCVisualEffectOnObject::ApplyLightSource(unsigned short nVisualEffect)
 }
 
     enum { LIGHT_PRIORITY_PLAYER = 2, LIGHT_PRIORITY_OTHER_OBJECT = 4 };
-// PC 0x00704360 GOG 0x00704000
+// PC 0x00704360 GOG 0x00704000 Xbox 0x000D4080
 void CSWCVisualEffectOnObject::ApplyAlpha(unsigned short nVisualEffect)
 {
     CSWCObject* pObject = GetTargetCSWCObject();
@@ -1756,13 +1756,13 @@ void CSWCVisualEffectOnObject::ApplyAlpha(unsigned short nVisualEffect)
         }
     }
 }
-int CSWCVisualEffectOnObject::ApplyBeam(unsigned short nVisualEffect)  // PC 0x007044B0 GOG 0x00704150
+int CSWCVisualEffectOnObject::ApplyBeam(unsigned short nVisualEffect)  // PC 0x007044B0 GOG 0x00704150 Xbox 0x000D41E0
 {
     AttachBeam();
     return static_cast<Gob*>(m_pEffectModel)
         ->PlayAnimation("cast01", 1.0f, 0, 0.0f);
 }
-// PC 0x007044E0 GOG 0x00704180
+// PC 0x007044E0 GOG 0x00704180 Xbox 0x000D4210
 void CSWCVisualEffectOnObject::ApplyDeleteModel(unsigned short nVisualEffect)
 {
     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nGoreLevel >= 2)
@@ -1779,7 +1779,7 @@ void CSWCVisualEffectOnObject::ApplyDeleteModel(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00704540 GOG 0x00704380
+// PC 0x00704540 GOG 0x00704380 Xbox 0x000D43D0
 void CSWCVisualEffectOnObject::ApplyMirv(unsigned short nVisualEffect)
 {
     Quaternion qOrientation;
@@ -1864,7 +1864,7 @@ void CSWCVisualEffectOnObject::ApplyMirv(unsigned short nVisualEffect)
         break;
     }
 }
-// PC 0x00704880 GOG 0x007046C0
+// PC 0x00704880 GOG 0x007046C0 Xbox 0x000D4760
 void CSWCVisualEffectOnObject::ApplyFOV(unsigned short nVisualEffect)
 {
     CSWCCreature* pPlayerCreature =
@@ -1907,7 +1907,7 @@ void CSWCVisualEffectOnObject::ApplyFOV(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00704980 GOG 0x007047C0
+// PC 0x00704980 GOG 0x007047C0 Xbox 0x000D4860
 void CSWCVisualEffectOnObject::ApplyModelAttachment(
     unsigned short nVisualEffect)
 {
@@ -1958,7 +1958,7 @@ void CSWCVisualEffectOnObject::ApplyModelAttachment(
         }
     }
 }
-// PC 0x00704AD0 GOG 0x007049C0
+// PC 0x00704AD0 GOG 0x007049C0 Xbox 0x000D4A60
 void CSWCVisualEffectOnObject::RemoveTextureReplace(
     unsigned short nVisualEffect)
 {
@@ -1991,7 +1991,7 @@ void CSWCVisualEffectOnObject::RemoveTextureReplace(
         }
     }
 }
-// PC 0x00704B60 GOG 0x00704A50
+// PC 0x00704B60 GOG 0x00704A50 Xbox 0x000D4AF0
 void CSWCVisualEffectOnObject::RemoveEnvironmentMap(
     unsigned short nVisualEffect)
 {
@@ -2004,7 +2004,7 @@ void CSWCVisualEffectOnObject::RemoveEnvironmentMap(
         pGameObject->RestoreTexture();
     }
 }
-// PC 0x00704BA0 GOG 0x00704A90
+// PC 0x00704BA0 GOG 0x00704A90 Xbox 0x000D4B70
 void CSWCVisualEffectOnObject::RemoveLightSource(unsigned short nVisualEffect)
 {
     CSWCObject* pGameObject;
@@ -2045,7 +2045,7 @@ void CSWCVisualEffectOnObject::RemoveLightSource(unsigned short nVisualEffect)
         static_cast<Gob*>(m_pEffectModel)->AttachToScene(0);
     }
 }
-// PC 0x00704C90 GOG 0x00704B80
+// PC 0x00704C90 GOG 0x00704B80 Xbox 0x000D4C60
 void CSWCVisualEffectOnObject::RemoveAlpha(unsigned short nVisualEffect)
 {
     CSWCObject* pObject = GetTargetCSWCObject();
@@ -2065,7 +2065,7 @@ void CSWCVisualEffectOnObject::RemoveAlpha(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00704D10 GOG 0x00704C00
+// PC 0x00704D10 GOG 0x00704C00 Xbox 0x000D4B30
 void CSWCVisualEffectOnObject::RemoveSelfIllumination(
     unsigned short nVisualEffect)
 {
@@ -2075,7 +2075,7 @@ void CSWCVisualEffectOnObject::RemoveSelfIllumination(
         pObject->UnHilite(CSWCObject::HILITE_CHANNEL_VISUAL_EFFECT);
     }
 }
-// PC 0x00704D10 GOG 0x00704C00
+// PC 0x00704D10 GOG 0x00704C00 Xbox 0x000D4B30
 void CSWCVisualEffectOnObject::RemoveSelfIlluminationPulse(
     unsigned short nVisualEffect)
 {
@@ -2085,7 +2085,7 @@ void CSWCVisualEffectOnObject::RemoveSelfIlluminationPulse(
         pObject->UnHilite(CSWCObject::HILITE_CHANNEL_VISUAL_EFFECT);
     }
 }
-// PC 0x00704D50 GOG 0x00704C40
+// PC 0x00704D50 GOG 0x00704C40 Xbox 0x000D4CE0
 void CSWCVisualEffectOnObject::RemoveFOV(unsigned short nVisualEffect,
                                          int bForce)
 {
@@ -2130,7 +2130,7 @@ void CSWCVisualEffectOnObject::RemoveFOV(unsigned short nVisualEffect,
         }
     }
 }
-// PC 0x00704E30 GOG 0x00704D20
+// PC 0x00704E30 GOG 0x00704D20 Xbox 0x000D4DC0
 void CSWCVisualEffectOnObject::UpdateSelfIlluminationPulse(unsigned long nTimeElapsed)
 {
     CSWCObject* pObject = GetTargetCSWCObject();
@@ -2162,7 +2162,7 @@ void CSWCVisualEffectOnObject::UpdateSelfIlluminationPulse(unsigned long nTimeEl
         m_nHardCodedEffectTime += nTimeElapsed;
     }
 }
-// PC 0x00704FB0 GOG 0x00704EA0
+// PC 0x00704FB0 GOG 0x00704EA0 Xbox 0x000D4F70
 void CSWCVisualEffectOnObject::UpdateAlpha(unsigned long nTimeElapsed)
 {
     CSWCObject* pObject = GetTargetCSWCObject();
@@ -2241,7 +2241,7 @@ void CSWCVisualEffectOnObject::UpdateAlpha(unsigned long nTimeElapsed)
         }
     }
 }
-// PC 0x00705220 GOG 0x00705110
+// PC 0x00705220 GOG 0x00705110 Xbox 0x000D51D0
 void CSWCVisualEffectOnObject::UpdateFOV(
     unsigned short nVisualEffect, unsigned long nTimeElapsed)
 {
@@ -2274,7 +2274,7 @@ void CSWCVisualEffectOnObject::UpdateFOV(
         }
     }
 }
-// PC 0x00705350 GOG 0x00705240
+// PC 0x00705350 GOG 0x00705240 Xbox 0x000D5300
 int CSWCVisualEffectOnObject::LoadLightSource(unsigned short nVisualEffect)
 {
     if (GetTargetCSWCObject() == 0)
@@ -2304,7 +2304,7 @@ int CSWCVisualEffectOnObject::LoadAlpha(unsigned short nVisualEffect)
     }
     return 1;
 }
-// PC 0x007053B0 GOG 0x007052A0
+// PC 0x007053B0 GOG 0x007052A0 Xbox 0x000D5360
 void CSWCVisualEffectOnObject::ReAttachVisualEffect()
 {
     CExoString sAttachNode;
@@ -2486,7 +2486,7 @@ inline void CSWCArea::AddToBeDeletedEmitter(CAurObject* pEmitter)
     }
 }
 #endif
-// PC 0x007058E0 GOG 0x00701800
+// PC 0x007058E0 GOG 0x00701800 Xbox 0x000D1E80
 CSWCVisualEffectOnObject::~CSWCVisualEffectOnObject()
 {
     if (m_pSoundSource != 0)
@@ -2495,7 +2495,7 @@ CSWCVisualEffectOnObject::~CSWCVisualEffectOnObject()
     }
     UnloadVisualEffect();
 }
-// PC 0x00705950 GOG 0x007041E0
+// PC 0x00705950 GOG 0x007041E0 Xbox 0x000D4270
 void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
 {
 #ifdef _XBOX
@@ -2578,7 +2578,7 @@ void CSWCVisualEffectOnObject::RemoveModelAttachment(unsigned short nVisualEffec
     m_pEffectModel->AttachToScene(0);
 }
 #endif
-// PC 0x00705BA0 GOG 0x007059B0
+// PC 0x00705BA0 GOG 0x007059B0 Xbox 0x000D5A00
 void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
     unsigned short nVisualEffect)
 {
@@ -2650,7 +2650,7 @@ void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
     }
 }
 
-// PC 0x00705D60 GOG 0x00705B70
+// PC 0x00705D60 GOG 0x00705B70 Xbox 0x000D5BC0
 int CSWCVisualEffectOnObject::LoadHardCodedVisualEffect(
     unsigned short nVisualEffect)
 {
@@ -2689,7 +2689,7 @@ int CSWCVisualEffectOnObject::LoadHardCodedVisualEffect(
     }
     return 1;
 }
-// PC 0x00705DF0 GOG 0x007061E0
+// PC 0x00705DF0 GOG 0x007061E0 Xbox 0x000D6140
 void CSWCVisualEffectOnObject::HideVisualEffect()
 {
     int i;
@@ -2739,7 +2739,7 @@ void CSWCVisualEffectOnObject::HideVisualEffect()
         m_bLightSourceApplied = 0;
     }
 }
-// PC 0x00705EB0 GOG 0x00706C40
+// PC 0x00705EB0 GOG 0x00706C40 Xbox 0x000D6B20
 void CSWCVisualEffectOnObject::KillVisualEffect()
 {
     unsigned short nVisualEffect;
@@ -2781,7 +2781,7 @@ void CSWCVisualEffectOnObject::KillVisualEffect()
         m_pSoundSource = 0;
     }
 }
-// PC 0x00705F40 GOG 0x00705790
+// PC 0x00705F40 GOG 0x00705790 Xbox 0x000D57E0
 void CSWCVisualEffectOnObject::ApplyHardCodedVisualEffect(
     unsigned short nVisualEffect)
 {
@@ -2827,7 +2827,7 @@ void CSWCVisualEffectOnObject::ApplyHardCodedVisualEffect(
         m_bHardCodedEffectApplied = 1;
     }
 }
-// PC 0x00706160 GOG 0x00705C00
+// PC 0x00706160 GOG 0x00705C00 Xbox 0x000D5C60
 void CSWCVisualEffectOnObject::UpdateMotionBlur(unsigned long nTimeElapsed)
 {
     CSWCCreature* pPlayerCreature =
@@ -2879,7 +2879,7 @@ void CSWCVisualEffectOnObject::UpdateMotionBlur(unsigned long nTimeElapsed)
         AurSetSpeedBlurRatio(fSpeedRatio * 0.75f);
     }
 }
-// PC 0x00706280 GOG 0x00705D20
+// PC 0x00706280 GOG 0x00705D20 Xbox 0x000D5D80
 int CSWCVisualEffectOnObject::ShowVisualEffect(int bForce)
 {
     if (!bForce && m_bVisualEffectShown)
@@ -3014,7 +3014,7 @@ int CSWCVisualEffectOnObject::ShowVisualEffect(int bForce)
     }
     return 1;
 }
-// PC 0x00706740 GOG 0x007062A0
+// PC 0x00706740 GOG 0x007062A0 Xbox 0x000D6200
 void CSWCVisualEffectOnObject::StartVisualEffect()
 {
     int bDone = 1;
@@ -3175,7 +3175,7 @@ void CSWCVisualEffectOnObject::StartVisualEffect()
         m_bRumblePerformed = 1;
     }
 }
-// PC 0x00706D10 GOG 0x00706870
+// PC 0x00706D10 GOG 0x00706870 Xbox 0x000D6790
 void CSWCVisualEffectOnObject::StopVisualEffect(int bDone)
 {
     if (m_bVisualEffectStopped)
@@ -3286,7 +3286,7 @@ void CSWCVisualEffectOnObject::StopVisualEffect(int bDone)
         DetachVisualEffect();
     }
 }
-// PC 0x007070E0 GOG 0x00706CD0
+// PC 0x007070E0 GOG 0x00706CD0 Xbox 0x000D6BB0
 void CSWCVisualEffectOnObject::UpdateHardCodedVisualEffect(
     unsigned short nVisualEffect, unsigned long nTimeElapsed)
 {
@@ -3311,7 +3311,7 @@ void CSWCVisualEffectOnObject::UpdateHardCodedVisualEffect(
         return;
     }
 }
-// PC 0x00707150 GOG 0x00706D40
+// PC 0x00707150 GOG 0x00706D40 Xbox 0x000D6C20
 void CSWCVisualEffectOnObject::Update(unsigned long nTimeElapsed)
 {
     CExoString sAnimation;

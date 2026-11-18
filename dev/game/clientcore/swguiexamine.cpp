@@ -4,7 +4,7 @@
 #include "guiingame.h"
 #include "swguiingametutorialbox.h"
 
-// PC 0x0073CF30 GOG 0x0073CD00
+// PC 0x0073CF30 GOG 0x0073CD00 Xbox 0x00107930
 void CSWGuiExamine::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -24,7 +24,7 @@ void CSWGuiExamine::HandleInputEvent(int nEvent, int nState)
     return CSWGuiMessageBox::HandleInputEvent(nEvent, nState);
 }
 
-// PC 0x0073CF90 GOG 0x0073CC90
+// PC 0x0073CF90 GOG 0x0073CC90 Xbox 0x00107990
 CSWGuiExamine::CSWGuiExamine(CSWGuiManager* pManager)
     : CSWGuiMessageBox(pManager)
 {

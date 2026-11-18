@@ -3,7 +3,7 @@
 
 #include "aurprimitive.h"
 
-// PC 0x0044A340 GOG 0x0044A480
+// PC 0x0044A340 GOG 0x0044A480 Xbox 0x002ABE00
 inline NodeVertexAnim::~NodeVertexAnim()
 {
     m_lstPositions.SetSize(0);

@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
-// PC 0x0041DCC0 GOG 0x0041DCB0
+// PC 0x0041DCC0 GOG 0x0041DCB0 Xbox 0x00157D40
 C2DA::C2DA(CResRef cResRef, int bRequest)
 {
     m_ppEntries = NULL;
@@ -22,12 +22,12 @@ C2DA::C2DA(CResRef cResRef, int bRequest)
     m_pLabelData = NULL;
     SetResRef(cResRef, bRequest);
 }
-// PC 0x0041DD80 GOG 0x0041DD70
+// PC 0x0041DD80 GOG 0x0041DD70 Xbox 0x001586B0
 C2DA::~C2DA()
 {
     Unload2DArray();
 }
-// PC 0x0041D140 GOG 0x0041D130
+// PC 0x0041D140 GOG 0x0041D130 Xbox 0x00157330
 int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
 {
     int i;
@@ -57,7 +57,7 @@ int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
     return -1;
 }
 
-// PC 0x0041DDE0 GOG 0x0041DDD0
+// PC 0x0041DDE0 GOG 0x0041DDD0 Xbox 0x00157DD0
 int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -192,7 +192,7 @@ int C2DA::SetINTEntry(const CExoString& sRow, int nColumn, int nValue)
     m_ppEntries[nRow][nColumn] = szValue;
     return 1;
 }
-// PC 0x0041D1F0 GOG 0x0041D1E0
+// PC 0x0041D1F0 GOG 0x0041D1E0 Xbox 0x001573C0
 int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
                              CExoString* psEntry)
 {
@@ -220,7 +220,7 @@ int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x0041D2D0 GOG 0x0041D2C0
+// PC 0x0041D2D0 GOG 0x0041D2C0 Xbox 0x001574A0
 int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -248,7 +248,7 @@ int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x0041D3D0 GOG 0x0041D3C0
+// PC 0x0041D3D0 GOG 0x0041D3C0 Xbox 0x001575A0
 int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
 {
     int nColumn = GetColumnIndex(sColumn);
@@ -277,7 +277,7 @@ int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x0041D4D0 GOG 0x0041D4C0
+// PC 0x0041D4D0 GOG 0x0041D4C0 Xbox 0x001576A0
 int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -314,7 +314,7 @@ int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x0041D640 GOG 0x0041D630
+// PC 0x0041D640 GOG 0x0041D630 Xbox 0x00157810
 int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
 {
     int nColumn = GetColumnIndex(sColumn);
@@ -395,7 +395,7 @@ int C2DA::SetBlankEntry(int nRow, int nColumn)
     m_ppEntries[nRow][nColumn] = "";
     return 1;
 }
-// PC 0x0041D7B0 GOG 0x0041D7A0
+// PC 0x0041D7B0 GOG 0x0041D7A0 Xbox 0x00157970
 unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 {
     unsigned long nLength;
@@ -412,7 +412,7 @@ unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 
     return nLength;
 }
-// PC 0x0041D7E0 GOG 0x0041D7D0
+// PC 0x0041D7E0 GOG 0x0041D7D0 Xbox 0x001579A0
 int C2DA::GetNextToken(char** ppData, unsigned long* pnSize, char* szToken,
                        unsigned long* pnSkipped)
 {
@@ -482,7 +482,7 @@ int C2DA::GetNextToken(char** ppData, unsigned long* pnSize, char* szToken,
 
     return nCount > 0;
 }
-// PC 0x0041DEC0 GOG 0x0041DEB0
+// PC 0x0041DEC0 GOG 0x0041DEB0 Xbox 0x00157EB0
 int C2DA::GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn,
                              CExoString* psEntry)
 {
@@ -511,7 +511,7 @@ int C2DA::GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x0041DFA0 GOG 0x0041DF90
+// PC 0x0041DFA0 GOG 0x0041DF90 Xbox 0x00157F90
 int C2DA::GetCExoStringEntry(const CExoString& sRow, int nColumn,
                              CExoString* psEntry)
 {
@@ -539,7 +539,7 @@ int C2DA::GetCExoStringEntry(const CExoString& sRow, int nColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x0041E080 GOG 0x0041E070
+// PC 0x0041E080 GOG 0x0041E070 Xbox 0x00158070
 int C2DA::GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
                         float* pfEntry)
 {
@@ -570,7 +570,7 @@ int C2DA::GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x0041E1A0 GOG 0x0041E190
+// PC 0x0041E1A0 GOG 0x0041E190 Xbox 0x001581A0
 int C2DA::GetFLOATEntry(const CExoString& sRow, int nColumn, float* pfEntry)
 {
     int nRow = GetRowIndex(sRow);
@@ -595,7 +595,7 @@ int C2DA::GetFLOATEntry(const CExoString& sRow, int nColumn, float* pfEntry)
 
     return 1;
 }
-// PC 0x0041E270 GOG 0x0041E260
+// PC 0x0041E270 GOG 0x0041E260 Xbox 0x00158290
 int C2DA::GetINTEntry(const CExoString& sRow, const CExoString& sColumn,
                       int* pnEntry)
 {
@@ -635,7 +635,7 @@ int C2DA::GetINTEntry(const CExoString& sRow, const CExoString& sColumn,
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x0041E400 GOG 0x0041E3F0
+// PC 0x0041E400 GOG 0x0041E3F0 Xbox 0x00158410
 int C2DA::GetINTEntry(const CExoString& sRow, int nColumn, int* pnEntry)
 {
     int nRow = GetRowIndex(sRow);
@@ -673,7 +673,7 @@ int C2DA::GetINTEntry(const CExoString& sRow, int nColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x0041D8B0 GOG 0x0041D8A0
+// PC 0x0041D8B0 GOG 0x0041D8A0 Xbox 0x00157A70
 int C2DA::GetRowIndex(const CExoString& sRowLabel)
 {
     int i;
@@ -702,7 +702,7 @@ int C2DA::GetRowIndex(const CExoString& sRowLabel)
 
     return -1;
 }
-// PC 0x0041D940 GOG 0x0041D930
+// PC 0x0041D940 GOG 0x0041D930 Xbox 0x00157B00
 int C2DA::SkipNewLines(char** ppData, unsigned long* pnSize)
 {
     unsigned long nSize = *pnSize;
@@ -746,7 +746,7 @@ int C2DA::SkipNewLines(char** ppData, unsigned long* pnSize)
     return nSkipped > 0;
 }
 
-// PC 0x0041E570 GOG 0x0041E560
+// PC 0x0041E570 GOG 0x0041E560 Xbox 0x001586D0
 int C2DA::Load2DArray()
 {
     unsigned long nSize;
@@ -994,7 +994,7 @@ int C2DA::Load2DArray()
     m_bLoaded = 1;
     return 1;
 }
-// PC 0x0041D9E0 GOG 0x0041D9D0
+// PC 0x0041D9E0 GOG 0x0041D9D0 Xbox 0x00158580
 void C2DA::Unload2DArray()
 {
     int i;

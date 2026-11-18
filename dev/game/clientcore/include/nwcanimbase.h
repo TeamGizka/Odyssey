@@ -147,21 +147,21 @@ public:
     virtual void SetInCutscene(int bCutscene);
     virtual void UnloadModel();
     virtual void UnloadModel(unsigned char nModel);
-    virtual int Wield(unsigned long nItemId, const CExoString& sAttach,  // PC 0x00401590 GOG 0x00401590
+    virtual int Wield(unsigned long nItemId, const CExoString& sAttach,  // PC 0x00401590 GOG 0x00401590 Xbox 0x00306280
                             unsigned char nHand, float fScale)
     {
         return 0;
     }
-    virtual void HideWieldedItems(const CResRef&, const CResRef&)  // PC 0x006049D0 GOG 0x006049B0
+    virtual void HideWieldedItems(const CResRef&, const CResRef&)  // PC 0x006049D0 GOG 0x006049B0 Xbox 0x000C4DE0
     {
     }
-    virtual void ShowWieldedItems()  // PC 0x004015A0 GOG 0x004015A0
+    virtual void ShowWieldedItems()  // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     {
     }
-    virtual void HideHeadItem()  // PC 0x004015A0 GOG 0x004015A0
+    virtual void HideHeadItem()  // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     {
     }
-    virtual void ShowHeadItem()  // PC 0x004015A0 GOG 0x004015A0
+    virtual void ShowHeadItem()  // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     {
     }
     virtual void SetWieldLimited(int bLimited);
@@ -178,7 +178,7 @@ public:
     virtual void TurnOnShadows();
     virtual void TurnOffShadows();
     virtual Quaternion GetOrientation();
-    virtual void UpdateSound(int)  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void UpdateSound(int)  // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     {
     }
     virtual int AddAnimationFlag(int nFlag);
@@ -197,7 +197,7 @@ public:
     virtual unsigned short ServerToClientAnimation(unsigned short nAnimation);
     virtual void EnableDistortion();
     virtual void DisableDistortion();
-    virtual void SetHeadItem(unsigned long)  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void SetHeadItem(unsigned long)  // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     {
     }
     virtual int SetAnimationInternal(CAurObject* pObject,

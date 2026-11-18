@@ -16,11 +16,11 @@
 
 static inline void DestroyDialogCamera(CSWBehaviorCameraDialog* pBehavior);
 
-// PC 0x005EE1C0 GOG 0x005EE1A0
+// PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
 void CSWBehaviorCameraDialog::Message(char* sMessage)
 {
 }
-// PC 0x0070FE50 GOG 0x0070FBA0
+// PC 0x0070FE50 GOG 0x0070FBA0 Xbox 0x00109C30
 void CSWBehaviorCameraDialog::SetShot(int nShot, Vector vPosition,
                                       Quaternion qOrientation, float fCameraYaw)
 {
@@ -37,13 +37,13 @@ void CSWBehaviorCameraDialog::SetShot(int nShot, Vector vPosition,
         m_qCameraOrientation = qOrientation;
     }
 }
-// PC 0x0070FED0 GOG 0x0070FC20
+// PC 0x0070FED0 GOG 0x0070FC20 Xbox 0x00109CB0
 void CSWBehaviorCameraDialog::ApplyCameraShot()
 {
     ((Gob*)m_pObject)->SetPosition(m_vCameraPosition);
     ((Gob*)m_pObject)->SetOrientation(m_qCameraOrientation);
 }
-// PC 0x0070FF30 GOG 0x0070FC80
+// PC 0x0070FF30 GOG 0x0070FC80 Xbox 0x00109D10
 int CSWBehaviorCameraDialog::GetLineOfActionSide(unsigned long oidFirst,
                                                  unsigned long oidSecond)
 {
@@ -66,7 +66,7 @@ int CSWBehaviorCameraDialog::GetLineOfActionSide(unsigned long oidFirst,
     }
     return 0;
 }
-// PC 0x0070FF90 GOG 0x0070FCE0
+// PC 0x0070FF90 GOG 0x0070FCE0 Xbox 0x00109D70
 CSWBehaviorCameraDialog::CSWBehaviorCameraDialog(CAurObject* pObject,
                                                  int nDialogType)
     : CAurBehavior(pObject)
@@ -103,7 +103,7 @@ CSWBehaviorCameraDialog::CSWBehaviorCameraDialog(CAurObject* pObject,
 CSWBehaviorCameraDialog::~CSWBehaviorCameraDialog() throw()
 {
 }
-// PC 0x007100D0 GOG 0x0070FE20
+// PC 0x007100D0 GOG 0x0070FE20 Xbox 0x00109ED0
 void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
                                                 unsigned long nSide,
                                                 Vector vFirst, Vector vSecond,
@@ -286,7 +286,7 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
         DestroyDialogCamera(this);
     }
 }
-// PC 0x00711390 GOG 0x007110E0
+// PC 0x00711390 GOG 0x007110E0 Xbox 0x0010B490
 int CSWBehaviorCameraDialog::GetSideUnobstructed()
 {
     if (SWBEHAVIORCAMERADIALOG_DEBUG)
@@ -405,7 +405,7 @@ int CSWBehaviorCameraDialog::GetSideUnobstructed()
         return 2;
     }
 }
-// PC 0x00711C50 GOG 0x007119A0
+// PC 0x00711C50 GOG 0x007119A0 Xbox 0x0010BD30
 int CSWBehaviorCameraDialog::AddCalculatedLineOfAction(unsigned long oidFirst,
                                                        unsigned long oidSecond)
 {
@@ -440,7 +440,7 @@ int CSWBehaviorCameraDialog::AddCalculatedLineOfAction(unsigned long oidFirst,
     m_aLineOfAction[i].m_oidSecond = oidFirst;
     return nSide;
 }
-// PC 0x00711CE0 GOG 0x00711A30
+// PC 0x00711CE0 GOG 0x00711A30 Xbox 0x0010BDC0
 int CSWBehaviorCameraDialog::Control(float fTimeStep)
 {
     int nSide;
@@ -523,7 +523,7 @@ int CSWBehaviorCameraDialog::Control(float fTimeStep)
 
     return 1;
 }
-// PC 0x00711FF0 GOG 0x00711D40
+// PC 0x00711FF0 GOG 0x00711D40 Xbox 0x0010C0D0
 void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
                                      unsigned long oidSecond,
                                      int const& nShot,

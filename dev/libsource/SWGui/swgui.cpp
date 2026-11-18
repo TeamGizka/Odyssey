@@ -60,7 +60,7 @@ int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
                         const Vector& vColor, bool bScissor, float fAlpha);
 void AurGUICloseViewport();
 
-// PC 0x0040A0D0 GOG 0x0040A0A0
+// PC 0x0040A0D0 GOG 0x0040A0A0 Xbox 0x00331BC0
 int CSWGuiExtent::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     CResStruct cExtent;
@@ -78,7 +78,7 @@ int CSWGuiExtent::Load(CResGFF* pGFF, CResStruct& cStruct)
     }
     return nResult;
 }
-// PC 0x0040A170 GOG 0x0040A140
+// PC 0x0040A170 GOG 0x0040A140 Xbox 0x00331C60
 void CSWGuiPanel::HandleInputEvent(int nEvent, int nState)
 {
     if (m_pActiveControl != NULL)
@@ -169,7 +169,7 @@ static inline const Vector& SafeRegionWhite(Vector& vColor)
     return vColor;
 }
 
-// PC 0x0040BE30 GOG 0x0040BDF0
+// PC 0x0040BE30 GOG 0x0040BDF0 Xbox 0x003327E0
 CSWGuiManager::CSWGuiManager()
     : m_lPanels(0),
       m_lModalPanels(0)
@@ -230,7 +230,7 @@ CSWGuiManager::CSWGuiManager()
     m_nOldMouseY = -1;
 #endif
 }
-// PC 0x0040BFD0 GOG 0x0040BF90
+// PC 0x0040BFD0 GOG 0x0040BF90 Xbox 0x00332820
 void CSWGuiManager::AddPanel(CSWGuiPanel* pPanel, int nFlags, int bPlaySound)
 {
     if (pPanel != NULL)
@@ -271,7 +271,7 @@ void CSWGuiManager::AddPanel(CSWGuiPanel* pPanel, int nFlags, int bPlaySound)
         }
     }
 }
-// PC 0x0040C080 GOG 0x0040C040
+// PC 0x0040C080 GOG 0x0040C040 Xbox 0x00332940
 void CSWGuiManager::SendPanelToBack(CSWGuiPanel* pPanel)
 {
     if (m_lModalPanels.IndexOf(pPanel) == -1)
@@ -286,13 +286,13 @@ void CSWGuiManager::SendPanelToBack(CSWGuiPanel* pPanel)
         DetermineNeedToDraw();
     }
 }
-// PC 0x0040A300 GOG 0x0040A2D0
+// PC 0x0040A300 GOG 0x0040A2D0 Xbox 0x00331CA0
 void CSWGuiManager::GetSafeMargin(int& nX, int& nY)
 {
     nX = SAFE_MARGIN_X;
     nY = SAFE_MARGIN_Y;
 }
-// PC 0x0040A320 GOG 0x0040A2F0
+// PC 0x0040A320 GOG 0x0040A2F0 Xbox 0x00331CC0
 void CSWGuiManager::UnloadGuiSounds()
 {
     if (m_apGuiSounds != NULL)
@@ -310,7 +310,7 @@ void CSWGuiManager::UnloadGuiSounds()
     }
     m_nGuiSounds = 0;
 }
-// PC 0x0040A390 GOG 0x0040A360
+// PC 0x0040A390 GOG 0x0040A360 Xbox 0x00331D20
 void CSWGuiManager::PlayGuiSound(char nSound)
 {
     if (nSound != -1 && nSound < m_nGuiSounds)
@@ -470,7 +470,7 @@ void CSWGuiManager::StoreCurrentMousePosition()  // PC 0x0040A620 GOG 0x0040A5F0
     m_nOldMouseY = m_nMouseY;
 }
 #endif
-// PC 0x0040A630 GOG 0x0040A600
+// PC 0x0040A630 GOG 0x0040A600 Xbox 0x00331D50
 CSWGuiExtent CSWGuiExtent::Intersection(const CSWGuiExtent& extentFirst,
                                         const CSWGuiExtent& extentSecond)
 {
@@ -496,7 +496,7 @@ CSWGuiExtent CSWGuiExtent::Intersection(const CSWGuiExtent& extentFirst,
         extentResult.m_nTop;
     return extentResult;
 }
-// PC 0x0040A6B0 GOG 0x0040A680
+// PC 0x0040A6B0 GOG 0x0040A680 Xbox 0x00331DD0
 CSWGuiExtent CSWGuiExtent::Union(const CSWGuiExtent& extentFirst,
                                  const CSWGuiExtent& extentSecond)
 {
@@ -522,7 +522,7 @@ CSWGuiExtent CSWGuiExtent::Union(const CSWGuiExtent& extentFirst,
         extentResult.m_nTop;
     return extentResult;
 }
-// PC 0x0040A730 GOG 0x0040A700
+// PC 0x0040A730 GOG 0x0040A700 Xbox 0x00331E50
 void CSWGuiPanel::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cBorderExtent;
@@ -534,7 +534,7 @@ void CSWGuiPanel::SetExtent(const CSWGuiExtent& cExtent)
     cBorderExtent.m_nHeight = cExtent.m_nHeight;
     m_pBorder->SetExtent(cBorderExtent);
 }
-// PC 0x0040A790 GOG 0x0040A760
+// PC 0x0040A790 GOG 0x0040A760 Xbox 0x00331EB0
 void CSWGuiPanel::CenterPanel()
 {
     m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
@@ -550,7 +550,7 @@ void CSWGuiPanel::CenterPanel()
     m_bPositioned = 1;
 #endif
 }
-// PC 0x0040A7F0 GOG 0x0040A7C0
+// PC 0x0040A7F0 GOG 0x0040A7C0 Xbox 0x00331F80
 void CSWGuiPanel::SetActiveControl(CSWGuiControl* pControl, int bPlaySound)
 {
     if (m_pActiveControl != pControl)
@@ -570,7 +570,7 @@ void CSWGuiPanel::SetActiveControl(CSWGuiControl* pControl, int bPlaySound)
         }
     }
 }
-// PC 0x0040A840 GOG 0x0040A810
+// PC 0x0040A840 GOG 0x0040A810 Xbox 0x003320C0
 void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout, int bScalePosition, int bScaleSize)
 {
     if (!m_bLoadingLayout)
@@ -649,12 +649,12 @@ void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout, int bScalePosition
 #endif
     }
 }
-// PC 0x0040AB70 GOG 0x0040AB40
+// PC 0x0040AB70 GOG 0x0040AB40 Xbox 0x003322A0
 void CSWGuiPanel::SetBackground(const CResRef& cBackground)
 {
     m_pBorder->m_cParams.SetFillImage(cBackground, 0);
 }
-// PC 0x0040AB90 GOG 0x0040AB60
+// PC 0x0040AB90 GOG 0x0040AB60 Xbox 0x003322C0
 void CSWGuiPanel::ConnectControlMoves()
 {
     int nControls = m_lControls.num;
@@ -719,7 +719,7 @@ void CSWGuiPanel::GetExtentAccountingForPanelOffset(CSWGuiExtent* pExtent)
         }
     }
 }
-// PC 0x0040ACB0 GOG 0x0040AC80
+// PC 0x0040ACB0 GOG 0x0040AC80 Xbox 0x00332330
 CSWGuiManager::~CSWGuiManager()
 {
     if (m_pSafeRegionBorder != NULL)
@@ -764,12 +764,12 @@ int CSWGuiManager::GetPosInModalStack(CSWGuiPanel* pPanel)
     }
     return -1;
 }
-// PC 0x0040C0D0 GOG 0x0040C090
+// PC 0x0040C0D0 GOG 0x0040C090 Xbox 0x003329C0
 int CSWGuiManager::PanelExists(CSWGuiPanel* pPanel)
 {
     return GetPosInPanelList(pPanel) != -1;
 }
-// PC 0x0040C0F0 GOG 0x0040C0B0
+// PC 0x0040C0F0 GOG 0x0040C0B0 Xbox 0x00332A00
 int CSWGuiManager::PushModalPanel(CSWGuiPanel* pPanel)
 {
     if (pPanel == NULL)
@@ -866,7 +866,7 @@ int CSWGuiManager::HitCheckMouse(int nX, int nY, CSWGuiPanel** ppPanel,
     }
     return 0;
 }
-// PC 0x0040C160 GOG 0x0040C120
+// PC 0x0040C160 GOG 0x0040C120 Xbox 0x00332AB0
 CSWGuiPanel* CSWGuiManager::PopModalPanel()
 {
     int nPanels = m_lModalPanels.num;
@@ -892,7 +892,7 @@ CSWGuiPanel* CSWGuiManager::PopModalPanel()
 #endif
     return pPanel;
 }
-// PC 0x0040AED0 GOG 0x0040AEA0
+// PC 0x0040AED0 GOG 0x0040AEA0 Xbox 0x00332380
 void CSWGuiManager::DetermineNeedToDraw()
 {
     int bBackgroundFound = 0;
@@ -953,7 +953,7 @@ void CSWGuiManager::DetermineNeedToDraw()
         }
     }
 }
-// PC 0x0040B000 GOG 0x0040AFD0
+// PC 0x0040B000 GOG 0x0040AFD0 Xbox 0x00332430
 int CSWGuiManager::LoadGuiSounds()
 {
     C2DA* p2DA = new C2DA("guisounds", 0);
@@ -994,7 +994,7 @@ int CSWGuiManager::LoadGuiSounds()
     delete p2DA;
     return 1;
 }
-// PC 0x0040B1D0 GOG 0x0040B1A0
+// PC 0x0040B1D0 GOG 0x0040B1A0 Xbox 0x00332570
 int CSWGuiManager::IsOnTop(CSWGuiPanel* pPanel)
 {
     int nIndex = m_lModalPanels.num - 1;
@@ -1195,7 +1195,7 @@ void CSWGuiManager::SetSize(int nWidth, int nHeight)  // PC 0x0040C1D0 GOG 0x004
     }
 }
 #endif
-// PC 0x0040C220 GOG 0x0040C1E0
+// PC 0x0040C220 GOG 0x0040C1E0 Xbox 0x00333010
 void CSWGuiManager::DrawSafeRegion(float fElapsed)
 {
     if (m_pSafeRegionPanel == NULL)
@@ -1262,7 +1262,7 @@ void CSWGuiManager::DisplayToolTip(const CExoString& sText)  // PC 0x0040B690 GO
     }
 }
 #endif
-// PC 0x0040C480 GOG 0x0040C440
+// PC 0x0040C480 GOG 0x0040C440 Xbox 0x00332AF0
 void CSWGuiManager::HideAllPanels()
 {
     for (int i = 0; i < m_lPanels.num; i++)
@@ -1363,7 +1363,7 @@ void CSWGuiManager::ReloadPanels(int nWidth, int nHeight)
     }
 }
 #endif
-// PC 0x0040CA40 GOG 0x0040CA00
+// PC 0x0040CA40 GOG 0x0040CA00 Xbox 0x001A2B40
 void CSWGuiPanel::OnPanelRemoved()
 {
 #ifndef _XBOX
@@ -1437,7 +1437,7 @@ void CSWGuiManager::RestoreOldMousePosition()  // PC 0x0040D0A0 GOG 0x0040D060
     }
 }
 #endif
-// PC 0x0040D100 GOG 0x0040D0C0
+// PC 0x0040D100 GOG 0x0040D0C0 Xbox 0x00332B30
 int CSWGuiManager::RemovePanel(CSWGuiPanel* pPanel)
 {
     if (pPanel == NULL)
@@ -1896,7 +1896,7 @@ void CSWGuiManager::SetTemporarilyDisableToolTip(int bDisable)  // PC 0x0040B700
     m_pToolTipDisabledControl = NULL;
 }
 #endif
-template <> inline void CExoArrayList<CSWGuiPanel*>::Allocate(int nSize)
+template <> inline void CExoArrayList<CSWGuiPanel*>::Allocate(int nSize)  // Xbox 0x0008C7C0
 {
     CSWGuiPanel** pOld = element;
 
@@ -1921,7 +1921,7 @@ template <> void CExoArrayList<CSWGuiPanel*>::Add(CSWGuiPanel* value)
     }
     element[num++] = value;
 }
-template <> void CExoArrayList<CSWGuiPanel*>::Insert(CSWGuiPanel* value, int nIndex)
+template <> void CExoArrayList<CSWGuiPanel*>::Insert(CSWGuiPanel* value, int nIndex)  // Xbox 0x000CC0A0
 {
     int nCount = num;
     Add(value);
@@ -1931,7 +1931,7 @@ template <> void CExoArrayList<CSWGuiPanel*>::Insert(CSWGuiPanel* value, int nIn
     }
     element[nIndex] = value;
 }
-// PC 0x0040B7C0 GOG 0x0040B780
+// PC 0x0040B7C0 GOG 0x0040B780 Xbox 0x003325F0
 CSWGuiPanel::CSWGuiPanel(CSWGuiManager* pManager)
     : m_lControls(0)
 {
@@ -1995,7 +1995,7 @@ CSWGuiControl* CSWGuiPanel::HitCheckMouse(int nX, int nY)  // PC 0x0040B8E0 GOG 
     return NULL;
 }
 #endif
-void CSWGuiPanel::Draw(float fElapsed)  // PC 0x0040B9B0 GOG 0x0040B970
+void CSWGuiPanel::Draw(float fElapsed)  // PC 0x0040B9B0 GOG 0x0040B970 Xbox 0x00331FD0
 {
     if (!m_bNeedsDraw)
     {
@@ -2052,7 +2052,7 @@ void CSWGuiPanel::Draw(float fElapsed)  // PC 0x0040B9B0 GOG 0x0040B970
     }
     AurGUIStopLayer();
 }
-// PC 0x0040BAC0 GOG 0x0040BA80
+// PC 0x0040BAC0 GOG 0x0040BA80 Xbox 0x001A2B40
 void CSWGuiPanel::OnPanelAdded()
 {
     ResetFont();
@@ -2088,7 +2088,7 @@ void CSWGuiPanel::OnPanelAdded()
     }
 #endif
 }
-// PC 0x0040BB40 GOG 0x0040BB00
+// PC 0x0040BB40 GOG 0x0040BB00 Xbox 0x00332680
 void CSWGuiPanel::StopLoadFromLayout()
 {
     if (m_bLoadingLayout)
@@ -2103,7 +2103,7 @@ void CSWGuiPanel::StopLoadFromLayout()
         ConnectControlMoves();
     }
 }
-// PC 0x0040BB80 GOG 0x0040BB40
+// PC 0x0040BB80 GOG 0x0040BB40 Xbox 0x003326C0
 void CSWGuiPanel::InitControl(CSWGuiControl& cControl, const CExoString& sName,
                               int bRequired, int bScale)
 {
@@ -2145,7 +2145,7 @@ void CSWGuiPanel::InitControl(CSWGuiControl& cControl, const CExoString& sName,
         }
     }
 }
-// PC 0x0040BD00 GOG 0x0040BCC0
+// PC 0x0040BD00 GOG 0x0040BCC0 Xbox 0x00332750
 void CSWGuiPanel::AddControl(CSWGuiControl* pControl)
 {
     if (m_lControls.IndexOf(pControl) == -1)
@@ -2154,7 +2154,7 @@ void CSWGuiPanel::AddControl(CSWGuiControl* pControl)
         m_lControls.Add(pControl);
     }
 }
-// PC 0x0040BD30 GOG 0x0040BCF0
+// PC 0x0040BD30 GOG 0x0040BCF0 Xbox 0x003327B0
 void CSWGuiPanel::SetVisible(int bVisible)
 {
     m_bVisible = bVisible;
@@ -2223,7 +2223,7 @@ enum SWGuiInputState
     GUIINPUT_AXIS_POSITIVE = 1,
     GUIINPUT_AXIS_NEGATIVE = -1
 };
-// PC 0x0040D1B0 GOG 0x0040D170
+// PC 0x0040D1B0 GOG 0x0040D170 Xbox 0x00332BE0
 void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
 {
     int nIndex;
@@ -2406,7 +2406,7 @@ void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
 #endif
         g_pExoResMan->m_bCharGenImageLoaded = 0; }
 }
-// PC 0x0040D520 GOG 0x0040D4E0
+// PC 0x0040D520 GOG 0x0040D4E0 Xbox 0x00333280
 void CSWGuiManager::Draw(float fElapsed)
 {
 
@@ -2516,7 +2516,7 @@ void CSWGuiManager::Draw(float fElapsed)
         DrawSafeRegion(fElapsed);
     }
 }
-// PC 0x0040D740 GOG 0x0040D700
+// PC 0x0040D740 GOG 0x0040D700 Xbox 0x00332EE0
 void CSWGuiManager::Update(float fElapsed)
 {
 
@@ -2579,7 +2579,7 @@ void CSWGuiManager::Update(float fElapsed)
         }
     }
 }
-// PC 0x0040D830 GOG 0x0040D7F0
+// PC 0x0040D830 GOG 0x0040D7F0 Xbox 0x003331F0
 CSWGuiPanel::~CSWGuiPanel()
 {
     if (m_pBorder != NULL)
@@ -2603,7 +2603,7 @@ CSWGuiPanel::~CSWGuiPanel()
 
 #ifdef _XBOX
 
-CSWGuiControl* CSWGuiPanel::HitCheckMouse(int nX, int nY)
+CSWGuiControl* CSWGuiPanel::HitCheckMouse(int nX, int nY)  // Xbox 0x00331F10
 {
     if (nX >= m_cExtent.m_nLeft && nX <= m_cExtent.GetRight() &&
         nY >= m_cExtent.m_nTop && nY <= m_cExtent.GetBottom())

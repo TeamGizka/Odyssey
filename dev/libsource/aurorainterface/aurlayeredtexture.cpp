@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00782BB0 GOG 0x007810A0
+// PC 0x00782BB0 GOG 0x007810A0 Xbox 0x003301E0
 unsigned char* CAuroraLayeredTexture::GetTextureDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ unsigned char* CAuroraLayeredTexture::GetTextureDataPtr()
     }
     return 0;
 }
-// PC 0x00781290 GOG 0x00781060
+// PC 0x00781290 GOG 0x00781060 Xbox 0x0032EC70
 int CAuroraLayeredTexture::GetTextureAttrib(unsigned long* pnWidth,
                                             unsigned long* pnHeight,
                                             unsigned long* pnReserved)
@@ -22,7 +22,7 @@ int CAuroraLayeredTexture::GetTextureAttrib(unsigned long* pnWidth,
         return 0;
     }
 }
-// PC 0x007812D0 GOG 0x007810D0
+// PC 0x007812D0 GOG 0x007810D0 Xbox 0x0032ECB0
 int CAuroraLayeredTexture::Load()
 {
     unsigned char* pPLTData;
@@ -47,7 +47,7 @@ int CAuroraLayeredTexture::Load()
     pTrailer->nType = 6;
     return 1;
 }
-// PC 0x00783630 GOG 0x00783460
+// PC 0x00783630 GOG 0x00783460 Xbox 0x0032ED20
 void CAuroraLayeredTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -55,7 +55,7 @@ void CAuroraLayeredTexture::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x00781340 GOG 0x00781140
+// PC 0x00781340 GOG 0x00781140 Xbox 0x0032ED40
 unsigned char* CAuroraLayeredTexture::GetPtrToResHelperInfo()
 {
     unsigned char* nPLTDataPtr;
@@ -71,7 +71,7 @@ unsigned char* CAuroraLayeredTexture::GetPtrToResHelperInfo()
     }
     return 0;
 }
-// PC 0x00781590 GOG 0x00781390
+// PC 0x00781590 GOG 0x00781390 Xbox 0x0032EF60
 CAuroraLayeredTexture::CAuroraLayeredTexture(CResRef cResRef, int bRequest)
     : CResHelper<CResPLT, RESTYPE_PLT>()
 {

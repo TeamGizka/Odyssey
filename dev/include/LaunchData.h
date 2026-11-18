@@ -52,7 +52,7 @@ public:
 
     KOTOR_LAUNCH_DATA();
 
-    void SetLoadScreen(const CExoString& sLoadScreen)
+    void SetLoadScreen(const CExoString& sLoadScreen)  // Xbox 0x0001B520
     {
         EXOXBOXASSERT((unsigned int)sLoadScreen.GetLength() < sizeof(m_szLoadScreen));
         strcpy(m_szLoadScreen, sLoadScreen.CStr());
@@ -63,52 +63,52 @@ public:
         EXOXBOXASSERT((unsigned int)sXboxSavePath.GetLength() < sizeof(m_szXboxSavePath));
         strcpy(m_szXboxSavePath, sXboxSavePath.CStr());
     }
-    void SetModuleName(const CExoString& sModuleName)
+    void SetModuleName(const CExoString& sModuleName)  // Xbox 0x000DF850
     {
         EXOXBOXASSERT((unsigned int)sModuleName.GetLength() < sizeof(m_szModuleName));
         strcpy(m_szModuleName, sModuleName.CStr());
     }
-    void SetLoadMusic(const CExoString& sLoadMusic)
+    void SetLoadMusic(const CExoString& sLoadMusic)  // Xbox 0x000DF890
     {
         EXOXBOXASSERT((unsigned int)sLoadMusic.GetLength() < sizeof(m_szLoadMusic));
         strcpy(m_szLoadMusic, sLoadMusic.CStr());
     }
-    void SetStartWaypoint(const CExoString& sStartWaypoint)
+    void SetStartWaypoint(const CExoString& sStartWaypoint)  // Xbox 0x000DF8D0
     {
         EXOXBOXASSERT((unsigned int)sStartWaypoint.GetLength() < sizeof(m_szStartWaypoint));
         strcpy(m_szStartWaypoint, sStartWaypoint.CStr());
     }
-    void SetMovie1(const CExoString& sMovie)
+    void SetMovie1(const CExoString& sMovie)  // Xbox 0x000DF910
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie1));
         strcpy(m_szMovie1, sMovie.CStr());
     }
-    void SetMovie2(const CExoString& sMovie)
+    void SetMovie2(const CExoString& sMovie)  // Xbox 0x000DF950
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie2));
         strcpy(m_szMovie2, sMovie.CStr());
     }
-    void SetMovie3(const CExoString& sMovie)
+    void SetMovie3(const CExoString& sMovie)  // Xbox 0x000DF990
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie3));
         strcpy(m_szMovie3, sMovie.CStr());
     }
-    void SetMovie4(const CExoString& sMovie)
+    void SetMovie4(const CExoString& sMovie)  // Xbox 0x000DF9D0
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie4));
         strcpy(m_szMovie4, sMovie.CStr());
     }
-    void SetMovie5(const CExoString& sMovie)
+    void SetMovie5(const CExoString& sMovie)  // Xbox 0x000DFA10
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie5));
         strcpy(m_szMovie5, sMovie.CStr());
     }
-    void SetMovie6(const CExoString& sMovie)
+    void SetMovie6(const CExoString& sMovie)  // Xbox 0x000DFA50
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie6));
         strcpy(m_szMovie6, sMovie.CStr());
     }
-    void SetTime(unsigned long nYear, unsigned char nMonth, unsigned char nDay, unsigned char nHour,
+    void SetTime(unsigned long nYear, unsigned char nMonth, unsigned char nDay, unsigned char nHour,  // Xbox 0x000DFA90
                  unsigned short nMinute, unsigned short nSecond, unsigned short nMillisecond)
     {
         m_nTimeYear = nYear;
@@ -123,7 +123,7 @@ public:
     {
         m_cStatusSummary = cStatusSummary;
     }
-    void SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA& cOptionsData)
+    void SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA& cOptionsData)  // Xbox 0x0001B560
     {
         m_cOptionsData = cOptionsData;
         m_bOptionsDataValid = 1;
@@ -132,7 +132,7 @@ public:
     bool GetRenderQA() { return m_bRenderQA; }
     unsigned long GetAutoCalInfo() { return m_nAutoCalInfo; }
     unsigned long GetPortBinding() { return m_nPortBinding; }
-    int GetSaveSlot() { return m_nSaveSlot; }
+    int GetSaveSlot() { return m_nSaveSlot; }  // Xbox 0x00278D90
     CExoString GetXboxSavePath() { return CExoString(m_szXboxSavePath); }
     CExoString GetModuleName() { return CExoString(m_szModuleName); }
     CExoString GetLoadScreen() { return CExoString(m_szLoadScreen); }
@@ -198,7 +198,7 @@ extern int g_bLowDiskMode;
 extern unsigned char g_nBootFlags;
 extern __int64 g_nCurrentSessionStartFILETIME;
 
-inline KOTOR_LAUNCH_DATA::KOTOR_LAUNCH_DATA()
+inline KOTOR_LAUNCH_DATA::KOTOR_LAUNCH_DATA()  // Xbox 0x00011990
 {
     m_nMagic = MAGIC;
     m_bRenderQA = 0;

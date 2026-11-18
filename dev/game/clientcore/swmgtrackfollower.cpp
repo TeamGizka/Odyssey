@@ -29,7 +29,7 @@ void CSWTrackFollower::AttachGuns()
         AttachGuns(m_lstModels.element[i].m_pModel);
     }
 }
-// PC 0x006C1820 GOG 0x006C1600
+// PC 0x006C1820 GOG 0x006C1600 Xbox 0x000A5930
 void SetInitialHook(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     Vector vPosition;
@@ -39,12 +39,12 @@ void SetInitialHook(CAurObject* pObject, char* sEvent, void* pUserData)
         ->GetWorld(vPosition, qOrientation);
     static_cast<CSWMiniPlayer*>(pUserData)->m_vInitialHook = vPosition;
 }
-// PC 0x006C18A0 GOG 0x006C1680
+// PC 0x006C18A0 GOG 0x006C1680 Xbox 0x000A59B0
 int EnumGunAttachPoints(CAurPart* pPart)
 {
     return strnicmp(pPart->Name(), "gunbank", 7) == 0;
 }
-// PC 0x006C18C0 GOG 0x006C16A0
+// PC 0x006C18C0 GOG 0x006C16A0 Xbox 0x000A59D0
 void CSWTrackFollower::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                    CResStruct& structScripts)
 {
@@ -92,7 +92,7 @@ void CSWTrackFollower::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                                  bSuccess, resDefault));
     }
 }
-// PC 0x006C1A90 GOG 0x006C1870
+// PC 0x006C1A90 GOG 0x006C1870 Xbox 0x000A5BA0
 float CSWTrackFollower::SetSpeed(float fSpeed)
 {
     m_fTrackSpeed = fSpeed;
@@ -111,7 +111,7 @@ float CSWTrackFollower::SetSpeed(float fSpeed)
     }
     return m_fTrackSpeed;
 }
-// PC 0x006C1AF0 GOG 0x006C18D0
+// PC 0x006C1AF0 GOG 0x006C18D0 Xbox 0x000A5C00
 float CSWTrackFollower::SetSphereRadius(float fRadius)
 {
     if (fRadius >= 0.0f)
@@ -120,7 +120,7 @@ float CSWTrackFollower::SetSphereRadius(float fRadius)
     }
     return m_fSphereRadius;
 }
-// PC 0x006C1B20 GOG 0x006C1900
+// PC 0x006C1B20 GOG 0x006C1900 Xbox 0x000A5C20
 int CSWTrackFollower::SetHitPoints(int nHitPoints)
 {
     if (nHitPoints > 0)
@@ -129,7 +129,7 @@ int CSWTrackFollower::SetHitPoints(int nHitPoints)
     }
     return m_nHitPoints;
 }
-// PC 0x006C1B40 GOG 0x006C1920
+// PC 0x006C1B40 GOG 0x006C1920 Xbox 0x000A5C40
 float CSWTrackFollower::SetInvincibility(float fTime)
 {
     if (fTime >= 0.0f)
@@ -138,7 +138,7 @@ float CSWTrackFollower::SetInvincibility(float fTime)
     }
     return m_fInvincePeriod;
 }
-// PC 0x006C1B70 GOG 0x006C1950
+// PC 0x006C1B70 GOG 0x006C1950 Xbox 0x000A5C60
 int CSWTrackFollower::SetMaxHitPoints(int nHitPoints)
 {
     if (nHitPoints > 0)
@@ -147,7 +147,7 @@ int CSWTrackFollower::SetMaxHitPoints(int nHitPoints)
     }
     return m_nMaxHPs;
 }
-// PC 0x006C1B90 GOG 0x006C1970
+// PC 0x006C1B90 GOG 0x006C1970 Xbox 0x000A5C80
 CResRef CSWTrackFollower::GetScriptName(int nScript)
 {
     if (nScript < 0 || nScript >= NUM_SCRIPTS)
@@ -156,7 +156,7 @@ CResRef CSWTrackFollower::GetScriptName(int nScript)
     }
     return m_aScripts[nScript];
 }
-// PC 0x006C1BE0 GOG 0x006C19C0
+// PC 0x006C1BE0 GOG 0x006C19C0 Xbox 0x000A5CD0
 void CSWTrackFollower::SetScriptName(int nScript, const CResRef& resRef)
 {
     if (nScript < 0 || nScript >= NUM_SCRIPTS)
@@ -185,7 +185,7 @@ CResRef CSWTrackFollower::GetSoundName(int nSound)
     }
     return m_aOtherSoundNames[nSound - SOUND_DEATH];
 }
-// PC 0x006C1C10 GOG 0x006C19F0
+// PC 0x006C1C10 GOG 0x006C19F0 Xbox 0x000A5D00
 int CSWTrackFollower::GetSoundVolume(int nSound)
 {
     if (nSound < 0 || nSound >= 2)
@@ -194,7 +194,7 @@ int CSWTrackFollower::GetSoundVolume(int nSound)
     }
     return m_aSounds[nSound].m_nFrequency;
 }
-// PC 0x006C1C30 GOG 0x006C1A10
+// PC 0x006C1C30 GOG 0x006C1A10 Xbox 0x000A5D20
 void CSWTrackFollower::SetSoundFrequency(int nSound, int nFrequency)
 {
     if (nSound >= 0 && nSound < 2)
@@ -202,7 +202,7 @@ void CSWTrackFollower::SetSoundFrequency(int nSound, int nFrequency)
         m_aSounds[nSound].m_nFrequency = nFrequency;
     }
 }
-// PC 0x006C1C50 GOG 0x006C1A30
+// PC 0x006C1C50 GOG 0x006C1A30 Xbox 0x000A5D40
 int CSWTrackFollower::GetSoundFrequencyIsRandom(int nSound)
 {
     if (nSound < 0 || nSound >= 2)
@@ -211,7 +211,7 @@ int CSWTrackFollower::GetSoundFrequencyIsRandom(int nSound)
     }
     return m_aSounds[nSound].m_bFrequencyIsRandom;
 }
-// PC 0x006C1C70 GOG 0x006C1A50
+// PC 0x006C1C70 GOG 0x006C1A50 Xbox 0x000A5D60
 void CSWTrackFollower::SetSoundFrequencyIsRandom(int nSound, int bRandom)
 {
     if (nSound >= 0 && nSound < 2)
@@ -219,7 +219,7 @@ void CSWTrackFollower::SetSoundFrequencyIsRandom(int nSound, int bRandom)
         m_aSounds[nSound].m_bFrequencyIsRandom = bRandom;
     }
 }
-// PC 0x006C1C90 GOG 0x006C1A70
+// PC 0x006C1C90 GOG 0x006C1A70 Xbox 0x000A5D80
 int CSWTrackFollower::GetSoundFrequency(int nSound)
 {
     if (nSound < 0 || nSound >= 2)
@@ -228,7 +228,7 @@ int CSWTrackFollower::GetSoundFrequency(int nSound)
     }
     return m_aSounds[nSound].m_nVolume;
 }
-// PC 0x006C1CB0 GOG 0x006C1A90
+// PC 0x006C1CB0 GOG 0x006C1A90 Xbox 0x000A5DA0
 void CSWTrackFollower::SetSoundVolume(int nSound, int nVolume)
 {
     if (nSound >= 0 && nSound < 2)
@@ -240,7 +240,7 @@ void CSWTrackFollower::SetSoundVolume(int nSound, int nVolume)
         }
     }
 }
-// PC 0x006C1CF0 GOG 0x006C1AD0
+// PC 0x006C1CF0 GOG 0x006C1AD0 Xbox 0x000A5DE0
 CExoString CSWTrackFollower::GetName()
 {
     if (m_pTrack != 0)
@@ -249,7 +249,7 @@ CExoString CSWTrackFollower::GetName()
     }
     return CExoString("");
 }
-// PC 0x006C1D30 GOG 0x006C1B10
+// PC 0x006C1D30 GOG 0x006C1B10 Xbox 0x000A5E20
 int CSWTrackFollower::GetLastObstacleHit()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -262,7 +262,7 @@ int CSWTrackFollower::GetLastObstacleHit()
     }
     return nResult;
 }
-// PC 0x006C1D60 GOG 0x006C1B40
+// PC 0x006C1D60 GOG 0x006C1B40 Xbox 0x000A5E50
 void CSWMiniPlayer::KeepInTunnel(Vector& vPosition)
 {
     if (m_vTunnelWrap.m_fX != 0.0f)
@@ -334,7 +334,7 @@ void CSWMiniPlayer::KeepInTunnel(Vector& vPosition)
         vPosition.m_fZ = m_vTunnelMaximum.m_fZ + m_vOrigin.m_fZ;
     }
 }
-// PC 0x006C1F10 GOG 0x006C1CF0
+// PC 0x006C1F10 GOG 0x006C1CF0 Xbox 0x000A5FD0
 Vector CSWMiniPlayer::SetOffset(const Vector& vOffset)
 {
     m_vOffset = vOffset;
@@ -355,7 +355,7 @@ Vector CSWMiniPlayer::DoInertia(const Vector& vPrevious,
     float fScale = fInertiaScale;
     return fScale * (-qOrientation * vChange);
 }
-// PC 0x006C1F50 GOG 0x006C1D30
+// PC 0x006C1F50 GOG 0x006C1D30 Xbox 0x000A6010
 void CSWMiniPlayer::AdjustPosition(int nPosition, int bRelative)
 {
     if (m_pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL &&
@@ -397,7 +397,7 @@ void CSWMiniPlayer::AdjustPosition(int nPosition, int bRelative)
     }
     PlayAnimation(szAnimation, 1.0f, 16);
 }
-// PC 0x006C2030 GOG 0x006C1E10
+// PC 0x006C2030 GOG 0x006C1E10 Xbox 0x000A6100
 int CSWMiniPlayer::SetLooping(int nLooping)
 {
     int nResult = nLooping;
@@ -407,13 +407,13 @@ int CSWMiniPlayer::SetLooping(int nLooping)
     }
     return nResult;
 }
-// PC 0x006C2050 GOG 0x006C1E30
+// PC 0x006C2050 GOG 0x006C1E30 Xbox 0x000A6120
 float CSWMiniPlayer::SetMinSpeed(float fSpeed)
 {
     m_fMinimumSpeed = fSpeed;
     return m_fMinimumSpeed;
 }
-// PC 0x006C2070 GOG 0x006C1E50
+// PC 0x006C2070 GOG 0x006C1E50 Xbox 0x000A6140
 float CSWMiniPlayer::SetMaxSpeed(float fSpeed)
 {
     if (fSpeed >= 0.0f)
@@ -422,13 +422,13 @@ float CSWMiniPlayer::SetMaxSpeed(float fSpeed)
     }
     return m_fMaximumSpeed;
 }
-// PC 0x006C20A0 GOG 0x006C1E80
+// PC 0x006C20A0 GOG 0x006C1E80 Xbox 0x000A6160
 float CSWMiniPlayer::SetAPS(float fAPS)
 {
     m_fAPS = fAPS;
     return m_fAPS;
 }
-// PC 0x006C20C0 GOG 0x006C1EA0
+// PC 0x006C20C0 GOG 0x006C1EA0 Xbox 0x000A6180
 Vector CSWMiniPlayer::SetOrigin(const Vector& vOrigin)
 {
     m_vOrigin = vOrigin;
@@ -438,7 +438,7 @@ Vector CSWMiniPlayer::SetOrigin(const Vector& vOrigin)
     }
     return m_vOrigin;
 }
-// PC 0x006C2120 GOG 0x006C1F00
+// PC 0x006C2120 GOG 0x006C1F00 Xbox 0x000A61E0
 void CSWMiniPlayer::SetCameraHook(CAurObject* pCameraHook,
                                   unsigned char bAttached)
 {
@@ -464,7 +464,7 @@ void CSWMiniPlayer::SetCameraHook(CAurObject* pCameraHook,
         m_pCameraHook->AttachToObject(m_pTrack, "modelhook", nAttachType);
     }
 }
-// PC 0x006C2180 GOG 0x006C1F60
+// PC 0x006C2180 GOG 0x006C1F60 Xbox 0x000A6240
 int CSWMiniEnemy::SetLooping(int nLooping)
 {
     int nResult = abs(nLooping);
@@ -474,7 +474,7 @@ int CSWMiniEnemy::SetLooping(int nLooping)
     }
     return nResult;
 }
-// PC 0x006C21A0 GOG 0x006C1F80
+// PC 0x006C21A0 GOG 0x006C1F80 Xbox 0x000A6260
 int CSWMGObstacle::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     CResStruct scripts;
@@ -485,7 +485,7 @@ int CSWMGObstacle::Load(CResGFF* pGFF, CResStruct* pStruct)
     OnCreate();
     return 1;
 }
-// PC 0x006C21F0 GOG 0x006C1FD0
+// PC 0x006C21F0 GOG 0x006C1FD0 Xbox 0x000A62B0
 CResRef CSWMGObstacle::GetScriptName(int nScript)
 {
     if (nScript < 0 || nScript >= 5)
@@ -494,7 +494,7 @@ CResRef CSWMGObstacle::GetScriptName(int nScript)
     }
     return m_aScripts[nScript];
 }
-// PC 0x006C2240 GOG 0x006C2020
+// PC 0x006C2240 GOG 0x006C2020 Xbox 0x000A6300
 void CSWMGObstacle::SetScriptName(int nScript, const CResRef& resRef)
 {
     if (nScript < 0 || nScript >= 5)
@@ -503,7 +503,7 @@ void CSWMGObstacle::SetScriptName(int nScript, const CResRef& resRef)
     }
     m_aScripts[nScript] = resRef;
 }
-// PC 0x006C2270 GOG 0x006C2050
+// PC 0x006C2270 GOG 0x006C2050 Xbox 0x000A6330
 void CSWMGObstacle::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                 CResStruct& structScripts)
 {
@@ -536,7 +536,7 @@ void CSWTrackFollower::OnHitWorld(int bScript)
 int bDoAcceleration = 1;
 float fSpeed = 100.0f;
 float fLastSpeedSet = 100.0f;
-// PC 0x006C2280 GOG 0x006C2060
+// PC 0x006C2280 GOG 0x006C2060 Xbox 0x000A6340
 void CSWTrackFollower::OnAccelerate(int bValue)
 {
     if (bValue == 0)
@@ -550,7 +550,7 @@ void CSWTrackFollower::OnAccelerate(int bValue)
         }
     }
 }
-// PC 0x006C2320 GOG 0x006C2100
+// PC 0x006C2320 GOG 0x006C2100 Xbox 0x000A63C0
 void CSWTrackFollower::OnBrake(int bValue)
 {
     if (bValue == 0)
@@ -564,7 +564,7 @@ void CSWTrackFollower::OnBrake(int bValue)
         }
     }
 }
-// PC 0x006C23C0 GOG 0x006C21A0
+// PC 0x006C23C0 GOG 0x006C21A0 Xbox 0x000A6440
 CSWMGTargettingGunBank* CSWTrackFollower::GetGunBank(int nGunBank)
 {
     if (nGunBank < 0 || nGunBank >= m_lstGunBanks.num)
@@ -573,7 +573,7 @@ CSWMGTargettingGunBank* CSWTrackFollower::GetGunBank(int nGunBank)
     }
     return (CSWMGTargettingGunBank*)m_lstGunBanks[nGunBank];
 }
-// PC 0x006C23E0 GOG 0x006C21C0
+// PC 0x006C23E0 GOG 0x006C21C0 Xbox 0x000A6460
 Gob* CSWTrackFollower::GetModel(int nIndex)
 {
     if (nIndex >= m_lstModels.num)
@@ -627,7 +627,7 @@ void CSWTrackFollower::UpdateGunBanks()
         }
     }
 }
-// PC 0x006C2B00 GOG 0x006C2930
+// PC 0x006C2B00 GOG 0x006C2930 Xbox 0x000A6C30
 void TrackFollowerPartDie(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     CSWTrackFollower* pFollower = (CSWTrackFollower*)pUserData;
@@ -659,7 +659,7 @@ void TrackFollowerPartDie(CAurObject* pObject, char* sEvent, void* pUserData)
         }
     }
 }
-// PC 0x006C2400 GOG 0x006C21E0
+// PC 0x006C2400 GOG 0x006C21E0 Xbox 0x000A6480
 CAurObject* CSWTrackFollower::RemoveModel(CAurObject* pModel)
 {
     for (int i = 0; i < m_lstModels.num; i++)
@@ -673,7 +673,7 @@ CAurObject* CSWTrackFollower::RemoveModel(CAurObject* pModel)
     }
     return 0;
 }
-// PC 0x006C2B90 GOG 0x006C29C0
+// PC 0x006C2B90 GOG 0x006C29C0 Xbox 0x000A6CC0
 CSWTrackFollower::CSWTrackFollower(CSWMiniGame* pMiniGame, unsigned long nType)
     : CSWMiniGameObject(nType)
 {
@@ -695,7 +695,7 @@ CSWTrackFollower::CSWTrackFollower(CSWMiniGame* pMiniGame, unsigned long nType)
         m_apSoundSources[i] = 0;
     }
 }
-// PC 0x006C2CB0 GOG 0x006C2AE0
+// PC 0x006C2CB0 GOG 0x006C2AE0 Xbox 0x000A6DB0
 CSWTrackFollower::~CSWTrackFollower()
 {
     int nModels = m_lstModels.num;
@@ -722,7 +722,7 @@ CSWTrackFollower::~CSWTrackFollower()
 
     delete m_pTrack;
 }
-// PC 0x006C2DC0 GOG 0x006C2BF0
+// PC 0x006C2DC0 GOG 0x006C2BF0 Xbox 0x000A6E80
 void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
@@ -734,7 +734,7 @@ void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
         m_lstGunBanks.Remove(pGunBank);
     }
 }
-// PC 0x006C2DE0 GOG 0x006C2C10
+// PC 0x006C2DE0 GOG 0x006C2C10 Xbox 0x000A6EA0
 void CSWTrackFollower::Update(float fTime)
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
@@ -759,7 +759,7 @@ void CSWTrackFollower::Update(float fTime)
         m_apSoundSources[0]->SetPosition(vSoundPosition, 0.0f);
     }
 }
-// PC 0x006C2EA0 GOG 0x006C2CD0
+// PC 0x006C2EA0 GOG 0x006C2CD0 Xbox 0x000A6F50
 int CSWTrackFollower::AddModel(CAurObject* pModel, unsigned char bAttach)
 {
     if (pModel == 0)
@@ -786,7 +786,7 @@ int CSWTrackFollower::AddModel(CAurObject* pModel, unsigned char bAttach)
     }
     return (int)pModel;
 }
-// PC 0x006C2F30 GOG 0x006C2D60
+// PC 0x006C2F30 GOG 0x006C2D60 Xbox 0x000A6FE0
 int CSWTrackFollower::SetTrack(CAurObject* pTrack, int bPlayAnimation)
 {
     if (pTrack != m_pTrack)
@@ -795,7 +795,7 @@ int CSWTrackFollower::SetTrack(CAurObject* pTrack, int bPlayAnimation)
     }
     return (int)m_pTrack;
 }
-// PC 0x006C2470 GOG 0x006C2250
+// PC 0x006C2470 GOG 0x006C2250 Xbox 0x000A64F0
 int CSWTrackFollower::ForceSetTrack(CAurObject* pTrack, int bPlayAnimation)
 {
     if (m_pTrack != 0 && m_pTrack != pTrack)
@@ -845,7 +845,7 @@ int CSWTrackFollower::ForceSetTrack(CAurObject* pTrack, int bPlayAnimation)
     }
     return (int)m_pTrack;
 }
-// PC 0x006C25C0 GOG 0x006C23A0
+// PC 0x006C25C0 GOG 0x006C23A0 Xbox 0x000A6640
 void CSWTrackFollower::Stop()
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
@@ -872,7 +872,7 @@ void CSWTrackFollower::Stop()
         }
     }
 }
-// PC 0x006C2610 GOG 0x006C23F0
+// PC 0x006C2610 GOG 0x006C23F0 Xbox 0x000A6690
 void CSWTrackFollower::Hit()
 {
     PlayAnimation("damage", 1.0f, 1);
@@ -883,7 +883,7 @@ void CSWTrackFollower::Hit()
         m_lstGunBanks[i]->Hit();
     }
 }
-// PC 0x006C2660 GOG 0x006C2440
+// PC 0x006C2660 GOG 0x006C2440 Xbox 0x000A66E0
 int CSWTrackFollower::DoBulletHitCheck(CAurObject* pBullet)
 {
     CSWMGBehaviorBullet* pBehavior =
@@ -908,7 +908,7 @@ int CSWTrackFollower::DoBulletHitCheck(CAurObject* pBullet)
     }
     return 0;
 }
-// PC 0x006C26D0 GOG 0x006C24B0
+// PC 0x006C26D0 GOG 0x006C24B0 Xbox 0x000A6750
 void CSWTrackFollower::PlayAnimation(char* szAnimation, float fSpeed, int nFlags)
 {
     int nModels = m_lstModels.num;
@@ -927,7 +927,7 @@ void CSWTrackFollower::PlayAnimation(char* szAnimation, float fSpeed, int nFlags
         }
     }
 }
-// PC 0x006C2F50 GOG 0x006C2D80
+// PC 0x006C2F50 GOG 0x006C2D80 Xbox 0x000A7000
 void CSWTrackFollower::OnDeath(int bScript)
 {
     if (bScript == 0)
@@ -1004,7 +1004,7 @@ void CSWTrackFollower::Die()
         OnDeath(0);
     }
 }
-// PC 0x006C3140 GOG 0x006C2F70
+// PC 0x006C3140 GOG 0x006C2F70 Xbox 0x000A71C0
 int CSWTrackFollower::AttachGuns(CAurObject* pObject)
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
@@ -1045,7 +1045,7 @@ int CSWTrackFollower::AttachGuns(CAurObject* pObject)
     }
     return nAttached;
 }
-// PC 0x006C3270 GOG 0x006C30A0
+// PC 0x006C3270 GOG 0x006C30A0 Xbox 0x000A72D0
 void CSWTrackFollower::OnHitObstacle(int bScript)
 {
     int nModels;
@@ -1077,7 +1077,7 @@ void CSWTrackFollower::OnHitObstacle(int bScript)
         return;
     }
 }
-// PC 0x006C3370 GOG 0x006C31A0
+// PC 0x006C3370 GOG 0x006C31A0 Xbox 0x000A73A0
 int CSWTrackFollower::DoObstacleHitCheck(CSWMGObstacle* pObstacle)
 {
     Gob* pObstacleModel = (Gob*)(CAurObject*)pObstacle->m_pModel;
@@ -1118,7 +1118,7 @@ int CSWTrackFollower::DoObstacleHitCheck(CSWMGObstacle* pObstacle)
     }
     return 0;
 }
-// PC 0x006C3480 GOG 0x006C32B0
+// PC 0x006C3480 GOG 0x006C32B0 Xbox 0x000A74D0
 void CSWTrackFollower::OnDamage(int bScript)
 {
     if (bScript == 0)
@@ -1160,13 +1160,13 @@ void CSWTrackFollower::OnDamage(int bScript)
         }
     }
 }
-// PC 0x006C35C0 GOG 0x006C33F0
+// PC 0x006C35C0 GOG 0x006C33F0 Xbox 0x000A75F0
 void CSWTrackFollower::AdjustHitPoints(int nHitPoints)
 {
     m_nDamage = nHitPoints;
     return OnDamage(0);
 }
-// PC 0x006C3C80 GOG 0x006C3AB0
+// PC 0x006C3C80 GOG 0x006C3AB0 Xbox 0x000A7CB0
 void CSWTrackFollower::LoadSounds(CResGFF* pGFF, CResStruct* pStruct,
                                   CResStruct& structSounds)
 {
@@ -1188,7 +1188,7 @@ void CSWTrackFollower::LoadSounds(CResGFF* pGFF, CResStruct* pStruct,
                                                resDefault));
     }
 }
-// PC 0x006C35E0 GOG 0x006C3410
+// PC 0x006C35E0 GOG 0x006C3410 Xbox 0x000A7710
 CExoSoundSource* CSWTrackFollower::SetSoundName(int nSound,
                                                 const CResRef& resRef)
 {
@@ -1253,7 +1253,7 @@ CExoSoundSource* CSWTrackFollower::SetSoundName(int nSound,
     }
     return 0;
 }
-// PC 0x006C2750 GOG 0x006C2530
+// PC 0x006C2750 GOG 0x006C2530 Xbox 0x000A67D0
 Vector CSWTrackFollower::GetPosition()
 {
     Vector vPosition;
@@ -1263,7 +1263,7 @@ Vector CSWTrackFollower::GetPosition()
     }
     return vPosition;
 }
-// PC 0x006C27C0 GOG 0x006C25A0
+// PC 0x006C27C0 GOG 0x006C25A0 Xbox 0x000A6830
 void CSWMiniPlayer::Control(float fTime, CSWMGPhysicsState& stateCurrent,
                            CSWMGPhysicsState& statePrevious)
 {
@@ -1326,7 +1326,7 @@ void CSWMiniPlayer::Control(float fTime, CSWMGPhysicsState& stateCurrent,
             ((CAurBehaviorAttachRotate*)pBehavior)->m_vRotation = m_vOffset;
     }
 }
-// PC 0x006C29E0 GOG 0x006C27C0
+// PC 0x006C29E0 GOG 0x006C27C0 Xbox 0x000A6AC0
 void CSWMiniPlayer::Fire()
 {
     int nGunBanks = m_lstGunBanks.num;
@@ -1335,7 +1335,7 @@ void CSWMiniPlayer::Fire()
         m_lstGunBanks[i]->Fire();
     }
 }
-// PC 0x006C2A10 GOG 0x006C27F0
+// PC 0x006C2A10 GOG 0x006C27F0 Xbox 0x000A6AF0
 CExoString CSWMGObstacle::GetName()
 {
     if (m_pModel != 0)
@@ -1345,7 +1345,7 @@ CExoString CSWMGObstacle::GetName()
     return CExoString("");
 }
 
-// PC 0x006C3D10 GOG 0x006C3B40
+// PC 0x006C3D10 GOG 0x006C3B40 Xbox 0x000A7D50
 CSWMiniPlayer::CSWMiniPlayer(CSWMiniGame* pMiniGame)
     : CSWTrackFollower(pMiniGame, SWMG_OBJECT_PLAYER)
 {
@@ -1362,7 +1362,7 @@ CSWMiniPlayer::CSWMiniPlayer(CSWMiniGame* pMiniGame)
     m_lstPositionKeys.num = 0;
     m_lstOrientationKeys.num = 0;
 }
-// PC 0x006C3830 GOG 0x006C3660
+// PC 0x006C3830 GOG 0x006C3660 Xbox 0x000A7900
 CSWMiniPlayer::~CSWMiniPlayer()
 {
     if (m_pCameraHook != 0)
@@ -1370,7 +1370,7 @@ CSWMiniPlayer::~CSWMiniPlayer()
         delete m_pCameraHook;
     }
 }
-// PC 0x006C3ED0 GOG 0x006C3D00
+// PC 0x006C3ED0 GOG 0x006C3D00 Xbox 0x000A7F40
 int CSWMiniPlayer::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1451,7 +1451,7 @@ int CSWMiniPlayer::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
     CreateGunBank(nBank, resBullet, resGun, bullet, resFireSound);
     return 1;
 }
-// PC 0x006C38E0 GOG 0x006C3710
+// PC 0x006C38E0 GOG 0x006C3710 Xbox 0x000A7980
 CSWMGGunBank* CSWMiniPlayer::CreateGunBank(int nBank, const CResRef& sBank,
                                            const CResRef& sGun,
                                            const CSWMGBullet& bullet,
@@ -1491,7 +1491,7 @@ CSWMGGunBank* CSWMiniPlayer::CreateGunBank(int nBank, const CResRef& sBank,
 
     return pGunBank;
 }
-// PC 0x006C4160 GOG 0x006C3F90
+// PC 0x006C4160 GOG 0x006C3F90 Xbox 0x000A81E0
 int CSWMiniEnemy::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1594,7 +1594,7 @@ int CSWMiniEnemy::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
     CreateGunBank(nBank, resBullet, resGun, bullet, params, resFireSound);
     return 1;
 }
-// PC 0x006C3A90 GOG 0x006C38C0
+// PC 0x006C3A90 GOG 0x006C38C0 Xbox 0x000A7B10
 CSWMGGunBank* CSWMiniEnemy::CreateGunBank(int nBank, const CResRef& sBank,
                                       const CResRef& sGun,
                                       const CSWMGBullet& bullet,
@@ -1636,7 +1636,7 @@ CSWMGGunBank* CSWMiniEnemy::CreateGunBank(int nBank, const CResRef& sBank,
 
     return pGunBank;
 }
-// PC 0x006C4490 GOG 0x006C42C0
+// PC 0x006C4490 GOG 0x006C42C0 Xbox 0x000A8520
 void OnAnimKeyEvent(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     CSWMiniGameObject* pMiniGameObject = (CSWMiniGameObject*)pUserData;
@@ -1679,7 +1679,7 @@ void OnAnimKeyEvent(CAurObject* pObject, char* sEvent, void* pUserData)
         }
     }
 }
-// PC 0x006C4630 GOG 0x006C4460
+// PC 0x006C4630 GOG 0x006C4460 Xbox 0x000A8690
 int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     if (SWMGTRACKFOLLOWER_DEBUG)
@@ -1725,7 +1725,7 @@ int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
     OnCreate();
     return 1;
 }
-// PC 0x006C4800 GOG 0x006C4630
+// PC 0x006C4800 GOG 0x006C4630 Xbox 0x000A8880
 void CSWTrackFollower::Go()
 {
     if (m_pTrack != 0 && !m_bTrackPlaying)
@@ -1765,7 +1765,7 @@ void CSWTrackFollower::Go()
         }
     }
 }
-// PC 0x006C4930 GOG 0x006C4760
+// PC 0x006C4930 GOG 0x006C4760 Xbox 0x000A89B0
 int CSWMiniPlayer::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1819,7 +1819,7 @@ int CSWMiniPlayer::Load(CResGFF* pGFF, CResStruct* pStruct)
         pGFF->ReadFieldFLOAT(pStruct, "Target_Offset_Z", bSuccess, 0.0f));
     return 1;
 }
-// PC 0x006C4C20 GOG 0x006C4A50
+// PC 0x006C4C20 GOG 0x006C4A50 Xbox 0x000A8CB0
 int CSWMiniEnemy::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1832,13 +1832,13 @@ int CSWMiniEnemy::Load(CResGFF* pGFF, CResStruct* pStruct)
     m_bTrigger = pGFF->ReadFieldBYTE(pStruct, "Trigger", bSuccess, 0);
     return 1;
 }
-// PC 0x006C4C70 GOG 0x006C4AA0
+// PC 0x006C4C70 GOG 0x006C4AA0 Xbox 0x000A8D00
 CSWMGObstacle::CSWMGObstacle(CSWMiniGame* pMiniGame, CAurObject* pModel)
     : CSWMiniGameObject(3)
 {
     m_pModel = pModel;
 }
-// PC 0x006C4D10 GOG 0x006C4B40
+// PC 0x006C4D10 GOG 0x006C4B40 Xbox 0x000A8D70
 CSWMGObstacle::~CSWMGObstacle()
 {
     if (m_pModel != 0)
@@ -1847,7 +1847,7 @@ CSWMGObstacle::~CSWMGObstacle()
     }
 }
 
-// PC 0x006C4D80 GOG 0x006C4BB0
+// PC 0x006C4D80 GOG 0x006C4BB0 Xbox 0x000A8DB0
 int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                      int bRunScripts)
 {

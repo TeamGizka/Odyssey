@@ -128,14 +128,14 @@ public:
 
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void SetActiveControl(CSWGuiControl* pControl, int bPlaySound);
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWGuiPanel* AsSWGuiPanel()
     {
         return this;
     }
 
     virtual void Draw(float fElapsed);
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void Update(float fElapsed)
     {
     }
@@ -190,7 +190,7 @@ public:
 #endif
     void AddControl(CSWGuiControl* pControl);
     CSWGuiControl* GetControl(int nIndex);
-    void SetToBeRemoved(int bToBeRemoved)  // PC 0x00639690 GOG 0x00639590
+    void SetToBeRemoved(int bToBeRemoved)  // PC 0x00639690 GOG 0x00639590 Xbox 0x0001B3F0
     {
         m_bDeferredRemoval = bToBeRemoved;
         if (m_nExitState != EXITSTATE_DELETE)

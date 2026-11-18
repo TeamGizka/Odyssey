@@ -3,7 +3,7 @@
 
 #include "nwsdialog.h"
 
-// PC 0x004F60A0 GOG 0x00505890
+// PC 0x004F60A0 GOG 0x00505890 Xbox 0x0019C470
 inline unsigned long CSWSDialog::GetCurrentPlayerId()
 {
     if (m_lstPlayers.GetHeadPos() != NULL)

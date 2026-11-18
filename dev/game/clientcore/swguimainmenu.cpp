@@ -168,7 +168,7 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006D0FF0 GOG 0x006D0D80
+// PC 0x006D0FF0 GOG 0x006D0D80 Xbox 0x000A04E0
 void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -297,7 +297,7 @@ void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006D12F0 GOG 0x006D1080
+// PC 0x006D12F0 GOG 0x006D1080 Xbox 0x000A0740
 void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -337,7 +337,7 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006D13D0 GOG 0x006D1160
+// PC 0x006D13D0 GOG 0x006D1160 Xbox 0x000A0820
 void CSWGuiMainMenu::OnEnterButton(CSWGuiControl* pControl)
 {
 #ifdef _XBOX
@@ -357,7 +357,7 @@ void CSWGuiMainMenu::OnExitButton(CSWGuiControl* pControl)
 
 #define SAVE_GAME_DRIVE 'U'
 #define SAVE_GAME_BLOCKS_NEEDED 3202
-void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)
+void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // Xbox 0x000A0860
 {
     LD_LAUNCH_DASHBOARD cLaunchData;
 
@@ -391,7 +391,7 @@ void CSWGuiMainMenu::OnQuitButtonPressed(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x006D1740 GOG 0x006D11F0
+// PC 0x006D1740 GOG 0x006D11F0 Xbox 0x000A0AD0
 CSWGuiMainMenu::~CSWGuiMainMenu()
 {
 #ifndef _XBOX
@@ -423,7 +423,7 @@ void CSWGuiMainMenu::ClearListBox()
 
 static int s_bSaveSpaceChecked = 0;
 
-inline void CSWGuiMainMenu::OnPanelAdded()
+inline void CSWGuiMainMenu::OnPanelAdded()  // Xbox 0x000A1C80
 {
     unsigned __int64 nFreeBytes;
     g_pExoResMan->GetFreeDiskSpace("SAVES:", &nFreeBytes);
@@ -916,7 +916,7 @@ void CSWGuiMainMenu::OnErrorMessageDone(CSWGuiControl* pControl)
     }
 }
 
-void CSWGuiMainMenu::ShowErrorMessage()
+void CSWGuiMainMenu::ShowErrorMessage()  // Xbox 0x000A0E90
 {
     EXOXBOXASSERT(m_lstErrorMessages.num != 0);
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -933,7 +933,7 @@ void CSWGuiMainMenu::ShowErrorMessage()
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
 
-void CSWGuiMainMenu::AddErrorMessage(const CErrorMessageData& cMessage)
+void CSWGuiMainMenu::AddErrorMessage(const CErrorMessageData& cMessage)  // Xbox 0x000A1C30
 {
     m_lstErrorMessages.Add(cMessage);
     if (m_lstErrorMessages.num == 1)

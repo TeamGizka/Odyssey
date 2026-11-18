@@ -33,7 +33,7 @@ int CResDWK::IsLoaded()
 }
 
 // Dead code: not in the PC executable
-int CResDWK::OnResourceFreed()
+int CResDWK::OnResourceFreed()  // Xbox 0x00331990
 {
     m_bServiced = 0;
     m_nDWKSize = 0;
@@ -42,7 +42,7 @@ int CResDWK::OnResourceFreed()
 }
 
 // Dead code: not in the PC executable
-int CResDWK::OnResourceServiced()
+int CResDWK::OnResourceServiced()  // Xbox 0x00161470
 {
     unsigned char* pData;
 

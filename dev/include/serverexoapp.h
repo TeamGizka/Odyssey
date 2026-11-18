@@ -52,7 +52,7 @@ public:
                                   int bGuaranteed);
     virtual int HandleMessage(unsigned long nPlayerId, unsigned char* pMessage,
                               unsigned long nSize, int bGuaranteed);
-    virtual float GetFPS()  // PC 0x004DC860 GOG 0x004DC520
+    virtual float GetFPS()  // PC 0x004DC860 GOG 0x004DC520 Xbox 0x00171AB0
     {
         return 100.0f;
     }
@@ -64,7 +64,7 @@ public:
     virtual CConnectionLib* GetConnectionLib();
     virtual CExoLocString* GetModuleDescription();
     virtual int GetApplicationId();
-    virtual void SetApplicationIdsMatch(int bMatch)  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void SetApplicationIdsMatch(int bMatch)  // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     {
     }
 
@@ -239,7 +239,7 @@ public:
     void SetMoveToPausedTimeOfDay(unsigned long nTimeOfDay);
     unsigned long GetMoveToPausedTimeOfDay();
     void SetSaveGameName(const CExoString& sName);
-    // PC 0x004EA0F0 GOG 0x004EAE50
+    // PC 0x004EA0F0 GOG 0x004EAE50 Xbox 0x0001B490
     CSWSCreature* GetPlayerCreature()
     {
         return GetCreatureByGameObjectID(GetPlayerCreatureId());

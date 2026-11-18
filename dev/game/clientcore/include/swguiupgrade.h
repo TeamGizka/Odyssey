@@ -331,7 +331,7 @@ public:
     void SetCharacter(unsigned long oidCharacter) { m_oidCharacter = oidCharacter; }
     void SetDisableItemCreation(int bDisableItemCreation) { m_bDisableItemCreation = bDisableItemCreation; }
     void SetDisableUpgrade(int bDisableUpgrade) { m_bDisableUpgrade = bDisableUpgrade; }
-    // PC 0x0067CB20 GOG 0x0067C8F0
+    // PC 0x0067CB20 GOG 0x0067C8F0 Xbox 0x00055140
     void SetOverride2DA(CExoString sOverride2DA)
     {
         m_sOverride2DA = sOverride2DA;

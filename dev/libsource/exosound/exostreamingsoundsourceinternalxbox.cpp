@@ -12,7 +12,7 @@ CExoXboxStreamCommand::~CExoXboxStreamCommand()
 {
 }
 
-int CExoXboxStreamManager::QueueCommand(CExoXboxStreamCommand cCommand)
+int CExoXboxStreamManager::QueueCommand(CExoXboxStreamCommand cCommand)  // Xbox 0x00165F30
 {
     DWORD nNext = m_nCommandHead;
     DWORD nTail = m_nCommandTail;
@@ -61,7 +61,7 @@ int CExoXboxStreamManager::QueueCommand(CExoXboxStreamCommand cCommand)
     return 1;
 }
 
-int CExoXboxStreamManager::GetNextCommand(CExoXboxStreamCommand& cCommand)
+int CExoXboxStreamManager::GetNextCommand(CExoXboxStreamCommand& cCommand)  // Xbox 0x00166070
 {
     DWORD nNext = m_nCommandTail;
     if (m_nCommandHead == nNext)
@@ -87,7 +87,7 @@ int CExoXboxStreamManager::GetNextCommand(CExoXboxStreamCommand& cCommand)
     return 1;
 }
 
-int CExoXboxStreamManager::QueueDeletedStream(CExoXboxStream* pStream)
+int CExoXboxStreamManager::QueueDeletedStream(CExoXboxStream* pStream)  // Xbox 0x00166100
 {
     DWORD nNext = m_nDeletedHead;
     DWORD nTail = m_nDeletedTail;
@@ -106,7 +106,7 @@ int CExoXboxStreamManager::QueueDeletedStream(CExoXboxStream* pStream)
     return 1;
 }
 
-int CExoXboxStreamManager::GetNextDeletedStream(CExoXboxStream** ppStream)
+int CExoXboxStreamManager::GetNextDeletedStream(CExoXboxStream** ppStream)  // Xbox 0x00166140
 {
     if (m_nDeletedHead == m_nDeletedTail)
     {
@@ -125,7 +125,7 @@ int CExoXboxStreamManager::GetNextDeletedStream(CExoXboxStream** ppStream)
     return 1;
 }
 
-CExoXboxStreamCommand::CExoXboxStreamCommand()
+CExoXboxStreamCommand::CExoXboxStreamCommand()  // Xbox 0x00166190
 {
     m_nCommand = COMMAND_NONE;
     m_pStream = NULL;
@@ -150,7 +150,7 @@ void CExoXboxStreamManager::ShutDown()
     }
 }
 
-void CExoXboxStreamManager::RemoveStream(CExoXboxStream* pStream)
+void CExoXboxStreamManager::RemoveStream(CExoXboxStream* pStream)  // Xbox 0x00166240
 {
     CExoLinkedListNode* pPosition = m_lstStreams.GetHeadPos();
     CExoXboxStream* pListStream = m_lstStreams.GetHead();
@@ -185,7 +185,7 @@ CExoXboxStreamManager::~CExoXboxStreamManager()
     ShutDown();
 }
 
-void CExoXboxStreamManager::ProcessCommand(CExoXboxStreamCommand cCommand)
+void CExoXboxStreamManager::ProcessCommand(CExoXboxStreamCommand cCommand)  // Xbox 0x00166310
 {
     int nCommand = cCommand.m_nCommand;
     float fParam1 = cCommand.m_fParam1;
@@ -349,7 +349,7 @@ void CExoXboxStreamManager::ProcessCommand(CExoXboxStreamCommand cCommand)
     }
 }
 
-void CExoXboxStreamManager::Update()
+void CExoXboxStreamManager::Update()  // Xbox 0x00166740
 {
     float fVolumeScale = m_fVolumeScale;
     float fLastVolumeScale = m_fLastVolumeScale;
@@ -400,7 +400,7 @@ void CExoXboxStreamManager::Update()
     }
 }
 
-static DWORD WINAPI ExoXboxStreamThread(LPVOID pParameter)
+static DWORD WINAPI ExoXboxStreamThread(LPVOID pParameter)  // Xbox 0x00166930
 {
     CExoXboxStreamManager* pManager = (CExoXboxStreamManager*)pParameter;
 
@@ -411,7 +411,7 @@ static DWORD WINAPI ExoXboxStreamThread(LPVOID pParameter)
     return 0;
 }
 
-void CExoXboxStreamManager::Initialize()
+void CExoXboxStreamManager::Initialize()  // Xbox 0x00166960
 {
     m_hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     m_hThread = CreateThread(NULL, THREAD_STACK_SIZE, ExoXboxStreamThread, this, 0, NULL);
@@ -425,23 +425,23 @@ void CExoXboxStreamManager::Initialize()
     m_fTargetVolumeScale = 1.0f;
 }
 
-CExoXboxStreamManager::CExoXboxStreamManager(CExoSoundInternal* pSoundInternal)
+CExoXboxStreamManager::CExoXboxStreamManager(CExoSoundInternal* pSoundInternal)  // Xbox 0x001669E0
 {
     m_pSoundInternal = pSoundInternal;
     Initialize();
 }
 
-int CExoStreamingSoundSourceInternal::IsPlaying()
+int CExoStreamingSoundSourceInternal::IsPlaying()  // Xbox 0x00168B80
 {
     return m_pStream->m_bPlaying;
 }
 
-int CExoStreamingSoundSourceInternal::GetPlayFailed()
+int CExoStreamingSoundSourceInternal::GetPlayFailed()  // Xbox 0x00168B90
 {
     return m_pStream->m_bPlayFailed;
 }
 
-int CExoStreamingSoundSourceInternal::GetHasStartedStreaming()
+int CExoStreamingSoundSourceInternal::GetHasStartedStreaming()  // Xbox 0x00168BA0
 {
     if (m_pStream != NULL)
     {
@@ -450,7 +450,7 @@ int CExoStreamingSoundSourceInternal::GetHasStartedStreaming()
     return 0;
 }
 
-CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int bReservedStream)
+CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int bReservedStream)  // Xbox 0x00168BB0
 {
     m_pSoundInternal = pSoundInternal;
     m_b3D = 0;
@@ -467,7 +467,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInte
     m_fOcclusion = 0.0f;
 }
 
-CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
+CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()  // Xbox 0x00168C70
 {
     int bPlaying = m_pStream->m_bPlaying;
 
@@ -490,7 +490,7 @@ CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
     }
 }
 
-void CExoStreamingSoundSourceInternal::SetLooping(int bLooping)
+void CExoStreamingSoundSourceInternal::SetLooping(int bLooping)  // Xbox 0x00168D80
 {
     int bPlaying = m_pStream->m_bPlaying;
     m_bLooping = bLooping;
@@ -510,7 +510,7 @@ void CExoStreamingSoundSourceInternal::SetLooping(int bLooping)
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::Set3D(int b3D)
+void CExoStreamingSoundSourceInternal::Set3D(int b3D)  // Xbox 0x00168E70
 {
     int bStopped = m_pStream->m_bStopped;
     int bPlaying = m_pStream->m_bPlaying;
@@ -535,7 +535,7 @@ void CExoStreamingSoundSourceInternal::Set3D(int b3D)
     }
 }
 
-void CExoStreamingSoundSourceInternal::SetDistance(float fMaxVolumeDist, float fMinVolumeDist)
+void CExoStreamingSoundSourceInternal::SetDistance(float fMaxVolumeDist, float fMinVolumeDist)  // Xbox 0x00168F30
 {
     CExoXboxStream* pStream = m_pStream;
     int bPlaying = pStream->m_bPlaying;
@@ -548,7 +548,7 @@ void CExoStreamingSoundSourceInternal::SetDistance(float fMaxVolumeDist, float f
     }
 }
 
-void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode, float fScale)
+void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode, float fScale)  // Xbox 0x00168F70
 {
     int bPlaying = m_pStream->m_bPlaying;
 
@@ -574,7 +574,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume, int nSli
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)
+void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)  // Xbox 0x00169090
 {
     int bPlaying = m_pStream->m_bPlaying;
 
@@ -591,7 +591,7 @@ void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nFadeTime)
+void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nFadeTime)  // Xbox 0x00169180
 {
     int bPlaying = m_pStream->m_bPlaying;
     if (bPlaying != 0)
@@ -605,7 +605,7 @@ void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nFadeTime)
     m_nFadeDuration = nFadeTime;
 }
 
-void CExoStreamingSoundSourceInternal::Pause()
+void CExoStreamingSoundSourceInternal::Pause()  // Xbox 0x00169270
 {
     int bPlaying = m_pStream->m_bPlaying;
     if (bPlaying == 0)
@@ -620,7 +620,7 @@ void CExoStreamingSoundSourceInternal::Pause()
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::Resume()
+void CExoStreamingSoundSourceInternal::Resume()  // Xbox 0x00169340
 {
     int bPlaying = m_pStream->m_bPlaying;
     if (bPlaying == 0)
@@ -635,7 +635,7 @@ void CExoStreamingSoundSourceInternal::Resume()
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::SetPosition(const Vector& vPosition)
+void CExoStreamingSoundSourceInternal::SetPosition(const Vector& vPosition)  // Xbox 0x00169410
 {
     int bPlaying = m_pStream->m_bPlaying;
     m_vPosition = vPosition;
@@ -654,7 +654,7 @@ void CExoStreamingSoundSourceInternal::SetPosition(const Vector& vPosition)
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::DoObstructionWork()
+void CExoStreamingSoundSourceInternal::DoObstructionWork()  // Xbox 0x00169520
 {
     int bPlaying = m_pStream->m_bPlaying;
     if (bPlaying != 0)
@@ -701,7 +701,7 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityG
     }
 }
 
-void CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)
+void CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)  // Xbox 0x00169720
 {
     int bPlaying = m_pStream->m_bPlaying;
     if (bPlaying == 0)
@@ -710,7 +710,7 @@ void CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)
     }
 }
 
-int CExoStreamingSoundSourceInternal::GetWithinRangeOfListener()
+int CExoStreamingSoundSourceInternal::GetWithinRangeOfListener()  // Xbox 0x00169740
 {
     if (m_b3D == 0)
     {
@@ -722,7 +722,7 @@ int CExoStreamingSoundSourceInternal::GetWithinRangeOfListener()
     return magnitude(vListenerPosition - vPosition) <= m_fMinVolumeDist;
 }
 
-void CExoStreamingSoundSourceInternal::SetPitchVariance(float fVariance)
+void CExoStreamingSoundSourceInternal::SetPitchVariance(float fVariance)  // Xbox 0x001697E0
 {
     int bPlaying = m_pStream->m_bPlaying;
     if (bPlaying == 0)
@@ -738,7 +738,7 @@ void CExoStreamingSoundSourceInternal::SetPitchVariance(float fVariance)
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-void CExoStreamingSoundSourceInternal::SetFixedVariance(float fVariance)
+void CExoStreamingSoundSourceInternal::SetFixedVariance(float fVariance)  // Xbox 0x001698D0
 {
     int bPlaying = m_pStream->m_bPlaying;
     if (bPlaying == 0)
@@ -754,7 +754,7 @@ void CExoStreamingSoundSourceInternal::SetFixedVariance(float fVariance)
     GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
 }
 
-int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned short nResourceType, int bVoice,
+int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned short nResourceType, int bVoice,  // Xbox 0x001699C0
                                            int bMusic, int bCached)
 {
     int bDirect;

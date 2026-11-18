@@ -6,7 +6,7 @@
 #include "exoresman.h"
 #include "guiingame.h"
 #include "clientexoappinternal.h"
-// PC 0x006D0490 GOG 0x006CFF90
+// PC 0x006D0490 GOG 0x006CFF90 Xbox 0x00094F80
 CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -81,7 +81,7 @@ void CSWGuiLoadScreen::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 }
 #endif
-// PC 0x006D02B0 GOG 0x006D0350
+// PC 0x006D02B0 GOG 0x006D0350 Xbox 0x00094F00
 void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 {
     CExoString sHint;
@@ -105,7 +105,7 @@ void CSWGuiLoadScreen::AddHintToMessageBuffer()
     ((CGuiInGame*)pClient->GetInGameGui())
         ->AppendToDialogBuffer(m_lblHint.m_cText.m_cParams.m_sText, sSpeaker);
 }
-// PC 0x006D03F0 GOG 0x006CFF50
+// PC 0x006D03F0 GOG 0x006CFF50 Xbox 0x00094E70
 void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
 {
 #ifdef _XBOX

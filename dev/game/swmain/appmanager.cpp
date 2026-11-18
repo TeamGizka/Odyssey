@@ -56,7 +56,7 @@ CSWReentrantServerStats::~CSWReentrantServerStats()
 }
 
 // Dead code: not in the PC executable
-void CAppManager::FreeLargeTempBuffer()
+void CAppManager::FreeLargeTempBuffer()  // Xbox 0x0014F8E0
 {
     if (m_pLargeTempBuffer)
     {
@@ -64,7 +64,7 @@ void CAppManager::FreeLargeTempBuffer()
         m_pLargeTempBuffer = NULL;
     }
 }
-// PC 0x00401060 GOG 0x00401060
+// PC 0x00401060 GOG 0x00401060 Xbox 0x00011000
 CObjectTableManager* CAppManager::GetObjectTableManager(unsigned long nTable)
 {
     if (nTable == 0)
@@ -93,7 +93,7 @@ void BuildStatusMessage(CExoLocString& lsMessage, const CExoString& sText)
     lsMessage.AddString(0, sText, 0);
 }
 #endif
-void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0 GOG 0x004010A0
+void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0 GOG 0x004010A0 Xbox 0x000111A0
 {
     if (m_pLargeTempBuffer == NULL)
     {
@@ -137,7 +137,7 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x00401160 GOG 0x00401160
+// PC 0x00401160 GOG 0x00401160 Xbox 0x00011230
 CAppManager::CAppManager()
 {
     m_pClientExoApp = NULL;
@@ -150,7 +150,7 @@ CAppManager::CAppManager()
     m_pLargeTempBuffer = NULL;
     AllocLargeTempBuffer();
 }
-// PC 0x00401280 GOG 0x00401280
+// PC 0x00401280 GOG 0x00401280 Xbox 0x00011300
 void CAppManager::DestroyServer()
 {
     if (m_pServerExoApp)
@@ -221,7 +221,7 @@ void CAppManager::ShowServerMem()
         m_pClientExoApp->ShowServerMem();
     }
 }
-// PC 0x00401380 GOG 0x00401380
+// PC 0x00401380 GOG 0x00401380 Xbox 0x00011410
 void CAppManager::CreateServer(int nServices)
 {
     if (m_pServerExoApp)
@@ -305,7 +305,7 @@ const char* SetResolution(char* sBuffer)
 
 #ifdef _XBOX
 
-unsigned char CAppManager::GetCodeWord()
+unsigned char CAppManager::GetCodeWord()  // Xbox 0x00011050
 {
     CExoIni cIni;
     CExoString sValue;
@@ -343,7 +343,7 @@ unsigned char CAppManager::GetCodeWord()
 
 #ifdef _XBOX
 
-void CAppManager::DoSaveGameScreenShot(const CExoString& sName)
+void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // Xbox 0x00011030
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, false);
 }

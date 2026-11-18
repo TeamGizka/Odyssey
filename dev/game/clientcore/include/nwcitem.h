@@ -23,7 +23,7 @@ public:
 
     CSWCItem(unsigned long nBaseItem);
     virtual ~CSWCItem();
-    // PC 0x0069CC00 GOG 0x0069C9B0
+    // PC 0x0069CC00 GOG 0x0069C9B0 Xbox 0x001EC1D0
     virtual CSWCItem* AsSWCItem()
     {
         return this;

@@ -7,7 +7,7 @@
 #include "gameobjectarray.h"
 #include "nwsplayerluo.h"
 #include "swactionnodeinl.h"
-// PC 0x006151B0 GOG 0x00615190
+// PC 0x006151B0 GOG 0x00615190 Xbox 0x00280010
 void CSWSPlayerLUOInventory::ClearSlots()
 {
     for (int i = 0; i < 20; i++)
@@ -16,7 +16,7 @@ void CSWSPlayerLUOInventory::ClearSlots()
         m_nSlotIndex[i] = -1;
     }
 }
-// PC 0x006151E0 GOG 0x006151C0
+// PC 0x006151E0 GOG 0x006151C0 Xbox 0x00280040
 void CSWSPlayerLastUpdateObject::ClearKnownSpellUsesLeft()
 {
     for (int i = 0; i < 2; i++)
@@ -24,7 +24,7 @@ void CSWSPlayerLastUpdateObject::ClearKnownSpellUsesLeft()
         m_nKnownSpellUsesLeft[i] = 0;
     }
 }
-// PC 0x006151F0 GOG 0x006151D0
+// PC 0x006151F0 GOG 0x006151D0 Xbox 0x00280050
 unsigned char CSWSPlayerLastUpdateObject::GetKnownSpellUsesLeft(
     unsigned char nClass, unsigned char nLevel)
 {
@@ -34,7 +34,7 @@ unsigned char CSWSPlayerLastUpdateObject::GetKnownSpellUsesLeft(
     }
     return m_nKnownSpellUsesLeft[nClass + nLevel];
 }
-// PC 0x00615220 GOG 0x00615200
+// PC 0x00615220 GOG 0x00615200 Xbox 0x00280080
 void CSWSPlayerLastUpdateObject::SetKnownSpellUsesLeft(unsigned char nClass,
                                                        unsigned char nLevel,
                                                        unsigned char nUsesLeft)
@@ -45,7 +45,7 @@ void CSWSPlayerLastUpdateObject::SetKnownSpellUsesLeft(unsigned char nClass,
     }
 }
 
-// PC 0x00615250 GOG 0x00615230
+// PC 0x00615250 GOG 0x00615230 Xbox 0x002800B0
 void CSWSPlayerLastUpdateObject::ClearActionQueue()
 {
     for (int i = 0; i < 10; ++i)
@@ -53,7 +53,7 @@ void CSWSPlayerLastUpdateObject::ClearActionQueue()
         m_aActions[i].ClearData();
     }
 }
-// PC 0x00615600 GOG 0x006155E0
+// PC 0x00615600 GOG 0x006155E0 Xbox 0x002803B0
 void CSWSPlayerLUOInventory::ClearRepository()
 {
     while (!m_lstRepository.IsEmpty())
@@ -61,7 +61,7 @@ void CSWSPlayerLUOInventory::ClearRepository()
         delete m_lstRepository.RemoveHead();
     }
 }
-// PC 0x00615630 GOG 0x00615610
+// PC 0x00615630 GOG 0x00615610 Xbox 0x002803E0
 void CSWSPlayerLUOInventory::ClearContainer()
 {
     while (!m_lstContainer.IsEmpty())
@@ -127,7 +127,7 @@ unsigned long CSWSPlayerLUOInventory::ItemListGetItemObjectID(
     }
     return CGameObjectArray::INVALIDOBJID;
 }
-// PC 0x00615660 GOG 0x00615640
+// PC 0x00615660 GOG 0x00615640 Xbox 0x00280410
 CSWSPlayerLUOInventoryItem* CSWSPlayerLUOInventory::ItemListGetUpdateItem(
     CExoLinkedListNode* pNode, unsigned char nList)
 {
@@ -165,7 +165,7 @@ void CSWSPlayerLUOInventory::ItemListSetStart(CExoLinkedListNode*& pNode,
         pNode = m_lstOverflow.GetHeadPos();
     }
 }
-// PC 0x006156B0 GOG 0x00615690
+// PC 0x006156B0 GOG 0x00615690 Xbox 0x00280460
 void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
                                             unsigned char nList)
 {
@@ -184,7 +184,7 @@ void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
 }
 
 // Dead code: not in the PC executable
-void CSWSPlayerLUOInventory::ItemListGetNext(CExoLinkedListNode*& pNode,
+void CSWSPlayerLUOInventory::ItemListGetNext(CExoLinkedListNode*& pNode,  // Xbox 0x002804B0
                                              unsigned char nList)
 {
     if (nList == 0)
@@ -200,7 +200,7 @@ void CSWSPlayerLUOInventory::ItemListGetNext(CExoLinkedListNode*& pNode,
         m_lstOverflow.GetNext(pNode);
     }
 }
-// PC 0x00615700 GOG 0x006156E0
+// PC 0x00615700 GOG 0x006156E0 Xbox 0x002804B0
 void CSWSPlayerLUOInventory::ItemListGetPrev(CExoLinkedListNode*& pNode,
                                              unsigned char nList)
 {
@@ -235,7 +235,7 @@ int CSWSPlayerLUOInventory::ItemListGetNumber(unsigned char nList)
     }
     return 0;
 }
-// PC 0x00615750 GOG 0x00615730
+// PC 0x00615750 GOG 0x00615730 Xbox 0x00280500
 void CSWSPlayerLUOInventory::ItemListRemove(CExoLinkedListNode* pNode,
                                             unsigned char nList)
 {
@@ -252,7 +252,7 @@ void CSWSPlayerLUOInventory::ItemListRemove(CExoLinkedListNode* pNode,
         delete m_lstOverflow.Remove(pNode);
     }
 }
-// PC 0x006157C0 GOG 0x006157A0
+// PC 0x006157C0 GOG 0x006157A0 Xbox 0x00280570
 void CSWSPlayerLUOInventory::ItemListAddHead(unsigned long oidItem,
                                              unsigned char nList,
                                              unsigned long nStackSize,
@@ -280,11 +280,11 @@ void CSWSPlayerLUOInventory::ItemListAddHead(unsigned long oidItem,
         delete pItem;
     }
 }
-// PC 0x00615830 GOG 0x00615810
+// PC 0x00615830 GOG 0x00615810 Xbox 0x002805E0
 CLastUpdateObject::~CLastUpdateObject()
 {
 }
-// PC 0x006158E0 GOG 0x006158C0
+// PC 0x006158E0 GOG 0x006158C0 Xbox 0x00280640
 unsigned long CSWSPlayerLastUpdateObject::GetKnownSpell(unsigned char nClass,
                                                         unsigned char nLevel,
                                                         unsigned char nIndex)
@@ -297,7 +297,7 @@ unsigned long CSWSPlayerLastUpdateObject::GetKnownSpell(unsigned char nClass,
     }
     return m_aKnownSpells[nList][nIndex];
 }
-// PC 0x00615920 GOG 0x00615900
+// PC 0x00615920 GOG 0x00615900 Xbox 0x00280680
 void CSWSPlayerLastUpdateObject::ClearVisibilityList()
 {
     if (m_lstVisibility.num > 0)
@@ -323,7 +323,7 @@ void CSWSPlayerLUOInventory::ClearStore()
         delete m_lstOverflow.RemoveHead();
     }
 }
-// PC 0x00615990 GOG 0x00615970
+// PC 0x00615990 GOG 0x00615970 Xbox 0x002806F0
 CSWSPlayerLUOInventory::CSWSPlayerLUOInventory()
 {
     ClearSlots();
@@ -332,7 +332,7 @@ CSWSPlayerLUOInventory::CSWSPlayerLUOInventory()
     ClearStore();
     m_oidRepository = CGameObjectArray::INVALIDOBJID;
 }
-// PC 0x00615AA0 GOG 0x00615A80
+// PC 0x00615AA0 GOG 0x00615A80 Xbox 0x00280820
 CSWSPlayerLUOInventory::~CSWSPlayerLUOInventory()
 {
     ClearSlots();
@@ -341,7 +341,7 @@ CSWSPlayerLUOInventory::~CSWSPlayerLUOInventory()
     ClearStore();
     m_oidRepository = CGameObjectArray::INVALIDOBJID;
 }
-// PC 0x00615BF0 GOG 0x00615BD0
+// PC 0x00615BF0 GOG 0x00615BD0 Xbox 0x00280930
 CLastUpdateObject::CLastUpdateObject()
 {
     m_nSoundSetFile = 0;
@@ -350,13 +350,13 @@ CLastUpdateObject::CLastUpdateObject()
     memset(m_nClass, UNSET_SHORT_CACHE, sizeof(m_nClass));
     memset(m_nClassLevel, UNSET_SHORT_CACHE, sizeof(m_nClassLevel));
 }
-// PC 0x00615E30 GOG 0x00615E10
+// PC 0x00615E30 GOG 0x00615E10 Xbox 0x00280B50
 CSWSPlayerLastUpdateObject::CSWSPlayerLastUpdateObject()
 {
     m_bCanLevelUp = 0;
     m_pExtraSpells = NULL;
 }
-// PC 0x00615F20 GOG 0x00615F00
+// PC 0x00615F20 GOG 0x00615F00 Xbox 0x00280F00
 CSWSPlayerLastUpdateObject::~CSWSPlayerLastUpdateObject()
 {
     ClearKnownSpells();
@@ -364,7 +364,7 @@ CSWSPlayerLastUpdateObject::~CSWSPlayerLastUpdateObject()
     delete m_pExtraSpells;
     m_pExtraSpells = NULL;
 }
-// PC 0x00615CD0 GOG 0x00615CB0
+// PC 0x00615CD0 GOG 0x00615CB0 Xbox 0x002809F0
 void CSWSPlayerLastUpdateObject::ClearKnownSpells()
 {
     for (int i = 0; i < 2; i++)
@@ -372,7 +372,7 @@ void CSWSPlayerLastUpdateObject::ClearKnownSpells()
         m_aKnownSpells[i].SetSize(0);
     }
 }
-// PC 0x00615D10 GOG 0x00615CF0
+// PC 0x00615D10 GOG 0x00615CF0 Xbox 0x00280A30
 void CSWSPlayerLastUpdateObject::ClearFeats()
 {
     m_lstFeats.SetSize(0);
@@ -388,14 +388,14 @@ void CSWSPlayerLastUpdateObject::ClearFeats()
     }
     m_lstFeatUses.SetSize(0);
 }
-// PC 0x00615D90 GOG 0x00615D70
+// PC 0x00615D90 GOG 0x00615D70 Xbox 0x00280AB0
 void CSWSPlayerLastUpdateObject::AddKnownSpell(unsigned char nClass,
                                                unsigned char nLevel,
                                                unsigned long nSpell)
 {
     m_aKnownSpells[nClass + nLevel].Add(nSpell);
 }
-// PC 0x00615DE0 GOG 0x00615DC0
+// PC 0x00615DE0 GOG 0x00615DC0 Xbox 0x00280B00
 void CSWSPlayerLastUpdateObject::ClearSpellAddDeleteLists()
 {
     for (int i = 0; i < 2; i++)

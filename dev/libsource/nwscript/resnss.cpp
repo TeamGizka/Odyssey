@@ -33,7 +33,7 @@ int CResNSS::IsLoaded()
 }
 
 // Dead code: not in the PC executable
-int CResNSS::OnResourceFreed()
+int CResNSS::OnResourceFreed()  // Xbox 0x00331990
 {
     m_bServiced = 0;
     m_nNSSSize = 0;
@@ -42,7 +42,7 @@ int CResNSS::OnResourceFreed()
 }
 
 // Dead code: not in the PC executable
-int CResNSS::OnResourceServiced()
+int CResNSS::OnResourceServiced()  // Xbox 0x00161470
 {
     unsigned char* pData;
 

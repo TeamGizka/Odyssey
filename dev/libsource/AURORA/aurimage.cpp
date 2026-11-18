@@ -43,7 +43,7 @@ void print(TiffHeader& header)
     printf(" %4d ImageDescriptor \n", header.nImageDescriptor);
     printf("\n");
 }
-// PC 0x004736C0 GOG 0x00473850
+// PC 0x004736C0 GOG 0x00473850 Xbox 0x003153E0
 void ImageFlipY(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
 {
     int nSize = nBPP * nHeight * nWidth;
@@ -62,7 +62,7 @@ void ImageFlipY(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
     memcpy(pImage, pBuffer, nSize);
     delete[] pBuffer;
 }
-// PC 0x004737B0 GOG 0x00473940
+// PC 0x004737B0 GOG 0x00473940 Xbox 0x003154D0
 void ImageFlipRB(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
 {
     int nSize;
@@ -193,7 +193,7 @@ unsigned char* ImageScale(unsigned char* pImage, int nSrcWidth, int nSrcHeight,
     delete[] pRow;
     return pScaled;
 }
-// PC 0x00473AC0 GOG 0x00473C50
+// PC 0x00473AC0 GOG 0x00473C50 Xbox 0x003159F0
 void ImageGammaCorrect(int nWidth, int nHeight, int nBPP, unsigned char* pImage,
                        float fGamma)
 {
@@ -220,7 +220,7 @@ void ImageGammaCorrect(int nWidth, int nHeight, int nBPP, unsigned char* pImage,
 }
 
 int shortcircuitdecode;
-// PC 0x00473B40 GOG 0x00473CD0
+// PC 0x00473B40 GOG 0x00473CD0 Xbox 0x00315A70
 unsigned char* ImageDecode(unsigned char* pImage, int nWidth, int nHeight,
                            unsigned char* pPalette, int nPaletteCount,
                            int* pnScheme, int nSchemeSize)
@@ -254,7 +254,7 @@ unsigned char* ImageDecode(unsigned char* pImage, int nWidth, int nHeight,
     }
     return (unsigned char*)pDecoded;
 }
-// PC 0x00473C40 GOG 0x00473DD0
+// PC 0x00473C40 GOG 0x00473DD0 Xbox 0x00315B70
 unsigned char* ImageRead16bit(char* sFileName, int* pnWidth, int* pnHeight,
                               float* pfScale, int* pnReserved)
 {
@@ -282,7 +282,7 @@ unsigned char* ImageRead16bit(char* sFileName, int* pnWidth, int* pnHeight,
     fclose(pFile);
     return pImage;
 }
-// PC 0x00473D40 GOG 0x00473ED0
+// PC 0x00473D40 GOG 0x00473ED0 Xbox 0x00315C70
 int ImageRead16bitHeader(char* sFileName, int* pnWidth, int* pnHeight,
                          float* pfScale, int* pnReserved)
 {
@@ -307,7 +307,7 @@ int ImageRead16bitHeader(char* sFileName, int* pnWidth, int* pnHeight,
     fclose(pFile);
     return 1;
 }
-// PC 0x00473E20 GOG 0x00473FB0
+// PC 0x00473E20 GOG 0x00473FB0 Xbox 0x00315D50
 int ImageReadS3TCHeader(FILE* pFile, int* pnWidth, int* pnHeight, int* pnFormat,
                         int* pnSize, float* pfScale)
 {
@@ -327,7 +327,7 @@ int ImageReadS3TCHeader(FILE* pFile, int* pnWidth, int* pnHeight, int* pnFormat,
     fread(pfScale, 4, 1, pFile);
     return 1;
 }
-// PC 0x00473EB0 GOG 0x00474040
+// PC 0x00473EB0 GOG 0x00474040 Xbox 0x00315DF0
 int ImageReadS3TCHeader(char* sFileName, int* pnWidth, int* pnHeight,
                         int* pnFormat, int* pnSize, float* pfScale)
 {
@@ -370,7 +370,7 @@ int ImageReadS3TCHeader(char* sFileName, int* pnWidth, int* pnHeight,
     return 1;
 #endif
 }
-// PC 0x00473FA0 GOG 0x00474130
+// PC 0x00473FA0 GOG 0x00474130 Xbox 0x00315EC0
 int ImageGetS3TCSize(int nWidth, int nHeight, int nFormat)
 {
     int nSize = 0;
@@ -396,7 +396,7 @@ int ImageGetS3TCSize(int nWidth, int nHeight, int nFormat)
     }
     return nSize;
 }
-// PC 0x00474010 GOG 0x004741A0
+// PC 0x00474010 GOG 0x004741A0 Xbox 0x00315F30
 int ImageReadTGAHeader(FILE* pFile, int* pnWidth, int* pnHeight, int* pnBPP)
 {
     TGAHeader header;
@@ -407,7 +407,7 @@ int ImageReadTGAHeader(FILE* pFile, int* pnWidth, int* pnHeight, int* pnBPP)
     *pnBPP = header.nBitsPerPixel >> 3;
     return *pnBPP;
 }
-// PC 0x00474050 GOG 0x004741E0
+// PC 0x00474050 GOG 0x004741E0 Xbox 0x00315F70
 unsigned char* ImageReadTGAImage(FILE* pFile, int nWidth, int nHeight, int nBPP)
 {
     unsigned char* pImage = new unsigned char[nBPP * nHeight * nWidth];
@@ -426,7 +426,7 @@ int ImageReadProcessedHeader(char*, int*, int*, char*, int*, int*, float*, char*
 {
     return 0;
 }
-// PC 0x00474080 GOG 0x00474210
+// PC 0x00474080 GOG 0x00474210 Xbox 0x00315FA0
 unsigned char* ImageReadTGA(char* sFileName, int* pnWidth, int* pnHeight,
                             int* pnBPP)
 {
@@ -469,13 +469,13 @@ unsigned char* ImageReadTGA(char* sFileName, int* pnWidth, int* pnHeight,
     }
     return NULL;
 }
-// PC 0x00474160 GOG 0x004742F0
+// PC 0x00474160 GOG 0x004742F0 Xbox 0x00316060
 unsigned char* ImageRead(char* sFileName, int* pnWidth, int* pnHeight,
                          int* pnBPP)
 {
     return ImageReadTGA(sFileName, pnWidth, pnHeight, pnBPP);
 }
-// PC 0x00474170 GOG 0x00474300
+// PC 0x00474170 GOG 0x00474300 Xbox 0x00316070
 int ImageReadHeader(char* sFileName, int* pnWidth, int* pnHeight, int* pnBPP)
 {
     char sPath[256];
@@ -516,7 +516,7 @@ int ImageReadHeader(char* sFileName, int* pnWidth, int* pnHeight, int* pnBPP)
     return 1;
 #endif
 }
-// PC 0x00474240 GOG 0x004743D0
+// PC 0x00474240 GOG 0x004743D0 Xbox 0x00316130
 unsigned char* ImageReadPLT(char* sFileName, int* pnWidth, int* pnHeight,
                             int* pnReserved)
 {
@@ -585,7 +585,7 @@ void ImageJulia(int nWidth, int nHeight, int nBPP, unsigned char* pImage,
         }
     }
 }
-// PC 0x004742E0 GOG 0x00474470
+// PC 0x004742E0 GOG 0x00474470 Xbox 0x00316E50
 unsigned char ImageInterpolate(unsigned char* pImage, float fX, float fY,
                                int nWidth, int nHeight)
 {
@@ -605,7 +605,7 @@ unsigned char ImageInterpolate(unsigned char* pImage, float fX, float fY,
     roundToInt(nResult, fValue);
     return (unsigned char)nResult;
 }
-// PC 0x004743E0 GOG 0x00474570
+// PC 0x004743E0 GOG 0x00474570 Xbox 0x003161D0
 unsigned char* ImageBuildPerlin(int nSize, float fScale)
 {
     unsigned char* pImage = new unsigned char[nSize * nSize];
@@ -617,7 +617,7 @@ unsigned char* ImageBuildPerlin(int nSize, float fScale)
     }
     return pImage;
 }
-// PC 0x00474440 GOG 0x004745D0
+// PC 0x00474440 GOG 0x004745D0 Xbox 0x00316230
 unsigned char* ImageBuildParameterPerlin(int nSize, float fScale, int nRange, int nBase)
 {
     int nPixels = nSize * nSize;
@@ -633,7 +633,7 @@ unsigned char* ImageBuildParameterPerlin(int nSize, float fScale, int nRange, in
     }
     return pImage;
 }
-// PC 0x004744A0 GOG 0x00474630
+// PC 0x004744A0 GOG 0x00474630 Xbox 0x00316F50
 unsigned char ImageGetPerlinPixel(unsigned char** ppImages, int nRow, int nColumn,
                         int nStart, int nLevels, int nSize)
 {
@@ -651,7 +651,7 @@ unsigned char ImageGetPerlinPixel(unsigned char** ppImages, int nRow, int nColum
     }
     return (unsigned char)nPixel + IMAGE_PERLIN_BIAS;
 }
-// PC 0x00474520 GOG 0x004746B0
+// PC 0x00474520 GOG 0x004746B0 Xbox 0x00316290
 float ImageGetAlphaMean(unsigned char* pImage, int nWidth, int nHeight,
                         int nBPP)
 {
@@ -693,7 +693,7 @@ float ImageGetAlphaMean(unsigned char* pImage, int nWidth, int nHeight,
 #endif
     return fSum / nPixels;
 }
-// PC 0x00474640 GOG 0x004747D0
+// PC 0x00474640 GOG 0x004747D0 Xbox 0x003163B0
 void ImageLowpassLowQualityBlur(unsigned char* pImage, unsigned char* pSource,
                                 int nWidth, int nHeight, int nSection)
 {
@@ -731,7 +731,7 @@ void ImageLowpassLowQualityBlur(unsigned char* pImage, unsigned char* pSource,
         }
     }
 }
-// PC 0x00474800 GOG 0x00474990
+// PC 0x00474800 GOG 0x00474990 Xbox 0x003164E0
 void ImageLowpassLowQualityBlur2(unsigned char* pImage, int nWidth,
                                  int nHeight)
 {
@@ -780,7 +780,7 @@ void ImageLowpassLowQualityBlur2(unsigned char* pImage, int nWidth,
     }
     memcpy(pImage, newimage, nWidth * nHeight);
 }
-// PC 0x00474A40 GOG 0x00474BD0
+// PC 0x00474A40 GOG 0x00474BD0 Xbox 0x003166E0
 void ImageLowpassBlur(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
 {
     float filter[3][3] = {
@@ -822,7 +822,7 @@ void ImageLowpassBlur(unsigned char* pImage, int nWidth, int nHeight, int nBPP)
     memcpy(pImage, newimage, nSize);
     delete[] newimage;
 }
-// PC 0x00474D90 GOG 0x00474F20
+// PC 0x00474D90 GOG 0x00474F20 Xbox 0x003168D0
 unsigned char* ImageGetSubImage(unsigned char* pImage, int nWidth, int nHeight,
                                 int nBPP, int nX, int nY, int nSubWidth,
                                 int nSubHeight)
@@ -838,7 +838,7 @@ unsigned char* ImageGetSubImage(unsigned char* pImage, int nWidth, int nHeight,
     }
     return pSubImage;
 }
-// PC 0x00474E60 GOG 0x00474FF0
+// PC 0x00474E60 GOG 0x00474FF0 Xbox 0x003169A0
 void ImageFillAlpha(unsigned char* pImage, int nWidth, int nHeight, int nBPP,
                     const Vector& vColor)
 {
@@ -877,7 +877,7 @@ void ImageFillAlpha(unsigned char* pImage, int nWidth, int nHeight, int nBPP,
         }
     }
 }
-// PC 0x00475030 GOG 0x004751C0
+// PC 0x00475030 GOG 0x004751C0 Xbox 0x00316B90
 void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
                    unsigned char* pImage, bool bFlipY)
 {
@@ -923,7 +923,7 @@ void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
     operator delete(pBuffer);
     fclose(pFile);
 }
-// PC 0x00475140 GOG 0x004752D0
+// PC 0x00475140 GOG 0x004752D0 Xbox 0x00316CA0
 unsigned char* ImageReadS3TC(FILE* pFile, int* pnWidth, int* pnHeight,
                              int* pnFormat, int* pnSize, float* pfScale)
 {
@@ -963,7 +963,7 @@ unsigned char* ImageReadS3TC(FILE* pFile, int* pnWidth, int* pnHeight,
     }
     return pImage;
 }
-// PC 0x00475250 GOG 0x004753E0
+// PC 0x00475250 GOG 0x004753E0 Xbox 0x00316DB0
 unsigned char* ImageReadS3TC(char* sFileName, int* pnWidth, int* pnHeight,
                              int* pnFormat, int* pnSize, float* pfScale)
 {
@@ -1008,7 +1008,7 @@ void ImageCopy(unsigned char* pDest, unsigned char* pSource, int nWidth, int nHe
     memcpy(pDest, pSource, nWidth * nHeight * nBPP);
 }
 
-unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage, int nFactor)
+unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage, int nFactor)  // Xbox 0x00315520
 {
     int nNewWidth = nWidth / nFactor;
     g_nImagesDownSampled++;
@@ -1046,7 +1046,7 @@ unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage,
     return pDest;
 }
 
-unsigned char* ImageDownSample(int nWidth, int nHeight, int nBPP, unsigned char* pImage)
+unsigned char* ImageDownSample(int nWidth, int nHeight, int nBPP, unsigned char* pImage)  // Xbox 0x003156C0
 {
     g_nImagesDownSampled++;
     int nNewWidth = nWidth / 2;
@@ -1102,7 +1102,7 @@ unsigned char* ImageDownSample(int nWidth, int nHeight, int nBPP, unsigned char*
     return pDest;
 }
 
-unsigned char* ImageSkipS3TCLevels(int nWidth, int nHeight, int nBPP, unsigned char* pImage, int nLevels)
+unsigned char* ImageSkipS3TCLevels(int nWidth, int nHeight, int nBPP, unsigned char* pImage, int nLevels)  // Xbox 0x00315940
 {
     int i = 0;
     nBPP = nBPP == 4 ? 16 : 8;

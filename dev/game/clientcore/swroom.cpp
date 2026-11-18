@@ -1,6 +1,6 @@
 #include "swroom.h"
 #define SWROOM_DEBUG 0
-// PC 0x0055B520 GOG 0x0055B650
+// PC 0x0055B520 GOG 0x0055B650 Xbox 0x000BEBD0
 CSWRoom::CSWRoom()
 {
     m_nEnvAudio = 0;
@@ -15,14 +15,14 @@ CSWRoom::~CSWRoom()
         EXOLOG("CSWRoom::~CSWRoom() no walk mesh %d\n", GetNoWalkMesh());
     }
 }
-// PC 0x0055B570 GOG 0x0055B6B0
+// PC 0x0055B570 GOG 0x0055B6B0 Xbox 0x000BEC40
 void CSWRoom::SetRoomInfo(const CResRef& cResRef, const Vector& vPosition)
 {
     SetNoWalkMesh(cResRef == "****");
     m_cResRef = cResRef;
     m_vPosition = vPosition;
 }
-// PC 0x0055B5C0 GOG 0x0055B700
+// PC 0x0055B5C0 GOG 0x0055B700 Xbox 0x000BEC90
 void CSWRoom::SetRoomEnvAudioProps(int nCount, CExoString* pasEnvAudio,
                                   int* panEnvAudio, float* pafEnvAudioVolume)
 {

@@ -86,7 +86,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x
     }
 }
 #endif
-// PC 0x00738D90 GOG 0x00738AF0
+// PC 0x00738D90 GOG 0x00738AF0 Xbox 0x000F9000
 void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -99,7 +99,7 @@ void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x00738DF0 GOG 0x00738B50
+// PC 0x00738DF0 GOG 0x00738B50 Xbox 0x000F9060
 void CSWGuiInGameInventory::NotUseable(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -127,7 +127,7 @@ void CSWGuiInGameInventory::NotUseableOnHawk(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x00738E50 GOG 0x00738BB0
+// PC 0x00738E50 GOG 0x00738BB0 Xbox 0x000F90C0
 void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -833,7 +833,7 @@ void CSWGuiInGameInventory::UpdatePortraits()
 #include "nwccreature.h"
 #include "exoinput.h"
 
-CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
+CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0x000F9B30
     : CSWGuiPanel(pManager)
 {
     CSWGuiButton btnItem;
@@ -1011,7 +1011,7 @@ void CSWGuiInGameInventory::SetItemRows(int nTopItem, int nSelectedItem)
     }
 }
 
-void CSWGuiInGameInventory::SelectNextItem()
+void CSWGuiInGameInventory::SelectNextItem()  // Xbox 0x000F8D20
 {
     int nSelected = m_nSelectedItem + 1;
     int nTop = m_nTopItem;
@@ -1028,7 +1028,7 @@ void CSWGuiInGameInventory::SelectNextItem()
     SetItemRows(nTop, nSelected);
 }
 
-void CSWGuiInGameInventory::SelectPreviousItem()
+void CSWGuiInGameInventory::SelectPreviousItem()  // Xbox 0x000F8D80
 {
     int nSelected = m_nSelectedItem - 1;
     int nTop = m_nTopItem;
@@ -1245,7 +1245,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
     }
 }
 
-void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)
+void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // Xbox 0x000F8E60
 {
     if (pControl->m_bSelected != 0)
     {

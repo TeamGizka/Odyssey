@@ -8,7 +8,7 @@ CSWSExpressionList::~CSWSExpressionList()
 {
 }
 
-// PC 0x005E45F0 GOG 0x005E4620
+// PC 0x005E45F0 GOG 0x005E4620 Xbox 0x0027ED10
 void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
 {
     while (pNode != NULL)
@@ -29,7 +29,7 @@ void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
         pNode = pNext;
     }
 }
-// PC 0x005E4640 GOG 0x005E4670
+// PC 0x005E4640 GOG 0x005E4670 Xbox 0x0027ED60
 int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
 {
     if (NWSEXPRESSION_DEBUG)
@@ -77,7 +77,7 @@ void CSWSExpressionList::AddNodeToHead(CSWSExpressionNode* pNode)
         m_pCurrent = pNode;
     }
 }
-// PC 0x005E4680 GOG 0x005E46B0
+// PC 0x005E4680 GOG 0x005E46B0 Xbox 0x0027EDA0
 CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 {
     if (NWSEXPRESSION_DEBUG)
@@ -88,7 +88,7 @@ CSWSExpressionNode* CSWSExpression::NewNode(int nType)
     pNode->m_nType = nType;
     return pNode;
 }
-// PC 0x005E4700 GOG 0x005E4730
+// PC 0x005E4700 GOG 0x005E4730 Xbox 0x0027EDE0
 void CSWSExpression::ClearAlternate(CSWSExpressionNode* pNode)
 {
     if (NWSEXPRESSION_DEBUG)
@@ -111,7 +111,7 @@ void CSWSExpression::ClearAlternate(CSWSExpressionNode* pNode)
         pNode->m_nVisits = 0;
     }
 }
-// PC 0x005E4740 GOG 0x005E4770
+// PC 0x005E4740 GOG 0x005E4770 Xbox 0x0027EE20
 void CSWSExpressionList::DeleteList()
 {
     CSWSExpressionNode* pNode = m_pHead;
@@ -129,7 +129,7 @@ void CSWSExpressionList::DeleteList()
         pNode = pNext;
     }
 }
-// PC 0x005E4780 GOG 0x005E47B0
+// PC 0x005E4780 GOG 0x005E47B0 Xbox 0x0027EE60
 void CSWSExpression::ClearGraph()
 {
     CSWSExpressionNode* pNode = m_pList->m_pHead;
@@ -145,14 +145,14 @@ void CSWSExpression::ClearGraph()
         pNode = pNode->m_pNext;
     }
 }
-// PC 0x005E47B0 GOG 0x005E47E0
+// PC 0x005E47B0 GOG 0x005E47E0 Xbox 0x0027EE90
 CSWSExpression::CSWSExpression()
 {
     m_pList = NULL;
     m_bCaseSensitive = 0;
     m_nId = 0;
 }
-// PC 0x005E4800 GOG 0x005E4830
+// PC 0x005E4800 GOG 0x005E4830 Xbox 0x0027EEC0
 CSWSExpression::~CSWSExpression()
 {
     if (m_pList != NULL)
@@ -174,7 +174,7 @@ CSWSExpression::~CSWSExpression()
 
     m_lstMatches.SetSize(0);
 }
-// PC 0x005E48D0 GOG 0x005E4900
+// PC 0x005E48D0 GOG 0x005E4900 Xbox 0x0027EF50
 int CSWSExpression::ParseString(CExoString sPattern)
 {
     int nDepth = 0;
@@ -350,7 +350,7 @@ int CSWSExpression::ParseString(CExoString sPattern)
     m_sPattern = sPattern;
     return 0;
 }
-// PC 0x005E4FC0 GOG 0x005E4FF0
+// PC 0x005E4FC0 GOG 0x005E4FF0 Xbox 0x0027F5F0
 int CSWSExpression::TestString(const CExoString& sString, int bCapture)
 {
     CExoString sText;

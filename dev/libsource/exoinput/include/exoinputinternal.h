@@ -33,12 +33,12 @@ public:
         m_nInputClassCount = pDesc->m_nInputClassCount;
         m_nCoolDown = pDesc->m_nCoolDown;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual int IsDetailed()
     {
         return 0;
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual int Is2Button()
     {
         return 0;
@@ -58,7 +58,7 @@ class CExoInputEventDescDetailed : public CExoInputEventDesc
 public:
     CExoInputEventDescDetailed();
     CExoInputEventDescDetailed(CExoInputEventDesc* pDesc);
-    // PC 0x0065D0F0 GOG 0x0065CF00
+    // PC 0x0065D0F0 GOG 0x0065CF00 Xbox 0x000A7970
     virtual int IsDetailed()
     {
         return 1;
@@ -74,7 +74,7 @@ class CExoInputeventDesc2ButtonAxis : public CExoInputEventDescDetailed
 {
 public:
     CExoInputeventDesc2ButtonAxis();
-    // PC 0x0065D0F0 GOG 0x0065CF00
+    // PC 0x0065D0F0 GOG 0x0065CF00 Xbox 0x000A7970
     virtual int Is2Button()
     {
         return 1;
@@ -107,7 +107,7 @@ struct CExoInputRepeatEvent
 class CExoInputClass
 {
 public:
-    CExoInputClass()  // PC 0x0062CD40 GOG 0x0062CC30
+    CExoInputClass()  // PC 0x0062CD40 GOG 0x0062CC30 Xbox 0x0014E370
         : m_lstMembers(0)
     {
     }

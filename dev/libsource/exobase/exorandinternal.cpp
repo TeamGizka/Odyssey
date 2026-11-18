@@ -5,7 +5,7 @@
 #include "platform.h"
 #endif
 #include <string.h>
-// PC 0x00637E70 GOG 0x00637D60
+// PC 0x00637E70 GOG 0x00637D60 Xbox 0x0014D320
 CExoRandInternal::~CExoRandInternal()
 {
     if (m_pBuffer != NULL)
@@ -14,7 +14,7 @@ CExoRandInternal::~CExoRandInternal()
         m_pBuffer = NULL;
     }
 }
-// PC 0x00637E90 GOG 0x00637D80
+// PC 0x00637E90 GOG 0x00637D80 Xbox 0x0014D340
 unsigned long CExoRandInternal::Rand()
 {
 
@@ -36,7 +36,7 @@ unsigned long CExoRandInternal::Rand()
         ((nState3 & m_anMask[3]) << m_anFeedbackShift[3]);
     return m_anState[0] ^ m_anState[1] ^ m_anState[2] ^ m_anState[3];
 }
-// PC 0x00637F30 GOG 0x00637E20
+// PC 0x00637F30 GOG 0x00637E20 Xbox 0x0014D3E0
 void CExoRandInternal::ReSeed(unsigned long nSeed0, unsigned long nSeed1,
                               unsigned long nSeed2, unsigned long nSeed3)
 {
@@ -62,7 +62,7 @@ void CExoRandInternal::ReSeed(unsigned long nSeed0, unsigned long nSeed1,
 
     Rand();
 }
-// PC 0x00638010 GOG 0x00637F00
+// PC 0x00638010 GOG 0x00637F00 Xbox 0x0014D4C0
 void CExoRandInternal::Add(unsigned char* pData, int nLength)
 {
     if (m_nBufferLength + nLength < 128)
@@ -132,7 +132,7 @@ void CExoRandInternal::SignalEvent(unsigned long nEvent)
         m_nTickCount = nEvent;
     }
 }
-// PC 0x00638090 GOG 0x00637F80
+// PC 0x00638090 GOG 0x00637F80 Xbox 0x0014D540
 CExoString CExoRandInternal::GetString(unsigned short nLength)
 {
     unsigned short nBlocks = 128 / nLength;
@@ -224,7 +224,7 @@ void CExoRandInternal::GenSeed()
     Add((unsigned char*)&sSystemInfo, sizeof(sSystemInfo));
 #endif
 }
-// PC 0x006382D0 GOG 0x006381C0
+// PC 0x006382D0 GOG 0x006381C0 Xbox 0x0014D6D0
 CExoRandInternal::CExoRandInternal()
 {
     CExoString sSeed;

@@ -40,7 +40,7 @@ inline CSWSTrigger* CSWCTrigger::GetServerTrigger()
     }
     return 0;
 }
-// PC 0x006DB7A0 GOG 0x0069CD00
+// PC 0x006DB7A0 GOG 0x0069CD00 Xbox 0x0009D4B0
 void CSWCTrigger::UnloadModel()
 {
     if (m_pAnimBase != NULL)
@@ -50,7 +50,7 @@ void CSWCTrigger::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x0069CF50 GOG 0x0069CD30
+// PC 0x0069CF50 GOG 0x0069CD30 Xbox 0x0009F220
 void CSWCTrigger::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -58,7 +58,7 @@ void CSWCTrigger::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x006EA680 GOG 0x006EA510
+// PC 0x006EA680 GOG 0x006EA510 Xbox 0x000B7750
 CSWCTrigger::CSWCTrigger()
     : CSWCObject(CGameObject::OBJECT_TYPE_TRIGGER)
 {
@@ -79,7 +79,7 @@ CSWCTrigger::CSWCTrigger()
     m_cTriggerType = -1;
 }
 
-// PC 0x006EA790 GOG 0x006EA340
+// PC 0x006EA790 GOG 0x006EA340 Xbox 0x000B75E0
 int CSWCTrigger::LoadModel(const CResRef& cModel, unsigned char nModel,
                            unsigned char nFlags)
 {
@@ -106,7 +106,7 @@ int CSWCTrigger::LoadModel(const CResRef& cModel, unsigned char nModel,
 
     return 1;
 }
-// PC 0x006EA870 GOG 0x006EA6E0
+// PC 0x006EA870 GOG 0x006EA6E0 Xbox 0x000B78C0
 void CSWCTrigger::UpdateTriggerColor(int nMode)
 {
     if (m_bTrap != 0)
@@ -148,7 +148,7 @@ void CSWCTrigger::UpdateTriggerColor(int nMode)
     float fFade = m_fHighlightFade;
     AurPartTriggerSetHighlight(m_pPartTrigger, true, fFade, true);
 }
-// PC 0x006EA930 GOG 0x006EA7A0
+// PC 0x006EA930 GOG 0x006EA7A0 Xbox 0x000B79A0
 void CSWCTrigger::DisplayTrigger(int bDisplay)
 {
     if (bDisplay != m_bDisplayed)
@@ -173,7 +173,7 @@ void CSWCTrigger::DisplayTrigger(int bDisplay)
         UpdateTriggerColor(1);
     }
 }
-// PC 0x006EA990 GOG 0x006EA800
+// PC 0x006EA990 GOG 0x006EA800 Xbox 0x000B7A00
 void CSWCTrigger::SetCursor(unsigned char nTrigger)
 {
     int nCursor;
@@ -195,7 +195,7 @@ void CSWCTrigger::SetCursor(unsigned char nTrigger)
 void CSWCTrigger::SetMineIcon(unsigned char nIcon)
 {
 }
-// PC 0x006EAA20 GOG 0x006EA890
+// PC 0x006EAA20 GOG 0x006EA890 Xbox 0x000B7A70
 void CSWCTrigger::UpdatePosition()
 {
     Vector vMin = m_pvVertices[0];
@@ -235,7 +235,7 @@ void CSWCTrigger::UpdatePosition()
                    vHalf.m_fZ + vMin.m_fZ);
     m_vPosition = vCenter;
 }
-// PC 0x006EAB70 GOG 0x006EA9E0
+// PC 0x006EAB70 GOG 0x006EA9E0 Xbox 0x000B7BC0
 unsigned char CSWCTrigger::GetCenter(Vector& vCenter)
 {
     CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
@@ -273,7 +273,7 @@ unsigned char CSWCTrigger::GetCenter(Vector& vCenter)
     }
     return nResult;
 }
-// PC 0x006EADC0 GOG 0x006EA420
+// PC 0x006EADC0 GOG 0x006EA420 Xbox 0x000B7660
 int CSWCTrigger::GetMineStrengthLevel(int nTrapType)
 {
     if (nTrapType == TRAP_FLASH_STUN_MINOR ||
@@ -318,7 +318,7 @@ int CSWCTrigger::GetMineStrengthLevel(int nTrapType)
     }
     return MINE_STRENGTH_NONE;
 }
-// PC 0x006EAE80 GOG 0x006EAC30
+// PC 0x006EAE80 GOG 0x006EAC30 Xbox 0x000B7E70
 void CSWCTrigger::ActionMenuDisableMine(unsigned long nAction,
                                         CSWCCreature* pCreature)
 {
@@ -329,20 +329,20 @@ void CSWCTrigger::ActionMenuDisableMine(unsigned long nAction,
         pMessage->SendPlayerToServerInput_UseSkill(CSWRules::SKILL_DEMOLITIONS, 0, m_nId, vTarget);
     }
 }
-// PC 0x006EAED0 GOG 0x006EAC80
+// PC 0x006EAED0 GOG 0x006EAC80 Xbox 0x000B7EC0
 void CSWCTrigger::ActionMenuRecoverMine(unsigned long nAction,
                                         CSWCCreature* pCreature)
 {
     pCreature->PerformSkill(1, 0x65, GetId());
 }
-// PC 0x006EAEF0 GOG 0x006EA4E0
+// PC 0x006EAEF0 GOG 0x006EA4E0 Xbox 0x000B7720
 void CSWCTrigger::AddFireAndForgetAnimation(unsigned short nAnimation,
                                             void* pData, unsigned short nFlags)
 {
     unsigned long nLength = (unsigned long)GetAnimationLength(nAnimation);
     InsertFireForgetAnimation(nAnimation, nLength, 1.0f, pData, 0);
 }
-// PC 0x006EAF20 GOG 0x006EACA0
+// PC 0x006EAF20 GOG 0x006EACA0 Xbox 0x000B7EE0
 void CSWCTrigger::AnimationUpdate()
 {
     unsigned short nAnimation;
@@ -377,7 +377,7 @@ void CSWCTrigger::AnimationUpdate()
         }
     }
 }
-// PC 0x006EAFE0 GOG 0x006EAD60
+// PC 0x006EAFE0 GOG 0x006EAD60 Xbox 0x000B7FA0
 int CSWCTrigger::LineSegmentIntersectTrigger(const Vector& vStart,
                                              const Vector& vEnd, Vector* pvHit)
 {
@@ -409,7 +409,7 @@ int CSWCTrigger::LineSegmentIntersectTrigger(const Vector& vStart,
 
     return 0;
 }
-// PC 0x006EB0B0 GOG 0x006EAE30
+// PC 0x006EB0B0 GOG 0x006EAE30 Xbox 0x000B8080
 unsigned char CSWCTrigger::GetReticlePoint(Vector& vPoint)
 {
     int nResult;
@@ -448,7 +448,7 @@ unsigned char CSWCTrigger::GetReticlePoint(Vector& vPoint)
 done:
     return nResult;
 }
-// PC 0x006EB250 GOG 0x006EA620
+// PC 0x006EB250 GOG 0x006EA620 Xbox 0x000B7830
 CSWCTrigger::~CSWCTrigger()
 {
     if (m_pAnimBase != NULL)
@@ -470,7 +470,7 @@ CSWCTrigger::~CSWCTrigger()
         m_pPartTrigger = NULL;
     }
 }
-// PC 0x006EB330 GOG 0x006EAFF0
+// PC 0x006EB330 GOG 0x006EAFF0 Xbox 0x000B82E0
 void CSWCTrigger::AddToRenderList(int nMode)
 {
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
@@ -484,7 +484,7 @@ void CSWCTrigger::AddToRenderList(int nMode)
                                          m_nNumVertices, TRUE, afColor, this);
     UpdateTriggerColor(nMode);
 }
-// PC 0x006EB3F0 GOG 0x006EB0B0
+// PC 0x006EB3F0 GOG 0x006EB0B0 Xbox 0x000B83A0
 void CSWCTrigger::RemoveFromRenderList()
 {
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
@@ -497,7 +497,7 @@ void CSWCTrigger::RemoveFromRenderList()
         AurPartTriggerDelete(pModule->m_pInfo->m_pScene, m_pPartTrigger, false);
     }
 }
-// PC 0x006EB470 GOG 0x006EB130
+// PC 0x006EB470 GOG 0x006EB130 Xbox 0x000B8420
 void CSWCTrigger::SpecialDisplayTrigger(int bDisplay)
 {
     Vector vColor;
@@ -599,7 +599,7 @@ int CSWCTrigger::InTrigger(const Vector& vPoint)
     }
     return nIntersections % 2 == 1;
 }
-// PC 0x006EB570 GOG 0x006EB230
+// PC 0x006EB570 GOG 0x006EB230 Xbox 0x000B8520
 void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
                                      CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -748,7 +748,7 @@ void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
         break;
     }
 }
-// PC 0x006EBB10 GOG 0x006EB7D0
+// PC 0x006EBB10 GOG 0x006EB7D0 Xbox 0x000B8AF0
 void CSWCTrigger::UpdateAreaTransitionDisplay()
 {
     CGuiInGame* pGuiInGame = g_pAppManager->GetClientExoApp()->GetInGameGui();
@@ -834,7 +834,7 @@ void CSWCTrigger::UpdateAreaTransitionDisplay()
     }
 #endif
 }
-// PC 0x006EBE70 GOG 0x006EBB30
+// PC 0x006EBE70 GOG 0x006EBB30 Xbox 0x000B8E00
 void CSWCTrigger::AIUpdate()
 {
     unsigned long nDay;

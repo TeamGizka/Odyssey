@@ -54,7 +54,7 @@ int countreset();
 static StringGob* g_pStringObj;
 #ifdef _XBOX
 
-void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
+void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,  // Xbox 0x002CD6C0
               double dNear, double dFar)
 {
     GLRender::SetOrthoTransform(dLeft, dRight, dBottom, dTop, dNear, dFar);
@@ -124,7 +124,7 @@ void AurInitFont()
     initialized = 1;
 }
 #endif
-// PC 0x00461110 GOG 0x00461220
+// PC 0x00461110 GOG 0x00461220 Xbox 0x002CD720
 void AurFreeFont()
 {
     if (initialized != 0)
@@ -210,7 +210,7 @@ int SetConsoleFont(char* szFontName)
     return g_nFontNum;
 }
 #endif
-void PostedString::Post()  // PC 0x00461150 GOG 0x00461260
+void PostedString::Post()  // PC 0x00461150 GOG 0x00461260 Xbox 0x002CD750
 {
     float fElapsedRatio;
     float fRed;
@@ -245,7 +245,7 @@ void PostedString::Post()  // PC 0x00461150 GOG 0x00461260
         }
     }
 }
-// PC 0x00461240 GOG 0x00461350
+// PC 0x00461240 GOG 0x00461350 Xbox 0x002CD860
 void AurStringsFree()
 {
     int i;
@@ -264,7 +264,7 @@ void AurStringsFree()
         }
     }
 }
-// PC 0x004612B0 GOG 0x004613C0
+// PC 0x004612B0 GOG 0x004613C0 Xbox 0x002CD8D0
 char* untrace(char* szPrefix)
 {
     static char buf[256];
@@ -315,7 +315,7 @@ char* untrace(char* szPrefix)
     return buf;
 }
 
-PostedString::PostedString(char* szString, int nColumn, int nRow,
+PostedString::PostedString(char* szString, int nColumn, int nRow,  // Xbox 0x002CD9A0
                            float fDuration)
 {
     char* szSource;
@@ -381,7 +381,7 @@ PostedString::PostedString(char* szString, int nColumn, int nRow,
     m_fEndBlue = g_cDefCol2.m_fBlue;
     m_fEndAlpha = g_cDefCol2.m_fAlpha;
 }
-// PC 0x004614F0 GOG 0x00461600
+// PC 0x004614F0 GOG 0x00461600 Xbox 0x002CDB40
 void AurPostString(char* szString, int nColumn, int nRow, float fDuration)
 {
     new PostedString(szString, nColumn, nRow, fDuration);
@@ -413,7 +413,7 @@ void AurPrintf(const char* szFormat, ...)
         va_end(vaArgs);
     }
 }
-// PC 0x00461680 GOG 0x00461790
+// PC 0x00461680 GOG 0x00461790 Xbox 0x002CDB70
 void PostTraceStrings()
 {
     char szBuffer[512];
@@ -447,7 +447,7 @@ void PostTraceStrings()
 #endif
     g_bKeepHistory = bKeepHistory;
 }
-// PC 0x00461700 GOG 0x00461810
+// PC 0x00461700 GOG 0x00461810 Xbox 0x002CDC10
 void AurRenderStrings()
 {
     int i;

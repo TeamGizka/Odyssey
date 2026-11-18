@@ -93,7 +93,7 @@ public:
     int GetMeshBoundingBox(Vector& vMin, Vector& vMax) { return m_cSurfaceMesh.GetMeshBoundingBox(vMin, vMax); }
     void SetLocked(int bLocked) { m_bLocked = bLocked; }
     virtual ~CSWSPlaceable();
-    virtual CSWSPlaceable* AsSWSPlaceable()  // PC 0x00698BD0 GOG 0x00698980
+    virtual CSWSPlaceable* AsSWSPlaceable()  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     {
         return this;
     }
@@ -102,20 +102,20 @@ public:
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    virtual CExoLocString* GetFirstName()  // PC 0x00587F40 GOG 0x00587FC0
+    virtual CExoLocString* GetFirstName()  // PC 0x00587F40 GOG 0x00587FC0 Xbox 0x0021EC90
     {
         return &m_lsLocName;
     }
-    virtual CResRef GetDialogResref()  // PC 0x00587F50 GOG 0x00587FD0
+    virtual CResRef GetDialogResref()  // PC 0x00587F50 GOG 0x00587FD0 Xbox 0x002217A0
     {
         return m_cConversation;
     }
     virtual void DoDamage(int nDamage);
-    virtual unsigned long GetEffectSpellId()  // PC 0x00587F80 GOG 0x00588000
+    virtual unsigned long GetEffectSpellId()  // PC 0x00587F80 GOG 0x00588000 Xbox 0x002217D0
     {
         return m_EffectSpellId;
     }
-    virtual void SetEffectSpellId(unsigned long nSpellId)
+    virtual void SetEffectSpellId(unsigned long nSpellId)  // Xbox 0x002217E0
     {
         m_EffectSpellId = nSpellId;
     }

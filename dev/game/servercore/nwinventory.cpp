@@ -4,7 +4,7 @@
 #include "nwrules.h"
 #include "gameobjectarray.h"
 #include "nwsitem.h"
-// PC 0x005ECEC0 GOG 0x005ECEA0
+// PC 0x005ECEC0 GOG 0x005ECEA0 Xbox 0x0020DFF0
 CSWInventory::CSWInventory()
 {
     for (int i = 0; i < TOTAL_SLOT_COUNT; ++i)
@@ -17,7 +17,7 @@ CSWInventory::CSWInventory()
 CSWInventory::~CSWInventory()
 {
 }
-// PC 0x005ECEE0 GOG 0x005ECEC0
+// PC 0x005ECEE0 GOG 0x005ECEC0 Xbox 0x0020E040
 unsigned long CSWInventory::FindSlot(unsigned long nBaseItem)
 {
     unsigned long nSlots = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nEquipableSlots;
@@ -87,7 +87,7 @@ unsigned long CSWInventory::FindSlot(unsigned long nBaseItem)
     }
     return nSlots & INVENTORY_SLOT_LEFTHAND2;
 }
-// PC 0x005ECFD0 GOG 0x005ECFB0
+// PC 0x005ECFD0 GOG 0x005ECFB0 Xbox 0x0020E130
 int CSWInventory::GetItemInInventory(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -107,7 +107,7 @@ int CSWInventory::GetItemInInventory(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005ED000 GOG 0x005ECFE0
+// PC 0x005ED000 GOG 0x005ECFE0 Xbox 0x0020E160
 unsigned long CSWInventory::GetSlotFromItem(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -127,7 +127,7 @@ unsigned long CSWInventory::GetSlotFromItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005ED1D0 GOG 0x005ED1B0
+// PC 0x005ED1D0 GOG 0x005ED1B0 Xbox 0x0020E330
 CSWSItem* CSWInventory::GetItemInSlot(unsigned long nSlot)
 {
     unsigned long* pSlot = GetSlotPointer(nSlot);
@@ -140,7 +140,7 @@ CSWSItem* CSWInventory::GetItemInSlot(unsigned long nSlot)
 
     return NULL;
 }
-// PC 0x005ED040 GOG 0x005ED020
+// PC 0x005ED040 GOG 0x005ED020 Xbox 0x0020E1A0
 unsigned long* CSWInventory::GetSlotPointer(unsigned long nSlot)
 {
     switch (nSlot)
@@ -168,7 +168,7 @@ unsigned long* CSWInventory::GetSlotPointer(unsigned long nSlot)
     default: return NULL;
     }
 }
-// PC 0x005ED150 GOG 0x005ED130
+// PC 0x005ED150 GOG 0x005ED130 Xbox 0x0020E2B0
 int CSWInventory::RemoveItem(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -189,7 +189,7 @@ int CSWInventory::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005ED190 GOG 0x005ED170
+// PC 0x005ED190 GOG 0x005ED170 Xbox 0x0020E2F0
 void CSWInventory::PutItemInSlot(unsigned long nSlot, CSWSItem* pItem)
 {
     unsigned long* pSlot = GetSlotPointer(nSlot);

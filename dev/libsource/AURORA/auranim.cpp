@@ -52,7 +52,7 @@ static const float DANGLY_MIN_TIME_STEP = 0.0125f;
 static const float DANGLY_PERIOD_SCALE = 1.5f;
 static const float DANGLY_TIGHTNESS_SCALE = 0.5f;
 static const float DANGLY_WIND_SCALE = 20.0f;
-// PC 0x004B5D30 GOG 0x004B5E40
+// PC 0x004B5D30 GOG 0x004B5E40 Xbox 0x00326280
 CallBack* Gob::RegisterCallBack(void (*pfnCallBack)(CAurObject*, char*, void*),
                                 char* sEvent, void* pData, float fDelay,
                                 bool bRepeat)
@@ -62,7 +62,7 @@ CallBack* Gob::RegisterCallBack(void (*pfnCallBack)(CAurObject*, char*, void*),
     m_lCallBacks.Add(pCallBack);
     return pCallBack;
 }
-// PC 0x004B5DB0 GOG 0x004B5EC0
+// PC 0x004B5DB0 GOG 0x004B5EC0 Xbox 0x00326300
 void NewController::ReportKey(Part* pPart, MdlNode* pNode, int nKey,
                               float fDelta)
 {
@@ -138,17 +138,17 @@ void NewController::ReportKey(Part* pPart, MdlNode* pNode, int nKey,
         pObject->DoEvent("ReportKey", &report);
     }
 }
-// PC 0x004B1EE0 GOG 0x004B1FF0
+// PC 0x004B1EE0 GOG 0x004B1FF0 Xbox 0x00321CC0
 unsigned char LookAtAnimation::IsActive()
 {
     return m_pOutOfOrderRun->m_bDone == 0;
 }
-// PC 0x004B1EF0 GOG 0x004B2000
+// PC 0x004B1EF0 GOG 0x004B2000 Xbox 0x00321CD0
 void LookAtAnimation::Deactivate()
 {
     m_bDeactivated = 1;
 }
-// PC 0x004B1F00 GOG 0x004B2010
+// PC 0x004B1F00 GOG 0x004B2010 Xbox 0x00321CE0
 void Gob::EndLookAtAnimate()
 {
     if (m_pLookAtAnimation != 0)
@@ -156,12 +156,12 @@ void Gob::EndLookAtAnimate()
         m_pLookAtAnimation->Deactivate();
     }
 }
-// PC 0x004B1F10 GOG 0x004B2020
+// PC 0x004B1F10 GOG 0x004B2020 Xbox 0x00321D00
 int AnimationParseField(void* pAnimation, char* sField)
 {
     return ((Animation*)pAnimation)->InternalParseField(sField);
 }
-// PC 0x004B1F20 GOG 0x004B2030
+// PC 0x004B1F20 GOG 0x004B2030 Xbox 0x00321D10
 AnimRun::AnimRun(Animation* pAnimation)
 {
     m_pAnimation = pAnimation;
@@ -174,7 +174,7 @@ AnimRun::AnimRun(Animation* pAnimation)
     m_bDone = 0;
     m_fScale = 1.0f;
 }
-// PC 0x004B1F50 GOG 0x004B2060
+// PC 0x004B1F50 GOG 0x004B2060 Xbox 0x00321D50
 OOAnimRun::OOAnimRun(Animation* pAnimation, float* pKeyTimes, float* pValues,
                      int nCount, float fBlendTime)
     : AnimRun(pAnimation)
@@ -192,7 +192,7 @@ OOAnimRun::OOAnimRun(Animation* pAnimation, float* pKeyTimes, float* pValues,
     m_nNumValues = nCount;
     m_fBlendTime = fBlendTime;
 }
-// PC 0x004B20E0 GOG 0x004B21F0
+// PC 0x004B20E0 GOG 0x004B21F0 Xbox 0x00321F10
 CallBack::CallBack(void (*pfnCallBack)(CAurObject*, char*, void*), char* sEvent,
                    void* pData, float fDelay, bool bRepeat)
 {
@@ -217,13 +217,13 @@ bool Gob::CheckEvent(float fTime, bool bForce)
         bFire = true;
     return bFire;
 }
-// PC 0x004B2130 GOG 0x004B2240
+// PC 0x004B2130 GOG 0x004B2240 Xbox 0x00321F60
 inline Quaternion Interpolate(const Quaternion& qFirst,
                               const Quaternion& qSecond, float fPosition)
 {
     return slerp(qFirst, qSecond, fPosition);
 }
-// PC 0x004B2170 GOG 0x004B2280
+// PC 0x004B2170 GOG 0x004B2280 Xbox 0x00321FA0
 void PartLightsaber::Animate(float fTimeStep)
 {
     if (!(fTimeStep > lightsaberdelta))
@@ -291,7 +291,7 @@ OOAnimRun::~OOAnimRun()
     m_pStartValues = 0;
 }
 #endif
-// PC 0x004B2400 GOG 0x004B2510
+// PC 0x004B2400 GOG 0x004B2510 Xbox 0x00322240
 bool Gob::IsCharacter()
 {
     if (m_pModel != 0)
@@ -302,7 +302,7 @@ bool Gob::IsCharacter()
 
     return false;
 }
-// PC 0x004B2420 GOG 0x004B2530
+// PC 0x004B2420 GOG 0x004B2530 Xbox 0x00322260
 inline bool Gob::IsRenderEarly()
 {
     if (m_pModel != 0)
@@ -321,7 +321,7 @@ CustomAnimation::~CustomAnimation()
         delete m_pTree;
     }
 }
-// PC 0x004B2460 GOG 0x004B2570
+// PC 0x004B2460 GOG 0x004B2570 Xbox 0x00322280
 void LookAtAnimation::Control()
 {
     if (m_pTarget == 0)
@@ -389,7 +389,7 @@ void LookAtAnimation::Control()
         ((Animation*)m_pTree)->m_fLength = 0.25f;
     }
 }
-// PC 0x004B2B20 GOG 0x004B2C30
+// PC 0x004B2B20 GOG 0x004B2C30 Xbox 0x00322A80
 int Gob::StopOutOfOrderAnimation(char* sName)
 {
     int nCount = m_lOutOfOrderAnimations.m_nCount;
@@ -412,7 +412,7 @@ int Gob::StopOutOfOrderAnimation(char* sName)
 
     return nIndex;
 }
-// PC 0x004B2B70 GOG 0x004B2C80
+// PC 0x004B2B70 GOG 0x004B2C80 Xbox 0x00322AD0
 Animation* FindAnimation(Model* pModel, char* sName)
 {
     if (sName == NULL)
@@ -447,7 +447,7 @@ Animation* FindAnimation(Model* pModel, char* sName)
     }
     return NULL;
 }
-// PC 0x004B2F10 GOG 0x004B3020
+// PC 0x004B2F10 GOG 0x004B3020 Xbox 0x00322E70
 void Gob::DeregisterCallback(CallBack* pCallBack)
 {
     for (int nIndex = 0; nIndex < m_lCallBacks.m_nCount; ++nIndex)
@@ -460,7 +460,7 @@ void Gob::DeregisterCallback(CallBack* pCallBack)
         }
     }
 }
-// PC 0x004B2F80 GOG 0x004B3090
+// PC 0x004B2F80 GOG 0x004B3090 Xbox 0x00322EE0
 void AnimateEvents(Gob* pGob, Animation* pAnimation, float fPreviousTime,
                    float fTime, int nFlags)
 {
@@ -509,7 +509,7 @@ void AnimateEvents(Gob* pGob, Animation* pAnimation, float fPreviousTime,
         }
     }
 }
-// PC 0x004B3440 GOG 0x004B3550
+// PC 0x004B3440 GOG 0x004B3550 Xbox 0x00323390
 void NewController::GetKeyIndexAndAlpha(float fTime, MdlNode* pNode, int& nKey,
                                         float& fAlpha)
 {
@@ -531,7 +531,7 @@ void NewController::GetKeyIndexAndAlpha(float fTime, MdlNode* pNode, int& nKey,
         fAlpha = (fTime - pfKey[-1]) / (pfKey[0] - pfKey[-1]);
     }
 }
-// PC 0x004B34C0 GOG 0x004B35D0
+// PC 0x004B34C0 GOG 0x004B35D0 Xbox 0x00323420
 int NewController::GetFloatValue(float fTime, MdlNode* pNode, float& value)
 {
     if ((m_nValueFormat & VALUE_TYPE_MASK) != VALUE_TYPE_FLOAT)
@@ -581,7 +581,7 @@ int NewController::GetFloatValue(float fTime, MdlNode* pNode, float& value)
     }
     return 1;
 }
-// PC 0x004B35F0 GOG 0x004B3700
+// PC 0x004B35F0 GOG 0x004B3700 Xbox 0x00323560
 int NewController::GetVectorValue(float fTime, MdlNode* pNode, Vector& value)
 {
     if ((m_nValueFormat & VALUE_TYPE_MASK) != VALUE_TYPE_VECTOR)
@@ -670,7 +670,7 @@ int NewController::GetVectorValue(float fTime, MdlNode* pNode, Vector& value)
     }
     return 1;
 }
-// PC 0x004B3920 GOG 0x004B3A30
+// PC 0x004B3920 GOG 0x004B3A30 Xbox 0x00323910
 void NewController::GetQuaternionFromIndexLocation(int nKey, MdlNode* pNode,
                                                    Quaternion& qValue)
 {
@@ -716,7 +716,7 @@ void NewController::GetQuaternionFromIndexLocation(int nKey, MdlNode* pNode,
         }
     }
 }
-// PC 0x004B3A80 GOG 0x004B3B90
+// PC 0x004B3A80 GOG 0x004B3B90 Xbox 0x00323A70
 int NewController::GetQuaternionValue(float fTime, MdlNode* pNode,
                                       Quaternion& value)
 {
@@ -751,7 +751,7 @@ int NewController::GetQuaternionValue(float fTime, MdlNode* pNode,
     value = qValue;
     return 1;
 }
-// PC 0x004B3C00 GOG 0x004B3D10
+// PC 0x004B3C00 GOG 0x004B3D10 Xbox 0x00323BF0
 void NewController::Control(Part* pPart, MdlNode* pNode, float fTime,
                             float fPreviousTime, float fBlend)
 {
@@ -835,7 +835,7 @@ void NewController::Control(Part* pPart, MdlNode* pNode, float fTime,
         }
     }
 }
-// PC 0x004B3F60 GOG 0x004B4070
+// PC 0x004B3F60 GOG 0x004B4070 Xbox 0x00324010
 void ProceduralAnimateHierarchy(Part* pPart)
 {
     int i;
@@ -900,7 +900,7 @@ void ProceduralAnimateHierarchy(Part* pPart)
     for (i = 0; i < pPart->m_lstChildren.m_nCount; ++i)
         ProceduralAnimateHierarchy(pPart->m_lstChildren[i]);
 }
-// PC 0x004B46B0 GOG 0x004B47C0
+// PC 0x004B46B0 GOG 0x004B47C0 Xbox 0x003247B0
 void AnimateHierarchy(Part* pPart, MdlNode* pNode, float fTime,
                       float fPreviousTime, float fBlend, bool bAnimate)
 {
@@ -959,7 +959,7 @@ void AnimateHierarchy(Part* pPart, MdlNode* pNode, float fTime,
     }
     depth--;
 }
-// PC 0x004B4B90 GOG 0x004B4CA0
+// PC 0x004B4B90 GOG 0x004B4CA0 Xbox 0x00324C80
 void Part::Animate(float fTimeStep)
 {
     for (int nChild = 0; nChild < m_lstChildren.m_nCount; ++nChild)
@@ -967,7 +967,7 @@ void Part::Animate(float fTimeStep)
         m_lstChildren[nChild]->Animate(fTimeStep);
     }
 }
-// PC 0x004B4BC0 GOG 0x004B4CD0
+// PC 0x004B4BC0 GOG 0x004B4CD0 Xbox 0x00324CB0
 void PartDanglyMesh::Animate(float fTimeStep)
 {
     if (renderdangly == 0 || currentscene == 0)
@@ -1076,7 +1076,7 @@ void PartDanglyMesh::Animate(float fTimeStep)
     m_qLastOrientation = qWorldOrientation;
     Part::Animate(fTimeStep);
 }
-// PC 0x004B5B30 GOG 0x004B5C40
+// PC 0x004B5B30 GOG 0x004B5C40 Xbox 0x00326070
 void Gob::AddAnimationFlag(int nFlag)
 {
     int nIndex = m_lOutOfOrderAnimations.m_nCount - 1;
@@ -1085,7 +1085,7 @@ void Gob::AddAnimationFlag(int nFlag)
         m_lOutOfOrderAnimations[nIndex]->m_nFlags |= nFlag;
     }
 }
-// PC 0x004B5B60 GOG 0x004B5C70
+// PC 0x004B5B60 GOG 0x004B5C70 Xbox 0x003260A0
 void Gob::RemoveAnimationFlag(int nFlag)
 {
     int nIndex = m_lOutOfOrderAnimations.m_nCount - 1;
@@ -1098,7 +1098,7 @@ void Gob::RemoveAnimationFlag(int nFlag)
         }
     }
 }
-// PC 0x004B5B90 GOG 0x004B5CA0
+// PC 0x004B5B90 GOG 0x004B5CA0 Xbox 0x003260D0
 AnimRun* CurrentAnimation(Gob* pGob)
 {
     int nCount = pGob->m_lOutOfOrderAnimations.m_nCount;
@@ -1117,7 +1117,7 @@ AnimRun* CurrentAnimation(Gob* pGob)
 
     return 0;
 }
-// PC 0x004B5BD0 GOG 0x004B5CE0
+// PC 0x004B5BD0 GOG 0x004B5CE0 Xbox 0x00326110
 float FindAnimScale(Model* pModel, Animation* pAnimation)
 {
     float fScale = 1.0f;
@@ -1164,7 +1164,7 @@ void Gob::Reset()
     position_scale_factor = 1.0f;
     AnimateHierarchy(m_pRootPart, m_pRootPart->m_pNode, 0.0f, 0.0f, 1.0f, false);
 }
-// PC 0x004B5C10 GOG 0x004B5D20
+// PC 0x004B5C10 GOG 0x004B5D20 Xbox 0x00326160
 OOAnimRun* Gob::GetAnimation(char* sName, float* pfTime, float* pfLength)
 {
     OOAnimRun* pRun = 0;
@@ -1203,7 +1203,7 @@ OOAnimRun* Gob::GetAnimation(char* sName, float* pfTime, float* pfLength)
     }
     return pRun;
 }
-// PC 0x004B5FE0 GOG 0x004B60F0
+// PC 0x004B5FE0 GOG 0x004B60F0 Xbox 0x00326500
 Animation::~Animation()
 {
     if (m_nType != 0)
@@ -1215,7 +1215,7 @@ Animation::~Animation()
         }
     }
 }
-// PC 0x004B6070 GOG 0x004B6180
+// PC 0x004B6070 GOG 0x004B6180 Xbox 0x00326550
 void Gob::PlayOutOfOrderAnimation(char* sName, float* pfWeights,
                                  float* pfTimes, int nCount, float fLength)
 {
@@ -1248,7 +1248,7 @@ Animation::Animation(char* sName)
     m_fTransitionTime = 0.25f;
     m_pfnParseField = AnimationParseField;
 }
-// PC 0x004B61A0 GOG 0x004B62B0
+// PC 0x004B61A0 GOG 0x004B62B0 Xbox 0x003265D0
 void NewController::ReportKeys(Part* pPart, MdlNode* pNode,
                                float fStartTime, float fEndTime)
 {
@@ -1337,7 +1337,7 @@ void NewController::ReportKeys(Part* pPart, MdlNode* pNode,
         pPart->m_pAurObject->DoEvent("ReportKey", &report);
     }
 }
-// PC 0x004B6420 GOG 0x004B6530
+// PC 0x004B6420 GOG 0x004B6530 Xbox 0x00326910
 void MdlNode::InternalControl(Part* pPart, float fTime,
                              float fPreviousTime, float fBlend)
 {
@@ -1358,14 +1358,14 @@ void MdlNode::InternalControl(Part* pPart, float fTime,
         }
     }
 }
-// PC 0x004B64B0 GOG 0x004B65C0
+// PC 0x004B64B0 GOG 0x004B65C0 Xbox 0x003269B0
 void MdlNodeLight::InternalControl(Part* pPart, float fTime,
                                    float fPreviousTime, float fBlend)
 {
     PartLight* pLight = pPart->AsPartLight();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B64E0 GOG 0x004B65F0
+// PC 0x004B64E0 GOG 0x004B65F0 Xbox 0x003269E0
 void MdlNodeEmitter::InternalControl(Part* pPart, float fTime,
                                      float fPreviousTime, float fBlend)
 {
@@ -1373,28 +1373,28 @@ void MdlNodeEmitter::InternalControl(Part* pPart, float fTime,
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
     pEmitter->CalculateRadius();
 }
-// PC 0x004B6520 GOG 0x004B6630
+// PC 0x004B6520 GOG 0x004B6630 Xbox 0x00326A20
 void MdlNodeCamera::InternalControl(Part* pPart, float fTime,
                                     float fPreviousTime, float fBlend)
 {
     PartCamera* pCamera = pPart->AsPartCamera();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B6550 GOG 0x004B6660
+// PC 0x004B6550 GOG 0x004B6660 Xbox 0x00326A50
 void MdlNodeReference::InternalControl(Part* pPart, float fTime,
                                        float fPreviousTime, float fBlend)
 {
     PartReference* pReference = pPart->AsPartReference();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B6580 GOG 0x004B6690
+// PC 0x004B6580 GOG 0x004B6690 Xbox 0x00326A80
 void MdlNodeTriMesh::InternalControl(Part* pPart, float fTime,
                                      float fPreviousTime, float fBlend)
 {
     PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B65B0 GOG 0x004B66C0
+// PC 0x004B65B0 GOG 0x004B66C0 Xbox 0x00326AB0
 void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
                                       float fPreviousTime, float fBlend)
 {
@@ -1507,7 +1507,7 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
     }
     MdlNodeTriMesh::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B6B20 GOG 0x004B6C30
+// PC 0x004B6B20 GOG 0x004B6C30 Xbox 0x00327110
 int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
 {
     if (AURANIM_DEBUG)
@@ -1657,7 +1657,7 @@ int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
     return 1;
 }
 float FindAnimScale(Model* pModel, Animation* pAnimation);
-// PC 0x004B7FA0 GOG 0x004B80B0
+// PC 0x004B7FA0 GOG 0x004B80B0 Xbox 0x003285A0
 LookAtAnimation::LookAtAnimation(CAurObject* pTarget, Part* pPart, Gob* pGob,
                                  Part* pHeadPart, float fHorizontalLimit,
                                  float fVerticalLimit, float fDuration,
@@ -1679,7 +1679,7 @@ LookAtAnimation::LookAtAnimation(CAurObject* pTarget, Part* pPart, Gob* pGob,
     m_bRestoringOrientation = 0;
     BuildAnimation();
 }
-// PC 0x004B6FE0 GOG 0x004B70F0
+// PC 0x004B6FE0 GOG 0x004B70F0 Xbox 0x003275D0
 LookAtAnimation::~LookAtAnimation()
 {
     int nIndex = m_pGob->m_lOutOfOrderAnimations.m_nCount;
@@ -1691,7 +1691,7 @@ LookAtAnimation::~LookAtAnimation()
         }
     }
 }
-// PC 0x004B7090 GOG 0x004B71A0
+// PC 0x004B7090 GOG 0x004B71A0 Xbox 0x00327680
 void LookAtAnimation::BuildAnimation()
 {
     m_pTree = new Animation("LookAtAnimation");
@@ -1762,7 +1762,7 @@ void Gob::DoEvent(char* sEvent, void* pData)
     }
 }
 #endif
-void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0
+void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0 Xbox 0x00327B80
 {
     ProcessGob();
     if (!enablegobanimations)
@@ -2046,7 +2046,7 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0
     }
 }
 
-// PC 0x004B8110 GOG 0x004B8220
+// PC 0x004B8110 GOG 0x004B8220 Xbox 0x003286C0
 void Gob::BeginLookAtAnimate(CAurObject* pTarget, char* sTargetPart,
                              char* sHeadPart, float fHorizontalLimit,
                              float fVerticalLimit, float fDuration,
@@ -2315,7 +2315,7 @@ OOAnimRun::~OOAnimRun()
 #endif
 
 #ifdef _XBOX
-void Gob::DoEvent(char* sEvent, void* pData)
+void Gob::DoEvent(char* sEvent, void* pData)  // Xbox 0x00327A90
 {
     int nIndex = m_lCallBacks.m_nCount - 1;
     SafePointer<CAurObject> pObject(this);

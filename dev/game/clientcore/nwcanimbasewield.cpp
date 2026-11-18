@@ -6,7 +6,7 @@
 #include "nwitem.h"
 #include "clientexoapp.h"
 
-// PC 0x006F45C0 GOG 0x006F41B0
+// PC 0x006F45C0 GOG 0x006F41B0 Xbox 0x000C3110
 CSWCAnimBaseWield::CSWCAnimBaseWield()
 {
     m_nRightItemId = CGameObjectArray::INVALIDOBJID;
@@ -22,17 +22,17 @@ CSWCAnimBaseWield::CSWCAnimBaseWield()
     m_bTorchLit = 0;
     m_pTorchSound = 0;
 }
-// PC 0x006F46C0 GOG 0x006F4460
+// PC 0x006F46C0 GOG 0x006F4460 Xbox 0x000C3360
 int CSWCAnimBase::AddAnimationFlag(int nFlag)
 {
     return AddAnimationFlagInternal(m_pModel, nFlag);
 }
-// PC 0x006F46E0 GOG 0x006F4480
+// PC 0x006F46E0 GOG 0x006F4480 Xbox 0x000C3380
 int CSWCAnimBase::RemoveAnimationFlag(int nFlag)
 {
     return RemoveAnimationFlagInternal(m_pModel, nFlag);
 }
-// PC 0x006F4700 GOG 0x006F42B0
+// PC 0x006F4700 GOG 0x006F42B0 Xbox 0x000C31E0
 CSWCAnimBaseWield::~CSWCAnimBaseWield()
 {
     if (m_pTorchSound != 0)
@@ -56,13 +56,13 @@ CSWCAnimBaseWield::~CSWCAnimBaseWield()
     }
     UnloadModel();
 }
-// PC 0x006F47F0 GOG 0x006F43A0
+// PC 0x006F47F0 GOG 0x006F43A0 Xbox 0x000C32A0
 void CSWCAnimBaseWield::SetWieldLimited(int bLimited)
 {
     m_bWieldLimited = bLimited;
 }
 
-// PC 0x006F4800 GOG 0x006F44A0
+// PC 0x006F4800 GOG 0x006F44A0 Xbox 0x000C33A0
 int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
                                             unsigned short nAnimation,
                                             float fSpeed, int nFlags,
@@ -124,7 +124,7 @@ int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
     return CSWCAnimBaseTW::SetAnimationInternal(pObject, nAnimation, fSpeed,
                                                 nFlags, fBlend);
 }
-// PC 0x006F4A70 GOG 0x006F43B0
+// PC 0x006F4A70 GOG 0x006F43B0 Xbox 0x000C32B0
 int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
     CAurObject* pObject, unsigned char nSubObject, unsigned short nAnimation,
     float fSpeed, int nFlags, float fBlend)
@@ -135,7 +135,7 @@ int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
     }
     return SetAnimationInternal(pObject, nAnimation, fSpeed, nFlags, fBlend);
 }
-// PC 0x006F5250 GOG 0x006F4E70
+// PC 0x006F5250 GOG 0x006F4E70 Xbox 0x000C3CC0
 Gob* CSWCAnimBaseWield::GetModel(unsigned char nSlot)
 {
     switch (nSlot)
@@ -159,7 +159,7 @@ Gob* CSWCAnimBaseWield::GetModel(unsigned char nSlot)
     }
     return CSWCAnimBaseTW::GetModel(nSlot);
 }
-// PC 0x006F5340 GOG 0x006F4F60
+// PC 0x006F5340 GOG 0x006F4F60 Xbox 0x000C3DB0
 int CSWCAnimBaseWield::Wield(unsigned long nItemId, const CExoString& sAttach,
                              unsigned char nHand, float fScale)
 {
@@ -308,7 +308,7 @@ int CSWCAnimBaseWield::Wield(unsigned long nItemId, const CExoString& sAttach,
     RefreshHilite();
     return 1;
 }
-// PC 0x006F57D0 GOG 0x006F53C0
+// PC 0x006F57D0 GOG 0x006F53C0 Xbox 0x000C4210
 int CSWCAnimBaseWield::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     if (CSWCAnimBaseTW::LoadModel(sResRef, nType) != 0)
@@ -318,7 +318,7 @@ int CSWCAnimBaseWield::LoadModel(const CResRef& sResRef, unsigned char nType)
     }
     return 0;
 }
-// PC 0x006F56D0 GOG 0x006F52F0
+// PC 0x006F56D0 GOG 0x006F52F0 Xbox 0x000C4140
 void CSWCAnimBaseWield::ReAttachWieldedObjects()
 {
     Gob* pRightModel = GetItemAurObject(m_nRightItemId, CSWCObject::MODEL_SLOT_DEFAULT);
@@ -333,7 +333,7 @@ void CSWCAnimBaseWield::ReAttachWieldedObjects()
     }
     RefreshHilite();
 }
-// PC 0x006F4AB0 GOG 0x006F4710
+// PC 0x006F4AB0 GOG 0x006F4710 Xbox 0x000C35F0
 Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
                                                 unsigned char nSlot)
 {
@@ -345,7 +345,7 @@ Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
     }
     return pItem->GetModel(nSlot, 1);
 }
-// PC 0x006F4AE0 GOG 0x006F4740
+// PC 0x006F4AE0 GOG 0x006F4740 Xbox 0x000C3620
 int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
 {
     if (m_bWieldLimited == 0)
@@ -355,7 +355,7 @@ int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
     return g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nItemId) !=
            0;
 }
-// PC 0x006F4B10 GOG 0x006F4770
+// PC 0x006F4B10 GOG 0x006F4770 Xbox 0x000C3650
 void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
                                          const CResRef& sLeft)
 {
@@ -435,7 +435,7 @@ void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
 
     m_bItemsHidden = 1;
 }
-// PC 0x006F4D50 GOG 0x006F49B0
+// PC 0x006F4D50 GOG 0x006F49B0 Xbox 0x000C3860
 void CSWCAnimBaseWield::ShowWieldedItems()
 {
     if (m_bItemsHidden != 0)
@@ -501,7 +501,7 @@ void CSWCAnimBaseWield::TurnOffShadows()
 {
     CSWCAnimBase::TurnOffShadows();
 }
-// PC 0x006F4ED0 GOG 0x006F4B10
+// PC 0x006F4ED0 GOG 0x006F4B10 Xbox 0x000C39C0
 void CSWCAnimBaseWield::UpdateSound(int bPlaying)
 {
     if (bPlaying != 0 && m_bTorchLit != 0)
@@ -544,7 +544,7 @@ void CSWCAnimBaseWield::UpdateSound(int bPlaying)
         }
     }
 }
-// PC 0x006F5070 GOG 0x006F4CB0
+// PC 0x006F5070 GOG 0x006F4CB0 Xbox 0x000C3B00
 void CSWCAnimBaseWield::EnableDistortion()
 {
     Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);
@@ -560,7 +560,7 @@ void CSWCAnimBaseWield::EnableDistortion()
     CSWCAnimBase::EnableDistortion();
 }
 
-// PC 0x006F5100 GOG 0x006F4D40
+// PC 0x006F5100 GOG 0x006F4D40 Xbox 0x000C3B90
 void CSWCAnimBaseWield::DisableDistortion()
 {
     Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);

@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00786240 GOG 0x00786010
+// PC 0x00786240 GOG 0x00786010 Xbox 0x00339E20
 CResTGA::CResTGA()
 {
     m_bDataOwned = 0;
@@ -28,7 +28,7 @@ int CResTGA::CopyTGAData(unsigned char* pTGAData)
     memcpy(pTGAData, m_pTGAData, m_nDataSize);
     return 1;
 }
-// PC 0x00786290 GOG 0x00786060
+// PC 0x00786290 GOG 0x00786060 Xbox 0x00339E60
 int CResTGA::GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnDepth)
 {
     if (m_pHeader == 0)
@@ -41,7 +41,7 @@ int CResTGA::GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsig
     *pnDepth = m_pHeader->nBitsPerPixel;
     return 1;
 }
-// PC 0x007862D0 GOG 0x007860A0
+// PC 0x007862D0 GOG 0x007860A0 Xbox 0x00339EA0
 int CResTGA::OnResourceFreed()
 {
     if (m_bDataOwned && m_pTGAData)
@@ -60,7 +60,7 @@ int CResTGA::OnResourceFreed()
     m_pHeader = 0;
     return 1;
 }
-// PC 0x00786310 GOG 0x007860E0
+// PC 0x00786310 GOG 0x007860E0 Xbox 0x00339EE0
 int CResTGA::ReadColorMappedRLETGA()
 {
     unsigned char* pSource = m_pTGAData;
@@ -97,7 +97,7 @@ int CResTGA::ReadColorMappedRLETGA()
     m_bDataOwned = 1;
     return 1;
 }
-// PC 0x00786550 GOG 0x00786320
+// PC 0x00786550 GOG 0x00786320 Xbox 0x0033A130
 int CResTGA::OnResourceServiced()
 {
     if (m_pResource == 0)
@@ -186,7 +186,7 @@ int CResTGA::OnResourceServiced()
     m_bServiced = 1;
     return 1;
 }
-// PC 0x007863A0 GOG 0x00786170
+// PC 0x007863A0 GOG 0x00786170 Xbox 0x00339F70
 int CResTGA::ReadUnmappedRLETGA()
 {
     unsigned char* pSource = m_pTGAData;
@@ -290,7 +290,7 @@ unsigned char* CResTGA::GetTGAColorMapPtr()
 {
     return m_pColorMap;
 }
-// PC 0x00786840 GOG 0x00786610
+// PC 0x00786840 GOG 0x00786610 Xbox 0x0033A3E0
 unsigned char* CResTGA::GetTGADataPtr()
 {
     return m_pTGAData;
@@ -301,7 +301,7 @@ TGAHeader* CResTGA::GetTGAHeaderPtr()
 {
     return m_pHeader;
 }
-// PC 0x00786860 GOG 0x00786630
+// PC 0x00786860 GOG 0x00786630 Xbox 0x0033A710
 unsigned long CResTGA::GetTGASize()
 {
     return m_nDataSize;

@@ -11,7 +11,7 @@
 
 #include "nwspell.h"
 
-// PC 0x0073B1B0 GOG 0x0073AA90
+// PC 0x0073B1B0 GOG 0x0073AA90 Xbox 0x00102190
 CSWGuiSkillFlow::CSWGuiSkillFlow()
 {
     int i;
@@ -59,7 +59,7 @@ void CSWGuiSkillFlow::Clear()
     }
 }
 
-// PC 0x0073AC90 GOG 0x0073ABC0
+// PC 0x0073AC90 GOG 0x0073ABC0 Xbox 0x00101D30
 void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cFlowExtent = cExtent;
@@ -108,7 +108,7 @@ void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
     }
     m_cExtent = cFlowExtent;
 }
-// PC 0x0073AE40 GOG 0x0073A9F0
+// PC 0x0073AE40 GOG 0x0073A9F0 Xbox 0x00101C90
 void CSWGuiSkillFlow::Draw(float fElapsed)
 {
     int i;
@@ -129,7 +129,7 @@ void CSWGuiSkillFlow::Draw(float fElapsed)
         }
     }
 }
-// PC 0x0073B2E0 GOG 0x0073B260
+// PC 0x0073B2E0 GOG 0x0073B260 Xbox 0x00102320
 void CSWGuiSkillFlow::SetSkillSelected(unsigned char nSkill, int bSelected)
 {
     if (m_aSkills[nSkill].m_bSelected != bSelected)
@@ -138,18 +138,18 @@ void CSWGuiSkillFlow::SetSkillSelected(unsigned char nSkill, int bSelected)
         SetSkillStatus(nSkill, m_aSkills[nSkill].m_nStatus);
     }
 }
-// PC 0x0073B8F0 GOG 0x0073B2B0
+// PC 0x0073B8F0 GOG 0x0073B2B0 Xbox 0x00102370
 CSWGuiSkillFlowChart::CSWGuiSkillFlowChart()
 {
     m_nSelectedCol = 0;
     m_nSelectedRow = 0;
 }
-// PC 0x0073B910 GOG 0x0073B2D0
+// PC 0x0073B910 GOG 0x0073B2D0 Xbox 0x00102390
 CSWGuiSkillFlowChart::~CSWGuiSkillFlowChart()
 {
     ClearChart();
 }
-// PC 0x0073BE80 GOG 0x0073BBE0
+// PC 0x0073BE80 GOG 0x0073BBE0 Xbox 0x00102D20
 void CSWGuiSkillFlowChart::BuildSortedPowerList(
     CExoArrayList<unsigned long>& lstPowers)
 {
@@ -218,7 +218,7 @@ void CSWGuiSkillFlowChart::BuildSortedPowerList(
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     pInGameGui->m_aSortedPowers = lstPowers;
 }
-// PC 0x0073B970 GOG 0x0073B330
+// PC 0x0073B970 GOG 0x0073B330 Xbox 0x001023B0
 void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
                                       unsigned long nPower2,
                                       unsigned long nPower3, int bSecret)
@@ -248,7 +248,7 @@ void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
     }
     m_cFlows.Add(pFlow);
 }
-// PC 0x0073BB10 GOG 0x0073B4D0
+// PC 0x0073BB10 GOG 0x0073B4D0 Xbox 0x00102530
 void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
                                      unsigned long nFeat2,
                                      unsigned long nFeat3)
@@ -276,7 +276,7 @@ void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
     }
     m_cFlows.Add(pFlow);
 }
-// PC 0x0073AEB0 GOG 0x0073AD70
+// PC 0x0073AEB0 GOG 0x0073AD70 Xbox 0x00101E60
 void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus)
 {
     m_aSkills[nSkill].m_nStatus = nStatus;
@@ -348,7 +348,7 @@ unsigned int CSWGuiSkillFlow::SkillHitCheckMouse(int nX, int nY)
     }
     return m_aSkills[nHit].m_nSkill;
 }
-// PC 0x0073B330 GOG 0x0073AFB0
+// PC 0x0073B330 GOG 0x0073AFB0 Xbox 0x00102030
 int CSWGuiSkillFlowChart::ClearChart()
 {
     int nResult;
@@ -367,7 +367,7 @@ int CSWGuiSkillFlowChart::ClearChart()
     m_cFlows.num = 0;
     return nResult;
 }
-// PC 0x0073B370 GOG 0x0073B650
+// PC 0x0073B370 GOG 0x0073B650 Xbox 0x00102690
 void CSWGuiSkillFlowChart::SetSelectedSkill(unsigned long nSkill)
 {
     int i;
@@ -402,7 +402,7 @@ void CSWGuiSkillFlowChart::SetSelectedSkill(unsigned long nSkill)
         }
     }
 }
-// PC 0x0073B480 GOG 0x0073AFF0
+// PC 0x0073B480 GOG 0x0073AFF0 Xbox 0x00102070
 void CSWGuiSkillFlowChart::SetSkillStatus(unsigned long nSkill,
                                           unsigned char nStatus)
 {
@@ -431,7 +431,7 @@ void CSWGuiSkillFlowChart::SetSkillStatus(unsigned long nSkill,
         }
     }
 }
-// PC 0x0073C120 GOG 0x0073BE80
+// PC 0x0073C120 GOG 0x0073BE80 Xbox 0x00102FB0
 void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
                                           int bAllPowers)
 {
@@ -527,7 +527,7 @@ void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
         }
     }
 }
-// PC 0x0073C440 GOG 0x0073C1A0
+// PC 0x0073C440 GOG 0x0073C1A0 Xbox 0x00103290
 void CSWGuiSkillFlowChart::BuildSortedFeatList(
     CExoArrayList<unsigned short>& cFeats)
 {
@@ -576,7 +576,7 @@ void CSWGuiSkillFlowChart::BuildSortedFeatList(
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     pInGameGui->m_aSortedFeats = cFeats;
 }
-// PC 0x0073C580 GOG 0x0073C2E0
+// PC 0x0073C580 GOG 0x0073C2E0 Xbox 0x001033D0
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
 {
     CSWClass* pClass;
@@ -652,7 +652,7 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
         AddFeatSet(aFeats[i], nNextFeat, nAltFeat);
     }
 }
-// PC 0x0073C7A0 GOG 0x0073C500
+// PC 0x0073C7A0 GOG 0x0073C500 Xbox 0x001035B0
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
                                            int bBonusFeats)
 {
@@ -849,7 +849,7 @@ int CSWGuiSkillFlow::GetSkillIDIndex(unsigned long nSkill)
     }
     return -1;
 }
-// PC 0x0073B4E0 GOG 0x0073B050
+// PC 0x0073B4E0 GOG 0x0073B050 Xbox 0x001020D0
 int CSWGuiSkillFlowChart::SetSkillStatusAll(unsigned char nStatus)
 {
     int nResult;
@@ -868,7 +868,7 @@ int CSWGuiSkillFlowChart::SetSkillStatusAll(unsigned char nStatus)
     }
     return nResult;
 }
-// PC 0x0073B520 GOG 0x0073B760
+// PC 0x0073B520 GOG 0x0073B760 Xbox 0x001027A0
 int CSWGuiSkillFlowChart::SetTopLeft()
 {
     CSWGuiSkillFlow* pFlow;
@@ -898,7 +898,7 @@ int CSWGuiSkillFlowChart::SetTopLeft()
     return -1;
 }
 
-// PC 0x0073CD10 GOG 0x0073CA70
+// PC 0x0073CD10 GOG 0x0073CA70 Xbox 0x00103AE0
 CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -941,7 +941,7 @@ CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
     m_pCallbackObject = NULL;
     m_pCallback = NULL;
 }
-// PC 0x0073B590 GOG 0x0073B7D0
+// PC 0x0073B590 GOG 0x0073B7D0 Xbox 0x00102810
 int CSWGuiSkillFlowChart::HandleInput(int nEvent)
 {
     int nOldRow = m_nSelectedRow;
@@ -996,12 +996,12 @@ int CSWGuiSkillFlowChart::HandleInput(int nEvent)
     }
     return m_cFlows[m_nSelectedRow]->m_aSkills[m_nSelectedCol].m_nSkill;
 }
-// PC 0x0073B7B0 GOG 0x0073B090
+// PC 0x0073B7B0 GOG 0x0073B090 Xbox 0x00102A30
 CSWGuiSkillInfoBox::~CSWGuiSkillInfoBox()
 {
     m_lbSkills.ClearItems();
 }
-// PC 0x0073B0F0 GOG 0x0073B130
+// PC 0x0073B0F0 GOG 0x0073B130 Xbox 0x00102110
 void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1023,14 +1023,14 @@ void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0073B180 GOG 0x0073AA60
+// PC 0x0073B180 GOG 0x0073AA60 Xbox 0x00101D00
 void CSWGuiSkillInfoBox::SetCallback(CSWGuiObject* pObject, CSWGuiHandler pfnCallback)
 {
     m_pCallback = pfnCallback;
     m_pCallbackObject = pObject;
 }
 
-// PC 0x0073BCB0 GOG 0x0073BA10
+// PC 0x0073BCB0 GOG 0x0073BA10 Xbox 0x00102B60
 void CSWGuiSkillInfoBox::SetSkillList(const CExoArrayList<unsigned long>& lSkills,
                                       unsigned char nState)
 {
@@ -1044,7 +1044,7 @@ void CSWGuiSkillInfoBox::SetSkillList(const CExoArrayList<unsigned long>& lSkill
     m_lbSkills.AddControls(lControls, 0, 1, 0);
     SetActiveControl(&m_lbSkills, 0);
 }
-// PC 0x0073B1A0 GOG 0x0073AA80
+// PC 0x0073B1A0 GOG 0x0073AA80 Xbox 0x00101D20
 void CSWGuiSkillInfoBox::OnPanelRemoved()
 {
     m_pCallback = NULL;

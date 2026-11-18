@@ -36,7 +36,7 @@ void CSWGuiQuickPanel::CancelPanel()
     SetState(0);
 #endif
 }
-// PC 0x00760D20 GOG 0x00760B70
+// PC 0x00760D20 GOG 0x00760B70 Xbox 0x0013B8F0
 void CSWGuiQuickPanel::SetState(int nState)
 {
     m_nState = nState;
@@ -113,7 +113,7 @@ void CSWGuiQuickPanel::SetState(int nState)
     }
     SetActiveControl(&m_btnStep[m_nState], 0);
 }
-// PC 0x00760F30 GOG 0x00760DA0
+// PC 0x00760F30 GOG 0x00760DA0 Xbox 0x0013BA70
 void CSWGuiQuickPanel::OnSelectNameButton(CSWGuiControl* pControl)
 {
     CSWGuiNameChargen* pPanel;
@@ -174,13 +174,13 @@ void CSWGuiQuickPanel::CancelledByChild()
     CSWGuiTextParams* pParams = &pButton->m_cText.m_cParams;
     pParams->m_bHilightText = 1;
 }
-// PC 0x00761110 GOG 0x00760F80
+// PC 0x00761110 GOG 0x00760F80 Xbox 0x0013BB90
 void CSWGuiQuickPanel::PortraitCreationCompleted()
 {
     m_pMainCharGen->PortraitChanged();
     SetState(1);
 }
-// PC 0x00761130 GOG 0x00760FA0
+// PC 0x00761130 GOG 0x00760FA0 Xbox 0x0013BBB0
 void CSWGuiQuickPanel::NameCreationCompleted()
 {
     m_pMainCharGen->NameChanged();
@@ -191,7 +191,7 @@ CExoString CSWGuiCustomPanel::GetCurrentName()
 {
     return ((CSWGuiMainCharGen*)m_pParentPanel)->m_sName;
 }
-// PC 0x00761180 GOG 0x00760D80
+// PC 0x00761180 GOG 0x00760D80 Xbox 0x0013BA50
 void CSWGuiQuickPanel::OnSelectPlayButton(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -214,7 +214,7 @@ void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x007611E0 GOG 0x00761280
+// PC 0x007611E0 GOG 0x00761280 Xbox 0x0013BDE0
 void CSWGuiQuickPanel::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -251,7 +251,7 @@ CExoString CSWGuiQuickPanel::GetCurrentName()
 {
     return m_pMainCharGen->m_sName;
 }
-// PC 0x00761270 GOG 0x00760FC0
+// PC 0x00761270 GOG 0x00760FC0 Xbox 0x0013BBD0
 void CSWGuiQuickPanel::DoQuickStats()
 {
     unsigned char nIndex = m_pCreature->GetStats()->GetNumClasses() - 1;
@@ -280,7 +280,7 @@ void CSWGuiQuickPanel::DoQuickStats()
 }
 
 // Dead code: not in the PC executable
-void CSWGuiQuickPanel::PlayGame()
+void CSWGuiQuickPanel::PlayGame()  // Xbox 0x0013A220
 {
     m_pMainCharGen->BeginPlayGame();
 }
@@ -306,7 +306,7 @@ void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x00761550 GOG 0x00761390
+// PC 0x00761550 GOG 0x00761390 Xbox 0x0013BE70
 CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
                                    CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)
@@ -367,7 +367,7 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
     m_bCenterVertical = 1;
 #endif
 }
-// PC 0x00761950 GOG 0x00761260
+// PC 0x00761950 GOG 0x00761260 Xbox 0x0013BDC0
 void CSWGuiQuickPanel::OnPanelAdded()
 {
     DoQuickStats();

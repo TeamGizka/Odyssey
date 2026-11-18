@@ -84,7 +84,7 @@ public:
     virtual ~PerlinTextureController();
     virtual void Control();
     virtual void Init();
-    // PC 0x004794F0 GOG 0x00479680
+    // PC 0x004794F0 GOG 0x00479680 Xbox 0x0031A7D0
     virtual void ParseField(char* sField)
     {
         TextureController::ParseField(sField);
@@ -116,7 +116,7 @@ public:
     virtual void Control();
     virtual void Init();
 #ifdef _XBOX  // PC 0x005ED350 GOG 0x005ED330
-    virtual bool IsLinear()
+    virtual bool IsLinear()  // Xbox 0x001B9D80
 #else
     virtual char IsLinear()
 #endif
@@ -137,7 +137,7 @@ public:
     virtual ~HeatDistortTextureController();
     virtual void Control();
     virtual void Init();
-    virtual bool IsLinear()
+    virtual bool IsLinear()  // Xbox 0x001B9D80
     {
         return 1;
     }
@@ -151,7 +151,7 @@ class WaterTextureController : public TextureController
 {
 public:
     WaterTextureController(CAurTexture* pTexture);
-    virtual ~WaterTextureController()  // PC 0x00479300 GOG 0x00479490
+    virtual ~WaterTextureController()  // PC 0x00479300 GOG 0x00479490 Xbox 0x0031A5B0
     {
         delete[] m_pfHeight;
         delete[] m_pfVelocity;
@@ -183,7 +183,7 @@ class WaveTextureController : public TextureController
 {
 public:
     WaveTextureController(CAurTexture* pTexture);
-    virtual ~WaveTextureController()  // PC 0x00479490 GOG 0x00479620
+    virtual ~WaveTextureController()  // PC 0x00479490 GOG 0x00479620 Xbox 0x0031A770
     {
         delete[] m_pfWaveImage;
         delete[] m_pfOffsetImage;
@@ -202,7 +202,7 @@ class ArturoTextureController : public TextureController
 {
 public:
     ArturoTextureController(CAurTexture* pTexture);
-    virtual ~ArturoTextureController()  // PC 0x00479560 GOG 0x004796F0
+    virtual ~ArturoTextureController()  // PC 0x00479560 GOG 0x004796F0 Xbox 0x0031A870
     {
         delete[] m_pfArturoCurrent;
         delete[] m_pfArturoPrevious;
@@ -246,7 +246,7 @@ public:
     virtual void Control();
     virtual void Init();
 #ifdef _XBOX  // PC 0x00420990 GOG 0x004209A0
-    virtual bool IsLinear()
+    virtual bool IsLinear()  // Xbox 0x0031A9B0
 #else
     virtual char IsLinear()
 #endif
@@ -268,7 +268,7 @@ public:
     virtual void Control();
     virtual void Init();
 #ifdef _XBOX
-    virtual bool IsLinear()
+    virtual bool IsLinear()  // Xbox 0x0031A9B0
 #else
     virtual char IsLinear()
 #endif

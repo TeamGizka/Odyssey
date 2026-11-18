@@ -6,7 +6,7 @@
 #include <aurlist.h>
 
 const unsigned int nStripSplitThreshold = 1000;
-// PC 0x004AC210 GOG 0x004AC320
+// PC 0x004AC210 GOG 0x004AC320 Xbox 0x0031C5B0
 void NvStripifier::UpdateCacheFace(VertexCache* pCache, NvFaceInfo* pFace)
 {
     if (!pCache->InCache(pFace->m_nVertex0))
@@ -22,7 +22,7 @@ void NvStripifier::UpdateCacheFace(VertexCache* pCache, NvFaceInfo* pFace)
         pCache->AddEntry(pFace->m_nVertex2);
     }
 }
-// PC 0x004AC8C0 GOG 0x004AC9D0
+// PC 0x004AC8C0 GOG 0x004AC9D0 Xbox 0x0031D160
 NvEdgeInfo* NvStripifier::FindEdgeInfo(NvEdgeInfoList& lstEdges, int nVertex0,
                                        int nVertex1)
 {
@@ -52,7 +52,7 @@ NvEdgeInfo* NvStripifier::FindEdgeInfo(NvEdgeInfoList& lstEdges, int nVertex0,
 
     return 0;
 }
-// PC 0x004AC900 GOG 0x004ACA10
+// PC 0x004AC900 GOG 0x004ACA10 Xbox 0x0031D1A0
 bool NvStripifier::AlreadyExists(NvFaceInfo* pFace, NvFaceInfoList& lstFaces)
 {
     for (unsigned int i = 0; i < lstFaces.size(); i++)
@@ -109,7 +109,7 @@ int NvStripifier::FindStartPoint(NvFaceInfoList& lstFaces,  // PC 0x004AC950 GOG
     return -1;
 }
 #endif
-int NvStripifier::CalcNumHitsFace(VertexCache* pCache, NvFaceInfo* pFace)  // PC 0x004AC2D0 GOG 0x004AC3E0
+int NvStripifier::CalcNumHitsFace(VertexCache* pCache, NvFaceInfo* pFace)  // PC 0x004AC2D0 GOG 0x004AC3E0 Xbox 0x0031C670
 {
     int nNumHits = 0;
     if (pCache->InCache(pFace->m_nVertex0))
@@ -126,7 +126,7 @@ int NvStripifier::CalcNumHitsFace(VertexCache* pCache, NvFaceInfo* pFace)  // PC
     }
     return nNumHits;
 }
-// PC 0x004ACA90 GOG 0x004ACBA0
+// PC 0x004ACA90 GOG 0x004ACBA0 Xbox 0x0031D330
 NvFaceInfo* NvStripifier::FindGoodResetPoint(NvFaceInfoList& lstFaces,
                                            NvEdgeInfoList& lstEdges)
 {
@@ -167,7 +167,7 @@ NvFaceInfo* NvStripifier::FindGoodResetPoint(NvFaceInfoList& lstFaces,
     }
     return pResult;
 }
-// PC 0x004ACB50 GOG 0x004ACC60
+// PC 0x004ACB50 GOG 0x004ACC60 Xbox 0x0031CE70
 inline int NvStripifier::GetNextIndex(const NvIndexList& lstIndices, NvFaceInfo* pFace)
 {
     int nNumIndices = lstIndices.size();
@@ -220,7 +220,7 @@ inline int NvStripifier::GetNextIndex(const NvIndexList& lstIndices, NvFaceInfo*
     printf("GetNextIndex: Duplicate triangle sent\n");
     return -1;
 }
-// PC 0x004ACC40 GOG 0x004ACD50
+// PC 0x004ACC40 GOG 0x004ACD50 Xbox 0x0031D450
 void NvStripifier::UpdateCacheStrip(VertexCache* pCache, NvStripInfo* pStrip)
 {
     for (unsigned int i = 0; i < pStrip->m_lstFaces.size(); i++)
@@ -239,7 +239,7 @@ void NvStripifier::UpdateCacheStrip(VertexCache* pCache, NvStripInfo* pStrip)
         }
     }
 }
-// PC 0x004ACD60 GOG 0x004ACE70
+// PC 0x004ACD60 GOG 0x004ACE70 Xbox 0x0031D580
 float NvStripifier::CalcNumHitsStrip(VertexCache* pCache, NvStripInfo* pStrip)
 {
     int nNumHits = 0;
@@ -293,7 +293,7 @@ int NvStripifier::NumNeighbors(NvFaceInfo* pFace, NvEdgeInfoList& lstEdges)  // 
     return nNumNeighbors;
 }
 #endif
-float NvStripifier::AvgStripSize(const NvStripInfoList& lstStrips)  // PC 0x004ACEC0 GOG 0x004ACFD0
+float NvStripifier::AvgStripSize(const NvStripInfoList& lstStrips)  // PC 0x004ACEC0 GOG 0x004ACFD0 Xbox 0x0031CF60
 {
     int nSizeAccum = 0;
     int nNumStrips = lstStrips.size();
@@ -307,7 +307,7 @@ float NvStripifier::AvgStripSize(const NvStripInfoList& lstStrips)  // PC 0x004A
     return ((float)nSizeAccum) / ((float)nNumStrips);
 }
 
-// PC 0x004ACF30 GOG 0x004AD040
+// PC 0x004ACF30 GOG 0x004AD040 Xbox 0x0031D6F0
 bool NvStripInfo::Unique(NvFaceInfoList& lstFaces, NvFaceInfo* pFace)
 {
     bool bVertex0, bVertex1, bVertex2;
@@ -348,7 +348,7 @@ bool NvStripInfo::Unique(NvFaceInfoList& lstFaces, NvFaceInfo* pFace)
     }
     return true;
 }
-// PC 0x004AD370 GOG 0x004AD480
+// PC 0x004AD370 GOG 0x004AD480 Xbox 0x0031DAF0
 bool NvStripifier::FindTraversal(NvFaceInfoList& lstFaces,
                                  NvEdgeInfoList& lstEdges,
                                  NvStripInfo* pStrip,
@@ -394,7 +394,7 @@ bool NvStripifier::FindTraversal(NvFaceInfoList& lstFaces,
     }
     return (startInfo.m_pStartFace != 0);
 }
-// PC 0x004ACFF0 GOG 0x004AD100
+// PC 0x004ACFF0 GOG 0x004AD100 Xbox 0x0031D7B0
 bool NvStripInfo::SharesEdge(const NvFaceInfo* pFace, NvEdgeInfoList& lstEdges)
 {
     int nVertex1 = pFace->m_nVertex1;
@@ -417,7 +417,7 @@ bool NvStripInfo::SharesEdge(const NvFaceInfo* pFace, NvEdgeInfoList& lstEdges)
     }
     return false;
 }
-// PC 0x004AEDB0 GOG 0x004AEF30
+// PC 0x004AEDB0 GOG 0x004AEF30 Xbox 0x0031F8C0
 void NvStripifier::CreateStrips(NvStripInfoList& lstStrips,
                                 NvIndexList& lstIndices,
                                 NvIndexList& lstStripLengths)
@@ -499,7 +499,7 @@ void NvStripifier::CreateStrips(NvStripInfoList& lstStrips,
 }
 
 bool bNonManifoldFlag;
-// PC 0x004AF3F0 GOG 0x004AF500
+// PC 0x004AF3F0 GOG 0x004AF500 Xbox 0x0031F110
 void NvStripifier::BuildStripifyInfo(NvFaceInfoList& lstFaces,
                                     NvEdgeInfoList& lstEdges)
 {
@@ -592,7 +592,7 @@ void NvStripifier::BuildStripifyInfo(NvFaceInfoList& lstFaces,
         }
     }
 }
-// PC 0x004AF760 GOG 0x004AF870
+// PC 0x004AF760 GOG 0x004AF870 Xbox 0x0031F460
 void NvStripifier::CommitStrips(NvStripInfoList& lstStrips,
                                 const NvStripInfoList& lstNewStrips,
                                 MyFaceList& lstFaces)
@@ -632,7 +632,7 @@ void NvStripifier::CommitStrips(NvStripInfoList& lstStrips,
 }
 
 List<NvFaceInfo*> facestodelete;
-// PC 0x004AF8B0 GOG 0x004AF9C0
+// PC 0x004AF8B0 GOG 0x004AF9C0 Xbox 0x0031F590
 void NvStripifier::RemoveSmallStrips(NvStripInfoList& lstStrips,
                                      NvStripInfoList& lstLargeStrips,
                                      NvFaceInfoList& lstFaces)
@@ -705,7 +705,7 @@ void NvStripifier::RemoveSmallStrips(NvStripInfoList& lstStrips,
     delete pCache;
     delete[] pVisited;
 }
-// PC 0x004AFBF0 GOG 0x004AFD00
+// PC 0x004AFBF0 GOG 0x004AFD00 Xbox 0x0031FD80
 void NvStripifier::SplitUpStripsAndOptimize(NvStripInfoList& lstStrips,
                                             NvStripInfoList& lstOptimizedStrips,
                                             NvEdgeInfoList& lstEdges,
@@ -830,7 +830,7 @@ void NvStripifier::SplitUpStripsAndOptimize(NvStripInfoList& lstStrips,
 int numsamples = 10;
 
 int numedges = 6;
-// PC 0x004B0B20 GOG 0x004B0C30
+// PC 0x004B0B20 GOG 0x004B0C30 Xbox 0x00320B10
 void NvStripifier::FindAllStrips(NvStripInfoList& lstStrips,
                                  NvFaceInfoList& lstFaces,
                                  NvEdgeInfoList& lstEdges, int nSamples,
@@ -1053,7 +1053,7 @@ void NvStripInfo::Build(NvEdgeInfoList& lstEdges, NvFaceInfoList& lstFaces)  // 
     Combine(lstForward, lstBackward);
 }
 #endif
-void NvStripInfo::Combine(const NvFaceInfoList& lstForward,  // PC 0x004AF1C0 GOG 0x004AF340
+void NvStripInfo::Combine(const NvFaceInfoList& lstForward,  // PC 0x004AF1C0 GOG 0x004AF340 Xbox 0x0031FC80
                           const NvFaceInfoList& lstBackward)
 {
     int nNumFaces = lstBackward.size();
@@ -1069,7 +1069,7 @@ void NvStripInfo::Combine(const NvFaceInfoList& lstForward,  // PC 0x004AF1C0 GO
         m_lstFaces.push_back(lstForward[i]);
     }
 }
-// PC 0x004B1580 GOG 0x004B1690
+// PC 0x004B1580 GOG 0x004B1690 Xbox 0x00321460
 void NvStripifier::Stripify(const NvIndexList& lstIndices, int nCacheSize,
                             int nMinStripLength, MyFaceList& lstFaces,
                             NvStripInfoList& lstStrips,
@@ -1119,7 +1119,7 @@ void NvStripifier::Stripify(const NvIndexList& lstIndices, int nCacheSize,
 
 #define CACHESIZE_GEFORCE1_2 16
 #define MIN_STRIP_LENGTH 2
-// PC 0x004B17D0 GOG 0x004B18E0
+// PC 0x004B17D0 GOG 0x004B18E0 Xbox 0x00321680
 void AurStripify(List<int>& lstIndices, List<List<int> >& lstStrips)
 {
     MyFaceList lstFaces;
@@ -1184,7 +1184,7 @@ NvFaceInfo* NvStripifier::FindOtherFace(NvEdgeInfoList& lstEdges, int nVertex0, 
 #endif
 
 #ifdef _XBOX
-int NvStripifier::NumNeighbors(NvFaceInfo* pFace, NvEdgeInfoList& lstEdges)
+int NvStripifier::NumNeighbors(NvFaceInfo* pFace, NvEdgeInfoList& lstEdges)  // Xbox 0x0031D660
 {
     int nNumNeighbors = 0;
 
@@ -1206,7 +1206,7 @@ int NvStripifier::NumNeighbors(NvFaceInfo* pFace, NvEdgeInfoList& lstEdges)
 #endif
 
 #ifdef _XBOX
-void NvStripInfo::Build(NvEdgeInfoList& lstEdges, NvFaceInfoList& lstFaces)
+void NvStripInfo::Build(NvEdgeInfoList& lstEdges, NvFaceInfoList& lstFaces)  // Xbox 0x00320460
 {
     static NvIndexList scratchIndices;
     scratchIndices.resize(0);
@@ -1294,7 +1294,7 @@ void NvStripInfo::Build(NvEdgeInfoList& lstEdges, NvFaceInfoList& lstFaces)
 #endif
 
 #ifdef _XBOX
-int NvStripifier::FindStartPoint(NvFaceInfoList& lstFaces,
+int NvStripifier::FindStartPoint(NvFaceInfoList& lstFaces,  // Xbox 0x0031D1F0
                                  NvEdgeInfoList& lstEdges)
 {
     for (int i = 0; i < lstFaces.size(); i++)

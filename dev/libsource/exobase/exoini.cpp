@@ -25,23 +25,23 @@ CExoIni::~CExoIni()
 }
 #else
 
-CExoIni::CExoIni()
+CExoIni::CExoIni()  // Xbox 0x0025DD00
 {
 }
 
-int CExoIni::ReadIniEntry(CExoString& sValue, const CExoString& sSection,
+int CExoIni::ReadIniEntry(CExoString& sValue, const CExoString& sSection,  // Xbox 0x00306280
                           const CExoString& sKey, const CExoString& sDefault)
 {
     return 0;
 }
 
-int CExoIni::WriteIniEntry(const CExoString& sSection, const CExoString& sKey,
+int CExoIni::WriteIniEntry(const CExoString& sSection, const CExoString& sKey,  // Xbox 0x00306280
                            const CExoString& sValue, const CExoString& sDefault)
 {
     return 0;
 }
 
-CExoIni::~CExoIni()
+CExoIni::~CExoIni()  // Xbox 0x001A2B40
 {
 }
 #endif

@@ -13,16 +13,16 @@
 float parttriggeralpha;
 
 MdlNodeTrigger global_nodetrigger("trigger");
-// PC 0x005EE1C0 GOG 0x005EE1A0
+// PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
 void MdlNodeTrigger::InternalParseField(char* sField)
 {
 }
-// PC 0x006955A0 GOG 0x00695350
+// PC 0x006955A0 GOG 0x00695350 Xbox 0x0031ADD0
 Part* MdlNodeTrigger::InternalCreateInstance(Gob* pGob)
 {
     return 0;
 }
-// PC 0x004CA9A0 GOG 0x004CAAB0
+// PC 0x004CA9A0 GOG 0x004CAAB0 Xbox 0x00310D90
 MdlNodeTrigger::MdlNodeTrigger(char* sName)
     : MdlNode(sName)
 {
@@ -36,7 +36,7 @@ void AurPartTriggerSetColor(PartTrigger* pTrigger, float* pfColor)
 }
 // PC 0x004CA9C0 GOG 0x004CAAD0
 #ifdef _XBOX
-void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger)
+void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger)  // Xbox 0x00310DB0
 #else
 void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger,
                           bool bDelete)
@@ -58,12 +58,12 @@ void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger,
     }
 #endif
 }
-// PC 0x006C56E0 GOG 0x006C53F0
+// PC 0x006C56E0 GOG 0x006C53F0 Xbox 0x000BA2D0
 void AurPartTriggerReleaseMemory(PartTrigger* pTrigger)
 {
     delete pTrigger;
 }
-// PC 0x004CAA00 GOG 0x004CAB10
+// PC 0x004CAA00 GOG 0x004CAB10 Xbox 0x00310DF0
 int PartTrigger::HitCheckGeom(const Vector& vStart, Vector& vEnd,
                               Vector* pHit, CHitInfo* pHitInfo, float fRadius)
 {
@@ -95,7 +95,7 @@ int PartTrigger::HitCheckGeom(const Vector& vStart, Vector& vEnd,
 
     return 0;
 }
-// PC 0x004CAD20 GOG 0x004CAE30
+// PC 0x004CAD20 GOG 0x004CAE30 Xbox 0x003110B0
 PartTrigger::PartTrigger(MdlNode* pNode)
     : Part(pNode), m_lstVertices(0), m_lstHighlightTop(0),
       m_lstHighlightBottom(0), m_lstHighlightSide(0),
@@ -111,7 +111,7 @@ PartTrigger::PartTrigger(MdlNode* pNode)
     m_fHighlightBlend = 1.0f;
     m_bAdditiveBlend = false;
 }
-// PC 0x004CAAD0 GOG 0x004CABE0
+// PC 0x004CAAD0 GOG 0x004CABE0 Xbox 0x00310EC0
 PartTrigger::~PartTrigger()
 {
     Scene::RemoveFromSceneManager(this);
@@ -127,7 +127,7 @@ void PartTrigger::SetHighlightColor(const Vector& vColor, float fAlpha)
     m_fHighlightAlpha = fAlpha;
 }
 
-void AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,
+void AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,  // Xbox 0x00310F40
                                       const Vector& vColor,
                                       float fAlpha, bool bColor,
                                       float fBlend, bool bAdditive)
@@ -153,14 +153,14 @@ PartTrigger* AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,  // PC 0x00
     return pTrigger;
 }
 #endif
-// PC 0x004CABF0 GOG 0x004CAD00
+// PC 0x004CABF0 GOG 0x004CAD00 Xbox 0x00310FA0
 void PartTrigger::DrawVolume()
 {
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_TRIANGLE_STRIP, m_lstHighlightTop);
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_POLYGON, m_lstHighlightBottom);
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_POLYGON, m_lstHighlightSide);
 }
-// PC 0x004CAC30 GOG 0x004CAD40
+// PC 0x004CAC30 GOG 0x004CAD40 Xbox 0x00310FE0
 void PartTrigger::Draw(bool bRenderLast)
 {
     float afColor[4];
@@ -192,7 +192,7 @@ void PartTrigger::Draw(bool bRenderLast)
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_TRIANGLES, m_lstTriangles);
     GLRender::PopAttrib();
 }
-// PC 0x004CAE00 GOG 0x004CAF10
+// PC 0x004CAE00 GOG 0x004CAF10 Xbox 0x00311190
 void PartTrigger::SetHighlighted(bool bHighlighted, float fOffset, bool bReverse)
 {
     m_bHighlighted = bHighlighted;
@@ -228,7 +228,7 @@ void PartTrigger::SetHighlighted(bool bHighlighted, float fOffset, bool bReverse
         m_vMaximum = VectorMax(m_lstHighlightTop);
     }
 }
-// PC 0x004CB100 GOG 0x004CB210
+// PC 0x004CB100 GOG 0x004CB210 Xbox 0x003114C0
 void PartTrigger::Decompose(List<int> lstIndices)
 {
     while (lstIndices.m_nCount > 2)
@@ -325,13 +325,13 @@ void PartTrigger::Decompose(List<int> lstIndices)
         }
     }
 }
-// PC 0x004CB800 GOG 0x004CB910
+// PC 0x004CB800 GOG 0x004CB910 Xbox 0x00311B30
 void AurPartTriggerSetHighlight(PartTrigger* pTrigger, bool bHighlighted,
                                float fOffset, bool bReverse)
 {
     pTrigger->SetHighlighted(bHighlighted, fOffset, bReverse);
 }
-// PC 0x004CB820 GOG 0x004CB930
+// PC 0x004CB820 GOG 0x004CB930 Xbox 0x00311B50
 PartTrigger* AurPartTriggerCreate(CAurScene* pScene, Vector* pVertices,
                                   int nVertices, int bHitCheck, float* pfColor,
                                   void* pHitData)

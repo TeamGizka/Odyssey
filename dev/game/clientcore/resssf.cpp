@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00749960 GOG 0x007497B0
+// PC 0x00749960 GOG 0x007497B0 Xbox 0x00127600
 CResSSF::CResSSF()
 {
     m_bServiced = 0;
@@ -14,13 +14,13 @@ int CResSSF::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x00749990 GOG 0x007497E0
+// PC 0x00749990 GOG 0x007497E0 Xbox 0x00127620
 int CResSSF::OnResourceFreed()
 {
     m_bServiced = 0;
     return 1;
 }
-// PC 0x007499A0 GOG 0x007497F0
+// PC 0x007499A0 GOG 0x007497F0 Xbox 0x00127630
 int CResSSF::OnResourceServiced()
 {
     if (m_pResource == 0)

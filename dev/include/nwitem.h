@@ -220,8 +220,8 @@ public:
     int GetIsOneHanded();
     CExoString GetNameText();
 
-    void SetNameStrRef(int value) { m_nName = value; }
-    void SetEquipableSlots(int value) { m_nEquipableSlots = value; }
+    void SetNameStrRef(int value) { m_nName = value; }  // Xbox 0x00171F80
+    void SetEquipableSlots(int value) { m_nEquipableSlots = value; }  // Xbox 0x00043AB0
 
     int GetEquipableSlots() { return m_nEquipableSlots; }
     void SetCanRotateIcon(int value) { m_bCanRotateIcon = value; }

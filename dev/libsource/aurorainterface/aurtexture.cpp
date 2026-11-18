@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00782C40 GOG 0x00782A50
+// PC 0x00782C40 GOG 0x00782A50 Xbox 0x0032FAF0
 int CAuroraTexture::GetTextureDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ int CAuroraTexture::GetTextureDataSize()
     }
     return 0;
 }
-// PC 0x00782C10 GOG 0x00782A20
+// PC 0x00782C10 GOG 0x00782A20 Xbox 0x0032FAC0
 unsigned char* CAuroraTexture::GetTextureDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -17,7 +17,7 @@ unsigned char* CAuroraTexture::GetTextureDataPtr()
     }
     return 0;
 }
-// PC 0x007823E0 GOG 0x007821E0
+// PC 0x007823E0 GOG 0x007821E0 Xbox 0x0032FA80
 int CAuroraTexture::GetTextureAttrib(unsigned long* pnWidth,
                                      unsigned long* pnHeight,
                                      unsigned char* pnDepth)
@@ -31,7 +31,7 @@ int CAuroraTexture::GetTextureAttrib(unsigned long* pnWidth,
         return 0;
     }
 }
-// PC 0x00782420 GOG 0x00782220
+// PC 0x00782420 GOG 0x00782220 Xbox 0x0032FB20
 int CAuroraTexture::Load()
 {
     unsigned char* nTGADataPtr;
@@ -88,7 +88,7 @@ void CAuroraTexture::Unload()
         }
     }
 }
-// PC 0x00782510 GOG 0x00782310
+// PC 0x00782510 GOG 0x00782310 Xbox 0x0032FBA0
 int CAuroraTexture::ReadTextureHeader(int* pnWidth, int* pnHeight, int* pnDepth)
 {
     TGAHeader tgaHeader;
@@ -106,7 +106,7 @@ int CAuroraTexture::ReadTextureHeader(int* pnWidth, int* pnHeight, int* pnDepth)
     *pnDepth = tgaHeader.nBitsPerPixel >> 3;
     return 1;
 }
-// PC 0x00782570 GOG 0x00782370
+// PC 0x00782570 GOG 0x00782370 Xbox 0x0032FBF0
 unsigned char* CAuroraTexture::GetPtrToResHelperInfo()
 {
     unsigned char* nTGADataPtr;
@@ -122,13 +122,13 @@ unsigned char* CAuroraTexture::GetPtrToResHelperInfo()
     }
     return 0;
 }
-// PC 0x007827D0 GOG 0x007825D0
+// PC 0x007827D0 GOG 0x007825D0 Xbox 0x0032FE20
 CAuroraTexture::CAuroraTexture(CResRef cResRef, int bRequest)
     : CResHelper<CResTGA, RESTYPE_TGA>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00782860 GOG 0x00782660
+// PC 0x00782860 GOG 0x00782660 Xbox 0x0032FE80
 CAuroraTexture::~CAuroraTexture()
 {
 }

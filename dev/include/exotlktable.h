@@ -7,7 +7,7 @@ class CExoFile;
 
 struct STR_RES
 {
-    STR_RES()  // PC 0x004145E0 GOG 0x00414590
+    STR_RES()  // PC 0x004145E0 GOG 0x00414590 Xbox 0x0001D080
     {
     }
     // PC 0x0061CDD0 GOG 0x00635DB0
@@ -114,7 +114,7 @@ public:
     int GetLanguageVersion();
     int ExoIsDBCSLeadByte(unsigned char c);
     char* RemapFontName(char* sFontName);
-    // PC 0x006049D0 GOG 0x006049B0
+    // PC 0x006049D0 GOG 0x006049B0 Xbox 0x000C4DE0
     virtual void GetTokenValue(const CTlkTableToken&, CExoString&)
     {
     }

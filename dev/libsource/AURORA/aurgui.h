@@ -176,57 +176,57 @@ public:
     CAurGUIStringInternal(char* sString, char* sFont, Vector vColor,
                           float fScale);
     virtual ~CAurGUIStringInternal();
-    virtual Vector GetColor()  // PC 0x00470CF0 GOG 0x00470E30
+    virtual Vector GetColor()  // PC 0x00470CF0 GOG 0x00470E30 Xbox 0x00315060
     {
         return m_vColor;
     }
-    virtual void SetColor(const Vector& vColor)  // PC 0x00470D10 GOG 0x00470E50
+    virtual void SetColor(const Vector& vColor)  // PC 0x00470D10 GOG 0x00470E50 Xbox 0x00315080
     {
         m_vColor = vColor;
     }
-    virtual int GetStringSize()  // PC 0x00470D30 GOG 0x00470E70
+    virtual int GetStringSize()  // PC 0x00470D30 GOG 0x00470E70 Xbox 0x003150A0
     {
         return strlen(m_sString);
     }
     virtual void SetStringSize(short nSize);
     virtual void SetString(char* sString);
-    virtual void SetAlignment(unsigned char nAlignment)  // PC 0x00470D40 GOG 0x00470E80
+    virtual void SetAlignment(unsigned char nAlignment)  // PC 0x00470D40 GOG 0x00470E80 Xbox 0x003150B0
     {
         m_nAlignmentBits = nAlignment;
     }
-    virtual unsigned char GetAlignment()  // PC 0x00470D50 GOG 0x00470E90
+    virtual unsigned char GetAlignment()  // PC 0x00470D50 GOG 0x00470E90 Xbox 0x003150C0
     {
         return m_nAlignmentBits;
     }
-    virtual void SetAlignmentVertical(unsigned char nAlignment)  // PC 0x00470D60 GOG 0x00470EA0
+    virtual void SetAlignmentVertical(unsigned char nAlignment)  // PC 0x00470D60 GOG 0x00470EA0 Xbox 0x003150D0
     {
         m_nAlignmentBits = nAlignment | (m_nAlignmentBits & ALIGNMENT_HORIZONTAL);
     }
-    virtual int GetAlignmentVertical()  // PC 0x00470D80 GOG 0x00470EC0
+    virtual int GetAlignmentVertical()  // PC 0x00470D80 GOG 0x00470EC0 Xbox 0x003150F0
     {
         return m_nAlignmentBits & ALIGNMENT_VERTICAL;
     }
-    virtual void SetAlignmentHorizontal(unsigned char nAlignment)  // PC 0x00470D90 GOG 0x00470ED0
+    virtual void SetAlignmentHorizontal(unsigned char nAlignment)  // PC 0x00470D90 GOG 0x00470ED0 Xbox 0x00315100
     {
         m_nAlignmentBits = nAlignment | (m_nAlignmentBits & ALIGNMENT_VERTICAL);
     }
-    virtual int GetAlignmentHorizontal()  // PC 0x00470DB0 GOG 0x00470EF0
+    virtual int GetAlignmentHorizontal()  // PC 0x00470DB0 GOG 0x00470EF0 Xbox 0x00315120
     {
         return m_nAlignmentBits & ALIGNMENT_HORIZONTAL;
     }
-    virtual void SetCursorIndex(short nIndex)  // PC 0x00470DC0 GOG 0x00470F00
+    virtual void SetCursorIndex(short nIndex)  // PC 0x00470DC0 GOG 0x00470F00 Xbox 0x00315130
     {
         m_nCursorIndex = nIndex;
     }
-    virtual short GetCursorIndex()  // PC 0x00470DD0 GOG 0x00470F10
+    virtual short GetCursorIndex()  // PC 0x00470DD0 GOG 0x00470F10 Xbox 0x00315140
     {
         return m_nCursorIndex;
     }
-    virtual void DisableCursor()  // PC 0x00470DE0 GOG 0x00470F20
+    virtual void DisableCursor()  // PC 0x00470DE0 GOG 0x00470F20 Xbox 0x00315150
     {
         m_nCursorIndex = -1;
     }
-    virtual char* GetFontTexture()  // PC 0x00470DF0 GOG 0x00470F30
+    virtual char* GetFontTexture()  // PC 0x00470DF0 GOG 0x00470F30 Xbox 0x00315160
     {
         CAurTexture* pFont = AsTexture(m_pFont);
 
@@ -243,7 +243,7 @@ public:
     virtual int GetFontPixelHeight();
     virtual void WrapStrings(int nWidth);
     virtual int GetIdealPixelHeight(int nWidth);
-    virtual int GetNumLines()  // PC 0x00786860 GOG 0x00786630
+    virtual int GetNumLines()  // PC 0x00786860 GOG 0x00786630 Xbox 0x0033A710
     {
         return m_lstLineLength.m_nCount;
     }
@@ -257,7 +257,7 @@ public:
     virtual void SetSizeBoundingRect(float fWidth, float fHeight);
     virtual void DrawBoundingRect(Vector vColor, float fAlpha);
     virtual void Draw(float fAlpha);
-    virtual void Draw()  // PC 0x00470E00 GOG 0x00470F40
+    virtual void Draw()  // PC 0x00470E00 GOG 0x00470F40 Xbox 0x00315170
     {
         Draw(1.0f);
     }

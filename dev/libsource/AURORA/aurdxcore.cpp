@@ -295,7 +295,7 @@ unsigned long TranslatePoolUsage(unsigned long nUsage)
     return nD3DUsage;
 }
 
-unsigned long TranslatePoolFormat(unsigned long nFormat)
+unsigned long TranslatePoolFormat(unsigned long nFormat)  // Xbox 0x0029ABA0
 {
     unsigned long nFVF = 0;
     if (nFormat & 1)
@@ -343,7 +343,7 @@ unsigned long TranslatePoolLockFlags(unsigned long nFlags)
     return nD3DFlags;
 }
 
-int GetPrimitiveCount(int nPrimitive, int nVertices)
+int GetPrimitiveCount(int nPrimitive, int nVertices)  // Xbox 0x0029ABF0
 {
     switch (nPrimitive)
     {
@@ -377,7 +377,7 @@ D3DResource* RequestPoolManager::GetPool(unsigned long nPool)
     return m_ppIndexPools[nPool];
 }
 
-Vector Quaternion::axis() const
+Vector Quaternion::axis() const  // Xbox 0x0029ADC0
 {
     Vector vAxis(m_fX, m_fY, m_fZ);
     float dAngle = acos(m_fW) * 2.0;
@@ -389,7 +389,7 @@ Vector Quaternion::axis() const
     return Vector(vAxis.m_fX * fScale, vAxis.m_fY * fScale, vAxis.m_fZ * fScale);
 }
 
-void GLRender::SetColor4f(float fRed, float fGreen, float fBlue, float fAlpha)
+void GLRender::SetColor4f(float fRed, float fGreen, float fBlue, float fAlpha)  // Xbox 0x0029AC60
 {
     D3DCOLORVALUE color;
     color.r = fRed;
@@ -425,12 +425,12 @@ void GLRender::SetColor4f(float fRed, float fGreen, float fBlue, float fAlpha)
     }
 }
 
-void GLRender::SetColorv(const float* pColor)
+void GLRender::SetColorv(const float* pColor)  // Xbox 0x0029AE80
 {
     SetColor4f(pColor[0], pColor[1], pColor[2], pColor[3]);
 }
 
-void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, int nWidth, int nHeight, int nFormat)
+void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, int nWidth, int nHeight, int nFormat)  // Xbox 0x0029AEA0
 {
     char szMessage[256];
     int bLinear = 0;
@@ -542,7 +542,7 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
     }
 }
 
-void GLRender::CopyVolumeToTextureMemory(void* pImage, D3DLOCKED_BOX* pLock, int nWidth, int nHeight, int nDepth,
+void GLRender::CopyVolumeToTextureMemory(void* pImage, D3DLOCKED_BOX* pLock, int nWidth, int nHeight, int nDepth,  // Xbox 0x0029B310
                                          int nFormat)
 {
     int bLinear = 0;
@@ -566,7 +566,7 @@ void GLRender::CopyVolumeToTextureMemory(void* pImage, D3DLOCKED_BOX* pLock, int
     }
 }
 
-int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
+int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)  // Xbox 0x0029B380
 {
     int nMipWidth = nWidth;
     int nBlockSize = nBytesPerPixel == 4 ? 16 : 8;
@@ -586,7 +586,7 @@ int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
     return nIndex * nSize;
 }
 
-void GLRender::EnableClientState(int nArray)
+void GLRender::EnableClientState(int nArray)  // Xbox 0x0029B400
 {
     switch (nArray)
     {
@@ -621,7 +621,7 @@ void GLRender::EnableClientState(int nArray)
     }
 }
 
-void GLRender::DisableClientState(int nArray)
+void GLRender::DisableClientState(int nArray)  // Xbox 0x0029B4A0
 {
     switch (nArray)
     {
@@ -660,7 +660,7 @@ void GLRender::DisableClientState(int nArray)
     }
 }
 
-int GLRender::InitializeVertexShaders()
+int GLRender::InitializeVertexShaders()  // Xbox 0x0029B570
 {
     g_pD3DDevice->CreateVertexShader(s_aDeclarationVN, NULL, &g_hVertexShaderVN, 0);
     g_pD3DDevice->CreateVertexShader(s_aDeclarationV, NULL, &g_hVertexShaderV, 0);
@@ -678,7 +678,7 @@ int GLRender::InitializeVertexShaders()
     return 1;
 }
 
-DWORD GLRender::CreateClientStateVertexShader()
+DWORD GLRender::CreateClientStateVertexShader()  // Xbox 0x0029B670
 {
     DWORD hShader;
     int nCount = 0;
@@ -729,7 +729,7 @@ DWORD GLRender::CreateClientStateVertexShader()
     return hShader;
 }
 
-DWORD GLRender::GetVertexShader(int bSeparateStreams)
+DWORD GLRender::GetVertexShader(int bSeparateStreams)  // Xbox 0x0029B790
 {
     static int bVertexShadersCreated = InitializeVertexShaders();
 
@@ -768,7 +768,7 @@ DWORD GLRender::GetVertexShader(int bSeparateStreams)
     return CreateClientStateVertexShader();
 }
 
-void GLRender::PushCurrentMatrix()
+void GLRender::PushCurrentMatrix()  // Xbox 0x0029B940
 {
     g_nMatrixStackDepth++;
     switch (g_nMatrixMode)
@@ -788,22 +788,22 @@ void GLRender::PushCurrentMatrix()
     }
 }
 
-void GLRender::SetActiveTexture(unsigned long nStage)
+void GLRender::SetActiveTexture(unsigned long nStage)  // Xbox 0x0029B9A0
 {
     cm_uiCurrentStage = nStage;
 }
 
-void GLRender::SetTextureStageFlag(unsigned long nStage, int nValue)
+void GLRender::SetTextureStageFlag(unsigned long nStage, int nValue)  // Xbox 0x0029B9B0
 {
     cm_nGLCurrentTID[nStage] = nValue;
 }
 
-unsigned int GLRender::GetCurrentStageTID()
+unsigned int GLRender::GetCurrentStageTID()  // Xbox 0x0029B9C0
 {
     return cm_nGLCurrentTID[cm_uiCurrentStage];
 }
 
-void GLRender::SetOrthoTransform(double fLeft, double fRight, double fBottom, double fTop, double fNear, double fFar)
+void GLRender::SetOrthoTransform(double fLeft, double fRight, double fBottom, double fTop, double fNear, double fFar)  // Xbox 0x0029B9D0
 {
     if (g_pD3DDevice)
     {
@@ -852,17 +852,17 @@ void GLRender::SetDirtyTexture(int nIndex, CAurTexture* pTexture)
     m_pDirtyTexture[nIndex] = pTexture;
 }
 
-void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
+void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)  // Xbox 0x0029BA50
 {
     cm_pFilmNoiseTexture = pTexture;
 }
 
-void GLRender::SetForceDistortionTexture(CAurTexture* pTexture)
+void GLRender::SetForceDistortionTexture(CAurTexture* pTexture)  // Xbox 0x0029BA60
 {
     cm_pForceDistortionTexture = pTexture;
 }
 
-void GLRender::ReleaseFrameTexture()
+void GLRender::ReleaseFrameTexture()  // Xbox 0x0029BA70
 {
     g_bFrameTextureReleased = true;
     if (g_pFrameTexture)
@@ -872,14 +872,14 @@ void GLRender::ReleaseFrameTexture()
     g_pFrameTexture = NULL;
 }
 
-void GLRender::SetFrameBufferMode(int nMode)
+void GLRender::SetFrameBufferMode(int nMode)  // Xbox 0x0029BAA0
 {
     g_nFrameBufferMode = nMode;
     g_bFrameBufferModeChanged = 1;
     g_bFrameBufferChanged = 1;
 }
 
-void GLRender::InitAttenuationTexture()
+void GLRender::InitAttenuationTexture()  // Xbox 0x0029BAC0
 {
     unsigned char pixels[64 * 64 * 4];
 
@@ -911,7 +911,7 @@ void GLRender::InitAttenuationTexture()
     pSurface->Release();
 }
 
-void GLRender::SetShadowLightPosition(const Vector& vPosition)
+void GLRender::SetShadowLightPosition(const Vector& vPosition)  // Xbox 0x0029BBE0
 {
     Vector vLight = vPosition;
     D3DXMATRIX mViewProjection;
@@ -925,7 +925,7 @@ void GLRender::SetShadowLightPosition(const Vector& vPosition)
     D3DXVec4Transform(&g_vShadowLightView, &vLight4, g_pViewMatrixStack->GetTop());
 }
 
-char* AllocateShadowMemory(int nSize)
+char* AllocateShadowMemory(int nSize)  // Xbox 0x0029BCC0
 {
     static char* data = new char[nSize];
     static int c_size = nSize;
@@ -959,7 +959,7 @@ void GLRender::DisableDreamDistortion()
     m_bDreamDistortLetterbox = false;
 }
 
-void GLRender::Rotate(float fAngle, float fX, float fY, float fZ)
+void GLRender::Rotate(float fAngle, float fX, float fY, float fZ)  // Xbox 0x0029BEB0
 {
     switch (g_nMatrixMode)
     {
@@ -975,7 +975,7 @@ void GLRender::Rotate(float fAngle, float fX, float fY, float fZ)
     }
 }
 
-void GLRender::Translate(float fX, float fY, float fZ)
+void GLRender::Translate(float fX, float fY, float fZ)  // Xbox 0x0029BF80
 {
     switch (g_nMatrixMode)
     {
@@ -995,7 +995,7 @@ void GLRender::Translate(float fX, float fY, float fZ)
     }
 }
 
-void GLRender::MultMatrix(const float* pMatrix)
+void GLRender::MultMatrix(const float* pMatrix)  // Xbox 0x0029C030
 {
     D3DXMATRIX mMatrix(pMatrix);
     switch (g_nMatrixMode)
@@ -1015,7 +1015,7 @@ void GLRender::MultMatrix(const float* pMatrix)
     }
 }
 
-void GLRender::Scale(float fX, float fY, float fZ)
+void GLRender::Scale(float fX, float fY, float fZ)  // Xbox 0x0029C0C0
 {
     if (fX != 1.0f || fY != 1.0f || fZ != 1.0f)
     {
@@ -1037,7 +1037,7 @@ void GLRender::Scale(float fX, float fY, float fZ)
     }
 }
 
-void GLRender::SetStencilOp(int nFail, int nZFail, int nPass)
+void GLRender::SetStencilOp(int nFail, int nZFail, int nPass)  // Xbox 0x0029C190
 {
     if (stencilOpTranslationTable[nFail] != g_nCurrentStencilFail)
     {
@@ -1056,7 +1056,7 @@ void GLRender::SetStencilOp(int nFail, int nZFail, int nPass)
     }
 }
 
-void RequestPoolManager::ResizePool(unsigned long nPool, unsigned long nSize, D3DDevice* pDevice)
+void RequestPoolManager::ResizePool(unsigned long nPool, unsigned long nSize, D3DDevice* pDevice)  // Xbox 0x0029C2E0
 {
     if (nPool == (unsigned long)INVALID_POOL)
     {
@@ -1098,7 +1098,7 @@ void RequestPoolManager::ResizePool(unsigned long nPool, unsigned long nSize, D3
     }
 }
 
-void* RequestPoolManager::LockPool(unsigned long nPool, unsigned long nOffset, unsigned long nSize,
+void* RequestPoolManager::LockPool(unsigned long nPool, unsigned long nOffset, unsigned long nSize,  // Xbox 0x0029C450
                                    unsigned long nFlags)
 {
     if (nPool == (unsigned long)INVALID_POOL)
@@ -1121,7 +1121,7 @@ void* RequestPoolManager::LockPool(unsigned long nPool, unsigned long nOffset, u
     return pData;
 }
 
-void RequestPoolManager::ReleasePools()
+void RequestPoolManager::ReleasePools()  // Xbox 0x0029C4B0
 {
     unsigned int nPool;
     for (nPool = 0; nPool < m_nVertexPools; nPool++)
@@ -1167,7 +1167,7 @@ void DXBox::Render(D3DDevice* pDevice)
     pDevice->SetRenderState(D3DRS_COLORVERTEX, FALSE);
 }
 
-DXBox::DXBox(D3DDevice* pDevice)
+DXBox::DXBox(D3DDevice* pDevice)  // Xbox 0x0029C520
 {
     DXShapeVertex vertices[36];
     vertices[0].x = 0.0f;
@@ -1304,7 +1304,7 @@ void DXCircle::Render(D3DDevice* pDevice)
     pDevice->DrawPrimitive(D3DPT_LINESTRIP, 0, 8);
 }
 
-DXCircle::DXCircle(D3DDevice* pDevice)
+DXCircle::DXCircle(D3DDevice* pDevice)  // Xbox 0x0029C910
 {
     DXShapeVertex vertices[9];
     for (int i = 0; i < 9; i++)
@@ -1325,7 +1325,7 @@ DXCircle::DXCircle(D3DDevice* pDevice)
     memcpy(pData, vertices, sizeof(vertices));
 }
 
-void GLRender::RestoreVertexPrograms()
+void GLRender::RestoreVertexPrograms()  // Xbox 0x0029C9A0
 {
     for (int i = 0; i < g_listVertexPrograms.m_nCount; i++)
     {
@@ -1338,7 +1338,7 @@ void GLRender::RestoreVertexPrograms()
     }
 }
 
-void GLRender::Transform(const Vector& vPosition, const Quaternion& qOrientation, int nForce)
+void GLRender::Transform(const Vector& vPosition, const Quaternion& qOrientation, int nForce)  // Xbox 0x0029C9E0
 {
     static float m[16];
 
@@ -1386,7 +1386,7 @@ void GLRender::Transform(const Vector& vPosition, const Quaternion& qOrientation
     }
 }
 
-void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
+void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)  // Xbox 0x0029CB60
 {
     if (nVertices == 0)
     {
@@ -1406,7 +1406,7 @@ void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
     g_pD3DDevice->DrawPrimitiveUP(D3DPT_QUADLIST, nVertices / 4, pVertices, sizeof(RenderVertexVTC));
 }
 
-void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
+void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)  // Xbox 0x0029CBF0
 {
     if (nVertices == 0)
     {
@@ -1429,7 +1429,7 @@ void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
     g_pD3DDevice->DrawPrimitiveUP(D3DPT_QUADLIST, nVertices / 4, pVertices, sizeof(RenderVertexVT));
 }
 
-void GLRender::CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight, int nBorder,
+void GLRender::CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight, int nBorder,  // Xbox 0x0029CCC0
                           int nFormat, void* pImage)
 {
     D3DTexture* pTexture;
@@ -1447,7 +1447,7 @@ void GLRender::CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, i
     pSurface->Release();
 }
 
-void GLRender::CreateTextureImageRaw3D(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight,
+void GLRender::CreateTextureImageRaw3D(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight,  // Xbox 0x0029CD60
                                        int nDepth, int nBorder, int nFormat, void* pImage)
 {
     D3DVolumeTexture* pTexture;
@@ -1512,7 +1512,7 @@ void GLRender::CreateCompressedTexImage(int nTarget, int bMipMaps, int nLevel, i
     }
 }
 
-void GLRender::CreateMipMaps(int nTarget, int nComponents, int nWidth, int nHeight, int nFormat, void* pImage)
+void GLRender::CreateMipMaps(int nTarget, int nComponents, int nWidth, int nHeight, int nFormat, void* pImage)  // Xbox 0x0029CEF0
 {
     D3DTexture* pTexture;
     g_pD3DDevice->CreateTexture(nWidth, nHeight, 0, 0, (D3DFORMAT)textureFormatTranslationTable[nFormat],
@@ -1851,7 +1851,7 @@ char g_szPixelShaderWhite[] =
     "mov r0, 1-zero\n"
     "xfc 1-zero, r0.rgb, fog.rgb, zero, zero, zero, r0.a;\n";
 
-void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
+void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,  // Xbox 0x0029D010
                                  int nIndex)
 {
     static int s1[6] = {1, 0, 2, 3, 4, 5};
@@ -2035,7 +2035,7 @@ void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
     }
 }
 
-void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
+void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,  // Xbox 0x0029D860
                                           int nIndex)
 {
     pTexture->GetHeight();
@@ -2114,7 +2114,7 @@ void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
     cm_pCurrentTexture[cm_uiCurrentStage] = pCubeTexture;
 }
 
-void GLRender::ReadPixelsFromBuffer(int nX, int nY, int nWidth, int nHeight, int nFormat,
+void GLRender::ReadPixelsFromBuffer(int nX, int nY, int nWidth, int nHeight, int nFormat,  // Xbox 0x0029DAC0
                           unsigned char* pPixels)
 {
     D3DSurface* pSurface;
@@ -2157,7 +2157,7 @@ void GLRender::ReadPixelsFromBuffer(int nX, int nY, int nWidth, int nHeight, int
     pSurface->Release();
 }
 
-void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
+void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,  // Xbox 0x0029DCB0
                                     void* pIndices, int nStride, int nFirst,
                                     int nQuads)
 {
@@ -2180,7 +2180,7 @@ void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
     g_pD3DDevice->SetStreamSource(1, NULL, 0);
 }
 
-void GLRender::DrawElementsInShadow(unsigned int nProgram, const DWORD* pFunction,
+void GLRender::DrawElementsInShadow(unsigned int nProgram, const DWORD* pFunction,  // Xbox 0x0029DD80
                                     const DWORD* pDeclaration)
 {
     DXVertexProgram* pProgram = g_listVertexPrograms.m_pList[nProgram];
@@ -2195,7 +2195,7 @@ void GLRender::DrawElementsInShadow(unsigned int nProgram, const DWORD* pFunctio
     g_bVertexProgramBound = 1;
 }
 
-bool GLRender::IsProgramNV(int nProgram)
+bool GLRender::IsProgramNV(int nProgram)  // Xbox 0x0029DDD0
 {
     if (nProgram < g_listVertexPrograms.m_nCount &&
         g_listVertexPrograms.m_pList[nProgram])
@@ -2205,7 +2205,7 @@ bool GLRender::IsProgramNV(int nProgram)
     return false;
 }
 
-void GLRender::BindVertexProgram(int nProgram)
+void GLRender::BindVertexProgram(int nProgram)  // Xbox 0x0029DDF0
 {
     if (nProgram == 0)
     {
@@ -2216,7 +2216,7 @@ void GLRender::BindVertexProgram(int nProgram)
     g_pD3DDevice->SetVertexShader(g_listVertexPrograms.m_pList[nProgram]->m_hShader);
 }
 
-void GLRender::TrackMatrix()
+void GLRender::TrackMatrix()  // Xbox 0x0029DE20
 {
     D3DXMATRIX mWorldView;
     D3DXMATRIX mWorldViewProjection;
@@ -2230,16 +2230,16 @@ void GLRender::TrackMatrix()
     g_pD3DDevice->SetVertexShaderConstantFast(8, &mWorldView, 4);
 }
 
-void GLRender::SetUpTextFormat()
+void GLRender::SetUpTextFormat()  // Xbox 0x001A2B40
 {
 }
 
-void GLRender::InitExtensions()
+void GLRender::InitExtensions()  // Xbox 0x0029DEB0
 {
     InitAttenuationTexture();
 }
 
-int GLRender::InitializePixelShaders()
+int GLRender::InitializePixelShaders()  // Xbox 0x0031AA30
 {
     LPXGBUFFER pCompiledShader;
     LPXGBUFFER pErrors;
@@ -2643,7 +2643,7 @@ int GLRender::InitializePixelShaders()
     return 1;
 }
 
-void GLRender::SetPerspectiveTransform(double fFieldOfView, double fAspect,
+void GLRender::SetPerspectiveTransform(double fFieldOfView, double fAspect,  // Xbox 0x0029B8E0
                               double fNearClip, double fFarClip)
 {
     if (g_pD3DDevice)
@@ -2657,7 +2657,7 @@ void GLRender::SetPerspectiveTransform(double fFieldOfView, double fAspect,
     }
 }
 
-void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
+void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)  // Xbox 0x0029DEC0
 {
     g_nMatrixMode = 1;
     LoadMatrixIdentity();
@@ -2678,7 +2678,7 @@ void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
     }
 }
 
-void GLRender::PopCurrentMatrix()
+void GLRender::PopCurrentMatrix()  // Xbox 0x0029E000
 {
     g_nMatrixStackDepth--;
     switch (g_nMatrixMode)
@@ -2705,7 +2705,7 @@ void GLRender::PopCurrentMatrix()
     }
 }
 
-void GLRender::MakeNormalizationCubeMap(int nSize)
+void GLRender::MakeNormalizationCubeMap(int nSize)  // Xbox 0x0029E090
 {
     DXTextureState* pState = g_listTextureStates.m_pList[g_nCurrentTexture];
     pState->m_nWrapS = 1;
@@ -2802,7 +2802,7 @@ void GLRender::MakeNormalizationCubeMap(int nSize)
     delete[] pSourceBits;
 }
 
-void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
+void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(  // Xbox 0x0029E3C0
     unsigned char* pHeightField, int nWidth, int nHeight, int nRowWidth,
     int nRowCount, float fScale, int bUpdate, bool bNormalMap)
 {
@@ -2861,7 +2861,7 @@ void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
     delete[] pNormalMap;
 }
 
-void GLRender::RenderOverlayConvolution(D3DTexture* pTexture)
+void GLRender::RenderOverlayConvolution(D3DTexture* pTexture)  // Xbox 0x0029E590
 {
     static const DWORD dwDeclaration[] =
     {
@@ -3162,7 +3162,7 @@ static D3DTexture* g_pBrightnessGreenTexture;
 static D3DTexture* g_pBrightnessRedTexture;
 static int g_bBrightnessSetUp;
 
-void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)
+void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)  // Xbox 0x0029F160
 {
     SetBlendFunc(BLEND_ONE, BLEND_ZERO);
     if (!g_bBrightnessSetUp || rerunoverbrighten)
@@ -3259,7 +3259,7 @@ void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)
     SetTextureStageFlag(3, 0);
 }
 
-void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
+void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)  // Xbox 0x0029F7C0
 {
     SetBlendFunc(BLEND_ONE, BLEND_ZERO);
     g_pD3DDevice->SetTexture(0, (D3DBaseTexture*)nTexture);
@@ -3296,7 +3296,7 @@ void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
     SetActiveTexture(0);
 }
 
-void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
+void GLRender::RenderSaturationAdjustment(unsigned long nTexture)  // Xbox 0x0029F970
 {
     SetBlendFunc(BLEND_ONE, BLEND_ZERO);
     g_pD3DDevice->SetTexture(0, (D3DBaseTexture*)nTexture);
@@ -3348,7 +3348,7 @@ void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
     SetActiveTexture(0);
 }
 
-void GLRender::FrameBufferModifications2(unsigned long nFlags)
+void GLRender::FrameBufferModifications2(unsigned long nFlags)  // Xbox 0x0029FC80
 {
     if (doframebuffer && g_nFrameBufferMode != 4 && visualizepass4 && m_bSaturationEnabled &&
         (nFlags & FRAMEBUFFER_SATURATION))
@@ -3401,7 +3401,7 @@ void GLRender::FrameBufferModifications2(unsigned long nFlags)
 extern D3DXVECTOR4 g_vShadowLightClip;
 extern D3DXVECTOR4 g_vShadowLightView;
 
-void GLRender::SetShadowLightConstants()
+void GLRender::SetShadowLightConstants()  // Xbox 0x0029FEF0
 {
     float fConstant[4];
 
@@ -3417,7 +3417,7 @@ void GLRender::SetShadowLightConstants()
     g_pD3DDevice->SetVertexShaderConstant(SHADOW_CONSTANT_LIGHT_VIEW, fConstant, 1);
 }
 
-void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
+void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)  // Xbox 0x0029FF80
 {
     static unsigned short* indexToken = new unsigned short[AUR_SHADOW_INDEX_COUNT];
     if (nEdges == 0)
@@ -3515,7 +3515,7 @@ void GLRender::EnableFury(short nLevel)
     }
 }
 
-void GLRender::EnableLight(unsigned long nLight)
+void GLRender::EnableLight(unsigned long nLight)  // Xbox 0x002A0250
 {
     if (!g_lstLights.Contains(nLight))
     {
@@ -3538,7 +3538,7 @@ void GLRender::EnableLight(unsigned long nLight)
     g_pD3DDevice->LightEnable(nLight, TRUE);
 }
 
-void GLRender::GenPrograms(int nCount, unsigned int* pnPrograms)
+void GLRender::GenPrograms(int nCount, unsigned int* pnPrograms)  // Xbox 0x002A03B0
 {
     for (unsigned int i = 0; i < nCount; i++)
     {
@@ -3560,7 +3560,7 @@ void GLRender::GenPrograms(int nCount, unsigned int* pnPrograms)
     }
 }
 
-void RequestPoolManager::DeletePool(unsigned long nPool)
+void RequestPoolManager::DeletePool(unsigned long nPool)  // Xbox 0x002A04F0
 {
     if (nPool == INVALID_POOL)
     {
@@ -3616,7 +3616,7 @@ void RequestPoolManager::DeletePool(unsigned long nPool)
     }
 }
 
-unsigned long RequestPoolManager::AddVertexPool(D3DVertexBuffer* pBuffer, unsigned long nSize)
+unsigned long RequestPoolManager::AddVertexPool(D3DVertexBuffer* pBuffer, unsigned long nSize)  // Xbox 0x002A0670
 {
     totalvertexpool += nSize;
     totalvertexpool4k += (nSize + POOL_PAGE_ROUNDING) & POOL_PAGE_MASK;
@@ -3659,7 +3659,7 @@ unsigned long RequestPoolManager::AddVertexPool(D3DVertexBuffer* pBuffer, unsign
     return nPool | POOL_VERTEX_FLAG;
 }
 
-unsigned long RequestPoolManager::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned long nSize)
+unsigned long RequestPoolManager::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned long nSize)  // Xbox 0x002A0840
 {
     totalindexpool += nSize;
     if (m_lstFreeIndexPools.m_nCount > 0)
@@ -3702,7 +3702,7 @@ unsigned long RequestPoolManager::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned
     return nPool;
 }
 
-unsigned long RequestPoolManager::RequestIndexPool(unsigned long nSize, unsigned long nUsage,
+unsigned long RequestPoolManager::RequestIndexPool(unsigned long nSize, unsigned long nUsage,  // Xbox 0x002A0A10
                                                    D3DFORMAT nFormat, unsigned long* pnPool,
                                                    D3DDevice* pDevice)
 {
@@ -3757,7 +3757,7 @@ unsigned long RequestPoolManager::RequestIndexPool(unsigned long nSize, unsigned
     return *pnPool;
 }
 
-unsigned long RequestPoolManager::RequestVertexPool(unsigned long nSize, unsigned long nUsage,
+unsigned long RequestPoolManager::RequestVertexPool(unsigned long nSize, unsigned long nUsage,  // Xbox 0x002A0C10
                                                     unsigned long nFVF, unsigned long* pnPool,
                                                     D3DDevice* pDevice)
 {
@@ -3812,7 +3812,7 @@ unsigned long RequestPoolManager::RequestVertexPool(unsigned long nSize, unsigne
     return *pnPool;
 }
 
-RequestPoolManager::RequestPoolManager() : m_lstFreeVertexPools(0), m_lstFreeIndexPools(0)
+RequestPoolManager::RequestPoolManager() : m_lstFreeVertexPools(0), m_lstFreeIndexPools(0)  // Xbox 0x002A0E00
 {
     unsigned int i;
 
@@ -3843,13 +3843,13 @@ RequestPoolManager::RequestPoolManager() : m_lstFreeVertexPools(0), m_lstFreeInd
     memset(m_pIndexPoolState, 0, m_nIndexPools);
 }
 
-RequestPoolManager* RequestPoolManager::GetInstance()
+RequestPoolManager* RequestPoolManager::GetInstance()  // Xbox 0x002A0F80
 {
     static RequestPoolManager instance;
     return &instance;
 }
 
-void GLRender::DrawSphereBound(float fRadius, Vector& vCenter, const Vector& vColor, float fScale,
+void GLRender::DrawSphereBound(float fRadius, Vector& vCenter, const Vector& vColor, float fScale,  // Xbox 0x002A0FC0
                                bool bBillboard)
 {
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -3893,7 +3893,7 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter, const Vector& vCo
     PopCurrentMatrix();
 }
 
-void GLRender::RenderBox(const Vector& vMinimum, const Vector& vMaximum, const Vector& vColor)
+void GLRender::RenderBox(const Vector& vMinimum, const Vector& vMaximum, const Vector& vColor)  // Xbox 0x002A11F0
 {
     static DXBox box(g_pD3DDevice);
 
@@ -3929,7 +3929,7 @@ void RequestPoolManager::UnlockPool(unsigned long nPool)
     }
 }
 
-unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType, unsigned long nSize,
+unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType, unsigned long nSize,  // Xbox 0x002A1340
                                     unsigned long nUsage, unsigned long nPoolFlags,
                                     unsigned long* pnPool)
 {
@@ -3946,38 +3946,38 @@ unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType, unsig
     return *pnPool;
 }
 
-void* GLRender::LockPool(unsigned long nPool, unsigned long nOffset, unsigned long nSize,
+void* GLRender::LockPool(unsigned long nPool, unsigned long nOffset, unsigned long nSize,  // Xbox 0x002A1420
                          unsigned long nCount)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->LockPool(nPool, nOffset, nSize, TranslatePoolLockFlags(nCount));
 }
 
-unsigned long GLRender::AddVertexPool(D3DVertexBuffer* pBuffer, unsigned long nSize)
+unsigned long GLRender::AddVertexPool(D3DVertexBuffer* pBuffer, unsigned long nSize)  // Xbox 0x002A14B0
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->AddVertexPool(pBuffer, nSize);
 }
 
-unsigned long GLRender::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned long nSize)
+unsigned long GLRender::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned long nSize)  // Xbox 0x002A1520
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->AddIndexPool(pBuffer, nSize);
 }
 
-D3DResource* GLRender::GetPool(unsigned long nPool)
+D3DResource* GLRender::GetPool(unsigned long nPool)  // Xbox 0x002A1590
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->GetPool(nPool);
 }
 
-void GLRender::UnlockPool(unsigned long nPool)
+void GLRender::UnlockPool(unsigned long nPool)  // Xbox 0x002A1620
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     pManager->UnlockPool(nPool);
 }
 
-void GLRender::DeletePool(unsigned long nPool)
+void GLRender::DeletePool(unsigned long nPool)  // Xbox 0x002A8860
 {
     if (nPool != RequestPoolManager::INVALID_POOL)
     {
@@ -3986,13 +3986,13 @@ void GLRender::DeletePool(unsigned long nPool)
     }
 }
 
-void GLRender::ReleasePools()
+void GLRender::ReleasePools()  // Xbox 0x002A1680
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     pManager->ReleasePools();
 }
 
-void GLRender::ResizePool(unsigned long nPool, unsigned long nSize)
+void GLRender::ResizePool(unsigned long nPool, unsigned long nSize)  // Xbox 0x002A16F0
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     pManager->ResizePool(nPool, nSize, g_pD3DDevice);
@@ -4011,7 +4011,7 @@ void GLRender::RenderObjectsVTCQuadUPVP(RenderVertexVTC* pVertices, int nVertice
     }
 }
 
-void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, bool bLinear)
+void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, bool bLinear)  // Xbox 0x002A1770
 {
     int nHeight = pTexture->GetHeight();
     unsigned char* pImage = pTexture->GetImage();
@@ -4158,7 +4158,7 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, 
 
 #define AUR_REPLACE_CURRENT_TEXTURE(pTexture)     {         D3DBaseTexture* pOldTexture = g_listTextures.m_pList[g_nCurrentTexture];         if (pOldTexture)         {             int nOldType = g_listTextureStates.m_pList[g_nCurrentTexture]->m_nType;             if (nOldType == 1)             {                 g_pD3DDevice->SetTexture(0, NULL);                 g_pD3DDevice->SetTexture(1, NULL);                 g_pD3DDevice->SetTexture(2, NULL);                 g_pD3DDevice->SetTexture(3, NULL);                 delete pOldTexture;             }             else if (nOldType == 0)             {                 pOldTexture->Release();             }         }         g_listTextures.m_pList[g_nCurrentTexture] = (pTexture);         g_pCurrentTexture = (pTexture);         cm_pCurrentTexture[cm_uiCurrentStage] = (pTexture);     }
 
-void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, bool bLinear)
+void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, bool bLinear)  // Xbox 0x002A1D00
 {
     int nHeight = pTexture->GetHeight();
     unsigned char* pImage = pTexture->GetImage();
@@ -4303,7 +4303,7 @@ void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int
 
 static unsigned int lookup;
 
-void GLRender::MakeLookUpTexture(float fGamma)
+void GLRender::MakeLookUpTexture(float fGamma)  // Xbox 0x002A2440
 {
     if (lookup == 0 || g_listTextures[lookup] == NULL)
     {
@@ -4332,7 +4332,7 @@ void GLRender::MakeLookUpTexture(float fGamma)
     }
 }
 
-void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)
+void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // Xbox 0x002A2560
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     static unsigned long nPool;
@@ -4422,7 +4422,7 @@ void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)
     }
 }
 
-void GLRender::RenderObjectsVC(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned long nPool, int nVertices)
+void GLRender::RenderObjectsVC(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned long nPool, int nVertices)  // Xbox 0x002A29A0
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     int nPrimitives = GetPrimitiveCount(nPrimitive, nVertices);
@@ -4448,7 +4448,7 @@ void GLRender::RenderObjectsVC(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned
 
 int g_nStreamBufferIndex = -1;
 
-void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags, unsigned long nPool,
+void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags, unsigned long nPool,  // Xbox 0x002A2B10
                                     int nVertexCount, MdlNodeTriMesh* pMesh, unsigned long nOffset)
 {
     if (g_nStreamBufferIndex >= g_lstShaderSources.m_nCount - 1)
@@ -4462,7 +4462,7 @@ void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags, unsigned 
     g_pD3DDevice->SetStreamSource(0, pBuffer, nStride);
 }
 
-void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned long nCount,
+void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned long nCount,  // Xbox 0x002A2BC0
                             unsigned long nOffset, unsigned long nPool)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
@@ -4510,7 +4510,7 @@ __int64 g_nTimerDivisor;
 __int64 g_nRenderStartTime;
 __int64 AurGetHighResolutionTime();
 
-void GLRender::InitRenderSystem()
+void GLRender::InitRenderSystem()  // Xbox 0x002A2DB0
 {
     if (FAILED(D3DXCreateMatrixStack(0, &g_pWorldMatrixStack)))
         return;
@@ -4573,7 +4573,7 @@ void GLRender::InitRenderSystem()
     g_nRenderStartTime = AurGetHighResolutionTime();
 }
 
-void GLRender::SetPoolBufferHeaders(unsigned long nPool, D3DVertexBuffer* pBuffer,
+void GLRender::SetPoolBufferHeaders(unsigned long nPool, D3DVertexBuffer* pBuffer,  // Xbox 0x002A30D0
                                     D3DVertexBuffer* pOffsetBuffer, unsigned long nOffset)
 {
     D3DResource* pPool = GetPool(nPool);
@@ -4591,7 +4591,7 @@ static inline void UnbindCurrentTexture()
     GLRender::SetTextureStageFlag(GLRender::cm_uiCurrentStage, 0);
 }
 
-void GLRender::DisableCombiners(CAurTexture* pTexture)
+void GLRender::DisableCombiners(CAurTexture* pTexture)  // Xbox 0x002A3120
 {
     if (tex1on)
     {
@@ -4646,7 +4646,7 @@ char* AllocateShadowMemory(int nSize);
 
 extern unsigned int lookup;
 
-void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
+void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 0x002A31E0
                                CAurTexture* pTexture1, CAurTexture* pTexture2,
                                CAurTexture* pTexture3)
 {
@@ -4956,7 +4956,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
     }
 }
 
-void GLRender::Shutdown(int bReleaseRenderer)
+void GLRender::Shutdown(int bReleaseRenderer)  // Xbox 0x002A7530
 {
     if (bReleaseRenderer && g_bRendererShutDown != true)
     {
@@ -5040,7 +5040,7 @@ void GLRender::Shutdown(int bReleaseRenderer)
     }
 }
 
-void GLRender::AddSquareToRender(unsigned long nPool)
+void GLRender::AddSquareToRender(unsigned long nPool)  // Xbox 0x002A7740
 {
     if (nPool != (unsigned long)-1)
     {
@@ -5048,14 +5048,14 @@ void GLRender::AddSquareToRender(unsigned long nPool)
     }
 }
 
-void GLRender::RenderSquares(unsigned int nPool)
+void GLRender::RenderSquares(unsigned int nPool)  // Xbox 0x002A7790
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
     D3DDevice_SetStreamSource(0, (D3DVertexBuffer*)pPoolManager->GetPool(nPool), 16);
     g_pD3DDevice->DrawPrimitive(D3DPT_LINESTRIP, 0, 4);
 }
 
-void GLRender::RenderDrawableSquares()
+void GLRender::RenderDrawableSquares()  // Xbox 0x002A7830
 {
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -5075,7 +5075,7 @@ void GLRender::RenderDrawableSquares()
     g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 
-void GLRender::BackUpLights()
+void GLRender::BackUpLights()  // Xbox 0x002A78D0
 {
     if (g_nLightBackUpDepth++ == 0)
     {
@@ -5093,7 +5093,7 @@ void GLRender::BackUpLights()
     }
 }
 
-void GLRender::RestoreLights()
+void GLRender::RestoreLights()  // Xbox 0x002A79D0
 {
     if (--g_nLightBackUpDepth == 0)
     {
@@ -5113,12 +5113,12 @@ void GLRender::RestoreLights()
     }
 }
 
-void GLRender::ValidatePool(unsigned long nPool)
+void GLRender::ValidatePool(unsigned long nPool)  // Xbox 0x002A7AA0
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
 }
 
-void GLRender::RenderToTexture(int nUnused, D3DTexture* pTarget, D3DBaseTexture* pSource,
+void GLRender::RenderToTexture(int nUnused, D3DTexture* pTarget, D3DBaseTexture* pSource,  // Xbox 0x002A7B00
                                int nWidth, int nHeight, int nTargetWidth, int nTargetHeight)
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
@@ -5145,7 +5145,7 @@ void GLRender::RenderToTexture(int nUnused, D3DTexture* pTarget, D3DBaseTexture*
     g_pD3DDevice->End();
 }
 
-void GLRender::CopyFrameBufferTexture(D3DBaseTexture* pSource, D3DTexture* pTarget)
+void GLRender::CopyFrameBufferTexture(D3DBaseTexture* pSource, D3DTexture* pTarget)  // Xbox 0x002A7C90
 {
     D3DSurface* pDepthStencil;
     g_pD3DDevice->GetDepthStencilSurface(&pDepthStencil);
@@ -5189,7 +5189,7 @@ static unsigned long g_adwHeatDistortionDeclaration[] =
     D3DVSD_END()
 };
 
-void GLRender::RenderForceDistortion(unsigned long nTexture)
+void GLRender::RenderForceDistortion(unsigned long nTexture)  // Xbox 0x002A7D10
 {
     float fParameter[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
     g_pD3DDevice->SetVertexShaderConstant(DISTORTION_ENV_PARAMETER, fParameter, 1);
@@ -5261,7 +5261,7 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)
     SetTextureStageFlag(3, 0);
 }
 
-void GLRender::ResetViewPort(int nX, int nY, int nWidth, int nHeight)
+void GLRender::ResetViewPort(int nX, int nY, int nWidth, int nHeight)  // Xbox 0x002A88A0
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
     if (g_pD3DDevice)
@@ -5330,7 +5330,7 @@ struct RenderVertexVNC
     D3DCOLOR color;
 };
 
-void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nVertexPool,
+void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nVertexPool,  // Xbox 0x002A8BE0
                              int nVertexStride, int nPositionOffset, short nVertexCount,
                              unsigned long nColorPool, int nPoolOffset)
 {
@@ -5384,7 +5384,7 @@ void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nV
     g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, lFaces.m_nCount);
 }
 
-void GLRender::RemoveSquareToRender(unsigned long nPool)
+void GLRender::RemoveSquareToRender(unsigned long nPool)  // Xbox 0x002A9060
 {
     if (nPool != (unsigned long)-1)
     {
@@ -5427,7 +5427,7 @@ static const DWORD dwDeclaration[] =
     D3DVSD_END()
 };
 
-void GLRender::RenderOverlayConvolutionPyramid(D3DTexture* pTexture)
+void GLRender::RenderOverlayConvolutionPyramid(D3DTexture* pTexture)  // Xbox 0x002A90B0
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
     static unsigned long nPool = RequestPool(Aurora::POOL_VERTEX, 8 * sizeof(ConvolutionVertex),
@@ -5671,7 +5671,7 @@ void GLRender::RenderOverlayConvolutionPyramid(D3DTexture* pTexture)
     pBackBuffer->Release();
 }
 
-void GLRender::RenderAccumulationBlur(D3DTexture* pFrame, D3DTexture* pAccumulation)
+void GLRender::RenderAccumulationBlur(D3DTexture* pFrame, D3DTexture* pAccumulation)  // Xbox 0x002A9CC0
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
     static unsigned long nPool = RequestPool(Aurora::POOL_VERTEX, 128, RequestPoolManager::POOL_COLOR, 0x3011,
@@ -5847,7 +5847,7 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)
     g_fFrameBufferTime = DeltaT + g_fFrameBufferTime;
 }
 
-int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
+int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,  // Xbox 0x002AA570
                                const Plane& plane, const Vector& vNearCap,
                                const Vector& vFarCap, int nVertices,
                                unsigned long nPool, int nOffset, int nStride)

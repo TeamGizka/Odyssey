@@ -144,17 +144,17 @@ struct CSWClass
     void LoadSpellsTable();
     int GetRecommendedSpell(int nSide, int nIndex);
 
-    void SetNameStrRef(unsigned long nStrRef)
+    void SetNameStrRef(unsigned long nStrRef)  // Xbox 0x00171F80
     {
         m_nNameStrRef = nStrRef;
     }
 
-    void SetNameLowerStrRef(unsigned long nStrRef)
+    void SetNameLowerStrRef(unsigned long nStrRef)  // Xbox 0x00043AB0
     {
         m_nNameLowerStrRef = nStrRef;
     }
 
-    void SetNamePluralStrRef(unsigned long nStrRef)
+    void SetNamePluralStrRef(unsigned long nStrRef)  // Xbox 0x0008EE90
     {
         m_nNamePluralStrRef = nStrRef;
     }
@@ -164,7 +164,7 @@ struct CSWClass
         m_nDescriptionStrRef = nStrRef;
     }
 
-    void SetIcon(const CExoString& sIcon)
+    void SetIcon(const CExoString& sIcon)  // Xbox 0x00130570
     {
         m_sIcon = sIcon;
     }
@@ -259,7 +259,7 @@ struct CSWClass
         m_nWisdom = nValue;
     }
 
-    void SetCharisma(unsigned char nValue)
+    void SetCharisma(unsigned char nValue)  // Xbox 0x002B3990
     {
         m_nCharisma = nValue;
     }

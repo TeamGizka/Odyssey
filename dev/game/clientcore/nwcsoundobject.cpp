@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 const int CSWCSoundObject::MAX_VOLUME = 127;
-// PC 0x0069E3C0 GOG 0x0069E1A0
+// PC 0x0069E3C0 GOG 0x0069E1A0 Xbox 0x000B9600
 CSWCSoundObject::CSWCSoundObject()
     : CSWCObject(CGameObject::OBJECT_TYPE_SOUND)
 {
@@ -43,7 +43,7 @@ CSWCSoundObject::CSWCSoundObject()
     m_fRandomRangeY = 0.0f;
     m_bRestart = 0;
 }
-// PC 0x0069DE70 GOG 0x0069DC50
+// PC 0x0069DE70 GOG 0x0069DC50 Xbox 0x000B8F40
 void CSWCSoundObject::ChangeVolume(int nVolume)
 {
     if (m_bStreaming == 0)
@@ -56,7 +56,7 @@ void CSWCSoundObject::ChangeVolume(int nVolume)
     }
     m_nVolume = nVolume;
 }
-// PC 0x0069E530 GOG 0x0069E310
+// PC 0x0069E530 GOG 0x0069E310 Xbox 0x000B9740
 CSWCSoundObject::~CSWCSoundObject()
 {
     if (m_pSoundSource != NULL)
@@ -75,7 +75,7 @@ CSWCSoundObject::~CSWCSoundObject()
         m_pSounds = NULL;
     }
 }
-// PC 0x0069E5E0 GOG 0x0069E3C0
+// PC 0x0069E5E0 GOG 0x0069E3C0 Xbox 0x000B97C0
 void CSWCSoundObject::LoadFromMessage(CSWCMessage* pMessage)
 {
     Vector vPosition;
@@ -197,7 +197,7 @@ void CSWCSoundObject::ChangeFixedVariance(float fVariance)
         m_fFixedVariance = fVariance;
     }
 }
-// PC 0x0069DF30 GOG 0x0069DD10
+// PC 0x0069DF30 GOG 0x0069DD10 Xbox 0x000B9040
 void CSWCSoundObject::ChangePosition(const Vector& vPosition)
 {
     Vector vSource = vPosition;
@@ -226,7 +226,7 @@ inline int CSWCSoundObject::GetLooping()
     }
     return 0;
 }
-// PC 0x0069DFA0 GOG 0x0069DD80
+// PC 0x0069DFA0 GOG 0x0069DD80 Xbox 0x000B90C0
 void CSWCSoundObject::SetIsActive(int bActive)
 {
     if (m_bPlaying != bActive)
@@ -245,7 +245,7 @@ void CSWCSoundObject::SetIsActive(int bActive)
         }
     }
 }
-// PC 0x0069E000 GOG 0x0069DDE0
+// PC 0x0069E000 GOG 0x0069DDE0 Xbox 0x000B9120
 void CSWCSoundObject::UpdateTimeOfDay()
 {
     if (m_nTimeOfDay != TIME_OF_DAY_CUSTOM)
@@ -274,7 +274,7 @@ void CSWCSoundObject::UpdateTimeOfDay()
             0;
     }
 }
-// PC 0x0069E0A0 GOG 0x0069DE80
+// PC 0x0069E0A0 GOG 0x0069DE80 Xbox 0x000B91C0
 unsigned long CSWCSoundObject::GetTimeDiff()
 {
     unsigned long nDay;
@@ -289,7 +289,7 @@ unsigned long CSWCSoundObject::GetTimeDiff()
         &nDiffTime);
     return nDiffTime;
 }
-// PC 0x0069E110 GOG 0x0069DEF0
+// PC 0x0069E110 GOG 0x0069DEF0 Xbox 0x000B9230
 void CSWCSoundObject::UpdateVolumeVariation()
 {
     int nVariation = m_nVolumeVariation;
@@ -320,7 +320,7 @@ void CSWCSoundObject::UpdateVolumeVariation()
 void CSWCSoundObject::UpdateRandomPosition()
 {
 }
-// PC 0x0069E170 GOG 0x0069DF50
+// PC 0x0069E170 GOG 0x0069DF50 Xbox 0x000B92A0
 void CSWCSoundObject::UpdateIntervalVariation()
 {
     if (m_nInterval != 0)
@@ -341,7 +341,7 @@ void CSWCSoundObject::UpdateIntervalVariation()
     }
 }
 
-template <> inline void CExoArrayList<CResRef>::DelIndex(int nIndex)
+template <> inline void CExoArrayList<CResRef>::DelIndex(int nIndex)  // Xbox 0x000B9310
 {
     num--;
     for (; nIndex < num; nIndex++)
@@ -356,7 +356,7 @@ void CSWCSoundObject::ResetLastUpdate()
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(
         &m_nLastUpdateDay, &m_nLastUpdateTime);
 }
-// PC 0x0069E210 GOG 0x0069DFF0
+// PC 0x0069E210 GOG 0x0069DFF0 Xbox 0x000B93F0
 void CSWCSoundObject::Play()
 {
     CResRef cResRef;
@@ -383,7 +383,7 @@ void CSWCSoundObject::Play()
         m_bRestart = 1;
     }
 }
-// PC 0x0069E2F0 GOG 0x0069E0D0
+// PC 0x0069E2F0 GOG 0x0069E0D0 Xbox 0x000B94E0
 void CSWCSoundObject::Stop()
 {
     if (m_bPlaying != 0)
@@ -402,7 +402,7 @@ void CSWCSoundObject::Stop()
     m_nSoundTimer = 0;
     m_nIntervalTimer = 0;
 }
-// PC 0x0069E350 GOG 0x0069E130
+// PC 0x0069E350 GOG 0x0069E130 Xbox 0x000B9540
 void CSWCSoundObject::FadeAndStop(unsigned long nFadeTime)
 {
     if (m_bPlaying != 0)
@@ -421,7 +421,7 @@ void CSWCSoundObject::FadeAndStop(unsigned long nFadeTime)
     m_nSoundTimer = 0;
     m_nIntervalTimer = 0;
 }
-// PC 0x0069EA60 GOG 0x0069E840
+// PC 0x0069EA60 GOG 0x0069E840 Xbox 0x000B9C00
 int CSWCSoundObject::AddToArea(CSWCArea* pArea, CGameObjectArray* pObjectArray)
 {
     CClientAIMaster* pAIMaster =
@@ -447,7 +447,7 @@ int CSWCSoundObject::AddToArea(CSWCArea* pArea, CGameObjectArray* pObjectArray)
     }
     return 1;
 }
-// PC 0x0069EC90 GOG 0x0069EA70
+// PC 0x0069EC90 GOG 0x0069EA70 Xbox 0x000B9E00
 CResRef CSWCSoundObject::GetNextSound()
 {
     CResRef cResRef;
@@ -478,7 +478,7 @@ CResRef CSWCSoundObject::GetNextSound()
     }
     return cResRef;
 }
-// PC 0x0069EB40 GOG 0x0069E920
+// PC 0x0069EB40 GOG 0x0069E920 Xbox 0x000B9CE0
 void CSWCSoundObject::ShuffleList()
 {
     CExoArrayList<CResRef>* pSounds = new CExoArrayList<CResRef>(0);
@@ -494,7 +494,7 @@ void CSWCSoundObject::ShuffleList()
     delete m_pSounds;
     m_pSounds = pSounds;
 }
-// PC 0x0069ED90 GOG 0x0069EB70
+// PC 0x0069ED90 GOG 0x0069EB70 Xbox 0x000B9F10
 void CSWCSoundObject::AIUpdate()
 {
     CResRef cResRef;

@@ -18,7 +18,7 @@
 
 bool g_bDisplayServicedResources = false;
 bool g_bExtendedResourceTracking = false;
-// PC 0x00637A30 GOG 0x00637930
+// PC 0x00637A30 GOG 0x00637930 Xbox 0x00149D50
 CExoDebugInternal::CExoDebugInternal()
 {
     m_pScriptLogFile = 0;
@@ -253,7 +253,7 @@ void CExoDebugInternal::WriteResourceToScreen(const CExoString& text,
         text.CStr();
     }
 }
-// PC 0x00637A50 GOG 0x00637950
+// PC 0x00637A50 GOG 0x00637950 Xbox 0x00149D80
 void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
 {
     struct _timeb tb;
@@ -263,7 +263,7 @@ void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
     sprintf(szTimestamp, "%.19s", ctime(&tb.time));
     timestamp.Format(szTimestamp);
 }
-// PC 0x00637A90 GOG 0x00637990
+// PC 0x00637A90 GOG 0x00637990 Xbox 0x00149DC0
 void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
 {
     if (m_bLogFilesOpen)
@@ -271,7 +271,7 @@ void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
         m_pScriptLogFile->Write(text);
     }
 }
-// PC 0x00637AA0 GOG 0x006379A0
+// PC 0x00637AA0 GOG 0x006379A0 Xbox 0x00149DD0
 void CExoDebugInternal::FlushScriptLogFile()
 {
     if (m_bLogFilesOpen)
@@ -279,11 +279,11 @@ void CExoDebugInternal::FlushScriptLogFile()
         m_pScriptLogFile->Flush();
     }
 }
-// PC 0x005EE1C0 GOG 0x005EE1A0
+// PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
 void CExoDebugInternal::OpenLogFiles(const CExoString& path)
 {
 }
-// PC 0x00637AB0 GOG 0x006379B0
+// PC 0x00637AB0 GOG 0x006379B0 Xbox 0x00149DE0
 void CExoDebugInternal::CloseLogFiles()
 {
     if (m_bLogFilesOpen)
@@ -327,7 +327,7 @@ void CExoDebugInternal::CloseLogFiles()
     }
 }
 
-// PC 0x00637B80 GOG 0x00637A70
+// PC 0x00637B80 GOG 0x00637A70 Xbox 0x00149EA0
 void CExoDebugInternal::Warning(int line, char* file, const char* message)
 {
     if (EXODEBUGINTERNAL_DEBUG)
@@ -427,7 +427,7 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
         fclose(pFile);
     }
 }
-// PC 0x00637E60 GOG 0x00637D50
+// PC 0x00637E60 GOG 0x00637D50 Xbox 0x0014A110
 CExoDebugInternal::~CExoDebugInternal()
 {
     CloseLogFiles();

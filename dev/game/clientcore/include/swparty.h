@@ -71,7 +71,7 @@ public:
     Vector m_vLeaderPosition;
     unsigned long m_oidCombatTarget;
     unsigned long m_nCombatMessage;
-    // PC 0x0050B7D0 GOG 0x0050B830
+    // PC 0x0050B7D0 GOG 0x0050B830 Xbox 0x0006AA00
     void Reset()
     {
         m_nCharacterIndex = -1;
@@ -194,7 +194,7 @@ public:
 
     int GetNumCharacters() { return m_nCharacters; }
 
-    CSWPartyMemberData* GetMemberData(int nIndex)
+    CSWPartyMemberData* GetMemberData(int nIndex)  // Xbox 0x0001B430
     {
         EXOXBOXASSERT(nIndex >= 0 && nIndex < 3);
 #ifndef _XBOX

@@ -74,12 +74,12 @@ CAurObject* g_pDialogIconModel = NULL;
 
 int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData);
 int HandleWMCharMessage(unsigned short nChar);
-// PC 0x0066FC70 GOG 0x0066FA10
+// PC 0x0066FC70 GOG 0x0066FA10 Xbox 0x00060170
 void CClientExoAppInternal::DisableInput()
 {
     m_bInputDisabled = 1;
 }
-// PC 0x0066FC80 GOG 0x0066FA20
+// PC 0x0066FC80 GOG 0x0066FA20 Xbox 0x00060180
 void CClientExoAppInternal::EnableInput()
 {
     m_bInputDisabled = 0;
@@ -259,11 +259,11 @@ void CClientExoAppInternal::ShowMouse(int nFlags)
 #endif
 
 // Dead code: not in the PC executable
-int NearestObjectCompare(void* pObjectId, CNearestStruct cNearest)
+int NearestObjectCompare(void* pObjectId, CNearestStruct cNearest)  // Xbox 0x0001F3E0
 {
     return pObjectId == (void*)cNearest.m_oidObject;
 }
-// PC 0x0066FF40 GOG 0x0066FCE0
+// PC 0x0066FF40 GOG 0x0066FCE0 Xbox 0x0001F3E0
 int TestNearestStruct(void* pObjectId, CNearestStruct cNearest)
 {
     return (unsigned long)pObjectId == cNearest.m_oidObject;
@@ -586,7 +586,7 @@ void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
     }
 }
 #endif
-int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00670810 GOG 0x006705B0
+int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00670810 GOG 0x006705B0 Xbox 0x00060190
 {
 #ifdef _XBOX
     if (m_pGuiInGame->HideSWInGameGui() != 0)
@@ -1574,7 +1574,7 @@ void CClientExoAppInternal::HandleMouseOver(unsigned long oidObject,  // PC 0x00
     }
 }
 #endif
-// PC 0x00672A00 GOG 0x006727A0
+// PC 0x00672A00 GOG 0x006727A0 Xbox 0x00060A60
 void CClientExoAppInternal::PlayBackInputEvents()
 {
     if (m_lstPlayBackEvents.GetHeadPos() != NULL)
@@ -2424,7 +2424,7 @@ static inline void TraceInputEvent()
 
 #ifdef _XBOX
 
-void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)
+void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // Xbox 0x00060280
 {
     switch (nEvent)
     {
@@ -2624,7 +2624,7 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)
 
 #ifdef _XBOX
 
-void CClientExoAppInternal::ProcessInput(float fTimeStep)
+void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
 {
     int nEvents;
     if (m_bInputDisabled)
@@ -2905,7 +2905,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)
     }
 }
 
-void CClientExoAppInternal::SetInputClass(int nClass)
+void CClientExoAppInternal::SetInputClass(int nClass)  // Xbox 0x0005FF50
 {
     if (m_nInputClass != nClass)
     {

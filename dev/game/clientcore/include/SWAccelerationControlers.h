@@ -5,7 +5,7 @@
 
 class CSWPhysicsState
 {
-public:
+public:  // Xbox 0x0008EA00
     CSWPhysicsState(const Vector& vValue = Vector(),
                     const Vector& vRate = Vector())
     {

@@ -7,7 +7,7 @@
 
 #define STARTSCREEN_ATTRACT_TIME 90.0f
 
-void CSWGuiStartScreen::HandleInputEvent(int nEvent, int nState)
+void CSWGuiStartScreen::HandleInputEvent(int nEvent, int nState)  // Xbox 0x000B4A90
 {
     if (nState)
     {
@@ -46,7 +46,7 @@ void CSWGuiStartScreen::Draw(float fElapsed)
     }
 }
 
-CSWGuiStartScreen::CSWGuiStartScreen(CSWGuiManager* pManager)
+CSWGuiStartScreen::CSWGuiStartScreen(CSWGuiManager* pManager)  // Xbox 0x000B4BA0
     : CSWGuiPanel(pManager)
 {
     if (m_pManager == NULL)

@@ -9,7 +9,7 @@ const float CSWArea::MAX_TILE_EPSILON = 9.9999f;
 const float CSWArea::MIN_TILE_EPSILON = 0.0001f;
 const float CSWArea::EPSILON = 0.0001f;
 const float CSWArea::SPLINE_COSINE_LIMIT = 0.9f;
-// PC 0x005A1540 GOG 0x005A15B0
+// PC 0x005A1540 GOG 0x005A15B0 Xbox 0x000BE380
 CSWArea::CSWArea()
 {
     Vector vColor;
@@ -49,7 +49,7 @@ CSWArea::CSWArea()
     m_bDayNightCycle = 1;
     m_nShadowOpacity = 50;
 }
-// PC 0x005A1630 GOG 0x005A16A0
+// PC 0x005A1630 GOG 0x005A16A0 Xbox 0x000BE490
 CSWArea::~CSWArea()
 {
     delete m_pStaticObjectTriangleStarts;
@@ -194,7 +194,7 @@ void CSWArea::GrowStaticObjectTriangles(int nAdditional)
     m_nStaticTriangleAlloc = nNewAlloc;
     m_pStaticTriangles = pTriangles;
 }
-// PC 0x005A1690 GOG 0x005A1700
+// PC 0x005A1690 GOG 0x005A1700 Xbox 0x000BE4F0
 int CSWArea::InitializeStaticObjects()
 {
     m_nStaticObjectVertexCount = 0;
@@ -216,7 +216,7 @@ int CSWArea::InitializeStaticObjects()
     m_pBoundingBoxIds = 0;
     return 0;
 }
-// PC 0x005A16D0 GOG 0x005A1740
+// PC 0x005A16D0 GOG 0x005A1740 Xbox 0x000BE530
 int CSWArea::IntersectLineSegments(float fX1, float fY1, float fX2, float fY2,
                                    float fX3, float fY3, float fX4, float fY4,
                                    float* pfX, float* pfY)
@@ -377,7 +377,7 @@ int CSWArea::GetIsNight()
 {
     return m_bIsNight;
 }
-// PC 0x005A1B70 GOG 0x005A1BE0
+// PC 0x005A1B70 GOG 0x005A1BE0 Xbox 0x000BE8C0
 int CSWArea::SetFog(float fNear, float fFar, Vector vColor)
 {
     m_vFogColor = vColor;
@@ -385,19 +385,19 @@ int CSWArea::SetFog(float fNear, float fFar, Vector vColor)
     m_fFogFar = fFar;
     return 1;
 }
-// PC 0x005A1BA0 GOG 0x005A1C10
+// PC 0x005A1BA0 GOG 0x005A1C10 Xbox 0x000BE900
 int CSWArea::SetIsNight(int bIsNight)
 {
     m_bIsNight = bIsNight;
     return 1;
 }
-// PC 0x005A1BC0 GOG 0x005A1C30
+// PC 0x005A1BC0 GOG 0x005A1C30 Xbox 0x000BE920
 int CSWArea::SetWind(unsigned char nWind)
 {
     m_nWind = nWind;
     return 1;
 }
-// PC 0x005A1BE0 GOG 0x005A1C50
+// PC 0x005A1BE0 GOG 0x005A1C50 Xbox 0x000BE940
 int CSWArea::AddStaticBoundingBox(unsigned long nId, const Vector& vMin,
                                   const Vector& vMax)
 {
@@ -432,7 +432,7 @@ int CSWArea::AddStaticBoundingBox(unsigned long nId, const Vector& vMin,
     m_pBoundingBoxIds[m_nBoundingBoxCount] = nId;
     return ++m_nBoundingBoxCount;
 }
-// PC 0x005A1D50 GOG 0x005A1DC0
+// PC 0x005A1D50 GOG 0x005A1DC0 Xbox 0x000BEA90
 int CSWArea::RemoveStaticBoundingBox(unsigned long nId)
 {
     int i;

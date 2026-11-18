@@ -52,7 +52,7 @@ int CSWRoomSurfaceMesh::SetEdgeVertex(int nEdge, Vector& vVertex)
     return 0;
 }
 
-// PC 0x005769D0 GOG 0x00576640
+// PC 0x005769D0 GOG 0x00576640 Xbox 0x001FB010
 float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
 {
     int nFace = FindTriangle(vPosition, bWalkable, Vector(1.0f, 1.0f, 0.0f));
@@ -67,13 +67,13 @@ float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
     return PlaneHeightAtPoint(m_pFaceNormals[nFace], m_pFaceDistances[nFace],
                               vPoint);
 }
-// PC 0x00574C80 GOG 0x00575170
+// PC 0x00574C80 GOG 0x00575170 Xbox 0x001F9940
 void CSWRoomSurfaceMesh::SetOrientation(const Quaternion& qOrientation)
 {
     m_qOrientation = qOrientation;
 }
 
-// PC 0x00575340 GOG 0x00575D50
+// PC 0x00575340 GOG 0x00575D50 Xbox 0x001FA600
 CSWRoomSurfaceMeshHitInfo::CSWRoomSurfaceMeshHitInfo(unsigned long nMask)
 {
     ClearAll(nMask);
@@ -87,7 +87,7 @@ inline CSWRoomSurfaceMeshAABBNode::CSWRoomSurfaceMeshAABBNode()
     m_nNodeType = 4;
     m_nTraversalMask = 0;
 }
-// PC 0x00574CD0 GOG 0x00574DB0
+// PC 0x00574CD0 GOG 0x00574DB0 Xbox 0x001F94D0
 static __int64 QueryTimer()
 {
     LARGE_INTEGER nCount;
@@ -96,7 +96,7 @@ static __int64 QueryTimer()
     QueryPerformanceCounter(&nCount);
     return 1000000 * nCount.QuadPart / performanceFrequency;
 }
-// PC 0x00574D50 GOG 0x005751C0
+// PC 0x00574D50 GOG 0x005751C0 Xbox 0x001F9960
 int CSWRoomSurfaceMeshHitInfo::ClearOutput()
 {
     m_bHit = 0;
@@ -104,7 +104,7 @@ int CSWRoomSurfaceMeshHitInfo::ClearOutput()
     m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
-// PC 0x00574D80 GOG 0x005751F0
+// PC 0x00574D80 GOG 0x005751F0 Xbox 0x001F99A0
 void CSWRoomSurfaceMeshHitInfo::ClearAll(unsigned long nMask)
 {
     m_nHitFace = -1;
@@ -114,7 +114,7 @@ void CSWRoomSurfaceMeshHitInfo::ClearAll(unsigned long nMask)
     m_nHitMaterialMask = 0;
     m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
 }
-// PC 0x00574DC0 GOG 0x00574E30
+// PC 0x00574DC0 GOG 0x00574E30 Xbox 0x001F9550
 void CSWRoomSurfaceMesh::ComputeTriangleAdjacency()
 {
     if (m_nAdjacencyCount != 0)
@@ -172,7 +172,7 @@ void CSWRoomSurfaceMesh::ComputeTriangleAdjacency()
         delete[] pVertexIndices;
     }
 }
-// PC 0x00574FE0 GOG 0x00575050
+// PC 0x00574FE0 GOG 0x00575050 Xbox 0x001FA3F0
 float CSWRoomSurfaceMesh::ComputeHeight(int nFace, Vector vPosition)
 {
     Vector vPoint(vPosition.m_fX, vPosition.m_fY, -9.0f);
@@ -180,7 +180,7 @@ float CSWRoomSurfaceMesh::ComputeHeight(int nFace, Vector vPosition)
     return PlaneHeightAtPoint(m_pFaceNormals[nFace], m_pFaceDistances[nFace],
                               vPoint);
 }
-// PC 0x00575020 GOG 0x00575090
+// PC 0x00575020 GOG 0x00575090 Xbox 0x001F9860
 void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nLevel, int nTriangle,
                                               int* pnFirst, int* pnSecond,
                                               int* pnThird)
@@ -199,7 +199,7 @@ void CSWRoomSurfaceMesh::GetTriangleAdjacency(int nLevel, int nTriangle,
         *pnThird = nThird;
     }
 }
-// PC 0x005750C0 GOG 0x00575130
+// PC 0x005750C0 GOG 0x00575130 Xbox 0x001F9900
 void CSWRoomSurfaceMesh::GetTriangleVertices(int nLevel, int nTriangle,
                                              int* pnFirst, int* pnSecond,
                                              int* pnThird)
@@ -213,7 +213,7 @@ void CSWRoomSurfaceMesh::GetTriangleVertices(int nLevel, int nTriangle,
         *pnThird = m_pFaces[nVertexOffset + 2];
     }
 }
-// PC 0x00575390 GOG 0x00575230
+// PC 0x00575390 GOG 0x00575230 Xbox 0x001F99F0
 int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
 {
     if (SWROOMSURFACEMESH_DEBUG)
@@ -295,7 +295,7 @@ template <> CExoArrayList<CSWRoomSurfaceMeshAABBNode>::~CExoArrayList()
     element = NULL;
 }
 #endif
-// PC 0x00576040 GOG 0x00575F00
+// PC 0x00576040 GOG 0x00575F00 Xbox 0x001FA810
 int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
                                              CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -313,7 +313,7 @@ int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
 
     return hitInfo.m_bHit;
 }
-// PC 0x005760A0 GOG 0x00575F60
+// PC 0x005760A0 GOG 0x00575F60 Xbox 0x001FA870
 int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
                                           CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -344,7 +344,7 @@ int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
 
     return hitInfo.m_bHit;
 }
-// PC 0x005761D0 GOG 0x00576090
+// PC 0x005761D0 GOG 0x00576090 Xbox 0x001FA9D0
 int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
                                      CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -378,7 +378,7 @@ int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
     checkaabbtime = (float)(QueryTimer() - nStartTime);
     return hitInfo.m_bHit;
 }
-// PC 0x005754B0 GOG 0x00575DA0
+// PC 0x005754B0 GOG 0x00575DA0 Xbox 0x001FA660
 int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
     int nResult = CSWCollisionMesh::SaveBinaryMesh(sFileName);
@@ -411,10 +411,10 @@ int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
     return nResult;
 }
 
-CSWRoomSurfaceMeshCrossingFaces::~CSWRoomSurfaceMeshCrossingFaces()
+CSWRoomSurfaceMeshCrossingFaces::~CSWRoomSurfaceMeshCrossingFaces()  // Xbox 0x000B92F0
 {
 }
-// PC 0x00575630 GOG 0x00575350
+// PC 0x00575630 GOG 0x00575350 Xbox 0x001F9B10
 int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& vEnd,
                                      CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -465,7 +465,7 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& v
         }
     }
 }
-// PC 0x00575800 GOG 0x00575520
+// PC 0x00575800 GOG 0x00575520 Xbox 0x001F9CE0
 void CSWRoomSurfaceMesh::TransformAABBToWorld(int nNode, const Vector& vOffset)
 {
     while (nNode != -1)
@@ -479,7 +479,7 @@ void CSWRoomSurfaceMesh::TransformAABBToWorld(int nNode, const Vector& vOffset)
         nNode = m_lstAABBNodes[nNode].m_nRightChild;
     }
 }
-// PC 0x005758F0 GOG 0x00575610
+// PC 0x005758F0 GOG 0x00575610 Xbox 0x001F9E00
 int CSWRoomSurfaceMesh::GetEdgeVertex(int nEdge, Vector& vVertex)
 {
     if (nEdge < m_lstExternalEdges.num)
@@ -492,7 +492,7 @@ int CSWRoomSurfaceMesh::GetEdgeVertex(int nEdge, Vector& vVertex)
     vVertex = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
-// PC 0x00575970 GOG 0x00575690
+// PC 0x00575970 GOG 0x00575690 Xbox 0x001F9E80
 int CSWRoomSurfaceMesh::GetEdgeVertices(int nEdge, Vector& vFirst,
                                         Vector& vSecond)
 {
@@ -513,7 +513,7 @@ int CSWRoomSurfaceMesh::GetEdgeVertices(int nEdge, Vector& vFirst,
     vSecond = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
-// PC 0x00575A60 GOG 0x00575780
+// PC 0x00575A60 GOG 0x00575780 Xbox 0x001F9F70
 int CSWRoomSurfaceMesh::WeldEdgeVertices(CSWRoomSurfaceMesh* pOther,
                                          float fTolerance, Vector* pvPosition,
                                          Vector* pvOtherPosition)
@@ -549,7 +549,7 @@ int CSWRoomSurfaceMesh::WeldEdgeVertices(CSWRoomSurfaceMesh* pOther,
 
     return nWelded;
 }
-// PC 0x00575BA0 GOG 0x005758C0
+// PC 0x00575BA0 GOG 0x005758C0 Xbox 0x001FA100
 int CSWRoomSurfaceMesh::SetRoomAdjacency(CSWRoomSurfaceMesh* pOther,
                                           int nRoom, int nOtherRoom,
                                           const Vector& vPosition,
@@ -622,13 +622,13 @@ int CSWRoomSurfaceMesh::SetRoomAdjacency(CSWRoomSurfaceMesh* pOther,
 
     return nAdjacent;
 }
-// PC 0x00575E60 GOG 0x00575B80
+// PC 0x00575E60 GOG 0x00575B80 Xbox 0x001FA3D0
 int CSWRoomSurfaceMesh::GetAdjacentRoom(int nEdge)
 {
     return m_lstExternalEdges[nEdge].m_nAdjacentRoom;
 }
 
-// PC 0x00578C90 GOG 0x00578D10
+// PC 0x00578C90 GOG 0x00578D10 Xbox 0x001FD520
 int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
     const Vector& vStart, const Vector& vEnd, Vector& vClippedStart,
     Vector& vClippedEnd, float& fMinHeight, float& fMaxHeight, int& nFace)
@@ -792,7 +792,7 @@ int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
     }
     return 0;
 }
-// PC 0x00576330 GOG 0x005761F0
+// PC 0x00576330 GOG 0x005761F0 Xbox 0x001FAB50
 int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
                                      Vector vDirection)
 {
@@ -829,7 +829,7 @@ int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
 
     return hitInfo.m_nHitFace;
 }
-// PC 0x00576580 GOG 0x00576440
+// PC 0x00576580 GOG 0x00576440 Xbox 0x001FADD0
 int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
 {
     Vector vLocal = WorldToLocal(vPosition);
@@ -845,7 +845,7 @@ int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
 
     return m_pFaceMaterials[hitInfo.m_nHitFace];
 }
-// PC 0x00576660 GOG 0x00576520
+// PC 0x00576660 GOG 0x00576520 Xbox 0x001FAED0
 int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
 {
     Vector vLocal = WorldToLocal(vPosition);
@@ -861,7 +861,7 @@ int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
 
     return m_pFaceMaterials[hitInfo.m_nHitFace];
 }
-// PC 0x00576A70 GOG 0x00576AF0
+// PC 0x00576A70 GOG 0x00576AF0 Xbox 0x001FB4E0
 CSWRoomSurfaceMesh::~CSWRoomSurfaceMesh()
 {
     if (m_bBinary != 0)
@@ -895,7 +895,7 @@ CSWRoomSurfaceMesh::~CSWRoomSurfaceMesh()
         }
     }
 }
-// PC 0x00576C50 GOG 0x00576CD0
+// PC 0x00576C50 GOG 0x00576CD0 Xbox 0x001FB650
 void CSWRoomSurfaceMesh::ComputeRoomBorder()
 {
     if (m_nAdjacencyCount == 0)
@@ -962,7 +962,7 @@ void CSWRoomSurfaceMesh::ComputeRoomBorder()
     }
     delete[] pnEdges;
 }
-// PC 0x005770A0 GOG 0x00577120
+// PC 0x005770A0 GOG 0x00577120 Xbox 0x001FBA70
 int CSWRoomSurfaceMesh::IsPointInPolygon(const Vector& vStart,
                                          const Vector& vEnd, int& nFace)
 {
@@ -1063,7 +1063,7 @@ int CSWRoomSurfaceMesh::IsPointInPolygon(const Vector& vStart,
         nFace = m_lstCrossingFaces[0];
     return nCrossings;
 }
-// PC 0x00576740 GOG 0x005768A0
+// PC 0x00576740 GOG 0x005768A0 Xbox 0x001FB250
 void CSWRoomSurfaceMesh::AddCrossing(const Vector& vStart,
                                     const Vector& vDirection,
                                     const Vector& vCrossing,
@@ -1080,7 +1080,7 @@ void CSWRoomSurfaceMesh::AddCrossing(const Vector& vStart,
     m_lstCrossingFaces.Insert(nFace, nIndex);
     nCrossings++;
 }
-// PC 0x00576990 GOG 0x00576600
+// PC 0x00576990 GOG 0x00576600 Xbox 0x001FAFD0
 void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
 {
     if (SWROOMSURFACEMESH_DEBUG)
@@ -1105,7 +1105,7 @@ inline CExoStaticArrayList<CSWRoomSurfaceExternalEdge>::CExoStaticArrayList(
     m_bStatic = bStatic;
 }
 #endif
-// PC 0x00577550 GOG 0x005775D0
+// PC 0x00577550 GOG 0x005775D0 Xbox 0x001FBF20
 CSWRoomSurfaceMesh::CSWRoomSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, RESTYPE_WOK)
 {
@@ -1163,7 +1163,7 @@ CSWRoomSurfaceMesh::CSWRoomSurfaceMesh()
         m_nAllMaterialsMask += 1 << nMaterial;
     }
 }
-// PC 0x005777E0 GOG 0x00577860
+// PC 0x005777E0 GOG 0x00577860 Xbox 0x001FC160
 int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
                                      unsigned long nDataSize)
 {
@@ -1475,7 +1475,7 @@ int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
     }
     return 1;
 }
-// PC 0x005788A0 GOG 0x00578920
+// PC 0x005788A0 GOG 0x00578920 Xbox 0x001FD170
 int CSWRoomSurfaceMesh::ComputeClippedLineSegment(
     Vector vStart, Vector vEnd, Vector& vClippedStart, Vector& vClippedEnd,
     int& nFace)

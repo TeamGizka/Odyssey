@@ -25,12 +25,12 @@ extern int g_Letterbox_bottom;
 
 #define SWGUIDIALOG_DEBUG 0
 
-// PC 0x005EE1C0 GOG 0x005EE1A0
+// PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
 void CSWGuiDialogComputer::SetType(unsigned char)
 {
 }
 
-// PC 0x0070E2A0 GOG 0x0070E900
+// PC 0x0070E2A0 GOG 0x0070E900 Xbox 0x000E8E50
 CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -41,21 +41,21 @@ CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
     Reset();
 }
 
-// PC 0x0070D440 GOG 0x0070D430
+// PC 0x0070D440 GOG 0x0070D430 Xbox 0x000E7630
 void CSWGuiDialog::SetReplyActive(CSWGuiControl* pControl)
 {
     EXOXBOXASSERT(pControl->AsLabel());
     CSWGuiLabel* pLabel = pControl->AsLabel();
     pLabel->m_cText.m_cParams.SetColor(m_vReplyHighlightColor);
 }
-// PC 0x0070D470 GOG 0x0070D460
+// PC 0x0070D470 GOG 0x0070D460 Xbox 0x000E7670
 void CSWGuiDialog::SetReplyInactive(CSWGuiControl* pControl)
 {
     EXOXBOXASSERT(pControl->AsLabel());
     CSWGuiLabel* pLabel = pControl->AsLabel();
     pLabel->m_cText.m_cParams.SetColor(m_vReplyColor);
 }
-// PC 0x0070D4A0 GOG 0x0070D490
+// PC 0x0070D4A0 GOG 0x0070D490 Xbox 0x000E76B0
 void CSWGuiDialog::SetDialogMessage(const CExoString& sMessage)
 {
     m_lbReplies.SetEnabledFlag(0);
@@ -74,7 +74,7 @@ void CSWGuiDialog::SetDialogMessage(const CExoString& sMessage)
     }
     m_bDialogActive = 1;
 }
-// PC 0x0070D530 GOG 0x0070D520
+// PC 0x0070D530 GOG 0x0070D520 Xbox 0x000E7740
 void CSWGuiDialog::ShowDialogMessage()
 {
     m_bDialogWaiting = 0;
@@ -87,12 +87,12 @@ void CSWGuiDialog::ShowDialogMessage()
     }
     m_lblMessage.SetEnabledFlag(1);
 }
-// PC 0x0070D5A0 GOG 0x0070D190
+// PC 0x0070D5A0 GOG 0x0070D190 Xbox 0x000E75C0
 void CSWGuiDialog::EndDialog()
 {
     m_bDialogEnded = 1;
 }
-// PC 0x0070D5B0 GOG 0x0070D590
+// PC 0x0070D5B0 GOG 0x0070D590 Xbox 0x000E77B0
 int CSWGuiDialog::SelectReply(int nReply)
 {
     if (nReply < m_nReplyCount)
@@ -104,7 +104,7 @@ int CSWGuiDialog::SelectReply(int nReply)
     }
     return 0;
 }
-// PC 0x0070E420 GOG 0x0070EC70
+// PC 0x0070E420 GOG 0x0070EC70 Xbox 0x000E8760
 CSWGuiDialogLetterbox::CSWGuiDialogLetterbox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -113,7 +113,7 @@ CSWGuiDialogLetterbox::CSWGuiDialogLetterbox(CSWGuiManager* pManager)
     m_nPosition = 0;
     m_bDone = 0;
 }
-// PC 0x0070D600 GOG 0x0070D5E0
+// PC 0x0070D600 GOG 0x0070D5E0 Xbox 0x000E7800
 void CSWGuiDialog::Reset()
 {
     m_lbReplies.SetEnabledFlag(0);
@@ -128,7 +128,7 @@ void CSWGuiDialog::Reset()
         m_lblReply[i].m_cText.m_cParams.SetText(sText);
     }
 }
-// PC 0x0070F100 GOG 0x0070EA00
+// PC 0x0070F100 GOG 0x0070EA00 Xbox 0x000E85D0
 void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
                               unsigned long* pReplyIndices, int nStartIndex,
                               int bShowReplies)
@@ -192,7 +192,7 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
                                 m_pManager->m_nMouseY);
 #endif
 }
-// PC 0x0070D6D0 GOG 0x0070D1A0
+// PC 0x0070D6D0 GOG 0x0070D1A0 Xbox 0x000E75D0
 int CSWGuiDialog::GetReplyIndex(int nReply)
 {
     if (nReply >= m_nReplyCount || nReply < 0)
@@ -201,7 +201,7 @@ int CSWGuiDialog::GetReplyIndex(int nReply)
     }
     return m_aReplyIndex[nReply];
 }
-// PC 0x0070D6F0 GOG 0x0070D6B0
+// PC 0x0070D6F0 GOG 0x0070D6B0 Xbox 0x000E78A0
 void CSWGuiDialog::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -293,7 +293,7 @@ int CSWGuiDialog::HandleSelectReply(CSWGuiControl* pControl)
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     return SelectReply(m_lbReplies.m_nSelectedItem);
 }
-// PC 0x0070D870 GOG 0x0070D830
+// PC 0x0070D870 GOG 0x0070D830 Xbox 0x000E7980
 void CSWGuiDialogLetterbox::SetExtentSpecial(CSWGuiExtent cExtent)
 {
     switch (m_nPosition)
@@ -333,7 +333,7 @@ void CSWGuiDialogLetterbox::SetExtentSpecial(CSWGuiExtent cExtent)
         }
     }
 }
-// PC 0x0070D910 GOG 0x0070D8D0
+// PC 0x0070D910 GOG 0x0070D8D0 Xbox 0x000E7A20
 void CSWGuiDialogLetterbox::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cNewExtent = cExtent;
@@ -348,7 +348,7 @@ void CSWGuiDialogLetterbox::SetExtent(const CSWGuiExtent& cExtent)
     }
     CSWGuiPanel::SetExtent(cNewExtent);
 }
-// PC 0x0070D980 GOG 0x0070D940
+// PC 0x0070D980 GOG 0x0070D940 Xbox 0x000E7A80
 void CSWGuiDialogLetterbox::SetTop()
 {
     if (m_pManager == 0)
@@ -378,7 +378,7 @@ void CSWGuiDialogLetterbox::SetTop()
     m_nPosition = POSITION_TOP;
     g_Letterbox_top = 0;
 }
-// PC 0x0070DA10 GOG 0x0070D9D0
+// PC 0x0070DA10 GOG 0x0070D9D0 Xbox 0x000E7B00
 void CSWGuiDialogLetterbox::SetBottom()
 {
     if (m_pManager == 0)
@@ -409,7 +409,7 @@ void CSWGuiDialogLetterbox::SetBottom()
     g_Letterbox_bottom = m_cExtent.m_nTop;
     m_nPosition = POSITION_BOTTOM;
 }
-// PC 0x0070E560 GOG 0x0070EDB0
+// PC 0x0070E560 GOG 0x0070EDB0 Xbox 0x000E8830
 CSWGuiManager* CSWGuiDialogLetterbox::SetMiddle()
 {
     if (m_pManager == 0)
@@ -425,7 +425,7 @@ CSWGuiManager* CSWGuiDialogLetterbox::SetMiddle()
     m_cExtent.m_nHeight = pManager->m_nHeight;
     return pManager;
 }
-// PC 0x0070DAB0 GOG 0x0070DA70
+// PC 0x0070DAB0 GOG 0x0070DA70 Xbox 0x000E7BA0
 void CSWGuiDialogLetterbox::ResetFade()
 {
     if (m_nPosition == POSITION_MIDDLE)
@@ -441,7 +441,7 @@ void CSWGuiDialogLetterbox::ResetFade()
     m_fFadeTime = 0.0f;
     m_bFadeIn = 0;
 }
-// PC 0x0070DAF0 GOG 0x0070DAB0
+// PC 0x0070DAF0 GOG 0x0070DAB0 Xbox 0x000E7BE0
 void CSWGuiDialogLetterbox::SetFade(int bFadeIn, float fDelay, float fLength,
                                     const Vector& vColor)
 {
@@ -459,7 +459,7 @@ void CSWGuiDialogLetterbox::SetFade(int bFadeIn, float fDelay, float fLength,
     m_fFadeLength = fLength;
     m_fFadeTime = 0.1f;
 }
-// PC 0x0070DB50 GOG 0x0070D1C0
+// PC 0x0070DB50 GOG 0x0070D1C0 Xbox 0x000E75F0
 int CSWGuiDialogLetterbox::IsFadeDone()
 {
     if (m_fFadeTime == 0.0f)
@@ -468,7 +468,7 @@ int CSWGuiDialogLetterbox::IsFadeDone()
     }
     return m_fFadeDelay + m_fFadeLength < m_fFadeTime;
 }
-// PC 0x0070DB90 GOG 0x0070DF60
+// PC 0x0070DB90 GOG 0x0070DF60 Xbox 0x000E7E70
 void CSWGuiDialogTop::SetReply(const CExoString& sReply)
 {
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -504,7 +504,7 @@ void CSWGuiDialogTop::SetReply(const CExoString& sReply)
         pGui->m_pDialogTop->SetExtentSpecial(cExtent);
     }
 }
-// PC 0x0070DCD0 GOG 0x0070E120
+// PC 0x0070DCD0 GOG 0x0070E120 Xbox 0x000E7FB0
 void CSWGuiDialogCinematic::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiPanel::SetExtent(cExtent);
@@ -515,7 +515,7 @@ void CSWGuiDialogCinematic::SetExtent(const CSWGuiExtent& cExtent)
     cChildExtent.m_nWidth = m_cExtent.m_nWidth;
     m_lblMessage.SetExtent(cChildExtent);
 }
-// PC 0x0070DD60 GOG 0x0070E1B0
+// PC 0x0070DD60 GOG 0x0070E1B0 Xbox 0x000E8040
 void CSWGuiDialogCinematic::ShowDialogMessage()
 {
     CGuiInGame* pGui;
@@ -537,7 +537,7 @@ void CSWGuiDialogCinematic::ShowDialogMessage()
     pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     pGui->m_pDialogLetterbox->SetExtentSpecial(cExtent);
 }
-// PC 0x0070E5D0 GOG 0x0070DB10
+// PC 0x0070E5D0 GOG 0x0070DB10 Xbox 0x000E7C50
 void CSWGuiDialogLetterbox::Draw(float fElapsed)
 {
     if (SWGUIDIALOG_DEBUG)
@@ -642,7 +642,7 @@ int CSWGuiDialogLetterbox::GetLetterboxChangeTop(const float& fElapsed)
     float fScrollRate = (m_cTarget.m_nTop - m_cStart.m_nTop) * 2.0f;
     return (int)(fScrollRate * fElapsed);
 }
-// PC 0x0070E800 GOG 0x0070DD40
+// PC 0x0070E800 GOG 0x0070DD40 Xbox 0x000E88A0
 CSWGuiDialogTop::CSWGuiDialogTop(CSWGuiManager* pManager,
                                const CResRef& cFont, const Vector& vColor)
     : CSWGuiPanel(pManager)
@@ -677,7 +677,7 @@ CSWGuiDialogTop::CSWGuiDialogTop(CSWGuiManager* pManager,
     m_bPositioned = 1;
 #endif
 }
-// PC 0x0070DE50 GOG 0x0070E2A0
+// PC 0x0070DE50 GOG 0x0070E2A0 Xbox 0x000E8130
 int CSWGuiDialogCinematic::SelectReply(int nReply)
 {
     if (CSWGuiDialog::SelectReply(nReply))
@@ -690,7 +690,7 @@ int CSWGuiDialogCinematic::SelectReply(int nReply)
     }
     return 1;
 }
-// PC 0x0070DF20 GOG 0x0070E370
+// PC 0x0070DF20 GOG 0x0070E370 Xbox 0x000E81D0
 void CSWGuiDialogCinematic::Reset()
 {
     CSWGuiExtent cExtent;
@@ -729,7 +729,7 @@ void CSWGuiDialogCinematic::Reset()
     }
     CSWGuiDialog::Reset();
 }
-// PC 0x0070EA20 GOG 0x0070EE90
+// PC 0x0070EA20 GOG 0x0070EE90 Xbox 0x000E8F90
 CSWGuiDialogCinematic::CSWGuiDialogCinematic(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
 {
@@ -802,7 +802,7 @@ CSWGuiDialogCinematic::~CSWGuiDialogCinematic()
         m_pTop = 0;
     }
 }
-// PC 0x0070F400 GOG 0x0070F150
+// PC 0x0070F400 GOG 0x0070F150 Xbox 0x000E8A70
 void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
                                        unsigned long* pReplyIndices,
                                        int nStartIndex, int bShowReplies)
@@ -825,7 +825,7 @@ void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
         m_pManager->AddPanel(m_pTop, 0, 1);
     }
 }
-// PC 0x0070F4D0 GOG 0x0070F220
+// PC 0x0070F4D0 GOG 0x0070F220 Xbox 0x000E91F0
 CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
 {
@@ -889,7 +889,7 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     m_lblMessage.m_cText.m_cParams.SetColor(m_vReplyColor);
     m_vReplyHighlightColor = CGuiInGame::COLOR_WHITE;
 }
-// PC 0x0070E080 GOG 0x0070E630
+// PC 0x0070E080 GOG 0x0070E630 Xbox 0x000E8300
 void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -906,7 +906,7 @@ void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiDialog::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0070FBB0 GOG 0x0070F900
+// PC 0x0070FBB0 GOG 0x0070F900 Xbox 0x000E8C40
 void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
                                       unsigned long* pReplyIndices,
                                       int nStartIndex, int bShowReplies)
@@ -920,7 +920,7 @@ void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
     UpdateSkills();
 }
 
-// PC 0x007088F0 GOG 0x00708630
+// PC 0x007088F0 GOG 0x00708630 Xbox 0x000E84E0
 void CSWGuiDialogComputer::OnPanelAdded()
 {
     m_pSound->Play();
@@ -929,7 +929,7 @@ void CSWGuiDialogComputer::OnPanelAdded()
 #endif
 }
 
-// PC 0x0070A8A0 GOG 0x0070A5E0
+// PC 0x0070A8A0 GOG 0x0070A5E0 Xbox 0x000E84F0
 void CSWGuiDialogComputer::OnPanelRemoved()
 {
     m_pSound->Stop();
@@ -1011,7 +1011,7 @@ CSWGuiDialogComputer::~CSWGuiDialogComputer()
 
     m_lbMessage.ClearItems();
 }
-// PC 0x0070FCD0 GOG 0x0070FA20
+// PC 0x0070FCD0 GOG 0x0070FA20 Xbox 0x000E97D0
 CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
 {
@@ -1042,7 +1042,7 @@ CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
 #endif
 }
 static inline void TraceComputerSkills();
-// PC 0x0070EE90 GOG 0x0070E690
+// PC 0x0070EE90 GOG 0x0070E690 Xbox 0x000E8360
 void CSWGuiDialogComputer::UpdateSkills()
 {
     if (SWGUIDIALOG_DEBUG)

@@ -1,6 +1,6 @@
 #include "nwcanimbase.h"
 #include "math3d.h"
-// PC 0x0075AF20 GOG 0x0075AD40
+// PC 0x0075AF20 GOG 0x0075AD40 Xbox 0x00136EA0
 CSWCAnimBaseProjectile::CSWCAnimBaseProjectile()
 {
     m_nAnimationType = 7;
@@ -10,7 +10,7 @@ CSWCAnimBaseProjectile::~CSWCAnimBaseProjectile()
 {
     UnloadModel();
 }
-// PC 0x0075AF90 GOG 0x0075ADB0
+// PC 0x0075AF90 GOG 0x0075ADB0 Xbox 0x00136EC0
 int CSWCAnimBaseProjectile::LoadModel(const CResRef& sResRef,
                                       unsigned char nType)
 {
@@ -27,7 +27,7 @@ int CSWCAnimBaseProjectile::LoadModel(const CResRef& sResRef,
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x0075B000 GOG 0x0075AE20
+// PC 0x0075B000 GOG 0x0075AE20 Xbox 0x00136F40
 int CSWCAnimBaseProjectile::SetAnimation(unsigned short nAnimation,
                                          float fSpeed, int nFlags, float fBlend)
 {
@@ -59,7 +59,7 @@ int CSWCAnimBaseProjectile::SetAnimation(unsigned short nAnimation,
     }
 }
 
-// PC 0x0075B130 GOG 0x0075AF70
+// PC 0x0075B130 GOG 0x0075AF70 Xbox 0x001370B0
 int CSWCAnimBaseProjectile::SetOrientation(const Vector& vFacing)
 {
     if (m_pModel == 0)

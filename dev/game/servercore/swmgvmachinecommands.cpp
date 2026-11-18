@@ -9,18 +9,18 @@
 #include "serverexoapp.h"
 #include "nwsobject.h"
 #include "nwscreaturestats.h"
-// PC 0x006176B0 GOG 0x00617760
+// PC 0x006176B0 GOG 0x00617760 Xbox 0x000A5910
 int CSWTrackFollower::GetIsInvulnerable()
 {
     return m_fInvincibilityRemaining > 0.0f;
 }
-// PC 0x006176D0 GOG 0x00617780
+// PC 0x006176D0 GOG 0x00617780 Xbox 0x00130650
 void CSWMGGunBank::SetBulletModel(const CResRef& sBank)
 {
     m_resBulletModel = sBank;
 }
 
-// PC 0x006176F0 GOG 0x00617640
+// PC 0x006176F0 GOG 0x00617640 Xbox 0x00282E70
 int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
                                                            int nArgs)
 {
@@ -47,7 +47,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
     }
     return 0;
 }
-// PC 0x006177C0 GOG 0x006177A0
+// PC 0x006177C0 GOG 0x006177A0 Xbox 0x00282EF0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,
                                                                int nArgs)
 {
@@ -69,7 +69,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,
     }
     return 0;
 }
-// PC 0x006178A0 GOG 0x00617970
+// PC 0x006178A0 GOG 0x00617970 Xbox 0x00283030
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectByName(int nCommand,
                                                                   int nArgs)
 {
@@ -96,7 +96,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectByName(int nCommand,
     }
     return 0;
 }
-// PC 0x00617980 GOG 0x00617A50
+// PC 0x00617980 GOG 0x00617A50 Xbox 0x002830C0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimation(int nCommand,
                                                                 int nArgs)
 {
@@ -157,7 +157,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimation(int nCommand,
     }
     return 0;
 }
-// PC 0x00617AE0 GOG 0x00617BB0
+// PC 0x00617AE0 GOG 0x00617BB0 Xbox 0x002831F0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletInfo(
     int nCommand, int nArgs)
 {
@@ -198,7 +198,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletInfo(
     }
     return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
-// PC 0x00617BA0 GOG 0x00617C70
+// PC 0x00617BA0 GOG 0x00617C70 Xbox 0x002832B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletShooter(
     int nCommand, int nArgs)
 {
@@ -221,7 +221,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletShooter(
     }
     return g_pVirtualMachine->StackPushObject(nObjectId) != 0 ? 0 : -2000;
 }
-// PC 0x00617C00 GOG 0x00617CD0
+// PC 0x00617C00 GOG 0x00617CD0 Xbox 0x00283310
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_AdjustFollowerHitPoints(
     int nCommand, int nArgs)
 {
@@ -255,7 +255,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_AdjustFollowerHitPoints(
     }
     return 0;
 }
-// PC 0x00617C90 GOG 0x00617D60
+// PC 0x00617C90 GOG 0x00617D60 Xbox 0x002833A0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_DefaultImplementations(
     int nCommand, int nArgs)
 {
@@ -295,7 +295,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_DefaultImplementations(
     }
     return 0;
 }
-// PC 0x00617D70 GOG 0x00617E40
+// PC 0x00617D70 GOG 0x00617E40 Xbox 0x00283480
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastObjectHit(int nCommand,
                                                                    int nArgs)
 {
@@ -335,7 +335,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastObjectHit(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(nObjectId) != 0 ? 0 : -2000;
 }
-// PC 0x00617DF0 GOG 0x00617EC0
+// PC 0x00617DF0 GOG 0x00617EC0 Xbox 0x00283500
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectName(int nCommand,
                                                                 int nArgs)
 {
@@ -361,7 +361,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectName(int nCommand,
     }
     return 0;
 }
-// PC 0x00617EF0 GOG 0x00617FC0
+// PC 0x00617EF0 GOG 0x00617FC0 Xbox 0x002835B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_IsSomething(int nCommand,
                                                               int nArgs)
 {
@@ -420,7 +420,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_IsSomething(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(bResult) != 0 ? 0 : -2000;
 }
-// PC 0x00617FD0 GOG 0x006180A0
+// PC 0x00617FD0 GOG 0x006180A0 Xbox 0x00283690
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastHPChange(int nCommand,
                                                                   int nArgs)
 {
@@ -438,7 +438,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastHPChange(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nChange) != 0 ? 0 : -2000;
 }
-// PC 0x00618020 GOG 0x006180F0
+// PC 0x00618020 GOG 0x006180F0 Xbox 0x002836E0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_RemoveAnimation(int nCommand,
                                                                   int nArgs)
 {
@@ -464,7 +464,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_RemoveAnimation(int nCommand,
     }
     return 0;
 }
-// PC 0x00618100 GOG 0x006181D0
+// PC 0x00618100 GOG 0x006181D0 Xbox 0x00283780
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetCameraClipping(
     int nCommand, int nArgs)
 {
@@ -489,7 +489,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetCameraClipping(
     }
     return g_pVirtualMachine->StackPushFloat(fClip) != 0 ? 0 : -2000;
 }
-// PC 0x00618170 GOG 0x00618240
+// PC 0x00618170 GOG 0x00618240 Xbox 0x002837E0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetCameraClipping(
     int nCommand, int nArgs)
 {
@@ -514,7 +514,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetCameraClipping(
     }
     return 0;
 }
-// PC 0x006181E0 GOG 0x006182B0
+// PC 0x006181E0 GOG 0x006182B0 Xbox 0x00283850
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayer(int nCommand,
                                                             int nArgs)
 {
@@ -534,7 +534,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayer(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidPlayer) != 0 ? 0 : -2000;
 }
-// PC 0x00618220 GOG 0x00618340
+// PC 0x00618220 GOG 0x00618340 Xbox 0x002838E0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameObjects(
     int nCommand, int nArgs)
 {
@@ -569,7 +569,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameObjects(
     }
     return g_pVirtualMachine->StackPushObject(nObjectId) != 0 ? 0 : -2000;
 }
-// PC 0x006182C0 GOG 0x006184D0
+// PC 0x006182C0 GOG 0x006184D0 Xbox 0x00283A70
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_StartInvulnerability(
     int nCommand, int nArgs)
 {
@@ -590,7 +590,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_StartInvulnerability(
     }
     return 0;
 }
-// PC 0x00618310 GOG 0x00618520
+// PC 0x00618310 GOG 0x00618520 Xbox 0x00283AC0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -621,7 +621,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo(
     }
     return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
 }
-// PC 0x00619870 GOG 0x006185C0
+// PC 0x00619870 GOG 0x006185C0 Xbox 0x00283B60
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition(
     int nCommand, int nArgs)
 {
@@ -649,7 +649,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition(
     }
     return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
 }
-// PC 0x006183B0 GOG 0x006186B0
+// PC 0x006183B0 GOG 0x006186B0 Xbox 0x00283C40
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerIntInfo(
     int nCommand, int nArgs)
 {
@@ -683,7 +683,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerIntInfo(
     }
     return 0;
 }
-// PC 0x00618440 GOG 0x00618740
+// PC 0x00618440 GOG 0x00618740 Xbox 0x00283CD0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -717,7 +717,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerFloatInfo(
     }
     return 0;
 }
-// PC 0x006184D0 GOG 0x006187D0
+// PC 0x006184D0 GOG 0x006187D0 Xbox 0x00283D60
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankStringInfo(
     int nCommand, int nArgs)
 {
@@ -761,7 +761,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankStringInfo(
     }
     return 0;
 }
-// PC 0x00618600 GOG 0x00618900
+// PC 0x00618600 GOG 0x00618900 Xbox 0x00283E40
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankIntInfo(
     int nCommand, int nArgs)
 {
@@ -808,7 +808,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankIntInfo(
         return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x006186C0 GOG 0x006189C0
+// PC 0x006186C0 GOG 0x006189C0 Xbox 0x00283F00
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -855,7 +855,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloatInfo(
         return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x00618780 GOG 0x00618A80
+// PC 0x00618780 GOG 0x00618A80 Xbox 0x00283FC0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTargettingGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -905,7 +905,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTargettingGunBankFloatInfo(
         return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x00618870 GOG 0x00618B70
+// PC 0x00618870 GOG 0x00618B70 Xbox 0x002840B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankStringInfo(
     int nCommand, int nArgs)
 {
@@ -953,7 +953,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankStringInfo(
     }
     return 0;
 }
-// PC 0x006189A0 GOG 0x00618CA0
+// PC 0x006189A0 GOG 0x00618CA0 Xbox 0x002841B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankIntInfo(
     int nCommand, int nArgs)
 {
@@ -997,7 +997,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankIntInfo(
     }
     return 0;
 }
-// PC 0x00618A50 GOG 0x00618D50
+// PC 0x00618A50 GOG 0x00618D50 Xbox 0x00284260
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1044,7 +1044,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloatInfo(
     }
     return 0;
 }
-// PC 0x00618B20 GOG 0x00618E20
+// PC 0x00618B20 GOG 0x00618E20 Xbox 0x00284330
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetTargettingGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1096,7 +1096,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetTargettingGunBankFloatInfo(
     }
     return 0;
 }
-// PC 0x00618C30 GOG 0x00618F30
+// PC 0x00618C30 GOG 0x00618F30 Xbox 0x00284440
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletHitPart(
     int nCommand, int nArgs)
 {
@@ -1117,7 +1117,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletHitPart(
     }
     return 0;
 }
-// PC 0x00618CE0 GOG 0x00618FE0
+// PC 0x00618CE0 GOG 0x00618FE0 Xbox 0x002844B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1146,7 +1146,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloatInfo(
     }
     return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
 }
-// PC 0x00618DA0 GOG 0x006190A0
+// PC 0x00618DA0 GOG 0x006190A0 Xbox 0x00284570
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVectorInfo(
     int nCommand, int nArgs)
 {
@@ -1177,7 +1177,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVectorInfo(
     }
     return g_pVirtualMachine->StackPushVector(vValue) != 0 ? 0 : -2000;
 }
-// PC 0x00618EF0 GOG 0x006191F0
+// PC 0x00618EF0 GOG 0x006191F0 Xbox 0x002846B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1211,7 +1211,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloatInfo(
     }
     return 0;
 }
-// PC 0x00618FB0 GOG 0x006192B0
+// PC 0x00618FB0 GOG 0x006192B0 Xbox 0x00284770
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVectorInfo(
     int nCommand, int nArgs)
 {
@@ -1245,7 +1245,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVectorInfo(
     }
     return 0;
 }
-// PC 0x00619120 GOG 0x00619420
+// PC 0x00619120 GOG 0x00619420 Xbox 0x002848C0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSoundProperty(int nCommand,
                                                                    int nArgs)
 {
@@ -1287,7 +1287,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSoundProperty(int nCommand,
         return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x006191E0 GOG 0x006194E0
+// PC 0x006191E0 GOG 0x006194E0 Xbox 0x00284980
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetSoundProperty(int nCommand,
                                                                    int nArgs)
 {
@@ -1329,7 +1329,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetSoundProperty(int nCommand,
     }
     return 0;
 }
-// PC 0x006192B0 GOG 0x006195B0
+// PC 0x006192B0 GOG 0x006195B0 Xbox 0x00284A50
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelPerSec(
     int nCommand, int nArgs)
 {
@@ -1348,7 +1348,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelPerSec(
     g_pAppManager->m_pClientExoApp->GetMiniGame()->m_fLateralAccel = fAccel;
     return 0;
 }
-// PC 0x00619340 GOG 0x00619640
+// PC 0x00619340 GOG 0x00619640 Xbox 0x00284AF0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralAccelPerSec(
     int nCommand, int nArgs)
 {
@@ -1359,7 +1359,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralAccelPerSec(
     fAccel = pApp->GetMiniGame()->m_fLateralAccel;
     return g_pVirtualMachine->StackPushFloat(fAccel) != 0 ? 0 : -2000;
 }
-// PC 0x00619380 GOG 0x00619680
+// PC 0x00619380 GOG 0x00619680 Xbox 0x00284B30
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, int nArgs)
 {
     int nSlot;
@@ -1372,7 +1372,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, 
     }
     return g_pVirtualMachine->StackPushInteger(nUpgrade) != 0 ? 0 : -2000;
 }
-// PC 0x006193D0 GOG 0x006196D0
+// PC 0x006193D0 GOG 0x006196D0 Xbox 0x00284B80
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition(int nCommand, int nArgs)
 {
     unsigned long oidFollower;
@@ -1386,7 +1386,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition(int nCommand,
     }
     return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
 }
-// PC 0x00619480 GOG 0x00619780
+// PC 0x00619480 GOG 0x00619780 Xbox 0x00284C20
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition(int nCommand, int nArgs)
 {
     Vector vPosition(0.0f, 0.0f, 0.0f);
@@ -1397,7 +1397,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition(int nComma
     }
     return 0;
 }
-// PC 0x006194F0 GOG 0x006197F0
+// PC 0x006194F0 GOG 0x006197F0 Xbox 0x00284C80
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_DestroyMiniGameObject(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -1413,7 +1413,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_DestroyMiniGameObject(int nCom
     }
     return 0;
 }
-// PC 0x00619550 GOG 0x00619850
+// PC 0x00619550 GOG 0x00619850 Xbox 0x00284CE0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs)
 {
     float fSpeed;
@@ -1424,7 +1424,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int
     }
     return 0;
 }
-// PC 0x00619590 GOG 0x00619890
+// PC 0x00619590 GOG 0x00619890 Xbox 0x00284D20
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs)
 {
     Vector vForce(0.0f, 0.0f, 0.0f);
@@ -1443,7 +1443,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce(int nCommand,
     }
     return 0;
 }
-// PC 0x00619640 GOG 0x00617880
+// PC 0x00619640 GOG 0x00617880 Xbox 0x00282F90
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEventModelName(
     int nCommand, int nArgs)
 {
@@ -1466,7 +1466,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEventModelName(
     }
     return 0;
 }
-// PC 0x00619730 GOG 0x006182F0
+// PC 0x00619730 GOG 0x006182F0 Xbox 0x00283890
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameCounts(
     int nCommand, int nArgs)
 {
@@ -1491,7 +1491,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameCounts(
     }
     return g_pVirtualMachine->StackPushInteger(nCount) != 0 ? 0 : -2000;
 }
-// PC 0x00619780 GOG 0x006183E0
+// PC 0x00619780 GOG 0x006183E0 Xbox 0x00283980
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerIntInfo(
     int nCommand, int nArgs)
 {
@@ -1531,7 +1531,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerIntInfo(
     }
     return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
-// PC 0x00619960 GOG 0x00619940
+// PC 0x00619960 GOG 0x00619940 Xbox 0x00284E40
 void CSWVirtualMachineCommands::InitializeSWMGCommands()
 {
     m_pCommands[582] = &CSWVirtualMachineCommands::ExecuteCommandAurPostString;

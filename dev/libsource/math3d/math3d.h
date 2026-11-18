@@ -24,7 +24,7 @@ static inline void roundToInt(int& iResult, float fValue)
 }
 
 
-// PC 0x00425430 GOG 0x00425540
+// PC 0x00425430 GOG 0x00425540 Xbox 0x0028E6E0
 inline float AbsoluteValue(float fValue)
 {
     return fValue < 0.0f ? -fValue : fValue;
@@ -35,7 +35,7 @@ class Matrix;
 class Vector
 {
 public:
-    Vector()  // PC 0x0040A290 GOG 0x0040A260
+    Vector()  // PC 0x0040A290 GOG 0x0040A260 Xbox 0x0001B390
     {
         m_fX = 0.0f;
         m_fY = 0.0f;
@@ -48,7 +48,7 @@ public:
           m_fZ(fZ)
     {
     }
-    // PC 0x00480900 GOG 0x00480A80
+    // PC 0x00480900 GOG 0x00480A80 Xbox 0x0006A9A0
     int IsZero() const
     {
         return m_fX == 0.0f && m_fY == 0.0f && m_fZ == 0.0f;
@@ -168,7 +168,7 @@ public:
 
 class Plane
 {
-public:
+public:  // Xbox 0x0027A270
     Plane()
         : m_fDistance(0.0f)
     {
@@ -350,7 +350,7 @@ inline Vector operator*(float fScale, const Vector& vector)
     return Vector(fScale * vector.m_fX, fScale * vector.m_fY,
                   fScale * vector.m_fZ);
 }
-// PC 0x00448D70 GOG 0x00448EC0
+// PC 0x00448D70 GOG 0x00448EC0 Xbox 0x0008E990
 inline Vector operator/(const Vector& vector, float fScale)
 {
     if (fScale != 0.0f)
@@ -361,7 +361,7 @@ inline Vector operator/(const Vector& vector, float fScale)
     }
     return vector;
 }
-// PC 0x004254E0 GOG 0x004255F0
+// PC 0x004254E0 GOG 0x004255F0 Xbox 0x0001B3B0
 inline float operator*(const Vector& left, const Vector& right)
 {
     return left.m_fX * right.m_fX + left.m_fY * right.m_fY +
@@ -381,7 +381,7 @@ inline Vector Interpolate(const Vector& vFirst, const Vector& vSecond, float fPo
 class Matrix
 {
 public:
-    Matrix()  // PC 0x00448DD0 GOG 0x00448F20
+    Matrix()  // PC 0x00448DD0 GOG 0x00448F20 Xbox 0x0028E710
     {
         m_vFirst = Vector(1.0f, 0.0f, 0.0f);
         m_vSecond = Vector(0.0f, 1.0f, 0.0f);
@@ -400,7 +400,7 @@ public:
     Vector m_vSecond;
     Vector m_vThird;
 };
-// PC 0x00463580 GOG 0x00463690
+// PC 0x00463580 GOG 0x00463690 Xbox 0x002C2330
 inline Matrix Quaternion::getmatrix() const
 {
     return Matrix(xdir(), ydir(), zdir());

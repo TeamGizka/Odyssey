@@ -6,7 +6,7 @@
 class CResARE : public CResGFF
 {
 public:
-    CResARE()  // PC 0x004DF850 GOG 0x004DF970
+    CResARE()  // PC 0x004DF850 GOG 0x004DF970 Xbox 0x000BA290
     {
         strncpy(m_szFileType, "ARE ", 4);
     }

@@ -27,14 +27,14 @@ public:
 
     CSWCSoundObject();
     virtual ~CSWCSoundObject();
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWCSoundObject* AsSWCSoundObject()
     {
         return this;
     }
 
     virtual void AIUpdate();
-    virtual void SetPosition(const Vector& vPosition)  // PC 0x0069E4D0 GOG 0x0069E2B0
+    virtual void SetPosition(const Vector& vPosition)  // PC 0x0069E4D0 GOG 0x0069E2B0 Xbox 0x000B96F0
     {
         CSWCObject::SetPosition(vPosition);
         if (m_bStreaming == 0 && m_pSoundSource != NULL)
@@ -46,15 +46,15 @@ public:
             m_pStreamingSource->SetPosition(vPosition);
         }
     }
-    virtual int LoadModel(const CResRef& cModel, unsigned char nModel,  // PC 0x0069E520 GOG 0x0069E300
+    virtual int LoadModel(const CResRef& cModel, unsigned char nModel,  // PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
                           unsigned char nFlags)
     {
         return 0;
     }
-    virtual void UnloadModel(unsigned char nModel)  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void UnloadModel(unsigned char nModel)  // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     {
     }
-    virtual void UnloadModel()  // PC 0x004015A0 GOG 0x004015A0
+    virtual void UnloadModel()  // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     {
     }
 

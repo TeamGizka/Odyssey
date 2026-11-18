@@ -20,17 +20,17 @@ CExoFileThread::~CExoFileThread()
         CloseHandle(m_hThread);
     }
 }
-// PC 0x00636FA0 GOG 0x00636EA0
+// PC 0x00636FA0 GOG 0x00636EA0 Xbox 0x0014C990
 CExoAliasListInternal::CExoAliasListInternal()
 {
     m_pAliasList = NULL;
     m_sDefault = "";
 }
-// PC 0x00636FF0 GOG 0x00636EF0
+// PC 0x00636FF0 GOG 0x00636EF0 Xbox 0x0001D080
 inline CExoAliasListInternal::CExoAlias::CExoAlias()
 {
 }
-// PC 0x00637040 GOG 0x00636F40
+// PC 0x00637040 GOG 0x00636F40 Xbox 0x0014D000
 const CExoString& CExoAliasListInternal::GetAliasPath(const CExoString& sAlias,
                                                       int nLength) const
 {
@@ -64,7 +64,7 @@ const CExoString& CExoAliasListInternal::GetAliasPath(const CExoString& sAlias,
     }
     return m_sDefault;
 }
-// PC 0x006370B0 GOG 0x00636FB0
+// PC 0x006370B0 GOG 0x00636FB0 Xbox 0x0014D070
 CExoString CExoAliasListInternal::ResolveFileName(const CExoString& sName,
                                                   unsigned short nResType) const
 {
@@ -106,7 +106,7 @@ CExoString CExoAliasListInternal::ResolveFileName(const CExoString& sName,
         return sResult;
     }
 }
-// PC 0x00637250 GOG 0x00637150
+// PC 0x00637250 GOG 0x00637150 Xbox 0x0014C9B0
 CExoFileInternal::CExoFileInternal(const CExoString& path,
                                    unsigned short resourceType,
                                    const CExoString& mode)
@@ -119,7 +119,7 @@ CExoFileInternal::CExoFileInternal(const CExoString& path,
     m_pFile = fopen(sFileName.CStr(), mode.CStr());
     m_sFileName = sFileName;
 }
-// PC 0x00637320 GOG 0x00637220
+// PC 0x00637320 GOG 0x00637220 Xbox 0x0014CA40
 CExoFileInternal::~CExoFileInternal()
 {
     if (m_pFile)
@@ -158,7 +158,7 @@ unsigned long CExoFileInternal::GetSize()
 }
 static CExoFileThread g_AsyncFileThread;
 
-// PC 0x006373D0 GOG 0x006372D0
+// PC 0x006373D0 GOG 0x006372D0 Xbox 0x0014CAF0
 unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
 {
     if (m_pFile != NULL)
@@ -187,7 +187,7 @@ unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
     }
     return 0;
 }
-// PC 0x00637470 GOG 0x00637370
+// PC 0x00637470 GOG 0x00637370 Xbox 0x0014CB90
 unsigned long CExoFileInternal::Read(void* data, unsigned long size,
                                      unsigned long count)
 {
@@ -213,7 +213,7 @@ unsigned long CExoFileInternal::Read(void* data, unsigned long size,
     }
     return 0;
 }
-// PC 0x006374F0 GOG 0x006373F0
+// PC 0x006374F0 GOG 0x006373F0 Xbox 0x0014CC10
 void CExoFileInternal::ReadAsync(void* data, unsigned long size,
                                  unsigned long count)
 {
@@ -225,7 +225,7 @@ int CExoFileInternal::ReadAsyncComplete()
     return g_AsyncFileThread.m_bComplete;
 }
 
-// PC 0x00637560 GOG 0x00637460
+// PC 0x00637560 GOG 0x00637460 Xbox 0x0014CC70
 unsigned long CExoFileInternal::Write(const char* text)
 {
     if (m_pFile != NULL)
@@ -234,7 +234,7 @@ unsigned long CExoFileInternal::Write(const char* text)
     }
     return 0;
 }
-// PC 0x006375A0 GOG 0x006374A0
+// PC 0x006375A0 GOG 0x006374A0 Xbox 0x0014CCB0
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter)
 {
     while (!g_AsyncFileThread.m_bStop)
@@ -261,7 +261,7 @@ CExoFileThread::CExoFileThread()
                              CREATE_SUSPENDED, &m_nThreadId);
     SetThreadPriority(m_hThread, THREAD_PRIORITY_LOWEST);
 }
-// PC 0x006376C0 GOG 0x006375C0
+// PC 0x006376C0 GOG 0x006375C0 Xbox 0x0014CD70
 void CExoAliasListInternal::Add(const CExoString& sAlias,
                                 const CExoString& sPath)
 {
@@ -317,7 +317,7 @@ void CExoAliasListInternal::Add(const CExoString& sAlias,
 
 #ifdef _XBOX
 
-void CExoAliasListInternal::ChangePath(const CExoString& sAlias,
+void CExoAliasListInternal::ChangePath(const CExoString& sAlias,  // Xbox 0x0014CEE0
                                    const CExoString& sPath)
 {
     CExoString sNewAlias = sAlias;
@@ -353,7 +353,7 @@ void CExoAliasListInternal::ChangePath(const CExoString& sAlias,
     }
 }
 #endif
-// PC 0x00637880 GOG 0x00637780
+// PC 0x00637880 GOG 0x00637780 Xbox 0x0014D1F0
 CExoAliasListInternal::~CExoAliasListInternal()
 {
     CExoAlias* pAlias = m_pAliasList;

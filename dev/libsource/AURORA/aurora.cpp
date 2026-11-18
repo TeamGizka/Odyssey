@@ -36,7 +36,7 @@ CAurInternalGL* NewCAurora()
 {
     return CAurInternal::NewCAuroraInstance();
 }
-// PC 0x00462E40 GOG 0x00462F50
+// PC 0x00462E40 GOG 0x00462F50 Xbox 0x002CF4C0
 void DestroyCAurora()
 {
     CAurInternal::DestroyCAuroraInstance();
@@ -58,7 +58,7 @@ void sleep(unsigned long nMilliseconds)
         ;
 }
 #endif
-// PC 0x00462E50 GOG 0x00462F60
+// PC 0x00462E50 GOG 0x00462F60 Xbox 0x002CF4D0
 int AurMakeCurrent()
 {
 #ifdef _XBOX
@@ -82,7 +82,7 @@ int AurMakeCurrent()
     return AurTextureMakeCurrent();
 }
 
-// PC 0x00462EC0 GOG 0x00462FD0
+// PC 0x00462EC0 GOG 0x00462FD0 Xbox 0x002CF540
 CAurPathInfo::CAurPathInfo()
 {
     m_pfCoordinates = NULL;
@@ -98,7 +98,7 @@ void AurDisableGrass()
 {
     enablegrass = 1;
 }
-// PC 0x00463190 GOG 0x004632A0
+// PC 0x00463190 GOG 0x004632A0 Xbox 0x002E94C0
 void AurEnableGrass()
 {
     enablegrass = 0;
@@ -110,7 +110,7 @@ int AurEnableSoftShadows()
     enableshadows = 1;
     return 1;
 }
-// PC 0x00462F20 GOG 0x00463030
+// PC 0x00462F20 GOG 0x00463030 Xbox 0x002E94C0
 void AurDisableSoftShadows()
 {
     enablesoftshadows = 0;
@@ -120,7 +120,7 @@ void AurEnableFrameBufferEffects()
 {
     doframebuffer = 1;
 }
-// PC 0x00462F40 GOG 0x00463050
+// PC 0x00462F40 GOG 0x00463050 Xbox 0x002E94C0
 void AurDisableFrameBufferEffects()
 {
     doframebuffer = 0;
@@ -175,7 +175,7 @@ char* testsetpausecolor(char* sArguments)
                                 (int)(afColor[1] * 255.0)) << 8) | (int)(afColor[2] * 255.0);
     return "SUCCESS";
 }
-// PC 0x00463000 GOG 0x00463110
+// PC 0x00463000 GOG 0x00463110 Xbox 0x002CF5F0
 void AurEnableForceSight()
 {
     g_ForceSight = true;
@@ -183,7 +183,7 @@ void AurEnableForceSight()
         !AurATIFrameBufferModificationsAvailable())
         g_ForceSight = false;
 }
-// PC 0x00463020 GOG 0x00463130
+// PC 0x00463020 GOG 0x00463130 Xbox 0x002CF600
 void AurDisableForceSight()
 {
     g_ForceSight = false;
@@ -214,7 +214,7 @@ void AurATIUnlockSoftShadowsForHotFix()  // PC 0x00463060 GOG 0x00463170
 
 #ifdef _XBOX
 
-void AurReportError(int nLine, const char* sFile, const char* sMessage)
+void AurReportError(int nLine, const char* sFile, const char* sMessage)  // Xbox 0x002CF560
 {
     char sReport[1024];
     if (sMessage == NULL)
@@ -234,7 +234,7 @@ void AurReportError(int nLine, const char* sFile, const char* sMessage)
     }
 }
 #endif
-// PC 0x00463080 GOG 0x00463190
+// PC 0x00463080 GOG 0x00463190 Xbox 0x002CF610
 int (AurAddDrawableSquare)(float* pVertices, unsigned long nColor,
                            const char* sFile, int nLine)
 {
@@ -273,7 +273,7 @@ int (AurAddDrawableSquare)(float* pVertices, unsigned long nColor,
     GLRender::AddSquareToRender(nPool);
     return nPool;
 }
-// PC 0x00463160 GOG 0x00463270
+// PC 0x00463160 GOG 0x00463270 Xbox 0x002CF730
 void AurRemoveDrawableSquare(unsigned long nSquare)
 {
     if (nSquare != (unsigned int)-1)
@@ -340,17 +340,17 @@ float QueryMaxAnisotropicFilter()
     return largest_supported_anisotropy;
 }
 #endif
-// PC 0x004631B0 GOG 0x004632C0
+// PC 0x004631B0 GOG 0x004632C0 Xbox 0x002CF760
 bool AurIsSpeedBlurEnabled()
 {
     return GLRender::m_bSpeedBlurEnabled;
 }
-// PC 0x004631C0 GOG 0x004632D0
+// PC 0x004631C0 GOG 0x004632D0 Xbox 0x002CF770
 void AurEnableSpeedBlur()
 {
     GLRender::m_bSpeedBlurEnabled = true;
 }
-// PC 0x004631D0 GOG 0x004632E0
+// PC 0x004631D0 GOG 0x004632E0 Xbox 0x002CF780
 void AurDisableSpeedBlur()
 {
     GLRender::m_bSpeedBlurEnabled = false;
@@ -369,42 +369,42 @@ char* endblur(char* sArguments)
     AurDisableSpeedBlur();
     return "blah";
 }
-// PC 0x004631E0 GOG 0x004632F0
+// PC 0x004631E0 GOG 0x004632F0 Xbox 0x002CF790
 void AurEnableSaturation()
 {
     GLRender::m_bSaturationEnabled = true;
 }
-// PC 0x004631F0 GOG 0x00463300
+// PC 0x004631F0 GOG 0x00463300 Xbox 0x002CF7A0
 void AurDisableSaturation()
 {
     GLRender::m_bSaturationEnabled = false;
 }
-// PC 0x00463200 GOG 0x00463310
+// PC 0x00463200 GOG 0x00463310 Xbox 0x002CF7B0
 void AurEnableScanNoise()
 {
     GLRender::m_bScanNoiseEnabled = true;
 }
-// PC 0x00463210 GOG 0x00463320
+// PC 0x00463210 GOG 0x00463320 Xbox 0x002CF7C0
 void AurDisableScanNoise()
 {
     GLRender::m_bScanNoiseEnabled = false;
 }
-// PC 0x00463220 GOG 0x00463330
+// PC 0x00463220 GOG 0x00463330 Xbox 0x002CF7D0
 void AurEnableClairvoyance(bool bLetterbox)
 {
     GLRender::EnableDreamDistortion(bLetterbox);
 }
-// PC 0x00463230 GOG 0x00463340
+// PC 0x00463230 GOG 0x00463340 Xbox 0x002CF7E0
 void AurDisableClairvoyance()
 {
     GLRender::DisableDreamDistortion();
 }
-// PC 0x00463240 GOG 0x00463350
+// PC 0x00463240 GOG 0x00463350 Xbox 0x002CF7F0
 void AurEnableForceFury(short nLevel)
 {
     GLRender::EnableFury(nLevel);
 }
-// PC 0x00463250 GOG 0x00463360
+// PC 0x00463250 GOG 0x00463360 Xbox 0x002CF800
 void AurSetSaturationParams(Vector vColor, float fSaturation)
 {
 #ifdef _XBOX
@@ -417,7 +417,7 @@ void AurSetSaturationParams(Vector vColor, float fSaturation)
 #endif
     GLRender::m_fSaturation = fSaturation;
 }
-// PC 0x00463280 GOG 0x00463390
+// PC 0x00463280 GOG 0x00463390 Xbox 0x002CF830
 void AurSetSpeedBlurRatio(float fRatio)
 {
     GLRender::m_fAccumulationRatio = fRatio;
@@ -560,12 +560,12 @@ char* setaliasing(char* sArguments)
 }
 #else
 
-void AurPersistDisplay()
+void AurPersistDisplay()  // Xbox 0x002CF840
 {
     g_pD3DDevice->PersistDisplay();
 }
 
-void AurReleaseFrameTexture()
+void AurReleaseFrameTexture()  // Xbox 0x002CF850
 {
     GLRender::ReleaseFrameTexture();
 }

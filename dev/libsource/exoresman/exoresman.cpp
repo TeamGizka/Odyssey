@@ -22,7 +22,7 @@ char CResRef::RETURN_BUFFERS[4][17];
 FILE* g_fpNRL = NULL;
 int CResRef::s_nCurBufferIndex = 0;
 
-// PC 0x00405F70 GOG 0x00405F40
+// PC 0x00405F70 GOG 0x00405F40 Xbox 0x001516B0
 CResRef::CResRef()
 {
     for (unsigned int i = 0; i < 16; ++i)
@@ -30,7 +30,7 @@ CResRef::CResRef()
         m_resRef[i] = 0;
     }
 }
-// PC 0x00405F90 GOG 0x00405F60
+// PC 0x00405F90 GOG 0x00405F60 Xbox 0x001516D0
 CResRef::CResRef(unsigned char* pResRef, unsigned char nLength)
 {
     if (pResRef)
@@ -47,17 +47,17 @@ CResRef::CResRef(unsigned char* pResRef, unsigned char nLength)
         }
     }
 }
-// PC 0x00406EA0 GOG 0x00406E70
+// PC 0x00406EA0 GOG 0x00406E70 Xbox 0x00152EA0
 CResRef::CResRef(const CExoString& sString)
 {
     *this = sString;
 }
-// PC 0x00406EC0 GOG 0x00406E90
+// PC 0x00406EC0 GOG 0x00406E90 Xbox 0x00152EC0
 CResRef::CResRef(char* pString)
 {
     *this = pString;
 }
-// PC 0x00406EE0 GOG 0x00406EB0
+// PC 0x00406EE0 GOG 0x00406EB0 Xbox 0x00152EE0
 CResRef::CResRef(unsigned char* pResRef)
 {
     *this = pResRef;
@@ -67,13 +67,13 @@ int CResRef::operator!=(const CResRef& other) const
 {
     return !(*this == other);
 }
-// PC 0x00698BD0 GOG 0x00698980
+// PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
 unsigned char* CResRef::GetResRef() const
 {
     return (unsigned char*)m_resRef;
 }
 
-// PC 0x00406010 GOG 0x00405FE0
+// PC 0x00406010 GOG 0x00405FE0 Xbox 0x00151750
 void CResRef::CopyToString(CExoString& sString) const
 {
     char szResRef[17];
@@ -82,13 +82,13 @@ void CResRef::CopyToString(CExoString& sString) const
     szResRef[16] = 0;
     sString = szResRef;
 }
-// PC 0x00406050 GOG 0x00406020
+// PC 0x00406050 GOG 0x00406020 Xbox 0x00151790
 void CResRef::CopyToString(char* pString) const
 {
     memcpy(pString, m_resRef, 16);
     pString[16] = 0;
 }
-// PC 0x00406080 GOG 0x00406050
+// PC 0x00406080 GOG 0x00406050 Xbox 0x001517C0
 char* CResRef::GetResRefStr() const
 {
     s_nCurBufferIndex = (s_nCurBufferIndex + 1) % 4;
@@ -96,12 +96,12 @@ char* CResRef::GetResRefStr() const
     RETURN_BUFFERS[s_nCurBufferIndex][16] = 0;
     return RETURN_BUFFERS[s_nCurBufferIndex];
 }
-// PC 0x004060D0 GOG 0x004060A0
+// PC 0x004060D0 GOG 0x004060A0 Xbox 0x00151810
 int CResRef::IsValid() const
 {
     return m_resRef[0] != 0;
 }
-// PC 0x004060E0 GOG 0x004060B0
+// PC 0x004060E0 GOG 0x004060B0 Xbox 0x00151820
 unsigned char CResRef::GetLength() const
 {
     unsigned char nLength = 0;
@@ -256,7 +256,7 @@ int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)  // PC 0x
     return 0;
 }
 #endif
-// PC 0x004088D0 GOG 0x004088A0
+// PC 0x004088D0 GOG 0x004088A0 Xbox 0x001545B0
 CExoResMan::~CExoResMan()
 {
     m_bExitAsyncThread = 1;
@@ -268,28 +268,28 @@ CExoResMan::~CExoResMan()
         CloseHandle(m_hAsyncThread);
     }
 }
-// PC 0x00408A00 GOG 0x004089D0
+// PC 0x00408A00 GOG 0x004089D0 Xbox 0x00154680
 int CExoResMan::AddEncapsulatedResourceFile(const CExoString& sFileName,
                                             unsigned long nId)
 {
     return AddKeyTable(sFileName, TABLE_ENCAPSULATED, nId);
 }
-// PC 0x00408A20 GOG 0x004089F0
+// PC 0x00408A20 GOG 0x004089F0 Xbox 0x001546A0
 void CExoResMan::AddResourceImageFile(const CExoString& sFileName)
 {
     AddKeyTable(sFileName, TABLE_RESOURCE_IMAGE, 0);
 }
-// PC 0x00408A40 GOG 0x00408A10
+// PC 0x00408A40 GOG 0x00408A10 Xbox 0x001546C0
 void CExoResMan::AddFixedKeyTableFile(const CExoString& sFileName)
 {
     AddKeyTable(sFileName, TABLE_KEY, 0);
 }
-// PC 0x00408A60 GOG 0x00408A30
+// PC 0x00408A60 GOG 0x00408A30 Xbox 0x001546E0
 void CExoResMan::AddResourceDirectory(const CExoString& sFileName)
 {
     AddKeyTable(sFileName, TABLE_DIRECTORY, 0);
 }
-// PC 0x00406F20 GOG 0x00406EF0
+// PC 0x00406F20 GOG 0x00406EF0 Xbox 0x00152F70
 int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
                             unsigned long nId)
 {
@@ -403,22 +403,22 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
 
     return bResult;
 }
-// PC 0x00408A80 GOG 0x00408A50
+// PC 0x00408A80 GOG 0x00408A50 Xbox 0x00154700
 int CExoResMan::RemoveEncapsulatedResourceFile(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_ENCAPSULATED);
 }
-// PC 0x00408A90 GOG 0x00408A60
+// PC 0x00408A90 GOG 0x00408A60 Xbox 0x00154710
 int CExoResMan::RemoveResourceImageFile(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_RESOURCE_IMAGE);
 }
-// PC 0x00408B20 GOG 0x00408AF0
+// PC 0x00408B20 GOG 0x00408AF0 Xbox 0x00154720
 int CExoResMan::RemoveFixedKeyTableFile(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_KEY);
 }
-// PC 0x00408B30 GOG 0x00408B00
+// PC 0x00408B30 GOG 0x00408B00 Xbox 0x00154730
 int CExoResMan::RemoveResourceDirectory(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_DIRECTORY);
@@ -437,16 +437,16 @@ int CExoResMan::UpdateResourceImageFile(const CExoString& sFileName)
 }
 
 // Dead code: not in the PC executable
-int CExoResMan::UpdateFixedKeyTableFile(const CExoString& sFileName)
+int CExoResMan::UpdateFixedKeyTableFile(const CExoString& sFileName)  // Xbox 0x00154720
 {
     return UpdateKeyTable(sFileName, TABLE_KEY);
 }
-// PC 0x00408B40 GOG 0x00408B10
+// PC 0x00408B40 GOG 0x00408B10 Xbox 0x00154740
 int CExoResMan::UpdateResourceDirectory(const CExoString& sFileName)
 {
     return UpdateKeyTable(sFileName, 2);
 }
-// PC 0x00408B50 GOG 0x00408B20
+// PC 0x00408B50 GOG 0x00408B20 Xbox 0x00154750
 int CExoResMan::CancelRequest(CRes* pRes)
 {
     if (pRes == NULL)
@@ -519,7 +519,7 @@ int CExoResMan::CancelRequest(CRes* pRes)
 
     return pRes->m_nRequestCount;
 }
-// PC 0x00408C50 GOG 0x00408C20
+// PC 0x00408C50 GOG 0x00408C20 Xbox 0x00155AC0
 void* CExoResMan::Demand(CRes* pRes)
 {
     CExoLinkedListNode* pPos;
@@ -617,7 +617,7 @@ void* CExoResMan::Demand(CRes* pRes)
 
     return NULL;
 }
-// PC 0x00408DF0 GOG 0x00408DC0
+// PC 0x00408DF0 GOG 0x00408DC0 Xbox 0x00154850
 void CExoResMan::Dump(CRes* pRes, int bFlag)
 {
     if (pRes != NULL)
@@ -632,7 +632,7 @@ void CExoResMan::Dump(CRes* pRes, int bFlag)
         }
     }
 }
-// PC 0x00408E20 GOG 0x00408DF0
+// PC 0x00408E20 GOG 0x00408DF0 Xbox 0x00154880
 int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
                        unsigned long* pnTableType)
 {
@@ -648,7 +648,7 @@ int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
 
     return bExists;
 }
-// PC 0x00408E60 GOG 0x00408E30
+// PC 0x00408E60 GOG 0x00408E30 Xbox 0x001548C0
 int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
                        unsigned long nTableType)
 {
@@ -680,7 +680,7 @@ int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
 
     return 0;
 }
-// PC 0x00408EC0 GOG 0x00408E90
+// PC 0x00408EC0 GOG 0x00408E90 Xbox 0x00154920
 CExoStringList* CExoResMan::GetResOfType(unsigned short nType, CRes* pRes)
 {
     EXOXBOXASSERT(pRes);
@@ -694,7 +694,7 @@ CExoStringList* CExoResMan::GetResOfType(unsigned short nType, CRes* pRes)
 
     return pList;
 }
-// PC 0x00408EF0 GOG 0x00408EC0
+// PC 0x00408EF0 GOG 0x00408EC0 Xbox 0x00154960
 int CExoResMan::Release(CRes* pRes)
 {
     if (pRes == NULL)
@@ -743,7 +743,7 @@ int CExoResMan::Release(CRes* pRes)
 
     return 0;
 }
-// PC 0x00408FA0 GOG 0x00408F70
+// PC 0x00408FA0 GOG 0x00408F70 Xbox 0x00154D50
 void CExoResMan::Update(unsigned long nTime)
 {
     int bStarted;
@@ -817,7 +817,7 @@ void CExoResMan::Update(unsigned long nTime)
         }
     }
 }
-// PC 0x00409090 GOG 0x00409060
+// PC 0x00409090 GOG 0x00409060 Xbox 0x00154E40
 int CExoResMan::ReadRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     int bResult;
@@ -840,7 +840,7 @@ int CExoResMan::ReadRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return bResult;
 }
-// PC 0x004090F0 GOG 0x004090C0
+// PC 0x004090F0 GOG 0x004090C0 Xbox 0x00155CA0
 int CExoResMan::WipeDirectory(const CExoString& sPath, int bDeleteFiles,
                               int bRemoveDirectory, int bRecurseClean,
                               int bRecurse)
@@ -929,13 +929,13 @@ int CExoResMan::WipeDirectory(const CExoString& sPath, int bDeleteFiles,
 
     return bResult;
 }
-// PC 0x004096A0 GOG 0x00409670
+// PC 0x004096A0 GOG 0x00409670 Xbox 0x001561D0
 int CExoResMan::CleanDirectory(const CExoString& sPath, int bRecurse,
                                int bRecurseClean)
 {
     return WipeDirectory(sPath, 1, 0, bRecurseClean, bRecurse);
 }
-// PC 0x004096C0 GOG 0x00409690
+// PC 0x004096C0 GOG 0x00409690 Xbox 0x001561F0
 int CExoResMan::NukeDirectory(const CExoString& sPath, int bDeleteFiles,
                               int bRecurse)
 {
@@ -1204,27 +1204,27 @@ int CExoResMan::GetNewResRef(const CResRef& cResRef, unsigned short nType,
     }
     return bFound;
 }
-// PC 0x00409E10 GOG 0x00409DE0
+// PC 0x00409E10 GOG 0x00409DE0 Xbox 0x001558B0
 void CRes::CancelRequest()
 {
     g_pExoResMan->CancelRequest(this);
 }
-// PC 0x00409E20 GOG 0x00409DF0
+// PC 0x00409E20 GOG 0x00409DF0 Xbox 0x00156240
 void* CRes::Demand()
 {
     return g_pExoResMan->Demand(this);
 }
-// PC 0x00409E30 GOG 0x00409E00
+// PC 0x00409E30 GOG 0x00409E00 Xbox 0x001558C0
 int CRes::ReadRaw(int nSize, char* pBuffer)
 {
     return g_pExoResMan->ReadRaw(this, nSize, pBuffer);
 }
-// PC 0x00409E50 GOG 0x00409E20
+// PC 0x00409E50 GOG 0x00409E20 Xbox 0x001558E0
 void CRes::Dump(int bFlag)
 {
     g_pExoResMan->Dump(this, bFlag);
 }
-// PC 0x00409E90 GOG 0x00409E60
+// PC 0x00409E90 GOG 0x00409E60 Xbox 0x00155920
 int CRes::Release()
 {
     return g_pExoResMan->Release(this);
@@ -1236,7 +1236,7 @@ void CRes::SetID(unsigned long nResId)
     g_pExoResMan->Dump(this, 1);
     m_nResId = nResId;
 }
-// PC 0x00409EA0 GOG 0x00409E70
+// PC 0x00409EA0 GOG 0x00409E70 Xbox 0x00155930
 void AsyncRimLoadThreadProc(void* pParameter)
 {
     while (g_pExoResMan != NULL)
@@ -1255,7 +1255,7 @@ void AsyncRimLoadThreadProc(void* pParameter)
 
     ExitThread(1);
 }
-// PC 0x00409F00 GOG 0x00409ED0
+// PC 0x00409F00 GOG 0x00409ED0 Xbox 0x00155990
 CExoResMan::CExoResMan()
 {
     MEMORYSTATUS msStatus;
@@ -1295,7 +1295,7 @@ CExoResMan::CExoResMan()
         NULL, 0x10000, (LPTHREAD_START_ROUTINE)AsyncRimLoadThreadProc,
         &nParameter, CREATE_SUSPENDED, &m_nAsyncThreadId);
 }
-// PC 0x0040A000 GOG 0x00409FD0
+// PC 0x0040A000 GOG 0x00409FD0 Xbox 0x00155C50
 int CExoResMan::ReleaseResObject(CRes* pRes)
 {
     if (pRes != NULL)
@@ -1330,7 +1330,7 @@ int CExoResMan::ReleaseResObject(CRes* pRes)
 }
 
 // Dead code: not in the PC executable
-void CExoResMan::ResumeServicing()
+void CExoResMan::ResumeServicing()  // Xbox 0x00328AE0
 {
     m_bUpdateDisabled = 0;
 }
@@ -1376,7 +1376,7 @@ void CExoResMan::SuspendServicing()
 {
     m_bUpdateDisabled = 1;
 }
-// PC 0x0040A050 GOG 0x0040A020
+// PC 0x0040A050 GOG 0x0040A020 Xbox 0x00156210
 CRes::~CRes()
 {
     if (m_nDemandCount > 0)
@@ -1388,7 +1388,7 @@ CRes::~CRes()
         g_pExoResMan->Free(this);
     }
 }
-// PC 0x00407120 GOG 0x004070F0
+// PC 0x00407120 GOG 0x004070F0 Xbox 0x00153150
 int CExoResMan::Free(CRes* pRes)
 {
     if (pRes == NULL || pRes->m_pResource == NULL)
@@ -1465,7 +1465,7 @@ void CExoResMan::DumpTable(CExoLinkedList<CExoKeyTable>& lstTables)
         pTable = lstTables.GetNext(pPos);
     }
 }
-// PC 0x004071A0 GOG 0x00407170
+// PC 0x004071A0 GOG 0x00407170 Xbox 0x001531D0
 int CExoResMan::FreeChunk()
 {
     unsigned long nFreed = 0;
@@ -1537,7 +1537,7 @@ CExoLocString CExoResMan::GetEncapsulatedFileDescription(
 
     return lsDescription;
 }
-// PC 0x004072A0 GOG 0x00407270
+// PC 0x004072A0 GOG 0x00407270 Xbox 0x00153280
 int CExoResMan::GetKeyEntryFromTable(CExoLinkedList<CExoKeyTable>& lstTables,
                                      const CResRef& cResRef,
                                      unsigned short nType,
@@ -1575,7 +1575,7 @@ int CExoResMan::GetKeyEntryFromTable(CExoLinkedList<CExoKeyTable>& lstTables,
 
     return 0;
 }
-// PC 0x00407330 GOG 0x00407300
+// PC 0x00407330 GOG 0x00407300 Xbox 0x00153310
 int CExoResMan::GetKeyEntry(const CResRef& cResRef, unsigned short nType,
                             CExoKeyTable** ppTable, CKeyTableEntry** ppEntry)
 {
@@ -1614,7 +1614,7 @@ int CExoResMan::GetKeyEntry(const CResRef& cResRef, unsigned short nType,
 
     return 0;
 }
-// PC 0x004073E0 GOG 0x004073B0
+// PC 0x004073E0 GOG 0x004073B0 Xbox 0x001533C0
 CExoStringList* CExoResMan::GetResOfTypeFromTable(
     CExoLinkedList<CExoKeyTable>& lstTables, unsigned short nType)
 {
@@ -1652,7 +1652,7 @@ CExoStringList* CExoResMan::GetResOfTypeFromTable(
 
     return pList;
 }
-// PC 0x00407490 GOG 0x00407460
+// PC 0x00407490 GOG 0x00407460 Xbox 0x00153470
 CExoStringList* CExoResMan::GetResOfType(unsigned short nType,
                                          int bEncapsulatedOnly)
 {
@@ -1709,7 +1709,7 @@ CExoStringList* CExoResMan::GetResOfType(unsigned short nType,
 
     return GetResOfTypeFromTable(m_lstKeyTables, nType);
 }
-// PC 0x004075D0 GOG 0x004075A0
+// PC 0x004075D0 GOG 0x004075A0 Xbox 0x001535B0
 CRes* CExoResMan::GetResObject(const CResRef& cResRef, unsigned short nType)
 {
     CExoKeyTable* pTable = NULL;
@@ -1779,7 +1779,7 @@ CRes* CExoResMan::GetResObject(const CResRef& cResRef, unsigned short nType)
 
     return NULL;
 }
-// PC 0x00407780 GOG 0x00407750
+// PC 0x00407780 GOG 0x00407750 Xbox 0x00153710
 void CExoResMan::SetResObject(const CResRef& cResRef, unsigned short nType,
                               CRes* pRes)
 {
@@ -1811,7 +1811,7 @@ unsigned long CExoResMan::GetResID(const CResRef& cResRef, unsigned short nType)
 
     return 0xFFFFFFFF;
 }
-// PC 0x004077E0 GOG 0x004077B0
+// PC 0x004077E0 GOG 0x004077B0 Xbox 0x00153770
 CExoKeyTable* CExoResMan::GetTable(CRes* pRes)
 {
     CExoLinkedList<CExoKeyTable>* pList;
@@ -1853,7 +1853,7 @@ CExoKeyTable* CExoResMan::GetTable(CRes* pRes)
 
     return NULL;
 }
-// PC 0x00407880 GOG 0x00407850
+// PC 0x00407880 GOG 0x00407850 Xbox 0x00153810
 int CExoResMan::GetTableCount(CRes* pRes, int bCountAll)
 {
     CExoKeyTable* pTable = GetTable(pRes);
@@ -1870,7 +1870,7 @@ int CExoResMan::GetTableCount(CRes* pRes, int bCountAll)
 
 int g_nContiguousResourceMemory;
 #endif
-// PC 0x004078B0 GOG 0x00407880
+// PC 0x004078B0 GOG 0x00407880 Xbox 0x00153840
 int CExoResMan::Malloc(CRes* pRes)
 {
     while ((int)pRes->m_nSize > m_nAvailableMemory && FreeChunk())
@@ -1928,7 +1928,7 @@ int CExoResMan::Malloc(CRes* pRes)
 
     return 1;
 }
-// PC 0x00407930 GOG 0x00407900
+// PC 0x00407930 GOG 0x00407900 Xbox 0x00153940
 int CExoResMan::RemoveKeyTable(const CExoString& sFileName, unsigned long nType)
 {
     CExoLinkedList<CExoKeyTable>* pList;
@@ -1975,7 +1975,7 @@ int CExoResMan::RemoveKeyTable(const CExoString& sFileName, unsigned long nType)
 
     return 0;
 }
-// PC 0x004079F0 GOG 0x004079C0
+// PC 0x004079F0 GOG 0x004079C0 Xbox 0x00154A10
 int CExoResMan::ServiceFromDirectory(CRes* pRes, int bAsync)
 {
     CExoString sFullPath;
@@ -2087,7 +2087,7 @@ int CExoResMan::ServiceFromDirectory(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x00407DE0 GOG 0x00407DB0
+// PC 0x00407DE0 GOG 0x00407DB0 Xbox 0x00153A10
 int CExoResMan::ServiceFromEncapsulated(CRes* pRes, int bAsync)
 {
     if (pRes == NULL)
@@ -2169,7 +2169,7 @@ int CExoResMan::ServiceFromEncapsulated(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x00407F60 GOG 0x00407F30
+// PC 0x00407F60 GOG 0x00407F30 Xbox 0x00153B80
 int CExoResMan::ServiceFromImage(CRes* pRes, int bAsync)
 {
     if (pRes == NULL)
@@ -2211,7 +2211,7 @@ int CExoResMan::ServiceFromImage(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x00408010 GOG 0x00407FE0
+// PC 0x00408010 GOG 0x00407FE0 Xbox 0x00153C30
 int CExoResMan::ServiceFromResFile(CRes* pRes, int bAsync)
 {
     if (pRes == NULL)
@@ -2313,7 +2313,7 @@ int CExoResMan::ServiceFromResFile(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x004081F0 GOG 0x004081C0
+// PC 0x004081F0 GOG 0x004081C0 Xbox 0x00153E10
 int CExoResMan::UpdateKeyTable(const CExoString& sFileName, unsigned long nType)
 {
     CExoLinkedList<CExoKeyTable>* pList;
@@ -2357,7 +2357,7 @@ int CExoResMan::UpdateKeyTable(const CExoString& sFileName, unsigned long nType)
 
     return 0;
 }
-// PC 0x00408290 GOG 0x00408260
+// PC 0x00408290 GOG 0x00408260 Xbox 0x00153EB0
 int CExoResMan::ServiceFromDirectoryRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     CExoString sFullPath;
@@ -2415,7 +2415,7 @@ int CExoResMan::ServiceFromDirectoryRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x00406560 GOG 0x00406530
+// PC 0x00406560 GOG 0x00406530 Xbox 0x00151C30
 CRes::CRes()
 {
     m_nDemandCount = 0;
@@ -2429,12 +2429,12 @@ CRes::CRes()
     m_bAllocSuffix = 0;
     m_nFlags = 0;
 }
-// PC 0x004065B0 GOG 0x00406580
+// PC 0x004065B0 GOG 0x00406580 Xbox 0x002CEDA0
 void* CRes::GetData()
 {
     return m_pResource;
 }
-// PC 0x004065C0 GOG 0x00406590
+// PC 0x004065C0 GOG 0x00406590 Xbox 0x00151C60
 int CRes::GetDemands()
 {
     return m_nDemandCount;
@@ -2451,18 +2451,18 @@ unsigned long CRes::GetID()
 {
     return m_nResId;
 }
-// PC 0x004065D0 GOG 0x004065A0
+// PC 0x004065D0 GOG 0x004065A0 Xbox 0x00151C70
 void CRes::GetResRef(CResRef& cResRef, unsigned short& nType)
 {
     cResRef = m_pKeyEntry->m_resRef;
     nType = m_pKeyEntry->m_nType;
 }
-// PC 0x00406600 GOG 0x004065D0
+// PC 0x00406600 GOG 0x004065D0 Xbox 0x0015DF20
 unsigned long CRes::GetSize()
 {
     return m_nSize;
 }
-// PC 0x00406610 GOG 0x004065E0
+// PC 0x00406610 GOG 0x004065E0 Xbox 0x00151CA0
 void CExoResMan::AddResourceImageFilesAsync(const CExoString& sModuleName,
                                             int bIsModule, int bFromCurrentGame)
 {
@@ -2482,7 +2482,7 @@ void CExoResMan::AddResourceImageFilesAsync(const CExoString& sModuleName,
 
     m_csAsync.LeaveCriticalSection();
 }
-// PC 0x00406660 GOG 0x00406630
+// PC 0x00406660 GOG 0x00406630 Xbox 0x00151CF0
 void CExoResMan::FreeResourceData(CRes* pRes)
 {
     if (pRes != NULL)
@@ -2534,7 +2534,7 @@ void CExoResMan::FreeResourceData(CRes* pRes)
         }
     }
 }
-// PC 0x004066C0 GOG 0x00406690
+// PC 0x004066C0 GOG 0x00406690 Xbox 0x00151DB0
 void CExoResMan::GetResRefFromFile(CResRef& cResRef,
                                    const CExoString& sFileName)
 {
@@ -2554,7 +2554,7 @@ void CExoResMan::GetResRefFromFile(CResRef& cResRef,
         cResRef = sFileName.SubString(0, nDot);
     }
 }
-// PC 0x00406770 GOG 0x00406740
+// PC 0x00406770 GOG 0x00406740 Xbox 0x00151E20
 unsigned short CExoResMan::GetResTypeFromFile(const CExoString& sFileName)
 {
     CExoString sExtension;
@@ -2570,7 +2570,7 @@ unsigned short CExoResMan::GetResTypeFromFile(const CExoString& sFileName)
 
     return g_pExoBase->GetResTypeFromExtension(sExtension);
 }
-// PC 0x00406840 GOG 0x00406810
+// PC 0x00406840 GOG 0x00406810 Xbox 0x00151EA0
 int CExoResMan::GetIsStaticType(unsigned short nType)
 {
     switch (nType)
@@ -2603,7 +2603,7 @@ unsigned long CExoResMan::GetTotalPhysicalMemory()
 {
     return m_nTotalPhysicalMemory;
 }
-// PC 0x004068D0 GOG 0x004068A0
+// PC 0x004068D0 GOG 0x004068A0 Xbox 0x00151F30
 int CExoResMan::GetFreeDiskSpace(const CExoString& sPath,
                                  unsigned __int64* pnFreeBytes)
 {
@@ -2646,7 +2646,7 @@ int CExoResMan::GetFreeDiskSpace(const CExoString& sPath,
 
     return bResult;
 }
-// PC 0x004069F0 GOG 0x004069C0
+// PC 0x004069F0 GOG 0x004069C0 Xbox 0x00151FE0
 int CExoResMan::CreateDirectory2(const CExoString& sPath)
 {
     CExoString sFullPath;
@@ -2660,7 +2660,7 @@ int CExoResMan::CreateDirectory2(const CExoString& sPath)
 
     return CreateDirectoryA(sFullPath.CStr(), NULL);
 }
-// PC 0x00406AD0 GOG 0x00406AA0
+// PC 0x00406AD0 GOG 0x00406AA0 Xbox 0x00152070
 int CExoResMan::FileCopy(const CExoString& sSource, const CExoString& sDest,
                          unsigned short nSourceType, unsigned short nDestType)
 {
@@ -2692,7 +2692,7 @@ int CExoResMan::FileCopy(const CExoString& sSource, const CExoString& sDest,
 
     return 0;
 }
-// PC 0x00406C60 GOG 0x00406C30
+// PC 0x00406C60 GOG 0x00406C30 Xbox 0x001521B0
 int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
 {
     CExoString sFullPath;
@@ -2777,7 +2777,7 @@ void CExoResMan::ReportMissingFile(const CExoString& sFileName,
 
 #define SIGNATURE_BUFFER_SIZE 0x10000
 
-int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
+int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // Xbox 0x00152740
                                     unsigned short nType, unsigned long nSize,
                                     unsigned char* pSignature,
                                     unsigned long nFlags)
@@ -2838,7 +2838,7 @@ int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
     return bResult;
 }
 
-int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
+int CExoResMan::VerifySignatureFile(const CExoString& sFileName,  // Xbox 0x001528B0
                                     const unsigned char* pSignature)
 {
     unsigned char aSignature[SIGNATURE_SIZE];
@@ -2863,7 +2863,7 @@ int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
     return 0;
 }
 
-void CExoResMan::WriteSignatureFile(const CExoString& sFileName,
+void CExoResMan::WriteSignatureFile(const CExoString& sFileName,  // Xbox 0x001529A0
                                     const unsigned char* pSignature)
 {
     CExoFile* pFile = new CExoFile(sFileName, RESTYPE_SIG, "wb+");
@@ -2874,7 +2874,7 @@ void CExoResMan::WriteSignatureFile(const CExoString& sFileName,
     }
 }
 
-CExoString CExoResMan::CacheResource(const CExoString& sFileName,
+CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // Xbox 0x00152A30
                                      unsigned short nType, int& nResult)
 {
     CExoString sResult(sFileName);
@@ -3281,7 +3281,7 @@ int CExoResMan::GetResourcesInMemory(int* pnResources, int* pnKeys,
 
     return nTotal;
 }
-// PC 0x004084E0 GOG 0x004084B0
+// PC 0x004084E0 GOG 0x004084B0 Xbox 0x00154080
 int CExoResMan::ServiceFromEncapsulatedRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     if (pRes == NULL)
@@ -3323,7 +3323,7 @@ int CExoResMan::ServiceFromEncapsulatedRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x004085A0 GOG 0x00408570
+// PC 0x004085A0 GOG 0x00408570 Xbox 0x00154140
 int CExoResMan::ServiceFromImageRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     if (pRes == NULL)
@@ -3367,7 +3367,7 @@ int CExoResMan::ServiceFromImageRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x00408660 GOG 0x00408630
+// PC 0x00408660 GOG 0x00408630 Xbox 0x00154200
 int CExoResMan::ServiceFromResFileRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     if (pRes == NULL)
@@ -3419,7 +3419,7 @@ int CExoResMan::ServiceFromResFileRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x00408740 GOG 0x00408710
+// PC 0x00408740 GOG 0x00408710 Xbox 0x001542E0
 int CExoResMan::ServiceCurrentAsyncRes()
 {
     int bServiced = 0;
@@ -3464,7 +3464,7 @@ int CExoResMan::ServiceCurrentAsyncRes()
 
     return bServiced;
 }
-// PC 0x00408800 GOG 0x004087D0
+// PC 0x00408800 GOG 0x004087D0 Xbox 0x00154540
 CExoString CExoResMan::CacheResource(const CExoString& sFileName,
                                      unsigned short nType)
 {
@@ -3499,7 +3499,7 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // PC 0x00406
     return sCached;
 }
 #endif
-// PC 0x00408880 GOG 0x00408850
+// PC 0x00408880 GOG 0x00408850 Xbox 0x00154560
 int CRes::Request()
 {
     return g_pExoResMan->Request(this);
@@ -3508,7 +3508,7 @@ int CRes::Request()
 #ifdef _XBOX
 #include "exotlktable.h"
 
-int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
+int CExoResMan::VerifySignatureFile(const CExoString& sFileName,  // Xbox 0x001543A0
                                     unsigned short nType, unsigned long nSize,
                                     unsigned long nFlags)
 {
@@ -3533,7 +3533,7 @@ int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
     return bResult;
 }
 
-int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
+int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // Xbox 0x00154480
                                     unsigned short nType, unsigned long nSize,
                                     unsigned long nFlags)
 {
@@ -3556,7 +3556,7 @@ int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
     return bResult;
 }
 
-int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)
+int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)  // Xbox 0x00154EA0
 {
     CExoString sAlias;
     int nPackage;
@@ -3584,7 +3584,7 @@ int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)
 
 #ifdef _XBOX
 
-void CExoResMan::AsyncLoad()
+void CExoResMan::AsyncLoad()  // Xbox 0x00155020
 {
     CExoCriticalSection* pCriticalSection = &m_csAsync;
     pCriticalSection->EnterCriticalSection();

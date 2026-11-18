@@ -34,7 +34,7 @@ void CSWGuiInGameCredits::Initialize()
     m_lblCredit.m_cText.m_cParams.m_fAlpha = 0.0f;
 }
 
-// PC 0x006E8960 GOG 0x006E8580
+// PC 0x006E8960 GOG 0x006E8580 Xbox 0x0011D420
 void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 {
     if (SWGUIINGAMECREDITS_DEBUG)
@@ -79,7 +79,7 @@ void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 }
 
 #ifdef _XBOX
-CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)
+CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)  // Xbox 0x0011D830
     : CSWGuiPanel(pManager)
 {
     int nName;
@@ -210,7 +210,7 @@ CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x006E8
 #endif
 
 #ifdef _XBOX
-CSWGuiInGameCredits::~CSWGuiInGameCredits()
+CSWGuiInGameCredits::~CSWGuiInGameCredits()  // Xbox 0x0011D570
 {
     if (m_pText != NULL) { delete[] m_pText; }
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bCreditSequenceInProgress = 0;
@@ -220,7 +220,7 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()
 }
 #else
 #endif
-// PC 0x006E8600 GOG 0x006E8440
+// PC 0x006E8600 GOG 0x006E8440 Xbox 0x0011D390
 void CSWGuiInGameCredits::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -246,7 +246,7 @@ void CSWGuiInGameCredits::OnPanelAdded()
     }
 #endif
 }
-// PC 0x006E86F0 GOG 0x006E8530
+// PC 0x006E86F0 GOG 0x006E8530 Xbox 0x0011D3D0
 void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -272,7 +272,7 @@ void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
 }
 
 #ifdef _XBOX
-void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)
+void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // Xbox 0x0011D4F0
 {
     m_fScrollTime += fElapsed;
     while (m_fScrollTime >= m_fScrollInterval)
@@ -353,7 +353,7 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0 GOG 0x006E82C0
     g_pAppManager->GetClientExoApp()->ShowMouse(128);
 }
 #endif
-// PC 0x006E8C10 GOG 0x006E88D0
+// PC 0x006E8C10 GOG 0x006E88D0 Xbox 0x0011D630
 void CSWGuiInGameCredits::SetNextText()
 {
     int bLastText = 0;
@@ -377,7 +377,7 @@ void CSWGuiInGameCredits::SetNextText()
 }
 
 #ifdef _XBOX
-void CSWGuiInGameCredits::UpdateFading(float fElapsed)
+void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // Xbox 0x0011D6E0
 {
     const float fFadeInDuration = 3.0f;
     const float fFadeOutDuration = 2.0f;
@@ -469,7 +469,7 @@ void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x006E8CB0 GOG 0x0
 #endif
 
 #ifdef _XBOX
-void CSWGuiInGameCredits::Draw(float fElapsed)
+void CSWGuiInGameCredits::Draw(float fElapsed)  // Xbox 0x0011D7F0
 {
     if (m_bFading != 0)
     {

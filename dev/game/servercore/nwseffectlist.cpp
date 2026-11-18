@@ -263,7 +263,7 @@ const int CSWSEffectListHandler::VISION_EFFECT_TYPE_BLIND = 4;
 const int CSWSEffectListHandler::MISS_CHANCE_TYPE_NORMAL = 0;
 const int CSWSEffectListHandler::MISS_CHANCE_TYPE_DARKNESS = 1;
 const int CSWSEffectListHandler::VFX_NONE = -1;
-// PC 0x0052B600 GOG 0x0052D360
+// PC 0x0052B600 GOG 0x0052D360 Xbox 0x0020F650
 CSWSEffectListHandler::~CSWSEffectListHandler()
 {
     if (m_pEffectApplied != NULL)
@@ -278,7 +278,7 @@ CSWSEffectListHandler::~CSWSEffectListHandler()
         m_pEffectRemoved = NULL;
     }
 }
-// PC 0x0052B670 GOG 0x0052D3D0
+// PC 0x0052B670 GOG 0x0052D3D0 Xbox 0x0020F690
 int CSWSEffectListHandler::OnEffectApplied(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -294,7 +294,7 @@ int CSWSEffectListHandler::OnEffectApplied(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052B6B0 GOG 0x0052D410
+// PC 0x0052B6B0 GOG 0x0052D410 Xbox 0x0020F6D0
 int CSWSEffectListHandler::OnEffectRemoved(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -306,7 +306,7 @@ int CSWSEffectListHandler::OnEffectRemoved(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052B6F0 GOG 0x0052D450
+// PC 0x0052B6F0 GOG 0x0052D450 Xbox 0x0020F720
 int CSWSEffectListHandler::OnApplyFury(CSWSObject* pObject,
                                        CGameEffect* pEffect, int bLoadingModule)
 {
@@ -333,7 +333,7 @@ int CSWSEffectListHandler::OnApplyFury(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052B800 GOG 0x0052D560
+// PC 0x0052B800 GOG 0x0052D560 Xbox 0x0020F830
 int CSWSEffectListHandler::OnApplyFactionModifier(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -391,7 +391,7 @@ int CSWSEffectListHandler::OnApplyFactionModifier(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052B960 GOG 0x0052D6C0
+// PC 0x0052B960 GOG 0x0052D6C0 Xbox 0x0020F990
 int CSWSEffectListHandler::OnRemoveFactionModifier(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
@@ -443,7 +443,7 @@ int CSWSEffectListHandler::OnRemoveFactionModifier(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052BB20 GOG 0x0052D880
+// PC 0x0052BB20 GOG 0x0052D880 Xbox 0x0020FB30
 int CSWSEffectListHandler::OnApplyAssassinate(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -504,7 +504,7 @@ int CSWSEffectListHandler::OnApplyForceBody(CSWSObject* pObject,
 {
     return 0;
 }
-int CSWSEffectListHandler::OnRemoveForceBody(CSWSObject* pObject,
+int CSWSEffectListHandler::OnRemoveForceBody(CSWSObject* pObject,  // Xbox 0x0020F710
                                              CGameEffect* pEffect)
 {
     return 1;
@@ -515,7 +515,7 @@ int CSWSEffectListHandler::OnApplyFPRegenModifier(CSWSObject* pObject,
 {
     return 0;
 }
-int CSWSEffectListHandler::OnRemoveFPRegenModifier(CSWSObject* pObject,
+int CSWSEffectListHandler::OnRemoveFPRegenModifier(CSWSObject* pObject,  // Xbox 0x0020F710
                                                    CGameEffect* pEffect)
 {
     return 1;
@@ -526,7 +526,7 @@ int CSWSEffectListHandler::OnApplyVPRegenModifier(CSWSObject* pObject,
 {
     return 0;
 }
-int CSWSEffectListHandler::OnRemoveVPRegenModifier(CSWSObject* pObject,
+int CSWSEffectListHandler::OnRemoveVPRegenModifier(CSWSObject* pObject,  // Xbox 0x0020F710
                                                    CGameEffect* pEffect)
 {
     return 1;
@@ -537,12 +537,12 @@ int CSWSEffectListHandler::OnApplyForceSight(CSWSObject* pObject,
 {
     return 0;
 }
-int CSWSEffectListHandler::OnRemoveForceSight(CSWSObject* pObject,
+int CSWSEffectListHandler::OnRemoveForceSight(CSWSObject* pObject,  // Xbox 0x0020F710
                                               CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x0052BCF0 GOG 0x0052DA50
+// PC 0x0052BCF0 GOG 0x0052DA50 Xbox 0x0020FCC0
 int CSWSEffectListHandler::OnApplyAssuredHit(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -562,7 +562,7 @@ int CSWSEffectListHandler::OnApplyAssuredHit(CSWSObject* pObject,
     }
     return nResult;
 }
-// PC 0x0052BD40 GOG 0x0052DAA0
+// PC 0x0052BD40 GOG 0x0052DAA0 Xbox 0x0020FD10
 int CSWSEffectListHandler::OnRemoveAssuredHit(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -572,7 +572,7 @@ int CSWSEffectListHandler::OnRemoveAssuredHit(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052BD70 GOG 0x0052DAD0
+// PC 0x0052BD70 GOG 0x0052DAD0 Xbox 0x0020FD40
 int CSWSEffectListHandler::OnApplyAssuredDeflection(CSWSObject* pObject,
                                                     CGameEffect* pEffect,
                                                     int bLoadingModule)
@@ -597,7 +597,7 @@ int CSWSEffectListHandler::OnApplyAssuredDeflection(CSWSObject* pObject,
     }
     return nResult;
 }
-// PC 0x0052BDE0 GOG 0x0052DB40
+// PC 0x0052BDE0 GOG 0x0052DB40 Xbox 0x0020FDB0
 int CSWSEffectListHandler::OnRemoveAssuredDeflection(CSWSObject* pObject,
                                                      CGameEffect* pEffect)
 {
@@ -608,7 +608,7 @@ int CSWSEffectListHandler::OnRemoveAssuredDeflection(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052BE20 GOG 0x0052DB80
+// PC 0x0052BE20 GOG 0x0052DB80 Xbox 0x0020FDF0
 int CSWSEffectListHandler::OnApplyAbilityIncrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -635,7 +635,7 @@ int CSWSEffectListHandler::OnApplyAbilityIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052BE90 GOG 0x0052DBF0
+// PC 0x0052BE90 GOG 0x0052DBF0 Xbox 0x0020FE60
 int CSWSEffectListHandler::OnRemoveAbilityIncrease(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
@@ -648,7 +648,7 @@ int CSWSEffectListHandler::OnRemoveAbilityIncrease(CSWSObject* pObject,
 
     return 1;
 }
-// PC 0x0052BED0 GOG 0x0052DC30
+// PC 0x0052BED0 GOG 0x0052DC30 Xbox 0x0020FEA0
 int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -691,7 +691,7 @@ int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052BF80 GOG 0x0052DCE0
+// PC 0x0052BF80 GOG 0x0052DCE0 Xbox 0x0020FF60
 int CSWSEffectListHandler::OnRemoveAbilityDecrease(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
@@ -703,7 +703,7 @@ int CSWSEffectListHandler::OnRemoveAbilityDecrease(CSWSObject* pObject,
 
     return 1;
 }
-// PC 0x0052BFB0 GOG 0x0052DD10
+// PC 0x0052BFB0 GOG 0x0052DD10 Xbox 0x0020FF90
 int CSWSEffectListHandler::OnApplySummonCreature(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -783,7 +783,7 @@ int CSWSEffectListHandler::OnApplySummonCreature(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052C5C0 GOG 0x0052E320
+// PC 0x0052C5C0 GOG 0x0052E320 Xbox 0x00210540
 int CSWSEffectListHandler::OnRemoveSummonCreature(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -800,7 +800,7 @@ int CSWSEffectListHandler::OnRemoveSummonCreature(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052C340 GOG 0x0052E0A0
+// PC 0x0052C340 GOG 0x0052E0A0 Xbox 0x002102F0
 int CSWSEffectListHandler::OnApplySummonParty(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -862,7 +862,7 @@ int CSWSEffectListHandler::OnApplySummonParty(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052C5C0 GOG 0x0052E320
+// PC 0x0052C5C0 GOG 0x0052E320 Xbox 0x00210540
 int CSWSEffectListHandler::OnRemoveSummonParty(CSWSObject* pObject,
                                                CGameEffect* pEffect)
 {
@@ -879,7 +879,7 @@ int CSWSEffectListHandler::OnRemoveSummonParty(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052C5F0 GOG 0x0052E350
+// PC 0x0052C5F0 GOG 0x0052E350 Xbox 0x00210570
 int CSWSEffectListHandler::OnApplySavingThrowIncrease(CSWSObject* pObject,
                                                       CGameEffect* pEffect,
                                                       int bLoadingModule)
@@ -900,7 +900,7 @@ int CSWSEffectListHandler::OnApplySavingThrowIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052C640 GOG 0x0052E3A0
+// PC 0x0052C640 GOG 0x0052E3A0 Xbox 0x002105F0
 int CSWSEffectListHandler::OnApplySavingThrowDecrease(CSWSObject* pObject,
                                                       CGameEffect* pEffect,
                                                       int bLoadingModule)
@@ -922,7 +922,7 @@ int CSWSEffectListHandler::OnApplySavingThrowDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052C6C0 GOG 0x0052E420
+// PC 0x0052C6C0 GOG 0x0052E420 Xbox 0x00210670
 int CSWSEffectListHandler::OnApplyACIncrease(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -989,7 +989,7 @@ int CSWSEffectListHandler::OnApplyACIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052C8D0 GOG 0x0052E630
+// PC 0x0052C8D0 GOG 0x0052E630 Xbox 0x00210870
 int CSWSEffectListHandler::OnApplyACDecrease(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -1059,7 +1059,7 @@ int CSWSEffectListHandler::OnApplyACDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052CA70 GOG 0x0052E7D0
+// PC 0x0052CA70 GOG 0x0052E7D0 Xbox 0x00210A10
 int CSWSEffectListHandler::OnApplyAttackIncrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -1074,7 +1074,7 @@ int CSWSEffectListHandler::OnApplyAttackIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052CAC0 GOG 0x0052E820
+// PC 0x0052CAC0 GOG 0x0052E820 Xbox 0x00210A60
 int CSWSEffectListHandler::OnApplyAttackDecrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -1105,7 +1105,7 @@ int CSWSEffectListHandler::OnApplyAttackDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052CB50 GOG 0x0052E8B0
+// PC 0x0052CB50 GOG 0x0052E8B0 Xbox 0x00210AF0
 int CSWSEffectListHandler::OnApplyDamageIncrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -1116,7 +1116,7 @@ int CSWSEffectListHandler::OnApplyDamageIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052CB80 GOG 0x0052E910
+// PC 0x0052CB80 GOG 0x0052E910 Xbox 0x00210B20
 int CSWSEffectListHandler::OnApplyDamageDecrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -1139,7 +1139,7 @@ int CSWSEffectListHandler::OnApplyDamageDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052CBF0 GOG 0x0052E8E0
+// PC 0x0052CBF0 GOG 0x0052E8E0 Xbox 0x002105C0
 int CSWSEffectListHandler::OnRemoveSavingThrowIncrease(CSWSObject* pObject,
                                                        CGameEffect* pEffect)
 {
@@ -1149,7 +1149,7 @@ int CSWSEffectListHandler::OnRemoveSavingThrowIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052CBF0 GOG 0x0052E8E0
+// PC 0x0052CBF0 GOG 0x0052E8E0 Xbox 0x002105C0
 int CSWSEffectListHandler::OnRemoveSavingThrowDecrease(CSWSObject* pObject,
                                                        CGameEffect* pEffect)
 {
@@ -1159,7 +1159,7 @@ int CSWSEffectListHandler::OnRemoveSavingThrowDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052CBF0 GOG 0x0052E8E0
+// PC 0x0052CBF0 GOG 0x0052E8E0 Xbox 0x002105C0
 int CSWSEffectListHandler::OnRemoveAttackIncrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -1169,7 +1169,7 @@ int CSWSEffectListHandler::OnRemoveAttackIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052CBF0 GOG 0x0052E8E0
+// PC 0x0052CBF0 GOG 0x0052E8E0 Xbox 0x002105C0
 int CSWSEffectListHandler::OnRemoveAttackDecrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -1179,7 +1179,7 @@ int CSWSEffectListHandler::OnRemoveAttackDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052CBF0 GOG 0x0052E8E0
+// PC 0x0052CBF0 GOG 0x0052E8E0 Xbox 0x002105C0
 int CSWSEffectListHandler::OnRemoveDamageIncrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -1189,7 +1189,7 @@ int CSWSEffectListHandler::OnRemoveDamageIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052CBF0 GOG 0x0052E8E0
+// PC 0x0052CBF0 GOG 0x0052E8E0 Xbox 0x002105C0
 int CSWSEffectListHandler::OnRemoveDamageDecrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -1199,7 +1199,7 @@ int CSWSEffectListHandler::OnRemoveDamageDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052CC20 GOG 0x0052E980
+// PC 0x0052CC20 GOG 0x0052E980 Xbox 0x00210B90
 int CSWSEffectListHandler::OnApplyTemporaryHitpoints(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -1219,7 +1219,7 @@ int CSWSEffectListHandler::OnApplyTemporaryHitpoints(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052CC70 GOG 0x0052E9D0
+// PC 0x0052CC70 GOG 0x0052E9D0 Xbox 0x00210BE0
 int CSWSEffectListHandler::OnRemoveTemporaryHitpoints(CSWSObject* pObject,
                                                       CGameEffect* pEffect)
 {
@@ -1294,7 +1294,7 @@ int CSWSEffectListHandler::OnRemoveTemporaryHitpoints(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052CF10 GOG 0x0052EC70
+// PC 0x0052CF10 GOG 0x0052EC70 Xbox 0x00210E20
 int CSWSEffectListHandler::OnApplyDamageImmunityIncrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect,
                                                          int bLoadingModule)
@@ -1315,7 +1315,7 @@ int CSWSEffectListHandler::OnApplyDamageImmunityIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052CF70 GOG 0x0052ECD0
+// PC 0x0052CF70 GOG 0x0052ECD0 Xbox 0x00210E80
 int CSWSEffectListHandler::OnApplyDamageImmunityDecrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect,
                                                          int bLoadingModule)
@@ -1357,7 +1357,7 @@ int CSWSEffectListHandler::OnApplyDamageImmunityDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052D010 GOG 0x0052ED70
+// PC 0x0052D010 GOG 0x0052ED70 Xbox 0x00210F20
 int CSWSEffectListHandler::OnApplyEntangled(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -1420,7 +1420,7 @@ int CSWSEffectListHandler::OnApplyEntangled(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052D260 GOG 0x0052EFC0
+// PC 0x0052D260 GOG 0x0052EFC0 Xbox 0x002110F0
 int CSWSEffectListHandler::OnRemoveEntangled(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -1437,7 +1437,7 @@ int CSWSEffectListHandler::OnRemoveEntangled(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052D2A0 GOG 0x0052F000
+// PC 0x0052D2A0 GOG 0x0052F000 Xbox 0x00211130
 int CSWSEffectListHandler::OnApplyKnockdown(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -1517,7 +1517,7 @@ int CSWSEffectListHandler::OnApplyKnockdown(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052D5A0 GOG 0x0052F300
+// PC 0x0052D5A0 GOG 0x0052F300 Xbox 0x00211400
 int CSWSEffectListHandler::OnRemoveKnockdown(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -1547,7 +1547,7 @@ int CSWSEffectListHandler::OnRemoveKnockdown(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052D630 GOG 0x0052F390
+// PC 0x0052D630 GOG 0x0052F390 Xbox 0x00211490
 int CSWSEffectListHandler::OnApplyDisarm(CSWSObject* pObject,
                                        CGameEffect* pEffect,
                                        int bLoadingModule)
@@ -1630,7 +1630,7 @@ int CSWSEffectListHandler::OnApplyDisarm(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052D9A0 GOG 0x0052F700
+// PC 0x0052D9A0 GOG 0x0052F700 Xbox 0x00211810
 int CSWSEffectListHandler::OnApplySetAIState(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -1649,7 +1649,7 @@ int CSWSEffectListHandler::OnApplySetAIState(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052D9E0 GOG 0x0052F740
+// PC 0x0052D9E0 GOG 0x0052F740 Xbox 0x00211850
 int CSWSEffectListHandler::OnApplyDeaf(CSWSObject* pObject,
                                       CGameEffect* pEffect,
                                       int bLoadingModule)
@@ -1702,7 +1702,7 @@ int CSWSEffectListHandler::OnApplyDeaf(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052DBB0 GOG 0x0052F910
+// PC 0x0052DBB0 GOG 0x0052F910 Xbox 0x002119B0
 int CSWSEffectListHandler::OnApplyEnemyAttackBonus(CSWSObject* pObject,
                                                    CGameEffect* pEffect,
                                                    int bLoadingModule)
@@ -1726,7 +1726,7 @@ int CSWSEffectListHandler::OnApplyEnemyAttackBonus(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052DC10 GOG 0x0052F970
+// PC 0x0052DC10 GOG 0x0052F970 Xbox 0x00211A10
 int CSWSEffectListHandler::OnApplyArcaneSpellFailure(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -1749,7 +1749,7 @@ int CSWSEffectListHandler::OnApplyArcaneSpellFailure(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052DC80 GOG 0x0052F9E0
+// PC 0x0052DC80 GOG 0x0052F9E0 Xbox 0x00211A90
 int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -1890,7 +1890,7 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
     }
     return 0;
 }
-int CSWSEffectListHandler::OnRemoveSetStateInternal(CSWSObject* pObject,  // PC 0x0052E1F0 GOG 0x0052FF50
+int CSWSEffectListHandler::OnRemoveSetStateInternal(CSWSObject* pObject,  // PC 0x0052E1F0 GOG 0x0052FF50 Xbox 0x00211F20
                                                     CGameEffect* pEffect)
 {
     CSWSCreature* pCreature;
@@ -1930,7 +1930,7 @@ int CSWSEffectListHandler::OnRemoveSetStateInternal(CSWSObject* pObject,  // PC 
     }
     return 1;
 }
-// PC 0x0052E290 GOG 0x0052FFF0
+// PC 0x0052E290 GOG 0x0052FFF0 Xbox 0x00211FC0
 int CSWSEffectListHandler::OnApplyMovementSpeedIncrease(CSWSObject* pObject,
                                                         CGameEffect* pEffect,
                                                         int bLoadingModule)
@@ -1951,7 +1951,7 @@ int CSWSEffectListHandler::OnApplyMovementSpeedIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052E310 GOG 0x00530070
+// PC 0x0052E310 GOG 0x00530070 Xbox 0x00212040
 int CSWSEffectListHandler::OnApplyMovementSpeedDecrease(CSWSObject* pObject,
                                                         CGameEffect* pEffect,
                                                         int bLoadingModule)
@@ -1976,7 +1976,7 @@ int CSWSEffectListHandler::OnApplyMovementSpeedDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052E3C0 GOG 0x00530120
+// PC 0x0052E3C0 GOG 0x00530120 Xbox 0x002120F0
 int CSWSEffectListHandler::OnApplyVisualEffect(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -2070,7 +2070,7 @@ int CSWSEffectListHandler::OnApplyVisualEffect(CSWSObject* pObject,
                                    oidCreator, nBeamType);
     return 0;
 }
-// PC 0x0052E740 GOG 0x005304A0
+// PC 0x0052E740 GOG 0x005304A0 Xbox 0x00212440
 int CSWSEffectListHandler::OnRemoveVisualEffect(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -2080,7 +2080,7 @@ int CSWSEffectListHandler::OnRemoveVisualEffect(CSWSObject* pObject,
     pObject->RemoveLoopingVisualEffect(nVisualEffect);
     return 1;
 }
-// PC 0x0052E760 GOG 0x005304C0
+// PC 0x0052E760 GOG 0x005304C0 Xbox 0x00212460
 int CSWSEffectListHandler::OnApplyAreaOfEffect(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -2120,7 +2120,7 @@ int CSWSEffectListHandler::OnApplyAreaOfEffect(CSWSObject* pObject,
     pEffect->SetObjectID(0, pAreaEffect->m_nId);
     return 0;
 }
-// PC 0x0052E990 GOG 0x005306F0
+// PC 0x0052E990 GOG 0x005306F0 Xbox 0x00212610
 int CSWSEffectListHandler::OnRemoveAreaOfEffect(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -2145,7 +2145,7 @@ int CSWSEffectListHandler::OnRemoveAreaOfEffect(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052EA10 GOG 0x00530770
+// PC 0x0052EA10 GOG 0x00530770 Xbox 0x00212690
 int CSWSEffectListHandler::OnApplyBeam(CSWSObject* pObject,
                                        CGameEffect* pEffect, int bLoadingModule)
 {
@@ -2166,7 +2166,7 @@ int CSWSEffectListHandler::OnApplyBeam(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052EB10 GOG 0x00530870
+// PC 0x0052EB10 GOG 0x00530870 Xbox 0x00212750
 int CSWSEffectListHandler::OnApplyForceResistanceIncrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect,
                                                           int bLoadingModule)
@@ -2200,7 +2200,7 @@ int CSWSEffectListHandler::OnApplyForceResistanceIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052EBA0 GOG 0x00530900
+// PC 0x0052EBA0 GOG 0x00530900 Xbox 0x002127E0
 int CSWSEffectListHandler::OnApplyForceResistanceDecrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect,
                                                           int bLoadingModule)
@@ -2243,7 +2243,7 @@ int CSWSEffectListHandler::OnApplyForceResistanceDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052EC50 GOG 0x005309B0
+// PC 0x0052EC50 GOG 0x005309B0 Xbox 0x00212890
 int CSWSEffectListHandler::OnApplyRegenerate(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -2263,7 +2263,7 @@ int CSWSEffectListHandler::OnApplyRegenerate(CSWSObject* pObject,
 }
 
 inline unsigned short CGameEffect::GetSubType() { return m_nSubType; }
-// PC 0x00532FD0 GOG 0x00534D30
+// PC 0x00532FD0 GOG 0x00534D30 Xbox 0x002164B0
 int CSWSEffectListHandler::OnApplyForceShield(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -2350,7 +2350,7 @@ int CSWSEffectListHandler::OnApplyForceShield(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x005334E0 GOG 0x00535240
+// PC 0x005334E0 GOG 0x00535240 Xbox 0x00216900
 int CSWSEffectListHandler::OnRemoveFury(CSWSObject* pObject,
                                         CGameEffect* pEffect)
 {
@@ -2375,7 +2375,7 @@ int CSWSEffectListHandler::OnRemoveFury(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00533560 GOG 0x005352C0
+// PC 0x00533560 GOG 0x005352C0 Xbox 0x00216990
 int CSWSEffectListHandler::OnApplyDestroyShields(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -2400,7 +2400,7 @@ int CSWSEffectListHandler::OnApplyDestroyShields(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005335F0 GOG 0x00535350
+// PC 0x005335F0 GOG 0x00535350 Xbox 0x00216A40
 int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -2767,7 +2767,7 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052ECB0 GOG 0x00530A10
+// PC 0x0052ECB0 GOG 0x00530A10 Xbox 0x002128F0
 int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
                                          CGameEffect* pEffect, int bLoadingModule)
 {
@@ -2897,7 +2897,7 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052F210 GOG 0x00530F70
+// PC 0x0052F210 GOG 0x00530F70 Xbox 0x00212DB0
 int CSWSEffectListHandler::OnRemovePoison(CSWSObject* pObject,
                                           CGameEffect* pEffect)
 {
@@ -2915,7 +2915,7 @@ int CSWSEffectListHandler::OnRemovePoison(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052F270 GOG 0x00530FD0
+// PC 0x0052F270 GOG 0x00530FD0 Xbox 0x00212E10
 int CSWSEffectListHandler::OnRemoveDisease(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -2925,7 +2925,7 @@ int CSWSEffectListHandler::OnRemoveDisease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052F2A0 GOG 0x00531000
+// PC 0x0052F2A0 GOG 0x00531000 Xbox 0x00212E40
 int CSWSEffectListHandler::OnApplyLink(CSWSObject* pObject,
                                        CGameEffect* pEffect, int bLoadingModule)
 {
@@ -2946,7 +2946,7 @@ int CSWSEffectListHandler::OnApplyLink(CSWSObject* pObject,
     pEffect->SetLinked(NULL, NULL);
     return 1;
 }
-// PC 0x0052F2F0 GOG 0x00531050
+// PC 0x0052F2F0 GOG 0x00531050 Xbox 0x00212E90
 int CSWSEffectListHandler::OnApplyHasteInternal(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -2974,7 +2974,7 @@ int CSWSEffectListHandler::OnApplyHasteInternal(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052F430 GOG 0x00531190
+// PC 0x0052F430 GOG 0x00531190 Xbox 0x00212F80
 int CSWSEffectListHandler::OnRemoveHasteInternal(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
@@ -2987,7 +2987,7 @@ int CSWSEffectListHandler::OnRemoveHasteInternal(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052F450 GOG 0x005311B0
+// PC 0x0052F450 GOG 0x005311B0 Xbox 0x00212FA0
 int CSWSEffectListHandler::OnApplySlowInternal(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -3034,7 +3034,7 @@ int CSWSEffectListHandler::OnApplySlowInternal(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052F6C0 GOG 0x00531420
+// PC 0x0052F6C0 GOG 0x00531420 Xbox 0x00213180
 int CSWSEffectListHandler::OnRemoveSlowInternal(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -3047,7 +3047,7 @@ int CSWSEffectListHandler::OnRemoveSlowInternal(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052F6E0 GOG 0x00531440
+// PC 0x0052F6E0 GOG 0x00531440 Xbox 0x002131A0
 int CSWSEffectListHandler::OnApplyLight(CSWSObject* pObject,
                                         CGameEffect* pEffect,
                                         int bLoadingModule)
@@ -3064,7 +3064,7 @@ int CSWSEffectListHandler::OnApplyLight(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052F790 GOG 0x005314F0
+// PC 0x0052F790 GOG 0x005314F0 Xbox 0x00213210
 int CSWSEffectListHandler::OnApplyModifyNumAttacks(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -3082,7 +3082,7 @@ int CSWSEffectListHandler::OnApplyModifyNumAttacks(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052F7D0 GOG 0x00531530
+// PC 0x0052F7D0 GOG 0x00531530 Xbox 0x00213250
 int CSWSEffectListHandler::OnRemoveModifyNumAttacks(CSWSObject* pObject,
                                                     CGameEffect* pEffect)
 {
@@ -3099,7 +3099,7 @@ int CSWSEffectListHandler::OnRemoveModifyNumAttacks(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052F810 GOG 0x00531570
+// PC 0x0052F810 GOG 0x00531570 Xbox 0x002132C0
 int CSWSEffectListHandler::OnApplyCurse(CSWSObject* pObject,
                                      CGameEffect* pEffect, int bLoadingModule)
 {
@@ -3177,7 +3177,7 @@ int CSWSEffectListHandler::OnApplyCurse(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052FBB0 GOG 0x00531910
+// PC 0x0052FBB0 GOG 0x00531910 Xbox 0x002135A0
 int CSWSEffectListHandler::OnApplySilence(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -3226,7 +3226,7 @@ int CSWSEffectListHandler::OnApplySilence(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052FD30 GOG 0x00531A90
+// PC 0x0052FD30 GOG 0x00531A90 Xbox 0x002136C0
 int CSWSEffectListHandler::OnRemoveSilence(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -3236,7 +3236,7 @@ int CSWSEffectListHandler::OnRemoveSilence(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052FD60 GOG 0x00531AC0
+// PC 0x0052FD60 GOG 0x00531AC0 Xbox 0x00213700
 int CSWSEffectListHandler::OnApplyTaunt(CSWSObject* pObject,
                                        CGameEffect* pEffect,
                                        int bLoadingModule)
@@ -3272,7 +3272,7 @@ int CSWSEffectListHandler::OnApplyTaunt(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052FEB0 GOG 0x00531C10
+// PC 0x0052FEB0 GOG 0x00531C10 Xbox 0x00213800
 int CSWSEffectListHandler::OnRemoveTaunt(CSWSObject* pObject,
                                          CGameEffect* pEffect)
 {
@@ -3282,7 +3282,7 @@ int CSWSEffectListHandler::OnRemoveTaunt(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x0052FEE0 GOG 0x00531C40
+// PC 0x0052FEE0 GOG 0x00531C40 Xbox 0x00213830
 int CSWSEffectListHandler::OnApplyLimitMovementSpeed(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -3297,7 +3297,7 @@ int CSWSEffectListHandler::OnApplyLimitMovementSpeed(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x0052FF30 GOG 0x00531C90
+// PC 0x0052FF30 GOG 0x00531C90 Xbox 0x00213880
 int CSWSEffectListHandler::OnApplySkillIncrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -3317,7 +3317,7 @@ int CSWSEffectListHandler::OnApplySkillIncrease(CSWSObject* pObject,
     }
     return pObject->AsSWSCreature() == NULL;
 }
-// PC 0x0052FF80 GOG 0x00531CE0
+// PC 0x0052FF80 GOG 0x00531CE0 Xbox 0x002138D0
 int CSWSEffectListHandler::OnApplySkillDecrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -3345,7 +3345,7 @@ int CSWSEffectListHandler::OnApplySkillDecrease(CSWSObject* pObject,
     pStats = pObject->AsSWSCreature()->m_pStats;
     return pStats->GetEffectImmunity(IMMUNITY_TYPE_SKILL_DECREASE, pCreator) != 0;
 }
-// PC 0x00530010 GOG 0x00531D70
+// PC 0x00530010 GOG 0x00531D70 Xbox 0x00213960
 int CSWSEffectListHandler::OnApplyHitPointChangeWhenDying(CSWSObject* pObject,
                                                         CGameEffect* pEffect,
                                                         int bLoadingModule)
@@ -3374,7 +3374,7 @@ int CSWSEffectListHandler::OnApplyHitPointChangeWhenDying(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00530150 GOG 0x00531EB0
+// PC 0x00530150 GOG 0x00531EB0 Xbox 0x00213A60
 int CSWSEffectListHandler::OnRemoveHitPointChangeWhenDying(CSWSObject* pObject,
                                                          CGameEffect* pEffect)
 {
@@ -3449,7 +3449,7 @@ int CSWSEffectListHandler::OnRemoveHitPointChangeWhenDying(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005303C0 GOG 0x00532120
+// PC 0x005303C0 GOG 0x00532120 Xbox 0x00213C70
 int CSWSEffectListHandler::OnApplySpecialWalkAnimation(CSWSObject* pObject,
                                                        CGameEffect* pEffect,
                                                        int bLoadingModule)
@@ -3464,7 +3464,7 @@ int CSWSEffectListHandler::OnApplySpecialWalkAnimation(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00530400 GOG 0x00532160
+// PC 0x00530400 GOG 0x00532160 Xbox 0x00213CB0
 int CSWSEffectListHandler::OnRemoveDisguise(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -3494,7 +3494,7 @@ int CSWSEffectListHandler::OnRemoveDisguise(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00530480 GOG 0x005321E0
+// PC 0x00530480 GOG 0x005321E0 Xbox 0x00213D30
 int CSWSEffectListHandler::OnApplyTimestop(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3542,7 +3542,7 @@ int CSWSEffectListHandler::OnApplyTimestop(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x005305D0 GOG 0x00532330
+// PC 0x005305D0 GOG 0x00532330 Xbox 0x00213E80
 int CSWSEffectListHandler::OnRemoveTimestop(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -3551,7 +3551,7 @@ int CSWSEffectListHandler::OnRemoveTimestop(CSWSObject* pObject,
                                                             1);
     return 1;
 }
-// PC 0x00530600 GOG 0x00532360
+// PC 0x00530600 GOG 0x00532360 Xbox 0x00213EB0
 int CSWSEffectListHandler::OnApplyRacialType(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -3562,7 +3562,7 @@ int CSWSEffectListHandler::OnApplyRacialType(CSWSObject* pObject,
     }
     return &g_pRules->m_pRaces[(unsigned short)pEffect->GetInteger(0)] == NULL;
 }
-// PC 0x00530640 GOG 0x005323A0
+// PC 0x00530640 GOG 0x005323A0 Xbox 0x00213EF0
 int CSWSEffectListHandler::OnApplySeeInvisible(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -3576,7 +3576,7 @@ int CSWSEffectListHandler::OnApplySeeInvisible(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00530670 GOG 0x005323D0
+// PC 0x00530670 GOG 0x005323D0 Xbox 0x00213F20
 int CSWSEffectListHandler::OnApplyBlindness(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3668,21 +3668,21 @@ int CSWSEffectListHandler::OnApplyBlindness(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00530900 GOG 0x00532660
+// PC 0x00530900 GOG 0x00532660 Xbox 0x00214130
 int CSWSEffectListHandler::OnApplyMissChance(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
 {
     return pEffect->GetInteger(0) > 100 || pEffect->GetInteger(0) < 1;
 }
-// PC 0x00530900 GOG 0x00532660
+// PC 0x00530900 GOG 0x00532660 Xbox 0x00214130
 int CSWSEffectListHandler::OnApplyConcealment(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
 {
     return pEffect->GetInteger(0) > 100 || pEffect->GetInteger(0) < 1;
 }
-// PC 0x00530930 GOG 0x00532690
+// PC 0x00530930 GOG 0x00532690 Xbox 0x00214160
 int CSWSEffectListHandler::OnApplyDarkness(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3706,7 +3706,7 @@ int CSWSEffectListHandler::OnApplyDarkness(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00530A40 GOG 0x005327A0
+// PC 0x00530A40 GOG 0x005327A0 Xbox 0x00214220
 int CSWSEffectListHandler::OnApplyTurnResistance(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -3714,7 +3714,7 @@ int CSWSEffectListHandler::OnApplyTurnResistance(CSWSObject* pObject,
     return pObject == NULL || pObject->AsSWSCreature() == NULL ||
            pObject->AsSWSCreature()->m_pStats->m_bIsPC != 0;
 }
-// PC 0x00530A80 GOG 0x005327E0
+// PC 0x00530A80 GOG 0x005327E0 Xbox 0x00214260
 int CSWSEffectListHandler::OnApplyDisappearAppear(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -3759,7 +3759,7 @@ int CSWSEffectListHandler::OnApplyDisappearAppear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00530BB0 GOG 0x00532910
+// PC 0x00530BB0 GOG 0x00532910 Xbox 0x00214390
 int CSWSEffectListHandler::OnRemoveDisappearAppear(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -3803,7 +3803,7 @@ int CSWSEffectListHandler::OnRemoveDisappearAppear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00530DB0 GOG 0x00532B10
+// PC 0x00530DB0 GOG 0x00532B10 Xbox 0x00214590
 int CSWSEffectListHandler::OnApplyDisappear(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -3830,7 +3830,7 @@ int CSWSEffectListHandler::OnApplyDisappear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00530E30 GOG 0x00532B90
+// PC 0x00530E30 GOG 0x00532B90 Xbox 0x00214610
 int CSWSEffectListHandler::OnApplyAppear(CSWSObject* pObject,
                                        CGameEffect* pEffect,
                                        int bLoadingModule)
@@ -3843,7 +3843,7 @@ int CSWSEffectListHandler::OnApplyAppear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00530E60 GOG 0x00532BC0
+// PC 0x00530E60 GOG 0x00532BC0 Xbox 0x00214640
 int CSWSEffectListHandler::OnApplyNegativeLevel(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -3949,7 +3949,7 @@ int CSWSEffectListHandler::OnApplyNegativeLevel(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x005312B0 GOG 0x00533010
+// PC 0x005312B0 GOG 0x00533010 Xbox 0x002149E0
 int CSWSEffectListHandler::OnRemoveNegativeLevel(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
@@ -3969,7 +3969,7 @@ int CSWSEffectListHandler::OnRemoveNegativeLevel(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00531310 GOG 0x00533070
+// PC 0x00531310 GOG 0x00533070 Xbox 0x00214A40
 int CSWSEffectListHandler::OnApplyWounding(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3992,7 +3992,7 @@ int CSWSEffectListHandler::OnApplyWounding(CSWSObject* pObject,
     pObject->ApplyEffect(pWoundEffect, bLoadingModule, 0);
     return 0;
 }
-// PC 0x00531400 GOG 0x00533160
+// PC 0x00531400 GOG 0x00533160 Xbox 0x00214AE0
 int CSWSEffectListHandler::OnRemoveWounding(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -4060,7 +4060,7 @@ int CSWSEffectListHandler::OnRemoveWounding(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005316C0 GOG 0x00533420
+// PC 0x005316C0 GOG 0x00533420 Xbox 0x00214D50
 int CSWSEffectListHandler::OnApplyVampiricRegeneration(CSWSObject* pObject,
                                                        CGameEffect* pEffect,
                                                        int bLoadingModule)
@@ -4092,7 +4092,7 @@ int CSWSEffectListHandler::OnApplyVampiricRegeneration(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005317B0 GOG 0x00533510
+// PC 0x005317B0 GOG 0x00533510 Xbox 0x00214E00
 int CSWSEffectListHandler::OnApplyTemporaryForce(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -4114,7 +4114,7 @@ int CSWSEffectListHandler::OnApplyTemporaryForce(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x005317F0 GOG 0x00533550
+// PC 0x005317F0 GOG 0x00533550 Xbox 0x00214E40
 int CSWSEffectListHandler::OnRemoveTemporaryForce(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -4135,7 +4135,7 @@ int CSWSEffectListHandler::OnRemoveTemporaryForce(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00531830 GOG 0x00533590
+// PC 0x00531830 GOG 0x00533590 Xbox 0x00214E80
 int CSWSEffectListHandler::OnApplyForceDrain(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -4159,14 +4159,14 @@ int CSWSEffectListHandler::OnApplyForceDrain(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00531890 GOG 0x005335F0
+// PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemoveDroidStun(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
     pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x005318B0 GOG 0x00533610
+// PC 0x005318B0 GOG 0x00533610 Xbox 0x00214F00
 int CSWSEffectListHandler::OnApplyForceJump(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -4208,7 +4208,7 @@ int CSWSEffectListHandler::OnApplyForceJump(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00531A10 GOG 0x00533770
+// PC 0x00531A10 GOG 0x00533770 Xbox 0x00215030
 int CSWSEffectListHandler::OnApplyForceJumpDelayed(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -4282,7 +4282,7 @@ int CSWSEffectListHandler::OnApplyForceJumpDelayed(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00531D70 GOG 0x00533AD0
+// PC 0x00531D70 GOG 0x00533AD0 Xbox 0x002153B0
 int CSWSEffectListHandler::OnRemoveForcePush(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -4305,7 +4305,7 @@ int CSWSEffectListHandler::OnRemoveForcePush(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00531E40 GOG 0x00533BA0
+// PC 0x00531E40 GOG 0x00533BA0 Xbox 0x00215450
 int CSWSEffectListHandler::OnApplyDamageForcePoints(CSWSObject* pObject,
                                                     CGameEffect* pEffect,
                                                     int bLoadingModule)
@@ -4328,7 +4328,7 @@ int CSWSEffectListHandler::OnApplyDamageForcePoints(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00531EB0 GOG 0x00533C10
+// PC 0x00531EB0 GOG 0x00533C10 Xbox 0x002154C0
 int CSWSEffectListHandler::OnApplyHealForcePoints(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -4355,7 +4355,7 @@ int CSWSEffectListHandler::OnApplyHealForcePoints(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00531FA0 GOG 0x00533D00
+// PC 0x00531FA0 GOG 0x00533D00 Xbox 0x00215580
 int CSWSEffectListHandler::OnApplyBodyFuel(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -4369,7 +4369,7 @@ int CSWSEffectListHandler::OnApplyBodyFuel(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00531FC0 GOG 0x00533D20
+// PC 0x00531FC0 GOG 0x00533D20 Xbox 0x002155A0
 int CSWSEffectListHandler::OnRemoveBodyFuel(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -4382,7 +4382,7 @@ int CSWSEffectListHandler::OnRemoveBodyFuel(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyEffectImmunity(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -4390,7 +4390,7 @@ int CSWSEffectListHandler::OnApplyEffectImmunity(CSWSObject* pObject,
     pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyDroidStun(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -4398,7 +4398,7 @@ int CSWSEffectListHandler::OnApplyDroidStun(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyWhirlWind(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -4406,7 +4406,7 @@ int CSWSEffectListHandler::OnApplyWhirlWind(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyBlasterDeflectionIncrease(CSWSObject* pObject,
                                                             CGameEffect* pEffect,
                                                             int bLoadingModule)
@@ -4414,7 +4414,7 @@ int CSWSEffectListHandler::OnApplyBlasterDeflectionIncrease(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyBlasterDeflectionDecrease(CSWSObject* pObject,
                                                             CGameEffect* pEffect,
                                                             int bLoadingModule)
@@ -4422,7 +4422,7 @@ int CSWSEffectListHandler::OnApplyBlasterDeflectionDecrease(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyHorrified(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -4430,7 +4430,7 @@ int CSWSEffectListHandler::OnApplyHorrified(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyChoke(CSWSObject* pObject,
                                         CGameEffect* pEffect,
                                         int bLoadingModule)
@@ -4438,7 +4438,7 @@ int CSWSEffectListHandler::OnApplyChoke(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FE0 GOG 0x00533D40
+// PC 0x00531FE0 GOG 0x00533D40 Xbox 0x002136F0
 int CSWSEffectListHandler::OnApplyPsychicStatic(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -4446,7 +4446,7 @@ int CSWSEffectListHandler::OnApplyPsychicStatic(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x00531FF0 GOG 0x00533D50
+// PC 0x00531FF0 GOG 0x00533D50 Xbox 0x002155C0
 int CSWSEffectListHandler::OnApplyLightsaberThrow(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -4615,7 +4615,7 @@ int CSWSEffectListHandler::OnApplyLightsaberThrow(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00532700 GOG 0x00534460
+// PC 0x00532700 GOG 0x00534460 Xbox 0x00215D60
 int CSWSEffectListHandler::OnRemoveLightsaberThrow(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
@@ -4628,7 +4628,7 @@ int CSWSEffectListHandler::OnRemoveLightsaberThrow(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00532720 GOG 0x00534480
+// PC 0x00532720 GOG 0x00534480 Xbox 0x00215D80
 int CSWSEffectListHandler::OnApplyForceResisted(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -4650,7 +4650,7 @@ int CSWSEffectListHandler::OnApplyForceResisted(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00532800 GOG 0x00534560
+// PC 0x00532800 GOG 0x00534560 Xbox 0x00215E30
 int CSWSEffectListHandler::OnApplyForceFizzle(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -4671,139 +4671,139 @@ int CSWSEffectListHandler::OnApplyForceFizzle(CSWSObject* pObject,
     return 1;
 }
 
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveSpellLevelAbsorption(CSWSObject* pObject,
                                                        CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveSpellImmunity(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveMissChance(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveEffectImmunity(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveLight(CSWSObject* pObject,
                                         CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveSkillIncrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveSkillDecrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveRacialType(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveVision(CSWSObject* pObject,
                                          CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveTurnResistance(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveForceJump(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveForceJumpDelayed(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveForceShield(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemovePureGoodPowers(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemovePureEvilPowers(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x0069E520 GOG 0x0069E300
+// PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
 int CSWSEffectListHandler::OnApplyDamageResistance(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0069E520 GOG 0x0069E300
+// PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
 int CSWSEffectListHandler::OnApplyDamageReduction(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0069E520 GOG 0x0069E300
+// PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
 int CSWSEffectListHandler::OnApplySpellImmunity(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0069E520 GOG 0x0069E300
+// PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
 int CSWSEffectListHandler::OnApplyDamageShield(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0069E520 GOG 0x0069E300
+// PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
 int CSWSEffectListHandler::OnApplySpellLevelAbsorption(CSWSObject* pObject,
                                                       CGameEffect* pEffect,
                                                       int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0069E520 GOG 0x0069E300
+// PC 0x0069E520 GOG 0x0069E300 Xbox 0x00124C90
 int CSWSEffectListHandler::OnApplyBonusSpellOfLevel(CSWSObject* pObject,
                                                    CGameEffect* pEffect,
                                                    int bLoadingModule)
 {
     return 0;
 }
-// PC 0x005328B0 GOG 0x00534610
+// PC 0x005328B0 GOG 0x00534610 Xbox 0x00215EC0
 int CSWSEffectListHandler::OnApplyPureGoodPowers(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -4882,7 +4882,7 @@ int CSWSEffectListHandler::OnApplyPureGoodPowers(CSWSObject* pObject,
     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
     return 0;
 }
-// PC 0x00532BC0 GOG 0x00534920
+// PC 0x00532BC0 GOG 0x00534920 Xbox 0x00216150
 int CSWSEffectListHandler::OnApplyPureEvilPowers(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -4959,49 +4959,49 @@ int CSWSEffectListHandler::OnApplyPureEvilPowers(CSWSObject* pObject,
     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
     return 0;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveBeam(CSWSObject* pObject,
                                        CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveBonusSpellOfLevel(CSWSObject* pObject,
                                                     CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveConcealment(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveCurse(CSWSObject* pObject,
                                         CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveDamageShield(CSWSObject* pObject,
                                                CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveDarkness(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EA0 GOG 0x00534C00
+// PC 0x00532EA0 GOG 0x00534C00 Xbox 0x0020F710
 int CSWSEffectListHandler::OnRemoveDisarm(CSWSObject* pObject,
                                          CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x00532EB0 GOG 0x00534C10
+// PC 0x00532EB0 GOG 0x00534C10 Xbox 0x002163B0
 int CSWSEffectListHandler::IsEffectToIgnoreOnDeath(CGameEffect* pEffect)
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -5028,7 +5028,7 @@ int CSWSEffectListHandler::IsEffectToIgnoreOnDeath(CGameEffect* pEffect)
     }
     return 0;
 }
-// PC 0x005342B0 GOG 0x00536010
+// PC 0x005342B0 GOG 0x00536010 Xbox 0x00217640
 int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject,
                                       CGameEffect* pEffect,
                                       int bLoadingModule)
@@ -5135,7 +5135,7 @@ int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005345C0 GOG 0x00536320
+// PC 0x005345C0 GOG 0x00536320 Xbox 0x00217900
 int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
                                       CGameEffect* pEffect,
                                       int bLoadingModule)
@@ -5378,7 +5378,7 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00534EE0 GOG 0x00536C40
+// PC 0x00534EE0 GOG 0x00536C40 Xbox 0x00218150
 int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -5442,7 +5442,7 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00535020 GOG 0x00536D80
+// PC 0x00535020 GOG 0x00536D80 Xbox 0x00218290
 int CSWSEffectListHandler::OnRemoveACIncrease(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -5527,7 +5527,7 @@ int CSWSEffectListHandler::OnRemoveACIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00535260 GOG 0x00536FC0
+// PC 0x00535260 GOG 0x00536FC0 Xbox 0x002184C0
 int CSWSEffectListHandler::OnRemoveACDecrease(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -5603,7 +5603,7 @@ int CSWSEffectListHandler::OnRemoveACDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00535450 GOG 0x005371B0
+// PC 0x00535450 GOG 0x005371B0 Xbox 0x002186B0
 int CSWSEffectListHandler::OnRemoveDamageImmunityIncrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect)
 {
@@ -5639,7 +5639,7 @@ int CSWSEffectListHandler::OnRemoveDamageImmunityIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00535520 GOG 0x00537280
+// PC 0x00535520 GOG 0x00537280 Xbox 0x00218780
 int CSWSEffectListHandler::OnRemoveDamageImmunityDecrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect)
 {
@@ -5675,7 +5675,7 @@ int CSWSEffectListHandler::OnRemoveDamageImmunityDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005355F0 GOG 0x00537350
+// PC 0x005355F0 GOG 0x00537350 Xbox 0x00218850
 int CSWSEffectListHandler::OnRemoveSetAIState(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -5711,7 +5711,7 @@ int CSWSEffectListHandler::OnRemoveSetAIState(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00535680 GOG 0x005373E0
+// PC 0x00535680 GOG 0x005373E0 Xbox 0x002188E0
 int CSWSEffectListHandler::OnRemoveEnemyAttackBonus(CSWSObject* pObject,
                                                     CGameEffect* pEffect)
 {
@@ -5745,7 +5745,7 @@ int CSWSEffectListHandler::OnRemoveEnemyAttackBonus(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00535700 GOG 0x00537460
+// PC 0x00535700 GOG 0x00537460 Xbox 0x00218960
 int CSWSEffectListHandler::OnRemoveArcaneSpellFailure(CSWSObject* pObject,
                                                       CGameEffect* pEffect)
 {
@@ -5783,7 +5783,7 @@ int CSWSEffectListHandler::OnRemoveArcaneSpellFailure(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005357A0 GOG 0x00537500
+// PC 0x005357A0 GOG 0x00537500 Xbox 0x00218A00
 int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -6078,7 +6078,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x005360E0 GOG 0x00537E40
+// PC 0x005360E0 GOG 0x00537E40 Xbox 0x00219270
 int CSWSEffectListHandler::OnRemoveSetState(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -6147,7 +6147,7 @@ int CSWSEffectListHandler::OnRemoveSetState(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536280 GOG 0x00537FE0
+// PC 0x00536280 GOG 0x00537FE0 Xbox 0x002193E0
 int CSWSEffectListHandler::OnRemoveMovementSpeedIncrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect)
 {
@@ -6187,7 +6187,7 @@ int CSWSEffectListHandler::OnRemoveMovementSpeedIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536280 GOG 0x00537FE0
+// PC 0x00536280 GOG 0x00537FE0 Xbox 0x002193E0
 int CSWSEffectListHandler::OnRemoveMovementSpeedDecrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect)
 {
@@ -6228,7 +6228,7 @@ int CSWSEffectListHandler::OnRemoveMovementSpeedDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536360 GOG 0x005380C0
+// PC 0x00536360 GOG 0x005380C0 Xbox 0x002194E0
 int CSWSEffectListHandler::OnRemoveForceResistanceIncrease(CSWSObject* pObject,
                                                            CGameEffect* pEffect)
 {
@@ -6278,7 +6278,7 @@ int CSWSEffectListHandler::OnRemoveForceResistanceIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536440 GOG 0x005381A0
+// PC 0x00536440 GOG 0x005381A0 Xbox 0x002195C0
 int CSWSEffectListHandler::OnRemoveForceResistanceDecrease(CSWSObject* pObject,
                                                            CGameEffect* pEffect)
 {
@@ -6325,7 +6325,7 @@ int CSWSEffectListHandler::OnRemoveForceResistanceDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536510 GOG 0x00538270
+// PC 0x00536510 GOG 0x00538270 Xbox 0x00219690
 int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -6418,7 +6418,7 @@ int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536880 GOG 0x005385E0
+// PC 0x00536880 GOG 0x005385E0 Xbox 0x00219990
 int CSWSEffectListHandler::OnApplyHasteOrSlow(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -6531,7 +6531,7 @@ int CSWSEffectListHandler::OnApplyHasteOrSlow(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00536B40 GOG 0x005388A0
+// PC 0x00536B40 GOG 0x005388A0 Xbox 0x00219BF0
 int CSWSEffectListHandler::OnRemoveHasteOrSlow(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -6618,7 +6618,7 @@ int CSWSEffectListHandler::OnRemoveHasteOrSlow(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536D30 GOG 0x00538A90
+// PC 0x00536D30 GOG 0x00538A90 Xbox 0x00219DB0
 int CSWSEffectListHandler::OnApplyVision(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -6637,7 +6637,7 @@ int CSWSEffectListHandler::OnApplyVision(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536DD0 GOG 0x00538B30
+// PC 0x00536DD0 GOG 0x00538B30 Xbox 0x00219E10
 int CSWSEffectListHandler::OnRemoveLimitMovementSpeed(CSWSObject* pObject,
                                                       CGameEffect* pEffect)
 {
@@ -6672,7 +6672,7 @@ int CSWSEffectListHandler::OnRemoveLimitMovementSpeed(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536E40 GOG 0x00538BA0
+// PC 0x00536E40 GOG 0x00538BA0 Xbox 0x00219E80
 int CSWSEffectListHandler::OnRemoveSpecialWalkAnimation(CSWSObject* pObject,
                                                         CGameEffect* pEffect)
 {
@@ -6715,7 +6715,7 @@ int CSWSEffectListHandler::OnRemoveSpecialWalkAnimation(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536EC0 GOG 0x00538C20
+// PC 0x00536EC0 GOG 0x00538C20 Xbox 0x00219F00
 int CSWSEffectListHandler::OnRemoveEffectIcon(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -6760,7 +6760,7 @@ int CSWSEffectListHandler::OnRemoveEffectIcon(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00536FC0 GOG 0x00538D20
+// PC 0x00536FC0 GOG 0x00538D20 Xbox 0x0021A010
 int CSWSEffectListHandler::OnApplyDisguise(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -6795,7 +6795,7 @@ int CSWSEffectListHandler::OnApplyDisguise(CSWSObject* pObject,
     pCreature->Disguise(nAppearance, pEffect, bLoadingModule);
     return 0;
 }
-// PC 0x005379D0 GOG 0x00539730
+// PC 0x005379D0 GOG 0x00539730 Xbox 0x0021A9C0
 int CSWSEffectListHandler::OnApplyInvisibility(CSWSObject* pObject,
                                                CGameEffect* pGameEffect,
                                                int bLoadingModule)
@@ -6814,7 +6814,7 @@ int CSWSEffectListHandler::OnApplyInvisibility(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00537A20 GOG 0x00539780
+// PC 0x00537A20 GOG 0x00539780 Xbox 0x0021AA10
 int CSWSEffectListHandler::OnRemoveInvisibility(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -6860,7 +6860,7 @@ int CSWSEffectListHandler::OnRemoveInvisibility(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00537B00 GOG 0x00539860
+// PC 0x00537B00 GOG 0x00539860 Xbox 0x0021AAF0
 int CSWSEffectListHandler::OnApplySanctuary(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -6912,7 +6912,7 @@ int CSWSEffectListHandler::OnApplySanctuary(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00537C60 GOG 0x005399C0
+// PC 0x00537C60 GOG 0x005399C0 Xbox 0x0021AC10
 int CSWSEffectListHandler::OnRemoveSanctuary(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -7012,7 +7012,7 @@ int CSWSEffectListHandler::OnRemoveSanctuary(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00537ED0 GOG 0x00539C30
+// PC 0x00537ED0 GOG 0x00539C30 Xbox 0x0021AE50
 int CSWSEffectListHandler::OnApplyDispelAllMagic(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -7109,7 +7109,7 @@ int CSWSEffectListHandler::OnApplyDispelAllMagic(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005381C0 GOG 0x00539F20
+// PC 0x005381C0 GOG 0x00539F20 Xbox 0x0021B110
 int CSWSEffectListHandler::OnApplyDispelBestMagic(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -7208,7 +7208,7 @@ int CSWSEffectListHandler::OnApplyDispelBestMagic(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005384E0 GOG 0x0053A240
+// PC 0x005384E0 GOG 0x0053A240 Xbox 0x0021B3F0
 int CSWSEffectListHandler::OnApplyBonusFeat(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -7223,7 +7223,7 @@ int CSWSEffectListHandler::OnApplyBonusFeat(CSWSObject* pObject,
     pObject->AsSWSCreature()->m_pStats->m_lstBonusFeats.Add(nFeat);
     return 0;
 }
-// PC 0x00538550 GOG 0x0053A2B0
+// PC 0x00538550 GOG 0x0053A2B0 Xbox 0x0021B460
 int CSWSEffectListHandler::OnRemoveBonusFeat(CSWSObject* pObject,
                                              CGameEffect* pGameEffect)
 {
@@ -7238,7 +7238,7 @@ int CSWSEffectListHandler::OnRemoveBonusFeat(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00537090 GOG 0x00538DF0
+// PC 0x00537090 GOG 0x00538DF0 Xbox 0x0021A0E0
 int CSWSEffectListHandler::OnRemoveSeeInvisible(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -7275,7 +7275,7 @@ int CSWSEffectListHandler::OnRemoveSeeInvisible(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00537110 GOG 0x00538E70
+// PC 0x00537110 GOG 0x00538E70 Xbox 0x0021A160
 int CSWSEffectListHandler::OnApplyUltraVision(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -7345,7 +7345,7 @@ static inline int GetEffectCount(CExoArrayList<CGameEffect*>* pList)
 {
     return pList->num;
 }
-// PC 0x00537270 GOG 0x00538FD0
+// PC 0x00537270 GOG 0x00538FD0 Xbox 0x0021A290
 int CSWSEffectListHandler::OnRemoveUltraVision(CSWSObject* pObject,
                                                CGameEffect* pEffect)
 {
@@ -7397,7 +7397,7 @@ int CSWSEffectListHandler::OnRemoveUltraVision(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005373A0 GOG 0x00539100
+// PC 0x005373A0 GOG 0x00539100 Xbox 0x0021A3A0
 int CSWSEffectListHandler::OnApplyTrueSeeing(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -7441,7 +7441,7 @@ int CSWSEffectListHandler::OnApplyTrueSeeing(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00537480 GOG 0x005391E0
+// PC 0x00537480 GOG 0x005391E0 Xbox 0x0021A490
 int CSWSEffectListHandler::OnRemoveTrueSeeing(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -7487,7 +7487,7 @@ int CSWSEffectListHandler::OnRemoveTrueSeeing(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x00537550 GOG 0x005392B0
+// PC 0x00537550 GOG 0x005392B0 Xbox 0x0021A570
 int CSWSEffectListHandler::OnRemoveBlindness(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -7521,7 +7521,7 @@ int CSWSEffectListHandler::OnRemoveBlindness(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x005375F0 GOG 0x00539350
+// PC 0x005375F0 GOG 0x00539350 Xbox 0x0021A610
 int CSWSEffectListHandler::OnApplyForcePush(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -7597,7 +7597,7 @@ int CSWSEffectListHandler::OnApplyForcePush(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x00538590 GOG 0x0053A2F0
+// PC 0x00538590 GOG 0x0053A2F0 Xbox 0x0021B4A0
 int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -7670,7 +7670,7 @@ int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x005388E0 GOG 0x0053A640
+// PC 0x005388E0 GOG 0x0053A640 Xbox 0x0021B760
 void CSWSEffectListHandler::InitializeEffects()
 {
     m_pEffectApplied = new EffectAppliedHandler[MAX_EFFECTS];
@@ -7893,42 +7893,42 @@ void CSWSEffectListHandler::InitializeEffects()
     m_pEffectApplied[EFFECT_ASSASSINATE] = &CSWSEffectListHandler::OnApplyAssassinate;
 #endif
 }
-// PC 0x00531890 GOG 0x005335F0
+// PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemoveWhirlWind(CSWSObject* pObject,
                                           CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x00531890 GOG 0x005335F0
+// PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemoveBlasterDeflectionIncrease(
     CSWSObject* pObject, CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x00531890 GOG 0x005335F0
+// PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemoveBlasterDeflectionDecrease(
     CSWSObject* pObject, CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x00531890 GOG 0x005335F0
+// PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemoveHorrified(CSWSObject* pObject,
                                           CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x00531890 GOG 0x005335F0
+// PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemoveChoke(CSWSObject* pObject,
                                       CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x00531890 GOG 0x005335F0
+// PC 0x00531890 GOG 0x005335F0 Xbox 0x00214EE0
 int CSWSEffectListHandler::OnRemovePsychicStatic(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {

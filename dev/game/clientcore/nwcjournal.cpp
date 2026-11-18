@@ -14,7 +14,7 @@
 
 const unsigned long CSWCJournal::STRREF_CSWCJOURNAL_QUESTENTRYADDED = 32296;
 const unsigned long CSWCJournal::STRREF_CSWCJOURNAL_WORLDENTRYADDED = 0;
-// PC 0x006CBC00 GOG 0x006CB900
+// PC 0x006CBC00 GOG 0x006CB900 Xbox 0x0008D0E0
 void CSWCSortedJournalArrayList::SortList()
 {
     int (CSWCSortedJournalArrayList::*pfnCompare)(int, int);
@@ -58,17 +58,17 @@ void CSWCSortedJournalArrayList::SortList()
 CWorldJournalEntry::~CWorldJournalEntry()
 {
 }
-// PC 0x006CB480 GOG 0x006CB180
+// PC 0x006CB480 GOG 0x006CB180 Xbox 0x0008C760
 void CSWCJournal::EnableSort()
 {
     m_bSortEnabled = 1;
 }
-// PC 0x006CB490 GOG 0x006CB190
+// PC 0x006CB490 GOG 0x006CB190 Xbox 0x0008C770
 void CSWCJournal::DisableSort()
 {
     m_bSortEnabled = 0;
 }
-// PC 0x006CB5A0 GOG 0x006CB2A0
+// PC 0x006CB5A0 GOG 0x006CB2A0 Xbox 0x0008C810
 int CSWCSortedJournalArrayList::SortItemsByDate(int nFirst, int nSecond)
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -78,7 +78,7 @@ int CSWCSortedJournalArrayList::SortItemsByDate(int nFirst, int nSecond)
         m_lstEntries[nSecond].m_nDate,
         m_lstEntries[nSecond].m_nTime);
 }
-// PC 0x006CB5E0 GOG 0x006CB2E0
+// PC 0x006CB5E0 GOG 0x006CB2E0 Xbox 0x0008C850
 int CSWCSortedJournalArrayList::SortItemsByName(int nFirst, int nSecond)
 {
     CExoString sFirst;
@@ -96,7 +96,7 @@ int CSWCSortedJournalArrayList::SortItemsByName(int nFirst, int nSecond)
     }
     return 0;
 }
-// PC 0x006CB720 GOG 0x006CB420
+// PC 0x006CB720 GOG 0x006CB420 Xbox 0x0008C920
 int CSWCSortedJournalArrayList::SortItemsByPriority(int nFirst, int nSecond)
 {
     unsigned long nFirstPriority = m_lstEntries.element[nFirst].m_nPriority;
@@ -111,7 +111,7 @@ int CSWCSortedJournalArrayList::SortItemsByPriority(int nFirst, int nSecond)
     }
     return SortItemsByDate(nFirst, nSecond);
 }
-// PC 0x006CB770 GOG 0x006CB470
+// PC 0x006CB770 GOG 0x006CB470 Xbox 0x0008C970
 int CSWCSortedJournalArrayList::SortItemsByPlanet(int nFirst, int nSecond)
 {
     int nFirstPlanet = m_lstEntries.element[nFirst].m_nPlanetID;
@@ -142,7 +142,7 @@ void CSWCSortedJournalArrayList::UpdateEntry(int nIndex, const SJournalEntry& en
     m_lstEntries[nIndex].m_nPlanetID = entry.m_nPlanetID;
     m_lstEntries[nIndex].m_nXP = entry.m_nXP;
 }
-// PC 0x006CB7C0 GOG 0x006CB4C0
+// PC 0x006CB7C0 GOG 0x006CB4C0 Xbox 0x0008C9C0
 void CSWCJournal::Remove(const CExoString& sTag)
 {
     int nActive = m_lstActive.m_lstEntries.num;
@@ -197,7 +197,7 @@ void CSWCJournal::Remove(const CExoString& sTag)
         }
     }
 }
-// PC 0x006CB930 GOG 0x006CB630
+// PC 0x006CB930 GOG 0x006CB630 Xbox 0x0008CB30
 void CSWCJournal::SetJournalPicture(const CExoString& sTag, int nPicture)
 {
     int nDone = m_lstDone.m_lstEntries.num;
@@ -225,7 +225,7 @@ void CSWCJournal::SetJournalPicture(const CExoString& sTag, int nPicture)
         }
     }
 }
-// PC 0x006CB9E0 GOG 0x006CB6E0
+// PC 0x006CB9E0 GOG 0x006CB6E0 Xbox 0x0008CBE0
 CSWJournalEntry* CSWCJournal::GetActiveEntryAt(int nIndex)
 {
     if (nIndex >= 0 && nIndex < m_lstActive.m_lstEntries.num)
@@ -235,7 +235,7 @@ CSWJournalEntry* CSWCJournal::GetActiveEntryAt(int nIndex)
     }
     return 0;
 }
-// PC 0x006CBA10 GOG 0x006CB710
+// PC 0x006CBA10 GOG 0x006CB710 Xbox 0x0008CC10
 CSWJournalEntry* CSWCJournal::GetDoneEntryAt(int nIndex)
 {
     if (nIndex >= 0 && nIndex < m_lstDone.m_lstEntries.num)
@@ -245,17 +245,17 @@ CSWJournalEntry* CSWCJournal::GetDoneEntryAt(int nIndex)
     }
     return 0;
 }
-// PC 0x005ED200 GOG 0x005ED1E0
+// PC 0x005ED200 GOG 0x005ED1E0 Xbox 0x0015C390
 int CSWCJournal::GetNumActiveEntries()
 {
     return m_lstActive.m_lstEntries.num;
 }
-// PC 0x006CB4A0 GOG 0x006CB1A0
+// PC 0x006CB4A0 GOG 0x006CB1A0 Xbox 0x0014A260
 int CSWCJournal::GetNumDoneEntries()
 {
     return m_lstDone.m_lstEntries.num;
 }
-// PC 0x006CBCE0 GOG 0x006CB9E0
+// PC 0x006CBCE0 GOG 0x006CB9E0 Xbox 0x0008D630
 void CSWCJournal::Add(SJournalEntry entry, unsigned short nFlags)
 {
     int nDoneCount = m_lstDone.m_lstEntries.num;
@@ -359,7 +359,7 @@ void CSWCJournal::Add(SJournalEntry entry, unsigned short nFlags)
         }
     }
 }
-// PC 0x006CC1D0 GOG 0x006CBED0
+// PC 0x006CC1D0 GOG 0x006CBED0 Xbox 0x0008DAF0
 void CSWCJournal::ClearAll()
 {
     m_lstDone.m_lstEntries.SetSize(0);
@@ -367,13 +367,13 @@ void CSWCJournal::ClearAll()
     m_lstActive.m_lstEntries.SetSize(0);
     m_lstActive.m_lstOrder.SetSize(0);
 }
-// PC 0x006CC270 GOG 0x006CBF70
+// PC 0x006CC270 GOG 0x006CBF70 Xbox 0x0008D1C0
 void CSWCJournal::CallFullUpdateComplete()
 {
     m_lstActive.SortList();
     m_lstDone.SortList();
 }
-// PC 0x006CC290 GOG 0x006CBF90
+// PC 0x006CC290 GOG 0x006CBF90 Xbox 0x0008D1E0
 void CSWCJournal::SetActiveSortBy(int nSortBy)
 {
     if (nSortBy == CSWCSortedJournalArrayList::SORT_BY_DATE ||
@@ -388,7 +388,7 @@ void CSWCJournal::SetActiveSortBy(int nSortBy)
         }
     }
 }
-// PC 0x006CC2C0 GOG 0x006CBFC0
+// PC 0x006CC2C0 GOG 0x006CBFC0 Xbox 0x0008D210
 void CSWCJournal::SetDoneSortBy(int nSortBy)
 {
     if (nSortBy == CSWCSortedJournalArrayList::SORT_BY_DATE ||
@@ -425,7 +425,7 @@ void CSWCJournal::SetJournalPageClosed()
         pMessage->SendPlayerToServerJournalMessage_QuestScreenClosed();
     }
 }
-// PC 0x006CC2F0 GOG 0x006CBFF0
+// PC 0x006CC2F0 GOG 0x006CBFF0 Xbox 0x0008DB40
 void CSWCJournal::JournalUpdated(int bFromServer, int bActive,
                                  const CExoString& sMessage)
 {
@@ -473,17 +473,17 @@ void CSWCJournal::CheckForUpdates()
     }
     m_lstPendingUpdates.SetSize(0);
 }
-// PC 0x006CC470 GOG 0x006CC170
+// PC 0x006CC470 GOG 0x006CC170 Xbox 0x0008DD00
 CSWCWorldJournal::CSWCWorldJournal() : m_lstEntries(0), m_lstOrder(0)
 {
     m_nSortBy = 0;
     m_bChanged = 0;
 }
-// PC 0x006CC4B0 GOG 0x006CC1B0
+// PC 0x006CC4B0 GOG 0x006CC1B0 Xbox 0x0008DD20
 CSWCWorldJournal::~CSWCWorldJournal()
 {
 }
-// PC 0x006CC530 GOG 0x006CC230
+// PC 0x006CC530 GOG 0x006CC230 Xbox 0x0008D240
 void CSWCWorldJournal::DeleteEntryStrRef(unsigned long nStrRef)
 {
     int nCount = m_lstEntries.num;
@@ -512,7 +512,7 @@ void CSWCWorldJournal::DeleteEntryStrRef(unsigned long nStrRef)
     }
     m_bChanged = 1;
 }
-// PC 0x006CC5D0 GOG 0x006CC2D0
+// PC 0x006CC5D0 GOG 0x006CC2D0 Xbox 0x0008D2E0
 void CSWCWorldJournal::DeleteEntry(unsigned long nId)
 {
     int nCount = m_lstEntries.num;
@@ -536,7 +536,7 @@ void CSWCWorldJournal::DeleteEntry(unsigned long nId)
     }
     m_bChanged = 1;
 }
-// PC 0x006CC670 GOG 0x006CC370
+// PC 0x006CC670 GOG 0x006CC370 Xbox 0x0008E000
 void CSWCWorldJournal::DeleteAllEntries()
 {
     m_lstEntries.SetSize(0);
@@ -580,7 +580,7 @@ CSWCSortedJournalArrayList::CSWCSortedJournalArrayList()
 }
 
 // Dead code: not in the PC executable
-SJournalEntry* CSWCSortedJournalArrayList::GetEntryAt(int nIndex)
+SJournalEntry* CSWCSortedJournalArrayList::GetEntryAt(int nIndex)  // Xbox 0x0008CC10
 {
     if (nIndex >= 0 && nIndex < m_lstEntries.num)
     {
@@ -588,7 +588,7 @@ SJournalEntry* CSWCSortedJournalArrayList::GetEntryAt(int nIndex)
     }
     return 0;
 }
-// PC 0x006CC6D0 GOG 0x006CC3D0
+// PC 0x006CC6D0 GOG 0x006CC3D0 Xbox 0x0008D380
 void CSWCWorldJournal::SortList()
 {
     int (CSWCWorldJournal::*pfnCompare)(int, int, int);
@@ -619,13 +619,13 @@ void CSWCWorldJournal::SortList()
         m_lstOrder.element[nBest] = nSwap;
     }
 }
-// PC 0x006CC790 GOG 0x006CC490
+// PC 0x006CC790 GOG 0x006CC490 Xbox 0x0008E040
 CSWCJournal::CSWCJournal()
     : m_lstPendingUpdates(0)
 {
     m_bSortEnabled = 1;
 }
-// PC 0x006CBA40 GOG 0x006CB740
+// PC 0x006CBA40 GOG 0x006CB740 Xbox 0x0008CC40
 int CSWCWorldJournal::SortItemsByDate(int nFirst, int nSecond, int bNoTie)
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -640,7 +640,7 @@ int CSWCWorldJournal::SortItemsByDate(int nFirst, int nSecond, int bNoTie)
     }
     return nResult;
 }
-// PC 0x006CBAA0 GOG 0x006CB7A0
+// PC 0x006CBAA0 GOG 0x006CB7A0 Xbox 0x0008CCA0
 int CSWCWorldJournal::SortItemsByName(int nFirst, int nSecond, int bNoTie)
 {
     if (m_lstEntries[nFirst].m_sTag <
@@ -659,7 +659,7 @@ int CSWCWorldJournal::SortItemsByName(int nFirst, int nSecond, int bNoTie)
     }
     return 0;
 }
-// PC 0x006CBB40 GOG 0x006CB840
+// PC 0x006CBB40 GOG 0x006CB840 Xbox 0x0008CD40
 int CSWCJournal::HasNewEntries()
 {
     int nCount = m_lstActive.m_lstEntries.num;
@@ -672,7 +672,7 @@ int CSWCJournal::HasNewEntries()
     }
     return 0;
 }
-// PC 0x006CC800 GOG 0x006CC500
+// PC 0x006CC800 GOG 0x006CC500 Xbox 0x0008DD40
 void CSWCWorldJournal::AddEntryStrRef(unsigned long nNameStrRef,
                                       unsigned long nTextStrRef,
                                       unsigned long nCalendarDay,
@@ -702,7 +702,7 @@ void CSWCWorldJournal::AddEntryStrRef(unsigned long nNameStrRef,
     SortList();
     m_bChanged = 1;
 }
-// PC 0x006CC9D0 GOG 0x006CC6D0
+// PC 0x006CC9D0 GOG 0x006CC6D0 Xbox 0x0008DEF0
 void CSWCWorldJournal::AddEntry(unsigned long nId, const CExoString& sText,
                                 const CExoString& sName,
                                 unsigned long nCalendarDay,

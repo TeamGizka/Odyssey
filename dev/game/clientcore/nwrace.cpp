@@ -22,7 +22,7 @@ const unsigned short CSWRace::CRACE_DROID_MASK = 0x0002;
 const unsigned short CSWRace::CRACE_PLACEABLE_MASK = 0x0004;
 const unsigned short CSWRace::CRACE_ALL_RACES_MASK = 0x0000;
 const unsigned short CSWRace::CRACE_INVALID_RACE_MASK = 0x0000;
-// PC 0x00614D40 GOG 0x00614D20
+// PC 0x00614D40 GOG 0x00614D20 Xbox 0x000CF090
 CSWRace::CSWRace()
 {
     m_nNameStrRef = -1;
@@ -40,7 +40,7 @@ CSWRace::CSWRace()
     m_nFavoredClass = -1;
     m_bPlayerRace = 0;
 }
-// PC 0x00614D80 GOG 0x00614D60
+// PC 0x00614D80 GOG 0x00614D60 Xbox 0x000CF0D0
 CSWRace::~CSWRace()
 {
     if (m_pFirstLevelGrantedFeats != 0)
@@ -65,21 +65,21 @@ CExoString CSWRace::GetDefaultBiographyText()
     g_pTlkTable->Fetch(m_nBiographyStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x00614DA0 GOG 0x00614D80
+// PC 0x00614DA0 GOG 0x00614D80 Xbox 0x00130580
 CExoString CSWRace::GetNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x00614E40 GOG 0x00614E20
+// PC 0x00614E40 GOG 0x00614E20 Xbox 0x000CF0F0
 CExoString CSWRace::GetConverNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nConverNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x00614EE0 GOG 0x00614EC0
+// PC 0x00614EE0 GOG 0x00614EC0 Xbox 0x000CF160
 CExoString CSWRace::GetConverNameLowerText()
 {
     STR_RES strRes;
@@ -89,13 +89,13 @@ CExoString CSWRace::GetConverNameLowerText()
 }
 
 // Dead code: not in the PC executable
-CExoString CSWRace::GetNamePluralText()
+CExoString CSWRace::GetNamePluralText()  // Xbox 0x000B4390
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNamePluralStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x00614F80 GOG 0x00614F60
+// PC 0x00614F80 GOG 0x00614F60 Xbox 0x000CF210
 void CSWRace::LoadFeatsTable(const CExoString& sTable)
 {
     C2DA* p2DA = new C2DA(sTable, 0);
@@ -129,7 +129,7 @@ void CSWRace::LoadFeatsTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x00615170 GOG 0x00615150
+// PC 0x00615170 GOG 0x00615150 Xbox 0x000CF1D0
 int CSWRace::IsFirstLevelGrantedFeat(unsigned short nFeat)
 {
     unsigned short* pFeats = m_pFirstLevelGrantedFeats;

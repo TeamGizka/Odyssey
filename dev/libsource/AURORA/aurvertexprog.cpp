@@ -86,7 +86,7 @@ void VertexProgram::FindNumberOfAllowedLights()
 
     m_nAllowedLights = nAllowedLights;
 }
-// PC 0x004CEB30 GOG 0x004CEC70
+// PC 0x004CEB30 GOG 0x004CEC70 Xbox 0x0032C7A0
 void AurVertexProgramMakeCurrent()
 {
     currentframe++;
@@ -109,7 +109,7 @@ void GLRender::DrawElementsInShadow(unsigned int nProgram,  // PC 0x004CEB40 GOG
     }
 }
 #endif
-// PC 0x004CEB80 GOG 0x004CECC0
+// PC 0x004CEB80 GOG 0x004CECC0 Xbox 0x0032C7B0
 void TrackMatrices()
 {
 #ifdef _XBOX
@@ -154,7 +154,7 @@ int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0 GOG 0x004CED30
     return cm_listExistentVertexPrograms.m_nCount;
 }
 #endif
-// PC 0x004CEC50 GOG 0x004CED90
+// PC 0x004CEC50 GOG 0x004CED90 Xbox 0x0032C810
 void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 {
     static char* lastProg;
@@ -301,7 +301,7 @@ void VertexProgramManager::RemoveVertexProgram(VertexProgram* pProgram)
     cm_listExistentVertexPrograms.Remove(pProgram);
 }
 #endif
-// PC 0x004CEF60 GOG 0x004CF0A0
+// PC 0x004CEF60 GOG 0x004CF0A0 Xbox 0x0032C760
 VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
 {
     m_sProgram = sProgram;

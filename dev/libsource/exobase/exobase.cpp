@@ -1,6 +1,6 @@
 #include "exobase.h"
 #include "swgui.h"
-// PC 0x00631E30 GOG 0x00631D20
+// PC 0x00631E30 GOG 0x00631D20 Xbox 0x00149410
 CExoBase::CExoBase()
 {
     m_pExoDebug = new CExoDebug;
@@ -13,7 +13,7 @@ CExoBase::CExoBase()
 }
 
 #ifdef _XBOX
-int CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,
+int CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,  // Xbox 0x001494D0
                                const CExoString& sPath,
                                unsigned short nResType, int bDirectories, int nSortMode)
 {
@@ -41,17 +41,17 @@ int CExoBase::GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList,
     return m_pInternal->GetAugmentedDirectoryList(pList, sDir, nResType,
                                                   bSorted);
 }
-// PC 0x00631F90 GOG 0x00631E80
+// PC 0x00631F90 GOG 0x00631E80 Xbox 0x001494E0
 const CExoString& CExoBase::GetResourceExtension(unsigned short resourceType)
 {
     return m_pInternal->GetResourceExtension(resourceType);
 }
-// PC 0x00631FA0 GOG 0x00631E90
+// PC 0x00631FA0 GOG 0x00631E90 Xbox 0x001494F0
 unsigned short CExoBase::GetResTypeFromExtension(const CExoString& extension)
 {
     return m_pInternal->GetResTypeFromExtension(extension);
 }
-// PC 0x00631FB0 GOG 0x00631EA0
+// PC 0x00631FB0 GOG 0x00631EA0 Xbox 0x00149500
 void CExoBase::LoadAliases(const CExoString& sFile)
 {
     m_pInternal->LoadAliases(sFile);
@@ -72,7 +72,7 @@ void CExoBase::SpawnExternalApplication(const CExoString& sApplication,
     m_pInternal->SpawnExternalApplication(sApplication, sCommandLine, bQuit);
 }
 #endif
-// PC 0x00631FC0 GOG 0x00631EB0
+// PC 0x00631FC0 GOG 0x00631EB0 Xbox 0x00149510
 int CExoBase::WcsToMbs(char* sDest, const wchar_t* sSource,
                        unsigned long nLength)
 {
@@ -86,7 +86,7 @@ int CExoBase::CheckForCD()
     return m_pInternal->CheckForCD();
 }
 #endif
-// PC 0x00631FD0 GOG 0x00631EC0
+// PC 0x00631FD0 GOG 0x00631EC0 Xbox 0x00149520
 CExoBase::~CExoBase()
 {
     if (m_pInternal != NULL)

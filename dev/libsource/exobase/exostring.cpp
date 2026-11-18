@@ -9,7 +9,7 @@ char g_szEmptyString[] = "";
 
 char* CExoStringFormatBuffer = NULL;
 int CExoStringFormatBufferSize = 0;
-// PC 0x005FF150 GOG 0x005FF130
+// PC 0x005FF150 GOG 0x005FF130 Xbox 0x00147BE0
 CExoString::CExoString()
 {
     m_sString = NULL;
@@ -104,7 +104,7 @@ BOOL CExoString::operator!=(const char* szString) const
 
     return TRUE;
 }
-// PC 0x006305A0 GOG 0x00630490
+// PC 0x006305A0 GOG 0x00630490 Xbox 0x00147E00
 BOOL CExoString::operator<(const CExoString& sString) const
 {
     if (m_sString != NULL && sString.m_sString != NULL)
@@ -119,7 +119,7 @@ BOOL CExoString::operator<(const CExoString& sString) const
 
     return FALSE;
 }
-// PC 0x00630620 GOG 0x00630510
+// PC 0x00630620 GOG 0x00630510 Xbox 0x00147E80
 BOOL CExoString::operator>(const CExoString& sString) const
 {
     if (m_sString != NULL && sString.m_sString != NULL)
@@ -202,7 +202,7 @@ BOOL CExoString::operator>=(const char* szString) const
 
     return TRUE;
 }
-// PC 0x00630790 GOG 0x00630680
+// PC 0x00630790 GOG 0x00630680 Xbox 0x00147FF0
 char CExoString::operator[](int nIndex) const
 {
     if (nIndex >= 0 && m_sString != NULL && strlen(m_sString) > nIndex)
@@ -212,7 +212,7 @@ char CExoString::operator[](int nIndex) const
 
     return 0;
 }
-// PC 0x006307C0 GOG 0x006306B0
+// PC 0x006307C0 GOG 0x006306B0 Xbox 0x00148020
 char* CExoString::CStr() const
 {
     if (m_sString == NULL)
@@ -222,7 +222,7 @@ char* CExoString::CStr() const
 
     return m_sString;
 }
-// PC 0x006307D0 GOG 0x006306C0
+// PC 0x006307D0 GOG 0x006306C0 Xbox 0x00148030
 void CExoString::Format(char* szFormat, ...)
 {
     va_list args;
@@ -268,7 +268,7 @@ void CExoString::Format(char* szFormat, ...)
     strncpy(m_sString, CExoStringFormatBuffer, nLength);
     m_sString[nLength] = 0;
 }
-// PC 0x006308E0 GOG 0x006307D0
+// PC 0x006308E0 GOG 0x006307D0 Xbox 0x00148140
 void CExoString::Insert(const CExoString& sString, int nPosition)
 {
     if (sString.m_sString == NULL)
@@ -300,7 +300,7 @@ void CExoString::Insert(const CExoString& sString, int nPosition)
         }
     }
 }
-// PC 0x006309D0 GOG 0x006308C0
+// PC 0x006309D0 GOG 0x006308C0 Xbox 0x00148230
 BOOL CExoString::CompareNoCase(const char* szString) const
 {
     const char* sThisString = m_sString;
@@ -316,7 +316,7 @@ BOOL CExoString::CompareNoCase(const char* szString) const
 
     return stricmp(szString, sThisString) == 0;
 }
-// PC 0x00630A10 GOG 0x00630900
+// PC 0x00630A10 GOG 0x00630900 Xbox 0x00148270
 BOOL CExoString::ComparePrefixNoCase(const CExoString& sString, int nSize) const
 {
     const char* szString = sString.CStr();
@@ -333,7 +333,7 @@ BOOL CExoString::ComparePrefixNoCase(const CExoString& sString, int nSize) const
 
     return strnicmp(szString, sThisString, nSize) == 0;
 }
-// PC 0x00630A60 GOG 0x00630950
+// PC 0x00630A60 GOG 0x00630950 Xbox 0x001482C0
 BOOL CExoString::StripNonAlphaNumeric(BOOL bLowerCase, BOOL bAllowEmail,
                                       BOOL bAllowPunctuation)
 {
@@ -397,7 +397,7 @@ BOOL CExoString::StripNonAlphaNumeric(BOOL bLowerCase, BOOL bAllowEmail,
 
     return bChanged;
 }
-// PC 0x00630BA0 GOG 0x00630A90
+// PC 0x00630BA0 GOG 0x00630A90 Xbox 0x00148400
 CExoString::CExoString(const char* szString)
 {
     if (szString != NULL && strlen(szString) != 0)
@@ -412,7 +412,7 @@ CExoString::CExoString(const char* szString)
         m_nBufferLength = 0;
     }
 }
-// PC 0x00630C10 GOG 0x00630B00
+// PC 0x00630C10 GOG 0x00630B00 Xbox 0x00148470
 CExoString::CExoString(const CExoString& sString)
 {
     if (sString.m_sString != NULL && strlen(sString.m_sString) != 0)
@@ -427,7 +427,7 @@ CExoString::CExoString(const CExoString& sString)
         m_nBufferLength = 0;
     }
 }
-// PC 0x00630C80 GOG 0x00630B70
+// PC 0x00630C80 GOG 0x00630B70 Xbox 0x001484E0
 CExoString::CExoString(const char* szString, int nLength)
 {
     if (nLength > 0)
@@ -443,7 +443,7 @@ CExoString::CExoString(const char* szString, int nLength)
         m_nBufferLength = 0;
     }
 }
-// PC 0x00630CD0 GOG 0x00630BC0
+// PC 0x00630CD0 GOG 0x00630BC0 Xbox 0x00148530
 CExoString::CExoString(int nValue)
 {
     char szBuffer[36];
@@ -453,7 +453,7 @@ CExoString::CExoString(int nValue)
     m_sString = new char[m_nBufferLength];
     strcpy(m_sString, szBuffer);
 }
-// PC 0x00630D30 GOG 0x00630C20
+// PC 0x00630D30 GOG 0x00630C20 Xbox 0x00148590
 CExoString::~CExoString()
 {
     if (m_sString != NULL)
@@ -545,7 +545,7 @@ CExoString& CExoString::operator=(const char* szString)
 
     return *this;
 }
-// PC 0x00630EE0 GOG 0x00630DD0
+// PC 0x00630EE0 GOG 0x00630DD0 Xbox 0x00148740
 CExoString CExoString::operator+(const CExoString& sString) const
 {
     CExoString sNew;
@@ -579,7 +579,7 @@ CExoString CExoString::operator+(const CExoString& sString) const
 
     return sNew;
 }
-// PC 0x00631080 GOG 0x00630F70
+// PC 0x00631080 GOG 0x00630F70 Xbox 0x001488B0
 int CExoString::Find(const CExoString& sString, int nStart) const
 {
     if (m_sString == NULL || sString.m_sString == NULL || nStart < 0)
@@ -622,7 +622,7 @@ int CExoString::Find(const CExoString& sString, int nStart) const
 
     return -1;
 }
-// PC 0x006310F0 GOG 0x00630FE0
+// PC 0x006310F0 GOG 0x00630FE0 Xbox 0x00148920
 int CExoString::Find(char cChar, int nStart) const
 {
     const char* szPos = m_sString;
@@ -687,7 +687,7 @@ int CExoString::FindNot(char cChar, int nStart) const
 
     return -1;
 }
-// PC 0x00631140 GOG 0x00631030
+// PC 0x00631140 GOG 0x00631030 Xbox 0x00148980
 CExoString CExoString::Left(int nCount) const
 {
     CExoString sNew;
@@ -720,7 +720,7 @@ CExoString CExoString::Left(int nCount) const
 
     return sNew;
 }
-// PC 0x00631250 GOG 0x00631140
+// PC 0x00631250 GOG 0x00631140 Xbox 0x00148A60
 CExoString CExoString::LowerCase() const
 {
     CExoString sNew;
@@ -750,7 +750,7 @@ CExoString CExoString::LowerCase() const
 
     return sNew;
 }
-// PC 0x00631340 GOG 0x00631230
+// PC 0x00631340 GOG 0x00631230 Xbox 0x00148B10
 CExoString CExoString::Right(int nCount) const
 {
     CExoString sNew;
@@ -783,7 +783,7 @@ CExoString CExoString::Right(int nCount) const
 
     return sNew;
 }
-// PC 0x00631440 GOG 0x00631330
+// PC 0x00631440 GOG 0x00631330 Xbox 0x00148BF0
 CExoString CExoString::SubString(int nStart, int nCount) const
 {
     CExoString sNew;
@@ -810,7 +810,7 @@ CExoString CExoString::SubString(int nStart, int nCount) const
 
     return sNew;
 }
-// PC 0x00631530 GOG 0x00631420
+// PC 0x00631530 GOG 0x00631420 Xbox 0x00148CC0
 CExoString CExoString::UpperCase() const
 {
     CExoString sNew;
@@ -840,7 +840,7 @@ CExoString CExoString::UpperCase() const
 
     return sNew;
 }
-// PC 0x00631620 GOG 0x00631510
+// PC 0x00631620 GOG 0x00631510 Xbox 0x00148D70
 BOOL CExoString::CompareNoCase(const CExoString& sString) const
 {
     int nOtherLength = sString.GetLength();

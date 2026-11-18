@@ -35,7 +35,7 @@ struct CPazaakCard
                m_nType == CARD_TYPE_TIEBREAKER;
     }
 
-    int GetCardValue()
+    int GetCardValue()  // Xbox 0x000952F0
     {
         if (m_nType < 0)
         {

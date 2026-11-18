@@ -123,7 +123,7 @@ CSWGuiTitleMovies::~CSWGuiTitleMovies()
         delete (CExoString*)m_lbxMovies.GetControl(nMovie)->AsButton()->m_nIndex;
     }
 }
-// PC 0x0074B720 GOG 0x0074B570
+// PC 0x0074B720 GOG 0x0074B570 Xbox 0x0012B3A0
 void CSWGuiTitleMovies::PopulateMovies()
 {
     CExoString sMovie;

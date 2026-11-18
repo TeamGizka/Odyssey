@@ -43,17 +43,17 @@ inline Vector CSWMiniGame::GetAcceleration(CSWMGPhysicsState& state,
     return m_fLateralAccel * vTarget -
            (m_fLateralAccel / m_fAxisScale) * state.m_vValue;
 }
-// PC 0x006C56D0 GOG 0x006C53E0
+// PC 0x006C56D0 GOG 0x006C53E0 Xbox 0x000BA2C0
 inline int CSWMiniEnemy::TargetType()
 {
     return TARGET_ENEMY;
 }
-// PC 0x006C56E0 GOG 0x006C53F0
+// PC 0x006C56E0 GOG 0x006C53F0 Xbox 0x000BA2D0
 void BulletDie(CAurObject* pBullet, char*, void*)
 {
     delete pBullet;
 }
-// PC 0x006C56F0 GOG 0x006C5400
+// PC 0x006C56F0 GOG 0x006C5400 Xbox 0x000BA2E0
 void CSWMiniGame::GetClipDist(float* pfNear, float* pfFar)
 {
     if (pfNear != NULL)
@@ -65,7 +65,7 @@ void CSWMiniGame::GetClipDist(float* pfNear, float* pfFar)
         *pfFar = m_fFarClip;
     }
 }
-// PC 0x006C5710 GOG 0x006C5420
+// PC 0x006C5710 GOG 0x006C5420 Xbox 0x000BA300
 void CSWMiniGame::SetClipDist(float fNear, float fFar)
 {
     if (fNear > fFar)
@@ -104,7 +104,7 @@ void CSWMiniGame::SetViewAngle(float fViewAngle)
         m_pCam->SetViewAngle(fViewAngle);
     }
 }
-// PC 0x006C5770 GOG 0x006C5480
+// PC 0x006C5770 GOG 0x006C5480 Xbox 0x000BA350
 Vector CSWMiniGame::BumpPlane(const Quaternion& qOrientation)
 {
     switch (m_nBumpPlane)
@@ -119,7 +119,7 @@ Vector CSWMiniGame::BumpPlane(const Quaternion& qOrientation)
         return Vector();
     }
 }
-// PC 0x006C57D0 GOG 0x006C54E0
+// PC 0x006C57D0 GOG 0x006C54E0 Xbox 0x000BA510
 int CSWMiniGame::GetAttachType()
 {
     switch (m_nAttachType)
@@ -132,7 +132,7 @@ int CSWMiniGame::GetAttachType()
         return 0;
     }
 }
-// PC 0x006C57F0 GOG 0x006C5500
+// PC 0x006C57F0 GOG 0x006C5500 Xbox 0x000BA530
 void CSWMiniGame::AxisAcceleration(const Vector& vAxis, float fScale)
 {
 
@@ -166,7 +166,7 @@ void CSWMiniGame::AxisAcceleration(const Vector& vAxis, float fScale)
     }
     m_vPosition = vAxis;
 }
-// PC 0x006C5BB0 GOG 0x006C58C0
+// PC 0x006C5BB0 GOG 0x006C58C0 Xbox 0x000BB080
 void CSWMiniGame::UpdateAxis(Vector& vAxis, float fScale)
 {
     switch (m_nAttachType)
@@ -238,7 +238,7 @@ void CSWMiniGame::UpdateMouse(float fDeltaX, float fDeltaY, float fTimeStep)
         break;
     }
 }
-// PC 0x006C5CE0 GOG 0x006C59F0
+// PC 0x006C5CE0 GOG 0x006C59F0 Xbox 0x000BB2F0
 void CSWMiniGame::Control(float fTimeStep)
 {
     if (m_pPlayer != NULL)
@@ -365,7 +365,7 @@ void CSWMiniGame::Control(float fTimeStep)
         }
     }
 }
-// PC 0x006C60E0 GOG 0x006C5DF0
+// PC 0x006C60E0 GOG 0x006C5DF0 Xbox 0x000BB840
 void CSWMiniGame::Go()
 {
     CSWMiniGameObjectArray* pArray =
@@ -404,7 +404,7 @@ void CSWMiniGame::Go()
 #endif
     }
 }
-// PC 0x006C61A0 GOG 0x006C5EB0
+// PC 0x006C61A0 GOG 0x006C5EB0 Xbox 0x000BB900
 int CSWMiniGame::GetEnemy(int nIndex)
 {
     if (nIndex >= m_lstEnemyIds.num)
@@ -414,7 +414,7 @@ int CSWMiniGame::GetEnemy(int nIndex)
     return (int)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(
         m_lstEnemyIds[nIndex], 2);
 }
-// PC 0x006C61E0 GOG 0x006C5EF0
+// PC 0x006C61E0 GOG 0x006C5EF0 Xbox 0x000BB940
 CSWMiniEnemy* CSWMiniGame::RemoveEnemy(CSWMiniEnemy* pEnemy)
 {
     unsigned long nObjectId = pEnemy->m_nObjectId;
@@ -426,7 +426,7 @@ CSWMiniEnemy* CSWMiniGame::RemoveEnemy(CSWMiniEnemy* pEnemy)
     m_lstEnemyIds.DelIndex(nIndex);
     return pEnemy;
 }
-// PC 0x006C6240 GOG 0x006C5F50
+// PC 0x006C6240 GOG 0x006C5F50 Xbox 0x000BB9A0
 CSWMGObstacle* CSWMiniGame::RemoveObstacle(CSWMGObstacle* pObstacle)
 {
     unsigned long nObjectId = pObstacle->m_nObjectId;
@@ -463,7 +463,7 @@ SWMGTrackInfo* CSWMiniGame::GetProtoTrack(const CResRef& cResRef)
     }
     return NULL;
 }
-// PC 0x006C62D0 GOG 0x006C5FE0
+// PC 0x006C62D0 GOG 0x006C5FE0 Xbox 0x000BBA10
 CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
 {
     if (nIndex >= m_lstObstacleIds.num)
@@ -473,7 +473,7 @@ CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
     return (CSWMGObstacle*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(
         m_lstObstacleIds[nIndex], SWMG_OBJECT_OBSTACLE);
 }
-// PC 0x006C6310 GOG 0x006C6020
+// PC 0x006C6310 GOG 0x006C6020 Xbox 0x000BBA50
 CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
 {
     if (SWMINIGAME_DEBUG)
@@ -528,7 +528,7 @@ CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
     }
     return m_pCam;
 }
-// PC 0x006C6490 GOG 0x006C61A0
+// PC 0x006C6490 GOG 0x006C61A0 Xbox 0x000BBB80
 CSWMiniPlayer* CSWMiniGame::SetPlayer(CSWMiniPlayer* pPlayer)
 {
     if (m_pPlayer != NULL)
@@ -540,7 +540,7 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CSWMiniPlayer* pPlayer)
     SetCamera(pCamera);
     return m_pPlayer;
 }
-// PC 0x006C64C0 GOG 0x006C61D0
+// PC 0x006C64C0 GOG 0x006C61D0 Xbox 0x000BBBB0
 CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
                                       CExoArrayList<unsigned char>& lstRotating,
                                       const CResRef& cTrack)
@@ -577,7 +577,7 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
     SetCamera(m_pCam);
     return m_pPlayer;
 }
-// PC 0x006C6670 GOG 0x006C6380
+// PC 0x006C6670 GOG 0x006C6380 Xbox 0x000BBD40
 CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
                                       CExoArrayList<unsigned char>& lstRotating,
                                       const CResRef& cTrack, const CResRef& cCamera,
@@ -622,7 +622,7 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
     SetCamera(m_pCam);
     return m_pPlayer;
 }
-// PC 0x006C6860 GOG 0x006C6570
+// PC 0x006C6860 GOG 0x006C6570 Xbox 0x000BBF10
 int CSWMiniGame::SetMouseAxisX(int nAxis)
 {
     if (SWMINIGAME_DEBUG)
@@ -635,7 +635,7 @@ int CSWMiniGame::SetMouseAxisX(int nAxis)
     }
     return m_nMouseAxisX;
 }
-// PC 0x006C6880 GOG 0x006C6590
+// PC 0x006C6880 GOG 0x006C6590 Xbox 0x000BBF30
 int CSWMiniGame::SetMouseAxisY(int nAxis)
 {
     if (SWMINIGAME_DEBUG)
@@ -690,7 +690,7 @@ int CSWMiniGame::SetType(int nType)
     }
     return m_nAttachType;
 }
-// PC 0x006C68A0 GOG 0x006C65B0
+// PC 0x006C68A0 GOG 0x006C65B0 Xbox 0x000BBF50
 void CSWMiniGame::SetCurPos(Vector vPosition)
 {
     Vector vTrackPosition = m_pPlayer->m_pTrack->GetPosition();
@@ -710,7 +710,7 @@ void CSWMiniGame::SetCurPos(Vector vPosition)
     m_pPlayer->SetOffset(Vector(0.0f, 0.0f, 0.0f));
     SetCamera(m_pCam);
 }
-// PC 0x00410CD0 GOG 0x00410C80
+// PC 0x00410CD0 GOG 0x00410C80 Xbox 0x001E6B30
 template <> void CExoArrayList<SWMGExplodeBullet*>::Add(SWMGExplodeBullet* value)
 {
     if (num == array_size)
@@ -719,7 +719,7 @@ template <> void CExoArrayList<SWMGExplodeBullet*>::Add(SWMGExplodeBullet* value
     }
     element[num++] = value;
 }
-// PC 0x006C6960 GOG 0x006C6670
+// PC 0x006C6960 GOG 0x006C6670 Xbox 0x000BC070
 CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
 {
     m_pArea = pArea;
@@ -753,7 +753,7 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
     }
     m_fJumpSpeed = 0.0f;
 }
-// PC 0x006C6C40 GOG 0x006C6940
+// PC 0x006C6C40 GOG 0x006C6940 Xbox 0x000BC370
 CSWMiniEnemy* CSWMiniGame::AddEnemy(CExoArrayList<CResRef>& lstModels,
                                     CExoArrayList<unsigned char>& lstRotating,
                                     const CResRef& cTrack)
@@ -786,7 +786,7 @@ CSWMiniEnemy* CSWMiniGame::AddEnemy(CExoArrayList<CResRef>& lstModels,
     m_lstEnemyIds.Add(pEnemy->m_nObjectId);
     return pEnemy;
 }
-// PC 0x006C6E40 GOG 0x006C6B40
+// PC 0x006C6E40 GOG 0x006C6B40 Xbox 0x000BC550
 int CSWMiniGame::ClearEnemies()
 {
     int nCount = m_lstEnemyIds.num;
@@ -804,7 +804,7 @@ int CSWMiniGame::ClearEnemies()
     m_lstEnemyIds.SetSize(0);
     return nCount;
 }
-// PC 0x006C6EC0 GOG 0x006C6BC0
+// PC 0x006C6EC0 GOG 0x006C6BC0 Xbox 0x000BC5D0
 SWMGTrackInfo* CSWMiniGame::AddTrack(const CResRef& cResRef,
                                      const Vector& vPosition)
 {
@@ -823,7 +823,7 @@ SWMGTrackInfo* CSWMiniGame::AddTrack(const CResRef& cResRef,
     m_lstTracks.Add(pNewTrack);
     return pNewTrack;
 }
-// PC 0x006C6FF0 GOG 0x006C6CF0
+// PC 0x006C6FF0 GOG 0x006C6CF0 Xbox 0x000BC6F0
 int CSWMiniGame::ClearTracks()
 {
     int nOldCount = m_lstTracks.num;
@@ -834,7 +834,7 @@ int CSWMiniGame::ClearTracks()
     m_lstTracks.SetSize(0);
     return nOldCount;
 }
-// PC 0x006C7040 GOG 0x006C6D40
+// PC 0x006C7040 GOG 0x006C6D40 Xbox 0x000BC740
 CSWMGObstacle* CSWMiniGame::AddObstacle(const CResRef& cResRef,
                                         const Vector& vPosition)
 {
@@ -853,7 +853,7 @@ CSWMGObstacle* CSWMiniGame::AddObstacle(const CResRef& cResRef,
     }
     return pObstacle;
 }
-// PC 0x006C71D0 GOG 0x006C6ED0
+// PC 0x006C71D0 GOG 0x006C6ED0 Xbox 0x000BC8B0
 int CSWMiniGame::Load()
 {
     CResRef cResRef;
@@ -1022,7 +1022,7 @@ int CSWMiniGame::Load()
     m_pRes->Release();
     return 1;
 }
-// PC 0x006C7CB0 GOG 0x006C79B0
+// PC 0x006C7CB0 GOG 0x006C79B0 Xbox 0x000BD390
 CSWMiniGame::~CSWMiniGame()
 {
     if (m_pPlayer != NULL)
@@ -1036,7 +1036,7 @@ CSWMiniGame::~CSWMiniGame()
     ClearObstacles();
     delete m_pImpactSound;
 }
-// PC 0x006C7DA0 GOG 0x006C7AA0
+// PC 0x006C7DA0 GOG 0x006C7AA0 Xbox 0x000BD430
 void CSWMiniGame::AddBullet(CAurObject* pBullet)
 {
     m_lstBullets.Add(new SafePointer<CAurObject>(pBullet));
@@ -1045,7 +1045,7 @@ void CSWMiniGame::AddBullet(CAurObject* pBullet)
 SWMGExplodeBullet::SWMGExplodeBullet()
 {
 }
-// PC 0x006C81F0 GOG 0x006C7EF0
+// PC 0x006C81F0 GOG 0x006C7EF0 Xbox 0x000BD8C0
 void CSWMiniGame::DoHitCheck()
 {
     int nBullets = m_lstBullets.num;
@@ -1259,7 +1259,7 @@ void CSWMiniGame::DoHitCheck()
         }
     }
 }
-// PC 0x006C7E70 GOG 0x006C7B70
+// PC 0x006C7E70 GOG 0x006C7B70 Xbox 0x000BD4B0
 int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
                                CSWMiniGameObject* pHit)
 {
@@ -1316,7 +1316,7 @@ int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
     }
     return 0;
 }
-// PC 0x006C8AD0 GOG 0x006C87D0
+// PC 0x006C8AD0 GOG 0x006C87D0 Xbox 0x000BE130
 void CSWMiniGame::Update(float fTimeStep)
 {
     CSWMiniGameObjectArray* pArray =
@@ -1390,7 +1390,7 @@ void CSWMiniGame::Update(float fTimeStep)
         m_pArea->m_pScene->SetCurrentRoom(m_pCurrentRoom->m_nRoomIndex);
     }
 }
-// PC 0x006C7150 GOG 0x006C6E50
+// PC 0x006C7150 GOG 0x006C6E50 Xbox 0x000BC830
 int CSWMiniGame::ClearObstacles()
 {
     int nOldCount = m_lstObstacleIds.num;
@@ -1419,7 +1419,7 @@ int CSWMiniGame::ClearObstacles()
 
 #ifdef _XBOX
 
-void CSWMiniGame::UpdateAxis(float fX, float fZ, float fTimeStep)
+void CSWMiniGame::UpdateAxis(float fX, float fZ, float fTimeStep)  // Xbox 0x000BB2B0
 {
     Vector vAxis(fX, 0.0f, fZ);
     UpdateAxis(vAxis, fTimeStep);

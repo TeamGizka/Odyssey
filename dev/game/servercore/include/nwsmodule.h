@@ -144,7 +144,7 @@ public:
     };
     CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveGame);
     virtual ~CSWSModule();
-    virtual CSWSModule* AsSWSModule() { return this; }  // PC 0x00507D40 GOG 0x004FFDF0
+    virtual CSWSModule* AsSWSModule() { return this; }  // PC 0x00507D40 GOG 0x004FFDF0 Xbox 0x001B6730
 
     enum ScriptType
     {

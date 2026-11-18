@@ -41,12 +41,12 @@
 static const int MODULE_SAVE_BASE_RESOURCES = 3;
 
 void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender);
-// PC 0x00504120 GOG 0x004FC200
+// PC 0x00504120 GOG 0x004FC200 Xbox 0x001B3130
 inline CResIFO::CResIFO()
 {
     strncpy(m_szFileType, "IFO ", 4);
 }
-// PC 0x00509340 GOG 0x005013F0
+// PC 0x00509340 GOG 0x005013F0 Xbox 0x001B7C30
 CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveGame)
     : CGameObject(CGameObject::OBJECT_TYPE_MODULE, OBJECT_INVALID)
 {
@@ -113,7 +113,7 @@ CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bIsSaveG
     m_pAreaCached = NULL;
     m_oidAreaCached = OBJECT_INVALID;
 }
-// PC 0x00506390 GOG 0x004FE420
+// PC 0x00506390 GOG 0x004FE420 Xbox 0x001B5270
 void CSWSModule::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay)
@@ -213,7 +213,7 @@ void CSWSModule::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         delete pData;
     }
 }
-// PC 0x00507A30 GOG 0x004FFAE0
+// PC 0x00507A30 GOG 0x004FFAE0 Xbox 0x001B64D0
 CSWSModule::~CSWSModule()
 {
     if (m_bModuleResReleased == 0)
@@ -266,7 +266,7 @@ void CSWSModule::ClearAreaVisitedFlags()
         pArea->m_bTransitionCounted = 0;
     }
 }
-// PC 0x00507D60 GOG 0x004FFE10
+// PC 0x00507D60 GOG 0x004FFE10 Xbox 0x001B6750
 int CSWSModule::ComputeInterAreaPath(CPathfindInformation* pPathfind)
 {
     int nDepth;
@@ -297,7 +297,7 @@ int CSWSModule::ComputeInterAreaPath(CPathfindInformation* pPathfind)
     SetIntraAreaGoal(pPathfind);
     return 1;
 }
-// PC 0x00506710 GOG 0x004FE7A0
+// PC 0x00506710 GOG 0x004FE7A0 Xbox 0x001B55F0
 int CSWSModule::GenerateInterAreaDFSSuccessors(
     int nArea, CPathfindInformation* pPathfind, unsigned long** ppSuccessors)
 {
@@ -316,7 +316,7 @@ int CSWSModule::GenerateInterAreaDFSSuccessors(
     return pArea->CountAreaTransitionTriggers(
         *ppSuccessors, pPathfind->GetAreaListCount(), pPathfind->GetAreaList());
 }
-// PC 0x00504150 GOG 0x004FC230
+// PC 0x00504150 GOG 0x004FC230 Xbox 0x001B3160
 CSWSArea* CSWSModule::GetArea()
 {
     if (m_oidAreaCached != m_oidArea)
@@ -337,13 +337,13 @@ CSWSArea* CSWSModule::GetArea()
     }
     return m_pAreaCached;
 }
-// PC 0x005041B0 GOG 0x004FC290
+// PC 0x005041B0 GOG 0x004FC290 Xbox 0x001B31C0
 void CSWSModule::ClearAreaCache()
 {
     m_pAreaCached = NULL;
     m_oidAreaCached = OBJECT_INVALID;
 }
-// PC 0x005041D0 GOG 0x004FC2B0
+// PC 0x005041D0 GOG 0x004FC2B0 Xbox 0x001B31E0
 void CSWSModule::PackModuleIntoMessage(unsigned long nPlayerId)
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -358,7 +358,7 @@ void CSWSModule::PackModuleIntoMessage(unsigned long nPlayerId)
     pMessage->WriteCResRef(m_cHak, 16);
     pMessage->WriteCResRef(m_cStartMovie, 16);
 }
-// PC 0x005042C0 GOG 0x004FC3A0
+// PC 0x005042C0 GOG 0x004FC3A0 Xbox 0x001B32A0
 int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
                               unsigned long nFlags)
 {
@@ -612,7 +612,7 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
     }
     return nResult;
 }
-// PC 0x005049D0 GOG 0x004FCAB0
+// PC 0x005049D0 GOG 0x004FCAB0 Xbox 0x001B3B70
 int CSWSModule::SaveModuleFAC()
 {
     CExoString sFileName;
@@ -645,7 +645,7 @@ int CSWSModule::SaveModuleFAC()
     delete pStruct;
     return bSuccess;
 }
-// PC 0x00504B80 GOG 0x004FCC60
+// PC 0x00504B80 GOG 0x004FCC60 Xbox 0x001B3CD0
 int CSWSModule::SaveModuleInProgress()
 {
     CExoString sName;
@@ -671,7 +671,7 @@ int CSWSModule::SaveModuleInProgress()
         1, nProgress);
     return 1;
 }
-// PC 0x00504CE0 GOG 0x004FCDC0
+// PC 0x00504CE0 GOG 0x004FCDC0 Xbox 0x001B3DD0
 void CSWSModule::SavePrimaryPlayerInfo(CSWSCreature* pCreature,
                                       const CExoString& sPath)
 {
@@ -702,7 +702,7 @@ void CSWSModule::SavePrimaryPlayerInfo(CSWSCreature* pCreature,
     }
     delete pGFF;
 }
-// PC 0x00504F10 GOG 0x004FCFF0
+// PC 0x00504F10 GOG 0x004FCFF0 Xbox 0x001B3F80
 void CSWSModule::SetIntraAreaGoal(CPathfindInformation* pPathfind)
 {
     if (pPathfind->m_nAreaPathLength > 1)
@@ -756,7 +756,7 @@ void CSWSModule::SetIntraAreaGoal(CPathfindInformation* pPathfind)
         }
     }
 }
-// PC 0x00506780 GOG 0x004FE810
+// PC 0x00506780 GOG 0x004FE810 Xbox 0x001B5660
 int CSWSModule::InterAreaDFS(int nArea, int nDepth,
                             CPathfindInformation* pPathfind)
 {
@@ -836,7 +836,7 @@ int CSWSModule::InterAreaDFS(int nArea, int nDepth,
         delete[] pSuccessors;
     return 0;
 }
-// PC 0x00506990 GOG 0x004FEA20
+// PC 0x00506990 GOG 0x004FEA20 Xbox 0x001B5870
 int CSWSModule::LoadModuleInProgress(int nAreasLoaded, int nAreasToLoad)
 {
     CSWSArea* pArea;
@@ -876,7 +876,7 @@ int CSWSModule::LoadModuleInProgress(int nAreasLoaded, int nAreasToLoad)
         ->SendServerToPlayerLoadBar_UpdateStallEvent(nAreasLoaded + 1, -1);
     return 0;
 }
-// PC 0x00506AF0 GOG 0x004FEB80
+// PC 0x00506AF0 GOG 0x004FEB80 Xbox 0x001B5960
 int CSWSModule::LoadModuleFinish()
 {
     CResStruct cTopLevelStruct;
@@ -913,7 +913,7 @@ int CSWSModule::LoadModuleFinish()
 void CSWSModule::PostProcess()
 {
 }
-// PC 0x00506C00 GOG 0x004FEC90
+// PC 0x00506C00 GOG 0x004FEC90 Xbox 0x001B5A40
 int CSWSModule::SaveStatic(CERFFile* pERFFile, const CExoString& sFileType,
                            unsigned short nResType, int bIsGFF)
 {
@@ -977,7 +977,7 @@ int CSWSModule::SaveStatic(CERFFile* pERFFile, const CExoString& sFileType,
     delete pResources;
     return bSuccess;
 }
-// PC 0x00507E20 GOG 0x004FFED0
+// PC 0x00507E20 GOG 0x004FFED0 Xbox 0x001B6810
 int CSWSModule::AIUpdate()
 {
     unsigned long nDiffDay;
@@ -1014,7 +1014,7 @@ int CSWSModule::AIUpdate()
     }
     return 0;
 }
-// PC 0x00507F50 GOG 0x00500000
+// PC 0x00507F50 GOG 0x00500000 Xbox 0x001B6940
 int CSWSModule::DoUpdate()
 {
     CServerExoApp* pExoApp;
@@ -1034,13 +1034,13 @@ int CSWSModule::DoUpdate()
     }
     m_bAIUpdate = 1;
 }
-// PC 0x00507F90 GOG 0x00500040
+// PC 0x00507F90 GOG 0x00500040 Xbox 0x001B6980
 unsigned long CSWSModule::GetWaypoint(const CExoString& sTag)
 {
     return FindObjectByTagTypeOrdinal(sTag, CGameObject::OBJECT_TYPE_WAYPOINT,
                                       0);
 }
-// PC 0x00507FB0 GOG 0x00500060
+// PC 0x00507FB0 GOG 0x00500060 Xbox 0x001B69A0
 int CSWSModule::PlotInterAreaPath(CPathfindInformation* pPathfind,
                                   unsigned long nFlags)
 {
@@ -1114,7 +1114,7 @@ int CSWSModule::PlotInterAreaPath(CPathfindInformation* pPathfind,
     }
     return nResult;
 }
-// PC 0x00508100 GOG 0x005001B0
+// PC 0x00508100 GOG 0x005001B0 Xbox 0x001B6AF0
 int CSWSModule::PlotPath(CPathfindInformation* pPathfind, unsigned long nFlags)
 {
     int nResult;
@@ -1163,7 +1163,7 @@ int CSWSModule::PlotPath(CPathfindInformation* pPathfind, unsigned long nFlags)
     }
     return nResult;
 }
-// PC 0x00509800 GOG 0x005018B0
+// PC 0x00509800 GOG 0x005018B0 Xbox 0x001B80B0
 void CSWSModule::SaveModuleStart(CExoString& sPath, CExoString& sName)
 {
     m_bIsSaveGame = 1;
@@ -1207,7 +1207,7 @@ inline BOOL IsModuleCustomToken(unsigned long nIndex)
     unsigned long nToken = pTlkTable->m_pCustomTokens[nIndex].m_nToken;
     return nToken > CTlkTable::CUSTOMTOKEN_RESERVED_END;
 }
-// PC 0x005081E0 GOG 0x00500290
+// PC 0x005081E0 GOG 0x00500290 Xbox 0x001B6BD0
 int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
 {
     CExoLocString lsDefault;
@@ -1388,7 +1388,7 @@ int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SaveEventQueue(pRes, pStruct);
     return 1;
 }
-// PC 0x00506E30 GOG 0x004FEEC0
+// PC 0x00506E30 GOG 0x004FEEC0 Xbox 0x001B5C30
 void CSWSModule::SaveLimboCreatures(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList cList;
@@ -1412,7 +1412,7 @@ void CSWSModule::SaveLimboCreatures(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x00509A30 GOG 0x00501AE0
+// PC 0x00509A30 GOG 0x00501AE0 Xbox 0x001B82A0
 int CSWSModule::SaveModuleIFOFinish(CResGFF* pRes, CResStruct* pStruct,
                                     CERFFile* pERFFile, CExoString& sPath,
                                     CExoArrayList<unsigned long>& lstPlayers)
@@ -1427,7 +1427,7 @@ int CSWSModule::SaveModuleIFOFinish(CResGFF* pRes, CResStruct* pStruct,
     delete pStruct;
     return 1;
 }
-// PC 0x00508A00 GOG 0x00500AB0
+// PC 0x00508A00 GOG 0x00500AB0 Xbox 0x001B73A0
 int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
                             const CExoString& sPath,
                             CExoArrayList<unsigned long>& lstPlayers)
@@ -1554,7 +1554,7 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
     g_pExoResMan->ReleaseResObject(pModule);
     return 0;
 }
-// PC 0x00506EF0 GOG 0x004FEF80
+// PC 0x00506EF0 GOG 0x004FEF80 Xbox 0x001B5CF0
 int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
 {
     int nIndex = 0;
@@ -1584,7 +1584,7 @@ int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
     }
     return -1;
 }
-// PC 0x00507010 GOG 0x004FF0A0
+// PC 0x00507010 GOG 0x004FF0A0 Xbox 0x001B5DD0
 int CSWSModule::GetPrimaryPlayerIndex()
 {
     int nPrimaryPlayerIndex = -1;
@@ -1610,7 +1610,7 @@ int CSWSModule::GetPrimaryPlayerIndex()
     return nPrimaryPlayerIndex;
 }
 #include "nwsmoduleinl.h"
-// PC 0x00508CB0 GOG 0x00500D60
+// PC 0x00508CB0 GOG 0x00500D60 Xbox 0x001B7620
 int CSWSModule::AddObjectToLookupTable(const CExoString& sTag,
                                        unsigned long oidObject)
 {
@@ -1630,7 +1630,7 @@ int CSWSModule::AddObjectToLookupTable(const CExoString& sTag,
     m_lstTagTable.Insert(cNode, nIndex);
     return 1;
 }
-// PC 0x005070E0 GOG 0x004FF170
+// PC 0x005070E0 GOG 0x004FF170 Xbox 0x001B5E30
 int CSWSModule::FindTagPositionInTable(char* sTag)
 {
     int nLow = 0;
@@ -1653,7 +1653,7 @@ int CSWSModule::FindTagPositionInTable(char* sTag)
     }
     return nLow;
 }
-// PC 0x00507170 GOG 0x004FF200
+// PC 0x00507170 GOG 0x004FF200 Xbox 0x001B5EC0
 int CSWSModule::RemoveObjectFromLookupTable(const CExoString& sTag,
                                             unsigned long oidObject)
 {
@@ -1673,7 +1673,7 @@ int CSWSModule::RemoveObjectFromLookupTable(const CExoString& sTag,
     }
     return 0;
 }
-// PC 0x00507260 GOG 0x004FF2F0
+// PC 0x00507260 GOG 0x004FF2F0 Xbox 0x001B5F70
 unsigned long CSWSModule::FindObjectByTagOrdinal(const CExoString& sTag,
                                                  unsigned long nNth)
 {
@@ -1688,7 +1688,7 @@ unsigned long CSWSModule::FindObjectByTagOrdinal(const CExoString& sTag,
     return OBJECT_INVALID;
 }
 
-// PC 0x00507330 GOG 0x004FF3C0
+// PC 0x00507330 GOG 0x004FF3C0 Xbox 0x001B6000
 unsigned long CSWSModule::FindObjectByTagTypeOrdinal(const CExoString& sTag,
                                                      int nObjectType,
                                                      unsigned long nNth)
@@ -1720,7 +1720,7 @@ unsigned long CSWSModule::FindObjectByTagTypeOrdinal(const CExoString& sTag,
     }
     return OBJECT_INVALID;
 }
-// PC 0x00507450 GOG 0x004FF4E0
+// PC 0x00507450 GOG 0x004FF4E0 Xbox 0x001B60F0
 int CSWSModule::GetWorldJournalIndexUnique()
 {
     int nEntryCount = m_lstWorldJournal.num;
@@ -1742,7 +1742,7 @@ int CSWSModule::GetWorldJournalIndexUnique()
     }
     return nIndex;
 }
-// PC 0x00507490 GOG 0x004FF520
+// PC 0x00507490 GOG 0x004FF520 Xbox 0x001B6130
 void CSWSModule::UpdateTime(unsigned long nDay, unsigned long nTime,
                            unsigned long nDeltaTime)
 {
@@ -1837,7 +1837,7 @@ void CSWSModule::UpdateTime(unsigned long nDay, unsigned long nTime,
         }
     }
 }
-// PC 0x00507670 GOG 0x004FF700
+// PC 0x00507670 GOG 0x004FF700 Xbox 0x001B6310
 void CSWSModule::RemoveObjectFromLimbo(unsigned long oidObject)
 {
     for (int nIndex = m_lLimbo.num - 1; nIndex >= 0; nIndex--)
@@ -1849,7 +1849,7 @@ void CSWSModule::RemoveObjectFromLimbo(unsigned long oidObject)
         }
     }
 }
-// PC 0x005076D0 GOG 0x004FF760
+// PC 0x005076D0 GOG 0x004FF760 Xbox 0x001B6370
 int CSWSModule::IsObjectInLimbo(unsigned long oidObject)
 {
     for (int nIndex = m_lLimbo.num - 1; nIndex >= 0; nIndex--)
@@ -1880,7 +1880,7 @@ void CSWSModule::CleanUpLimboList()
         }
     }
 }
-// PC 0x00508DA0 GOG 0x00500E50
+// PC 0x00508DA0 GOG 0x00500E50 Xbox 0x001B76E0
 void CSWSModule::AddWorldJournalEntry(int nIndex, const CExoString& sText,
                                      const CExoString& sTag,
                                      unsigned long nCalendarDay,
@@ -1927,7 +1927,7 @@ void CSWSModule::AddWorldJournalEntry(int nIndex, const CExoString& sText,
         }
     }
 }
-// PC 0x00508F00 GOG 0x00500FB0
+// PC 0x00508F00 GOG 0x00500FB0 Xbox 0x001B7830
 void CSWSModule::AddWorldJournalEntryStrref(unsigned long nIndex,
                                             unsigned long nStrRef,
                                             unsigned long nCalendarDay,
@@ -1973,7 +1973,7 @@ void CSWSModule::AddWorldJournalEntryStrref(unsigned long nIndex,
         }
     }
 }
-// PC 0x00509040 GOG 0x005010F0
+// PC 0x00509040 GOG 0x005010F0 Xbox 0x001B7970
 void CSWSModule::DeleteWorldJournalEntry(int nIndex)
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -2015,7 +2015,7 @@ void CSWSModule::DeleteWorldJournalEntry(int nIndex)
         }
     }
 }
-// PC 0x00509100 GOG 0x005011B0
+// PC 0x00509100 GOG 0x005011B0 Xbox 0x001B7A30
 void CSWSModule::DeleteWorldJournalEntryStrref(unsigned long nStrRef)
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -2055,7 +2055,7 @@ void CSWSModule::DeleteWorldJournalEntryStrref(unsigned long nStrRef)
         }
     }
 }
-// PC 0x005091C0 GOG 0x00501270
+// PC 0x005091C0 GOG 0x00501270 Xbox 0x001B7AF0
 void CSWSModule::DeleteWorldJournalAllEntries()
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -2086,7 +2086,7 @@ void CSWSModule::DeleteWorldJournalAllEntries()
         }
     }
 }
-// PC 0x00509B10 GOG 0x00501BC0
+// PC 0x00509B10 GOG 0x00501BC0 Xbox 0x001B8340
 int CSWSModule::LoadLimboCreatures(CResGFF* pRes, CResStruct* pStruct,
                                    int bIsSaveGame)
 {
@@ -2145,7 +2145,7 @@ int CSWSModule::LoadLimboCreatures(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x00509280 GOG 0x00501330
+// PC 0x00509280 GOG 0x00501330 Xbox 0x001B7B70
 void CSWSModule::AddObjectToLimbo(unsigned long oidObject)
 {
     for (int i = 0; i < m_lLimbo.num; i++)
@@ -2157,7 +2157,7 @@ void CSWSModule::AddObjectToLimbo(unsigned long oidObject)
     }
     m_lLimbo.Add(oidObject);
 }
-// PC 0x00509D30 GOG 0x00501DE0
+// PC 0x00509D30 GOG 0x00501DE0 Xbox 0x001B8550
 void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
     CExoArrayList<NWPlayerCharacterList_st*>& lstCharacters)
 {
@@ -2197,7 +2197,7 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
 void CSWSModule::UnloadModule()
 {
 }
-// PC 0x00509EF0 GOG 0x00501FA0
+// PC 0x00509EF0 GOG 0x00501FA0 Xbox 0x001B8710
 int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
 {
     CExoString sModuleName;
@@ -2530,7 +2530,7 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
     m_bModuleResReleased = 0;
     return LOAD_MODULE_SUCCESS;
 }
-// PC 0x0050B530 GOG 0x005035E0
+// PC 0x0050B530 GOG 0x005035E0 Xbox 0x001B9B40
 int CSWSModule::SaveModuleFinish(CExoString& sPath, CExoString& sName)
 {
     if (m_pERFFile == NULL)
@@ -2551,7 +2551,7 @@ int CSWSModule::SaveModuleFinish(CExoString& sPath, CExoString& sName)
     m_plstPlayers = NULL;
     return 1;
 }
-// PC 0x00507700 GOG 0x004FF790
+// PC 0x00507700 GOG 0x004FF790 Xbox 0x001B63A0
 void CSWSModule::TimeStopSanityCheck()
 {
     int bTimeStop = 0;
@@ -2582,7 +2582,7 @@ void CSWSModule::TimeStopSanityCheck()
         g_pAppManager->m_pServerExoApp->TogglePauseState(1);
     }
 }
-// PC 0x00505170 GOG 0x004FD250
+// PC 0x00505170 GOG 0x004FD250 Xbox 0x001B4110
 int CSWSModule::GetTime(unsigned long* pnYear, unsigned long* pnMonth,
                         unsigned long* pnDay, unsigned long* pnTimeOfDay,
                         unsigned char* pnDawnDusk, unsigned long* pnTimeOfDay2)
@@ -2603,7 +2603,7 @@ int CSWSModule::GetTime(unsigned long* pnYear, unsigned long* pnMonth,
 #define XB7_RESTYPE_ERF 9997
 #define XB7_RESTYPE_MOD 2011
 #endif
-void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x005051C0 GOG 0x004FD2A0
+void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x005051C0 GOG 0x004FD2A0 Xbox 0x001B4160
 {
     CExoString sResourceName;
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -2688,7 +2688,7 @@ void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x0050
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgressEnd, 1);
     UpdateScreen(0.033333335f, 0, 0);
 }
-// PC 0x00505500 GOG 0x004FD5E0
+// PC 0x00505500 GOG 0x004FD5E0 Xbox 0x001B47B0
 void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
 {
     g_pExoResMan->RemoveEncapsulatedResourceFile(sModuleName);
@@ -2814,7 +2814,7 @@ void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
 #endif
     g_pAppManager->m_pClientExoApp->ResetModuleResourcesLoaded();
 }
-// PC 0x00505DB0 GOG 0x004FDE90
+// PC 0x00505DB0 GOG 0x004FDE90 Xbox 0x001B4F00
 CExoString CSWSModule::GetModuleResourceName()
 {
     int nColon;

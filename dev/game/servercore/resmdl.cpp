@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00616050 GOG 0x00616030
+// PC 0x00616050 GOG 0x00616030 Xbox 0x00265940
 CResMDL::CResMDL()
 {
     m_bServiced = 0;
@@ -11,7 +11,7 @@ CResMDL::CResMDL()
 CResMDL::~CResMDL()
 {
 }
-// PC 0x007845C0 GOG 0x00784460
+// PC 0x007845C0 GOG 0x00784460 Xbox 0x00331990
 int CResMDL::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -19,12 +19,12 @@ int CResMDL::OnResourceFreed()
     m_pMDLData = 0;
     return 1;
 }
-// PC 0x00404CF0 GOG 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0 Xbox 0x00161340
 unsigned char* CResMDL::GetMDLDataPtr()
 {
     return m_pMDLData;
 }
-// PC 0x007846A0 GOG 0x00784450
+// PC 0x007846A0 GOG 0x00784450 Xbox 0x0015B870
 unsigned long CResMDL::GetMDLSize()
 {
     return m_nMDLSize;
@@ -35,7 +35,7 @@ int CResMDL::IsLoaded()
 {
     return m_bServiced;
 }
-// PC 0x0077FE60 GOG 0x0062B5A0
+// PC 0x0077FE60 GOG 0x0062B5A0 Xbox 0x00161470
 int CResMDL::OnResourceServiced()
 {
     unsigned char* pData;

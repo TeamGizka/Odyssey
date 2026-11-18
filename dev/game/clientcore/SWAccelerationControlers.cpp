@@ -1,5 +1,5 @@
 #include "SWAccelerationControlers.h"
-// PC 0x006C5360 GOG 0x0073EC80
+// PC 0x006C5360 GOG 0x0073EC80 Xbox 0x0008EA60
 CSWPhysicsState operator+(const CSWPhysicsState& stateA,
                           const CSWPhysicsState& stateB)
 {
@@ -7,7 +7,7 @@ CSWPhysicsState operator+(const CSWPhysicsState& stateA,
     Vector vValue = stateA.m_vValue + stateB.m_vValue;
     return CSWPhysicsState(vValue, vRate);
 }
-// PC 0x006C53F0 GOG 0x0073ED10
+// PC 0x006C53F0 GOG 0x0073ED10 Xbox 0x0008EB20
 CSWPhysicsState operator*(const CSWPhysicsState& state, float fScale)
 {
     Vector vRate(state.m_vRate.m_fX * fScale, state.m_vRate.m_fY * fScale,
@@ -70,7 +70,7 @@ void CSWRK4Acceleration::SetVelocity(float fVelocity)
     m_NewState.m_vRate = Vector();
     m_NewState.m_vValue = Vector(0.0f, fVelocity, 0.0f);
 }
-// PC 0x0073F590 GOG 0x0073F410
+// PC 0x0073F590 GOG 0x0073F410 Xbox 0x0008EEA0
 CSWRK4SplitAcceleration::CSWRK4SplitAcceleration()
     : CSWRK4Acceleration(),
       m_fMaximumDeceleration(100.0f)

@@ -22,7 +22,7 @@
 
 #define NWSSPELLIMPACT_DEBUG 0
 
-// PC 0x005718F0 GOG 0x00571A20
+// PC 0x005718F0 GOG 0x00571A20 Xbox 0x00278C60
 CSWSAreaOfEffectObject::CSWSAreaOfEffectObject(unsigned long oidObject)
     : CSWSObject(SW_OBJECT_TYPE_AREA_OF_EFFECT, oidObject, 0)
 {
@@ -57,7 +57,7 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x00571A60 GOG 0x00571B90
+// PC 0x00571A60 GOG 0x00571B90 Xbox 0x00278280
 void CSWSAreaOfEffectObject::SetShape(unsigned char nShape, float fWidth,
                                       float fLength)
 {
@@ -84,7 +84,7 @@ void CSWSAreaOfEffectObject::SetShape(unsigned char nShape, float fWidth,
         break;
     }
 }
-// PC 0x00571C20 GOG 0x00571D50
+// PC 0x00571C20 GOG 0x00571D50 Xbox 0x00278410
 void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
 {
     if (NWSSPELLIMPACT_DEBUG)
@@ -130,7 +130,7 @@ void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
     g_pAppManager->m_pServerExoApp->GetModule()->AddObjectToLookupTable(
         m_sTag, m_nId);
 }
-// PC 0x00571F70 GOG 0x005720A0
+// PC 0x00571F70 GOG 0x005720A0 Xbox 0x002786C0
 int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)
 {
     if (NWSSPELLIMPACT_DEBUG)
@@ -178,7 +178,7 @@ int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x005721F0 GOG 0x00572320
+// PC 0x005721F0 GOG 0x00572320 Xbox 0x00278920
 int CSWSAreaOfEffectObject::SaveEffect(CResGFF* pRes, CResStruct* pStruct)
 {
     Vector vPosition;
@@ -227,7 +227,7 @@ int CSWSAreaOfEffectObject::SaveEffect(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x00572460 GOG 0x00572590
+// PC 0x00572460 GOG 0x00572590 Xbox 0x00278B90
 void CSWSAreaOfEffectObject::SetCreator(unsigned long oidCreator)
 {
     if (NWSSPELLIMPACT_DEBUG)
@@ -264,7 +264,7 @@ void CSWSAreaOfEffectObject::SetCreator(unsigned long oidCreator)
         }
     }
 }
-// PC 0x00572530 GOG 0x00572660
+// PC 0x00572530 GOG 0x00572660 Xbox 0x00278DB0
 int CSWSAreaOfEffectObject::LineSegmentIntersectAreaOfEffect(
     Vector vStart, Vector vEnd)
 {
@@ -332,12 +332,12 @@ int CSWSAreaOfEffectObject::LineSegmentIntersectAreaOfEffect(
     }
     return 0;
 }
-// PC 0x00572990 GOG 0x00572AC0
+// PC 0x00572990 GOG 0x00572AC0 Xbox 0x00279240
 inline void CSWSCreature::AddToAreaOfEffectObjects(unsigned long oidObject)
 {
     m_lstAreaOfEffectObjects.Add(oidObject);
 }
-// PC 0x005729D0 GOG 0x00572B00
+// PC 0x005729D0 GOG 0x00572B00 Xbox 0x00279280
 void CSWSAreaOfEffectObject::SetTargetObjID(unsigned long oidTarget)
 {
     CGameObject* pObject;
@@ -365,7 +365,7 @@ void CSWSAreaOfEffectObject::SetTargetObjID(unsigned long oidTarget)
         pObject->AsSWSCreature()->AddToAreaOfEffectObjects(oidSelf);
     }
 }
-// PC 0x00573140 GOG 0x00573270
+// PC 0x00573140 GOG 0x00573270 Xbox 0x00279970
 void CSWSAreaOfEffectObject::AIUpdate()
 {
     unsigned __int64 nTimer;
@@ -450,7 +450,7 @@ void CSWSAreaOfEffectObject::AIUpdate()
 
     RunActions(nNowDay, nNowTime, nTimer);
 }
-// PC 0x00573360 GOG 0x00573490
+// PC 0x00573360 GOG 0x00573490 Xbox 0x00279B90
 void CSWSAreaOfEffectObject::AddToArea(CSWSArea* pArea, float fX, float fY,
                                       float fZ, int bLoadingGame)
 {
@@ -483,7 +483,7 @@ void CSWSAreaOfEffectObject::AddToArea(CSWSArea* pArea, float fX, float fY,
         UpdateSubAreas(NULL);
     }
 }
-// PC 0x00572A70 GOG 0x00572BA0
+// PC 0x00572A70 GOG 0x00572BA0 Xbox 0x00279320
 void CSWSAreaOfEffectObject::UpdateSubAreas(Vector* pvLastPosition)
 {
     if (GetArea() == NULL)
@@ -630,7 +630,7 @@ void CSWSAreaOfEffectObject::UpdateSubAreas(Vector* pvLastPosition)
         }
     }
 }
-// PC 0x00573700 GOG 0x00573830
+// PC 0x00573700 GOG 0x00573830 Xbox 0x00279F80
 void CSWSAreaOfEffectObject::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -644,7 +644,7 @@ void CSWSAreaOfEffectObject::RemoveFromArea()
     SetPosition(Vector(), 1, 1, 0);
     SetAnimation(0);
 }
-// PC 0x00573790 GOG 0x005738C0
+// PC 0x00573790 GOG 0x005738C0 Xbox 0x0027A000
 void CSWSAreaOfEffectObject::JumpToPoint(CSWSArea* pArea,
                                         const Vector& vPosition)
 {
@@ -664,7 +664,7 @@ void CSWSAreaOfEffectObject::JumpToPoint(CSWSArea* pArea,
         }
     }
 }
-// PC 0x00573800 GOG 0x00573930
+// PC 0x00573800 GOG 0x00573930 Xbox 0x0027A070
 CSWSAreaOfEffectObject::~CSWSAreaOfEffectObject()
 {
     CGameObject* pObject;
@@ -695,7 +695,7 @@ CSWSAreaOfEffectObject::~CSWSAreaOfEffectObject()
         pModule->RemoveObjectFromLookupTable(m_sTag, oidSelf);
     }
 }
-// PC 0x00573910 GOG 0x00573A40
+// PC 0x00573910 GOG 0x00573A40 Xbox 0x0027A140
 void CSWSAreaOfEffectObject::EventHandler(unsigned long nEventId,
                                           unsigned long oidCaller,
                                           void* pEventData,
@@ -733,7 +733,7 @@ void CSWSAreaOfEffectObject::EventHandler(unsigned long nEventId,
         }
     }
 }
-// PC 0x00572F90 GOG 0x005730C0
+// PC 0x00572F90 GOG 0x005730C0 Xbox 0x002797F0
 void CSWSAreaOfEffectObject::RemoveFromSubAreas(int bNotify)
 {
     CSWSArea* pArea = GetArea();
@@ -777,7 +777,7 @@ void CSWSAreaOfEffectObject::RemoveFromSubAreas(int bNotify)
         }
     }
 }
-// PC 0x005728C0 GOG 0x005729F0
+// PC 0x005728C0 GOG 0x005729F0 Xbox 0x00279150
 int CSWSAreaOfEffectObject::InAreaOfEffect(Vector vPosition)
 {
     Vector vOffset = vPosition - GetPosition();
@@ -807,7 +807,7 @@ int CSWSAreaOfEffectObject::InAreaOfEffect(Vector vPosition)
 
     return 0;
 }
-// PC 0x00571B50 GOG 0x00571C80
+// PC 0x00571B50 GOG 0x00571C80 Xbox 0x00278340
 Vector CSWSAreaOfEffectObject::GetPosition()
 {
     CGameObject* pObject;
@@ -824,7 +824,7 @@ Vector CSWSAreaOfEffectObject::GetPosition()
 
     return GetPosition();
 }
-// PC 0x00571BE0 GOG 0x00571D10
+// PC 0x00571BE0 GOG 0x00571D10 Xbox 0x002783D0
 void CSWSAreaOfEffectObject::SetDuration(unsigned char nDurationType,
                                          float fDuration)
 {

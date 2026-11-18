@@ -39,17 +39,17 @@ int enablebumpselection = 0;
 int bumpselection = 0;
 int bumplightscount = 0;
 float shadowfadespeed = 0.3f;
-// PC 0x004CF020 GOG 0x004CF160
+// PC 0x004CF020 GOG 0x004CF160 Xbox 0x00328830
 List<PartLight*>* LightManager::GetBumpMapLights()
 {
     return &m_lstBumpMapLights;
 }
-// PC 0x004CF030 GOG 0x004CF170
+// PC 0x004CF030 GOG 0x004CF170 Xbox 0x00328840
 List<PartLight*>* LightManager::GetLensFlareLights()
 {
     return &m_lstLensFlareLights;
 }
-// PC 0x004CF040 GOG 0x004CF180
+// PC 0x004CF040 GOG 0x004CF180 Xbox 0x00328850
 int lightcmp(const void* pFirst, const void* pSecond)
 {
     PartLight* pLight1 = (*(Part* const*)pFirst)->AsPartLight();
@@ -90,7 +90,7 @@ int lightcmp(const void* pFirst, const void* pSecond)
         return 1;
     return pLight2 < pLight1 ? 1 : -1;
 }
-// PC 0x004CF180 GOG 0x004CF2C0
+// PC 0x004CF180 GOG 0x004CF2C0 Xbox 0x00329920
 void SetLightGL(int nLight, const Vector& vPosition, const Vector& vColor,
                 const float& fRadius, const int& bAmbientOnly)
 {
@@ -117,7 +117,7 @@ void SetLightGL(int nLight, const Vector& vPosition, const Vector& vColor,
                          fClampedRadius * fClampedRadius);
     GLRender_SetLightProperties(nLight + 1, LIGHT_QUADRATIC_ATTENUATION, &fAttenuation);
 }
-// PC 0x004CF340 GOG 0x004CF480
+// PC 0x004CF340 GOG 0x004CF480 Xbox 0x00328980
 LightManager::~LightManager()
 {
 }
@@ -157,7 +157,7 @@ Vector LightManager::GetEmitterLighting(Vector vPosition,
         vLighting.m_fZ = 1.0f;
     return vLighting;
 }
-// PC 0x004CF590 GOG 0x004CF6D0
+// PC 0x004CF590 GOG 0x004CF6D0 Xbox 0x00328B40
 void LightManager::UpdateLights()
 {
     Quaternion qOrientation;
@@ -171,7 +171,7 @@ void LightManager::UpdateLights()
         }
     }
 }
-// PC 0x004CF5F0 GOG 0x004CF730
+// PC 0x004CF5F0 GOG 0x004CF730 Xbox 0x0032A170
 void LightManager::EnableHighestPriorityLights(int nMaxLights)
 {
     if (m_lstEnabledLights.m_nCount != 0)
@@ -203,7 +203,7 @@ void LightManager::EnableHighestPriorityLights(int nMaxLights)
             GLRender_DisableLight(j + 1);
     }
 }
-// PC 0x004CF6B0 GOG 0x004CF7F0
+// PC 0x004CF6B0 GOG 0x004CF7F0 Xbox 0x00328BB0
 void LightManager::PrioritizeLights(const Vector& vPosition, bool bDynamicOnly)
 {
     Vector vZero;
@@ -220,7 +220,7 @@ void LightManager::PrioritizeLights(const Vector& vPosition, bool bDynamicOnly)
     }
     PrioritizeIllumination(bDynamicOnly);
 }
-// PC 0x004CF770 GOG 0x004CF8B0
+// PC 0x004CF770 GOG 0x004CF8B0 Xbox 0x0032A740
 void LightManager::EnableHeadLight()
 {
     if (AURLIGHTMANAGER_DEBUG)
@@ -232,7 +232,7 @@ void LightManager::EnableHeadLight()
     GLRender_SetLightProperties(0, LIGHT_POSITION, Homogenize(CurrentCamera->m_vPosition, 1.0f));
     AurEnableHeadLight();
 }
-// PC 0x004CF810 GOG 0x004CF950
+// PC 0x004CF810 GOG 0x004CF950 Xbox 0x00328CA0
 void LightManager::EnableLights()
 {
     if (AURLIGHTMANAGER_DEBUG)
@@ -261,7 +261,7 @@ void LightManager::EnableLights()
         m_bDynamicOnly = 0;
     }
 }
-// PC 0x004CF870 GOG 0x004CF9B0
+// PC 0x004CF870 GOG 0x004CF9B0 Xbox 0x00328D00
 void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
                                                          int bWorldSpace)
 {
@@ -533,7 +533,7 @@ char* LightManager::SetupVertexProgramLights(char* sProgram, int nLights,
 #endif
     return sProgram;
 }
-// PC 0x004D0250 GOG 0x004D0390
+// PC 0x004D0250 GOG 0x004D0390 Xbox 0x00329450
 void LightManager::SetupLightsForThisPositionAndRadius(
     const Vector& vPosition, float fRadius, List<PartLight*>& lstLights)
 {
@@ -569,7 +569,7 @@ void LightManager::SetupLightsForThisPositionAndRadius(
 #endif
     }
 }
-// PC 0x004D0350 GOG 0x004D0490
+// PC 0x004D0350 GOG 0x004D0490 Xbox 0x00329540
 void LightManager::SetupLightsForThisPositionAndRadius(const Vector& vPosition,
                                                        float fRadius)
 {
@@ -602,7 +602,7 @@ void LightManager::SetupLightsForThisPositionAndRadius(const Vector& vPosition,
 #endif
     }
 }
-// PC 0x004D0410 GOG 0x004D0550
+// PC 0x004D0410 GOG 0x004D0550 Xbox 0x0032B3A0
 int LightManager::GetNearestLights(Scene* pScene, Vector vPosition,
                                     float fRadius, int bDynamicOnly)
 {
@@ -637,7 +637,7 @@ int LightManager::GetNearestLights(Scene* pScene, Vector vPosition,
         GLRender_DisableLight(j + 1);
     return nLights;
 }
-// PC 0x004D0550 GOG 0x004D0690
+// PC 0x004D0550 GOG 0x004D0690 Xbox 0x00329AD0
 LightManager::LightManager()
     : m_lstLights(0),
       m_lstShadowLights(0),
@@ -664,7 +664,7 @@ LightManager::LightManager()
     m_nStateA8 = 0;
     m_bBumpMapLightsDisabled = 0;
 }
-// PC 0x004D0690 GOG 0x004D07D0
+// PC 0x004D0690 GOG 0x004D07D0 Xbox 0x00329BF0
 void LightManager::AddLight(PartLight* pLight)
 {
     if (!m_lstLights.Contains(pLight))
@@ -679,7 +679,7 @@ void LightManager::AddLight(PartLight* pLight)
             m_lstShadowLights.Add(pLight);
     }
 }
-// PC 0x004D0780 GOG 0x004D08C0
+// PC 0x004D0780 GOG 0x004D08C0 Xbox 0x00329CE0
 void LightManager::RemoveLight(PartLight* pLight, bool bAll)
 {
     if (m_lstLights.Contains(pLight))
@@ -711,13 +711,13 @@ void LightManager::RemoveLight(PartLight* pLight, bool bAll)
             m_lstShadowCastersBump.Remove(pLight);
     }
 }
-// PC 0x004D0940 GOG 0x004D0A80
+// PC 0x004D0940 GOG 0x004D0A80 Xbox 0x00329EA0
 void LightManager::AddRenderLight(PartLight* pLight)
 {
     if (!m_lstRenderLights.Contains(pLight))
         m_lstRenderLights.Add(pLight);
 }
-// PC 0x004D0990 GOG 0x004D0AD0
+// PC 0x004D0990 GOG 0x004D0AD0 Xbox 0x00329EF0
 void LightManager::PrioritizeIllumination(bool bDynamicOnly)
 {
     m_lstEnabledLights.m_nCount = 0;
@@ -747,7 +747,7 @@ void LightManager::PrioritizeIllumination(bool bDynamicOnly)
         }
     }
 }
-// PC 0x004D0AD0 GOG 0x004D0C10
+// PC 0x004D0AD0 GOG 0x004D0C10 Xbox 0x0032A040
 void LightManager::PrioritizeShadow()
 {
     m_lstPrioritizedLights.m_nCount = 0;
@@ -766,7 +766,7 @@ void LightManager::PrioritizeShadow()
     qsort(m_lstPrioritizedLights.m_pList, m_lstPrioritizedLights.m_nCount,
           sizeof(PartLight*), lightcmp);
 }
-// PC 0x004D0B80 GOG 0x004D0CC0
+// PC 0x004D0B80 GOG 0x004D0CC0 Xbox 0x0032A0E0
 void LightManager::PrioritizeBump()
 {
     m_lstBumpMapLights.m_nCount = 0;
@@ -786,7 +786,7 @@ void LightManager::PrioritizeBump()
         m_lstBumpMapLights.m_nCount = 1;
     }
 }
-// PC 0x004D0C10 GOG 0x004D0D50
+// PC 0x004D0C10 GOG 0x004D0D50 Xbox 0x0032A220
 void LightManager::EnableHighestPriorityLightsFade(
     int nMaxLights, CAurObjectLightContainer* pContainer)
 {
@@ -930,7 +930,7 @@ ShadowFadeDone:
         GLRender_DisableLight(i + 1);
     m_lstEnabledLights = lstLights;
 }
-// PC 0x004D1120 GOG 0x004D1260
+// PC 0x004D1120 GOG 0x004D1260 Xbox 0x0032A7D0
 void LightManager::EnableLightsDynamicOnly()
 {
     if (enablegetnearestlights == 0)
@@ -952,7 +952,7 @@ void LightManager::EnableLightsDynamicOnly()
         m_bDynamicOnly = 1;
     }
 }
-// PC 0x004D1220 GOG 0x004D1360
+// PC 0x004D1220 GOG 0x004D1360 Xbox 0x0032A8A0
 void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
                                      List<PartLight*>& lstFadeOut,
                                      List<PartLight*>& lstLights,
@@ -1098,7 +1098,7 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
         GLRender_DisableLight(j + 1);
     lstFadeOut = lstLights;
 }
-// PC 0x004D17B0 GOG 0x004D18F0
+// PC 0x004D17B0 GOG 0x004D18F0 Xbox 0x0032AE60
 List<PartLight*>* LightManager::GetShadowLights(int nType)
 {
     m_lstShadowCasters.m_nCount = 0;
@@ -1183,7 +1183,7 @@ List<PartLight*>* LightManager::GetShadowLights(int nType)
     }
     return &m_lstShadowCasters;
 }
-// PC 0x004D1BB0 GOG 0x004D1CF0
+// PC 0x004D1BB0 GOG 0x004D1CF0 Xbox 0x0032B240
 int LightManager::DisableThisLight(PartLight* pLight)
 {
     List<PartLight*> lstLights;
@@ -1201,7 +1201,7 @@ int LightManager::DisableThisLight(PartLight* pLight)
 #endif
     return 1;
 }
-// PC 0x004D1C90 GOG 0x004D1DD0
+// PC 0x004D1C90 GOG 0x004D1DD0 Xbox 0x0032B2F0
 int LightManager::EnableThisLight(PartLight* pLight)
 {
     List<PartLight*> lstLights;
@@ -1214,7 +1214,7 @@ int LightManager::EnableThisLight(PartLight* pLight)
     GLRender_EnableLight(lstLights.IndexOf(pLight) + 1);
     return 1;
 }
-// PC 0x004D1D70 GOG 0x004D1EB0
+// PC 0x004D1D70 GOG 0x004D1EB0 Xbox 0x0032B500
 void LightManager::DisableBumpMapLights()
 {
 #ifdef _XBOX
@@ -1230,7 +1230,7 @@ void LightManager::DisableBumpMapLights()
         cm_bLightManagerUpdated = 1;
     }
 }
-// PC 0x004D1E00 GOG 0x004D1F40
+// PC 0x004D1E00 GOG 0x004D1F40 Xbox 0x0032B560
 void LightManager::EnableBumpMapLights()
 {
 #ifdef _XBOX
@@ -1415,7 +1415,7 @@ char* setmaxlights(char* sArguments)
     return "Success";
 }
 #endif
-// PC 0x004CF530 GOG 0x004CF670
+// PC 0x004CF530 GOG 0x004CF670 Xbox 0x00328AE0
 inline void LightManager::Reset()
 
 {

@@ -30,7 +30,7 @@ class CAurCamera;
 class CSWMGPhysicsState
 {
 public:
-    CSWMGPhysicsState(const Vector& vValue = Vector(),  // PC 0x00617660 GOG 0x00617710
+    CSWMGPhysicsState(const Vector& vValue = Vector(),  // PC 0x00617660 GOG 0x00617710 Xbox 0x0008EA00
                       const Vector& vRate = Vector())
     {
         m_vValue = vValue;
@@ -55,61 +55,61 @@ public:
     static const int SWDRIVE_DOWN;
     CSWPlayerControl();
     CSWPlayerControl(unsigned long oidPlayer, CAurCamera* pCamera);
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void UpDown(float fValue)
     {
     }
-    // PC 0x006CEEE0 GOG 0x006CEBE0
+    // PC 0x006CEEE0 GOG 0x006CEBE0 Xbox 0x0008F140
     virtual float GetUpDown()
     {
         return 0.0f;
     }
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void LeftRight(float fValue)
     {
     }
-    // PC 0x006CEEE0 GOG 0x006CEBE0
+    // PC 0x006CEEE0 GOG 0x006CEBE0 Xbox 0x0008F140
     virtual float GetLeftRight()
     {
         return 0.0f;
     }
 
-    virtual void SetPlayerWalking(int bWalking)  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void SetPlayerWalking(int bWalking)  // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     {
     }
-    // PC 0x004065A0 GOG 0x00406570
+    // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     virtual int GetPlayerWalking()
     {
         return 0;
     }
-    // PC 0x004015A0 GOG 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     virtual void RunKey()
     {
     }
-    // PC 0x006CEEE0 GOG 0x006CEBE0
+    // PC 0x006CEEE0 GOG 0x006CEBE0 Xbox 0x0008F140
     virtual float GetCurSpeed()
     {
         return 0.0f;
     }
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void MouseLeftRight(float fValue)
     {
     }
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void MouseUpDown(float fValue)
     {
     }
-    // PC 0x006955A0 GOG 0x00695350
+    // PC 0x006955A0 GOG 0x00695350 Xbox 0x0031ADD0
     virtual int Control(float fTimeStep)
     {
         return 0;
     }
-    // PC 0x004015A0 GOG 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     virtual void ResetDriveAcceleration()
     {
     }
 
-    CSWCCreature* GetPlayer()
+    CSWCCreature* GetPlayer()  // Xbox 0x0008ED90
     {
         return g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(
             m_oidPlayer);
@@ -133,32 +133,32 @@ public:
     void SetMaxSpeed(float fSpeed);
     void SetAcceleration(float fAcceleration);
     void SetTurnVelocity(float fVelocity);
-    // PC 0x006CEEF0 GOG 0x006CEBF0
+    // PC 0x006CEEF0 GOG 0x006CEBF0 Xbox 0x0008F150
     virtual void UpDown(float fValue)
     {
         m_fUpDown = fValue;
     }
-    virtual float GetUpDown()  // PC 0x006CEF00 GOG 0x006CEC00
+    virtual float GetUpDown()  // PC 0x006CEF00 GOG 0x006CEC00 Xbox 0x0008F160
     {
         return m_fUpDown;
     }
-    virtual void LeftRight(float fValue)  // PC 0x006CEF10 GOG 0x006CEC10
+    virtual void LeftRight(float fValue)  // PC 0x006CEF10 GOG 0x006CEC10 Xbox 0x0008F170
     {
         m_fLeftRight = fValue;
     }
-    virtual float GetLeftRight()  // PC 0x006CEF20 GOG 0x006CEC20
+    virtual float GetLeftRight()  // PC 0x006CEF20 GOG 0x006CEC20 Xbox 0x0008F180
     {
         return m_fLeftRight;
     }
-    virtual void SetPlayerWalking(int bWalking)  // PC 0x006CEF30 GOG 0x006CEC30
+    virtual void SetPlayerWalking(int bWalking)  // PC 0x006CEF30 GOG 0x006CEC30 Xbox 0x0008F190
     {
         m_bPlayerWalking = bWalking;
     }
-    virtual int GetPlayerWalking()  // PC 0x00406600 GOG 0x004065D0
+    virtual int GetPlayerWalking()  // PC 0x00406600 GOG 0x004065D0 Xbox 0x0015DF20
     {
         return m_bPlayerWalking;
     }
-    virtual float GetCurSpeed()  // PC 0x006CEF40 GOG 0x006CEC40
+    virtual float GetCurSpeed()  // PC 0x006CEF40 GOG 0x006CEC40 Xbox 0x0008F1A0
     {
         float fForward = (float)fabs(m_stateB.m_vValue.m_fX);
         float fSideways = (float)fabs(m_stateB.m_vValue.m_fY);

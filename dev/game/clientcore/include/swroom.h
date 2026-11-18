@@ -17,7 +17,7 @@ public:
                              int* panEnvAudio, float* pafEnvAudioVolume);
     void SetNoWalkMesh(int bNoWalkMesh);
     int GetNoWalkMesh();
-    CResRef GetResRef() { return m_cResRef; }
+    CResRef GetResRef() { return m_cResRef; }  // Xbox 0x001A8640
 
     Vector m_vPosition;
     Quaternion m_qOrientation;

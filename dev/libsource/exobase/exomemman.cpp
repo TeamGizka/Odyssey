@@ -18,7 +18,7 @@ static char s_szHeapWalkLine[EXOMEMMAN_WALK_LINE_LENGTH];
 CExoMemHeap* CExoMemHeap::m_lHeapsStart;
 
 // Dead code: not in the PC executable
-CExoMemMan* GetMemMan()
+CExoMemMan* GetMemMan()  // Xbox 0x002A0F80
 {
     static CExoMemMan cMemMan;
     return &cMemMan;

@@ -43,7 +43,7 @@
 
 int g_nCombatAttackRoll = 0;
 int g_bDisableDamage = 0;
-// PC 0x00603280 GOG 0x00603260
+// PC 0x00603280 GOG 0x00603260 Xbox 0x00204AC0
 inline void CSWSCombatRound::SetCurrentCombatRoundAction(CSWSCombatRoundAction* pAction)
 {
     m_pCurrentAction = pAction;
@@ -52,7 +52,7 @@ inline void CSWSCombatRound::SetCurrentCombatRoundAction(CSWSCombatRoundAction* 
         m_nCurrentRoundActionType = pAction->m_nActionType;
     }
 }
-// PC 0x006032A0 GOG 0x00603280
+// PC 0x006032A0 GOG 0x00603280 Xbox 0x00204AE0
 int CSWSCreature::IsCreature()
 {
     int bCreature = 0;
@@ -72,7 +72,7 @@ int CSWSCreature::IsCreature()
 
     return bCreature;
 }
-// PC 0x00603360 GOG 0x00603340
+// PC 0x00603360 GOG 0x00603340 Xbox 0x00204B60
 int CSWSCreature::IsDebilitated(int bCheckMeditation)
 {
     int bDebilitated = 0;
@@ -92,7 +92,7 @@ int CSWSCreature::IsDebilitated(int bCheckMeditation)
 
     return bDebilitated;
 }
-// PC 0x006033C0 GOG 0x006033A0
+// PC 0x006033C0 GOG 0x006033A0 Xbox 0x00204BC0
 int CSWSCreature::IsInTotalDefense()
 {
     CSWSCombatRound* pCombatRound = m_pcCombatRound;
@@ -103,7 +103,7 @@ int CSWSCreature::IsInTotalDefense()
     }
     return 0;
 }
-// PC 0x006033F0 GOG 0x006033D0
+// PC 0x006033F0 GOG 0x006033D0 Xbox 0x00204BF0
 void CSWSCreature::CancelAllCombatModes(int)
 {
     SetLockOrientationToObject(OBJECT_INVALID, 0);
@@ -111,7 +111,7 @@ void CSWSCreature::CancelAllCombatModes(int)
     SetCombatMode(0, 1);
     m_pcCombatRound->ClearAllSpecialAttacks();
 }
-// PC 0x00603430 GOG 0x00603410
+// PC 0x00603430 GOG 0x00603410 Xbox 0x00204C30
 int CSWSCreature::HasTargetBeenDetected(unsigned long oidTarget,
                                         int bCheckHidden)
 {
@@ -137,7 +137,7 @@ int CSWSCreature::HasTargetBeenDetected(unsigned long oidTarget,
     }
     return bDetected;
 }
-// PC 0x006034B0 GOG 0x00603490
+// PC 0x006034B0 GOG 0x00603490 Xbox 0x00204CB0
 void CSWSCreature::InitializeNewAttackTarget(unsigned long oidTarget,
                                              CSWSObjectActionNode* pAction)
 {
@@ -152,7 +152,7 @@ void CSWSCreature::InitializeNewAttackTarget(unsigned long oidTarget,
     m_pcCombatRound->UpdateAttackTargetForAllActions(oidTarget);
     m_bNewAttackTarget = 1;
 }
-// PC 0x00603500 GOG 0x006034E0
+// PC 0x00603500 GOG 0x006034E0 Xbox 0x00204D00
 void CSWSCreature::ResolveSafeProjectile(int nAttack, int nProjectileType,
                                          int bUseAttackResult,
                                          int nWeaponHand)
@@ -203,7 +203,7 @@ void CSWSCreature::ResolveSafeProjectile(int nAttack, int nProjectileType,
                                 pAttack->m_nMissedBy);
     }
 }
-// PC 0x00606E40 GOG 0x00606E20
+// PC 0x00606E40 GOG 0x00606E20 Xbox 0x00208490
 void CSWSCreature::ClearAttackerList()
 {
     if (m_pAttackerList != NULL)
@@ -213,7 +213,7 @@ void CSWSCreature::ClearAttackerList()
         m_nNextAttacker = 0;
     }
 }
-// PC 0x00606E80 GOG 0x00606E60
+// PC 0x00606E80 GOG 0x00606E60 Xbox 0x002084D0
 void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
 {
     CSWSCombatAttackData* pAttack =
@@ -374,7 +374,7 @@ void CSWSCreature::SignalDamage(int bRanged, unsigned long oidTarget)
         SignalMeleeDamage(oidTarget, 1);
     }
 }
-// PC 0x006077B0 GOG 0x00607790
+// PC 0x006077B0 GOG 0x00607790 Xbox 0x00208D60
 void CSWSCreature::ResolveSneakAttack(CSWSCreature* pTarget)
 {
     if (pTarget == NULL)
@@ -441,7 +441,7 @@ void CSWSCreature::ResolveSneakAttack(CSWSCreature* pTarget)
         }
     }
 }
-// PC 0x00607AD0 GOG 0x00607AB0
+// PC 0x00607AD0 GOG 0x00607AB0 Xbox 0x00209060
 void CSWSCreature::ResolvePostMeleeDamage(CSWSObject* pTarget)
 {
     if (pTarget != NULL)
@@ -474,7 +474,7 @@ void CSWSCreature::ResolvePostMeleeDamage(CSWSObject* pTarget)
         }
     }
 }
-// PC 0x00607BF0 GOG 0x00607BD0
+// PC 0x00607BF0 GOG 0x00607BD0 Xbox 0x00209140
 void CSWSCreature::ResolvePostRangedDamage(CSWSObject* pTarget)
 {
     if (pTarget != NULL)
@@ -549,7 +549,7 @@ enum
     FEAT_DEFLECTION_PENALTY_4 = 243,
     FEAT_DEFLECTION_PENALTY_5 = 244
 };
-// PC 0x00607E20 GOG 0x00607E00
+// PC 0x00607E20 GOG 0x00607E00 Xbox 0x00209330
 int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack)
 {
     int bResult = 0;
@@ -714,7 +714,7 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
     return bResult;
 }
 
-// PC 0x00608220 GOG 0x00608200
+// PC 0x00608220 GOG 0x00608200 Xbox 0x00209730
 int CSWSCreature::ResolveRangedMissToParry(CSWSObject* pTarget, int bCheckWeapon,
                                            int nWeaponHand)
 {
@@ -737,7 +737,7 @@ int CSWSCreature::ResolveRangedMissToParry(CSWSObject* pTarget, int bCheckWeapon
     }
     return bParried;
 }
-// PC 0x00608280 GOG 0x00608260
+// PC 0x00608280 GOG 0x00608260 Xbox 0x00209790
 void CSWSCreature::ResolveOnHitVisuals(CSWSObject* pTarget)
 {
     CSWSCombatAttackData* pAttack =
@@ -814,7 +814,7 @@ inline unsigned char GetSimpleAlignmentGoodEvil(CSWSCreatureStats* pStats)
     }
     return CSWSCreatureStats::ALIGNMENT_NEUTRAL;
 }
-// PC 0x006084F0 GOG 0x006084D0
+// PC 0x006084F0 GOG 0x006084D0 Xbox 0x002099D0
 unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned short nDC,
                                             unsigned char nSaveVersusType,
                                             unsigned long oidSaveVersus,
@@ -1054,7 +1054,7 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
     }
     return SAVING_THROW_RESULT_FAILED;
 }
-// PC 0x00608A10 GOG 0x006089F0
+// PC 0x00608A10 GOG 0x006089F0 Xbox 0x00209E70
 void CSWSCreature::ApplyOnHitConfusion(CSWSObject* pObject, int nDuration)
 {
     CGameEffect* pEffect =
@@ -1099,7 +1099,7 @@ void CSWSCreature::ApplyOnHitConfusion(CSWSObject* pObject, int nDuration)
         }
     }
 }
-// PC 0x00608B10 GOG 0x00608AF0
+// PC 0x00608B10 GOG 0x00608AF0 Xbox 0x00209F70
 void CSWSCreature::ApplyOnHitFear(CSWSObject* pObject, int nDuration)
 {
     CGameEffect* pEffect =
@@ -1144,7 +1144,7 @@ void CSWSCreature::ApplyOnHitFear(CSWSObject* pObject, int nDuration)
         }
     }
 }
-// PC 0x00608C10 GOG 0x00608BF0
+// PC 0x00608C10 GOG 0x00608BF0 Xbox 0x0020A070
 void CSWSCreature::ApplyOnHitHold(CSWSObject* pObject, int nDuration)
 {
     CGameEffect* pEffect =
@@ -1200,7 +1200,7 @@ void CSWSCreature::ApplyOnHitHold(CSWSObject* pObject, int nDuration)
         }
     }
 }
-// PC 0x00608D20 GOG 0x00608D00
+// PC 0x00608D20 GOG 0x00608D00 Xbox 0x0020A190
 void CSWSCreature::ApplyOnHitSleep(CSWSObject* pObject, int nDuration)
 {
     CGameEffect* pEffect = new CGameEffect(1);
@@ -1259,7 +1259,7 @@ void CSWSCreature::ApplyOnHitSleep(CSWSObject* pObject, int nDuration)
         }
     }
 }
-// PC 0x00608F20 GOG 0x00608F00
+// PC 0x00608F20 GOG 0x00608F00 Xbox 0x0020A340
 void CSWSCreature::ApplyOnHitSlow(CSWSObject* pObject, int nDuration)
 {
     CGameEffect* pEffect = new CGameEffect(1);
@@ -1304,7 +1304,7 @@ void CSWSCreature::ApplyOnHitSlow(CSWSObject* pObject, int nDuration)
         }
     }
 }
-// PC 0x006090E0 GOG 0x006090C0
+// PC 0x006090E0 GOG 0x006090C0 Xbox 0x0020A4B0
 void CSWSCreature::ApplyOnHitStun(CSWSObject* pObject, int nDuration)
 {
     CGameEffect* pEffect =
@@ -1349,7 +1349,7 @@ void CSWSCreature::ApplyOnHitStun(CSWSObject* pObject, int nDuration)
         }
     }
 }
-// PC 0x006091E0 GOG 0x006091C0
+// PC 0x006091E0 GOG 0x006091C0 Xbox 0x0020A5B0
 void CSWSCreature::ApplyOnHitAbilityDamage(CSWSObject* pObject,
                                            CSWItemProperty* pItemProperty)
 {
@@ -1416,7 +1416,7 @@ void CSWSCreature::ApplyOnHitAbilityDamage(CSWSObject* pObject,
         }
     }
 }
-// PC 0x00609470 GOG 0x00609450
+// PC 0x00609470 GOG 0x00609450 Xbox 0x0020A7F0
 void CSWSCreature::ApplyOnHitPoison(CSWSObject* pObject,
                                     CSWItemProperty* pItemProperty)
 {
@@ -1439,7 +1439,7 @@ void CSWSCreature::ApplyOnHitPoison(CSWSObject* pObject,
         pAttack->m_lstEffects.Add(pEffect);
     }
 }
-// PC 0x00609510 GOG 0x006094F0
+// PC 0x00609510 GOG 0x006094F0 Xbox 0x0020A890
 void CSWSCreature::ApplyOnHitSlayRacialGroup(CSWSObject* pObject,
                                              CSWItemProperty* pItemProperty)
 {
@@ -1479,7 +1479,7 @@ void CSWSCreature::ApplyOnHitSlayRacialGroup(CSWSObject* pObject,
         }
     }
 }
-void CSWSCreature::ApplyOnHitInstantDeath(CSWSObject* pObject,  // PC 0x006096A0 GOG 0x00609680
+void CSWSCreature::ApplyOnHitInstantDeath(CSWSObject* pObject,  // PC 0x006096A0 GOG 0x00609680 Xbox 0x0020A9D0
                                           CSWItemProperty* pItemProperty)
 {
     CGameEffect* pDeathEffect = new CGameEffect(1);
@@ -1499,7 +1499,7 @@ void CSWSCreature::ApplyOnHitInstantDeath(CSWSObject* pObject,  // PC 0x006096A0
         pAttack->m_lstEffects.Add(pDeathEffect);
     }
 }
-// PC 0x006097A0 GOG 0x00609780
+// PC 0x006097A0 GOG 0x00609780 Xbox 0x0020AA90
 void CSWSCreature::ApplyOnHitKnockdown(CSWSObject* pObject,
                                        CSWItemProperty* pItemProperty)
 {
@@ -1524,7 +1524,7 @@ void CSWSCreature::ApplyOnHitKnockdown(CSWSObject* pObject,
 inline void CSWSCreature::ResolveSituationalModifiers(CSWSCreature* pTarget)
 {
 }
-// PC 0x006098A0 GOG 0x00609880
+// PC 0x006098A0 GOG 0x00609880 Xbox 0x0020AB60
 unsigned long CSWSCreature::GetFirstAttacker()
 {
     CSWSArea* pArea = GetArea();
@@ -1565,7 +1565,7 @@ enum
     RANGED_ASSASSINATE_CHANCE = 20,
     RANGED_ASSASSINATE_BASE_DC = 10
 };
-// PC 0x006099E0 GOG 0x006099C0
+// PC 0x006099E0 GOG 0x006099C0 Xbox 0x0020AC60
 void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                                             int bUseAttackResult)
 {
@@ -1778,7 +1778,7 @@ enum
     VISUAL_EFFECT_SHIELD_BREAKER = 8001,
     ATTACK_KILL_COUNT_LIMIT = 6
 };
-// PC 0x0060A060 GOG 0x0060A040
+// PC 0x0060A060 GOG 0x0060A040 Xbox 0x0020B290
 void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                                            CSWSObject* pTarget, int nImpactTime,
                                            int* pbStateApplied)
@@ -2036,7 +2036,7 @@ enum
     FORM_SABER_VII_JUYO = 264,
     FORM_SABER_VII_JUYO_CRITICAL_BONUS = 4
 };
-// PC 0x0060A9F0 GOG 0x0060A9D0
+// PC 0x0060A9F0 GOG 0x0060A9D0 Xbox 0x0020BB60
 void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
                                    int nAttackResult)
 {
@@ -2165,7 +2165,7 @@ void CSWSCreature::ResolveAttackRoll(CSWSObject* pTarget, int bUseAttackResult,
         }
     }
 }
-// PC 0x0060AD50 GOG 0x0060AD30
+// PC 0x0060AD50 GOG 0x0060AD30 Xbox 0x0020BEB0
 void CSWSCreature::ResolveOnHitEffect(CSWSObject* pTarget, int bOffHand,
                                      int bCritical)
 {
@@ -2345,7 +2345,7 @@ void CSWSCreature::ResolveOnHitEffect(CSWSObject* pTarget, int bOffHand,
         }
     }
 }
-// PC 0x0060B1F0 GOG 0x0060B1D0
+// PC 0x0060B1F0 GOG 0x0060B1D0 Xbox 0x0020C320
 void CSWSCreature::ResolveDamage(CSWSObject* pTarget, int bUseDamage, int nDamage)
 {
     CSWSCombatAttackData* pAttack =
@@ -2387,7 +2387,7 @@ void CSWSCreature::ResolveDamage(CSWSObject* pTarget, int bUseDamage, int nDamag
     pAttack->SetBaseDamage(nDamageRoll);
     pAttack->SetDamage(GetDamageFlags(), nDamageRoll);
 }
-// PC 0x0060B340 GOG 0x0060B320
+// PC 0x0060B340 GOG 0x0060B320 Xbox 0x0020C470
 void CSWSCreature::ResolveRangedAttack(CSWSObject* pTarget, int nAttacks,
                                        int nAnimation, int bUseAttackResult,
                                        int nAttackResult, int nAttackRollResult,
@@ -2496,7 +2496,7 @@ int CSWSCreature::GetClientMeleeAnimation(unsigned long oidTarget, unsigned shor
     return g_pAppManager->GetClientExoApp()->GetClientMeleeAnimation(
         GetId(), oidTarget, nAnimation, nAttackType, bUseAttackResult, nAttackResult);
 }
-// PC 0x0060B660 GOG 0x0060B640
+// PC 0x0060B660 GOG 0x0060B640 Xbox 0x0020C790
 void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
                                       int nAnimation, int bUseAttackResult,
                                       int nAttackResult, int nAttackRollResult,
@@ -2601,7 +2601,7 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
         pAttack->m_nForcedAttackResult = nAttackResult;
     }
 }
-// PC 0x0060BA40 GOG 0x0060BA20
+// PC 0x0060BA40 GOG 0x0060BA20 Xbox 0x0020CB90
 void CSWSCreature::ResolveAttack(unsigned long oidTarget, int nAttacks, int nAnimation,
                                  int bUseAttackResult, int nAttackResult, int nAttackRollResult, int nDamage)
 {
@@ -2650,7 +2650,7 @@ void CSWSCreature::ResolveAttack(unsigned long oidTarget, int nAttacks, int nAni
         }
     }
 }
-// PC 0x0060BBB0 GOG 0x0060BB90
+// PC 0x0060BBB0 GOG 0x0060BB90 Xbox 0x0020CD00
 int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
 {
     Vector vTarget;
@@ -3084,7 +3084,7 @@ AttackFailed:
 Done:
     return ACTION_COMPLETE;
 }
-// PC 0x00604E00 GOG 0x00604DE0
+// PC 0x00604E00 GOG 0x00604DE0 Xbox 0x002064D0
 int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
 {
     int bRoundPaused = GetCombatRound()->m_bRoundPaused;
@@ -3297,7 +3297,7 @@ MoveToPoint:
         return ACTION_COMPLETE;
     return ACTION_IN_PROGRESS;
 }
-// PC 0x006055B0 GOG 0x00605590
+// PC 0x006055B0 GOG 0x00605590 Xbox 0x00206C80
 void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
                                          int bCheckCleaveRange,
                                          unsigned long oidKilledCreature)
@@ -3429,7 +3429,7 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
         }
     }
 }
-// PC 0x006058B0 GOG 0x00605890
+// PC 0x006058B0 GOG 0x00605890 Xbox 0x00206FD0
 void CSWSCreature::ResolveRangedAnimations(CSWSObject* pTarget,
                                          int nAnimationLength,
                                          int bForceReaction)
@@ -3504,7 +3504,7 @@ void CSWSCreature::ResolveRangedAnimations(CSWSObject* pTarget,
         }
     }
 }
-// PC 0x00605A70 GOG 0x00605A50
+// PC 0x00605A70 GOG 0x00605A50 Xbox 0x00207190
 void CSWSCreature::ResolveRangedHit(CSWSObject* pTarget)
 {
     if (pTarget != NULL)
@@ -3533,7 +3533,7 @@ void CSWSCreature::ResolveRangedHit(CSWSObject* pTarget)
             (unsigned short)(magnitude(vDelta) * 23.809525f);
     }
 }
-// PC 0x00605B50 GOG 0x00605B30
+// PC 0x00605B50 GOG 0x00605B30 Xbox 0x00207280
 void CSWSCreature::ResolveRangedMiss(CSWSObject* pTarget)
 {
     if (pTarget != NULL)
@@ -3547,7 +3547,7 @@ void CSWSCreature::ResolveRangedMiss(CSWSObject* pTarget)
                 pAttack->m_vRangedTarget, 0);
     }
 }
-// PC 0x006035E0 GOG 0x006035C0
+// PC 0x006035E0 GOG 0x006035C0 Xbox 0x00204DE0
 Vector CSWSCreature::ResolveProjectileMissLocation(CSWSObject* pTarget)
 {
     Vector vHit;
@@ -3603,7 +3603,7 @@ Vector CSWSCreature::ResolveProjectileMissLocation(CSWSObject* pTarget)
     }
     return vHit;
 }
-// PC 0x00603960 GOG 0x00603940
+// PC 0x00603960 GOG 0x00603940 Xbox 0x00205220
 int CSWSCreature::ResolveProjectileMissImpact(const Vector& vImpact, int nDelay)
 {
     CGameEffect* pEffect = new CGameEffect(1);
@@ -3646,7 +3646,7 @@ int CSWSCreature::GetWeaponImpactTime(int nWeapon, int nImpact)
     pTable->GetINTEntry(sColumn, nImpact + 1, &nTime);
     return nTime;
 }
-// PC 0x00603AF0 GOG 0x00603AD0
+// PC 0x00603AF0 GOG 0x00603AD0 Xbox 0x002052F0
 CExoString CSWSCreature::GetWeaponDischargeRow(int nWeapon)
 {
     CExoString sRow(nWeapon);
@@ -3689,7 +3689,7 @@ CExoString CSWSCreature::GetWeaponDischargeRow(int nWeapon)
 
     return sRow;
 }
-// PC 0x00603D70 GOG 0x00603D50
+// PC 0x00603D70 GOG 0x00603D50 Xbox 0x002054E0
 int CSWSCreature::GetWeaponDischargeShots(int nWeapon)
 {
     CExoString sRow = GetWeaponDischargeRow(nWeapon);
@@ -3704,7 +3704,7 @@ int CSWSCreature::GetWeaponDischargeShots(int nWeapon)
     }
     return nShots;
 }
-// PC 0x00603E20 GOG 0x00603E00
+// PC 0x00603E20 GOG 0x00603E00 Xbox 0x00205560
 int CSWSCreature::GetWeaponHitShots(int nWeapon)
 {
     CExoString sRow = GetWeaponDischargeRow(nWeapon);
@@ -3719,7 +3719,7 @@ int CSWSCreature::GetWeaponHitShots(int nWeapon)
     }
     return nShots;
 }
-// PC 0x00603ED0 GOG 0x00603EB0
+// PC 0x00603ED0 GOG 0x00603EB0 Xbox 0x002055E0
 int CSWSCreature::GetWeaponDischargeTime(int nWeapon, int nDischarge)
 {
     CExoString sRow = GetWeaponDischargeRow(nWeapon);
@@ -3731,7 +3731,7 @@ int CSWSCreature::GetWeaponDischargeTime(int nWeapon, int nDischarge)
     pTable->GetINTEntry(sRow, nDischarge + 4, &nTime);
     return nTime;
 }
-// PC 0x00603F60 GOG 0x00603F40
+// PC 0x00603F60 GOG 0x00603F40 Xbox 0x00205650
 int CSWSCreature::GetWeaponDischargeHand(int nWeapon, int nDischarge)
 {
     CExoString sRow = GetWeaponDischargeRow(nWeapon);
@@ -3746,7 +3746,7 @@ int CSWSCreature::GetWeaponDischargeHand(int nWeapon, int nDischarge)
     }
     return sSwitchMask.SubString(nDischarge, 1).AsINT();
 }
-// PC 0x00605BF0 GOG 0x00605BD0
+// PC 0x00605BF0 GOG 0x00605BD0 Xbox 0x00207330
 void CSWSCreature::SignalRangedDamage(unsigned long oidTarget)
 {
     int nAttack = m_pcCombatRound->m_nCurrentAttack;
@@ -3859,7 +3859,7 @@ void CSWSCreature::SignalRangedDamage(unsigned long oidTarget)
     }
     ResolveSafeProjectile(nAttack, nTime, bHit, nWeaponHand);
 }
-// PC 0x006060C0 GOG 0x006060A0
+// PC 0x006060C0 GOG 0x006060A0 Xbox 0x002077A0
 inline int CSWSCreature::SetAttackResult(int nAttackResult)
 {
     int nResult = nAttackResult;
@@ -3897,7 +3897,7 @@ inline int CSWSCreature::SetAttackResult(int nAttackResult)
 
     return nResult;
 }
-// PC 0x00606130 GOG 0x00606110
+// PC 0x00606130 GOG 0x00606110 Xbox 0x00207810
 void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
                                           CSWSObject* pTarget,
                                           int nAnimationLength,
@@ -3978,7 +3978,7 @@ void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
         pAttack->m_nReactionAnimation = CSWSObject::ANIMATION_COMBAT_READY;
     }
 }
-// PC 0x00606310 GOG 0x006062F0
+// PC 0x00606310 GOG 0x006062F0 Xbox 0x002079F0
 void CSWSCreature::SignalMeleeDamage(unsigned long oidTarget, int nAttacks)
 {
     CServerAIMaster* pAIMaster =
@@ -4062,7 +4062,7 @@ void CSWSCreature::SignalMeleeDamage(unsigned long oidTarget, int nAttacks)
         nTime += pAttack->m_nReactionAnimationLength / 2;
     }
 }
-// PC 0x00604050 GOG 0x00604030
+// PC 0x00604050 GOG 0x00604030 Xbox 0x00205710
 int CSWSCreature::IsAttackSuccessful(int nAttackResult)
 {
     int bHit = 0;
@@ -4083,7 +4083,7 @@ int CSWSCreature::IsAttackSuccessful(int nAttackResult)
 
     return bHit;
 }
-// PC 0x00604080 GOG 0x00604060
+// PC 0x00604080 GOG 0x00604060 Xbox 0x00205740
 int CSWSCreature::IsAttackMiss(int nAttackResult)
 {
     int bMiss = 0;
@@ -4104,7 +4104,7 @@ int CSWSCreature::IsAttackMiss(int nAttackResult)
 
     return bMiss;
 }
-// PC 0x006040B0 GOG 0x00604090
+// PC 0x006040B0 GOG 0x00604090 Xbox 0x00205770
 int CSWSCreature::IsAttackParried(int nAttackResult)
 {
     int bParried = 0;
@@ -4125,7 +4125,7 @@ int CSWSCreature::IsAttackParried(int nAttackResult)
 
     return bParried;
 }
-// PC 0x006040E0 GOG 0x006040C0
+// PC 0x006040E0 GOG 0x006040C0 Xbox 0x002057A0
 int CSWSCreature::IsSpellCastingAnimation(unsigned short nAnimation)
 {
     if ((int)nAnimation == -1)
@@ -4166,14 +4166,14 @@ int CSWSCreature::IsSpellCastingAnimation(unsigned short nAnimation)
 
     return bSpellCastingAnimation;
 }
-// PC 0x00604140 GOG 0x00604120
+// PC 0x00604140 GOG 0x00604120 Xbox 0x00205800
 void CSWSCreature::SetCombatReactionTime(int nAttack, int nTime,
                                          int nReactionDelay)
 {
     m_pcCombatRound->GetAttack(nAttack)->m_nReactionAnimationLength = nTime;
     m_pcCombatRound->GetAttack(nAttack)->m_nReactionDelay = nReactionDelay;
 }
-// PC 0x00604180 GOG 0x00604160
+// PC 0x00604180 GOG 0x00604160 Xbox 0x00205840
 int CSWSCreature::CalculateMaxElementalDamage(CSWSObject* pObject, int)
 {
     if (pObject == NULL || pObject->m_bPlotObject != 0)
@@ -4186,7 +4186,7 @@ int CSWSCreature::CalculateMaxElementalDamage(CSWSObject* pObject, int)
     return GetTotalEffectBonus(2, pObject, nElementalDamage, 1, 1, 0, 0, 255,
                                255, 0);
 }
-// PC 0x00606620 GOG 0x00606600
+// PC 0x00606620 GOG 0x00606600 Xbox 0x00207CD0
 int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
                                        int bCheckShield, int& nShield,
                                        int& bCanReflect, int nWeaponHand)
@@ -4271,7 +4271,7 @@ int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
     }
     return bResult;
 }
-// PC 0x00606970 GOG 0x00606950
+// PC 0x00606970 GOG 0x00606950 Xbox 0x00208020
 int CSWSCreature::ResolveMoveToForceJump(CSWSObject* pTarget,
                                        unsigned short& nFeat)
 {
@@ -4315,7 +4315,7 @@ int CSWSCreature::ResolveMoveToForceJump(CSWSObject* pTarget,
     }
     return bResult;
 }
-// PC 0x00606B50 GOG 0x00606B30
+// PC 0x00606B50 GOG 0x00606B30 Xbox 0x00208200
 void CSWSCreature::ResolveDamageShields(CSWSCreature* pAttacker)
 {
     int nNumDice;
@@ -4391,7 +4391,7 @@ void CSWSCreature::ResolveDamageShields(CSWSCreature* pAttacker)
         }
     }
 }
-// PC 0x00606E10 GOG 0x00606DF0
+// PC 0x00606E10 GOG 0x00606DF0 Xbox 0x00208460
 unsigned long CSWSCreature::GetNextAttacker()
 {
     unsigned long oidAttacker = OBJECT_INVALID;
@@ -4409,7 +4409,7 @@ unsigned long CSWSCreature::GetNextAttacker()
 
     return oidAttacker;
 }
-// PC 0x006041D0 GOG 0x006041B0
+// PC 0x006041D0 GOG 0x006041B0 Xbox 0x00205890
 int CSWSCreature::IsLightsaberEquipped()
 {
     int bLightsaberEquipped = 0;
@@ -4429,7 +4429,7 @@ int CSWSCreature::IsLightsaberEquipped()
     }
     return bLightsaberEquipped;
 }
-// PC 0x00604220 GOG 0x00604200
+// PC 0x00604220 GOG 0x00604200 Xbox 0x002058E0
 void CSWSCreature::DoCombatStep(unsigned char nStep, int nTime,
                               unsigned long oidTarget)
 {
@@ -4717,7 +4717,7 @@ inline int CSWSCreature::CalculateProjectileTimeToTarget(const Vector& vTarget,
     }
     return (unsigned long)(fDistance / fSpeed * 1000.0f);
 }
-// PC 0x00604780 GOG 0x00604760
+// PC 0x00604780 GOG 0x00604760 Xbox 0x00205F60
 CGameEffect* CSWSCreature::CreateLinkedEffect(int nEffectType,
                                               int nEffectInteger,
                                               int nLinkedEffectType,
@@ -4756,7 +4756,7 @@ inline int CSWSCreature::GetClientRangedAnimation(int nAttackType, int nOption1,
     return g_pAppManager->GetClientExoApp()->GetClientRangedAnimation(
         GetId(), nAttackType, nOption1, nOption2);
 }
-// PC 0x006048E0 GOG 0x006048C0
+// PC 0x006048E0 GOG 0x006048C0 Xbox 0x00206040
 CGameEffect* CSWSCreature::CreateLinkedEffect(CGameEffect* pEffect,
                                               int nEffectType,
                                               int nEffectInteger)
@@ -4780,12 +4780,12 @@ CGameEffect* CSWSCreature::CreateLinkedEffect(CGameEffect* pEffect,
     pLinkEffect->SetLinked(pEffect, pRightEffect);
     return pLinkEffect;
 }
-// PC 0x006049D0 GOG 0x006049B0
+// PC 0x006049D0 GOG 0x006049B0 Xbox 0x000C4DE0
 void CSWSCreature::ApplyOnHitSlayAlignmentGroup(
     CSWSObject* pObject, CSWItemProperty* pItemProperty)
 {
 }
-// PC 0x006049E0 GOG 0x006049C0
+// PC 0x006049E0 GOG 0x006049C0 Xbox 0x002060E0
 void CSWSCreature::SendAttackSummaryFeedback(unsigned long oidTarget)
 {
     CSWSCombatRound* pCombatRound = m_pcCombatRound;
@@ -4847,7 +4847,7 @@ void CSWSCreature::SendAttackSummaryFeedback(unsigned long oidTarget)
 
     delete pMessage;
 }
-// PC 0x00604C30 GOG 0x00604C10
+// PC 0x00604C30 GOG 0x00604C10 Xbox 0x00206300
 void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long oidTarget)
 {
     CSWSCreature* pTarget =

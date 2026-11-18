@@ -41,7 +41,7 @@
 #define NWSDOOR_DEBUG 0
 
 extern int nRenderDoorBBox;
-// PC 0x0057F290 GOG 0x0057F310
+// PC 0x0057F290 GOG 0x0057F310 Xbox 0x00224D30
 int CSWSDoor::GetMeshOutline(Vector vPosition, Vector vOrientation, Vector& vFirst,
                              Vector& vSecond, Vector& vThird, Vector& vFourth)
 {
@@ -54,7 +54,7 @@ int CSWSDoor::GetMeshOutline(Vector vPosition, Vector vOrientation, Vector& vFir
     return m_apCollisionMesh[CSWDoorSurfaceMesh::DOOR_STATE_CLOSED]
         ->GetMeshOutline(vFirst, vSecond, vThird, vFourth);
 }
-// PC 0x0057F310 GOG 0x0057F390
+// PC 0x0057F310 GOG 0x0057F390 Xbox 0x00224DB0
 void CSWSDoor::AIUpdate()
 {
     unsigned __int64 nTimer;
@@ -91,7 +91,7 @@ void CSWSDoor::AIUpdate()
     UpdateEffectList(nNowDay, nNowTime);
     RunActions(nNowDay, nNowTime, nTimer);
 }
-// PC 0x0057F480 GOG 0x0057F500
+// PC 0x0057F480 GOG 0x0057F500 Xbox 0x00224EF0
 int CSWSDoor::GetDead()
 {
     if (m_bPlotObject != 0)
@@ -103,7 +103,7 @@ int CSWSDoor::GetDead()
         return CSWSObject::GetDead();
     }
 }
-// PC 0x0057F4A0 GOG 0x0057F520
+// PC 0x0057F4A0 GOG 0x0057F520 Xbox 0x00224F10
 unsigned char CSWSDoor::GetOpenLockDC()
 {
     unsigned char nDC = 0;
@@ -166,7 +166,7 @@ unsigned char CSWSDoor::GetOpenLockDC()
     }
     return nDC;
 }
-// PC 0x0057F590 GOG 0x0057F610
+// PC 0x0057F590 GOG 0x0057F610 Xbox 0x00224FF0
 unsigned char CSWSDoor::GetDetectDC()
 {
     int nDC = m_nTrapDetectDC;
@@ -185,7 +185,7 @@ unsigned char CSWSDoor::GetDetectDC()
         nDC = 1;
     return nDC;
 }
-// PC 0x0057F5E0 GOG 0x0057F660
+// PC 0x0057F5E0 GOG 0x0057F660 Xbox 0x00225040
 unsigned char CSWSDoor::GetDisarmDC()
 {
     unsigned char nDC = m_nDisarmDC;
@@ -206,7 +206,7 @@ unsigned char CSWSDoor::GetDisarmDC()
     }
     return nDC;
 }
-// PC 0x0057F630 GOG 0x0057F6B0
+// PC 0x0057F630 GOG 0x0057F6B0 Xbox 0x00225090
 int CSWSDoor::GetIsLinked()
 {
     char nIsLinked;
@@ -214,7 +214,7 @@ int CSWSDoor::GetIsLinked()
     return (nIsLinked == DOOR_LINK_DOOR) ||
            (nIsLinked == DOOR_LINK_WAYPOINT);
 }
-// PC 0x0057F650 GOG 0x0057F6D0
+// PC 0x0057F650 GOG 0x0057F6D0 Xbox 0x002250B0
 int CSWSDoor::NoNonWalkPolysInDoor(const Vector& vStart, const Vector& vEnd,
                                    const float& fMinHeight, const float& fMaxHeight,
                                    const float& fRadius, CWalkHitInfo* pHitInfo)
@@ -232,7 +232,7 @@ int CSWSDoor::NoNonWalkPolysInDoor(const Vector& vStart, const Vector& vEnd,
     return m_apCollisionMesh[(unsigned char)m_nOpenState]->NoNonWalkPolys(
         vStart, vEnd, fMinHeight, fMaxHeight, fRadius, pHitInfo);
 }
-// PC 0x0057F6F0 GOG 0x0057F770
+// PC 0x0057F6F0 GOG 0x0057F770 Xbox 0x00225150
 void CSWSDoor::DoDamage(int nDamage)
 {
     if (m_bPlotObject == 0)
@@ -266,7 +266,7 @@ Vector CSWSDoor::GetActionPoint(int nAnimation, unsigned char nPoint)
         return Vector(fInvalidActionPoint, fInvalidActionPoint, fInvalidActionPoint);
     }
 }
-// PC 0x0057F7A0 GOG 0x0057F820
+// PC 0x0057F7A0 GOG 0x0057F820 Xbox 0x00225170
 Vector CSWSDoor::GetNearestActionPoint(const Vector& vPosition, int bClosed)
 {
     Vector vNearestPoint;
@@ -318,7 +318,7 @@ Vector CSWSDoor::GetNearestActionPoint(const Vector& vPosition, int bClosed)
     }
     return vNearestPoint;
 }
-// PC 0x0057FAE0 GOG 0x0057FB60
+// PC 0x0057FAE0 GOG 0x0057FB60 Xbox 0x00225530
 CSWSObject* CSWSDoor::GetLinkedObject()
 {
     CSWSObject* pLinkedObject = 0;
@@ -370,7 +370,7 @@ int CSWSDoor::OpenDoor(unsigned long oidOpener)  // PC 0x005801E0 GOG 0x00580260
     return g_pVirtualMachine->RunScript(&m_asScripts[0], m_nId, 1);
 }
 #endif
-// PC 0x005802B0 GOG 0x00580330
+// PC 0x005802B0 GOG 0x00580330 Xbox 0x00225D80
 int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldDWORD(pStruct, (unsigned char)m_nAppearanceType, "Appearance");
@@ -493,7 +493,7 @@ int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldCExoLocString(pStruct, m_locTransitionDestination, "TransitionDestination");
     return 1;
 }
-// PC 0x00580E50 GOG 0x00580ED0
+// PC 0x00580E50 GOG 0x00580ED0 Xbox 0x00226900
 int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
 {
     int bSuccess;
@@ -818,7 +818,7 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
     PostProcess();
     return 1;
 }
-// PC 0x00580980 GOG 0x00580A00
+// PC 0x00580980 GOG 0x00580A00 Xbox 0x00226450
 void CSWSDoor::PostProcess()
 {
     if (m_nHardness > 0)
@@ -862,7 +862,7 @@ void CSWSDoor::PostProcess()
         }
     }
 }
-// PC 0x00580B20 GOG 0x00580BA0
+// PC 0x00580B20 GOG 0x00580BA0 Xbox 0x002265B0
 CSWSDoor::CSWSDoor(unsigned long oidSelf)
     : CSWSObject(CGameObject::OBJECT_TYPE_DOOR, oidSelf, 0)
 {
@@ -923,7 +923,7 @@ CSWSDoor::CSWSDoor(unsigned long oidSelf)
     m_bPreciseUse = 0;
     m_pTrapTrigger = NULL;
 }
-// PC 0x0057FB60 GOG 0x0057FBE0
+// PC 0x0057FB60 GOG 0x0057FBE0 Xbox 0x002255B0
 void CSWSDoor::SetOpenState(unsigned char nOpenState, int bImmediate)
 {
     unsigned char nState;
@@ -959,7 +959,7 @@ void CSWSDoor::SetOpenState(unsigned char nOpenState, int bImmediate)
         break;
     }
 }
-// PC 0x0057FBE0 GOG 0x0057FC60
+// PC 0x0057FBE0 GOG 0x0057FC60 Xbox 0x00225630
 void CSWSDoor::MoveToNextOpenState()
 {
     char nOldState;
@@ -980,7 +980,7 @@ void CSWSDoor::MoveToNextOpenState()
         }
     }
 }
-// PC 0x0057FC40 GOG 0x0057FCC0
+// PC 0x0057FC40 GOG 0x0057FCC0 Xbox 0x00225690
 void CSWSDoor::SetOrientation(Quaternion qOrientation)
 {
     Vector vFacing;
@@ -1079,7 +1079,7 @@ int CSWSDoor::InDoor(Vector vPoint)  // PC 0x0057FD30 GOG 0x0057FDB0
     return nCrossings % 2 == 1;
 }
 #endif
-int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vOrientation,  // PC 0x0057FEF0 GOG 0x0057FF70
+int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vOrientation,  // PC 0x0057FEF0 GOG 0x0057FF70 Xbox 0x00225910
                                  Vector& vMinimum, Vector& vMaximum)
 {
     int nMesh;
@@ -1185,7 +1185,7 @@ int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vOrientation,  // PC 0
     }
     return bSuccess;
 }
-// PC 0x00582130 GOG 0x005821B0
+// PC 0x00582130 GOG 0x005821B0 Xbox 0x00227930
 int CSWSDoor::LoadFromTemplate(CResRef const& cResRef)
 {
     int result;
@@ -1202,7 +1202,7 @@ int CSWSDoor::LoadFromTemplate(CResRef const& cResRef)
     delete pRes;
     return result;
 }
-// PC 0x005821F0 GOG 0x00582270
+// PC 0x005821F0 GOG 0x00582270 Xbox 0x002279B0
 void CSWSDoor::RemoveFromArea()
 {
     if (NWSDOOR_DEBUG)
@@ -1223,7 +1223,7 @@ void CSWSDoor::RemoveFromArea()
     SetArea(0);
     SetPosition(Vector(0.0f, 0.0f, 0.0f), 1, 1, 0);
 }
-// PC 0x005822B0 GOG 0x00582330
+// PC 0x005822B0 GOG 0x00582330 Xbox 0x00227A60
 CSWSDoor::~CSWSDoor()
 {
     if (GetArea() != NULL)
@@ -1248,7 +1248,7 @@ CSWSDoor::~CSWSDoor()
     }
     m_nOutlineVertices = 0;
 }
-// PC 0x00582430 GOG 0x005824B0
+// PC 0x00582430 GOG 0x005824B0 Xbox 0x00227B80
 void CSWSDoor::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                          int bLoadingGame)
 {
@@ -1278,7 +1278,7 @@ inline unsigned short CSWSDoor::GetLoadScreenID()
 {
     return m_nLoadScreenId;
 }
-// PC 0x005825B0 GOG 0x00582630
+// PC 0x005825B0 GOG 0x00582630 Xbox 0x00227D00
 void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                            void* pEventData, unsigned long nCalendarDay,
                            unsigned long nTimeOfDay)
@@ -1707,7 +1707,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             SetAnimation((int)pEventData);
     }
 }
-// PC 0x00583850 GOG 0x005838D0
+// PC 0x00583850 GOG 0x005838D0 Xbox 0x00228E70
 int CSWSDoor::LoadDoorExternal(CResGFF* pRes, CResStruct* pStruct,
                               int bLoadTemplate)
 {
@@ -1754,7 +1754,7 @@ int CSWSDoor::LoadDoorExternal(CResGFF* pRes, CResStruct* pStruct,
 
 #ifdef _XBOX
 
-int CSWSDoor::OpenDoor(unsigned long oidOpener)
+int CSWSDoor::OpenDoor(unsigned long oidOpener)  // Xbox 0x00225C00
 {
     CGameObject* pGameObject;
     CSWSObject* pOpener;
@@ -1783,7 +1783,7 @@ int CSWSDoor::OpenDoor(unsigned long oidOpener)
     return g_pVirtualMachine->RunScript(&m_asScripts[0], m_nId, 1);
 }
 
-int CSWSDoor::InDoor(Vector vPoint)
+int CSWSDoor::InDoor(Vector vPoint)  // Xbox 0x002257A0
 {
     int nCrossings;
     int nVertex;

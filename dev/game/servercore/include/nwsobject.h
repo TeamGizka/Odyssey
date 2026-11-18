@@ -173,7 +173,7 @@ public:
     void CopyScriptLocation(CScriptLocation* pLocation);
     int LoadLocation(CResGFF* pRes, CResStruct* pStruct);
     int SaveLocation(CResGFF* pRes, CResStruct* pStruct);
-    int Equals(CScriptLocation* pLocation)  // PC 0x005AD880 GOG 0x005AD8F0
+    int Equals(CScriptLocation* pLocation)  // PC 0x005AD880 GOG 0x005AD8F0 Xbox 0x00174BE0
     {
         return equal(m_vPosition, pLocation->m_vPosition) != 0 &&
                equal(m_vOrientation, pLocation->m_vOrientation) != 0;
@@ -493,7 +493,7 @@ public:
                                          float fDistance);
 
     virtual ~CSWSObject();
-    virtual CSWSObject* AsSWSObject() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual CSWSObject* AsSWSObject() { return this; }  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
 
     virtual void AIUpdate() = 0;
     virtual int ClearAction(CSWSObjectActionNode* pNode, int bRemove);
@@ -501,26 +501,26 @@ public:
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay) = 0;
     virtual void SetAnimation(int nAnimation);
-    virtual CResRef GetDialogResref()  // PC 0x004FA0F0 GOG 0x005098E0
+    virtual CResRef GetDialogResref()  // PC 0x004FA0F0 GOG 0x005098E0 Xbox 0x001A85F0
     {
         return CResRef("");
     }
-    virtual int GetDialogInterruptable()  // PC 0x0065D0F0 GOG 0x0065CF00
+    virtual int GetDialogInterruptable()  // PC 0x0065D0F0 GOG 0x0065CF00 Xbox 0x000A7970
     {
         return 1;
     }
     virtual unsigned char GetGender();
-    virtual CExoLocString* GetFirstName()  // PC 0x004FA110 GOG 0x00509900
+    virtual CExoLocString* GetFirstName()  // PC 0x004FA110 GOG 0x00509900 Xbox 0x001A8610
     {
         return &m_locLastName;
     }
-    // PC 0x004FA110 GOG 0x00509900
+    // PC 0x004FA110 GOG 0x00509900 Xbox 0x001A8610
     virtual CExoLocString& GetLastName()
     {
         return m_locLastName;
     }
     virtual int GetDead();
-    // PC 0x004FA120 GOG 0x00509910
+    // PC 0x004FA120 GOG 0x00509910 Xbox 0x001A8620
     virtual short GetMaxHitPoints(int bBaseOnly) { return (short)m_nMaxHitPoints; }
     virtual short GetCurrentHitPoints(int bBaseOnly);
     virtual void DoDamage(int nDamage);
@@ -537,37 +537,37 @@ public:
     virtual char GetDamageImmunity(unsigned char nType);
     virtual int GetDamageImmunityByFlags(unsigned short nFlags);
     virtual unsigned long GetEffectSpellId();
-    virtual void SetEffectSpellId(unsigned long nSpellId)  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void SetEffectSpellId(unsigned long nSpellId)  // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     {
     }
-    // PC 0x005EE1C0 GOG 0x005EE1A0
+    // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     virtual void SetLockOrientationToObject(unsigned long oidTarget)
     {
     }
-    // PC 0x004FA130 GOG 0x00509920
+    // PC 0x004FA130 GOG 0x00509920 Xbox 0x001A8630
     virtual unsigned long GetLockOrientationToObject()
     {
         return OBJECT_INVALID;
     }
-    // PC 0x004FA140 GOG 0x00509930
+    // PC 0x004FA140 GOG 0x00509930 Xbox 0x001A8640
     virtual CResRef GetPortrait()
     {
         return m_cPortrait;
     }
-    // PC 0x004FA170 GOG 0x00509960
+    // PC 0x004FA170 GOG 0x00509960 Xbox 0x001A8670
     virtual void SetPortrait(CResRef const& cResRef)
     {
         m_cPortrait = cResRef;
     }
-    virtual unsigned short GetPortraitId()  // PC 0x004FA190 GOG 0x00509980
+    virtual unsigned short GetPortraitId()  // PC 0x004FA190 GOG 0x00509980 Xbox 0x0018EEF0
     {
         return m_nPortraitId;
     }
     virtual void SetPortraitId(unsigned short nPortraitId);
-    virtual void UpdateEffectPtrs()  // PC 0x004015A0 GOG 0x004015A0
+    virtual void UpdateEffectPtrs()  // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     {
     }
-    virtual void UpdateAttributesOnEffect(CGameEffect* pEffect)  // PC 0x005EE1C0 GOG 0x005EE1A0
+    virtual void UpdateAttributesOnEffect(CGameEffect* pEffect)  // PC 0x005EE1C0 GOG 0x005EE1A0 Xbox 0x00149D70
     {
     }
 
@@ -602,11 +602,11 @@ public:
         PORTRAIT_ID_RESREF_FIRST = 0xFFFE,
         PORTRAIT_ID_INVALID = 0xFFFF
     };
-    int GetAnimation() { return m_nAnimation; }
+    int GetAnimation() { return m_nAnimation; }  // Xbox 0x002C2770
 
     int GetPlotObject() { return m_bPlotObject; }
     int GetMin1HP() { return m_bMin1HP; }
-    int GetNotBlastable() { return m_bNotBlastable; }
+    int GetNotBlastable() { return m_bNotBlastable; }  // Xbox 0x00306660
     int GetPartyInteract() { return m_bPartyInteract; }
 
 
@@ -634,7 +634,7 @@ public:
 
     void CopyScriptVars(CSWSScriptVarTable* pVarTable);
     CExoString& GetTag() { return m_sTag; }
-    void SetTag(const CExoString& sTag)  // PC 0x0055B690 GOG 0x0055B7B0
+    void SetTag(const CExoString& sTag)  // PC 0x0055B690 GOG 0x0055B7B0 Xbox 0x001B9C50
     {
         m_sTag = sTag.LowerCase();
     }
@@ -1336,7 +1336,7 @@ public:
     ~CSWSCreature();
     short GetArmorClass();
     int GetBodyBagAppearance();
-    virtual CSWSCreature* AsSWSCreature() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual CSWSCreature* AsSWSCreature() { return this; }  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual void AIUpdate();
     void SpawnInHeartbeatPerception(int bForce);
     void ResetHeartbeatTimer();
@@ -1830,8 +1830,8 @@ public:
 
     unsigned long GetAttemptedAttackTarget() { return m_oidAttemptedAttackTarget; }
     void SetAttemptedAttackTarget(unsigned long oidTarget);
-    unsigned long GetAttemptedSpellTarget() { return m_oidAttemptedSpellTarget; }
-    int GetDeadTemp()
+    unsigned long GetAttemptedSpellTarget() { return m_oidAttemptedSpellTarget; }  // Xbox 0x00150C50
+    int GetDeadTemp()  // Xbox 0x0001B460
     {
         if (m_bInParty != 0)
         {
@@ -2755,11 +2755,11 @@ public:
     void BroadcastDamageDataToParty(CSWCCMessageData* pMessageData, int bHealing);
 
     enum DamageBroadcastRangeLimit { DAMAGE_BROADCAST_RANGE_SQUARED = 900 };
-    unsigned long GetLockOrientationToObject()  // PC 0x0051A2F0 GOG 0x0051A350
+    unsigned long GetLockOrientationToObject()  // PC 0x0051A2F0 GOG 0x0051A350 Xbox 0x0018EF00
     {
         return m_oidLockOrientationToObject;
     }
-    CResRef GetDialogResref()  // PC 0x0051A300 GOG 0x0051A360
+    CResRef GetDialogResref()  // PC 0x0051A300 GOG 0x0051A360 Xbox 0x0018EF10
     {
         if (m_pStats == NULL)
         {
@@ -2767,7 +2767,7 @@ public:
         }
         return m_pStats->m_cConversation;
     }
-    int GetDialogInterruptable()  // PC 0x0051A350 GOG 0x0051A3B0
+    int GetDialogInterruptable()  // PC 0x0051A350 GOG 0x0051A3B0 Xbox 0x0018EF60
     {
         if (m_pStats == NULL)
         {
@@ -2775,7 +2775,7 @@ public:
         }
         return m_pStats->m_bInterruptable;
     }
-    unsigned char GetGender()  // PC 0x0051A360 GOG 0x0051A3C0
+    unsigned char GetGender()  // PC 0x0051A360 GOG 0x0051A3C0 Xbox 0x0018EF70
     {
         if (m_pStats == NULL)
         {
@@ -2783,7 +2783,7 @@ public:
         }
         return m_pStats->m_nGender;
     }
-    CExoLocString* GetFirstName()  // PC 0x0051A380 GOG 0x0051A3E0
+    CExoLocString* GetFirstName()  // PC 0x0051A380 GOG 0x0051A3E0 Xbox 0x0018EF90
     {
         if (m_pStats == NULL)
         {
@@ -2791,7 +2791,7 @@ public:
         }
         return &m_pStats->m_lsFirstName;
     }
-    CExoLocString& GetLastName()  // PC 0x0051A3A0 GOG 0x0051A400
+    CExoLocString& GetLastName()  // PC 0x0051A3A0 GOG 0x0051A400 Xbox 0x0018EFB0
     {
         if (m_pStats == NULL)
         {
@@ -2799,15 +2799,15 @@ public:
         }
         return m_pStats->m_lsLastName;
     }
-    unsigned long GetEffectSpellId()  // PC 0x0051A3C0 GOG 0x0051A420
+    unsigned long GetEffectSpellId()  // PC 0x0051A3C0 GOG 0x0051A420 Xbox 0x0018EFD0
     {
         return m_nEffectSpellId;
     }
-    void SetEffectSpellId(unsigned long nSpellId)  // PC 0x0051A3D0 GOG 0x0051A430
+    void SetEffectSpellId(unsigned long nSpellId)  // PC 0x0051A3D0 GOG 0x0051A430 Xbox 0x0018EFE0
     {
         m_nEffectSpellId = nSpellId;
     }
-    CResRef GetPortrait()  // PC 0x0051A3E0 GOG 0x0051A440
+    CResRef GetPortrait()  // PC 0x0051A3E0 GOG 0x0051A440 Xbox 0x0018EFF0
     {
         if (m_pStats != NULL)
         {
@@ -2815,14 +2815,14 @@ public:
         }
         return CResRef("");
     }
-    void SetPortrait(const CResRef& cResRef)  // PC 0x0051A430 GOG 0x0051A490
+    void SetPortrait(const CResRef& cResRef)  // PC 0x0051A430 GOG 0x0051A490 Xbox 0x0018F040
     {
         if (m_pStats != NULL)
         {
             m_pStats->m_cPortrait = CResRef(cResRef);
         }
     }
-    int GetDead()  // PC 0x0051A480 GOG 0x0051A4E0
+    int GetDead()  // PC 0x0051A480 GOG 0x0051A4E0 Xbox 0x0018F090
     {
         if (GetInParty())
         {

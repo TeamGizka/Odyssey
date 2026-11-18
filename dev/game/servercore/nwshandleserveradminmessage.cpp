@@ -115,7 +115,7 @@ static char* CMessageServerAdmin_Control_Ban = "Ban";
 static char* CMessageServerAdmin_Control_ChangeSAPassword = "SAPass";
 static char* CMessageServerAdmin_Control_ChangeGMPassword = "GMPass";
 static char* CMessageServerAdmin_Control_Say = "Say";
-// PC 0x005A9960 GOG 0x005A99D0
+// PC 0x005A9960 GOG 0x005A99D0 Xbox 0x0028C8B0
 int CSWSMessage::ParseGetString(unsigned char* pString, unsigned long nLength,
                                 CExoString& sString, unsigned long nMaxLength)
 {
@@ -147,7 +147,7 @@ int CSWSMessage::ParseGetBool(unsigned char* pString, unsigned long nLength,
     }
     return 0;
 }
-// PC 0x005A9A00 GOG 0x005A9A70
+// PC 0x005A9A00 GOG 0x005A9A70 Xbox 0x0028C910
 int CSWSMessage::ParseToken(const char* szToken, unsigned char** ppString,
                             unsigned long& nLength, int bPeriod)
 {
@@ -178,7 +178,7 @@ int CSWSMessage::ParseToken(const char* szToken, unsigned char** ppString,
     }
     return 0;
 }
-// PC 0x005A9A80 GOG 0x005A9AF0
+// PC 0x005A9A80 GOG 0x005A9AF0 Xbox 0x0028C990
 static int GetTokenPair(unsigned char* pString, unsigned long nLength,
                         CExoString& sCategory, CExoString& sName,
                         CExoString& sValue)
@@ -258,7 +258,7 @@ static int GetTokenPair(unsigned char* pString, unsigned long nLength,
     sValue = "";
     return 0;
 }
-// PC 0x005A9C50 GOG 0x005A9CC0
+// PC 0x005A9C50 GOG 0x005A9CC0 Xbox 0x0028CAF0
 int CSWSMessage::HandleServerAdminToServerMessage(unsigned long nPlayerId,
                                                   unsigned char* pMessage,
                                                   unsigned long nMessageLength)

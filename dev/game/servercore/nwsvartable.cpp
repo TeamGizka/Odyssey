@@ -12,7 +12,7 @@ const int CSWSScriptVarTable::VARTYPE_FLOAT = 2;
 const int CSWSScriptVarTable::VARTYPE_STRING = 3;
 const int CSWSScriptVarTable::VARTYPE_OBJECT = 4;
 const int CSWSScriptVarTable::VARTYPE_LOCATION = 5;
-// PC 0x005A08C0 GOG 0x005A0930
+// PC 0x005A08C0 GOG 0x005A0930 Xbox 0x0027EB10
 void CSWSScriptVarTable::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     if (NWSVARTABLE_DEBUG)
@@ -86,7 +86,7 @@ void CSWSScriptVarTable::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x0059FE90 GOG 0x0059FF00
+// PC 0x0059FE90 GOG 0x0059FF00 Xbox 0x0027E250
 CSWSScriptVar* CSWSScriptVarTable::MatchIndex(const CExoString& sName,
                                               unsigned long nType, int bCreate)
 {
@@ -121,7 +121,7 @@ CSWSScriptVar* CSWSScriptVarTable::MatchIndex(const CExoString& sName,
 
     return NULL;
 }
-// PC 0x0059FFE0 GOG 0x005A0050
+// PC 0x0059FFE0 GOG 0x005A0050 Xbox 0x0027E1D0
 void CSWSScriptVarTable::DeleteIndex(const CExoString& sName,
                                      unsigned long nType)
 {
@@ -134,7 +134,7 @@ void CSWSScriptVarTable::DeleteIndex(const CExoString& sName,
         }
     }
 }
-// PC 0x005A0030 GOG 0x005A00A0
+// PC 0x005A0030 GOG 0x005A00A0 Xbox 0x0027E3B0
 int CSWSScriptVarTable::GetInt(const CExoString& sName)
 {
     int nValue = 0;
@@ -147,7 +147,7 @@ int CSWSScriptVarTable::GetInt(const CExoString& sName)
 
     return nValue;
 }
-// PC 0x005A0060 GOG 0x005A00D0
+// PC 0x005A0060 GOG 0x005A00D0 Xbox 0x0027E3E0
 float CSWSScriptVarTable::GetFloat(const CExoString& sName)
 {
     float fValue = 0.0f;
@@ -160,7 +160,7 @@ float CSWSScriptVarTable::GetFloat(const CExoString& sName)
 
     return fValue;
 }
-// PC 0x005A0090 GOG 0x005A0100
+// PC 0x005A0090 GOG 0x005A0100 Xbox 0x0027E410
 CExoString CSWSScriptVarTable::GetString(const CExoString& sName)
 {
     CExoString sValue;
@@ -173,7 +173,7 @@ CExoString CSWSScriptVarTable::GetString(const CExoString& sName)
 
     return sValue;
 }
-// PC 0x005A0120 GOG 0x005A0190
+// PC 0x005A0120 GOG 0x005A0190 Xbox 0x0027E470
 unsigned long CSWSScriptVarTable::GetObject(const CExoString& sName)
 {
     unsigned long oidValue = CGameObjectArray::INVALIDOBJID;
@@ -186,7 +186,7 @@ unsigned long CSWSScriptVarTable::GetObject(const CExoString& sName)
 
     return oidValue;
 }
-// PC 0x005A0150 GOG 0x005A01C0
+// PC 0x005A0150 GOG 0x005A01C0 Xbox 0x0027E4A0
 CScriptLocation CSWSScriptVarTable::GetLocation(const CExoString& sName)
 {
     CScriptLocation lLocation;
@@ -241,24 +241,24 @@ void CSWSScriptVarTable::SetFloat(const CExoString& sName, float fValue)
     MatchIndex(sName, SCRIPTVAR_TYPE_FLOAT, 1)->m_fValue = fValue;
 }
 #endif
-void CSWSScriptVarTable::SetString(const CExoString& sName, CExoString& sValue)  // PC 0x005A03F0 GOG 0x005A0460
+void CSWSScriptVarTable::SetString(const CExoString& sName, CExoString& sValue)  // PC 0x005A03F0 GOG 0x005A0460 Xbox 0x0027E720
 {
     CSWSScriptVar* pVar = MatchIndex(sName, SCRIPTVAR_TYPE_STRING, 1);
     *pVar->m_psValue = sValue;
 }
-// PC 0x005A0410 GOG 0x005A0480
+// PC 0x005A0410 GOG 0x005A0480 Xbox 0x0027E740
 void CSWSScriptVarTable::SetObject(const CExoString& sName,
                                    unsigned long oidValue)
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_OBJECT, 1)->m_oidValue = oidValue;
 }
-// PC 0x005A0430 GOG 0x005A04A0
+// PC 0x005A0430 GOG 0x005A04A0 Xbox 0x0027E760
 void CSWSScriptVarTable::SetLocation(const CExoString& sName,
                                      CScriptLocation lLocation)
 {
     *MatchIndex(sName, SCRIPTVAR_TYPE_LOCATION, 1)->m_plValue = lLocation;
 }
-// PC 0x005A0490 GOG 0x005A0500
+// PC 0x005A0490 GOG 0x005A0500 Xbox 0x0027E7B0
 CSWSScriptVarTable::~CSWSScriptVarTable()
 {
     for (int i = 0; i < num; i++)
@@ -296,17 +296,17 @@ void CSWSScriptVarTable::DestroyInt(const CExoString& sName)
         }
     }
 }
-// PC 0x005A0560 GOG 0x005A05D0
+// PC 0x005A0560 GOG 0x005A05D0 Xbox 0x0027E220
 void CSWSScriptVarTable::DestroyFloat(const CExoString& sName)
 {
     DeleteIndex(sName, SCRIPTVAR_TYPE_FLOAT);
 }
-// PC 0x005A0570 GOG 0x005A05E0
+// PC 0x005A0570 GOG 0x005A05E0 Xbox 0x0027E230
 void CSWSScriptVarTable::DestroyString(const CExoString& sName)
 {
     DeleteIndex(sName, SCRIPTVAR_TYPE_STRING);
 }
-// PC 0x005A0580 GOG 0x005A05F0
+// PC 0x005A0580 GOG 0x005A05F0 Xbox 0x0027E240
 void CSWSScriptVarTable::DestroyObject(const CExoString& sName)
 {
     DeleteIndex(sName, SCRIPTVAR_TYPE_OBJECT);
@@ -317,7 +317,7 @@ void CSWSScriptVarTable::DestroyLocation(const CExoString& sName)
 {
     DeleteIndex(sName, SCRIPTVAR_TYPE_LOCATION);
 }
-// PC 0x005A0590 GOG 0x005A0600
+// PC 0x005A0590 GOG 0x005A0600 Xbox 0x0027E860
 void CSWSScriptVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     CScriptLocation lLocation;
@@ -388,7 +388,7 @@ void CSWSScriptVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 
 #ifdef _XBOX
 
-void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int bLoading)
+void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int bLoading)  // Xbox 0x0027E530
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1)->m_nValue = nValue;
 
@@ -423,7 +423,7 @@ void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int bLoadin
     }
 }
 
-void CSWSScriptVarTable::SetFloat(const CExoString& sName, float fValue)
+void CSWSScriptVarTable::SetFloat(const CExoString& sName, float fValue)  // Xbox 0x0027E700
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_FLOAT, 1)->m_nValue = *(int*)&fValue;
 }

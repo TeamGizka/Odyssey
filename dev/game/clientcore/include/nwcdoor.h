@@ -39,12 +39,12 @@ public:
 
     CSWCDoor();
     virtual ~CSWCDoor();
-    // PC 0x00698BD0 GOG 0x00698980
+    // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     virtual CSWCDoor* AsSWCDoor()
     {
         return this;
     }
-    // PC 0x006D96B0 GOG 0x006DB220
+    // PC 0x006D96B0 GOG 0x006DB220 Xbox 0x0009B430
     virtual CExoString GetName()
     {
         return m_sDescription;

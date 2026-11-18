@@ -8,7 +8,7 @@
 #include "nwrules.h"
 #include "twodimarray.h"
 #include "swmain.h"
-// PC 0x0073EA30 GOG 0x0073E710
+// PC 0x0073EA30 GOG 0x0073E710 Xbox 0x001085C0
 CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
                                                  CSWGuiHandler pHandler,
                                                  CSWGuiButton* pPrototype)
@@ -24,7 +24,7 @@ CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
     return pButton;
 }
 
-// PC 0x0073E8C0 GOG 0x0073E620
+// PC 0x0073E8C0 GOG 0x0073E620 Xbox 0x00109750
 void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -97,7 +97,7 @@ void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
             nSubType);
     }
 }
-// PC 0x0073EAF0 GOG 0x0073E850
+// PC 0x0073EAF0 GOG 0x0073E850 Xbox 0x001098D0
 CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager), m_nSelectedSubType(0)
 {

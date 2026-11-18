@@ -3,7 +3,7 @@
 #include "exoresman.h"
 #include "aurfonttexture.h"
 #include "math3d.h"
-// PC 0x00781650 GOG 0x00781450
+// PC 0x00781650 GOG 0x00781450 Xbox 0x0032EFF0
 CAuroraModel* CAuroraInterface::GetModelResHelper(
     const CExoString& sName, int bRequest, int* pbNew,
     CExoLinkedListNode** ppPosition)
@@ -89,7 +89,7 @@ CAuroraModel* CAuroraInterface::GetModelResHelper(
     }
     return pModel;
 }
-// PC 0x007818B0 GOG 0x007816B0
+// PC 0x007818B0 GOG 0x007816B0 Xbox 0x0032F1D0
 CAuroraModel* CAuroraInterface::GetModelInternal(
     const CExoString& sName, int bRequest, int* pbNew,
     CExoLinkedListNode** ppPosition)
@@ -114,7 +114,7 @@ CAuroraModel* CAuroraInterface::GetModelInternal(
     }
     return pModel;
 }
-// PC 0x00781910 GOG 0x00781710
+// PC 0x00781910 GOG 0x00781710 Xbox 0x0032F230
 void CAuroraInterface::ReleaseModelInternal(CAuroraModel* pModel)
 {
     SMDLDataTrailer* pTrailer;
@@ -133,7 +133,7 @@ void CAuroraInterface::ReleaseModelInternal(CAuroraModel* pModel)
         }
     }
 }
-// PC 0x00781960 GOG 0x00781760
+// PC 0x00781960 GOG 0x00781760 Xbox 0x0032F280
 CAuroraTexture* CAuroraInterface::GetTextureInternal(const CExoString& sName)
 {
     CAuroraTexture* pTexture;
@@ -169,7 +169,7 @@ CAuroraTexture* CAuroraInterface::GetTextureInternal(const CExoString& sName)
     }
     return pTexture;
 }
-// PC 0x00781A50 GOG 0x00781850
+// PC 0x00781A50 GOG 0x00781850 Xbox 0x0032F320
 CAurora16BitTexture* CAuroraInterface::Get16BitTextureInternal(
     const CExoString& sName)
 {
@@ -254,7 +254,7 @@ CAuroraFontTexture* CAuroraInterface::GetFontTextureInternal(
     }
     return pTexture;
 }
-// PC 0x00781B40 GOG 0x00781940
+// PC 0x00781B40 GOG 0x00781940 Xbox 0x0032F3C0
 CAuroraLayeredTexture* CAuroraInterface::GetLayeredTextureInternal(
     const CExoString& sName)
 {
@@ -296,7 +296,7 @@ CAuroraLayeredTexture* CAuroraInterface::GetLayeredTextureInternal(
     }
     return pTexture;
 }
-// PC 0x00781C30 GOG 0x00781A30
+// PC 0x00781C30 GOG 0x00781A30 Xbox 0x0032F460
 CAuroraCompressedTexture* CAuroraInterface::GetCompressedTextureInternal(
     const CExoString& sName)
 {
@@ -338,7 +338,7 @@ CAuroraCompressedTexture* CAuroraInterface::GetCompressedTextureInternal(
     }
     return pTexture;
 }
-// PC 0x00781D20 GOG 0x00781B20
+// PC 0x00781D20 GOG 0x00781B20 Xbox 0x0032F500
 CAuroraProcessedTexture* CAuroraInterface::GetProcessedTextureInternal(
     const CExoString& sName)
 {
@@ -384,7 +384,7 @@ CAuroraProcessedTexture* CAuroraInterface::GetProcessedTextureInternal(
     }
     return pTexture;
 }
-// PC 0x00781E10 GOG 0x00781C10
+// PC 0x00781E10 GOG 0x00781C10 Xbox 0x0032F5A0
 CAuroraTXI* CAuroraInterface::GetTXIInternal(const CExoString& sName)
 {
     CAuroraTXI* pTXI;
@@ -422,7 +422,7 @@ CAuroraTXI* CAuroraInterface::GetTXIInternal(const CExoString& sName)
     }
     return pTXI;
 }
-// PC 0x00781F00 GOG 0x00781D00
+// PC 0x00781F00 GOG 0x00781D00 Xbox 0x0032F640
 CAuroraVisibility* CAuroraInterface::GetVisibilityInternal(
     const CExoString& sName)
 {
@@ -463,7 +463,7 @@ CAuroraVisibility* CAuroraInterface::GetVisibilityInternal(
     }
     return pVisibility;
 }
-// PC 0x00781FF0 GOG 0x00781DF0
+// PC 0x00781FF0 GOG 0x00781DF0 Xbox 0x0032F6E0
 CAuroraModelX* CAuroraInterface::GetModelXInternal(const CExoString& sName)
 {
     CAuroraModelX* pModel;
@@ -501,12 +501,12 @@ CAuroraModelX* CAuroraInterface::GetModelXInternal(const CExoString& sName)
     }
     return pModel;
 }
-// PC 0x007820E0 GOG 0x00781EE0
+// PC 0x007820E0 GOG 0x00781EE0 Xbox 0x0032F780
 CAuroraTexture* CAuroraInterface::GetTexture(const CExoString& sName)
 {
     return GetTextureInternal(sName);
 }
-// PC 0x007820F0 GOG 0x00781EF0
+// PC 0x007820F0 GOG 0x00781EF0 Xbox 0x0032F790
 void CAuroraInterface::ReleaseTextureInternal(CAuroraTexture* pTexture)
 {
     STGATextureTrailer* pTrailer;
@@ -526,12 +526,12 @@ void CAuroraInterface::ReleaseTextureInternal(CAuroraTexture* pTexture)
         }
     }
 }
-// PC 0x00782140 GOG 0x00781F40
+// PC 0x00782140 GOG 0x00781F40 Xbox 0x0032F7E0
 CAurora16BitTexture* CAuroraInterface::Get16BitTexture(const CExoString& sName)
 {
     return Get16BitTextureInternal(sName);
 }
-// PC 0x00782150 GOG 0x00781F50
+// PC 0x00782150 GOG 0x00781F50 Xbox 0x0032F7F0
 void CAuroraInterface::Release16BitTextureInternal(
     CAurora16BitTexture* pTexture)
 {
@@ -574,12 +574,12 @@ void CAuroraInterface::ReleaseFontTextureInternal(
         }
     }
 }
-// PC 0x007821A0 GOG 0x00781FA0
+// PC 0x007821A0 GOG 0x00781FA0 Xbox 0x0032F840
 CAuroraLayeredTexture* CAuroraInterface::GetLayeredTexture(const CExoString& sName)
 {
     return GetLayeredTextureInternal(sName);
 }
-// PC 0x007821B0 GOG 0x00781FB0
+// PC 0x007821B0 GOG 0x00781FB0 Xbox 0x0032F850
 void CAuroraInterface::ReleaseLayeredTextureInternal(
     CAuroraLayeredTexture* pTexture)
 {
@@ -600,12 +600,12 @@ void CAuroraInterface::ReleaseLayeredTextureInternal(
         }
     }
 }
-// PC 0x00782200 GOG 0x00782000
+// PC 0x00782200 GOG 0x00782000 Xbox 0x0032F8A0
 CAuroraCompressedTexture* CAuroraInterface::GetCompressedTexture(const CExoString& sName)
 {
     return GetCompressedTextureInternal(sName);
 }
-// PC 0x00782210 GOG 0x00782010
+// PC 0x00782210 GOG 0x00782010 Xbox 0x0032F8B0
 void CAuroraInterface::ReleaseCompressedTextureInternal(
     CAuroraCompressedTexture* pTexture)
 {
@@ -626,12 +626,12 @@ void CAuroraInterface::ReleaseCompressedTextureInternal(
         }
     }
 }
-// PC 0x00782260 GOG 0x00782060
+// PC 0x00782260 GOG 0x00782060 Xbox 0x0032F900
 CAuroraProcessedTexture* CAuroraInterface::GetProcessedTexture(const CExoString& sName)
 {
     return GetProcessedTextureInternal(sName);
 }
-// PC 0x00782270 GOG 0x00782070
+// PC 0x00782270 GOG 0x00782070 Xbox 0x0032F910
 void CAuroraInterface::ReleaseProcessedTextureInternal(
     CAuroraProcessedTexture* pTexture)
 {
@@ -656,12 +656,12 @@ void CAuroraInterface::ReleaseProcessedTextureInternal(
         }
     }
 }
-// PC 0x007822C0 GOG 0x007820C0
+// PC 0x007822C0 GOG 0x007820C0 Xbox 0x0032F960
 CAuroraTXI* CAuroraInterface::GetTXI(const CExoString& sName)
 {
     return GetTXIInternal(sName);
 }
-// PC 0x007822D0 GOG 0x007820D0
+// PC 0x007822D0 GOG 0x007820D0 Xbox 0x0032F970
 void CAuroraInterface::ReleaseTXIInternal(CAuroraTXI* pTXI)
 {
     STXIResourcePrefix* pTrailer;
@@ -680,12 +680,12 @@ void CAuroraInterface::ReleaseTXIInternal(CAuroraTXI* pTXI)
         }
     }
 }
-// PC 0x00782320 GOG 0x00782120
+// PC 0x00782320 GOG 0x00782120 Xbox 0x0032F9C0
 CAuroraVisibility* CAuroraInterface::GetVisibility(const CExoString& sName)
 {
     return GetVisibilityInternal(sName);
 }
-// PC 0x00782330 GOG 0x00782130
+// PC 0x00782330 GOG 0x00782130 Xbox 0x0032F9D0
 void CAuroraInterface::ReleaseVisibilityInternal(CAuroraVisibility* pVisibility)
 {
     SVISDataTrailer* pTrailer;
@@ -704,12 +704,12 @@ void CAuroraInterface::ReleaseVisibilityInternal(CAuroraVisibility* pVisibility)
         }
     }
 }
-// PC 0x00782380 GOG 0x00782180
+// PC 0x00782380 GOG 0x00782180 Xbox 0x0032FA20
 CAuroraModelX* CAuroraInterface::GetModelX(const CExoString& sName)
 {
     return GetModelXInternal(sName);
 }
-// PC 0x00782390 GOG 0x00782190
+// PC 0x00782390 GOG 0x00782190 Xbox 0x0032FA30
 void CAuroraInterface::ReleaseModelXInternal(CAuroraModelX* pModel)
 {
     SMDXResPrefix* pTrailer;

@@ -1,20 +1,20 @@
 #include "swpattern.h"
 
 // Dead code: not in the PC executable
-CSWRumbleMotorData::CSWRumbleMotorData()
+CSWRumbleMotorData::CSWRumbleMotorData()  // Xbox 0x001618C0
 {
     m_pfMagnitudes = 0;
     m_pfTimes = 0;
     m_nNumSamplePoints = 0;
     m_nCurrentSamplePoint = 0;
 }
-// PC 0x006E91E0 GOG 0x006E8EA0
+// PC 0x006E91E0 GOG 0x006E8EA0 Xbox 0x000A1DB0
 CSWRumbleMotorData::~CSWRumbleMotorData()
 {
     delete m_pfMagnitudes;
     delete m_pfTimes;
 }
-// PC 0x006E9200 GOG 0x006E8EC0
+// PC 0x006E9200 GOG 0x006E8EC0 Xbox 0x000A1E30
 float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
 {
     if (!m_pfTimes || !m_pfMagnitudes)
@@ -68,11 +68,11 @@ float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
 }
 
 // Dead code: not in the PC executable
-CSWRumblePattern::CSWRumblePattern()
+CSWRumblePattern::CSWRumblePattern()  // Xbox 0x000A1F40
 {
     m_bLoop = 0;
 }
-// PC 0x006E9320 GOG 0x006E8FE0
+// PC 0x006E9320 GOG 0x006E8FE0 Xbox 0x000A2190
 int CSWRumblePattern::GetMagnitudes(float fTime, float& fLeftMagnitude,
                                     float& fRightMagnitude)
 {
@@ -98,7 +98,7 @@ int CSWRumblePattern::GetMagnitudes(float fTime, float& fLeftMagnitude,
 #ifdef _XBOX
 #include "twodimarray.h"
 
-void CSWRumbleMotorData::SetNumSamplePoints(int nSamples)
+void CSWRumbleMotorData::SetNumSamplePoints(int nSamples)  // Xbox 0x000A1DD0
 {
     if (nSamples <= 1)
     {
@@ -115,7 +115,7 @@ void CSWRumbleMotorData::SetNumSamplePoints(int nSamples)
     }
 }
 
-void CSWRumblePattern::LoadPattern(int nRow, C2DA* p2DA)
+void CSWRumblePattern::LoadPattern(int nRow, C2DA* p2DA)  // Xbox 0x000A1F60
 {
     if (nRow < p2DA->GetNumRows())
     {

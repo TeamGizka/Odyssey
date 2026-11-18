@@ -24,19 +24,19 @@ public:
 
     CAurBehavior(CAurObject* pObject);
     virtual ~CAurBehavior();
-    virtual void SetScene() {}  // PC 0x004015A0 GOG 0x004015A0
+    virtual void SetScene() {}  // PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType() { return 0; }  // PC 0x004065A0 GOG 0x00406570
-    virtual CAurBehaviorAttach* AsBehaviorAttach()  // PC 0x004065A0 GOG 0x00406570
+    virtual int GetType() { return 0; }  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
+    virtual CAurBehaviorAttach* AsBehaviorAttach()  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     {
         return 0;
     }
-    virtual CAurBehaviorNavigate* AsBehaviorNavigate()  // PC 0x004065A0 GOG 0x00406570
+    virtual CAurBehaviorNavigate* AsBehaviorNavigate()  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     {
         return 0;
     }
-    virtual CAurBehaviorCameraFollow* AsBehaviorCameraFollow()  // PC 0x004065A0 GOG 0x00406570
+    virtual CAurBehaviorCameraFollow* AsBehaviorCameraFollow()  // PC 0x004065A0 GOG 0x00406570 Xbox 0x00316120
     {
         return 0;
     }
@@ -57,11 +57,11 @@ public:
     virtual void SetScene();
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x004CD040 GOG 0x004CD150
+    virtual int GetType()  // PC 0x004CD040 GOG 0x004CD150 Xbox 0x000B5690
     {
         return 1001;
     }
-    virtual CAurBehaviorAttach* AsBehaviorAttach()  // PC 0x00698BD0 GOG 0x00698980
+    virtual CAurBehaviorAttach* AsBehaviorAttach()  // PC 0x00698BD0 GOG 0x00698980 Xbox 0x0025DD00
     {
         return this;
     }
@@ -86,7 +86,7 @@ public:
                                 CAurPart* pPart);
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x004CD160 GOG 0x004CD270
+    virtual int GetType()  // PC 0x004CD160 GOG 0x004CD270 Xbox 0x003098F0
     {
         return 1002;
     }
@@ -102,7 +102,7 @@ public:
                              CAurPart* pPart);
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x004CD1A0 GOG 0x004CD2B0
+    virtual int GetType()  // PC 0x004CD1A0 GOG 0x004CD2B0 Xbox 0x00309940
     {
         return 1003;
     }
@@ -116,7 +116,7 @@ public:
     CAurBehaviorAttachNoOrientation(CAurObject* pObject, CAurObject* pParent,
                                     CAurPart* pPart);
     virtual int Control(float fTimeStep);
-    virtual int GetType()  // PC 0x004CD1E0 GOG 0x004CD2F0
+    virtual int GetType()  // PC 0x004CD1E0 GOG 0x004CD2F0 Xbox 0x00309980
     {
         return 1008;
     }
@@ -173,7 +173,7 @@ public:
     virtual ~CAurBehaviorCameraFollow();
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x004CD300 GOG 0x004CD410
+    virtual int GetType()  // PC 0x004CD300 GOG 0x004CD410 Xbox 0x00309AC0
     {
         return 1005;
     }

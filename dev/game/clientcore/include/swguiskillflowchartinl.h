@@ -3,7 +3,7 @@
 
 #include "swguiskillflowchart.h"
 
-// PC 0x00736BE0 GOG 0x00736940
+// PC 0x00736BE0 GOG 0x00736940 Xbox 0x000F2FF0
 inline int CSWGuiSkillFlowChart::GetSelected()
 {
     if (m_cFlows.num > 0)

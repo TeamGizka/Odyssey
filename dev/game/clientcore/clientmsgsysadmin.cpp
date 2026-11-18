@@ -111,7 +111,7 @@ static char* CMessageServerAdmin_Control_Ban = "Ban";
 static char* CMessageServerAdmin_Control_ChangeSAPassword = "SAPass";
 static char* CMessageServerAdmin_Control_ChangeGMPassword = "GMPass";
 static char* CMessageServerAdmin_Control_Say = "Say";
-// PC 0x006CAB50 GOG 0x006CA850
+// PC 0x006CAB50 GOG 0x006CA850 Xbox 0x0006F6D0
 int CClientMsgSysAdmin::GetTokenPair(unsigned char* pData, unsigned long nSize,
                                     CExoString& sCategory, CExoString& sName,
                                     CExoString& sValue)
@@ -178,7 +178,7 @@ int CClientMsgSysAdmin::GetTokenPair(unsigned char* pData, unsigned long nSize,
     sValue = "";
     return 0;
 }
-// PC 0x006CAD10 GOG 0x006CAA10
+// PC 0x006CAD10 GOG 0x006CAA10 Xbox 0x0006F840
 int CClientMsgSysAdmin::SendSysAdminToServerMessage(const CExoString& sMessage)
 {
     unsigned long nLength = sMessage.GetLength() + 1;
@@ -192,7 +192,7 @@ int CClientMsgSysAdmin::SendSysAdminToServerMessage(const CExoString& sMessage)
     return g_pAppManager->m_pClientExoApp->GetNetLayer()->SendMessageToPlayer(
         CNetLayer::PLAYERID_SERVER, pData, nLength, 0);
 }
-// PC 0x006CADB0 GOG 0x006CAAB0
+// PC 0x006CADB0 GOG 0x006CAAB0 Xbox 0x0006F8E0
 int CClientMsgSysAdmin::HandleServerToSysAdminMessage(unsigned char* pData,
                                                       unsigned long nSize)
 {

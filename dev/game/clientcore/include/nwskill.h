@@ -55,27 +55,27 @@ public:
 
     unsigned long GetNameStrRef() { return m_nNameStrRef; }
 
-    void SetNameStrRef(unsigned long value)
+    void SetNameStrRef(unsigned long value)  // Xbox 0x00171F80
     {
         m_nNameStrRef = value;
     }
 
-    void SetDescriptionStrRef(unsigned long value)
+    void SetDescriptionStrRef(unsigned long value)  // Xbox 0x00043AB0
     {
         m_nDescriptionStrRef = value;
     }
 
-    void SetIcon(const CExoString& value)
+    void SetIcon(const CExoString& value)  // Xbox 0x00130570
     {
         m_sIcon = value;
     }
 
-    void SetKeyAbility(int value)
+    void SetKeyAbility(int value)  // Xbox 0x0008F190
     {
         m_nKeyAbility = value;
     }
 
-    void SetCategory(int value)
+    void SetCategory(int value)  // Xbox 0x0008EE90
     {
         m_nCategory = value;
     }

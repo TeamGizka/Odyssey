@@ -22,7 +22,7 @@ void CExoInputInternal::UpdateJoysticks()
 {
 }
 #endif
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void CExoInputInternal::Configure()
 {
 }
@@ -56,7 +56,7 @@ int CExoInputInternal::IsModalKeyDown_Alt()
     return (GetKeyState(VK_MENU) >> 15) & 1;
 }
 #endif
-// PC 0x0062BFD0 GOG 0x0062BEC0
+// PC 0x0062BFD0 GOG 0x0062BEC0 Xbox 0x0014DD30
 CExoInputEventDescDetailed::CExoInputEventDescDetailed()
 {
     m_fScale = 1.0f;
@@ -64,7 +64,7 @@ CExoInputEventDescDetailed::CExoInputEventDescDetailed()
     m_bScaled = 0;
     m_nRelative = 0;
 }
-// PC 0x0062C000 GOG 0x0062BEF0
+// PC 0x0062C000 GOG 0x0062BEF0 Xbox 0x0014DD60
 CExoInputEventDescDetailed::CExoInputEventDescDetailed(
     CExoInputEventDesc* pDesc)
     : CExoInputEventDesc(pDesc)
@@ -74,7 +74,7 @@ CExoInputEventDescDetailed::CExoInputEventDescDetailed(
     m_bScaled = 0;
     m_nRelative = 0;
 }
-// PC 0x0062C060 GOG 0x0062BF50
+// PC 0x0062C060 GOG 0x0062BF50 Xbox 0x0014DDC0
 CExoInputeventDesc2ButtonAxis::CExoInputeventDesc2ButtonAxis()
 {
     m_nRelative2 = 0;
@@ -139,7 +139,7 @@ float CExoInputInternal::ScaledValue(CExoInputEventDesc* pDesc,  // PC 0x0062C09
     return fValue;
 }
 #endif
-// PC 0x0062C250 GOG 0x0062C140
+// PC 0x0062C250 GOG 0x0062C140 Xbox 0x0014E320
 int CExoInputInternal::GetActive()
 {
     if (m_pRawInput != NULL)
@@ -148,7 +148,7 @@ int CExoInputInternal::GetActive()
     }
     return 0;
 }
-// PC 0x0062C270 GOG 0x0062C160
+// PC 0x0062C270 GOG 0x0062C160 Xbox 0x0014DBE0
 void CExoInputInternal::KeyboardModeOn()
 {
     if (m_pRawInput != NULL)
@@ -157,7 +157,7 @@ void CExoInputInternal::KeyboardModeOn()
     }
     m_bKeyboardMode = 1;
 }
-// PC 0x0062C290 GOG 0x0062C180
+// PC 0x0062C290 GOG 0x0062C180 Xbox 0x0014DC00
 void CExoInputInternal::KeyboardModeOff()
 {
     if (m_pRawInput != NULL)
@@ -170,7 +170,7 @@ void CExoInputInternal::KeyboardModeOff()
         m_bKeyboardMode = 1;
     }
 }
-// PC 0x0062C2C0 GOG 0x0062C1B0
+// PC 0x0062C2C0 GOG 0x0062C1B0 Xbox 0x0014DC30
 void CExoInputInternal::SetActive(int bActive)
 {
     m_bActive = bActive;
@@ -202,7 +202,7 @@ void CExoInputInternal::UnpauseRumble()
     m_pRawInput->m_nLastKey = 0;
 #endif
 }
-// PC 0x0062C740 GOG 0x0062C630
+// PC 0x0062C740 GOG 0x0062C630 Xbox 0x0014DDF0
 CExoInputEventDesc* CExoInputInternal::IsControlUsed(unsigned long nControl,
                                                      int nDevice,
                                                      int nInputClass)
@@ -263,7 +263,7 @@ CExoInputEventDesc* CExoInputInternal::IsControlUsed(unsigned long nControl,
     return NULL;
 #endif
 }
-// PC 0x0062C7E0 GOG 0x0062C6D0
+// PC 0x0062C7E0 GOG 0x0062C6D0 Xbox 0x0014DE80
 int CExoInputInternal::SetEventRepeatable(unsigned long nEvent,
                                           unsigned long nDelay,
                                           unsigned long nRate)
@@ -303,7 +303,7 @@ int CExoInputInternal::SetEventRepeatable(unsigned long nEvent,
     m_llRepeat.AddHead(pNewRepeat);
     return 1;
 }
-// PC 0x0062C8B0 GOG 0x0062C7A0
+// PC 0x0062C8B0 GOG 0x0062C7A0 Xbox 0x0014DFE0
 void CExoInputInternal::ClearEventRepeat(unsigned long nEvent)
 {
     CExoInputEventDesc* pDesc = m_lstEvents.element[nEvent];
@@ -326,7 +326,7 @@ void CExoInputInternal::ClearEventRepeat(unsigned long nEvent)
         }
     }
 }
-// PC 0x0062C930 GOG 0x0062C820
+// PC 0x0062C930 GOG 0x0062C820 Xbox 0x0014E060
 void CExoInputInternal::CoolDownEvent(unsigned long nEvent,
                                       unsigned long nCoolDown)
 {
@@ -358,7 +358,7 @@ void CExoInputInternal::CoolDownEvent(unsigned long nEvent,
         m_llCoolDown.AddTail(ppDesc);
     }
 }
-// PC 0x0062C9D0 GOG 0x0062C8C0
+// PC 0x0062C9D0 GOG 0x0062C8C0 Xbox 0x0014E1E0
 void CExoInputInternal::ClearEvents()
 {
     if (m_pRawInput != NULL)
@@ -423,7 +423,7 @@ void CExoInputInternal::ClearEvents()
 #endif
     }
 }
-// PC 0x0062CAD0 GOG 0x0062C9C0
+// PC 0x0062CAD0 GOG 0x0062C9C0 Xbox 0x0014E2A0
 void CExoInputInternal::WriteEventToFile(unsigned long nTimeStamp, int nEvent,
                                          CExoFile* pFile)
 {
@@ -624,7 +624,7 @@ CExoInputInternal::CExoInputInternal(HINSTANCE hInstance, HWND hWnd)  // PC 0x00
     }
 }
 #endif
-// PC 0x0062CE40 GOG 0x0062CD30
+// PC 0x0062CE40 GOG 0x0062CD30 Xbox 0x0014E440
 CExoInputInternal::~CExoInputInternal()
 {
     if (m_pRawInput != NULL)
@@ -666,7 +666,7 @@ CExoInputInternal::~CExoInputInternal()
     }
 #endif
 }
-// PC 0x0062E630 GOG 0x0062E520
+// PC 0x0062E630 GOG 0x0062E520 Xbox 0x0014EE40
 CExoInputEventDesc* CExoInputInternal::GetEvent(unsigned long nEvent,
                                                 int nEventClass)
 {
@@ -694,7 +694,7 @@ CExoInputEventDesc* CExoInputInternal::GetEvent(unsigned long nEvent,
 #endif
     return pEvent;
 }
-// PC 0x0062D040 GOG 0x0062CF30
+// PC 0x0062D040 GOG 0x0062CF30 Xbox 0x0014E590
 int CExoInputInternal::IsEventInClass(unsigned long nEvent, int nInputClass)
 {
     if (nInputClass >= 0 && nInputClass < 6)
@@ -718,7 +718,7 @@ int CExoInputInternal::IsEventInClass(unsigned long nEvent, int nInputClass)
     }
     return 0;
 }
-// PC 0x0062D0E0 GOG 0x0062CFD0
+// PC 0x0062D0E0 GOG 0x0062CFD0 Xbox 0x0014E620
 int CExoInputInternal::CreateNewEvent(unsigned long nEvent, int nType,
                                       int nClass, unsigned long nControl,
                                       unsigned long nControl2)
@@ -784,7 +784,7 @@ int CExoInputInternal::CreateNewEvent(unsigned long nEvent, int nType,
 
     return 0;
 }
-// PC 0x0062D260 GOG 0x0062D150
+// PC 0x0062D260 GOG 0x0062D150 Xbox 0x0014E7A0
 int CExoInputInternal::AddEvent(unsigned long nEvent, unsigned long nInputClass)
 {
 #ifdef _XBOX
@@ -870,7 +870,7 @@ int CExoInputInternal::AddEvent(unsigned long nEvent, unsigned long nInputClass)
     return 0;
 #endif
 }
-// PC 0x0062D370 GOG 0x0062D260
+// PC 0x0062D370 GOG 0x0062D260 Xbox 0x0014E8A0
 int CExoInputInternal::RemoveEvent(unsigned long nEvent)
 {
     CExoInputEventDesc* pDesc = m_lstEvents.element[nEvent];
@@ -917,7 +917,7 @@ int CExoInputInternal::RemoveEvent(unsigned long nEvent)
     delete pDesc;
     return nClass;
 }
-// PC 0x0062D490 GOG 0x0062D380
+// PC 0x0062D490 GOG 0x0062D380 Xbox 0x0014E9B0
 int CExoInputInternal::ScaleEvent(unsigned long nEvent, float fScale,
                                   float fExponent)
 {
@@ -1359,7 +1359,7 @@ void CExoInputInternal::SetMousePos(int nX, int nY, bool bKeepWarpState)
     }
 }
 #endif
-// PC 0x0062E690 GOG 0x0062E580
+// PC 0x0062E690 GOG 0x0062E580 Xbox 0x0014EE90
 float CExoInputInternal::PollInput(unsigned long nEvent, int nEventClass)
 {
     float fValue = 0.0f;
@@ -1414,7 +1414,7 @@ float CExoInputInternal::PollInput(unsigned long nEvent, int nEventClass)
     }
     return fValue;
 }
-// PC 0x0062E7B0 GOG 0x0062E6A0
+// PC 0x0062E7B0 GOG 0x0062E6A0 Xbox 0x0014EFD0
 CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEventClass)
 {
     int nDevice = -1;
@@ -1822,7 +1822,7 @@ void CExoInputInternal::UpdateJoysticks()
     m_pRawInput->UpdateJoysticks();
 }
 
-int CExoInputInternal::GetCheatCombo(unsigned char nCombo)
+int CExoInputInternal::GetCheatCombo(unsigned char nCombo)  // Xbox 0x0014DCE0
 {
     if (nCombo > 1)
     {
@@ -1831,7 +1831,7 @@ int CExoInputInternal::GetCheatCombo(unsigned char nCombo)
     return (m_nCheatCombos & (1 << nCombo)) != 0;
 }
 
-int CExoInputInternal::GetDebugOption()
+int CExoInputInternal::GetDebugOption()  // Xbox 0x0014DD10
 {
     if (m_pRawInput != NULL)
     {
@@ -1840,7 +1840,7 @@ int CExoInputInternal::GetDebugOption()
     return 0;
 }
 
-void CExoInputInternal::EndAttemptedBind()
+void CExoInputInternal::EndAttemptedBind()  // Xbox 0x0014E340
 {
     m_pRawInput->m_bBindEnded = 1;
 }
@@ -1848,7 +1848,7 @@ void CExoInputInternal::EndAttemptedBind()
 
 #ifdef _XBOX
 
-float CExoInputInternal::ScaledValue(CExoInputEventDesc* pDesc,
+float CExoInputInternal::ScaledValue(CExoInputEventDesc* pDesc,  // Xbox 0x0014E100
                                      unsigned long nControl,
                                      unsigned long nValue)
 {
@@ -1872,7 +1872,7 @@ float CExoInputInternal::ScaledValue(CExoInputEventDesc* pDesc,
 
 #ifdef _XBOX
 
-CExoInputInternal::CExoInputInternal()
+CExoInputInternal::CExoInputInternal()  // Xbox 0x0014EB30
 {
     m_bActive = 0;
     m_pRawInput = NULL;
@@ -1933,7 +1933,7 @@ CExoInputInternal::CExoInputInternal()
 
 #ifdef _XBOX
 
-void CExoInputInternal::SetEventNonRepeatable(unsigned long nEvent)
+void CExoInputInternal::SetEventNonRepeatable(unsigned long nEvent)  // Xbox 0x0014DF50
 {
     CExoInputEventDesc* pDesc = m_lstEvents.element[nEvent];
     if (pDesc != NULL && pDesc->m_nType == 1)

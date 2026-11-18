@@ -1,5 +1,5 @@
 #include "nwcanimbase.h"
-// PC 0x006F35F0 GOG 0x006F31E0
+// PC 0x006F35F0 GOG 0x006F31E0 Xbox 0x000C2110
 CSWAnimBase::CSWAnimBase()
 {
     m_afValues[0] = 0.0f;
@@ -35,7 +35,7 @@ int CSWAnimBase::Get(int nValue, float* pfValue)
             return 0;
     }
 }
-// PC 0x006F3620 GOG 0x006F3210
+// PC 0x006F3620 GOG 0x006F3210 Xbox 0x000C2140
 int CSWAnimBase::Set(int nValue, float fValue)
 {
     switch (nValue)

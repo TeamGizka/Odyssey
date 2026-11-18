@@ -377,23 +377,23 @@ public:
     C2DA* GetAppearance() { return m_pAppearance; }
     C2DA* GetJournal() { return m_pJournal; }
 
-    C2DA* GetEffectIcon() { EXOXBOXASSERT(m_pEffectIcon); return m_pEffectIcon; }
-    C2DA* GetStateScripts() { EXOXBOXASSERT(m_pStateScripts); return m_pStateScripts; }
+    C2DA* GetEffectIcon() { EXOXBOXASSERT(m_pEffectIcon); return m_pEffectIcon; }  // Xbox 0x0020F630
+    C2DA* GetStateScripts() { EXOXBOXASSERT(m_pStateScripts); return m_pStateScripts; }  // Xbox 0x001808B0
     C2DA* GetFormations() { EXOXBOXASSERT(m_pFormations); return m_pFormations; }
     C2DA* GetTraps() { return m_pTraps; }
     C2DA* GetIPRPPC() { return m_pIPRPPC; }
 
-    C2DA* GetSpells() { EXOXBOXASSERT(m_pSpells); return m_pSpells; }
+    C2DA* GetSpells() { EXOXBOXASSERT(m_pSpells); return m_pSpells; }  // Xbox 0x00036E30
 
-    C2DA* GetRanges() { EXOXBOXASSERT(m_pRanges); return m_pRanges; }
+    C2DA* GetRanges() { EXOXBOXASSERT(m_pRanges); return m_pRanges; }  // Xbox 0x0006A9E0
     int Load2DArrays();
     int UnLoad2DArrays();
 #ifdef _XBOX
 
-    C2DA* GetIPRPMonsterDamage() { EXOXBOXASSERT(m_pIPRPMonsterDamage); return m_pIPRPMonsterDamage; }
+    C2DA* GetIPRPMonsterDamage() { EXOXBOXASSERT(m_pIPRPMonsterDamage); return m_pIPRPMonsterDamage; }  // Xbox 0x001B9C30
 
-    C2DA* GetPoison() { EXOXBOXASSERT(m_pPoison); return m_pPoison; }
-    C2DA* GetDisease() { EXOXBOXASSERT(m_pDisease); return m_pDisease; }
+    C2DA* GetPoison() { EXOXBOXASSERT(m_pPoison); return m_pPoison; }  // Xbox 0x001808D0
+    C2DA* GetDisease() { EXOXBOXASSERT(m_pDisease); return m_pDisease; }  // Xbox 0x001808F0
 #endif
 };
 

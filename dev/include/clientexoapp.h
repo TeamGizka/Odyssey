@@ -144,7 +144,7 @@ public:
                                   int bGuaranteed);
     virtual int HandleMessage(unsigned long nPlayerId, unsigned char* pMessage,
                               unsigned long nSize, int bGuaranteed);
-    virtual float GetFPS() { return g_fFPS; }  // PC 0x00639650 GOG 0x00639550
+    virtual float GetFPS() { return g_fFPS; }  // PC 0x00639650 GOG 0x00639550 Xbox 0x0001B0C0
     virtual int ContinueMessageProcessing();
     virtual CNetLayer* GetNetLayer();
     virtual void ShutDownToMainMenu();

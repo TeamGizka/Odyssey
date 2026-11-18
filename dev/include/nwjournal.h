@@ -70,7 +70,7 @@ public:
     ~SJournalEntry()  // PC 0x006008B0 GOG 0x00600890
     {
     }
-    // PC 0x00600910 GOG 0x006008F0
+    // PC 0x00600910 GOG 0x006008F0 Xbox 0x000765F0
     SJournalEntry(const SJournalEntry& entry)
         : m_lsName(entry.m_lsName),
           m_lsText(entry.m_lsText),

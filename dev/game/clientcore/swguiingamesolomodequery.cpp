@@ -12,7 +12,7 @@
 #include "swguiingame.h"
 #include "swguiingame.inl"
 #include "swguiingamesolomodequery.h"
-// PC 0x007238A0 GOG 0x00723650
+// PC 0x007238A0 GOG 0x00723650 Xbox 0x00106F60
 void CSWGuiInGameSoloModeQuery::Draw(float fElapsed)
 {
     CSWCCreature* pPlayerCreature =
@@ -44,7 +44,7 @@ void CSWGuiInGameSoloModeQuery::Draw(float fElapsed)
 
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x00723990 GOG 0x00723740
+// PC 0x00723990 GOG 0x00723740 Xbox 0x00107040
 void CSWGuiInGameSoloModeQuery::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -77,7 +77,7 @@ void CSWGuiInGameSoloModeQuery::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiMessageBox::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00723A30 GOG 0x007237E0
+// PC 0x00723A30 GOG 0x007237E0 Xbox 0x001070E0
 void CSWGuiInGameSoloModeQuery::SetQueryText(int nQuery)
 {
     if (nQuery != 0)
@@ -102,7 +102,7 @@ void CSWGuiInGameSoloModeQuery::SetQueryText(int nQuery)
     m_nQuery = nQuery;
 }
 
-// PC 0x00723AD0 GOG 0x007235B0
+// PC 0x00723AD0 GOG 0x007235B0 Xbox 0x00107180
 CSWGuiInGameSoloModeQuery::CSWGuiInGameSoloModeQuery(CSWGuiManager* pManager)
     : CSWGuiMessageBox(pManager)
 {

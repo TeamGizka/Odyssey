@@ -12,7 +12,7 @@
 
 #define NWSSOUNDOBJECT_DEBUG 0
 
-// PC 0x00570470 GOG 0x005705A0
+// PC 0x00570470 GOG 0x005705A0 Xbox 0x00281F60
 CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
     : CSWSObject(CGameObject::OBJECT_TYPE_SOUND, oidObject, 0), m_lstSounds(0)
 {
@@ -40,7 +40,7 @@ CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
 CSWSSoundObject::~CSWSSoundObject()
 {
 }
-// PC 0x0056FC10 GOG 0x0056FD40
+// PC 0x0056FC10 GOG 0x0056FD40 Xbox 0x00281720
 void CSWSSoundObject::Save(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstSounds;
@@ -88,7 +88,7 @@ void CSWSSoundObject::Save(CResGFF* pRes, CResStruct* pStruct)
         pRes->WriteFieldCResRef(&stSound, m_lstSounds[nSound], "Sound");
     }
 }
-// PC 0x0056FE90 GOG 0x0056FFC0
+// PC 0x0056FE90 GOG 0x0056FFC0 Xbox 0x00281990
 void CSWSSoundObject::AddToArea(CSWSArea* pArea, int bLoadingGame)
 {
     RemoveFromArea();
@@ -100,7 +100,7 @@ void CSWSSoundObject::AddToArea(CSWSArea* pArea, int bLoadingGame)
             m_sTag, m_nId);
     }
 }
-// PC 0x0056FF00 GOG 0x00570030
+// PC 0x0056FF00 GOG 0x00570030 Xbox 0x00281A00
 void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
 {
     Vector vPosition = m_vPosition;
@@ -147,18 +147,18 @@ void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
         pMessage->WriteCResRef(m_lstSounds[nSound], 16);
     }
 }
-// PC 0x004015A0 GOG 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0 Xbox 0x001A2B40
 void CSWSSoundObject::AIUpdate()
 {
 }
-// PC 0x0056FB90 GOG 0x0056FCC0
+// PC 0x0056FB90 GOG 0x0056FCC0 Xbox 0x00281710
 void CSWSSoundObject::EventHandler(unsigned long nEventId,
                                    unsigned long oidCaller, void* pEventData,
                                    unsigned long nCalendarDay,
                                    unsigned long nTimeOfDay)
 {
 }
-// PC 0x00570110 GOG 0x00570240
+// PC 0x00570110 GOG 0x00570240 Xbox 0x00281C00
 void CSWSSoundObject::Play()
 {
     if (NWSSOUNDOBJECT_DEBUG)
@@ -197,7 +197,7 @@ void CSWSSoundObject::Play()
         }
     }
 }
-// PC 0x005701B0 GOG 0x005702E0
+// PC 0x005701B0 GOG 0x005702E0 Xbox 0x00281CA0
 void CSWSSoundObject::Stop()
 {
     if (NWSSOUNDOBJECT_DEBUG)
@@ -236,7 +236,7 @@ void CSWSSoundObject::Stop()
         }
     }
 }
-// PC 0x00570250 GOG 0x00570380
+// PC 0x00570250 GOG 0x00570380 Xbox 0x00281D40
 void CSWSSoundObject::FadeAndStop(unsigned long nFadeTime)
 {
     CSWCSoundObject* pSoundObject;
@@ -248,7 +248,7 @@ void CSWSSoundObject::FadeAndStop(unsigned long nFadeTime)
         pSoundObject->FadeAndStop(nFadeTime);
     }
 }
-// PC 0x00570290 GOG 0x005703C0
+// PC 0x00570290 GOG 0x005703C0 Xbox 0x00281D80
 void CSWSSoundObject::ChangePitchVariation(float fVariation)
 {
     CSWCSoundObject* pSoundObject;
@@ -263,7 +263,7 @@ void CSWSSoundObject::ChangePitchVariation(float fVariation)
         }
     }
 }
-// PC 0x005702E0 GOG 0x00570410
+// PC 0x005702E0 GOG 0x00570410 Xbox 0x00281DD0
 void CSWSSoundObject::ChangeFixedVariance(float fVariance)
 {
     CSWCSoundObject* pSoundObject;
@@ -278,7 +278,7 @@ void CSWSSoundObject::ChangeFixedVariance(float fVariance)
         }
     }
 }
-// PC 0x00570330 GOG 0x00570460
+// PC 0x00570330 GOG 0x00570460 Xbox 0x00281E20
 void CSWSSoundObject::ChangeVolume(int nVolume)
 {
     CSWCSoundObject* pSoundObject;
@@ -300,7 +300,7 @@ void CSWSSoundObject::ChangeVolume(int nVolume)
         }
     }
 }
-// PC 0x00570390 GOG 0x005704C0
+// PC 0x00570390 GOG 0x005704C0 Xbox 0x00281E80
 void CSWSSoundObject::ChangePosition(Vector vPosition)
 {
     if (NWSSOUNDOBJECT_DEBUG)
@@ -351,7 +351,7 @@ CExoArrayList<unsigned long> CSWSSoundObject::GetPeopleInSoundRange()
     CExoArrayList<unsigned long> lstPeople;
     return lstPeople;
 }
-// PC 0x00570580 GOG 0x005706B0
+// PC 0x00570580 GOG 0x005706B0 Xbox 0x00282090
 int CSWSSoundObject::Load(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -462,7 +462,7 @@ int CSWSSoundObject::Load(CResGFF* pRes, CResStruct* pStruct)
     }
     return bSuccess;
 }
-// PC 0x00570A20 GOG 0x00570B50
+// PC 0x00570A20 GOG 0x00570B50 Xbox 0x00282510
 int CSWSSoundObject::LoadFromTemplate(const CResRef& resTemplate)
 {
     CResGFF* pTemplate;

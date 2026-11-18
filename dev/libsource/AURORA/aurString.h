@@ -108,11 +108,11 @@ public:
     virtual CAurBehavior* AttachToPart(CAurObject* pObject, CAurPart* pPart, int nFlags) { return NULL; }
     virtual CAurBehavior* AttachCornersToObjects(CAurObject* pObject, char* sPart1, char* sPart2) { return NULL; }
     virtual int SetPositionOffset(Vector vOffset) { return 0; }
-    virtual Vector SetPosition(Vector vPosition) { return Vector(0.0f, 0.0f, 0.0f); }
+    virtual Vector SetPosition(Vector vPosition) { return Vector(0.0f, 0.0f, 0.0f); }  // Xbox 0x002B38F0
     virtual void AttachModel(CAurObject* pModel, int nIndex) {}
     virtual CAurObject* GetAttachedModel(int nIndex) { return NULL; }
-    virtual void* GetExternalData() { return m_pExternalData; }
-    virtual void SetExternalData(void* pData) { m_pExternalData = pData; }
+    virtual void* GetExternalData() { return m_pExternalData; }  // Xbox 0x002C02F0
+    virtual void SetExternalData(void* pData) { m_pExternalData = pData; }  // Xbox 0x002C0300
     virtual int SetFont(char* sFontName) { return 0; }
     virtual int SetFontPassword(char* sFontName, char cPassword) { return 0; }
     virtual int GetCurrentFontIndex() { return m_pFont->m_nLoadedFontIndex; }

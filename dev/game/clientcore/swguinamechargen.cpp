@@ -8,7 +8,7 @@
 #include "nwccreature.h"
 #include "nwccreaturestats.h"
 #include "nwrace.h"
-// PC 0x0076BEB0 GOG 0x0076BCF0
+// PC 0x0076BEB0 GOG 0x0076BCF0 Xbox 0x00146870
 void CSWGuiNameChargen::HandleCancelButton()
 {
     if (m_pParent != 0)
@@ -29,7 +29,7 @@ void CSWGuiNameChargen::HandleCancelButton()
 }
 
 #ifdef _XBOX
-CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)
+CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)  // Xbox 0x00146F30
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
@@ -207,7 +207,7 @@ void CSWGuiNameChargen::OnPanelAdded()
     }
 }
 #endif
-// PC 0x0076C580 GOG 0x0076C3A0
+// PC 0x0076C580 GOG 0x0076C3A0 Xbox 0x00146B70
 void CSWGuiNameChargen::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -240,13 +240,13 @@ void CSWGuiNameChargen::HandleInputEvent(int nEvent, int bPressed)
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
 
-// PC 0x0076BF00 GOG 0x0076BCD0
+// PC 0x0076BF00 GOG 0x0076BCD0 Xbox 0x00146840
 void CSWGuiNameChargen::SetParentPanel(CSWGuiPanel* pParent, int nParentType)
 {
     m_pParent = pParent;
     m_nParentType = nParentType;
 }
-// PC 0x0076BF20 GOG 0x0076BD40
+// PC 0x0076BF20 GOG 0x0076BD40 Xbox 0x001468C0
 void CSWGuiNameChargen::HandleRandomName()
 {
 #ifdef _XBOX
@@ -279,7 +279,7 @@ void CSWGuiNameChargen::HandleRandomName()
 }
 
 #ifdef _XBOX
-void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)
+void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // Xbox 0x00146C50
 {
     if (pControl->m_bSelected != 0)
     {
@@ -404,7 +404,7 @@ void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x0076C
 #ifdef _XBOX
 #include "exoinput.h"
 
-void CSWGuiNameChargen::OnEnterBackspace(CSWGuiControl* pControl)
+void CSWGuiNameChargen::OnEnterBackspace(CSWGuiControl* pControl)  // Xbox 0x00146940
 {
     if (pControl->m_bSelected)
     {
@@ -413,7 +413,7 @@ void CSWGuiNameChargen::OnEnterBackspace(CSWGuiControl* pControl)
     }
 }
 
-void CSWGuiNameChargen::OnExitBackspace(CSWGuiControl* pControl)
+void CSWGuiNameChargen::OnExitBackspace(CSWGuiControl* pControl)  // Xbox 0x00146980
 {
     if (pControl->m_bSelected)
     {
@@ -422,7 +422,7 @@ void CSWGuiNameChargen::OnExitBackspace(CSWGuiControl* pControl)
     }
 }
 
-void CSWGuiNameChargen::SetInternational(int bInternational)
+void CSWGuiNameChargen::SetInternational(int bInternational)  // Xbox 0x001469B0
 {
     if (m_aIntButtons[0].m_bEnabled == bInternational)
     {
@@ -463,7 +463,7 @@ void CSWGuiNameChargen::SetInternational(int bInternational)
     }
 }
 
-void CSWGuiNameChargen::OnPanelAdded()
+void CSWGuiNameChargen::OnPanelAdded()  // Xbox 0x00146860
 {
     SetActiveControl(&m_btnDone, 0);
 }
