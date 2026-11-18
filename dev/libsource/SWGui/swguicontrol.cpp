@@ -858,7 +858,9 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041C830 G
 CSWGuiListBox::CSWGuiListBox() : m_lItems(0), m_lItemExtents(0)  // PC 0x0041B830 GOG 0x0041B820
 {
     m_nSelectedItem = -1;
+#ifndef _XBOX
     m_nSelectSound = (char)GUISOUND_NONE;
+#endif
     m_nPadding = 0;
     m_pProtoItem = NULL;
 #ifndef _XBOX
@@ -873,8 +875,8 @@ CSWGuiListBox::CSWGuiListBox() : m_lItems(0), m_lItemExtents(0)  // PC 0x0041B83
     m_bHideScrollIcon = 0;
     m_bScrollOnly = 0;
     m_bClipItems = 0;
-    m_bPulseArrows = 1;
 #ifndef _XBOX
+    m_bPulseArrows = 1;
     m_bScrollToSelected = 1;
     m_nPressedItem = -1;
     m_nTopVisibleItem = 0;
@@ -888,6 +890,10 @@ CSWGuiListBox::CSWGuiListBox() : m_lItems(0), m_lItemExtents(0)  // PC 0x0041B83
 #endif
     m_nScrollPosition = 1;
     m_fScrollStep = 1.0f;
+#ifdef _XBOX
+    m_bPulseArrows = 1;
+    m_nSelectSound = (char)GUISOUND_NONE;
+#endif
 }
 // PC 0x0041B970 GOG 0x0041B960
 void CSWGuiListBox::SetExtent(const CSWGuiExtent& cExtent)
@@ -1969,6 +1975,15 @@ CSWGuiControl::CSWGuiControl()  // PC 0x0041A2B0 GOG 0x0041A2A0
     : m_lEvents(0)
 #endif
 {
+#ifdef _XBOX
+    m_pOwner = NULL;
+    m_bActive = 0;
+    m_bEnabled = 1;
+    m_nIndex = 0;
+    m_nID = -1;
+    m_nClickSound = 0;
+    m_nFocusSound = 1;
+#else
     m_bActive = 0;
     m_bEnabled = 1;
 #ifndef _XBOX
@@ -1993,6 +2008,7 @@ CSWGuiControl::CSWGuiControl()  // PC 0x0041A2B0 GOG 0x0041A2A0
 #endif
     m_nID = -1;
     m_nFocusSound = 1;
+#endif
 }
 // PC 0x0041A350 GOG 0x0041A340
 void CSWGuiControl::AddEvent(int nEvent, CSWGuiObject* pObject,
@@ -3953,7 +3969,8 @@ void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,
 
 int CSWGuiControl::HitCheckMouse(int nX, int nY)
 {
-    if (nX < m_cExtent.m_nLeft || nX > m_cExtent.GetRight() || nY < m_cExtent.m_nTop || nY > m_cExtent.GetBottom())
+    if (!m_bEnabled || nX < m_cExtent.m_nLeft || nX > m_cExtent.GetRight() || nY < m_cExtent.m_nTop ||
+        nY > m_cExtent.GetBottom())
     {
         return 0;
     }

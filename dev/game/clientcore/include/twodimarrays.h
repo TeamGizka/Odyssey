@@ -246,15 +246,14 @@ public:
     C2DA* m_pFeedBackText;
     C2DA* m_pForceShields;
     C2DA* m_pHeads;
-#ifdef _XBOX
-    C2DA* m_pMinGlobalRim;
-#endif
     C2DA* m_pItemValues;
     C2DA* m_pVideoEffects;
     C2DA* m_pMovies2DA;
     C2DA* m_pEffectIcon;
     C2DA* m_pRemoveFXOnDeath;
+#ifndef _XBOX
     C2DA* m_pTexPacks;
+#endif
     C2DA* m_pSubrace;
     C2DA* m_pIPRPPC;
     C2DA* m_pInfluence;
@@ -265,6 +264,9 @@ public:
     C2DA* m_pAlienVO;
     C2DA* m_pEmotion;
     C2DA* m_pAutoBalance;
+#ifdef _XBOX
+    C2DA* m_pMinGlobalRim;
+#endif
     C2DA* m_pAIScripts;
 
     CTwoDimArrays();

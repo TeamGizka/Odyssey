@@ -171,17 +171,13 @@ void CSWGuiTextParams::SetColor(const Vector& vColor)
 // PC 0x00414670 GOG 0x00414620
 void CSWGuiTextParams::SetDefaultColor(const Vector& vColor)
 {
-#ifndef _XBOX
     m_vOriginalColor = vColor;
-#endif
     SetColor(vColor);
 }
 // PC 0x004146A0 GOG 0x00414650
 void CSWGuiTextParams::RestoreDefaultColor()
 {
-#ifndef _XBOX
     SetColor(m_vOriginalColor);
-#endif
 }
 // PC 0x004146B0 GOG 0x00414660
 void CSWGuiText::WrapString()
@@ -1315,10 +1311,12 @@ void CSWGuiText::Load(CResGFF* pGFF, CResStruct& cStruct,
         int bSuccess;
 #ifndef _XBOX
         m_cParams.SetBaseFont(pGFF->ReadFieldCResRef(&cText, "FONT", bSuccess, "dialogfont16x16"));
-#else
-        m_cParams.SetBaseFont(pGFF->ReadFieldCResRef(&cText, "FONT", bSuccess, CSWGuiTextParams::s_cDefaultFont));
-#endif
         CSWGuiTextParams& cParams = m_cParams;
+#else
+        CSWGuiTextParams& cParams = m_cParams;
+        cParams.SetBaseFont(pGFF->ReadFieldCResRef(&cText, "FONT", bSuccess, CSWGuiTextParams::s_cDefaultFont));
+        cParams.SetColor(pGFF->ReadFieldVector(&cText, "COLOR", bSuccess, Vector(1.0f, 1.0f, 1.0f)));
+#endif
         cParams.SetDefaultColor(pGFF->ReadFieldVector(&cText, "COLOR", bSuccess, Vector(1.0f, 1.0f, 1.0f)));
         cParams.SetText(pGFF->ReadFieldCExoString(&cText, "TEXT", bSuccess, ""));
         cParams.SetStrRef(pGFF->ReadFieldDWORD(&cText, "STRREF", bSuccess, -1));
@@ -1332,13 +1330,8 @@ void CSWGuiText::Load(CResGFF* pGFF, CResStruct& cStruct,
         }
         char szFont[20];
         m_cParams.m_cFont.CopyToString(szFont);
-#ifdef _XBOX
-        m_pString = NewCAurGUIString((char*)cParams.m_sText.CStr(), szFont,
-                                     m_cParams.m_vColor);
-#else
         m_pString = NewCAurGUIString((char*)cParams.m_sText.CStr(), szFont,
                                      m_cParams.m_vColor, 1.0f);
-#endif
         cParams.SetTextObject(this);
     }
 }
@@ -1456,7 +1449,7 @@ void CSWGuiText::Initialize(const CSWGuiExtent& cExtent,
     cParams.m_cFont.CopyToString(szFont);
 #ifdef _XBOX
     m_pString = NewCAurGUIString((char*)cParams.m_sText.CStr(), szFont,
-                                cParams.m_vColor);
+                                cParams.m_vColor, 1.0f);
 #else
     m_pString = NewCAurGUIString((char*)cParams.m_sText.CStr(), szFont,
                                 cParams.m_vColor, fScale);
@@ -1526,9 +1519,10 @@ void CSWGuiTextParams::SetFont(const CResRef& cFont)
 
 CSWGuiTextParams::CSWGuiTextParams()
 {
-    m_cFont = s_cDefaultFont;
-    m_vColor = Vector(1.0f, 1.0f, 1.0f);
     m_nAlignment = SWGUI_TEXT_ALIGNMENT_DEFAULT;
+    m_vColor = Vector(1.0f, 1.0f, 1.0f);
+    m_cFont = s_cDefaultFont;
+    m_vOriginalColor = Vector(1.0f, 1.0f, 1.0f);
     m_bHilightText = 0;
     m_pText = NULL;
     m_nStrRef = -1;
@@ -1540,6 +1534,7 @@ CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
     m_sText = cParams.m_sText;
     m_nStrRef = cParams.m_nStrRef;
     m_cFont = cParams.m_cFont;
+    m_vOriginalColor = cParams.m_vColor;
     m_vColor = cParams.m_vColor;
     m_nAlignment = cParams.m_nAlignment;
     m_fAlpha = cParams.m_fAlpha;
@@ -1557,7 +1552,7 @@ void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
         {
             char szFont[20];
             m_cFont.CopyToString(szFont);
-            m_pText->m_pString = NewCAurGUIString((char*)m_sText.CStr(), szFont, m_vColor);
+            m_pText->m_pString = NewCAurGUIString((char*)m_sText.CStr(), szFont, m_vColor, 1.0f);
         }
         int nStrRef = m_nStrRef;
         SetFont(m_cFont);

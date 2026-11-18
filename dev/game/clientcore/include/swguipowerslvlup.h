@@ -56,8 +56,8 @@ public:
     void OnPowerPicked(unsigned long nPower);
 #ifndef _XBOX
     void OnDoubleClick(CSWGuiControl* pControl);
-    void ShowGranted(CSWGuiControl* pControl);
 #endif
+    void ShowGranted(CSWGuiControl* pControl);
 
     CSWCCreature* m_pCreature;
 
@@ -68,14 +68,15 @@ public:
     CSWGuiLabel m_lblRemainingBox;
     CSWGuiLabel m_lblRemainingSelections;
     CSWGuiLabel m_lblSelectionsRemaining;
-#ifdef _XBOX
-    CSWGuiLabel m_lblRecommended;
-    CSWGuiLabel m_lblAccept;
-#endif
     CSWGuiLabel m_lblSelectionsRemainingCount;
     CSWGuiLabel m_lblPowerTitle;
     CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblPower;
+    CSWGuiListBox m_lbPowers;
+    CSWGuiListBox m_lbDescription;
 #ifdef _XBOX
+    CSWGuiLabel m_lblRecommended;
+    CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblSelect;
     CSWGuiLabel m_lblA;
@@ -84,9 +85,6 @@ public:
     CSWGuiLabel m_lblY;
     CSWGuiLabel m_lblRanalog;
 #endif
-    CSWGuiLabel m_lblPower;
-    CSWGuiListBox m_lbPowers;
-    CSWGuiListBox m_lbDescription;
 #ifndef _XBOX
     CSWGuiButton m_btnRecommended;
     CSWGuiButton m_btnSelect;
@@ -98,21 +96,15 @@ public:
     unsigned char m_nSpellLevel;
     unsigned long m_bIsPC : 1;
     int m_nSelectedPower;
-#ifndef _XBOX
     unsigned long m_bShowGrantedTutorial : 1;
-#endif
     CExoString m_sSelectText;
     CExoString m_sDeselectText;
     CExoArrayList<unsigned long> m_lGranted;
     CExoArrayList<unsigned long> m_lAvailable;
     CExoArrayList<unsigned long> m_lChosen;
-#ifndef _XBOX
     CExoArrayList<unsigned long> m_lLocked;
-#endif
     CSWGuiSkillFlowChart m_cChart;
-#ifndef _XBOX
     unsigned char m_nPowerState;
-#endif
 };
 
 #endif

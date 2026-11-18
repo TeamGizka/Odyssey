@@ -372,9 +372,7 @@ public:
     unsigned char m_bIgnoreFaded;
     unsigned char m_bUseIgnoreHitCheck;
     unsigned char m_bSkipStatic;
-#ifndef _XBOX
     unsigned char m_bHitEmitterBounds;
-#endif
 };
 
 extern CHitInfo DefaultHitInfo;

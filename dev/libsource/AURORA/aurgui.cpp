@@ -17,10 +17,6 @@
 extern bool g_bTexturesRebuilt;
 #define AURGUI_MAX_WRAPPED_LINES 100
 #define AURGUI_DEBUG 0
-#ifdef _XBOX
-
-#define m_fScale 1.0f
-#endif
 
 #ifdef _XBOX
 
@@ -456,9 +452,14 @@ void CAurGUIImage::FlushBuffer(float fAlpha)
         }
         if (cm_bIsVTC == 0)
         {
+#ifdef _XBOX
+            float fFinalAlpha = GetViewportAlpha() * fAlpha;
+            GLRender_SetColor4f(1.0f, 1.0f, 1.0f, fFinalAlpha);
+#else
             float fViewportAlpha = GetViewportAlpha();
             GLfloat fFinalAlpha = fViewportAlpha * fAlpha;
             GLRender_SetColor4f(1.0f, 1.0f, 1.0f, fFinalAlpha);
+#endif
             GLRender::RenderObjectsVTQuadUP((RenderVertexVT*)cm_fGUIBuffer,
                                             cm_nGUIBufferSizeUsed / 5);
         }
@@ -1456,13 +1457,8 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
     GLRender_Enable(ENABLE_LIGHTING);
 }
 // PC 0x00470BA0 GOG 0x00470CE0
-#ifdef _XBOX
-CAurGUIStringInternal::CAurGUIStringInternal(char* sString, char* sFont,
-                                             Vector vColor)
-#else
 CAurGUIStringInternal::CAurGUIStringInternal(char* sString, char* sFont,
                                              Vector vColor, float fScale)
-#endif
 {
     if (sFont == 0)
     {
@@ -1483,9 +1479,7 @@ CAurGUIStringInternal::CAurGUIStringInternal(char* sString, char* sFont,
     m_nHeight = 0;
     m_nCursorIndex = -1;
     m_nAlignmentBits = 9;
-#ifndef _XBOX
     m_fScale = fScale;
-#endif
 }
 // PC 0x00470E10 GOG 0x00470F50
 inline void CAurGUIStringInternal::GetPositionBoundingRect(int& nX, int& nY)
@@ -1571,19 +1565,11 @@ void CAurGUIStringInternal::SetFontTexture(char* sFont)
     }
 }
 
-#ifdef _XBOX
-CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,
-                                        const Vector& vColor)
-{
-    return new CAurGUIStringInternal(sString, sFont, vColor);
-}
-#else
 CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // PC 0x00471010 GOG 0x00471150
                                         const Vector& vColor, float fScale)
 {
     return new CAurGUIStringInternal(sString, sFont, vColor, fScale);
 }
-#endif
 
 #ifdef _XBOX
 CAurGUIDraw::~CAurGUIDraw()

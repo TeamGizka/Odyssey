@@ -51,6 +51,7 @@ public:
     CSWGuiLabel m_lblSelectionsRemaining;
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblName;
 #ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
@@ -62,7 +63,6 @@ public:
     CSWGuiLabel m_lblSelect;
     CSWGuiLabel m_lblRanalog;
 #endif
-    CSWGuiLabel m_lblName;
 #ifndef _XBOX
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnBack;
@@ -93,9 +93,7 @@ public:
     CExoString m_sFeatUnavailableText;
     CExoString m_sFeatLockedText;
     CSWGuiSkillFlowChart m_cChart;
-#ifndef _XBOX
     unsigned char m_nFeatState;
-#endif
     virtual ~CSWGuiFeatsCharGen();
 #ifndef _XBOX
     virtual void Draw(float fElapsed);

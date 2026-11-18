@@ -2234,11 +2234,7 @@ void CGuiInGame::ResetComputerCameraShot()
     if (m_pGuiManager->PanelExists(m_pComputerScreen))
     {
         m_pGuiManager->RemovePanel(m_pComputerScreen);
-#ifdef _XBOX
-        m_pGuiManager->AddPanel(m_pDialog, 0, 1);
-#else
         m_pGuiManager->AddPanel(m_pDialog, CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
-#endif
         if (m_bVideoEffectEnabled == 0)
             g_pAppManager->m_pClientExoApp->DisableVideoEffect();
     }
@@ -3233,6 +3229,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)
             case 8:
             case 9:
             case 10:
+            case 11:
                 if (m_pPausePanel != 0)
                     m_pPausePanel->SetPauseReason(nReason);
                 if (m_bShowPauseGui == 1 ||
@@ -4730,10 +4727,12 @@ void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
 void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
                                  unsigned long oidOwner, unsigned long nFlags)
 {
+#ifndef _XBOX
     if (m_nReplies <= 1u)
     {
         g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->HideMouse(16);
     }
+#endif
     if (m_bDialogEntryShown)
     {
         m_pDialog->Reset();

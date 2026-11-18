@@ -920,9 +920,7 @@ void CHitInfo::Reset(int nType, int nFlags, int nMask)
     m_bIgnoreFaded = 1;
     m_bUseIgnoreHitCheck = 0;
     m_bSkipStatic = 0;
-#ifndef _XBOX
     m_bHitEmitterBounds = 0;
-#endif
     ClearOutput();
 }
 
@@ -1817,13 +1815,8 @@ CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
     {
         Gob* pGob = m_lstObjects.m_pList[i];
         if (pGob->m_pModel &&
-#ifdef _XBOX
-            (pGob->m_pModel->m_Classification.m_bEmitterBounds ||
-             pGob->m_bDistortion ||
-#else
             ((bool(pGob->m_pModel->m_Classification.m_bEmitterBounds) &&
               !pHitInfo->m_bHitEmitterBounds) || pGob->m_bDistortion ||
-#endif
              bool(pGob->m_pModel->m_Classification.m_bSceneHitDisabled) ||
              pGob->IsSceneHitExcluded()))
             continue;

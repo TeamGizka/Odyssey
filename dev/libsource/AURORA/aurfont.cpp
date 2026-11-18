@@ -60,8 +60,12 @@ void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
     GLRender::SetOrthoTransform(dLeft, dRight, dBottom, dTop, dNear, dFar);
 }
 
+// Xbox 0x002CD700
 void AurInitFont()
 {
+    g_bUseTexturedFont = false;
+    GLRender::SetUpTextFormat();
+    initialized = 1;
 }
 
 void AurPrintString(char* szString, int nColumn, int nRow)

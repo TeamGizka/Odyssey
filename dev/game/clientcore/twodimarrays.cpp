@@ -75,15 +75,14 @@ CTwoDimArrays::CTwoDimArrays()
     m_pFeedBackText = 0;
     m_pForceShields = 0;
     m_pHeads = 0;
-#ifdef _XBOX
-    m_pMinGlobalRim = 0;
-#endif
     m_pItemValues = 0;
     m_pVideoEffects = 0;
     m_pMovies2DA = 0;
     m_pEffectIcon = 0;
     m_pRemoveFXOnDeath = 0;
+#ifndef _XBOX
     m_pTexPacks = 0;
+#endif
     m_pSubrace = 0;
     m_pIPRPPC = 0;
     m_pInfluence = 0;
@@ -94,6 +93,9 @@ CTwoDimArrays::CTwoDimArrays()
     m_pAlienVO = 0;
     m_pEmotion = 0;
     m_pAutoBalance = 0;
+#ifdef _XBOX
+    m_pMinGlobalRim = 0;
+#endif
     m_pAIScripts = 0;
     return;
 }
@@ -220,141 +222,169 @@ int CTwoDimArrays::Load2DArrays_Appearance()  // PC 0x0060ED00 GOG 0x00613680
 
     COL2DA_APPEARANCETABLE_ABORTONPARRY =
         m_pAppearance->GetColumnIndex("ABORTONPARRY");
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_ABORTONPARRY != -1);
     {
         CExoString sColumn("BACKUPHEAD");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_BACKUPHEAD = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_BACKUPHEAD != -1);
     {
         CExoString sColumn("CameraHeightOffset");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_CAMERAHEIGHTOFFSET = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_CAMERAHEIGHTOFFSET != -1);
     {
         CExoString sColumn("CAMERASPACE");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_CAMERASPACE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_CAMERASPACE != -1);
     {
         CExoString sColumn("CREPERSPACE");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_CREPERSPACE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_CREPERSPACE != -1);
     {
         CExoString sColumn("DisableInjuredAnim");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_DISABLEINJUREDANIM = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_DISABLEINJUREDANIM != -1);
     {
         CExoString sColumn("DRIVEACCl");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_DRIVEACCl = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_DRIVEACCl != -1);
     {
         CExoString sColumn("DriveAnimRun_PC");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_DRIVEANIMRUN = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_DRIVEANIMRUN != -1);
     {
         CExoString sColumn("DriveAnimWalk");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_DRIVEANIMWALK = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_DRIVEANIMWALK != -1);
     {
         CExoString sColumn("DriveMaxSpeed");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_DRIVEMAXSPEED = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_DRIVEMAXSPEED != -1);
     {
         CExoString sColumn("ENVMAP");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_ENVMAP = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_ENVMAP != -1);
     {
         CExoString sColumn("FootstepType");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_FOOTSTEPTYPE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_FOOTSTEPTYPE != -1);
     {
         CExoString sColumn("HEAD_ARC_H");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_HEAD_ARC_H = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_HEAD_ARC_H != -1);
     {
         CExoString sColumn("HEAD_ARC_V");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_HEAD_ARC_V = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_HEAD_ARC_V != -1);
     {
         CExoString sColumn("HEADBONE");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_HEADBONE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_HEADBONE != -1);
     {
         CExoString sColumn("HEADTRACK");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_HEADTRACK = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_HEADTRACK != -1);
     {
         CExoString sColumn("HEIGHT");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_HEIGHT = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_HEIGHT != -1);
     {
         CExoString sColumn("HITRADIUS");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_HITRADIUS = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_HITRADIUS != -1);
     {
         CExoString sColumn("hitdist");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_HITDIST = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_HITDIST != -1);
     {
         CExoString sColumn("GROUNDTILT");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_GROUNDTILT = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_GROUNDTILT != -1);
     {
         CExoString sColumn("MODELTYPE");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_MODELTYPE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_MODELTYPE != -1);
     {
         CExoString sColumn("NORMALHEAD");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_NORMALHEAD = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_NORMALHEAD != -1);
     {
         CExoString sColumn("PERSPACE");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_PERSPACE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_PERSPACE != -1);
     {
         CExoString sColumn("RACE");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_RACE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_RACE != -1);
     {
         CExoString sColumn("RUNDIST");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_RUNDIST = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_RUNDIST != -1);
     {
         CExoString sColumn("SIZECATEGORY");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_SIZECATEGORY = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_SIZECATEGORY != -1);
     {
         CExoString sColumn("SoundAppType");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_SOUNDAPPTYPE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_SOUNDAPPTYPE != -1);
     {
         CExoString sColumn("WALKDIST");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_WALKDIST = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCETABLE_WALKDIST != -1);
     return 1;
 }
 // PC 0x0060F380 GOG 0x0060ECE0
@@ -368,31 +398,37 @@ int CTwoDimArrays::Load2DArrays_AppearanceSounds()
 
     COL2DA_APPEARANCESOUNDS_ARMORTYPE =
         m_pAppearanceSounds->GetColumnIndex("ArmorType");
+    EXOXBOXASSERT(COL2DA_APPEARANCESOUNDS_ARMORTYPE != -1);
     {
         CExoString sColumn("FallDirt");
         C2DA* p2DA = m_pAppearanceSounds;
         COL2DA_APPEARANCESOUNDS_FALLDIRT = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCESOUNDS_FALLDIRT != -1);
     {
         CExoString sColumn("FallHard");
         C2DA* p2DA = m_pAppearanceSounds;
         COL2DA_APPEARANCESOUNDS_FALLHARD = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCESOUNDS_FALLHARD != -1);
     {
         CExoString sColumn("FallMetal");
         C2DA* p2DA = m_pAppearanceSounds;
         COL2DA_APPEARANCESOUNDS_FALLMETAL = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCESOUNDS_FALLMETAL != -1);
     {
         CExoString sColumn("FallWater");
         C2DA* p2DA = m_pAppearanceSounds;
         COL2DA_APPEARANCESOUNDS_FALLWATER = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCESOUNDS_FALLWATER != -1);
     {
         CExoString sColumn("Weapon");
         C2DA* p2DA = m_pAppearanceSounds;
         COL2DA_APPEARANCESOUNDS_WEAPON = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_APPEARANCESOUNDS_WEAPON != -1);
     return 1;
 }
 // PC 0x0060F640 GOG 0x0060EFA0
@@ -405,6 +441,7 @@ int CTwoDimArrays::Load2DArrays_Gender()
     }
 
     COL2DA_GENDER_GENDER = m_pGender->GetColumnIndex("GENDER");
+    EXOXBOXASSERT(COL2DA_GENDER_GENDER != -1);
     return 1;
 }
 // PC 0x0060F570 GOG 0x0060EED0
@@ -417,6 +454,7 @@ int CTwoDimArrays::Load2DArrays_SurfaceMaterial()
     }
 
     COL2DA_SURFACEMATERIAL_NAME = m_pSurfaceMaterial->GetColumnIndex("Name");
+    EXOXBOXASSERT(COL2DA_SURFACEMATERIAL_NAME != -1);
     return 1;
 }
 // PC 0x0060F710 GOG 0x0060F070
@@ -430,66 +468,79 @@ int CTwoDimArrays::Load2DArrays_VisualEffect()
 
     COL2DA_VISUALEFFECT_IMP_HEADCON_NODE =
         m_pVisualEffect->GetColumnIndex("Imp_HeadCon_Node");
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_IMP_HEADCON_NODE != -1);
     {
         CExoString sColumn("Imp_Impact_Node");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_IMP_IMPACT_NODE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_IMP_IMPACT_NODE != -1);
     {
         CExoString sColumn("Imp_Root_H_Node");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_IMP_ROOT_H_NODE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_IMP_ROOT_H_NODE != -1);
     {
         CExoString sColumn("Imp_Root_L_Node");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_IMP_ROOT_L_NODE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_IMP_ROOT_L_NODE != -1);
     {
         CExoString sColumn("Imp_Root_M_Node");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_IMP_ROOT_M_NODE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_IMP_ROOT_M_NODE != -1);
     {
         CExoString sColumn("Imp_Root_S_Node");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_IMP_ROOT_S_NODE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_IMP_ROOT_S_NODE != -1);
     {
         CExoString sColumn("LowQuality");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_LOWQUALITY = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_LOWQUALITY != -1);
     {
         CExoString sColumn("OrientWithGround");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_ORIENTWITHGROUND = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_ORIENTWITHGROUND != -1);
     {
         CExoString sColumn("ShakeDelay");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_SHAKEDELAY = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_SHAKEDELAY != -1);
     {
         CExoString sColumn("ShakeDuration");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_SHAKEDURATION = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_SHAKEDURATION != -1);
     {
         CExoString sColumn("ShakeType");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_SHAKETYPE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_SHAKETYPE != -1);
     {
         CExoString sColumn("SoundDuration");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_SOUNDDURATION = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_SOUNDDURATION != -1);
     {
         CExoString sColumn("SoundImpact");
         C2DA* p2DA = m_pVisualEffect;
         COL2DA_VISUALEFFECT_SOUNDIMPACT = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_VISUALEFFECT_SOUNDIMPACT != -1);
     return 1;
 }
 // PC 0x0060FA70 GOG 0x0060F3D0
@@ -504,117 +555,140 @@ int CTwoDimArrays::Load2DArrays_PersistentVisualEffect()
 
     COL2DA_PERSISTENTVISUALEFFECT_DURATIONVFX =
         m_pVisualEffectsPersistent->GetColumnIndex("DurationVFX");
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_DURATIONVFX != -1);
     {
         CExoString sColumn("OrientWithGround");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_ORIENTWITHGROUND = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_ORIENTWITHGROUND != -1);
     {
         CExoString sColumn("SHAPE");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_SHAPE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_SHAPE != -1);
     {
         CExoString sColumn("RADIUS");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_RADIUS = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_RADIUS != -1);
     {
         CExoString sColumn("WIDTH");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_WIDTH = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_WIDTH != -1);
     {
         CExoString sColumn("LENGTH");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_LENGTH = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_LENGTH != -1);
     {
         CExoString sColumn("MODELMIN01");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_MODELMIN01 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_MODELMIN01 != -1);
     {
         CExoString sColumn("MODEL01");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_MODEL01 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_MODEL01 != -1);
     {
         CExoString sColumn("MODELMIN02");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_MODELMIN02 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_MODELMIN02 != -1);
     {
         CExoString sColumn("MODEL02");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_MODEL02 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_MODEL02 != -1);
     {
         CExoString sColumn("MODELMIN03");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_MODELMIN03 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_MODELMIN03 != -1);
     {
         CExoString sColumn("MODEL03");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_MODEL03 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_MODEL03 != -1);
     {
         CExoString sColumn("NUMACT01");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_NUMACT01 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_NUMACT01 != -1);
     {
         CExoString sColumn("NUMACT02");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_NUMACT02 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_NUMACT02 != -1);
     {
         CExoString sColumn("NUMACT03");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_NUMACT03 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_NUMACT03 != -1);
     {
         CExoString sColumn("DURATION01");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_DURATION01 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_DURATION01 != -1);
     {
         CExoString sColumn("DURATION02");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_DURATION02 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_DURATION02 != -1);
     {
         CExoString sColumn("DURATION03");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_DURATION03 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_DURATION03 != -1);
     {
         CExoString sColumn("EDGEWGHT01");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_EDGEWGHT01 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_EDGEWGHT01 != -1);
     {
         CExoString sColumn("EDGEWGHT02");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_EDGEWGHT02 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_EDGEWGHT02 != -1);
     {
         CExoString sColumn("EDGEWGHT03");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_EDGEWGHT03 = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_EDGEWGHT03 != -1);
     {
         CExoString sColumn("SoundOneShot");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_SOUNDONESHOT = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_SOUNDONESHOT != -1);
     {
         CExoString sColumn("SoundOneShotPercentage");
         C2DA* p2DA = m_pVisualEffectsPersistent;
         COL2DA_PERSISTENTVISUALEFFECT_SOUNDONESHOTPERCENTAGE =
             p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PERSISTENTVISUALEFFECT_SOUNDONESHOTPERCENTAGE != -1);
     return 1;
 }
 // PC 0x0060FFE0 GOG 0x0060F940
@@ -627,11 +701,13 @@ int CTwoDimArrays::Load2DArrays_CreatureSpeed()
     }
 
     COL2DA_CREATURESPEED_RUNRATE = m_pCreatureSpeed->GetColumnIndex("RUNRATE");
+    EXOXBOXASSERT(COL2DA_CREATURESPEED_RUNRATE != -1);
     {
         CExoString sColumn("WALKRATE");
         C2DA* p2DA = m_pCreatureSpeed;
         COL2DA_CREATURESPEED_WALKRATE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_CREATURESPEED_WALKRATE != -1);
     return 1;
 }
 // PC 0x006100F0 GOG 0x0060FA50
@@ -645,6 +721,7 @@ int CTwoDimArrays::Load2DArrays_DoorTypes()
 
     COL2DA_DOORTYPES_SOUNDAPPTYPE =
         m_pDoorTypes->GetColumnIndex("SoundAppType");
+    EXOXBOXASSERT(COL2DA_DOORTYPES_SOUNDAPPTYPE != -1);
     return 1;
 }
 // PC 0x006101C0 GOG 0x0060FB20
@@ -658,6 +735,7 @@ int CTwoDimArrays::Load2DArrays_GenericDoors()
 
     COL2DA_GENERICDOORS_SOUNDAPPTYPE =
         m_pGenericDoors->GetColumnIndex("SoundAppType");
+    EXOXBOXASSERT(COL2DA_GENERICDOORS_SOUNDAPPTYPE != -1);
     return 1;
 }
 // PC 0x00610290 GOG 0x0060FBF0
@@ -674,16 +752,19 @@ int CTwoDimArrays::Load2DArrays_Placeables()
         C2DA* p2DA = m_pPlaceables;
         COL2DA_PLACEABLES_SOUNDAPPTYPE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PLACEABLES_SOUNDAPPTYPE != -1);
     {
         CExoString sColumn("StrRef");
         C2DA* p2DA = m_pPlaceables;
         COL2DA_PLACEABLES_STRREF = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PLACEABLES_STRREF != -1);
     {
         CExoString sColumn("IgnoreStaticHitcheck");
         C2DA* p2DA = m_pPlaceables;
         COL2DA_PLACEABLES_IGNORESTATICHITCHECK = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PLACEABLES_IGNORESTATICHITCHECK != -1);
     return 1;
 }
 // PC 0x006103E0 GOG 0x0060FD40
@@ -697,26 +778,31 @@ int CTwoDimArrays::Load2DArrays_PlaceableSounds()
 
     COL2DA_PLACEABLESOUNDS_ARMORTYPE =
         m_pPlaceableSounds->GetColumnIndex("ArmorType");
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_ARMORTYPE != -1);
     {
         CExoString sColumn("Locked");
         C2DA* p2DA = m_pPlaceableSounds;
         COL2DA_PLACEABLESOUNDS_LOCKED = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_LOCKED != -1);
     {
         CExoString sColumn("Opened");
         C2DA* p2DA = m_pPlaceableSounds;
         COL2DA_PLACEABLESOUNDS_OPENED = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_OPENED != -1);
     {
         CExoString sColumn("Closed");
         C2DA* p2DA = m_pPlaceableSounds;
         COL2DA_PLACEABLESOUNDS_CLOSED = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_CLOSED != -1);
     {
         CExoString sColumn("Destroyed");
         C2DA* p2DA = m_pPlaceableSounds;
         COL2DA_PLACEABLESOUNDS_DESTROYED = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_PLACEABLESOUNDS_DESTROYED != -1);
     return 1;
 }
 // PC 0x006106E0 GOG 0x00610040
@@ -790,11 +876,13 @@ int CTwoDimArrays::Load2DArrays_FootstepSounds()
 
     COL2DA_FOOTSTEPSOUNDS_PITCHOFFSET =
         m_pFootstepSounds->GetColumnIndex("PitchOffset");
+    EXOXBOXASSERT(COL2DA_FOOTSTEPSOUNDS_PITCHOFFSET != -1);
     {
         CExoString sColumn("Rolling");
         C2DA* p2DA = m_pFootstepSounds;
         COL2DA_FOOTSTEPSOUNDS_ROLLING = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_FOOTSTEPSOUNDS_ROLLING != -1);
     return 1;
 }
 // PC 0x00610CF0 GOG 0x00610650
@@ -808,6 +896,7 @@ int CTwoDimArrays::Load2DArrays_WeaponSounds()
 
     COL2DA_WEAPONSOUNDS_PITCHOFFSET =
         m_pWeaponSounds->GetColumnIndex("PitchOffset");
+    EXOXBOXASSERT(COL2DA_WEAPONSOUNDS_PITCHOFFSET != -1);
     return 1;
 }
 
@@ -973,71 +1062,85 @@ int CTwoDimArrays::Load2DArrays_Animations()
     }
 
     COL2DA_ANIMATIONS_ATTACK = m_pAnimations->GetColumnIndex("Attack");
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_ATTACK != -1);
     {
         CExoString sColumn("Damage");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_DAMAGE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_DAMAGE != -1);
     {
         CExoString sColumn("Dialog");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_DIALOG = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_DIALOG != -1);
     {
         CExoString sColumn("Dodge");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_DODGE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_DODGE != -1);
     {
         CExoString sColumn("FireForget");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_FIREFORGET = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_FIREFORGET != -1);
     {
         CExoString sColumn("HideEquippedItems");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_HIDEEQUIPPEDITEMS = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_HIDEEQUIPPEDITEMS != -1);
     {
         CExoString sColumn("Looping");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_LOOPING = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_LOOPING != -1);
     {
         CExoString sColumn("Name");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_NAME = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_NAME != -1);
     {
         CExoString sColumn("Overlay");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_OVERLAY = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_OVERLAY != -1);
     {
         CExoString sColumn("Parry");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_PARRY = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_PARRY != -1);
     {
         CExoString sColumn("Pause");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_PAUSE = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_PAUSE != -1);
     {
         CExoString sColumn("Running");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_RUNNING = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_RUNNING != -1);
     {
         CExoString sColumn("Stationary");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_STATIONARY = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_STATIONARY != -1);
     {
         CExoString sColumn("Walking");
         C2DA* p2DA = m_pAnimations;
         COL2DA_ANIMATIONS_WALKING = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_ANIMATIONS_WALKING != -1);
     return 1;
 }
 
@@ -1056,11 +1159,13 @@ int CTwoDimArrays::Load2DArrays_ForceAdjust()
     }
 
     COL2DA_FORCEADJUST_EVILCOST = m_pForcePointAdjust->GetColumnIndex("EvilCost");
+    EXOXBOXASSERT(COL2DA_FORCEADJUST_EVILCOST != -1);
     {
         CExoString sColumn("GoodCost");
         C2DA* p2DA = m_pForcePointAdjust;
         COL2DA_FORCEADJUST_GOODCOST = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_FORCEADJUST_GOODCOST != -1);
     return 1;
 }
 // PC 0x006122E0 GOG 0x00611C40
@@ -1110,21 +1215,25 @@ int CTwoDimArrays::Load2DArrays_DialogAnimations()
 
     COL2DA_DIALOGANIMATIONS_DIALOG =
         m_pDialogAnimations->GetColumnIndex("Dialog");
+    EXOXBOXASSERT(COL2DA_DIALOGANIMATIONS_DIALOG != -1);
     {
         CExoString sColumn("FireForget");
         C2DA* p2DA = m_pDialogAnimations;
         COL2DA_DIALOGANIMATIONS_FIREFORGET = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_DIALOGANIMATIONS_FIREFORGET != -1);
     {
         CExoString sColumn("Looping");
         C2DA* p2DA = m_pDialogAnimations;
         COL2DA_DIALOGANIMATIONS_LOOPING = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_DIALOGANIMATIONS_LOOPING != -1);
     {
         CExoString sColumn("Overlay");
         C2DA* p2DA = m_pDialogAnimations;
         COL2DA_DIALOGANIMATIONS_OVERLAY = p2DA->GetColumnIndex(sColumn);
     }
+    EXOXBOXASSERT(COL2DA_DIALOGANIMATIONS_OVERLAY != -1);
     return 1;
 }
 
@@ -2092,14 +2201,6 @@ int CTwoDimArrays::UnLoad2DArrays()
         delete m_pHeads;
         m_pHeads = 0;
     }
-#ifdef _XBOX
-    if (m_pMinGlobalRim != 0)
-    {
-        m_pMinGlobalRim->Unload2DArray();
-        delete m_pMinGlobalRim;
-        m_pMinGlobalRim = 0;
-    }
-#endif
     if (m_pItemValues != 0)
     {
         m_pItemValues->Unload2DArray();
@@ -2130,12 +2231,14 @@ int CTwoDimArrays::UnLoad2DArrays()
         delete m_pRemoveFXOnDeath;
         m_pRemoveFXOnDeath = 0;
     }
+#ifndef _XBOX
     if (m_pTexPacks != 0)
     {
         m_pTexPacks->Unload2DArray();
         delete m_pTexPacks;
         m_pTexPacks = 0;
     }
+#endif
     if (m_pSubrace != 0)
     {
         m_pSubrace->Unload2DArray();
@@ -2196,6 +2299,14 @@ int CTwoDimArrays::UnLoad2DArrays()
         delete m_pAutoBalance;
         m_pAutoBalance = 0;
     }
+#ifdef _XBOX
+    if (m_pMinGlobalRim != 0)
+    {
+        m_pMinGlobalRim->Unload2DArray();
+        delete m_pMinGlobalRim;
+        m_pMinGlobalRim = 0;
+    }
+#endif
     if (m_pAIScripts != 0)
     {
         m_pAIScripts->Unload2DArray();

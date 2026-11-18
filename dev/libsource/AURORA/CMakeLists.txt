@@ -78,9 +78,6 @@ endif()
 kotor_library(AURORA ${sources})
 
 target_include_directories(AURORA BEFORE PRIVATE "${KOTOR_DEV}/libsource/math3d")
-if(KOTOR_PLATFORM STREQUAL "xbox")
-  target_compile_options(AURORA PRIVATE /Ob1)
-endif()
 set_source_files_properties(
   aurpostprocess.cpp aurcamera.cpp aurtexcontrol.cpp aurmodelparse.cpp aurtristripper.cpp aurskin.cpp aurio.cpp
   aurlightmanager.cpp aurwindmanager.cpp aurgrass.cpp

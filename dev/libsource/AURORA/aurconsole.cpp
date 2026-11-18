@@ -684,7 +684,7 @@ static int g_nMissingFiles;
 
 void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)
 {
-    char sPath[MISSING_FILE_NAME_LENGTH];
+    char sPath[MAX_PATH];
 
     if (sExtension == 0)
     {

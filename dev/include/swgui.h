@@ -211,7 +211,9 @@ public:
     CExoArrayList<CSWGuiControl*> m_lControls;
     CResGFF* m_pLayout;
     CResList m_lLayoutControls;
+#ifndef _XBOX
     unsigned long m_bPositioned : 1;
+#endif
     unsigned long m_bLoadingLayout : 1;
     unsigned long m_bVisible : 1;
     unsigned long m_bModal : 1;
@@ -221,7 +223,9 @@ public:
     unsigned long m_bDeferredRemoval : 1;
     unsigned long m_nExitState : 2;
     unsigned long : 21;
+#ifndef _XBOX
     unsigned char m_nBackground;
+#endif
     float m_fAlpha;
     Vector m_vColor;
     CSWGuiBorder* m_pBorder;
@@ -483,18 +487,15 @@ public:
     CSWGuiHandler m_pCallback;
     CSWGuiObject* m_pCallbackObject;
     CSWGuiControl* m_pCallbackControl;
+    CSWGuiLabel m_lblMessage;
+    CSWGuiLabel m_lblIcon;
 #ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblOk;
     CSWGuiLabel m_lblCancel;
-#endif
-    CSWGuiLabel m_lblMessage;
-#ifdef _XBOX
     CSWGuiLabel m_lblRAnalog;
-#endif
-    CSWGuiLabel m_lblIcon;
-#ifndef _XBOX
+#else
     CSWGuiButton m_btnOk;
     CSWGuiButton m_btnCancel;
 #endif

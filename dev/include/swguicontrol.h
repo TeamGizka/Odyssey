@@ -111,7 +111,9 @@ public:
     void SetExtent(CSWGuiExtent* pExtent);
 
     CSWGuiExtent m_cExtent;
+#ifndef _XBOX
     int m_n14;
+#endif
 };
 
 struct CSWGuiControlEvent
@@ -374,6 +376,9 @@ public:
     void SetMoveToControl(int nDirection, CSWGuiControl* pControl);
 
     CSWGuiControl* m_apMoveToControl[4];
+#ifdef _XBOX
+    int m_n4C;
+#endif
 };
 
 class CSWGuiLabel : public CSWGuiControl

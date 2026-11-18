@@ -101,9 +101,7 @@ public:
     CResRef m_cFont;
     Vector m_vColor;
     float m_fAlpha;
-#ifndef _XBOX
     Vector m_vOriginalColor;
-#endif
     unsigned long m_nAlignment : 6;
     unsigned long m_bHilightText : 1;
 #ifndef _XBOX

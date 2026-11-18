@@ -1158,14 +1158,22 @@ void CClientOptions::SetDefaultVideoOptions()
 
 void CClientOptions::SetDefaults()
 {
+    m_bAutopauseMineSighted = 0;
+    m_bAutopausePartyKilled = 1;
+    m_bAutopauseActionMenu = 0;
     m_bPauseVertMenu = 0;
     m_bAutopauseNewTargetSelected = 1;
-    m_nDifficulty = 1;
+    m_nMusicVolume = 85;
+    m_nVoiceVolume = 85;
+    m_nSoundEffectsVolume = 85;
+    m_nMovieVolume = 85;
     m_bAutoLevelUpNPCs = 0;
     m_bMouseLook = 0;
     m_bAutoSave = 1;
     m_bReverseMinigameYAxis = 0;
+    m_bReverseIngame = 0;
     m_bCombatMovement = 1;
+    m_bGuiFade = 1;
     m_bHideUnequippable = 0;
     m_bTutorialPopups = 1;
     m_bSubtitles = 1;
@@ -1175,12 +1183,9 @@ void CClientOptions::SetDefaults()
     m_bStatusSummary = 1;
     m_bAutopauseEndOfCombatRound = 0;
     m_bAutopauseEnemySighted = 1;
-    m_bAutopausePartyKilled = 1;
-    m_bAutopauseActionMenu = 0;
-    m_nMusicVolume = 85;
-    m_nVoiceVolume = 85;
-    m_nSoundEffectsVolume = 85;
-    m_nMovieVolume = 85;
+    m_nDifficulty = 1;
+    m_nXboxUnmapped34 = 0;
+    m_nXboxUnmapped38 = 0;
     SetDefaultVideoOptions();
     memset(m_aMoviesShown, 0, sizeof(m_aMoviesShown));
 }
@@ -1525,11 +1530,16 @@ void CClientOptions::SetWindMode(unsigned char nMode)
 
 CClientOptions::CClientOptions()
 {
-    m_nCameraStyle = 1;
+    m_nGoreLevel = 2;
+    m_nObjectShadowMode = OBJECT_SHADOWS_ALL;
+    m_fCameraDistance = 3.0f;
+    m_nGameSpeed = 2;
+    m_nWindMode = WIND_ALL;
+    m_nUnlockedSongs = 0;
     m_nCameraMode = CClientOptions::CAMERA_MODE_ON_A_STICK;
+    m_nCameraStyle = 1;
     m_nAmbientSoundOptions = DEFAULT_AMBIENT_SOUND_OPTIONS;
     m_nGeometryFadeMode = 0;
-    m_nGoreLevel = 2;
     m_nXboxUnmappedBit0 = 1;
     m_nXboxUnmappedBit1 = 0;
     m_bAutoDetectVideo = 1;
@@ -1537,13 +1547,14 @@ CClientOptions::CClientOptions()
     m_bFullScreen = 0;
     m_bPlayMovies = 1;
     m_bWindowed = 1;
-    m_bPlaySounds = 1;
-    m_nObjectShadowMode = OBJECT_SHADOWS_ALL;
-    m_fCameraDistance = 3.0f;
     m_fCameraHeight = 1.0f;
     m_nCombatSpeed = 3;
-    m_nGameSpeed = 2;
-    m_nWindMode = WIND_ALL;
+    m_nCurSithLord = 0;
+    m_bGameCompleted = 0;
+    m_nPCGender = 0;
+    m_nAppearanceType = 0;
+    m_nBodyVariation = 0;
+    m_nTextureVariation = 0;
     SetDefaults();
 }
 #endif

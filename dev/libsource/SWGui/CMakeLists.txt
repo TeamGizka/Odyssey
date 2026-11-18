@@ -5,7 +5,9 @@ kotor_library(SWGui
   swguicontrol.cpp
   swguidynamic.cpp)
 
-target_compile_options(SWGui PRIVATE /Ob1)
+if(NOT KOTOR_PLATFORM STREQUAL "xbox")
+  target_compile_options(SWGui PRIVATE /Ob1)
+endif()
 set_source_files_properties(swguicontrol.cpp PROPERTIES COMPILE_OPTIONS "/YX")
 
 kotor_source_pch(swguicontrol.cpp appmanager.h)

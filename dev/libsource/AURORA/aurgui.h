@@ -173,12 +173,8 @@ public:
 class CAurGUIStringInternal : public CAurGUIString
 {
 public:
-#ifdef _XBOX
-    CAurGUIStringInternal(char* sString, char* sFont, Vector vColor);
-#else
     CAurGUIStringInternal(char* sString, char* sFont, Vector vColor,
                           float fScale);
-#endif
     virtual ~CAurGUIStringInternal();
     virtual Vector GetColor()  // PC 0x00470CF0 GOG 0x00470E30
     {
@@ -275,22 +271,15 @@ public:
     Vector m_vColor;
     List<int> m_lstLineWidth;
     List<int> m_lstLineLength;
-#ifndef _XBOX
     float m_fScale;
-#endif
     short m_nCursorIndex;
     unsigned char m_nAlignmentBits : 8;
 
 };
 
 CAurGUIImageInternal* NewCAurGUIImage(char* sTexture);
-#ifdef _XBOX
-CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,
-                                        const Vector& vColor);
-#else
 CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,
                                         const Vector& vColor, float fScale);
-#endif
 void AurGUIStartLayer();
 void AurGUIStopLayer();
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,

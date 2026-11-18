@@ -618,6 +618,7 @@ void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout, int bScalePosition
             pGFF->GetList(&m_lLayoutControls, &cStruct, "CONTROLS");
             m_bLoadingLayout = 1;
         }
+#ifndef _XBOX
 
         CSWGuiExtent cExtent = m_cExtent;
         float fScaleX;
@@ -645,6 +646,7 @@ void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout, int bScalePosition
         SetExtent(cExtent);
         m_pBorder->SetExtent(cExtent);
         m_bPositioned = 1;
+#endif
     }
 }
 // PC 0x0040AB70 GOG 0x0040AB40

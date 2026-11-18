@@ -74,7 +74,6 @@ public:
         return 0.0f;
     }
 
-#ifndef _XBOX
     virtual void SetPlayerWalking(int bWalking)  // PC 0x005EE1C0 GOG 0x005EE1A0
     {
     }
@@ -83,7 +82,6 @@ public:
     {
         return 0;
     }
-#endif
     // PC 0x004015A0 GOG 0x004015A0
     virtual void RunKey()
     {
@@ -152,7 +150,6 @@ public:
     {
         return m_fLeftRight;
     }
-#ifndef _XBOX
     virtual void SetPlayerWalking(int bWalking)  // PC 0x006CEF30 GOG 0x006CEC30
     {
         m_bPlayerWalking = bWalking;
@@ -161,7 +158,6 @@ public:
     {
         return m_bPlayerWalking;
     }
-#endif
     virtual float GetCurSpeed()  // PC 0x006CEF40 GOG 0x006CEC40
     {
         float fForward = (float)fabs(m_stateB.m_vValue.m_fX);
@@ -182,9 +178,7 @@ public:
 
     float m_fUpDown;
     float m_fLeftRight;
-#ifndef _XBOX
     int m_bPlayerWalking;
-#endif
     Vector m_vFacing;
     Vector m_vDesiredFacing;
     float m_fTurnRate;

@@ -69,6 +69,8 @@ public:
     CSWGuiLabel m_lblCostPoints;
     CSWGuiLabel m_lblClassSkill;
     CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblSkill[8];
+    CSWGuiButton m_btnPoints[8];
 #ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
@@ -77,13 +79,10 @@ public:
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblRecommended;
     CSWGuiLabel m_lblRanalog;
-#endif
-    CSWGuiLabel m_lblSkill[8];
-#ifdef _XBOX
     CSWGuiLabel m_lblMinus[8];
     CSWGuiLabel m_lblPlus[8];
+    CExoArrayList<CSWGuiAbilitiesArrowHilight> m_lArrowHilights;
 #endif
-    CSWGuiButton m_btnPoints[8];
 #ifndef _XBOX
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnBack;
@@ -93,9 +92,6 @@ public:
     CSWGuiLabel m_alblBar[2];
 #endif
     CExoString m_sDescription[8];
-#ifdef _XBOX
-    CExoArrayList<CSWGuiAbilitiesArrowHilight> m_lArrowHilights;
-#endif
     int m_nPointsRemaining;
     int m_nSelected;
     unsigned char m_aStartRank[8];

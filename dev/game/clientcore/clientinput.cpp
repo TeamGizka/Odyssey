@@ -84,6 +84,7 @@ void CClientExoAppInternal::EnableInput()
 {
     m_bInputDisabled = 0;
 }
+#ifndef _XBOX
 // PC 0x0066FC90 GOG 0x0066FA30
 int CClientExoAppInternal::PerformXMouseMoveAction(int nX)
 {
@@ -111,6 +112,7 @@ int CClientExoAppInternal::PerformYMouseMoveAction(int nY)
         m_nMouseY >= g_nScreenHeight - 1 ? g_nScreenHeight - 1 : m_nMouseY;
     return 1;
 }
+#endif
 
 #ifndef _XBOX
 void CClientExoAppInternal::PerformLButtonDownAction(int nArg)  // PC 0x0066FD30 GOG 0x0066FAD0
@@ -203,6 +205,7 @@ void CClientExoAppInternal::SetMouseCursor(int nCursor, int bCentered, int bMous
 #endif
     }
 }
+#ifndef _XBOX
 // PC 0x0066FE70 GOG 0x0066FC10
 void CClientExoAppInternal::HideMouse(int nFlags)
 {
@@ -253,6 +256,7 @@ void CClientExoAppInternal::ShowMouse(int nFlags)
         }
     }
 }
+#endif
 
 // Dead code: not in the PC executable
 int NearestObjectCompare(void* pObjectId, CNearestStruct cNearest)

@@ -9,6 +9,8 @@
 #include "aurrendergl.h"
 #ifndef _XBOX
 #include "aurglext.h"
+#else
+#include <xgraphics.h>
 #endif
 #include "auremitter.h"
 #include "aurinternal.h"
@@ -230,8 +232,11 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
                 GLRender::GenPrograms(1, &m_nGLProgram);
             }
             unsigned long nLength = strlen(m_sVertexProgram);
-            GLRender::DrawElementsInShadow(m_nGLProgram, nLength,
-                                           m_sVertexProgram, m_pProgram);
+            XGBuffer* pFunction = NULL;
+            XGAssembleShader(NULL, m_sVertexProgram, nLength, SASM_SKIPVALIDATION, NULL, &pFunction,
+                             NULL, NULL, NULL, NULL, NULL);
+            GLRender::DrawElementsInShadow(m_nGLProgram, (const DWORD*)pFunction->GetBufferPointer(),
+                                           m_pProgram);
             m_bLoaded = 1;
             return;
 

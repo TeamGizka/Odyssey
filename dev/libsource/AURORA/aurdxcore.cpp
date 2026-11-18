@@ -542,6 +542,30 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
     }
 }
 
+void GLRender::CopyVolumeToTextureMemory(void* pImage, D3DLOCKED_BOX* pLock, int nWidth, int nHeight, int nDepth,
+                                         int nFormat)
+{
+    int bLinear = 0;
+
+    if (nFormat == 10)
+    {
+        bLinear = 1;
+    }
+    else if (nFormat == 11)
+    {
+        bLinear = 1;
+        nFormat = 1;
+    }
+    if (nFormat == 0)
+    {
+        XGSwizzleBox(pImage, 0, 0, NULL, pLock->pBits, nWidth, nHeight, nDepth, NULL, 4);
+    }
+    else if (nFormat == 10)
+    {
+        memcpy(pLock->pBits, pImage, nWidth * nHeight * nDepth * 4);
+    }
+}
+
 int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
 {
     int nMipWidth = nWidth;
@@ -777,14 +801,6 @@ void GLRender::SetTextureStageFlag(unsigned long nStage, int nValue)
 unsigned int GLRender::GetCurrentStageTID()
 {
     return cm_nGLCurrentTID[cm_uiCurrentStage];
-}
-
-DXVertexProgram::DXVertexProgram()
-{
-    m_pConstants = NULL;
-    m_pCompiledShader = NULL;
-    m_pErrors = NULL;
-    m_hShader = 0;
 }
 
 void GLRender::SetOrthoTransform(double fLeft, double fRight, double fBottom, double fTop, double fNear, double fFar)
@@ -1315,10 +1331,9 @@ void GLRender::RestoreVertexPrograms()
     {
         if (g_listVertexPrograms.m_pList[i])
         {
-            g_pD3DDevice->CreateVertexShader(
-                (DWORD*)g_listVertexPrograms.m_pList[i]->m_pErrors->GetBufferPointer(),
-                (DWORD*)g_listVertexPrograms.m_pList[i]->m_pCompiledShader->GetBufferPointer(),
-                &g_listVertexPrograms.m_pList[i]->m_hShader, 0);
+            g_pD3DDevice->CreateVertexShader(g_listVertexPrograms.m_pList[i]->m_pDeclaration,
+                                             g_listVertexPrograms.m_pList[i]->m_pFunction,
+                                             &g_listVertexPrograms.m_pList[i]->m_hShader, 0);
         }
     }
 }
@@ -1430,6 +1445,25 @@ void GLRender::CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, i
     pSurface->LockRect(&lock, NULL, 0);
     CopyTextureToTextureMemory(pImage, &lock, nWidth, nHeight, nFormat);
     pSurface->Release();
+}
+
+void GLRender::CreateTextureImageRaw3D(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight,
+                                       int nDepth, int nBorder, int nFormat, void* pImage)
+{
+    D3DVolumeTexture* pTexture;
+    g_pD3DDevice->CreateVolumeTexture(nWidth, nHeight, nDepth, 1, 0,
+                                      (D3DFORMAT)textureFormatTranslationTable[nFormat], D3DPOOL_DEFAULT,
+                                      &pTexture);
+    g_listTextures.m_pList[g_nCurrentTexture] = pTexture;
+    g_pCurrentTexture = pTexture;
+    cm_pCurrentTexture[cm_uiCurrentStage] = pTexture;
+    g_pCurrentTextureState->m_nComponents = 4;
+    D3DVolume* pVolume;
+    pTexture->GetVolumeLevel(0, &pVolume);
+    D3DLOCKED_BOX lock;
+    pVolume->LockBox(&lock, NULL, 0);
+    CopyVolumeToTextureMemory(pImage, &lock, nWidth, nHeight, nDepth, nFormat);
+    pVolume->Release();
 }
 
 void GLRender::CreateTexSubImage(int nTarget, int nLevel, int nWidth, int nHeight, int nFormat, void* pImage)
@@ -2146,30 +2180,18 @@ void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
     g_pD3DDevice->SetStreamSource(1, NULL, 0);
 }
 
-void GLRender::DrawElementsInShadow(unsigned int nProgram,
-                                    unsigned long nLength,
-                                    const char* sProgram,
-                                    unsigned long* pnProgram)
+void GLRender::DrawElementsInShadow(unsigned int nProgram, const DWORD* pFunction,
+                                    const DWORD* pDeclaration)
 {
     DXVertexProgram* pProgram = g_listVertexPrograms.m_pList[nProgram];
-    if (pProgram->m_pCompiledShader)
-    {
-        pProgram->m_pCompiledShader->Release();
-        pProgram->m_pConstants->Release();
-        pProgram->m_pConstants = NULL;
-        pProgram->m_pCompiledShader = NULL;
-    }
-    XGAssembleShader(NULL, sProgram, nLength, SASM_SKIPVALIDATION,
-                     &pProgram->m_pConstants, &pProgram->m_pCompiledShader,
-                     NULL, NULL, NULL, NULL, NULL);
     if (pProgram->m_hShader)
     {
         g_pD3DDevice->DeleteVertexShader(pProgram->m_hShader);
     }
-    g_pD3DDevice->CreateVertexShader(
-        pnProgram, (DWORD*)pProgram->m_pCompiledShader->GetBufferPointer(),
-        &pProgram->m_hShader, 0);
+    g_pD3DDevice->CreateVertexShader(pDeclaration, pFunction, &pProgram->m_hShader, 0);
     g_pD3DDevice->SetVertexShader(pProgram->m_hShader);
+    pProgram->m_pDeclaration = pDeclaration;
+    pProgram->m_pFunction = pFunction;
     g_bVertexProgramBound = 1;
 }
 
@@ -2203,9 +2225,13 @@ void GLRender::TrackMatrix()
     D3DXMatrixMultiply(&mWorldViewProjection, &mWorldView,
                        g_pProjectionMatrixStack->GetTop());
     D3DXMatrixTranspose(&mWorldViewProjection, &mWorldViewProjection);
-    g_pD3DDevice->SetVertexShaderConstant(0, &mWorldViewProjection, 4);
+    g_pD3DDevice->SetVertexShaderConstantFast(0, &mWorldViewProjection, 4);
     D3DXMatrixTranspose(&mWorldView, &mWorldView);
-    g_pD3DDevice->SetVertexShaderConstant(8, &mWorldView, 4);
+    g_pD3DDevice->SetVertexShaderConstantFast(8, &mWorldView, 4);
+}
+
+void GLRender::SetUpTextFormat()
+{
 }
 
 void GLRender::InitExtensions()
@@ -2774,26 +2800,6 @@ void GLRender::MakeNormalizationCubeMap(int nSize)
         pCubeMapFace->Release();
     }
     delete[] pSourceBits;
-}
-
-DXVertexProgram::~DXVertexProgram()
-{
-    if (m_pConstants)
-    {
-        m_pConstants->Release();
-    }
-    if (m_pCompiledShader)
-    {
-        m_pCompiledShader->Release();
-    }
-    if (m_pErrors)
-    {
-        m_pErrors->Release();
-    }
-    if (m_hShader)
-    {
-        g_pD3DDevice->DeleteVertexShader(m_hShader);
-    }
 }
 
 void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
@@ -3586,7 +3592,7 @@ void RequestPoolManager::DeletePool(unsigned long nPool)
     {
         if (!m_ppIndexPools[nPool])
         {
-            AurReportError(1004, "aurdxcore.cpp", "Trying to delete a non-existant index pool!");
+            AurReportError(1157, "aurdxcore.cpp", "Trying to delete a non-existant index pool!");
         }
         else
         {
@@ -4096,9 +4102,28 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, 
         if (bMipMap && !(nWidth & (nWidth - 1)) && !(nHeight & (nHeight - 1)))
             CreateMipMaps(0, nBPP, nSubWidth, nSubHeight, nFormat, pSubImage);
         else if (bSubImage)
-            CreateTexSubImage(0, 0, nSubWidth, nSubHeight, nFormat, pSubImage);
+        {
+            if (pTexture->GetDepth())
+            {
+                int nDepth = pTexture->GetDepth();
+                D3DVolume* pVolume;
+                ((D3DVolumeTexture*)g_pCurrentTexture)->GetVolumeLevel(0, &pVolume);
+                D3DLOCKED_BOX lock;
+                pVolume->LockBox(&lock, NULL, 0);
+                CopyVolumeToTextureMemory(pSubImage, &lock, nSubWidth, nSubHeight, nDepth, nFormat);
+                pVolume->Release();
+            }
+            else
+                CreateTexSubImage(0, 0, nSubWidth, nSubHeight, nFormat, pSubImage);
+        }
         else
-            CreateTextureImageRaw(0, 0, nBPP, nSubWidth, nSubHeight, 0, nFormat, pSubImage);
+        {
+            if (pTexture->GetDepth())
+                CreateTextureImageRaw3D(0, 0, nBPP, nSubWidth, nSubHeight, pTexture->GetDepth(), 0, nFormat,
+                                        pSubImage);
+            else
+                CreateTextureImageRaw(0, 0, nBPP, nSubWidth, nSubHeight, 0, nFormat, pSubImage);
+        }
     }
 
     if (!bSubImage)
@@ -4154,9 +4179,9 @@ void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int
     else
     {
         if ((nWidth & (nWidth - 1)) || (nHeight & (nHeight - 1)))
-            AurReportError(3717, "aurdxcore.cpp", "Bad cycle texture!  The subimages are not powers of 2");
+            AurReportError(4217, "aurdxcore.cpp", "Bad cycle texture!  The subimages are not powers of 2");
         if (nNumX > 1 && nSubWidth != nSubHeight)
-            AurReportError(3721, "aurdxcore.cpp",
+            AurReportError(4221, "aurdxcore.cpp",
                        "Bad cycle texture!  If numx > 1 then the subimages must be square!");
         pSubImage = pImage + GetCompressedContactSheetOffset(nIndex, nSubWidth, nBPP);
     }
@@ -4941,11 +4966,8 @@ void GLRender::Shutdown(int bReleaseRenderer)
         {
             delete g_lstShaderSources.m_pList[i];
         }
-        if (cm_pAttenuationTexture)
-        {
-            cm_pAttenuationTexture->Release();
-            cm_pAttenuationTexture = NULL;
-        }
+        cm_pAttenuationTexture->Release();
+        cm_pAttenuationTexture = NULL;
         if (g_pWorldMatrixStack)
         {
             g_pWorldMatrixStack->Release();
@@ -5142,22 +5164,20 @@ void GLRender::CopyFrameBufferTexture(D3DBaseTexture* pSource, D3DTexture* pTarg
     pDepthStencil->Release();
 }
 
-static char g_szHeatDistortionVertexProg[] =
-    "vs.1.1 \n"
-    "mov oPos, v0;\n"
-    "mov r0, v9;\n"
-    "mov oT0, r0;\n"
-    "mov r1, v10;\n"
-    "mov r2, v11;\n"
-    "mov r3.x, r1.x;\n"
-    "mov r3.y, c[15].x;\n"
-    "mov r3.z, r2.x;\n"
-    "mov r4.x, c[15].x;\n"
-    "mov r4.y, r1.y;\n"
-    "mov r4.z, r2.y;\n"
-    "mov oT1.xyz, r3.xyz;\n"
-    "mov oT2.xyz, r4.xyz;\n"
-    "mov oD0.xyzw, c[15].yyyy;\n";
+static DWORD g_dwHeatDistortionVertexShader[] =
+{
+    0x000a2078,
+    0x00000000, 0x022df400, 0xa8001157, 0xf830f81c,
+    0x00000000, 0x062de000, 0xfc0013fc, 0x24380000,
+    0x00000000, 0x022de000, 0xfc0013fc, 0x28401804,
+    0x00000000, 0x02201455, 0xa8001068, 0xd440c854,
+    0x00000000, 0x0047401a, 0x08355800, 0x20a0e800,
+    0x00000000, 0x02001200, 0x0800106e, 0x60a0f84c,
+    0x00000000, 0x02001600, 0x08001002, 0xe0a02854,
+    0x00000000, 0x02001600, 0x08001156, 0xe0a0285c,
+    0x00000000, 0x02000000, 0x08001069, 0x10a0c85c,
+    0x00000000, 0x0087601a, 0xc400286a, 0xf0b0e801
+};
 static unsigned long g_adwHeatDistortionDeclaration[] =
 {
     D3DVSD_STREAM(0),
@@ -5176,8 +5196,8 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)
     if (!IsProgramNV(cm_pHeatDistortionVertexProg))
     {
         GenPrograms(1, &cm_pHeatDistortionVertexProg);
-        DrawElementsInShadow(cm_pHeatDistortionVertexProg, strlen(g_szHeatDistortionVertexProg),
-                             g_szHeatDistortionVertexProg, g_adwHeatDistortionDeclaration);
+        DrawElementsInShadow(cm_pHeatDistortionVertexProg, g_dwHeatDistortionVertexShader,
+                             g_adwHeatDistortionDeclaration);
     }
     BindVertexProgram(cm_pHeatDistortionVertexProg);
     float fSize = (float)cm_pForceDistortionTexture->GetWidth();
@@ -5248,9 +5268,9 @@ void GLRender::ResetViewPort(int nX, int nY, int nWidth, int nHeight)
     {
         if (g_bInitializeLights)
         {
+            int i = 0;
             D3DXVECTOR3 vDirection(0.0f, 0.0f, 0.0f);
             D3DCOLORVALUE color;
-            int i = 0;
             color.a = 1.0f;
             for (; i < 8; i++)
             {

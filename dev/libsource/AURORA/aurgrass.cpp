@@ -561,8 +561,8 @@ CAurTriangleBin::~CAurTriangleBin()
         GLRender::DeletePool((unsigned long)m_pVertices);
         m_pVertices = (float*)RequestPoolManager::INVALID_POOL;
         delete (void*)m_nVertexOffset;
-        m_nVertexOffset = 0;
         delete (void*)m_nIndexOffset;
+        m_nVertexOffset = 0;
         m_nIndexOffset = 0;
 #else
         delete[] m_pCurrentVertices;

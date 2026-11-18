@@ -1465,6 +1465,7 @@ void CClientExoApp::CancelMovie()
 {
     m_pcExoAppInternal->CancelMovie();
 }
+#ifndef _XBOX
 // PC 0x00639440 GOG 0x00639340
 void CClientExoApp::HideMouse(int nFlags)
 {
@@ -1475,7 +1476,7 @@ void CClientExoApp::ShowMouse(int nFlags)
 {
     m_pcExoAppInternal->ShowMouse(nFlags);
 }
-#ifndef _XBOX
+#endif
 int CClientExoApp::GetCharacterChangeInProgress()  // PC 0x00639460 GOG 0x00639360
 {
     return m_pcExoAppInternal->m_bCharacterChangeInProgress;
@@ -1485,7 +1486,6 @@ void CClientExoApp::SetCharacterChangeInProgress(int bInProgress)
 {
     m_pcExoAppInternal->m_bCharacterChangeInProgress = bInProgress;
 }
-#endif
 void CClientExoApp::FadeAndStopStreamingSoundSource(  // PC 0x00639480 GOG 0x00639380
     CExoStreamingSoundSource* pSource, unsigned long nFadeTime)
 {

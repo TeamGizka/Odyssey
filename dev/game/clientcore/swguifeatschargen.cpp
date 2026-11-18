@@ -143,12 +143,10 @@ void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
 // PC 0x00763EF0 GOG 0x00763F40
 void CSWGuiFeatsCharGen::HandleCancelButton()
 {
-#ifndef _XBOX
     if (m_pCreature != 0 && m_pCreature->m_pStats != 0 && !m_bLevelUp)
     {
         m_pCreature->m_pStats->ClearFeats();
     }
-#endif
     if (m_pParentPanel != NULL)
     {
         m_pManager->PopModalPanel();
@@ -205,12 +203,11 @@ void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60 GOG 0x00763FB0
 void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
 {
 #ifdef _XBOX
-    unsigned char nState;
-    DetermineFeat(nFeat, nState);
+    DetermineFeat(nFeat, m_nFeatState);
     m_nSelectedFeat = nFeat;
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
 
-    switch (nState)
+    switch (m_nFeatState)
     {
     case FEAT_AVAILABLE:
         {
@@ -386,24 +383,17 @@ void CSWGuiFeatsCharGen::InitiateFeats()
     }
     for (int i = 0; i < (unsigned short)pStats->GetNumFeats(); i++)
     {
-#ifdef _XBOX
-        m_lGranted.Add(pStats->GetFeat(i));
-#else
         if (pStats->GetFeat(i) != CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS &&
             pStats->GetFeat(i) != CSWFeat::FEAT_MINE_IMMUNITY)
         {
             m_lGranted.Add(pStats->GetFeat(i));
         }
-#endif
     }
 
     m_bShowGrantedTutorial = 0;
     if (!m_bBonusFeatSelection)
     {
         CExoArrayList<unsigned long> lGranted;
-#ifdef _XBOX
-        pStats->AddGrantedFeats(&lGranted);
-#else
         if (IsNewCharacter())
         {
             pStats->AddGrantedFeats(&lGranted, true);
@@ -412,7 +402,6 @@ void CSWGuiFeatsCharGen::InitiateFeats()
         {
             pStats->AddGrantedFeats(&lGranted, false);
         }
-#endif
         if (lGranted.num > 0)
         {
             for (int i = 0; i < lGranted.num; i++)

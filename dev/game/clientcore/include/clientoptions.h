@@ -145,6 +145,7 @@ public:
     unsigned int m_bReverseMinigameYAxis : 1;
     unsigned int m_bReverseIngame : 1;
     unsigned int m_bCombatMovement : 1;
+    unsigned int m_bGuiFade : 1;
     unsigned int m_bHideUnequippable : 1;
     unsigned int m_bTutorialPopups : 1;
     unsigned int m_bSubtitles : 1;
@@ -154,11 +155,12 @@ public:
     unsigned int m_bStatusSummary : 1;
     unsigned int m_bAutopauseEndOfCombatRound : 1;
     unsigned int m_bAutopauseEnemySighted : 1;
+    unsigned int m_bAutopauseMineSighted : 1;
     unsigned int m_bAutopausePartyKilled : 1;
     unsigned int m_bAutopauseActionMenu : 1;
     unsigned int m_bPauseVertMenu : 1;
     unsigned int m_bAutopauseNewTargetSelected : 1;
-    unsigned int m_nAutopauseBits : 29;
+    unsigned int m_nAutopauseBits : 27;
     unsigned char m_nGeometryFadeMode;
     enum ObjectShadowMode
     {
@@ -187,21 +189,24 @@ public:
     float m_fCameraDistance;
     float m_fCameraHeight;
 
-    unsigned int m_bDialogSubtitles : 1;
-    unsigned int m_bTooltipHelp : 1;
-    unsigned int m_bUseSmallFonts : 1;
-    unsigned int m_bHideInGameGUI : 1;
-    unsigned int m_bEnableTooltips : 1;
-    unsigned int m_bAutopauseMineSighted : 1;
-    unsigned int m_bGUIsInScreenShot : 1;
-    float m_fGuiScale;
-    int m_bMouseTeleporting;
+    int m_nXboxUnmapped34;
+    int m_nXboxUnmapped38;
     unsigned char m_nCurSithLord;
+    unsigned long m_nUnlockedSongs;
     unsigned char m_bGameCompleted;
     unsigned char m_nPCGender;
     unsigned short m_nAppearanceType;
     unsigned char m_nBodyVariation;
     unsigned char m_nTextureVariation;
+
+    unsigned int m_bDialogSubtitles : 1;
+    unsigned int m_bTooltipHelp : 1;
+    unsigned int m_bUseSmallFonts : 1;
+    unsigned int m_bHideInGameGUI : 1;
+    unsigned int m_bEnableTooltips : 1;
+    unsigned int m_bGUIsInScreenShot : 1;
+    float m_fGuiScale;
+    int m_bMouseTeleporting;
     unsigned long m_nShadows;
     unsigned long m_nSoftShadows;
     unsigned long m_nGrass;

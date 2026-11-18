@@ -10,14 +10,23 @@ extern LPD3DXMATRIXSTACK g_pViewMatrixStack;
 extern LPD3DXMATRIXSTACK g_pWorldMatrixStack;
 extern LPD3DXMATRIXSTACK g_pTextureMatrixStack;
 
-struct XGBuffer;
 struct DXVertexProgram
 {
-    DXVertexProgram();
-    ~DXVertexProgram();
-    XGBuffer* m_pConstants;
-    XGBuffer* m_pCompiledShader;
-    XGBuffer* m_pErrors;
+    DXVertexProgram()
+    {
+        m_pFunction = NULL;
+        m_pDeclaration = NULL;
+        m_hShader = 0;
+    }
+    ~DXVertexProgram()
+    {
+        if (m_hShader)
+        {
+            g_pD3DDevice->DeleteVertexShader(m_hShader);
+        }
+    }
+    const DWORD* m_pFunction;
+    const DWORD* m_pDeclaration;
     DWORD m_hShader;
 };
 extern List<DXVertexProgram*> g_listVertexPrograms;
@@ -144,10 +153,8 @@ public:
     static void InitializeATIFragmentShaders();
     static void EnableFragmentShaders(int nShader, CAurTexture* pTexture0,
         CAurTexture* pTexture1, CAurTexture* pTexture2, CAurTexture* pTexture3);
-    static void DrawElementsInShadow(unsigned int nProgram,
-                                     unsigned long nLength,
-                                     const char* sProgram,
-                                     unsigned long* pnProgram);
+    static void DrawElementsInShadow(unsigned int nProgram, const DWORD* pFunction,
+                                     const DWORD* pDeclaration);
 
     static void DrawAxisAlignedFrame(const Vector& vMinimum,
                                      const Vector& vMaximum,
@@ -569,6 +576,8 @@ public:
     static void TrackMatrix();
 
     static void CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, int nWidth, int nHeight, int nFormat);
+    static void CopyVolumeToTextureMemory(void* pImage, D3DLOCKED_BOX* pLock, int nWidth, int nHeight, int nDepth,
+                                          int nFormat);
 
     static void ReadPixelsFromBuffer(int nX, int nY, int nWidth, int nHeight, int nFormat, unsigned char* pPixels);
 
@@ -678,6 +687,9 @@ public:
 
     static void CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight, int nBorder,
                            int nFormat, void* pImage);
+
+    static void CreateTextureImageRaw3D(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight,
+                                        int nDepth, int nBorder, int nFormat, void* pImage);
 
     static void CreateTexSubImage(int nTarget, int nLevel, int nWidth, int nHeight, int nFormat,
                               void* pImage);

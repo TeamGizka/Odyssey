@@ -3687,7 +3687,11 @@ void AurSnapshot(char* sFileName)
         glReadPixels(0, 0, nWidth, nHeight, textureFormatTranslationTable[Aurora::TEXTURE_FORMAT_RGB], 0x1401, pPixels);
 #endif
         ImageFlipY(pPixels, nWidth, nHeight, 3);
+#ifdef _XBOX
+        ImageWriteTGA(sBuffer, nWidth, nHeight, 3, pPixels, false);
+#else
         ImageWriteTGA(sBuffer, nWidth, nHeight, 3, pPixels);
+#endif
         delete[] pPixels;
     }
 }

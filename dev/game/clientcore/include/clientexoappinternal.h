@@ -356,8 +356,10 @@ public:
 
     void DisableInput();
     void EnableInput();
+#ifndef _XBOX
     int PerformXMouseMoveAction(int nX);
     int PerformYMouseMoveAction(int nY);
+#endif
     void HandleMouseClickInWorld();
 #ifndef _XBOX
     void PerformLButtonDownAction(int nArg);
@@ -371,9 +373,11 @@ public:
     void PerformMButtonUpAction();
     void PerformZMouseMoveAction(int nZ);
     void SetMouseCursor(int nCursor, int bCentered, int bMouseDown);
+#ifndef _XBOX
     void RestoreMousePositionTo(int nX, int nY);
     void HideMouse(int nFlags);
     void ShowMouse(int nFlags);
+#endif
     int DismissInGameGUI();
 #ifdef _XBOX
 
@@ -969,9 +973,7 @@ public:
     CExoArrayList<CHostileHilite> m_aHostileHilites;
     int m_nCombatMode;
     int m_bEnemySighted;
-#ifndef _XBOX
     int m_bMineSighted;
-#endif
     int m_bRunScript;
     CExoString m_sRunScript;
     unsigned long m_oidFutureLeader;
@@ -1001,13 +1003,9 @@ public:
     float m_fEnemyAutoPauseTimer;
 
     float m_fCombatAutoPauseTimer;
-#ifndef _XBOX
     unsigned char m_nDelayedAutoPauseType;
-#endif
     float m_fEnemyAutoPauseCooldown;
-#ifndef _XBOX
     float m_fMineSightedTime;
-#endif
     int m_nEnemyAutoPauseCount;
     int m_nVideoEffect;
     unsigned long m_nTutorialX;
@@ -1051,15 +1049,10 @@ public:
     CExoArrayList<CSWGuiInterfaceAction> m_aDefaultActions;
     unsigned char m_nSuperModelSet;
 #else
-    unsigned char m_nSuperModelSet;
-
     int m_bMissingFilePending;
+    int m_bCharacterChangeInProgress;
+    unsigned char m_nSuperModelSet;
     int m_nMissingFileType;
-
-    int m_nMouseX;
-    int m_nMouseY;
-    int m_nMouseHidden;
-    float m_fMouseHideTime;
 
 #endif
 };

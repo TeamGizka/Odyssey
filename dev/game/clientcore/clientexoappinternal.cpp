@@ -2765,9 +2765,7 @@ void CClientExoAppInternal::ChangeCharacter(int nCharacter, int bPlaySound)
         {
             m_pPlayerControl->ResetDriveAcceleration();
         }
-#ifndef _XBOX
         m_bCharacterChangeInProgress = 1;
-#endif
     }
 }
 
@@ -4059,6 +4057,9 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_bEvilEndingHackInProgress = 0;
     m_nSuperModelSet = 1;
     m_nSoundPausedByCombat = 0;
+#else
+    m_bCharacterChangeInProgress = 0;
+    m_nSuperModelSet = 1;
 #endif
 }
 // PC 0x006483D0 GOG 0x00648280
@@ -6096,7 +6097,11 @@ void CClientExoAppInternal::AddFloatyText(unsigned long oidObject,
                                         unsigned char nType, int nValue)
 {
     CClientOptions* pOptions = g_pAppManager->GetClientExoApp()->GetClientOptions();
+#ifdef _XBOX
+    if (pOptions == NULL || pOptions->m_bShowFloaty)
+#else
     if (pOptions == NULL || pOptions->m_bFloatingNumbers)
+#endif
     {
         Vector vColor;
         CExoString sText;
@@ -8581,8 +8586,8 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
 // PC 0x00640190 GOG 0x0063FFF0
 void CClientExoAppInternal::SetMouseMode(unsigned char nMode)
 {
-    HideMouse(4);
 #ifndef _XBOX
+    HideMouse(4);
     g_pExoInput->SetMouseMode(nMode);
 #endif
 
@@ -8602,7 +8607,9 @@ void CClientExoAppInternal::SetMouseMode(unsigned char nMode)
         }
     }
 
+#ifndef _XBOX
     ShowMouse(4);
+#endif
 }
 // PC 0x006401E0 GOG 0x00640040
 void CClientExoAppInternal::CancelMovie()
@@ -8801,7 +8808,9 @@ void CClientExoAppInternal::EnableMouseAtEndOfLoadModuleMovie()
         if (m_bEnableMouseAtEndOfLoadModuleMovie != 0)
         {
             m_bEnableMouseAtEndOfLoadModuleMovie = 0;
+#ifndef _XBOX
             ShowMouse(8);
+#endif
         }
     }
 }
@@ -8829,12 +8838,12 @@ void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)  // PC 
         m_pEvilEndingHackSound = NULL;
     }
 }
-#endif
 void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)  // PC 0x006406B0 GOG 0x00640510
 {
     m_nMouseX = nX;
     m_nMouseY = nY;
 }
+#endif
 // PC 0x006406D0 GOG 0x00640530
 void CClientExoAppInternal::DoScreenShot()
 {

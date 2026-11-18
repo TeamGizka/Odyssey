@@ -95,14 +95,12 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbPowers, 0);
 }
-#ifndef _XBOX
 // PC 0x00761FF0 GOG 0x00762010
 void CSWGuiPowersLevelUp::ShowGranted(CSWGuiControl* pControl)
 {
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-#endif
 // PC 0x00762020 GOG 0x00762040
 void CSWGuiPowersLevelUp::HandleCancelButton()
 {
@@ -147,11 +145,9 @@ CSWGuiPowersLevelUp::~CSWGuiPowersLevelUp()
 // PC 0x007622D0 GOG 0x007623E0
 void CSWGuiPowersLevelUp::OnPanelAdded()
 {
-#ifdef _XBOX
-    g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x13, OBJECT_INVALID,
-                                                       OBJECT_INVALID, 0);
-#else
+#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
+#endif
     if (m_bShowGrantedTutorial)
     {
         if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
@@ -169,7 +165,6 @@ void CSWGuiPowersLevelUp::OnPanelAdded()
             m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         }
     }
-#endif
 }
 
 // PC 0x00762350 GOG 0x00762080
@@ -209,12 +204,11 @@ void CSWGuiPowersLevelUp::OnAcceptButton()
 void CSWGuiPowersLevelUp::OnEnterPower(unsigned long nPower)
 {
 #ifdef _XBOX
-    unsigned char nState;
-    DeterminePower(nPower, nState);
+    DeterminePower(nPower, m_nPowerState);
     m_nSelectedPower = nPower;
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nPower);
 
-    switch (nState)
+    switch (m_nPowerState)
     {
     case POWER_AVAILABLE:
         {
@@ -241,6 +235,13 @@ void CSWGuiPowersLevelUp::OnEnterPower(unsigned long nPower)
         {
             CSWGuiTextParams* pParams = &m_lblSelect.m_cText.m_cParams;
             pParams->SetText(m_sSelectText);
+            pParams->SetColor(CGuiInGame::DISABLED_TEXT);
+            break;
+        }
+    case POWER_LOCKED:
+        {
+            CSWGuiTextParams* pParams = &m_lblSelect.m_cText.m_cParams;
+            pParams->SetText(m_sDeselectText);
             pParams->SetColor(CGuiInGame::DISABLED_TEXT);
             break;
         }
@@ -323,13 +324,11 @@ void CSWGuiPowersLevelUp::BuildButtons()
             m_cChart.SetSkillStatus(m_lAvailable.element[k], 0);
         }
     }
-#ifndef _XBOX
     for (int m = 0; m < m_lLocked.num; m++)
     {
         m_cChart.SetSkillStatus(m_lLocked.element[m],
                                 CSWGuiSkillFlow::STATUS_GRANTED_ALTERNATE);
     }
-#endif
     if (m_nSelectedPower == -1)
     {
         m_lbPowers.AddControls(
@@ -356,9 +355,7 @@ void CSWGuiPowersLevelUp::BuildAvailableList()
         if (m_lGranted.IndexOf(nSpell) != -1 ||
             m_lChosen.IndexOf(nSpell) != -1 ||
             m_lAvailable.IndexOf(nSpell) != -1 ||
-#ifndef _XBOX
             m_lLocked.IndexOf(nSpell) != -1 ||
-#endif
             !pStats->CanChooseSpell(nSpell, m_nSpellLevel, &m_lChosen))
         {
             continue;
@@ -458,7 +455,6 @@ void CSWGuiPowersLevelUp::InitiatePowers()
         }
     }
 
-#ifndef _XBOX
     m_bShowGrantedTutorial = 0;
     CExoArrayList<unsigned long> lGranted;
     pStats->AddGrantedPowers(&lGranted);
@@ -481,7 +477,6 @@ void CSWGuiPowersLevelUp::InitiatePowers()
         pInfoBox->SetMessage(111635);
         m_bShowGrantedTutorial = 1;
     }
-#endif
     m_nPowersRemaining = pStats->ComputeNumberKnownSpellsLeft();
     m_nSpellLevel = m_nPowersRemaining + 1;
     BuildAvailableList();
@@ -574,12 +569,10 @@ void CSWGuiPowersLevelUp::OnRecommendButton()
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
     pInfoBox->SetSkillList(lRecommended, CSWGuiInGameSkillEntry::ABILITY_POWER);
     pInfoBox->SetMessage(0xA511);
-#ifndef _XBOX
     if (m_pManager->PanelExists(pInfoBox))
     {
         m_pManager->RemovePanel(pInfoBox);
     }
-#endif
     m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     BuildButtons();
 }
@@ -665,11 +658,9 @@ void CSWGuiPowersLevelUp::OnPowerPicked(unsigned long nPower)
     case POWER_UNAVAILABLE:
         nMessage = STRREF_POWER_UNAVAILABLE;
         break;
-#ifndef _XBOX
     case POWER_LOCKED:
         nMessage = STRREF_POWER_LOCKED;
         break;
-#endif
     default:
         return;
     }
@@ -717,12 +708,10 @@ void CSWGuiPowersLevelUp::DeterminePower(unsigned long nPower,
     {
         nState = POWER_AVAILABLE;
     }
-#ifndef _XBOX
     else if (m_lLocked.IndexOf(nPower) != -1)
     {
         nState = POWER_LOCKED;
     }
-#endif
     else
     {
         nState = POWER_UNAVAILABLE;
