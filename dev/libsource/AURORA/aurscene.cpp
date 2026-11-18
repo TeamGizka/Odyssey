@@ -3811,9 +3811,7 @@ void Scene::RenderLensFlares()
         GLRender_Disable(ENABLE_DEPTH_TEST);
         GLRender_Enable(ENABLE_BLEND);
         GLRender_SetBlendFunc(BLEND_ONE, BLEND_ONE);
-#ifndef _XBOX
         GLRender_Enable(ENABLE_TEXTURE_2D);
-#endif
         if (m_bFog)
             GLRender_Disable(ENABLE_FOG);
         GLRender_SetMatrixMode(TRANSFORM_PROJECTION);

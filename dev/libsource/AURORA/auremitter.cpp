@@ -1518,11 +1518,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
     Vector vPosition;
     int bInheriting = pNode->IsInheriting();
     Vector vWind;
-#ifdef _XBOX
-    unsigned char bBouncing = pNode->IsBouncing();
-#else
     bool bBouncing = pNode->m_EmitterFlags.m_bBouncing;
-#endif
 
     for (int i = 0; i < m_lstActive.m_nCount; i++)
     {

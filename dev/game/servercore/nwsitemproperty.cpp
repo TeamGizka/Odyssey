@@ -501,9 +501,15 @@ int CSWSItemPropertyHandler::ApplyAttackBonus(CSWSItem* pItem,
                 CSWSEffectListHandler::ATTACK_INTEGER_RACIAL_GROUP,
                 nRacialGroup);
         }
+#ifdef _XBOX
+        nBaseItem = pItem->m_nBaseItem;
+        if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)
+                ->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON)
+#else
         nBaseItem = pItem->m_nBaseItem;
         if (g_pRules->GetBaseItemArray()->GetBaseItem(nBaseItem)
                 ->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON)
+#endif
         {
             CGameEffect* pOffHandEffect = new CGameEffect(0);
 
@@ -960,6 +966,20 @@ int CSWSItemPropertyHandler::ApplyBonusFeat(CSWSItem* pItem,
                                             CSWSCreature* pCreature,
                                             unsigned long nIndex, int bLoading)
 {
+#ifdef _XBOX
+    if (pCreature->m_pStats == NULL)
+        return 0;
+    CGameEffect* pEffect = new CGameEffect(1);
+    if (pEffect == NULL)
+        return 0;
+    pEffect->m_nType = CSWSEffectListHandler::EFFECT_BONUSFEAT;
+    pEffect->m_nSubType =
+        (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) | 3;
+    pEffect->SetInteger(0, pProperty->m_nSubtype);
+    pEffect->SetCreator(pItem->m_nId);
+    ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, bLoading);
+    return 0;
+#else
     CGameEffect* pEffect;
 
     if (pCreature->m_pStats != NULL)
@@ -977,6 +997,7 @@ int CSWSItemPropertyHandler::ApplyBonusFeat(CSWSItem* pItem,
     }
 
     return 0;
+#endif
 }
 // PC 0x0053ABD0 GOG 0x0053C930 Xbox 0x0025FCD0
 int CSWSItemPropertyHandler::ApplyDamageImmunity(CSWSItem* pItem,

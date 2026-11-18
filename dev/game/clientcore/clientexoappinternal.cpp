@@ -10843,12 +10843,19 @@ CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sMo
 #endif
 #ifdef _XBOX
 
+extern int g_bMissingFileDeferred;
+extern CExoString g_sMissingFileDeferred;
+
 #define XBOX_END_GAME_INPUT_LOCK_MS 500
 int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
 {
     int bAreaReady = 0;
     static int a;
 
+    if (m_bMissingFilePending == 1 || g_bMissingFileDeferred != 0)
+    {
+        g_pExoResMan->ReportMissingFile(g_sMissingFileDeferred.CStr(), 0xffff, 1);
+    }
     if (m_pGuiInGame != NULL)
         m_pGuiInGame->HideAreaTransition();
 

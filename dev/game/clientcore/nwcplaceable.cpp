@@ -566,7 +566,7 @@ float CSWCPlaceable::GetCanSeeHeight()
         }
         if (bFailed)
         {
-            return 1.5f;
+            fHeight = 1.5f;
         }
     }
     return fHeight;

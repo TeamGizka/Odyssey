@@ -286,6 +286,19 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
     int nCharacters = g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters;
     if (nCharacters > 0)
     {
+#ifdef _XBOX
+        for (int nCharacter = 0; nCharacter < nCharacters; nCharacter++)
+        {
+            CSWCCreature* pCharacter =
+                g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nCharacter);
+            if (pCharacter != NULL && pCharacter->GetServerCreature() != NULL &&
+                pCharacter->GetServerCreature()->GetDeadTemp() == 0)
+                goto FoundCharacter;
+        }
+        SetLockOrientationToObject(CGameObjectArray::INVALIDOBJID);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalDialogState(0);
+        return ACTION_FAILED;
+#else
         int nCharacter = 0;
         while (1)
         {
@@ -301,8 +314,12 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
                 return ACTION_FAILED;
             }
         }
+#endif
     }
 
+#ifdef _XBOX
+FoundCharacter:
+#endif
     if (oidOriginalLeader == OBJECT_INVALID)
     {
         CGameObject* pGameObject;
@@ -462,9 +479,15 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
                                 AurDrawLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_HIGH),
                                                      pMember->m_vPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_HIGH), 1);
                                 CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+#ifdef _XBOX
+                                Vector vOffset = *pParty->GetMemberFormationOffset(nMember);
+                                Vector vFollow = pParty->GetMemberData(nMember)->m_vFormationPosition;
+                                int nPathIndex = pParty->GetMemberData(nMember)->m_nFormationPathIndex;
+#else
                                 Vector vOffset = pParty->m_aPartyMemberData[nMember].m_vFormationOffset;
                                 Vector vFollow = pParty->m_aPartyMemberData[nMember].m_vFormationPosition;
                                 int nPathIndex = pParty->m_aPartyMemberData[nMember].m_nFormationPathIndex;
+#endif
                                 float fFacing = pParty->m_cFollowPaths.GetPathData(nPathIndex)->m_fFacing;
                                 Vector vAxis(0.0f, 0.0f, 1.0f);
                                 Vector vPosition = vFollow + Quaternion(vAxis, DegToRad(fFacing)) * vOffset;

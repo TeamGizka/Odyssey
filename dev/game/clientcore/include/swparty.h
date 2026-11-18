@@ -203,6 +203,9 @@ public:
 #endif
         return &m_aPartyMemberData[nIndex];
     }
+#ifdef _XBOX
+    Vector* GetMemberFormationOffset(int nIndex);
+#endif
 
     int m_nCharacters;
 

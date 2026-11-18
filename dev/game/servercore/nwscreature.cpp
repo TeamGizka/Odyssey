@@ -1249,11 +1249,15 @@ void CSWSCreature::HandleHPRegeneration()
         {
             fTimePerHP = 0.0001f;
         }
+#ifdef _XBOX
+        float fRate = max(0.0001f, 1.0f / fTimePerHP);
+#else
         float fRate = 1.0f / fTimePerHP;
         if (0.0001f > fRate)
         {
             fRate = 0.0001f;
         }
+#endif
 
         float fAdjustment = fRate * (m_nElapsedTime * 0.001f) * fHPBase;
         if (fAdjustment != 0.0)
@@ -3112,6 +3116,18 @@ void CSWSCreature::HandleFPRegeneration()
             }
             pRegeneration->GetFLOATEntry("WisModBonus", sValue, &fWisModBonus);
 
+#ifdef _XBOX
+            unsigned char nAlignmentBand;
+            CSWSCreatureStats* pStats = m_pStats;
+            if (pStats->GetGoodEvilAlignment() <= 40)
+            {
+                nAlignmentBand = 3;
+            }
+            else
+            {
+                nAlignmentBand = (pStats->GetGoodEvilAlignment() >= 60) + 1;
+            }
+#else
             unsigned char nAlignmentBand;
             if (m_pStats->GetGoodEvilAlignment() <= 40)
             {
@@ -3121,6 +3137,7 @@ void CSWSCreature::HandleFPRegeneration()
             {
                 nAlignmentBand = (m_pStats->GetGoodEvilAlignment() >= 60) + 1;
             }
+#endif
 
             fFPBase += GetStats()->m_nWisdomModifier * fWisModBonus;
             if (GetStats()->HasFeat(CSWFeat::FEAT_REGENERATE_FORCE_POINTS))
@@ -13029,10 +13046,18 @@ int CSWSCreature::IsInjured()
 {
     extern float g_fInjuredLevel;
 
+#ifdef _XBOX
+    if (m_bDisableInjuredAnim != 0)
+        return 0;
+    float fCurrent = (float)((CSWSObject*)this)->GetCurrentHitPoints(0);
+    float fRatio = fCurrent / (float)((CSWSObject*)this)->GetMaxHitPoints(1);
+    if (fRatio < g_fInjuredLevel)
+#else
     if (m_bDisableInjuredAnim == 0 &&
         (float)((CSWSObject*)this)->GetCurrentHitPoints(0) /
                 (float)((CSWSObject*)this)->GetMaxHitPoints(1) <
             g_fInjuredLevel)
+#endif
     {
         return 1;
     }

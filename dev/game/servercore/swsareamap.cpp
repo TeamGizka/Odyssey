@@ -143,7 +143,7 @@ int CSWSAreaMap::GetMapPixelFromWorldCoord(Vector vPosition, int& nMapX,
     }
     nMapX = (int)((fX - m_fOffsetX) / m_fScaleX + 0.5f);
     nMapY = (int)((fY - m_fOffsetY) / m_fScaleY + 0.5f);
-    if (nMapX >= 0 && nMapX <= 588 && nMapY >= 0 && nMapY <= 294)
+    if (nMapX >= 0 && nMapX <= MAP_PIXEL_WIDTH && nMapY >= 0 && nMapY <= MAP_PIXEL_HEIGHT)
     {
         return 1;
     }
@@ -170,10 +170,10 @@ float CSWSAreaMap::GetMapRotateCCWFromWorldOrientation(Vector vOrientation)
 int CSWSAreaMap::GetGridPixelFromMapPixel(int nMapX, int nMapY, int& nGridX,
                                           int& nGridY)
 {
-    if (nMapX <= 588 && nMapX >= 0 && nMapY <= 294 && nMapY >= 0)
+    if (nMapX <= MAP_PIXEL_WIDTH && nMapX >= 0 && nMapY <= MAP_PIXEL_HEIGHT && nMapY >= 0)
     {
-        float fPixelsPerRow = 294.0f / m_nHeight;
-        nGridX = (int)(nMapX / (588.0f / m_nWidth) + 0.5f);
+        float fPixelsPerRow = (float)MAP_PIXEL_HEIGHT / m_nHeight;
+        nGridX = (int)(nMapX / ((float)MAP_PIXEL_WIDTH / m_nWidth) + 0.5f);
         nGridY = (int)(nMapY / fPixelsPerRow + 0.5f);
         return 1;
     }
@@ -283,7 +283,7 @@ void CSWSAreaMap::SetEntireMapExplored()
 // PC 0x00574060 GOG 0x00573F50 Xbox 0x00229EE0
 void CSWSAreaMap::SetMapPointExplored(int nMapX, int nMapY)
 {
-    if (nMapX <= 588 && nMapX >= 0 && nMapY <= 294 && nMapY >= 0)
+    if (nMapX <= MAP_PIXEL_WIDTH && nMapX >= 0 && nMapY <= MAP_PIXEL_HEIGHT && nMapY >= 0)
     {
         int nGridX = 0;
         int nGridY = 0;
@@ -311,8 +311,8 @@ void CSWSAreaMap::SetWorldPointExplored(Vector vPosition, int nRadius)
                 int nSpan = nRadius - abs(i);
                 for (int j = -nSpan; j <= nSpan; j++)
                 {
-                    int nX = nMapX + i * (588 / m_nWidth);
-                    int nY = nMapY + j * (294 / m_nHeight);
+                    int nX = nMapX + i * (MAP_PIXEL_WIDTH / m_nWidth);
+                    int nY = nMapY + j * (MAP_PIXEL_HEIGHT / m_nHeight);
                     if (nX < 0)
                     {
                         nX = 0;
@@ -321,13 +321,13 @@ void CSWSAreaMap::SetWorldPointExplored(Vector vPosition, int nRadius)
                     {
                         nY = 0;
                     }
-                    if (nX > 588)
+                    if (nX > MAP_PIXEL_WIDTH)
                     {
-                        nX = 588;
+                        nX = MAP_PIXEL_WIDTH;
                     }
-                    if (nY > 294)
+                    if (nY > MAP_PIXEL_HEIGHT)
                     {
-                        nY = 294;
+                        nY = MAP_PIXEL_HEIGHT;
                     }
                     SetMapPointExplored(nX, nY);
                 }

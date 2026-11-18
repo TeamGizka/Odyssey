@@ -37,6 +37,13 @@ int g_bEnablePartySmoothing = 1;
 CSWParty::~CSWParty()
 {
 }
+#ifdef _XBOX
+Vector* CSWParty::GetMemberFormationOffset(int nIndex)  // Xbox 0x0006AAE0
+{
+    EXOXBOXASSERT(nIndex >= 0 && nIndex < 3);
+    return &m_aPartyMemberData[nIndex].m_vFormationOffset;
+}
+#endif
 // PC 0x00689E30 GOG 0x00689BA0 Xbox 0x0006AB10
 void CSWPartyMemberData::SetCombatMessage(unsigned long nMessage)
 {

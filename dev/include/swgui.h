@@ -581,8 +581,13 @@ public:
     unsigned long m_nDisabledReason : 4;
 
     unsigned long : 27;
+#ifdef _XBOX
+    unsigned char m_bRevertActionBar;
+    int m_nStackSize;
+#else
     int m_nStackSize;
     unsigned char m_bRevertActionBar;
+#endif
 };
 #ifndef _XBOX
 #pragma pack(pop)

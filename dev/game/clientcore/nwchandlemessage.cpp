@@ -8540,6 +8540,9 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_DestroyItem()
     {
         return 0;
     }
+#ifdef _XBOX
+    CSWCItem* pDeletedItem = pGameObject->AsSWCItem();
+#endif
     delete pItem;
     return 1;
 }
@@ -8554,18 +8557,17 @@ int CSWCMessage::HandleServerToPlayerVoiceChatMessage(unsigned char nMinor)
     {
         oidCreature = ReadOBJECTIDClient();
         nVoiceChat = ReadBYTE(8);
-        if (!MessageReadOverflow(1) && MessageReadUnderflow(1) == 0)
+        if (MessageReadOverflow(1) || MessageReadUnderflow(1) != 0)
         {
-            pCreature =
-                g_pAppManager->m_pClientExoApp->GetCreatureByGameObjectID(
-                    oidCreature);
-            if (pCreature != NULL)
-            {
-                pCreature->PlaySoundSetSound(nVoiceChat, 1);
-            }
-            return 1;
+            return 0;
         }
-        return 0;
+        pCreature =
+            g_pAppManager->m_pClientExoApp->GetCreatureByGameObjectID(
+                oidCreature);
+        if (pCreature != NULL)
+        {
+            pCreature->PlaySoundSetSound(nVoiceChat, 1);
+        }
     }
     return 1;
 }

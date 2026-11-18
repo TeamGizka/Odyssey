@@ -144,13 +144,13 @@ public:
 #ifndef _XBOX
     void SetIcon(CResRef const&, CExoString const&, int, unsigned char);
 #else
-    void SetIcon(CResRef const& cIcon, int bEnabled, unsigned char nSlide);
+    void SetIcon(CResRef const& cIcon, int bEnabled, int bHidden, unsigned char nSlide);
 #endif
     CSWGuiMainInterfaceAction();
 #ifndef _XBOX
     void Show(int, int);
 #else
-    void Show(int bActive, int bEmpty, int bArrow);
+    void Show(int bActive, int bEmpty, int bArrow, int bHidden);
 #endif
     ~CSWGuiMainInterfaceAction();
 #ifndef _XBOX
@@ -305,7 +305,8 @@ public:
         m_aBars[0].SetMaxValue(nMaxHealth);
         m_aBars[0].SetCurValue(nCurHealth);
 #ifdef _XBOX
-        m_aBars[0].m_cFill.m_cParams.SetFillImage(bAlive != 0 ? "lbl_healthp" : "lbl_health", 0);
+        m_aBars[0].m_cFill.m_cParams.m_vColor = bAlive != 0 ? CGuiInGame::COLOR_GREEN
+                                                                 : CGuiInGame::COLOR_RED;
 #else
         m_aBars[0].m_cFill.m_cParams.SetColor(bAlive != 0 ? CGuiInGame::COLOR_GREEN
                                                           : CGuiInGame::COLOR_RED);
@@ -317,7 +318,11 @@ public:
 #else
     void SetHealth(int nCurHealth, int nMaxHealth, int bAlive);
 #endif
+#ifdef _XBOX
+    void Show(int, unsigned char, unsigned char, unsigned char, int);
+#else
     void Show(int, unsigned char, unsigned char, unsigned char);
+#endif
     void Initialize(CSWGuiMainInterface*, int);
     CSWGuiMainInterfaceChar();
     ~CSWGuiMainInterfaceChar();
@@ -393,6 +398,9 @@ public:
     static const unsigned long STRREF_TARGET_TOO_CLOSE = 42422;
     static const unsigned long STRREF_FULL_HEALTH = 42498;
     static const unsigned long STRREF_PC_DEAD = 47936;
+#ifdef _XBOX
+    static const unsigned long STRREF_NOT_ENOUGH_HIT_POINTS = 48437;
+#endif
 
     static const unsigned long STRREF_HOTKEY_HELP = 48972;
     static const unsigned long STRREF_MENU_EQUIPMENT = 31387;
@@ -417,12 +425,6 @@ public:
 #ifdef _XBOX
     enum { NUM_TARGET_TYPES = 5, NUM_PERSONAL_MENUS = 7 };
     enum { TRANSITION_PORTRAIT_MARGIN = 106 };
-    enum
-    {
-        PERSONAL_MENU_FORCE_POWERS = 3,
-        PERSONAL_MENU_STANCES = 5,
-        PERSONAL_MENU_BEHAVIORS = 6
-    };
 #endif
     enum
     {
@@ -581,8 +583,8 @@ public:
     unsigned char m_nInterfaceOffset;
     CSWGuiControlFlags m_cActionDescriptionState;
     int m_nQueuedAction;
-    int m_nQueuedActionTarget;
-    int m_bRotationPending;
+    int m_bSelectingUseItemTarget;
+    int m_nUseItemTargetMember;
     unsigned long m_oidUseItemPending;
     CSWGuiLabel m_lblHelp;
     CSWGuiExtent m_cActionTextBackExtent;
@@ -590,8 +592,8 @@ public:
     float m_fFormMessageTime;
     unsigned long m_nFormMessage;
     Vector m_vIndicateColor;
-    int m_bSelectingUseItemTarget;
-    int m_nUseItemTargetMember;
+    int m_bPersonalActionScrolled;
+    int m_nLeaderNPC;
 #endif
     void SetActionDescription(CExoString const&);
     int SetTarget(unsigned long, int);
@@ -626,7 +628,7 @@ public:
     void ShowFlashingStatus(unsigned char nEffect);
     void RemoveFloatyText(CSWGuiFloatyText*);
 #ifdef _XBOX
-    void OnCombatXButton(int nEvent); void OnNonCombatXButton();
+    void OnCombatXButton(int nEvent, int bKeepSelection); void OnNonCombatXButton();
 #endif
     void OnCombatYButton();
     void UpdateAndDrawFogOfWar(CSWGuiExtent const&);
@@ -637,6 +639,10 @@ public:
     void OnSwapWeaponsPressed(CSWGuiControl*);
     void OnCancelPartyItemSelect(CSWGuiControl*);
     void RevertActionBarStates();
+#ifdef _XBOX
+    void SelectNextUseItemTarget();
+    void SelectPreviousUseItemTarget();
+#endif
     void UpdateGameMenu();
     void OnCharacterEntered(CSWGuiControl*);
     void OnCharacterExited(CSWGuiControl*);
@@ -678,7 +684,15 @@ public:
     void AddFloatyText(unsigned long, CExoString const&, Vector const&, float);
     void OnDefaultActionLeft(CSWGuiControl*);
     CSWGuiMainInterface(CSWGuiManager*);
+#ifdef _XBOX
+    void ResetPartyMemberItemUse()
+    {
+        m_nUseItemTargetMember = 0;
+        m_bSelectingUseItemTarget = 0;
+    }
+#else
     void ResetPartyMemberItemUse();
+#endif
 };
 
 #endif

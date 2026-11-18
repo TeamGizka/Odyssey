@@ -3955,12 +3955,8 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
             GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS2);
         }
         currentscene->DoFog();
-#ifdef _XBOX
-        GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
-#else
         GLRender_EnablePixelShaders(MODEL_SHADER_BUMP_DISABLE, 0, 0, 0, 0);
         GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
-#endif
 #ifndef _XBOX
         if (usearbvertexprograms)
         {

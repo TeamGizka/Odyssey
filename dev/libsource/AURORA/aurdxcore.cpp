@@ -7155,6 +7155,7 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)  // Xbox 0x002AA07
     D3DXMatrixIdentity(&mIdentity);
     g_pD3DDevice->SetTransform(D3DTS_PROJECTION, &mProjection);
     g_pD3DDevice->SetTransform(D3DTS_VIEW, &mIdentity);
+    g_pD3DDevice->SetTransform(D3DTS_WORLD, &mIdentity);
     g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     g_pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
@@ -7172,18 +7173,21 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)  // Xbox 0x002AA07
     g_pD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
     g_pD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
     g_pD3DDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
-    g_pD3DDevice->CopyRects(pBackBuffer, NULL, 0, pSurface, NULL);
     if (!visualizeregular)
     {
         g_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
     }
-    if (visualizepass6 && m_bSpeedBlurEnabled && (nFlags & FRAMEBUFFER_SPEED_BLUR) &&
+    if (!m_bSpeedBlurEnabled)
+    {
+        cm_bFirstFrameBufferFrame = true;
+    }
+    if (visualizepass6 && m_bSpeedBlurEnabled && (nFlags & FRAMEBUFFER_SPEED_BLUR) && !g_ForceSight &&
         !cm_bFirstFrameBufferFrame)
     {
         g_pD3DDevice->CopyRects(pBackBuffer, NULL, 1, pSurface, NULL);
         RenderAccumulationBlur(g_pFrameTexture, pAccumulationTexture);
     }
-    if (visualizepass6 && m_bSpeedBlurEnabled && (nFlags & FRAMEBUFFER_SPEED_BLUR))
+    if (visualizepass6 && m_bSpeedBlurEnabled && (nFlags & FRAMEBUFFER_SPEED_BLUR) && !g_ForceSight)
     {
         g_pD3DDevice->CopyRects(pBackBuffer, NULL, 1, pSurface, NULL);
         g_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
@@ -7227,7 +7231,10 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)  // Xbox 0x002AA07
     pSurface->Release();
     pBackBuffer->Release();
     g_pD3DDevice->SetTransform(D3DTS_PROJECTION, g_pProjectionMatrixStack->GetTop());
-    cm_bFirstFrameBufferFrame = false;
+    if (m_bSpeedBlurEnabled == true)
+    {
+        cm_bFirstFrameBufferFrame = false;
+    }
     g_fFrameBufferTime = DeltaT + g_fFrameBufferTime;
 }
 

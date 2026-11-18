@@ -857,11 +857,15 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
     InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblBlack, "LBL_BLACK", 1);
     InitControl(m_lblRanalog, "LBL_RANALOG", 1);
-    InitControl(m_lblDownarrow, "LBL_DOWNARROW", 1);
-    InitControl(m_lblUparrow, "LBL_UPARROW", 1);
     for (int nRow = 0; nRow < NUM_ITEM_ROWS; nRow++)
     {
         InitControl(btnItem, CExoString("BTN_ITEM") + CExoString(nRow + 1), 0);
+        if (nRow == 0)
+        {
+            m_vItemTextColor = btnItem.m_cText.m_cParams.m_vColor;
+            m_vItemBorderColor = btnItem.m_cBorder.m_cParams.m_vColor;
+            m_vItemHilightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+        }
         m_aItemRows[nRow].Initialize(btnItem.m_cText, btnItem.m_cBorder,
                                      btnItem.m_cHilite,
                                      btnItem.m_cExtent.m_nWidth, 1,
@@ -879,7 +883,6 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
             m_aItemRows[nItemRow].SetMoveToControl(nDirection, NULL);
         }
     }
-    m_lblDownarrow.m_cBorder.m_cParams.m_fRotation = 180.0f;
     m_lblDescription.Initialize(m_lbxDescription.m_pProtoItem->m_cExtent,
                               (CSWGuiLabel*)m_lbxDescription.m_pProtoItem);
 
@@ -987,13 +990,16 @@ void CSWGuiInGameInventory::SetItemRows(int nTopItem, int nSelectedItem)  // Xbo
 {
     int nRows = m_lItems.num > NUM_ITEM_ROWS ? NUM_ITEM_ROWS : m_lItems.num;
     m_nTopItem = nTopItem;
+    m_nPreviousSelectedItem = m_nSelectedItem;
     m_nSelectedItem = nSelectedItem;
+    SetActiveControl(NULL, 0);
     int nRow;
     for (nRow = 0; nRow < nRows; nRow++)
     {
         m_aItemRows[nRow].SetItem(m_lItems[nTopItem + nRow].m_oidItem,
                                   m_lItems[nTopItem + nRow].m_bEquipped,
-                                  m_lItems[nTopItem + nRow].m_bNewItem);
+                                  m_lItems[nTopItem + nRow].m_bNewItem,
+                                  m_vItemTextColor, m_vItemBorderColor, m_vItemHilightColor);
         m_aItemRows[nRow].AddEvent(GUIEVENT_ACTIVATE, this,
                                    m_lItems[nTopItem + nRow].m_pfnSelect);
         m_aItemRows[nRow].m_nIndex = m_lItems[nTopItem + nRow].m_bUsable;
@@ -1003,9 +1009,6 @@ void CSWGuiInGameInventory::SetItemRows(int nTopItem, int nSelectedItem)  // Xbo
     {
         m_aItemRows[nRow].SetShown(0);
     }
-    m_lblUparrow.SetShown(m_nTopItem != 0);
-    m_lblDownarrow.SetShown(m_nTopItem + nRows < m_lItems.num);
-    SetActiveControl(NULL, 0);
     if (m_lItems.num != 0)
     {
         SetActiveControl(&m_aItemRows[nSelectedItem - nTopItem], 1);

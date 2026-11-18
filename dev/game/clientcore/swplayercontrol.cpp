@@ -111,12 +111,17 @@ void CSWPlayerControlCamRelative::SetAcceleration(float fAcceleration)
         GetPlayer()->m_pAppearance->m_fDriveAcceleration = fAcceleration;
     }
 }
-// PC 0x006CEB90 GOG 0x006CE890
+// PC 0x006CEB90 GOG 0x006CE890 Xbox 0x0008EEA0
 void CSWPlayerControlCamRelative::Init()
 {
     m_fTurnRate = 480.0f;
+#ifdef _XBOX
+    CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+    int nRow = pModule->m_pInfo->m_nTurnRateRow;
+#else
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
     int nRow = pArea->m_nTurnRateRow;
+#endif
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     EXOXBOXASSERT(p2DArrays->m_pCameraStyle);
     C2DA* pTable = p2DArrays->m_pCameraStyle;
@@ -165,11 +170,13 @@ float CSWPlayerControlCamRelative::GetMaxSpeed()
     return 6.0f;
 }
 
+#ifndef _XBOX
 // Dead code: not in the PC executable
 void CSWPlayerControlCamRelative::SetTurnVelocity(float fVelocity)
 {
     m_integrator.SetVelocity(fVelocity);
 }
+#endif
 // PC 0x006CEDB0 GOG 0x006CEAB0 Xbox 0x0008F040
 void CSWPlayerControlCamRelative::ResetDriveAcceleration()
 {

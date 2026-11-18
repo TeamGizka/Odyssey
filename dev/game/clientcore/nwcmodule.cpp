@@ -339,6 +339,7 @@ void CSWCModule::TiltCamera(float fTilt)
             reinterpret_cast<CSWCameraFreeLook*>(pResult)->m_fTiltInput = fTilt;
         }
     }
+#ifndef _XBOX
     else if (m_nCameraType == 7)
     {
         pResult = m_pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_NAVIGATE);
@@ -348,6 +349,7 @@ void CSWCModule::TiltCamera(float fTilt)
                 fTilt * -60.0f;
         }
     }
+#endif
     else
     {
         if (m_pModuleCamera != NULL)
@@ -447,7 +449,9 @@ void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
         {
 #ifdef _XBOX
 
-            fTurn = pFreeLook->m_fRotateSpeed * fTimeStep * fTurn;
+            float fSpeed = pFreeLook->m_fRotateSpeed;
+            fSpeed *= fTimeStep;
+            fTurn = fSpeed * fTurn;
 #else
             float fTurnRate = max(-30.0f, min(30.0f, fTurn * 0.5f));
             float fSpeed = pFreeLook->m_fRotateSpeed;
@@ -765,8 +769,6 @@ void CSWCModule::UpdateCameraModeChaseCam()
     CAurBehaviorCameraFollow* pFollowMode;
     CAurScene* pScene;
     CSWCCreature* pPlayer;
-    float fNear;
-    float fFar;
     float fCameraYaw;
     float fDelta;
 
@@ -805,10 +807,12 @@ void CSWCModule::UpdateCameraModeChaseCam()
                     g_fMaxPitch = 50.0f;
                     m_vCameraOffset = Vector(0.0f, 0.0f, 1.0f);
                     pFollowMode->m_vOffset = m_vCameraOffset;
+                    float fNear;
+                    float fFar;
                     m_pModuleCamera->GetClipDist(fNear, fFar);
                     m_pModuleCamera->SetClipDist(fNear, 45.0f);
-                    pFollowMode->m_fPitch = 50.0f;
                     pFollowMode->m_fDistance = 20.0f;
+                    pFollowMode->m_fPitch = 50.0f;
                     m_bCameraModeChanged = 0;
                 }
             }
@@ -862,7 +866,7 @@ void CSWCModule::UpdateCameraModeChaseCam()
                     fDelta = 90.0f;
                 }
             }
-            if (fabs(fDelta) > 1.0)
+            if (fabs(fDelta) > 1.0f)
             {
                 if (fabs(fDelta) > camerafollowangle &&
                         m_bCameraFollowTurning == 0 ||
@@ -1020,7 +1024,7 @@ void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
                     fDelta = 90.0f;
                 }
             }
-            if (fabs(fDelta) > 1.0)
+            if (fabs(fDelta) > 1.0f)
             {
                 float fTurn = fDelta * 5.0f;
                 if (fTurn > 180.0f)

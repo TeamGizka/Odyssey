@@ -26,12 +26,16 @@ unsigned char CSWTlkTable::GetObjectGender()
         m_pObject->AsSWCCreature() != 0 &&
         m_pObject->AsSWCCreature()->m_pStats != 0)
     {
+#ifdef _XBOX
+        return m_pObject->AsSWCCreature()->m_pStats->m_nGender;
+#else
         unsigned char nGender = m_pObject->AsSWCCreature()->m_pStats->m_nGender;
         if (nGender > CTlkTable::GENDER_FEMALE)
         {
             nGender = CTlkTable::GENDER_MALE;
         }
         return nGender;
+#endif
     }
     return CTlkTable::GENDER_MALE;
 }

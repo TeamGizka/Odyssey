@@ -500,10 +500,16 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowObject(
                     GetIndex(oidPartyMember);
                 if (nIndex >= 0)
                 {
+#ifdef _XBOX
+                    vDestination = *g_pAppManager->GetClientExoApp()->GetSWParty()->
+                        GetMemberFormationOffset(nIndex);
+                    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+#else
                     CSWParty* pParty =
                         g_pAppManager->GetClientExoApp()->GetSWParty();
                     vDestination = pParty->m_aPartyMemberData[nIndex].m_vFormationOffset;
                     pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+#endif
                     float fRange = pParty->m_fFormationRange[pParty->m_nFormation];
                     vDestination += Vector(0.0f, -fRange, 0.0f);
                 }
@@ -22981,6 +22987,9 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
     pTraps->GetINTEntry(nMineType, "TrapName", &nTrapName);
     pTrigger->m_lsName.m_dwStringRef = nTrapName;
     CSWSArea* pArea = g_pAppManager->GetServerExoApp()->GetModule()->GetArea();
+#ifdef _XBOX
+    EXOXBOXASSERT(pArea);
+#endif
     pTrigger->CreateNewGeometry(2.0f, pLocation->m_vPosition, pArea);
     pTrigger->AddToArea(pArea, pLocation->m_vPosition.m_fX, pLocation->m_vPosition.m_fY, pLocation->m_vPosition.m_fZ, 1);
     pArea->m_lstTrapObjectIds.Add(pTrigger->GetId());

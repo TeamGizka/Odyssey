@@ -734,6 +734,21 @@ void Unblur(CAurObject* pObject, char* sEvent, void* pData)
 // PC 0x0065DCE0 GOG 0x0065DAF0 Xbox 0x0003D0E0
 void CSWCCreature::BlurWeapon(int bBlur)
 {
+#ifdef _XBOX
+    if (m_bBlurWeapon != bBlur)
+    {
+        unsigned long oidItem = GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND);
+        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+        CSWCItem* pItem = pClientExoApp->GetItemByGameObjectID(oidItem);
+        if (pItem != NULL)
+        {
+            g_pRules->m_pBaseItems->GetBaseItem(pItem->m_nBaseItem);
+            if (pItem->m_bVisualEffectLoaded == 1)
+                return;
+        }
+        m_bBlurWeapon = bBlur;
+    }
+#else
     if (m_bBlurWeapon != bBlur)
     {
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -750,6 +765,7 @@ void CSWCCreature::BlurWeapon(int bBlur)
                 m_bBlurWeapon = bBlur;
         }
     }
+#endif
 }
 // PC 0x0065DD40 GOG 0x0065DB50 Xbox 0x0003D140
 int CSWCCreature::ComputeWeaponOverlays(int bCheckAnimations, int bUnused)
@@ -2784,6 +2800,9 @@ void CSWCCreature::SetItemUnEquippedByMe(unsigned long oidItem)
         if (nResult == CGameObjectArray::SUCCESS)
         {
             CSWCItem* pItem = pObject->AsSWCItem();
+#ifdef _XBOX
+            CSWCCreature* pEquippedBy = pItem->GetEquippedBy();
+#endif
             pItem->SetEquippedBy(NULL);
         }
     }
@@ -4349,13 +4368,11 @@ int CSWCCreature::PlayHitSound(CSWCCombatAttackData* pAttackData, int bQueued)
 // PC 0x00665250 GOG 0x00664FF0 Xbox 0x00044430
 Gob* CSWCCreature::GetModel(unsigned char nModel, int bForceAppearanceUpdate)
 {
-    CSWCAnimBase* pAnimBase = m_pAnimBase;
-
-    if (pAnimBase == NULL)
+    if (m_pAnimBase == NULL)
         return NULL;
 
     if (bForceAppearanceUpdate != 0 && m_nCameraFollowDelay > 0 &&
-        nModel == 0xFF && pAnimBase->GetModel(CSWCObject::MODEL_SLOT_DEFAULT) == NULL)
+        nModel == 0xFF && m_pAnimBase->GetModel(CSWCObject::MODEL_SLOT_DEFAULT) == NULL)
     {
         ForceAppearanceUpdate();
         ReAttachCamera();

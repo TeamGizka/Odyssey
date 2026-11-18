@@ -332,12 +332,21 @@ public:
 
     enum PersonalActionMenu
     {
+#ifndef _XBOX
         PERSONAL_ACTION_FORCE_POWERS = 0,
         PERSONAL_ACTION_USABLE_ITEMS_1 = 1,
         PERSONAL_ACTION_USABLE_ITEMS_2 = 2,
         PERSONAL_ACTION_USABLE_ITEMS_3 = 3,
         PERSONAL_ACTION_BEHAVIORS = 4,
         PERSONAL_ACTION_STANCES = 5,
+#else
+        PERSONAL_ACTION_DEFAULT = 0,
+        PERSONAL_ACTION_MINES = 2,
+        PERSONAL_ACTION_FORCE_POWERS = 3,
+        PERSONAL_ACTION_USABLE_ITEMS = 4,
+        PERSONAL_ACTION_STANCES = 5,
+        PERSONAL_ACTION_BEHAVIORS = 6,
+#endif
         SUBRACE_BEAST = 2
     };
     enum UsableItemActionMask

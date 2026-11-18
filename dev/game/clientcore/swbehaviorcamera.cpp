@@ -73,7 +73,7 @@ void CSWCameraOnAStick::Message(char* sMessage)
 // PC 0x0068DC00 GOG 0x0068D970 Xbox 0x000ADF00
 Vector CSWCameraOnAStick::Control_ComputeDesiredPosition(Vector vPosition)
 {
-    Vector vOffset = m_fDistance * Vector(0.0f, 1.0f, 0.0f);
+    Vector vOffset = Vector(0.0f, 1.0f, 0.0f) * m_fDistance;
     vOffset = m_qLastOrientation * vOffset;
     Vector vDesiredPosition = vPosition - vOffset;
     return vDesiredPosition;
@@ -105,7 +105,7 @@ float CSWCameraOnAStick::Control_AccelerateInterp(float fStart, float fMinimum,
     }
     if (!(fResult < fMaximum))
     {
-        return fMaximum;
+        fResult = fMaximum;
     }
     return fResult;
 }
@@ -128,20 +128,20 @@ int CSWCameraOnAStick::CameraFreeStyleControl(float fTimeStep)
         if (m_fTurn != 0.0f)
         {
             static_cast<Gob*>(m_pObject)->SetPosition(
-                fTimeStep * Vector(1.0f, 0.0f, 0.0f) * m_fTurn +
-                static_cast<Gob*>(m_pObject)->GetPosition());
+                static_cast<Gob*>(m_pObject)->GetPosition() +
+                fTimeStep * Vector(1.0f, 0.0f, 0.0f) * m_fTurn);
         }
         if (m_fTilt < 0.0f)
         {
             static_cast<Gob*>(m_pObject)->SetPosition(
-                fTimeStep * Vector(0.0f, -1.0f, 0.0f) +
-                static_cast<Gob*>(m_pObject)->GetPosition());
+                static_cast<Gob*>(m_pObject)->GetPosition() +
+                fTimeStep * Vector(0.0f, -1.0f, 0.0f));
         }
         if (m_fTilt > 0.0f)
         {
             static_cast<Gob*>(m_pObject)->SetPosition(
-                fTimeStep * Vector(0.0f, 1.0f, 0.0f) +
-                static_cast<Gob*>(m_pObject)->GetPosition());
+                static_cast<Gob*>(m_pObject)->GetPosition() +
+                fTimeStep * Vector(0.0f, 1.0f, 0.0f));
         }
     }
     if (CameraFreeStyleMode == CAMERA_FREE_STYLE_ROTATE)
@@ -167,14 +167,14 @@ int CSWCameraOnAStick::CameraFreeStyleControl(float fTimeStep)
         if (m_fTilt < 0.0f)
         {
             static_cast<Gob*>(m_pObject)->SetPosition(
-                fTimeStep * Vector(0.0f, 0.0f, 1.0f) +
-                static_cast<Gob*>(m_pObject)->GetPosition());
+                static_cast<Gob*>(m_pObject)->GetPosition() +
+                fTimeStep * Vector(0.0f, 0.0f, 1.0f));
         }
         if (m_fTilt > 0.0f)
         {
             static_cast<Gob*>(m_pObject)->SetPosition(
-                fTimeStep * Vector(0.0f, 0.0f, -1.0f) +
-                static_cast<Gob*>(m_pObject)->GetPosition());
+                static_cast<Gob*>(m_pObject)->GetPosition() +
+                fTimeStep * Vector(0.0f, 0.0f, -1.0f));
         }
     }
     m_fTurn = 0.0f;
@@ -971,8 +971,8 @@ void CSWCameraOnAStick::ChangeTarget(CAurObject* pTarget, int bSnap)
     vDirection.Normalize();
 
     Vector vPosition =
-        vDirection * m_fDistance +
-        static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition();
+        static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition() +
+        m_fDistance * vDirection;
     vPosition.m_fZ = m_fHeight;
     m_vLastPosition = m_vInitialPosition = vPosition;
 }

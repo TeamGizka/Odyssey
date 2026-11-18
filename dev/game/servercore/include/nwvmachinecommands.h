@@ -916,6 +916,9 @@ public:
     CommandFunction* m_pCommands;
     virtual ~CSWVirtualMachineCommands();
     virtual void InitializeCommands();
+#ifdef _XBOX
+    void InitializeXboxCommands();
+#endif
     virtual int ExecuteCommand(int, int);
     virtual void RunScriptCallback(CExoString&);
     virtual void ReportError(CExoString&, int);

@@ -460,12 +460,16 @@ int CClientOptions::SetDefaultAdvancedSoundOptions()
 // PC 0x0066D300 GOG 0x0066D0A0 Xbox 0x0005EC20
 float CClientOptions::GetGammaSetting()
 {
+#ifdef _XBOX
+    return m_fGammaMax - (m_nBrightness * 0.01f) * (m_fGammaMax - m_fGammaMin);
+#else
     int nBrightness = m_nBrightness + GAMMA_BRIGHTNESS_OFFSET;
     if (nBrightness >= 100)
     {
         nBrightness = 100;
     }
     return m_fGammaMax - (m_fGammaMax - m_fGammaMin) * (nBrightness * 0.01f);
+#endif
 }
 // PC 0x0066D330 GOG 0x0066D0D0
 float CClientOptions::GetMouseSenSetting()

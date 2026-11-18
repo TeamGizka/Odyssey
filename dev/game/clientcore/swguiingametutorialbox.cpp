@@ -218,7 +218,7 @@ void CSWGuiTutorialBox::PerformCombatXButton(CSWGuiControl* pControl)
     MessageBoxUnpause(0);
 #ifdef _XBOX
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    pInGame->m_pMainInterface->OnCombatXButton(GUIEVENT_TOGGLE_MODE);
+    pInGame->m_pMainInterface->OnCombatXButton(GUIEVENT_TOGGLE_MODE, 0);
 #else
     g_pAppManager->m_pClientExoApp->GetInGameGui();
 #endif

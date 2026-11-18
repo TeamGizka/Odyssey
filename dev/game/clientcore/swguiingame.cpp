@@ -115,7 +115,8 @@ inline void CSWGuiMainInterfaceChar::SetHealth(int nCurHealth, int nMaxHealth, i
     m_aBars[0].SetMaxValue(nMaxHealth);
     m_aBars[0].SetCurValue(nCurHealth);
 #ifdef _XBOX
-    m_aBars[0].m_cFill.m_cParams.SetFillImage(bAlive != 0 ? "lbl_healthp" : "lbl_health", 0);
+    m_aBars[0].m_cFill.m_cParams.m_vColor = bAlive != 0 ? CGuiInGame::COLOR_GREEN
+                                                             : CGuiInGame::COLOR_RED;
 #else
     m_aBars[0].m_cFill.m_cParams.SetColor(bAlive != 0 ? CGuiInGame::COLOR_GREEN
                                                       : CGuiInGame::COLOR_RED);

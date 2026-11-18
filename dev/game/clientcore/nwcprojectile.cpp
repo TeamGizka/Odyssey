@@ -945,7 +945,11 @@ void CSWCProjectile::SetBehaviorListReflected()
     pBehavior->m_nDuration = m_nDesiredPositionTimer;
     pBehavior->m_nElapsedTime = 0;
     pBehavior->m_nProjectileType = 1;
+#ifdef _XBOX
+    pBehavior->m_fDistance = m_fSourceDistance;
+#else
     pBehavior->m_fDistance = (float)(1.0 * m_fSourceDistance);
+#endif
     m_lstBehaviors.AddTail(pBehavior);
 
     pBehavior = new CProjectileBehavior;

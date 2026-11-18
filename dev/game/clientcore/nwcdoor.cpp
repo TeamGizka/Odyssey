@@ -223,7 +223,9 @@ void CSWCDoor::MenuActionBash(unsigned long oidDoor, CSWCCreature* pCreature)
         {
             pCreature->ClearAllActions();
             pCreature->PerformAttack(m_nId);
+#ifndef _XBOX
             g_pAppManager->m_pClientExoApp->DelayNextEnemyAutoPause();
+#endif
         }
     }
 }

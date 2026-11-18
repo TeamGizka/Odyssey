@@ -675,7 +675,7 @@ public:
 
     enum { STRREF_ITEM_USED_THIS_ROUND = 42409 };
 
-    enum { NUM_ITEM_ROWS = 5 };
+    enum { NUM_ITEM_ROWS = 8 };
 
     struct ItemListEntry
     {
@@ -729,15 +729,17 @@ public:
     CSWGuiLabel m_lblPort;
     CSWGuiLabel m_lblVit;
     CSWGuiLabel m_lblDef;
-    CSWGuiLabel m_lblDownarrow;
-    CSWGuiLabel m_lblUparrow;
     CSWGuiInGameItemEntry m_aItemRows[NUM_ITEM_ROWS];
-    CExoArrayList<unsigned long> m_aNewItems;
     CExoArrayList<ItemListEntry> m_lItems;
+    CExoArrayList<unsigned long> m_aNewItems;
     unsigned long m_oidSelectedItem;
     short m_nTopItem;
     short m_nSelectedItem;
+    short m_nPreviousSelectedItem;
     unsigned long m_bUpdateItems : 1;
+    Vector m_vItemTextColor;
+    Vector m_vItemBorderColor;
+    Vector m_vItemHilightColor;
 };
 #endif
 

@@ -8,8 +8,13 @@ class CSWSAreaMap
 {
 public:
 
+#ifdef _XBOX
+    static const int MAP_PIXEL_WIDTH = 496;
+    static const int MAP_PIXEL_HEIGHT = 248;
+#else
     static const int MAP_PIXEL_WIDTH = 588;
     static const int MAP_PIXEL_HEIGHT = 294;
+#endif
 
     static const int EXPLORED_BITS_PER_WORD = 32;
 

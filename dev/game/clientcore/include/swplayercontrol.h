@@ -132,7 +132,9 @@ public:
     CSWPlayerControlCamRelative(unsigned long oidPlayer, CAurCamera* pCamera);
     void SetMaxSpeed(float fSpeed);
     void SetAcceleration(float fAcceleration);
+#ifndef _XBOX
     void SetTurnVelocity(float fVelocity);
+#endif
     // PC 0x006CEEF0 GOG 0x006CEBF0 Xbox 0x0008F150
     virtual void UpDown(float fValue)
     {
@@ -162,11 +164,7 @@ public:
     {
         float fForward = (float)fabs(m_stateB.m_vValue.m_fX);
         float fSideways = (float)fabs(m_stateB.m_vValue.m_fY);
-        if (fForward > fSideways)
-        {
-            return fForward;
-        }
-        return fSideways;
+        return fForward > fSideways ? fForward : fSideways;
     }
     virtual int Control(float fTimeStep);
     virtual void ResetDriveAcceleration();
@@ -188,7 +186,9 @@ public:
     CSWMGPhysicsState m_stateA;
     CSWMGPhysicsState m_stateB;
     Vector m_vTarget;
+#ifndef _XBOX
     CSWRK4SplitAcceleration m_integrator;
+#endif
 };
 
 #endif
