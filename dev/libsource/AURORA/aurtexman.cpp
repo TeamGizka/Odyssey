@@ -1185,8 +1185,8 @@ unsigned char* CAurTextureBasic::LoadImageA()  // Xbox 0x00295C40
             m_nWidth /= m_nNumX;
             m_nHeight /= m_nNumY;
             int nBytesPerBlock = m_nBPP == 4 ? 16 : 8;
-            m_nCompressedSize = ((m_nHeight + 3) / 4) * ((m_nWidth + 3) / 4) * nBytesPerBlock;
             short nNumMipMaps = 1;
+            m_nCompressedSize = ((m_nHeight + 3) / 4) * ((m_nWidth + 3) / 4) * nBytesPerBlock;
             int nSize = m_nWidth;
             while (nSize > 1)
             {

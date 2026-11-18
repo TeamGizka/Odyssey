@@ -13245,7 +13245,7 @@ void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActi
 {
     CItemRepository* pRepository = GetItemRepository(1);
     CExoString sName;
-    int nLanguage = g_pAppManager->m_pClientExoApp->GetClientLanguage();
+    int nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
     int nAction = lstActions.num;
 
     if (pRepository == NULL)
@@ -13257,7 +13257,7 @@ void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActi
     {
         CSWSItem* pItem = pRepository->ItemListGetItem(i);
         if (pItem != NULL &&
-            pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_SPIKE)
+            pItem->GetBaseItem()->GetItemType() != CSWBaseItem::ITEM_TYPE_SPIKE)
         {
             continue;
         }
@@ -13272,7 +13272,7 @@ void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActi
                 lstActions.SetSize(nAction + 1);
                 pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
                 if (pItem->m_nStackSize > 1)
-                    sName.Format("%s (%d)", sName.CStr(), pItem->m_nStackSize);
+                    sName.Format("%s (%d)", sName.CStr(), pItem->GetStackSize());
                 else if (pItem->m_nCharges > 1)
                     sName.Format("%s (%d)", sName.CStr(), pItem->m_nCharges);
                 lstActions[nAction].m_sName = sName;

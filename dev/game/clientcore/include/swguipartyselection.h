@@ -147,8 +147,8 @@ public:
     CSWGuiLabel m_lblExit;
     int m_bCanChangeParty;
     unsigned long m_nCannotChangeStrRef;
-    CSWGuiPartySelectionData* m_pSelectedData;
-    int m_bSelectedDataPending;
+    int m_bPartyAccepted;
+    int m_bSwitchingPanel;
 #else
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnAccept;

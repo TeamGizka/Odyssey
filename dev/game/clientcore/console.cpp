@@ -62,8 +62,7 @@ int GetCheatsTurnedOn()
     }
     return nCheats == 1;
 }
-#if !defined(_XBOX) || defined(_DEBUG)
-// PC 0x006566F0 GOG 0x006565A0
+// PC 0x006566F0 GOG 0x006565A0 Xbox 0x001A2B40
 void heal()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -72,7 +71,6 @@ void heal()
             ->SendPlayerToServerCheat_Resurrect();
     }
 }
-#endif
 // PC 0x00656710 GOG 0x006565C0
 void CheatSetSkill(int nSkill, char* szValue)
 {
@@ -802,9 +800,7 @@ void ToggleLiveContentIgnore()
 }
 #endif
 
-#if !defined(_XBOX) || defined(_DEBUG)
 ConsoleFunc ConFheal("heal", heal);
-#endif
 ConsoleFunc ConFsetcomputeruse("setcomputeruse", setcomputeruse);
 ConsoleFunc ConFsetdemolitions("setdemolitions", setdemolitions);
 ConsoleFunc ConFsetstealth("setstealth", setstealth);

@@ -1404,7 +1404,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // Xbox 
                 pCreature->SetSpellTarget(pCreature->m_nId);
                 pCreature->m_bSafeProjectileBroadcast = 0;
                 pCreature->InstantUseItem(oidItem);
-                CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
+                CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
                 if (pItem != NULL && !pItem->m_bDeleting)
                 {
                     static_cast<CSWGuiInGameItemEntry*>(pControl)->UpdateItem();

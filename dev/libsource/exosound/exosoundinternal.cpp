@@ -3729,6 +3729,7 @@ CExoSoundInternal::~CExoSoundInternal()  // Xbox 0x00163680
 
 
 
+#pragma optimize("", off)
 void CExoSoundInternal::Render()  // Xbox 0x001645E0
 {
     unsigned __int64 nStartTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
@@ -4077,6 +4078,7 @@ void CExoSoundInternal::Render()  // Xbox 0x001645E0
     g_fSoundRenderTime = (float)(int)
         (g_pExoBase->m_pExoTimers->GetHighResolutionTimer() - nStartTime) * 0.001f;
 }
+#pragma optimize("", on)
 #endif
 
 #ifdef _XBOX

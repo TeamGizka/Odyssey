@@ -34,9 +34,7 @@ template SafePointer<CAurTexture>::operator CAurTexture*() const;
 #define AUR_FORCE_GLOW_PULSE_STEP 0.024639942f
 #define AURMODELRENDER_DEBUG 0
 
-#ifndef _XBOX
 #pragma inline_recursion(on)
-#endif
 
 int rendermaxdepth = 999999;
 

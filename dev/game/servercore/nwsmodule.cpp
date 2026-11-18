@@ -2617,9 +2617,48 @@ void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x0050
 
     g_pExoResMan->FindModuleDownloadedPkg(sModuleName);
     int nProgressIncrement = (nProgressEnd - nProgress) / 15;
+#ifdef _XBOX
+    g_pExoResMan->AddResourceImageFile("HD0:footsteps");
     nProgress += nProgressIncrement;
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgress, 1);
     UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:gui", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    nProgress += nProgressIncrement;
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgress, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:p_mdl", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    nProgress += nProgressIncrement;
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgress, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:p_tex", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    nProgress += nProgressIncrement;
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgress, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:p_npc", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:effects", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:combat", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:footsteps", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    UpdateScreen(0.033333335f, 0, 0);
+    g_pExoResMan->AddEncapsulatedResourceFile(
+        g_pExoResMan->CacheResource("HD0:weapons", RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
+    nProgress += nProgressIncrement;
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgress, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+#else
+    nProgress += nProgressIncrement;
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgress, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+#endif
 
     int nColon = sModuleName.Find(':', 0);
     if (nColon == -1)

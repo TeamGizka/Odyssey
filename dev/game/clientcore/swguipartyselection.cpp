@@ -310,6 +310,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
                 CGuiInGame::DISABLED_TEXT);
             SetAddRemoveLabel(1);
         }
+#ifndef _XBOX
         if (m_pSelectedData != 0 && m_pSelectedData != pData)
         {
             if (m_pSelectedData->m_pCreature != 0)
@@ -318,6 +319,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
         }
         m_pSelectedData = pData;
         pData->m_btnNPC.SetActive(1);
+#endif
     }
     else
     {
@@ -327,6 +329,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
         m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
             CGuiInGame::DISABLED_TEXT);
         SetAddRemoveLabel(1);
+#ifndef _XBOX
         if (m_pSelectedData != 0)
         {
             if (m_pSelectedData->m_pCreature != 0)
@@ -334,6 +337,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
             m_pSelectedData->m_btnNPC.SetActive(0);
             m_pSelectedData = 0;
         }
+#endif
     }
 }
 // PC 0x0071DF70 GOG 0x0071DD20 Xbox 0x000F0770
@@ -411,7 +415,9 @@ void CSWGuiPartySelection::SetForcedNPC(int nFirstNPC, int nSecondNPC)
 // PC 0x0071E190 GOG 0x0071DEF0 Xbox 0x000F0850
 void CSWGuiPartySelection::AcceptParty(int bCancelled)
 {
-
+#ifdef _XBOX
+    m_bPartyAccepted = 1;
+#endif
     Vector vPosition;
     int nFormationMember = 1;
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
@@ -537,7 +543,8 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
     pServer->m_pcExoAppInternal->UpdateClientGameObjects(1);
     m_bForcedNPC = 0;
 #ifdef _XBOX
-    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->HideSWInGameGui())
+    if (!m_bSwitchingPanel &&
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->HideSWInGameGui())
 #else
     if (g_pAppManager->GetClientExoApp()->GetInGameGui()->HideSWInGameGui(0))
 #endif
@@ -733,6 +740,18 @@ void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
         case GUIEVENT_ACCEPT:
             OnDone(0);
             return;
+#ifdef _XBOX
+        case GUIEVENT_PREVIOUS:
+        case GUIEVENT_NEXT:
+            if (m_bPlaySound == 0)
+            {
+                m_bSwitchingPanel = 1;
+                OnDone(0);
+                if (m_bPartyAccepted == 0)
+                    return;
+            }
+            break;
+#endif
         }
     }
     CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
@@ -851,6 +870,8 @@ void CSWGuiPartySelection::OnPanelAdded()  // Xbox 0x000F1470
 #endif
     g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
         CClientExoApp::TUTORIAL_PARTY_SELECTION, OBJECT_INVALID, OBJECT_INVALID, 0);
+    m_bPartyAccepted = 0;
+    m_bSwitchingPanel = 0;
 }
 #else
 void CSWGuiPartySelection::OnPanelAdded()
@@ -1095,8 +1116,8 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
     m_bPlaySound = 0;
     m_bAllowCancel = 0;
     m_nCannotChangeStrRef = STRREF_CANNOT_CHANGE_PARTY;
-    m_pSelectedData = 0;
-    m_bSelectedDataPending = 0;
+    m_bPartyAccepted = 0;
+    m_bSwitchingPanel = 0;
 #else
     m_btnDone.AddEvent(CSWGuiControl::EVENT_SELECT, this,
         (CSWGuiEventHandler)&CSWGuiPartySelection::OnDone);

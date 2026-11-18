@@ -907,7 +907,7 @@ void CSWCTrigger::UpdateAreaTransitionDisplay()
     if (pGuiInGame->GetAreaTransitionObject() == OBJECT_INVALID ||
         vToHit * vToHit < vToTransition * vToTransition)
     {
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateAreaTransitionGUI(m_nId, vHit);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateAreaTransitionGUI(GetId(), vHit);
     }
 #else
     if (pGuiInGame->m_oidAreaTransition == OBJECT_INVALID ||

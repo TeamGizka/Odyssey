@@ -1027,6 +1027,33 @@ void Input::InputBinary::ResetMdlNodeLite(MdlNode* pNode,
 }
 #endif
 
+#ifdef _XBOX
+void Input::InputBinary::ResetBase(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
+{
+    ResetMdlNodeParts(pNode, pModelData, pVertexData);
+}
+
+void Input::InputBinary::ResetCamera(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
+{
+    ResetMdlNodeParts(pNode, pModelData, pVertexData);
+}
+
+void Input::InputBinary::ResetEmitter(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
+{
+    ResetMdlNodeParts(pNode, pModelData, pVertexData);
+}
+
+void Input::InputBinary::ResetReference(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
+{
+    ResetMdlNodeParts(pNode, pModelData, pVertexData);
+}
+
+void Input::InputBinary::ResetTrigger(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
+{
+    ResetMdlNodeParts(pNode, pModelData, pVertexData);
+}
+#endif
+
 // Dead code: not in the PC executable
 void Input::InputBinary::ResetCameraLite(MdlNode* pNode,  // Xbox 0x0032CAA0
                                     unsigned char* pModelData,
@@ -1468,31 +1495,6 @@ void Input::InputBinary::ResetTriMeshPartsLite(MdlNodeTriMesh* pNode,  // Xbox 0
 }
 
 #ifdef _XBOX
-void Input::InputBinary::ResetBase(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
-{
-    ResetMdlNodeParts(pNode, pModelData, pVertexData);
-}
-
-void Input::InputBinary::ResetCamera(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
-{
-    ResetMdlNodeParts(pNode, pModelData, pVertexData);
-}
-
-void Input::InputBinary::ResetEmitter(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
-{
-    ResetMdlNodeParts(pNode, pModelData, pVertexData);
-}
-
-void Input::InputBinary::ResetReference(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
-{
-    ResetMdlNodeParts(pNode, pModelData, pVertexData);
-}
-
-void Input::InputBinary::ResetTrigger(MdlNode* pNode, unsigned char* pModelData, unsigned char* pVertexData)
-{
-    ResetMdlNodeParts(pNode, pModelData, pVertexData);
-}
-
 void Input::InputBinary::ResetAABBLite(MdlNodeAABB* pNode, unsigned char* pModelData,
                                        unsigned char* pVertexData)
 {

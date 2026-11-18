@@ -1685,8 +1685,8 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
 #ifdef _XBOX
     StartLoadFromLayout("optfeedback_x");
     InitControl(m_lblTitle, "LBL_TITLE", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
     InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
     InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
@@ -1742,7 +1742,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     CSWGuiPanel* pPanel = this;
     pPanel->SetActiveControl(&m_aCheckboxes[0], 0);
     CClientOptions* pOptions =
-        g_pAppManager->m_pClientExoApp->GetClientOptions();
+        g_pAppManager->GetClientExoApp()->GetClientOptions();
     if (pOptions != 0)
     {
         unsigned int bHide = pOptions->m_bHideUnequippable;

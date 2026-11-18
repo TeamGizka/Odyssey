@@ -2686,13 +2686,14 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
     UpdateScreen(1.0f / 30.0f, 0, 0);
     unsigned long nStartTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
 
+    CExoString sSaveRoot("U:\\");
     WCHAR wszSaveName[256];
     char szSavePath[256];
     mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE_NAME).CStr(), 255);
-    XCreateSaveGame(CExoString("U:\\").CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
+    XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
     {
         CExoString sAlias("SAVES");
-        g_pExoBase->m_pExoAliasList->ChangePath(sAlias, szSavePath);
+        g_pExoBase->m_pExoAliasList->ChangePath(sAlias, CExoString(szSavePath));
     }
     CExoString sDirectory;
     sDirectory.Format("SAVES:%06d - %s", CSWGuiSaveLoadEntry::SAVE_SLOT_QUICK, "AUTOSAVE");
@@ -2714,7 +2715,10 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
     int nAreaName;
     if (p2DA->GetINTEntry(sModule, "AreaName", &nAreaName))
     {
-        sAreaName = g_pTlkTable->GetSimpleString(nAreaName);
+        if (nAreaName != 0)
+        {
+            sAreaName = g_pTlkTable->GetSimpleString(nAreaName);
+        }
     }
     CExoString sBMPResRef;
     bool bMissingImage;
@@ -2752,6 +2756,19 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
     pGFF->WriteFieldDWORD(&cRoot, m_partyTable.GetTotalPlayedSeconds(), "TIMEPLAYED");
     pGFF->WriteFieldBYTE(&cRoot, 1, "REBOOTAUTOSAVE");
     pGFF->WriteFieldCExoString(&cRoot, sBMPResRef, "SCREENSHOT");
+    {
+        SYSTEMTIME stLocalTime;
+        FILETIME ftTimeStamp;
+        GetLocalTime(&stLocalTime);
+        SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
+        unsigned __int64 nTimeStamp = ftTimeStamp.dwHighDateTime;
+        nTimeStamp <<= 32;
+        nTimeStamp |= ftTimeStamp.dwLowDateTime;
+        pGFF->WriteFieldDWORD64(&cRoot, nTimeStamp, "TIMESTAMP");
+    }
+    pGFF->WriteFieldCExoString(&cRoot, m_partyTable.GetPCName(), "PCNAME");
+    int nSaveNumber = m_partyTable.m_nSaveNumber;
+    pGFF->WriteFieldDWORD(&cRoot, nSaveNumber, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
                          "GAMEPLAYHINT");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(0),
@@ -2886,7 +2903,6 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
     g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
     UpdateScreen(1.0f / 30.0f, 0, 0);
 
-    unsigned long nEndTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
     CExoString sSavePath = g_pExoBase->m_pExoAliasList->GetAliasPath("SAVES", 0);
     {
         int nFillerSize = (1600 - XGetDisplayBlocks(sSavePath.CStr())) << 14;
@@ -2898,10 +2914,7 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
     }
     g_pAppManager->GetClientExoApp()->SetLoadBarProgress(100, 0);
     UpdateScreen(1.0f / 30.0f, 0, 0);
-    if (nEndTime - nStartTime < 3000)
-    {
-        Sleep(3000 - (nEndTime - nStartTime));
-    }
+    unsigned long nEndTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
 }
 
 void CServerExoAppInternal::StallEventSaveGame()  // Xbox 0x00254F70
@@ -2972,6 +2985,19 @@ void CServerExoAppInternal::StallEventSaveGame()  // Xbox 0x00254F70
     pGFF->WriteFieldCExoString(&stSaveInfo, sAreaName, "AREANAME");
     pGFF->WriteFieldCExoString(&stSaveInfo, sModuleName, "LASTMODULE");
     pGFF->WriteFieldDWORD(&stSaveInfo, m_partyTable.GetTotalPlayedSeconds(), "TIMEPLAYED");
+    {
+        SYSTEMTIME stLocalTime;
+        FILETIME ftTimeStamp;
+        GetLocalTime(&stLocalTime);
+        SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
+        unsigned __int64 nTimeStamp = ftTimeStamp.dwHighDateTime;
+        nTimeStamp <<= 32;
+        nTimeStamp |= ftTimeStamp.dwLowDateTime;
+        pGFF->WriteFieldDWORD64(&stSaveInfo, nTimeStamp, "TIMESTAMP");
+    }
+    pGFF->WriteFieldCExoString(&stSaveInfo, m_partyTable.GetPCName(), "PCNAME");
+    int nSaveNumber = m_partyTable.m_nSaveNumber;
+    pGFF->WriteFieldDWORD(&stSaveInfo, nSaveNumber, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&stSaveInfo,
         g_pAppManager->GetClientExoApp()->GetGamePlayHint(), "GAMEPLAYHINT");
     pGFF->WriteFieldBYTE(&stSaveInfo,
@@ -5092,14 +5118,22 @@ int CServerExoAppInternal::MainLoop()
                     (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) -
                         m_nAutoSaveTimeOfDay > 500;
                 g_pExoInput->UpdateJoysticks();
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
+                if (m_bMoveToModulePending == 0)
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
             }
         }
         if (m_bMoveToModulePending == 1 && bTransitionReady == 1 &&
             g_pAppManager->GetClientExoApp()->GetInGameGui()
                 ->m_bControllerPauseActive == 0)
         {
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
+                "000_Human_Conf_Active", 0);
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
+                "000_Beast_Conf_Active", 0);
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
+                "000_Droid_Conf_Active", 0);
             ForceRunAreaOnExitScripts();
+            AurReleaseFrameTexture();
             if (!StorePlayerCharacters())
             {
                 m_bDoingStartNewModule = 0;
@@ -5131,6 +5165,15 @@ int CServerExoAppInternal::MainLoop()
             CExoString sLoadScreen("");
             CExoString sLoadMusic("");
             int bMinGlobalRim = 0;
+            if (lMovies.num == 0 && !sModule.IsEmpty())
+            {
+                g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModule);
+                g_pAppManager->GetClientExoApp()->SetLoadMusic("");
+                g_pAppManager->GetClientExoApp()->SetLoadBarProgress(0, 1);
+                g_pAppManager->GetClientExoApp()->SetLoadScreenHint(0);
+                g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 0, 0);
+                UpdateScreen(1.0f / 30.0f, 0, 0);
+            }
             if (g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
                     sModule, "BMPResRef", &sLoadScreen) == 0)
             {
@@ -5209,6 +5252,13 @@ int CServerExoAppInternal::MainLoop()
             {
                 DoPCAutosave(sModule, cParams, pModuleSave);
             }
+            g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModule);
+            g_pAppManager->GetClientExoApp()->SetLoadMusic("");
+            g_pAppManager->GetClientExoApp()->SetLoadBarProgress(2, 1);
+            g_pAppManager->GetClientExoApp()->SetLoadScreenHint(
+                g_pAppManager->GetClientExoApp()->GetNextLoadScreenHintSTRREF(sModule, 0));
+            g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 0, 0);
+            UpdateScreen(1.0f / 30.0f, 0, 0);
             cParams.m_nHintTimer1 = m_nAutoSaveElapsedTime;
             cParams.m_nHintTimer2 = m_bAutoSaveTimerExpired;
             if (sMovie1.GetLength() <= 0 && sMovie2.GetLength() <= 0 &&
@@ -5305,7 +5355,7 @@ int CServerExoAppInternal::MainLoop()
                     XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
                     {
                         CExoString sAlias("SAVES");
-                        g_pExoBase->m_pExoAliasList->ChangePath(sAlias, szSavePath);
+                        g_pExoBase->m_pExoAliasList->ChangePath(sAlias, CExoString(szSavePath));
                     }
                     g_pExoResMan->FileCopy("HD0:AutoSaveImage", "SAVES:SaveImage", 3011, RESTYPE_INVALID);
                     SaveGame(0, sName, NULL, 1);
@@ -5359,7 +5409,11 @@ int CServerExoAppInternal::MainLoop()
                 CExoString sModule(pStats->m_sName);
                 CSWSModule* pModule = GetModule();
                 int bLoadingSaveGame = 0;
+#ifdef _XBOX
+                if (g_pAppManager->GetClientExoApp()->GetLoadingSaveGame() == 1)
+#else
                 if (m_bLoadFromSaveGame)
+#endif
                     bLoadingSaveGame = 1;
                 if (pStats->m_nProgressTotal == 0)
                 {
