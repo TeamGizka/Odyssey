@@ -54,7 +54,11 @@ CSWGuiStartScreen::CSWGuiStartScreen(CSWGuiManager* pManager)  // Xbox 0x000B4BA
         m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     }
 
+#ifdef _XBOX
+    StartLoadFromLayout("startscreen_x");
+#else
     StartLoadFromLayout("startscreen");
+#endif
     InitControl(m_lblStartText, "LBL_STARTTEXT", 1);
     StopLoadFromLayout();
 

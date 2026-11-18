@@ -317,7 +317,7 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
 {
     m_pCreature = pCreature;
 #ifdef _XBOX
-    StartLoadFromLayout("PORTCUST");
+    StartLoadFromLayout("PORTCUST_x");
 #else
     StartLoadFromLayout("PORTCUST_p");
 #endif

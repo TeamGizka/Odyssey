@@ -839,7 +839,7 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
     CSWGuiButton btnItem;
     m_bUpdateItems = 0;
     m_oidSelectedItem = OBJECT_INVALID;
-    StartLoadFromLayout("inventory");
+    StartLoadFromLayout("inventory_x");
     InitControl(m_lbxDescription, "LB_DESCRIPTION", 1);
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblX, "LBL_X", 1);

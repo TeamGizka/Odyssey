@@ -2222,11 +2222,13 @@ void CSWGuiControl::AddChildControl(CSWGuiControl* pChild)
     m_lChildren.Add(pChild);
 #endif
 }
+#ifndef _XBOX
 // PC 0x0041A500 GOG 0x0041A4F0
 CSWGuiLabel::CSWGuiLabel()
 {
     m_bFocusable = 0;
 }
+#endif
 // PC 0x0041A570 GOG 0x0041A560 Xbox 0x00335D10
 void CSWGuiButton::HandleInputEvent(int nEvent, int nState)
 {

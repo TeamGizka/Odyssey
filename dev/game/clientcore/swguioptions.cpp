@@ -78,7 +78,7 @@ void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
 CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("optionsmain");
+    StartLoadFromLayout("optionsmain_x");
     InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
     InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
     InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
@@ -1666,7 +1666,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("optfeedback");
+    StartLoadFromLayout("optfeedback_x");
     InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
     InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
     InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
@@ -2852,7 +2852,7 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("optgraphics");
+    StartLoadFromLayout("optgraphics_x");
     InitControl(m_sldGamma, "SLI_GAMMA", 1);
     InitControl(m_sldMusic, "SLI_MUSIC", 1);
     InitControl(m_sldVoice, "SLI_VO", 1);

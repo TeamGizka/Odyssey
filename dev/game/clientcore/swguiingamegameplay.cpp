@@ -362,7 +362,7 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("optgameplay");
+    StartLoadFromLayout("optgameplay_x");
     InitControl(m_btnDifficulty, "BTN_DIFFICULTY", 1);
     InitControl(m_cbInvertCam, "CB_AUTOCENTER", 1);
     InitControl(m_cbAutoLevelUp, "CB_LEVELUP", 1);

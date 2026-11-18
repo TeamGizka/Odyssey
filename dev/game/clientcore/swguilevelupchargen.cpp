@@ -540,7 +540,7 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
     LevelUpCreature();
     DetermineClass();
 #ifdef _XBOX
-    StartLoadFromLayout("MAINCG");
+    StartLoadFromLayout("MAINCG_x");
 #else
     StartLoadFromLayout("MAINCG_p");
 #endif

@@ -415,7 +415,7 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // Xbox 0
 {
     CExoString sName;
 
-    StartLoadFromLayout("abilities");
+    StartLoadFromLayout("abilities_x");
     InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;

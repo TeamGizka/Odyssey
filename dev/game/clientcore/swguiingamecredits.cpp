@@ -83,7 +83,7 @@ CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)  // Xbox 0x001
     : CSWGuiPanel(pManager)
 {
     int nName;
-    StartLoadFromLayout("credits");
+    StartLoadFromLayout("credits_x");
     InitControl(m_lbxCredits, "LB_CREDITS", 1);
     StopLoadFromLayout();
 

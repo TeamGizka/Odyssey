@@ -397,7 +397,7 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     nNumber = 0;
 
 #ifdef _XBOX
-    StartLoadFromLayout("LEVELUPPNL");
+    StartLoadFromLayout("LEVELUPPNL_x");
 #else
     StartLoadFromLayout("LEVELUPPNL_p");
 #endif

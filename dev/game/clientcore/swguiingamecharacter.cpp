@@ -29,7 +29,7 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("character");
+    StartLoadFromLayout("character_x");
 #else
     StartLoadFromLayout("character_p");
 #endif

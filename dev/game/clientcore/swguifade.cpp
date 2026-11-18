@@ -143,7 +143,7 @@ CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager)
         m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     }
 #ifdef _XBOX
-    StartLoadFromLayout("fade");
+    StartLoadFromLayout("fade_x");
 #else
     {
         CResRef cLayout("fade_p");

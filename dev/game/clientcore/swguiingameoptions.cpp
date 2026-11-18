@@ -304,7 +304,7 @@ CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("optionsingame");
+    StartLoadFromLayout("optionsingame_x");
 #else
     StartLoadFromLayout("optionsingame_p");
 #endif

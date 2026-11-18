@@ -24,7 +24,7 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
     m_bIsPC = pServerStats->m_bIsPC;
     m_nSelectedPower = -1;
 #ifdef _XBOX
-    StartLoadFromLayout("pwrlvlup");
+    StartLoadFromLayout("pwrlvlup_x");
 #else
     StartLoadFromLayout("pwrlvlup_p");
 #endif
@@ -34,25 +34,21 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
     InitControl(m_lblRemainingBox, "REMAINING_BOX_LBL", 1);
     InitControl(m_lblRemainingSelections, "REMAINING_SELECTIONS_LBL", 1);
     InitControl(m_lblSelectionsRemaining, "SELECTIONS_REMAINING_LBL", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_lbPowers, "LB_POWERS", 1);
+    InitControl(m_lblPower, "LBL_POWER", 1);
 #ifdef _XBOX
     InitControl(m_lblRecommended, "RECOMMENDED_LBL", 1);
     InitControl(m_lblAccept, "ACCEPT_LBL", 1);
-#endif
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-#ifdef _XBOX
     InitControl(m_lblBack, "BACK_LBL", 1);
     InitControl(m_lblSelect, "SELECT_LBL", 1);
-#endif
-    InitControl(m_lbPowers, "LB_POWERS", 1);
-#ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblX, "LBL_X", 1);
     InitControl(m_lblY, "LBL_Y", 1);
     InitControl(m_lblRanalog, "LBL_RANALOG", 1);
 #endif
-    InitControl(m_lblPower, "LBL_POWER", 1);
 #ifndef _XBOX
     InitControl(m_btnRecommended, "RECOMMENDED_BTN", 1);
     InitControl(m_btnSelect, "SELECT_BTN", 1);

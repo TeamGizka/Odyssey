@@ -407,7 +407,7 @@ CSWGuiCustomPanel::CSWGuiCustomPanel(CSWGuiManager* pManager,
     m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     m_pCreature = pCreature;
 #ifdef _XBOX
-    StartLoadFromLayout("CUSTPNL");
+    StartLoadFromLayout("CUSTPNL_x");
 #else
     StartLoadFromLayout("CUSTPNL_p", 0, 1);
 #endif

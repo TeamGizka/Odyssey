@@ -18,7 +18,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     m_bLevelUp = bLevelUp;
     m_pCreature = pCreature;
 #ifdef _XBOX
-    StartLoadFromLayout("ABCHRGEN");
+    StartLoadFromLayout("ABCHRGEN_x");
 #else
     StartLoadFromLayout("ABCHRGEN_p");
 #endif
@@ -37,6 +37,8 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
 #ifdef _XBOX
+    InitControl(m_lblAbilityMod, "LBL_ABILITY_MOD", 1);
+    InitControl(m_lblModifier, "LBL_MODIFIER", 1);
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblY, "LBL_Y", 1);
@@ -53,9 +55,9 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
 
 #ifdef _XBOX
+    InitControl(m_btnPoints[0], "STR_POINTS_BTN", 1);
     InitControl(m_lblScore[0], "STR_LBL", 1);
     InitControl(m_lblMinus[0], "STR_MINUS_LBL", 1);
-    InitControl(m_btnPoints[0], "STR_POINTS_BTN", 1);
     InitControl(m_lblPlus[0], "STR_PLUS_LBL", 1);
 #else
     InitControl(m_btnPoints[0], "STR_POINTS_BTN", 1);
@@ -66,9 +68,9 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     m_aDescriptionStrRef[0] = STRREF_STRENGTH_DESC;
 #ifdef _XBOX
+    InitControl(m_btnPoints[1], "DEX_POINTS_BTN", 1);
     InitControl(m_lblScore[1], "DEX_LBL", 1);
     InitControl(m_lblMinus[1], "DEX_MINUS_LBL", 1);
-    InitControl(m_btnPoints[1], "DEX_POINTS_BTN", 1);
     InitControl(m_lblPlus[1], "DEX_PLUS_LBL", 1);
 #else
     InitControl(m_btnPoints[1], "DEX_POINTS_BTN", 1);
@@ -79,9 +81,9 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     m_aDescriptionStrRef[1] = STRREF_DEXTERITY_DESC;
 #ifdef _XBOX
+    InitControl(m_btnPoints[2], "CON_POINTS_BTN", 1);
     InitControl(m_lblScore[2], "CON_LBL", 1);
     InitControl(m_lblMinus[2], "CON_MINUS_LBL", 1);
-    InitControl(m_btnPoints[2], "CON_POINTS_BTN", 1);
     InitControl(m_lblPlus[2], "CON_PLUS_LBL", 1);
 #else
     InitControl(m_btnPoints[2], "CON_POINTS_BTN", 1);
@@ -92,9 +94,9 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     m_aDescriptionStrRef[2] = STRREF_CONSTITUTION_DESC;
 #ifdef _XBOX
+    InitControl(m_btnPoints[3], "WIS_POINTS_BTN", 1);
     InitControl(m_lblScore[3], "WIS_LBL", 1);
     InitControl(m_lblMinus[3], "WIS_MINUS_LBL", 1);
-    InitControl(m_btnPoints[3], "WIS_POINTS_BTN", 1);
     InitControl(m_lblPlus[3], "WIS_PLUS_LBL", 1);
 #else
     InitControl(m_btnPoints[3], "WIS_POINTS_BTN", 1);
@@ -105,9 +107,9 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     m_aDescriptionStrRef[3] = STRREF_WISDOM_DESC;
 #ifdef _XBOX
+    InitControl(m_btnPoints[4], "INT_POINTS_BTN", 1);
     InitControl(m_lblScore[4], "INT_LBL", 1);
     InitControl(m_lblMinus[4], "INT_MINUS_LBL", 1);
-    InitControl(m_btnPoints[4], "INT_POINTS_BTN", 1);
     InitControl(m_lblPlus[4], "INT_PLUS_LBL", 1);
 #else
     InitControl(m_btnPoints[4], "INT_POINTS_BTN", 1);
@@ -118,9 +120,9 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     m_aDescriptionStrRef[4] = STRREF_INTELLIGENCE_DESC;
 #ifdef _XBOX
+    InitControl(m_btnPoints[5], "CHA_POINTS_BTN", 1);
     InitControl(m_lblScore[5], "CHA_LBL", 1);
     InitControl(m_lblMinus[5], "CHA_MINUS_LBL", 1);
-    InitControl(m_btnPoints[5], "CHA_POINTS_BTN", 1);
     InitControl(m_lblPlus[5], "CHA_PLUS_LBL", 1);
 #else
     InitControl(m_btnPoints[5], "CHA_POINTS_BTN", 1);
@@ -135,35 +137,19 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_alblBar[1], "LBL_BAR2", 1);
     InitControl(m_alblBar[2], "LBL_BAR3", 1);
     InitControl(m_alblBar[3], "LBL_BAR4", 1);
-    InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
 #endif
+    InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
     StopLoadFromLayout();
-#ifndef _XBOX
     m_vScoreTextColor = m_lblScore[0].m_cText.m_cParams.m_vColor;
     m_vScoreTextHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     m_vScoreBorderColor = m_lblScore[0].m_cBorder.m_cParams.m_vColor;
     m_vScoreBorderHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-    m_vPlusBorderColor = m_btnPlus[0].m_cBorder.m_cParams.m_vColor;
-    m_vPlusBorderHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-#endif
 #ifdef _XBOX
-    unsigned char nStrength = m_pCreature->GetStats()->m_aAbilities[0];
-    m_aScore[0] = nStrength;
-    m_aScore[1] = m_pCreature->GetStats()->m_aAbilities[1];
-    m_aScore[2] = m_pCreature->GetStats()->m_aAbilities[2];
-    m_aScore[3] = m_pCreature->GetStats()->m_aAbilities[4];
-    m_aScore[4] = m_pCreature->GetStats()->m_aAbilities[3];
-    m_aScore[5] = m_pCreature->GetStats()->m_aAbilities[5];
-    if (m_bLevelUp != 0)
-    {
-        m_aMinimumScore[0] = m_pCreature->GetStats()->m_aAbilities[0];
-        m_aMinimumScore[1] = m_pCreature->GetStats()->m_aAbilities[1];
-        m_aMinimumScore[2] = m_pCreature->GetStats()->m_aAbilities[2];
-        m_aMinimumScore[3] = m_pCreature->GetStats()->m_aAbilities[4];
-        m_aMinimumScore[4] = m_pCreature->GetStats()->m_aAbilities[3];
-        m_aMinimumScore[5] = m_pCreature->GetStats()->m_aAbilities[5];
-    }
+    m_vPlusBorderColor = m_lblPlus[0].m_cBorder.m_cParams.m_vColor;
 #else
+    m_vPlusBorderColor = m_btnPlus[0].m_cBorder.m_cParams.m_vColor;
+#endif
+    m_vPlusBorderHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     if (m_bLevelUp != 0)
     {
         CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
@@ -210,7 +196,6 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
         m_aScore[4] = m_pCreature->GetStats()->m_aAbilities[3];
         m_aScore[5] = m_pCreature->GetStats()->m_aAbilities[5];
     }
-#endif
     for (int i = 0; i < 6; i++)
     {
         m_btnPoints[i].AddEvent(
@@ -226,8 +211,8 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
         m_btnPoints[i].m_nIndex = i;
 #ifdef _XBOX
         m_lblMinus[i].SetEnabledFlag(0);
-        m_lblMinus[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        m_lblPlus[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_lblMinus[i].m_cBorder.m_cParams.m_vColor = m_vPlusBorderColor;
+        m_lblPlus[i].m_cBorder.m_cParams.m_vColor = m_vPlusBorderColor;
 #else
         if (m_bLevelUp != 0)
         {
@@ -304,9 +289,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_btnPoints[0], 0);
     m_nSelected = 0;
-#ifndef _XBOX
     SetPortraitImage(&m_lblPortrait, m_pCreature->GetPortrait(0));
-#endif
 }
 // PC 0x00768320 GOG 0x007683A0 Xbox 0x00142F10
 void CSWGuiAbilitiesCharGen::OnPanelAdded()
@@ -823,7 +806,7 @@ void CSWGuiAbilitiesCharGen::Draw(float fElapsed)  // Xbox 0x00143240
         m_lArrowHilights.element[i].m_fTimeLeft -= fElapsed;
         if (m_lArrowHilights.element[i].m_fTimeLeft <= 0.0f)
         {
-            m_lArrowHilights.element[i].m_pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+            m_lArrowHilights.element[i].m_pLabel->m_cBorder.m_cParams.m_vColor = m_vPlusBorderColor;
             m_lArrowHilights.DelIndex(i);
         }
     }
@@ -845,6 +828,6 @@ void CSWGuiAbilitiesCharGen::HilightArrow(CSWGuiLabel* pLabel)  // Xbox 0x00143C
     m_lArrowHilights.SetSize(nCount + 1);
     m_lArrowHilights.element[nCount].m_pLabel = pLabel;
     m_lArrowHilights.element[nCount].m_fTimeLeft = 0.25f;
-    pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    pLabel->m_cBorder.m_cParams.m_vColor = m_vPlusBorderHighlightColor;
 }
 #endif

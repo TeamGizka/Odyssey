@@ -197,7 +197,7 @@ CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("pause");
+    StartLoadFromLayout("pause_x");
 #else
     {
         CResRef cLayout("pause_p");

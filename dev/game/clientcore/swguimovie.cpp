@@ -66,7 +66,7 @@ CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)  // PC 0x0074BE70 
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("titlemovie");
+    StartLoadFromLayout("titlemovie_x");
 #else
     StartLoadFromLayout("titlemovie_p");
 #endif

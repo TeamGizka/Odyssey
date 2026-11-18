@@ -18,7 +18,7 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
 #ifndef _XBOX
     { CResRef cLayout("areatrans_p"); StartLoadFromLayout(cLayout); }
 #else
-    StartLoadFromLayout("areatransition");
+    StartLoadFromLayout("areatrans_x");
 #endif
     InitControl(m_lblTextBackground, "LBL_TEXTBG", 1);
     InitControl(m_lblIcon, "LBL_ICON", 1);

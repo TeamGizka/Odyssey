@@ -64,6 +64,10 @@ public:
 
     enum { STRREF_FUNCTION_UNAVAILABLE = 38451,
            STRREF_REJOIN_PARTY = 38452, STRREF_ENEMIES_NEARBY = 38462 };
+#ifdef _XBOX
+    enum { MAP_IMAGE_WIDTH = 496, MAP_IMAGE_HEIGHT = 248 };
+    enum { STRREF_RETURN_TO_EBON_HAWK = 133967 };
+#endif
     void SetMapNote(const CExoString& sNote);
 #ifndef _XBOX
     void OnMapNoteClicked(CSWGuiControl* pControl);
@@ -73,15 +77,15 @@ public:
     CSWGuiLabel m_lblArea;
     CSWGuiLabel m_lblTitle;
 #ifdef _XBOX
-    CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblX;
     CSWGuiLabel m_lblReturn;
-    CSWGuiLabel m_lblPrtySlct;
     CSWGuiLabel m_lblStart;
     CSWGuiLabel m_lblExit;
     CSWGuiLabel m_lblUp;
     CSWGuiLabel m_lblDown;
-    CSWGuiLabel m_lblNoteTitle;
+    CSWGuiLabel m_alblBar[6];
+    Vector m_vReturnColor;
+    CSWGuiLabel m_lblPanelTitle;
 #else
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnExit;
@@ -125,17 +129,20 @@ public:
 
 #ifdef _XBOX
     CSWGuiLabelHilight m_aPlanetButtons[PLANET_COUNT];
+#else
+    CSWGuiButton m_aPlanetButtons[PLANET_COUNT];
+#endif
     CSWGuiLabel m_lblPlanetDesc;
     CSWGuiLabel m_lblPlanetName;
+    CSWGuiLabel m_alblBar[2];
+#ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblBack;
+    CSWGuiLabel m_lblPadIcon;
+    CSWGuiLabel m_lblPadText;
 #else
-    CSWGuiButton m_aPlanetButtons[PLANET_COUNT];
-    CSWGuiLabel m_lblPlanetDesc;
-    CSWGuiLabel m_lblPlanetName;
-    CSWGuiLabel m_alblBar[2];
     CSWGuiButton m_btnNext;
     CSWGuiButton m_btnPrev;
 #endif
@@ -143,9 +150,7 @@ public:
     CSWGui3DSceneView m_cPlanetBackView;
     PlanetInfo m_aPlanets[PLANET_COUNT];
     int m_nSelectedPlanet;
-#ifndef _XBOX
     int m_nCurrentPlanet;
-#endif
 };
 
 #endif

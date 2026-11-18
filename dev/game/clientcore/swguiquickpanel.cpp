@@ -315,7 +315,7 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
 
     m_pCreature = pCreature;
 #ifdef _XBOX
-    StartLoadFromLayout("QUICKPNL");
+    StartLoadFromLayout("QUICKPNL_x");
 #else
     StartLoadFromLayout("QUICKPNL_p", 0);
 #endif

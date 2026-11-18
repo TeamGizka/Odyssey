@@ -122,7 +122,11 @@ CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     m_nSelection = 0;
+#ifdef _XBOX
+    StartLoadFromLayout("debug_x");
+#else
     StartLoadFromLayout("debug_p");
+#endif
     InitControl(m_lstOptions, "LB_OPTIONS", 1);
     InitControl(m_lblBuild, "LBL_BUILD", 1);
     StopLoadFromLayout();

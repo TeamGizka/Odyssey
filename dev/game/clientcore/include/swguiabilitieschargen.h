@@ -128,23 +128,21 @@ public:
     CSWGuiLabel m_lblCost;
     CSWGuiLabel m_lblCostPoints;
     CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblScore[6];
+    CSWGuiButton m_btnPoints[6];
 #ifdef _XBOX
+    CSWGuiLabel m_lblAbilityMod;
+    CSWGuiLabel m_lblModifier;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblY;
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblRecommended;
-#endif
-#ifdef _XBOX
     CSWGuiLabel m_lblRanalog;
-#endif
-    CSWGuiLabel m_lblScore[6];
-#ifdef _XBOX
     CSWGuiLabel m_lblMinus[6];
     CSWGuiLabel m_lblPlus[6];
 #endif
-    CSWGuiButton m_btnPoints[6];
 #ifndef _XBOX
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnBack;
@@ -164,7 +162,6 @@ public:
     int m_aMinimumScore[6];
     int m_nSelected;
     int m_bLevelUp;
-#ifndef _XBOX
     CSWGuiLabel m_lblPortrait;
     Vector m_vScoreTextColor;
     Vector m_vScoreTextHighlightColor;
@@ -172,7 +169,6 @@ public:
     Vector m_vScoreBorderHighlightColor;
     Vector m_vPlusBorderColor;
     Vector m_vPlusBorderHighlightColor;
-#endif
 };
 
 #endif

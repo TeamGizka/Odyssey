@@ -10,9 +10,9 @@ public:
 
 #ifndef _XBOX
     virtual void Draw(float fElapsed);
+#endif
     virtual void OnPanelAdded();
     virtual void OnPanelRemoved();
-#endif
 
     void SetImage(const CResRef& cImage);
 
@@ -36,8 +36,8 @@ public:
     CSWGuiLabel m_lblLogo;
     CSWGuiLabel m_lblLoading;
     unsigned long m_nHintStrRef;
-#ifndef _XBOX
     CResRef m_resLogo;
+#ifndef _XBOX
     CSWGuiLabel m_lblBackground;
 #endif
 };

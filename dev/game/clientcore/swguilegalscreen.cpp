@@ -107,7 +107,11 @@ CSWDemoScreen::CSWDemoScreen(CSWGuiManager* pManager, unsigned long nMinShowTime
     CExoString sText;
 
     SetExtent(CSWGuiExtent(0, 0, pManager->m_nWidth, pManager->m_nHeight));
+#ifdef _XBOX
+    StartLoadFromLayout("demo_x");
+#else
     StartLoadFromLayout("demo_p");
+#endif
     InitControl(m_lblDemoText, "LBL_DEMOTEXT", 1);
     StopLoadFromLayout();
 

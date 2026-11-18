@@ -35,7 +35,7 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
     CExoString sName;
     int i;
     m_pCreature = pCreature;
-    StartLoadFromLayout("NAME");
+    StartLoadFromLayout("NAME_x");
     for (i = 0; i < NUM_KEYS; i++)
     {
         sName.Format("BTN_INT%d", i + 1);

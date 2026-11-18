@@ -1547,7 +1547,7 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("saveload");
+    StartLoadFromLayout("saveload_x");
 #else
     StartLoadFromLayout("saveload_p");
 #endif

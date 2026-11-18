@@ -437,7 +437,11 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
 #endif
     g_pAppManager->GetClientExoApp()->SetLoadBarProgress(12, 1);
     UpdateScreen(0.033333335f, 0, 0);
+#ifdef _XBOX
+    StartLoadFromLayout("ClassSel_x");
+#else
     StartLoadFromLayout("ClassSel_p");
+#endif
 
     C2DA* pPortraits = new C2DA("PORTRAITS", 0);
 #ifdef _XBOX

@@ -565,7 +565,7 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     unsigned char nClass = m_pCreature->m_pStats->GetClass(
         m_pCreature->m_pStats->GetNumClasses() - 1);
 #ifdef _XBOX
-    StartLoadFromLayout("SKCHRGEN");
+    StartLoadFromLayout("SKCHRGEN_x");
 #else
     StartLoadFromLayout("SKCHRGEN_p");
 #endif

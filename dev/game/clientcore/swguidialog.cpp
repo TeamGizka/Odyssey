@@ -735,7 +735,11 @@ CSWGuiDialogCinematic::CSWGuiDialogCinematic(CSWGuiManager* pManager)
 {
     m_vReplyColor = CGuiInGame::COLOR_NEW_TEXT;
     m_vReplyHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+#ifdef _XBOX
+    StartLoadFromLayout("dialog_x", 0, 0);
+#else
     StartLoadFromLayout("dialog_p", 0, 0);
+#endif
     InitControl(m_lbReplies, "LB_REPLIES", 1, 0);
     CSWGuiListBox& cReplies = m_lbReplies;
     InitControl(m_lblMessage, "LBL_MESSAGE", 1, 0);
@@ -837,7 +841,11 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
         m_pSound->SetVolume(30);
     }
 
+#ifdef _XBOX
+    StartLoadFromLayout("computer_x");
+#else
     StartLoadFromLayout("computer_p");
+#endif
     InitControl(m_lbMessage, "LB_MESSAGE", 1);
     InitControl(m_lbReplies, "LB_REPLIES", 1);
     CSWGuiListBox& cReplies = m_lbReplies;
@@ -1017,7 +1025,7 @@ CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
 {
     m_pTop = 0;
 #ifdef _XBOX
-    StartLoadFromLayout("computercamera");
+    StartLoadFromLayout("computercam_x");
     InitControl(m_lblCameraTitle, "LBL_A", 1);
     InitControl(m_lblReturn, "LBL_RETURN", 1);
     StopLoadFromLayout();

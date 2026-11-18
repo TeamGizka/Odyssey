@@ -384,7 +384,13 @@ public:
 class CSWGuiLabel : public CSWGuiControl
 {
 public:
+#ifdef _XBOX
+    CSWGuiLabel()
+    {
+    }
+#else
     CSWGuiLabel();
+#endif
 #ifndef _XBOX
 #ifndef SWGUICONTROL_SOURCE
     virtual ~CSWGuiLabel()  // PC 0x00419700 GOG 0x004196F0

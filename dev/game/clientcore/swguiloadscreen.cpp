@@ -11,7 +11,7 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("loadscreen");
+    StartLoadFromLayout("loadscreen_x");
 #else
     {
         CResRef cLayout("loadscreen_p");
@@ -55,32 +55,37 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
         cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
     }
 #endif
+#ifdef _XBOX
+    m_bCenterHorizontal = 1;
+    m_bCenterVertical = 1;
+#else
     m_bCenterHorizontal = 0;
     m_bCenterVertical = 0;
-#ifndef _XBOX
+#endif
     m_resLogo = m_lblLogo.m_cBorder.m_cParams.m_cFillImage;
     {
         CResRef cNoLogo("");
         m_lblLogo.m_cBorder.m_cParams.SetFillImage(cNoLogo, 0);
     }
-#endif
 }
 
-#ifndef _XBOX
 // PC 0x006D0250 GOG 0x006D02F0
 void CSWGuiLoadScreen::OnPanelAdded()
 {
     m_lblLogo.m_cBorder.m_cParams.SetFillImage(m_resLogo, 0);
+#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
+#endif
 }
 // PC 0x006D0270 GOG 0x006D0310
 void CSWGuiLoadScreen::OnPanelRemoved()
 {
     CResRef cNoLogo("");
     m_lblLogo.m_cBorder.m_cParams.SetFillImage(cNoLogo, 0);
+#ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
-}
 #endif
+}
 // PC 0x006D02B0 GOG 0x006D0350 Xbox 0x00094F00
 void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 {

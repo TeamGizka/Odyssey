@@ -24,7 +24,7 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     m_bBonusFeatSelection = bBonusFeatSelection;
     m_nSelectedFeat = FEAT_INVALID;
 #ifdef _XBOX
-    StartLoadFromLayout("FTCHRGEN");
+    StartLoadFromLayout("FTCHRGEN_x");
 #else
     {
         CResRef cLayout("FTCHRGEN_p");
@@ -39,6 +39,7 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     InitControl(m_lbDesc, "LB_DESC", 1);
     m_lbDesc.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_lbFeats, "LB_FEATS", 1);
+    InitControl(m_lblName, "LBL_NAME", 1);
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
@@ -50,7 +51,6 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     InitControl(m_lblSelect, "LBL_SELECT", 1);
     InitControl(m_lblRanalog, "LBL_RANALOG", 1);
 #endif
-    InitControl(m_lblName, "LBL_NAME", 1);
 #ifndef _XBOX
     InitControl(m_btnAccept, "BTN_ACCEPT", 1);
     InitControl(m_btnRecommended, "BTN_RECOMMENDED", 1);

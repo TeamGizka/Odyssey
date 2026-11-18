@@ -27,7 +27,7 @@ CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("barkbubble");
+    StartLoadFromLayout("barkbubble_x");
 #else
     {
         CResRef cLayout("barkbubble_p");

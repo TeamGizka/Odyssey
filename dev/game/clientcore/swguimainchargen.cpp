@@ -322,7 +322,7 @@ CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
     m_pCreature = pCreature;
     DetermineClass();
 #ifdef _XBOX
-    StartLoadFromLayout("MAINCG");
+    StartLoadFromLayout("MAINCG_x");
 #else
     StartLoadFromLayout("MAINCG_p");
 #endif

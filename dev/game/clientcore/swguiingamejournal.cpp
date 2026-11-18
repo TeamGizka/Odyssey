@@ -87,7 +87,7 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
 #endif
 
 #ifdef _XBOX
-    StartLoadFromLayout("journal");
+    StartLoadFromLayout("journal_x");
 #else
     {
         CResRef cLayout("journal_p");

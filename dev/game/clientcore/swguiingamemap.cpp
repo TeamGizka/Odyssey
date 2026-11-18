@@ -181,7 +181,10 @@ void CSWGuiInGameGalaxyMap::Draw(float fElapsed)
 void CSWGuiInGameMap::OnPanelAdded()
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
-#ifndef _XBOX
+#ifdef _XBOX
+    m_imgMap.SetExtent(CSWGuiExtent(0, 0, MAP_IMAGE_WIDTH, MAP_IMAGE_HEIGHT));
+    m_cMapHider.SetExtent(CSWGuiExtent(0, 0, MAP_IMAGE_WIDTH, MAP_IMAGE_HEIGHT));
+#else
     float fScaleX = 1.0f;
     float fScaleY = 1.0f;
     if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
@@ -205,7 +208,6 @@ void CSWGuiInGameMap::OnPanelAdded()
     sMapImage.Format("lbl_map%s", sAreaResRef.CStr());
 
     int nMapMode;
-#ifndef _XBOX
     CSWPartyTable* pPartyTable = pServer->GetPartyTable();
     if (pPartyTable->m_bDisableMap)
     {
@@ -214,7 +216,6 @@ void CSWGuiInGameMap::OnPanelAdded()
         nMapMode = 0;
     }
     else
-#endif
     if (pServer->GetModule()->GetAreaMap()->m_nExploredSize > 0)
     {
         CResRef cMapImage(sMapImage);
@@ -329,12 +330,17 @@ void CSWGuiInGameMap::OnPanelAdded()
         m_bPartySelection && pServer->GetPartyTable()->m_nReturnFlag != 0;
 
 #ifdef _XBOX
-    unsigned long nReturnStrref = pServer->GetPartyTable()->m_nReturnStrref;
-    m_lblReturn.m_cText.m_cParams.SetStrRef(nReturnStrref);
-    m_lblReturn.m_cText.m_cParams.SetColor(
-        m_bPartySelection ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
-    m_lblPrtySlct.m_cText.m_cParams.SetColor(
-        m_bReturnButton ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
+    m_lblReturn.m_cText.m_cParams.SetStrRef(STRREF_RETURN_TO_EBON_HAWK);
+    if (m_bReturnButton)
+    {
+        m_lblReturn.SetEnabledFlag(0);
+        m_lblX.SetEnabledFlag(0);
+    }
+    else
+    {
+        m_lblReturn.SetShown(0);
+        m_lblX.SetShown(0);
+    }
 #endif
 #ifndef _XBOX
     g_pAppManager->m_pClientExoApp->GetClientOptions();
@@ -1020,7 +1026,7 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
 
     m_nSelectedPlanet = -1;
 #ifdef _XBOX
-    StartLoadFromLayout("galaxymap");
+    StartLoadFromLayout("galaxymap_x");
 #else
     StartLoadFromLayout("galaxymap_p");
 #endif
@@ -1028,15 +1034,15 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     InitControl(m_lblPlanetDesc, "LBL_PLANETNAME", 1);
     InitControl(m_cPlanetBackView, "3D_PlanetModel", 1);
     InitControl(m_cPlanetView, "3D_PlanetDisplay", 1);
-#ifndef _XBOX
     InitControl(m_alblBar[0], "LBL_BAR1", 1);
     InitControl(m_alblBar[1], "LBL_BAR2", 1);
-#endif
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblAccept, "LBL_ACCEPT", 1);
     InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblPadIcon, "LBL_PADICON", 1);
+    InitControl(m_lblPadText, "LBL_PADTEXT", 1);
 #else
     InitControl(m_btnNext, "BTN_ACCEPT", 1);
     InitControl(m_btnPrev, "BTN_BACK", 1);
@@ -1128,17 +1134,15 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     }
 #ifndef _XBOX
     m_nBackground = 3;
-    m_nCurrentPlanet = -1;
 #endif
+    m_nCurrentPlanet = -1;
 }
 // PC 0x006EF000 GOG 0x006EEBF0 Xbox 0x000ED7B0
 void CSWGuiInGameGalaxyMap::OnPanelAdded()
 {
     CSWPartyTable* pPartyTable =
         g_pAppManager->m_pServerExoApp->GetPartyTable();
-#ifndef _XBOX
     m_nCurrentPlanet = pPartyTable->m_nSelectedPlanet;
-#endif
     if (pPartyTable->m_nSelectedPlanet == -1)
     {
         int nPlanet = 0;
@@ -1179,7 +1183,6 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_ACTIVATE:
         case GUIEVENT_ACCEPT:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-#ifndef _XBOX
             {
                 CSWPartyTable* pPartyTable =
                     g_pAppManager->m_pServerExoApp->GetPartyTable();
@@ -1229,18 +1232,6 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
                     }
                 }
             }
-#else
-            if (g_pVirtualMachine != 0)
-            {
-                g_pAppManager->m_pClientExoApp->GetInGameGui()
-                    ->m_bTransitionScriptRunning = 1;
-                CExoString sScript("k_sup_galaxymap");
-                g_pVirtualMachine->RunScript(&sScript, OBJECT_INVALID, 0);
-                g_pAppManager->m_pClientExoApp->GetInGameGui()
-                    ->m_bTransitionScriptRunning = 0;
-            }
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
-#endif
             break;
         case GUIEVENT_CANCEL:
         case GUIEVENT_CANCEL_ALTERNATE:
@@ -1285,12 +1276,7 @@ void CSWGuiInGameGalaxyMap::NextPlanet()
         {
             nPlanet = 0;
         }
-#ifdef _XBOX
-        if (pPartyTable->GetPlanetAvailable(nPlanet) != 0 &&
-            pPartyTable->GetPlanetSelectable(nPlanet) != 0)
-#else
         if (pPartyTable->GetPlanetAvailable(nPlanet) != 0)
-#endif
         {
             pPartyTable->SetSelectedPlanet(nPlanet);
             break;
@@ -1318,12 +1304,7 @@ void CSWGuiInGameGalaxyMap::PrevPlanet()
         {
             nPlanet = 15;
         }
-#ifdef _XBOX
-        if (pPartyTable->GetPlanetAvailable(nPlanet) != 0 &&
-            pPartyTable->GetPlanetSelectable(nPlanet) != 0)
-#else
         if (pPartyTable->GetPlanetAvailable(nPlanet) != 0)
-#endif
         {
             pPartyTable->SetSelectedPlanet(nPlanet);
             break;
@@ -1338,7 +1319,7 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("map");
+    StartLoadFromLayout("map_x");
 #else
     StartLoadFromLayout("map_p");
 #endif
@@ -1346,19 +1327,24 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     InitControl(m_lblTitle, "LBL_MapNote", 1);
     InitControl(m_lblArea, "LBL_Area", 1);
 #ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblX, "LBL_X", 1);
-    InitControl(m_lblPrtySlct, "LBL_PRTYSLCT", 1);
     InitControl(m_lblReturn, "LBL_RETURN", 1);
     InitControl(m_lblExit, "LBL_EXIT", 1);
     InitControl(m_lblStart, "LBL_START", 1);
     InitControl(m_lblUp, "LBL_UP", 1);
     InitControl(m_lblDown, "LBL_DOWN", 1);
-    InitControl(m_lblNoteTitle, "LBL_COMPASS", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_lblPanelTitle, "LBL_TITLE", 1);
+    m_vReturnColor = m_lblReturn.m_cText.m_cParams.m_vColor;
     StopLoadFromLayout();
 
-    m_imgMap.SetExtent(CSWGuiExtent(0, 0, 512, 256));
-    m_cMapHider.SetExtent(CSWGuiExtent(0, 0, 440, 256));
+    m_imgMap.SetExtent(CSWGuiExtent(0, 0, MAP_IMAGE_WIDTH, MAP_IMAGE_HEIGHT));
+    m_cMapHider.SetExtent(CSWGuiExtent(0, 0, MAP_IMAGE_WIDTH, MAP_IMAGE_HEIGHT));
     m_bPartySelection = 1;
     m_bReturnButton = 1;
     m_nMessageStrRef = 0;

@@ -903,7 +903,7 @@ CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("skillinfo");
+    StartLoadFromLayout("skillinfo_x");
 #else
     {
         CResRef resLayout("skillinfo_p");

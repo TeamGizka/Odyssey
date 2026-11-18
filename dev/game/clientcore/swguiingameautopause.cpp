@@ -179,7 +179,7 @@ CSWGuiInGameAutoPause::CSWGuiInGameAutoPause(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
-    StartLoadFromLayout("optautopause");
+    StartLoadFromLayout("optautopause_x");
     InitControl(m_aCheckboxes[0], "CB_ENDROUND", 1);
     InitControl(m_aCheckboxes[1], "CB_ENEMYSIGHTED", 1);
     InitControl(m_aCheckboxes[2], "CB_PARTYKILLED", 1);
