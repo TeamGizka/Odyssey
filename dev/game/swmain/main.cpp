@@ -2792,7 +2792,7 @@ int main()
 
         if (cParams.m_nModuleTrans == KOTOR_LAUNCH_DATA::MODULETRANS_NONE)
         {
-            g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 0);
+            g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 1);
             g_pAppManager->m_pClientExoApp->DisplayMainMenu(0);
         }
         else if (cParams.m_nModuleTrans ==

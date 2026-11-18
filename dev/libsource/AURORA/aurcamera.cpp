@@ -420,6 +420,12 @@ Vector Camera::MouseDir(int nX, int nY)
     if (AURCAMERA_DEBUG)
     {
         AurPrintf("Camera::MouseDir() hit check %d\n", Camera::HitCheck(nX, nY, NULL, NULL));
+#ifdef _XBOX
+        for (int j = 0; j < 4; ++j)
+        {
+            AurPrintf("Camera::MouseDir() viewport %d\n", (&m_nViewPortX)[j]);
+        }
+#endif
     }
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)

@@ -216,11 +216,11 @@ public:
     float m_fTurnAcceleration;
     CSWRK4Acceleration m_integratorTilt;
     float m_fTiltAcceleration;
+#endif
     int m_nTiltDirection;
     float m_fTiltRate;
     float m_fLookDown;
     float m_fLookUp;
-#endif
     float m_fDistance;
     float m_fSpeed;
     float m_fMaximumDistance;

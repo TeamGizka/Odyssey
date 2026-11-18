@@ -50,7 +50,7 @@ void CSWGuiClassSelection::OnPanelAdded()
     }
     g_pExoInput->CoolDownEvent(40, 500);
     g_pExoInput->CoolDownEvent(46, 500);
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 0, 1);
+    g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 0);
     CSWGuiPanel::OnPanelAdded();
 }
 // PC 0x00749A90 GOG 0x00749B00 Xbox 0x00129890

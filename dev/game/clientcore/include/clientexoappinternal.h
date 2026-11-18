@@ -593,7 +593,7 @@ public:
     int IsPlayerCreature(CSWCCreature* pCreature);
     void ShowLoadScreen(int bFade, int bPlayMusic, int bSaving);
 #ifdef _XBOX
-    void HideLoadScreen(int bFade);
+    void HideLoadScreen(int bFade, int bStopLoadMusic);
 #else
     void HideLoadScreen(int bFade, int bStopLoadMusic, int bUpdateScreen);
 #endif

@@ -80,9 +80,9 @@ CSWBehaviorCameraDialog::CSWBehaviorCameraDialog(CAurObject* pObject,
     m_pSecondObject = 0;
 #ifdef _XBOX
     m_nActiveShot = 0;
-    m_nDialogType = nDialogType;
     m_fYawOffset = 0.0f;
     m_fPitchOffset = 0.0f;
+    m_nDialogType = nDialogType;
 #else
     m_nDialogType = nDialogType;
     m_fYawOffset = 0.0f;

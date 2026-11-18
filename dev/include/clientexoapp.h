@@ -380,9 +380,7 @@ public:
     CExoStreamingSoundSource* AquireLoadMusic(const CResRef& cResRef);
 #ifdef _XBOX
 
-    void HideLoadScreen(int bFade);
-    void HideLoadScreen(int bFade, int bUpdateScreen) { HideLoadScreen(bFade); }
-    void HideLoadScreen(int bFade, int bStopLoadMusic, int bUpdateScreen);
+    void HideLoadScreen(int bFade, int bStopLoadMusic);
 #else
     void HideLoadScreen(int bFade, int bStopLoadMusic, int bUpdateScreen = 1);
 #endif

@@ -306,9 +306,7 @@ public:
     void RemoveMotionBlur();
     void ApplyDistortion(unsigned short);
     void RemoveDistortion(unsigned short);
-#ifndef _XBOX
     void RemoveModelAttachment(unsigned short nVisualEffect);
-#endif
 
     CSWCObject* GetTargetCSWCObject();
     CSWCObject* GetSourceCSWCObject();

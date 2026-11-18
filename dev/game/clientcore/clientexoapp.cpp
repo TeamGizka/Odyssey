@@ -843,9 +843,9 @@ void CClientExoApp::ShowLoadScreen(int bFade, int bPlayMusic, int bSaving)
 }
 
 #ifdef _XBOX
-void CClientExoApp::HideLoadScreen(int bFade)  // Xbox 0x0001A850
+void CClientExoApp::HideLoadScreen(int bFade, int bStopLoadMusic)  // Xbox 0x0001A850
 {
-    m_pcExoAppInternal->HideLoadScreen(bFade);
+    m_pcExoAppInternal->HideLoadScreen(bFade, bStopLoadMusic);
 }
 #else
 void CClientExoApp::HideLoadScreen(int bFade, int bStopLoadMusic,

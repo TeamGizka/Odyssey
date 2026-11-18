@@ -2930,7 +2930,11 @@ void CClientExoAppInternal::SetInputClass(int nClass)  // Xbox 0x0005FF50
             }
             if (m_pModule != NULL && m_pModule->GetCamera() != NULL)
             {
-                Vector vOrientation = GetPlayerCreature()->m_vOrientation;
+                Vector vOrientation(0.0f, 0.0f, 0.0f);
+                if (GetPlayerCreature() != NULL)
+                {
+                    vOrientation = GetPlayerCreature()->m_vOrientation;
+                }
                 CSWCameraOnAStick* pCameraBehavior = (CSWCameraOnAStick*)
                     m_pModule->GetCamera()->GetBehavior(
                         AUR_BEHAVIOR_CAMERA_ONASTICK);
@@ -2955,7 +2959,11 @@ void CClientExoAppInternal::SetInputClass(int nClass)  // Xbox 0x0005FF50
 
         case INPUT_CLASS_MINIGAME:
         {
-            CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
+            CSWMiniGame* pMiniGame = NULL;
+            if (m_pModule != NULL && m_pModule->m_pInfo != NULL)
+            {
+                pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
+            }
             if (pMiniGame != NULL)
             {
                 IndicateObject(NULL, 0);

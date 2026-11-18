@@ -1156,7 +1156,7 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0 GOG 0x004EB75
     UpdateScreen(1.0f / 30.0f, 0, 0);
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
 #ifdef _XBOX
-    g_pAppManager->GetClientExoApp()->HideLoadScreen(0);
+    g_pAppManager->GetClientExoApp()->HideLoadScreen(0, 1);
 #else
     g_pAppManager->GetClientExoApp()->HideLoadScreen(0, 1, 0);
 #endif
@@ -3075,7 +3075,7 @@ void CServerExoAppInternal::StallEventSaveGame()  // Xbox 0x00254F70
         Sleep(3000 - (nEndTime - nStartTime));
     }
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
-    g_pAppManager->GetClientExoApp()->HideLoadScreen(0);
+    g_pAppManager->GetClientExoApp()->HideLoadScreen(0, 1);
     if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pPartySelection == 0)
     {
         if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState != 0)

@@ -254,11 +254,16 @@ void CSWCameraFreeLook::UpdateCamraStyle()
         m_fRotateSpeed = 60.0f;
         m_fTiltSpeed = 60.0f;
     }
+#ifdef _XBOX
+    CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+    int nRow = pModule->m_pInfo->m_nTurnRateRow;
+#else
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
     int nRow = pArea->m_nTurnRateRow;
+#endif
 #ifdef _XBOX
-    p2DA->GetFLOATEntry(nRow, "FL_TiltSpeed", &m_fRotateSpeed);
-    p2DA->GetFLOATEntry(nRow, "FL_RotateSpeed", &m_fTiltSpeed);
+    p2DA->GetFLOATEntry(nRow, "FL_XBox_TiltSpeed", &m_fTiltSpeed);
+    p2DA->GetFLOATEntry(nRow, "FL_XBox_RotateSpeed", &m_fRotateSpeed);
 #else
     p2DA->GetFLOATEntry(nRow, "FL_PC_TiltSpeed", &m_fTiltSpeed);
     p2DA->GetFLOATEntry(nRow, "FL_PC_RotateSpeed", &m_fRotateSpeed);

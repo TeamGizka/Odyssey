@@ -5963,7 +5963,7 @@ void CClientExoAppInternal::ShowLoadScreen(int bFade, int bPlayMusic, int bSavin
 }
 
 #ifdef _XBOX
-void CClientExoAppInternal::HideLoadScreen(int bFade)  // Xbox 0x00023340
+void CClientExoAppInternal::HideLoadScreen(int bFade, int bStopLoadMusic)  // Xbox 0x00023340
 {
 #else
 void CClientExoAppInternal::HideLoadScreen(int bFade, int bStopLoadMusic,
@@ -5992,9 +5992,13 @@ void CClientExoAppInternal::HideLoadScreen(int bFade, int bStopLoadMusic,
 
         m_pGuiLoadScreen->m_pbProgress.SetCurValue(0);
         m_pGuiLoadScreen->SetBackground("");
-        SetInputActive(1, 0);
 #ifdef _XBOX
-        StopLoadMusic();
+        if (g_pExoInput != NULL)
+        {
+            g_pExoInput->SetActive(1);
+        }
+#else
+        SetInputActive(1, 0);
 #endif
 
 #ifdef _XBOX
@@ -6003,16 +6007,12 @@ void CClientExoAppInternal::HideLoadScreen(int bFade, int bStopLoadMusic,
         if (!bFade && bUpdateScreen)
 #endif
         {
-#ifndef _XBOX
             float afClearColor[4];
             AurGetClearColor(afClearColor);
             AurSetClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-#endif
             UpdateScreen(1.0f / 30.0f, 0, 0);
-#ifndef _XBOX
             AurSetClearColor(afClearColor[0], afClearColor[1], afClearColor[2],
                              afClearColor[3]);
-#endif
         }
     }
 }
@@ -7929,14 +7929,9 @@ void CClientExoAppInternal::SetAutoPaused(int bAuto, unsigned char nPauseType)
 
             if (m_fEnemyAutoPauseDelay > 0.0f)
             {
-#ifdef _XBOX
-                m_fEnemyAutoPauseTimer = 1.0f;
-                m_fEnemyAutoPauseDelay = 0.0f;
-#else
                 m_fEnemyAutoPauseTimer = 1.0f;
                 m_fEnemyAutoPauseDelay = 0.0f;
                 m_nDelayedAutoPauseType = nPauseType;
-#endif
                 return;
             }
 
@@ -10574,7 +10569,7 @@ void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgres
             CloseHandle(hFind);
             if (bShowProgress)
             {
-                HideLoadScreen(1);
+                HideLoadScreen(1, 1);
             }
         }
     }
@@ -10877,7 +10872,7 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
             EnableInput();
             m_pModule->GetModuleTitle();
             WaitForMovie();
-            HideLoadScreen(1);
+            HideLoadScreen(1, 1);
             m_pCombatTimer->PauseWorldTimer();
             m_pPauseTimer->PauseWorldTimer();
             m_pAnimationTimer->PauseWorldTimer();

@@ -14317,11 +14317,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayMovie(int nCommand, int nArgs)
     {
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
     }
-#ifdef _XBOX
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
-#else
     g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
-#endif
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     pClientExoApp->PlayMovie(sMovie, nMovieResult, 0, 0, bKeepMusic != 0);
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);

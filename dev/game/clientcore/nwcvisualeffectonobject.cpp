@@ -2505,7 +2505,11 @@ void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
         CClientOptions::GORE_LEVEL_FULL)
     {
         CSWCObject* pObject = GetTargetCSWCObject();
+#ifdef _XBOX
+        if (pObject != 0 && pObject->m_pArea != 0)
+#else
         if (pObject->m_pArea != 0)
+#endif
         {
             CSWCCreature* pCreature = pObject->AsSWCCreature();
             if (pCreature != 0)
@@ -2551,8 +2555,7 @@ void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
         }
     }
 }
-#ifndef _XBOX
-// PC 0x00705AF0 GOG 0x00704910
+// PC 0x00705AF0 GOG 0x00704910 Xbox 0x000D49B0
 void CSWCVisualEffectOnObject::RemoveModelAttachment(unsigned short nVisualEffect)
 {
     if (m_pEffectModel == 0)
@@ -2577,7 +2580,6 @@ void CSWCVisualEffectOnObject::RemoveModelAttachment(unsigned short nVisualEffec
     }
     m_pEffectModel->AttachToScene(0);
 }
-#endif
 // PC 0x00705BA0 GOG 0x007059B0 Xbox 0x000D5A00
 void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
     unsigned short nVisualEffect)
@@ -2634,13 +2636,11 @@ void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
         {
             RemoveMotionBlur();
         }
-#ifndef _XBOX
         else if (nVisualEffect >= VFX_MODEL_ATTACHMENT_BEGIN &&
                  nVisualEffect < VFX_MODEL_ATTACHMENT_END)
         {
             RemoveModelAttachment(nVisualEffect);
         }
-#endif
         else if (nVisualEffect >= VFX_DISTORTION_BEGIN &&
                  nVisualEffect < VFX_DISTORTION_END)
         {

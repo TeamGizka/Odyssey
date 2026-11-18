@@ -7015,11 +7015,7 @@ int CGuiInGame::UnpackQuickSaveGame(unsigned long nSaveGame,
         }
         sSavePath = "SAVES:";
         sSavePath = sSavePath + sDirectory;
-#ifdef _XBOX
-        g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
-#else
         g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
-#endif
         CExoFile cFile(sSavePath + "\\" + "CORRUPT", 0, "wb+");
         cFile.Write("CORRUPT");
         cFile.Flush();

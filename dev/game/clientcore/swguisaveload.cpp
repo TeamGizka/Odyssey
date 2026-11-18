@@ -215,7 +215,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
             {
                 g_pAppManager->m_pReentrantServerStats->m_bOperationActive = 0;
                 g_pAppManager->m_pReentrantServerStats->m_nOperation = 0;
-                pClientExoApp->HideLoadScreen(0);
+                pClientExoApp->HideLoadScreen(0, 1);
                 ShowSaveError(XBOX_STRREF_SAVE_CORRUPT);
             }
         }
@@ -2571,11 +2571,7 @@ int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380 GOG 0x
         }
         sFileName = "SAVES:";
         sFileName = sFileName + sDirectory;
-#ifdef _XBOX
-        g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
-#else
         g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
-#endif
 #ifdef _XBOX
         ShowSaveError(42027);
 #endif
