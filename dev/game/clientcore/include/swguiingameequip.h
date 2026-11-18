@@ -261,8 +261,18 @@ public:
                                           const CSWGuiBorderParams&)
     {
     }
+#ifndef _XBOX
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int,
                             int);
+#else
+    virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int, int,
+                            const Vector& vBorderColor, const Vector& vHilightColor);
+#endif
+#ifdef _XBOX
+    void SetItem(unsigned long, int, int, const Vector& vTextColor,
+                 const Vector& vBorderColor, const Vector& vHilightColor);
+    void SetCanUse(unsigned char, const Vector& vBorderColor, const Vector& vHilightColor);
+#endif
     int GetNumItems();
 
     unsigned long GetItem() { return m_oidItem; }
@@ -321,15 +331,18 @@ public:
         STRREF_SELECT_ITEM_TO_EQUIP = 38154,
         STRREF_NO_DESCRIPTION = 32172,
         STRREF_ITEM_PREREQUISITES = 38450,
-        STRREF_INCOMPATIBLE_WEAPON = 42271
+        STRREF_INCOMPATIBLE_WEAPON = 42271,
+        STRREF_LEFT_HAND_LOCKED = 125569,
+        STRREF_SLOT_LOCKED = 125554
     };
-    enum { NUM_EQUIPMENT_SLOTS = 9 };
-    enum { INVALID_SLOT_ITEM_INDEX = 10 };
+    enum { NUM_EQUIPMENT_SLOTS = 11 };
+    enum { INVALID_SLOT_ITEM_INDEX = 12 };
     enum { RIGHTHAND_ITEM_INDEX = 1 };
     enum { LEFTHAND_ITEM_INDEX = 0 };
     enum { ARMOUR_ITEM_INDEX = 5 };
+    enum { LEFTHAND2_ITEM_INDEX = 9, RIGHTHAND2_ITEM_INDEX = 10 };
 
-    enum { NUM_ITEM_ROWS = 5, NUM_DESC_BORDERS = 4 };
+    enum { NUM_ITEM_ROWS = 8, NUM_DESC_BORDERS = 4, NUM_ROW_DIRECTIONS = 7 };
     enum { CHARACTER_UNSET = -2, CHARACTER_PLAYER = -1 };
 
     struct ItemListEntry
@@ -341,36 +354,47 @@ public:
     CSWCCreature* m_pCreature;
     CSWGuiButton m_aSlotButtons[NUM_EQUIPMENT_SLOTS];
     CSWGuiLabel m_aSlotLabels[NUM_EQUIPMENT_SLOTS];
-    CSWGuiLabel m_lblDownarrow;
-    CSWGuiLabel m_lblUparrow;
+    int m_anSlotLocked[NUM_EQUIPMENT_SLOTS];
     CExoArrayList<ItemListEntry> m_lItems;
     CSWGuiInGameItemEntry m_aItemRows[NUM_ITEM_ROWS];
     CSWGuiLabel m_lblAtkl;
     CSWGuiLabel m_lblTohitl;
     CSWGuiLabel m_lblAtkr;
     CSWGuiLabel m_lblTohitr;
-    CSWGuiLabel m_lblDef;
-    CSWGuiLabel m_lblVitality;
     CSWGuiLabel m_cDescriptionText;
-    CSWGuiLabel m_lblPortrait;
     CSWGuiLabel m_lblAttackInfo;
     CSWGuiLabel m_lblDefInfo;
-    CSWGuiLabel m_lblTxtbar;
-    CSWGuiLabel m_lblPortBord;
-    CSWGuiLabel m_lblEquip;
+    CSWGuiLabel m_lblDefText;
     CSWGuiLabel m_lblTohit;
     CSWGuiLabel m_lblDamage;
     CSWGuiLabel m_lblSlotname;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblAtkl2;
+    CSWGuiLabel m_lblTohitl2;
+    CSWGuiLabel m_lblAtkr2;
+    CSWGuiLabel m_lblTohitr2;
+    CSWGuiLabel m_lblPortBord;
+    CSWGuiLabel m_lblDef;
+    CSWGuiLabel m_lblVitality;
+    CSWGuiLabel m_lblTxtbar;
+    CSWGuiLabel m_aDescBorders[NUM_DESC_BORDERS];
+    CSWGuiLabel m_lblEquip;
+    CSWGuiListBox m_lbDesc;
+    CSWGuiLabel m_lblSelecttitle;
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblStart;
     CSWGuiLabel m_lblBack;
-    CSWGuiLabel m_lblTitle;
-    CSWGuiLabel m_lblSelecttitle;
     CSWGuiLabel m_lblBlack;
-    CSWGuiLabel m_aDescBorders[NUM_DESC_BORDERS];
     CSWGuiLabel m_lblRanalog;
-    CSWGuiListBox m_lbDesc;
+    CSWGuiLabel m_alblBar[5];
+    CSWGuiLabel m_lblConfig1;
+    CSWGuiLabel m_lblConfig2;
+    CSWGuiLabel m_lblConfigBack;
+    CSWGuiLabel m_lblDam;
+    CSWGuiLabel m_lblAtk;
+    CSWGuiLabel m_lblX;
+    CSWGuiLabel m_lblXText;
     unsigned int m_bDescriptionShown : 1;
 
     unsigned int m_bResetItems : 1;
@@ -381,6 +405,12 @@ public:
     short m_nSelectedItem;
     unsigned long m_aoidEquippedItems[NUM_EQUIPMENT_SLOTS];
     CSWGuiControl* m_pDescribedControl;
+    Vector m_vItemBorderColor;
+    Vector m_vItemTextColor;
+    Vector m_vItemHilightColor;
+    Vector m_vStatTextColor;
+    int m_bCanChangeCharacter;
+    int m_nCharacter;
     CSWGuiInGameEquip(CSWGuiManager*);
     ~CSWGuiInGameEquip();
     virtual void Draw(float);
@@ -392,12 +422,32 @@ public:
     void SetCharacter(CSWCCreature*);
     void ShowDescription(int bShow);
     void OnItemSelected(CSWGuiControl*);
+    void OnItemExited(CSWGuiControl*);
     void OnOKPressed(CSWGuiControl*);
     void CloseDescription();
     void OnSelectSlot(CSWGuiControl*);
     void OnEnterSlot(CSWGuiControl*);
     void UpdateInventory();
 
+    enum
+    {
+        NPC_ATTON = 0,
+        NPC_BAO_DUR = 1,
+        NPC_CANDEROUS = 2,
+        NPC_G0T0 = 3,
+        NPC_HANDMAIDEN = 4,
+        NPC_HK_47 = 5,
+        NPC_KREIA = 6,
+        NPC_MIRA = 7,
+        NPC_T3_M4 = 8,
+        NPC_VISAS = 9,
+        NPC_HANHARR = 10,
+        NPC_DISCIPLE = 11
+    };
+    void UpdateSlotLocks();
+    int GetSlotLockedBySLOTID(int nSlot);
+    void OnPrevNPCClicked(CSWGuiControl*);
+    void OnNextNPCClicked(CSWGuiControl*);
     void SetItemRows(int nTopItem, int nSelectedItem);
     void SelectNextItem();
     void SelectPreviousItem();

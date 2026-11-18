@@ -218,7 +218,7 @@ public:
     {
         LABEL_BACK, LABEL_DEBILATATED, LABEL_DISABLED,
 #ifdef _XBOX
-        LABEL_LEVELUP, LABEL_LVLUPBG, LABEL_CHAR
+        LABEL_LEVELUP, LABEL_CHAR, LABEL_PICKNPC
 #else
         LABEL_LEVELUP, LABEL_CHAR
 #endif
@@ -256,6 +256,7 @@ public:
 #ifndef _XBOX
     int m_bToolTipDirty;
 #else
+    Vector m_vBackColor;
     void SetDestination(int nPosition, int nCount, CSWGuiManager* pManager);
 #endif
     void Adjust(float);
@@ -413,6 +414,16 @@ public:
     static const unsigned long STRREF_CANNOT_USE_ITEM_ON = 124448;
     static const unsigned long STRREF_USE_ITEM_CANCEL = 124449;
 
+#ifdef _XBOX
+    enum { NUM_TARGET_TYPES = 5, NUM_PERSONAL_MENUS = 7 };
+    enum { TRANSITION_PORTRAIT_MARGIN = 106 };
+    enum
+    {
+        PERSONAL_MENU_FORCE_POWERS = 3,
+        PERSONAL_MENU_STANCES = 5,
+        PERSONAL_MENU_BEHAVIORS = 6
+    };
+#endif
     enum
     {
         CANCEL_ITEM_SELECT_LEFT = 4,
@@ -518,8 +529,8 @@ public:
     unsigned long m_oidPlayerCharacter;
     float m_fActionDescriptionTimer;
     unsigned long m_nActionDescription;
-    CExoArrayList<CSWGuiInterfaceAction> m_aPersonalActionLists[6];
-    int m_aSelectedPersonalActions[5][6];
+    CExoArrayList<CSWGuiInterfaceAction> m_aPersonalActionLists[NUM_PERSONAL_MENUS];
+    int m_aSelectedPersonalActions[NUM_TARGET_TYPES][NUM_PERSONAL_MENUS];
     int m_nDefaultAction;
     CSWGuiMainInterfaceChar m_aCharacters[3];
     CSWGuiMainInterfaceChar m_cTransitionCharacter;
@@ -527,7 +538,7 @@ public:
     CSWGuiLabel m_lblName;
     CSWGuiLabel m_lblReticle;
     CSWGuiLabel m_lblIndicate;
-    CSWGuiProgressBar m_pbHealth;
+    CSWGuiCharBar m_pbHealth;
     float m_fTargetUpdateDelay;
     CExoArrayList<CSWGuiFloatyText*> m_lFloatyText;
     CSWGuiLabel m_lblMapborder;
@@ -545,25 +556,42 @@ public:
     float m_fCombatMessageDuration;
     float m_fCombatMessageTime;
     unsigned long m_nCombatMessage;
-    CSWGuiMainInterfaceAction m_aPersonalActions[6];
+    CSWGuiMainInterfaceAction m_aPersonalActions[NUM_PERSONAL_MENUS];
     CSWGuiLabel m_cActionText;
     CSWGuiLabel m_cActionTextBack;
     CSWGuiLabel m_lblActiondescbg2;
     CSWGuiLabel m_lblSolomode;
-    unsigned char m_aSelectedMenu[5];
+    int m_bActionBarFadeEnabled;
+    float m_fActionBarAlpha;
+    float m_fActionBarFadeTimer;
+    int m_bActionBarHidden;
+    float m_fActionBarIdleTime;
+    float m_fActionBarFadeTime;
+    float m_fActionBarTargetAlpha;
+    float m_fActionBarIdleElapsed;
+    float m_fActionBarFadeElapsed;
+    int m_bActionBarFading;
+    float m_fActionBarIdleRemaining;
+    float m_fActionBarFadeRemaining;
+    float m_fActionBarAlphaScale;
+    unsigned char m_aSelectedMenu[NUM_TARGET_TYPES];
     unsigned char m_nSelectedAction;
     unsigned char m_nTargetType;
     unsigned char m_nActionTextMargin;
     unsigned char m_nInterfaceOffset;
     CSWGuiControlFlags m_cActionDescriptionState;
     int m_nQueuedAction;
-    CSWGuiExtent m_cActionTextBackExtent;
-    CSWGuiMainInterfaceStatus m_aEffects[9];
-    int m_bSelectingUseItemTarget;
-    int m_nUseItemTargetMember;
+    int m_nQueuedActionTarget;
+    int m_bRotationPending;
     unsigned long m_oidUseItemPending;
+    CSWGuiLabel m_lblHelp;
+    CSWGuiExtent m_cActionTextBackExtent;
+    CSWGuiMainInterfaceStatus m_aEffects[GUI_STATUS_COUNT];
     float m_fFormMessageTime;
     unsigned long m_nFormMessage;
+    Vector m_vIndicateColor;
+    int m_bSelectingUseItemTarget;
+    int m_nUseItemTargetMember;
 #endif
     void SetActionDescription(CExoString const&);
     int SetTarget(unsigned long, int);

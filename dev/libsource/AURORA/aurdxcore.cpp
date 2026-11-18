@@ -4722,8 +4722,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             EnableClientState(0);
             pTexture1->Bind();
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX,
-                                               cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
             g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ENVIRONMENT]);
             return;
 
@@ -4739,13 +4738,12 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
         case 19:
             envmapon = 1;
             tex1on = 1;
-            SetActiveTexture(2);
-            pTexture1->Bind();
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX,
-                                               cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
             SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
             pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
             g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ENVIRONMENT_LIGHT_MAP]);
             return;
 
@@ -4756,6 +4754,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             cm_pCurrentTexture[2] = NULL;
             g_pD3DDevice->SetTexture(2, NULL);
             SetTextureStageFlag(2, 0);
+            SetTextureStageFlag(3, 0);
             SetActiveTexture(0);
             g_pD3DDevice->SetPixelShader(0);
             g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
@@ -4810,8 +4809,6 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
 
         case 5:
             tex1on = 1;
-            SetActiveTexture(0);
-            pTexture0->Bind();
             SetActiveTexture(1);
             pTexture1->Bind();
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
@@ -4822,6 +4819,8 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             SetActiveTexture(3);
             pTexture3->Bind();
+            SetActiveTexture(0);
+            pTexture0->Bind();
             g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_BUMP_SPECULAR_POWER]);
             g_pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
             return;
@@ -4833,6 +4832,12 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
             g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
             cm_pCurrentTexture[1] = NULL;
+            cm_pCurrentTexture[2] = NULL;
+            g_pD3DDevice->SetTexture(2, NULL);
+            SetTextureStageFlag(2, 0);
+            cm_pCurrentTexture[3] = NULL;
+            g_pD3DDevice->SetTexture(3, NULL);
+            SetTextureStageFlag(3, 0);
             SetActiveTexture(0);
             tex1on = 0;
             g_pD3DDevice->SetPixelShader(0);
@@ -4874,7 +4879,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             SetActiveTexture(3);
             pTexture3->Bind();
             g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
-            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | 3);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
@@ -4885,7 +4890,6 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             MakeLookUpTexture(5.0f);
             SetActiveTexture(0);
             pTexture1->Bind();
-            SetActiveTexture(1);
             SetActiveTexture(2);
             BindTexture(Aurora::ENABLE_TEXTURE_2D, lookup);
             SetActiveTexture(3);
@@ -4952,10 +4956,1364 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,  // Xbox 
             g_pD3DDevice->SetPixelShader(0);
             return;
 
+        case 34:
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_TEXTURE_COLOR_FOG]);
+            return;
+
+        case 37:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ENVIRONMENT_SUBTRACT]);
+            SetActiveTexture(1);
+            return;
+
+        case 40:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_MODULATE]);
+            return;
+
+        case 43:
+            if (pTexture3 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_EM_MODULATE]);
+            return;
+
+        case 35:
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_LIGHT_MAP_ADD]);
+            return;
+
+        case 38:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_SUBTRACT]);
+            SetActiveTexture(1);
+            return;
+
+        case 41:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_EM_SUBTRACT]);
+            return;
+
+        case 44:
+            if (pTexture3 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_LM_SUBTRACT]);
+            return;
+
+        case 36:
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_TEXTURE_MODULATE_ALPHA]);
+            return;
+
+        case 39:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_ADD]);
+            SetActiveTexture(1);
+            return;
+
+        case 42:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_EM_ADD]);
+            return;
+
+        case 45:
+            if (pTexture3 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_LM_ADD]);
+            return;
+
+        case 46:
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_LM_MODULATE]);
+            return;
+
+        case 47:
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            tex1on = 1;
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_EMLM_SUBTRACT]);
+            SetActiveTexture(0);
+            return;
+
+        case 48:
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_EMLM_ADD]);
+            return;
+
+        case 49:
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_NOISE_EMLM_ADD]);
+            return;
+
+        case 50:
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_FGLOW]);
+            return;
+
+        case 53:
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+            SetActiveTexture(0);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_FGLOW_EMLM]);
+            return;
+
+        case 52:
+            tex1on = 1;
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_FGLOW_EM]);
+            return;
+
+        case 54:
+        {
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_FGLOW_BUMPMAP]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 55:
+        {
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            tex1on = 1;
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_FGLOW_BUMPY_SHINY]);
+            SetActiveTexture(0);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 56:
+        {
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 57:
+        {
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 58:
+        {
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_EM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 59:
+        {
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+            SetActiveTexture(0);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_EMLM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 61:
+        {
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+            SetActiveTexture(0);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_BUMPY_SHINY]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 60:
+        {
+            tex1on = 1;
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_BUMPMAP]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 62:
+        {
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_SUB]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 65:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_SUB_EM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 68:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_SUB_LM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 71:
+        {
+            if (pTexture3 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_SUB_EMLM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 63:
+        {
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_ADD]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 66:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_ADD_EM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 69:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_ADD_LM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 72:
+        {
+            if (pTexture3 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_ADD_EMLM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 64:
+        {
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_MOD]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 67:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_MOD_EM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 70:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_MOD_LM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 73:
+        {
+            if (pTexture3 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_DESAT_NOISE_MOD_EMLM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 74:
+            DisableCombiners(pTexture0);
+            g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            SetTextureStageFlag(1, 0);
+            SetTextureStageFlag(2, 0);
+            SetTextureStageFlag(3, 0);
+            SetTextureStageFlag(0, 0);
+            g_pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
+            return;
+
+        case 75:
+            SetActiveTexture(1);
+            m_pHologramFilterTexture->Bind();
+            tex1on = 1;
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_HOLO]);
+            SetActiveTexture(0);
+            return;
+
+        case 76:
+            SetActiveTexture(1);
+            m_pHologramFilterTexture->Bind();
+            tex1on = 1;
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_HOLO_DESAT]);
+            SetActiveTexture(0);
+            return;
+
+        case 77:
+            DisableCombiners(pTexture0);
+            SetActiveTexture(0);
+            return;
+
+        case 78:
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM]);
+            return;
+
+        case 79:
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_ENV]);
+            return;
+
+        case 80:
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_ENV]);
+            return;
+
+        case 93:
+        case 94:
+        {
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_FGLOW_BUMPMAP]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 95:
+        {
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_EMLM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 96:
+        case 97:
+        {
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_TEXCOORDINDEX, cm_uiCurrentStage | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_EMLM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 98:
+        {
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+            SetActiveTexture(0);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_SUB]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 100:
+        {
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, 3 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
+            SetActiveTexture(0);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_MOD]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 99:
+        {
+            tex1on = 1;
+            SetActiveTexture(0);
+            pTexture0->Bind();
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+            SetActiveTexture(3);
+            pTexture3->Bind();
+            g_pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_ADD]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 81:
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_ADD]);
+            return;
+
+        case 87:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_ADD]);
+            return;
+
+        case 84:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_EM_ADD]);
+            SetActiveTexture(1);
+            return;
+
+        case 90:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_EM_ADD]);
+            SetActiveTexture(1);
+            return;
+
+        case 82:
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_LM_MODULATE]);
+            return;
+
+        case 88:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_LM_MODULATE]);
+            return;
+
+        case 85:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_EM_MODULATE]);
+            SetActiveTexture(1);
+            return;
+
+        case 91:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_EM_MODULATE]);
+            SetActiveTexture(1);
+            return;
+
+        case 83:
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_EMLM_SUBTRACT]);
+            return;
+
+        case 89:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_EMLM_SUBTRACT]);
+            return;
+
+        case 86:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_LM_SUBTRACT]);
+            SetActiveTexture(1);
+            return;
+
+        case 92:
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_NOISE_LM_SUBTRACT]);
+            SetActiveTexture(1);
+            return;
+
+        case 101:
+        {
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_SUB_EM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 107:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_SUB_EM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 104:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_SUB_LM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 110:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_SUB_LM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 102:
+        {
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_ADD_EM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 108:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_ADD_EM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+        }
+
+        case 105:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_ADD_LM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 111:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_ADD_LM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 103:
+        {
+            if (pTexture1 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_MOD_EM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 109:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            SetActiveTexture(1);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_MOD_EM]);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 106:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture1->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_MOD_LM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+            return;
+        }
+
+        case 112:
+        {
+            if (pTexture2 == NULL)
+            {
+                return;
+            }
+            envmapon = 1;
+            tex1on = 1;
+            SetActiveTexture(1);
+            EnableClientState(0);
+            pTexture2->Bind();
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1 | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            SetActiveTexture(2);
+            pTexture3->Bind();
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 2);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetTextureStageState(2, D3DTSS_ADDRESSW, D3DTADDRESS_WRAP);
+            g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_ILLUM_DESAT_NOISE_MOD_LM]);
+            SetActiveTexture(1);
+            float fDesaturate[4] = {0.3f, 0.59f, 0.11f, 0.25f};
+            AurSetPixelShaderConstant(7, fDesaturate, 1);
+        }
+
         case 8:
         case 9:
         case 10:
         case 27:
+        case 51:
             break;
     }
 }

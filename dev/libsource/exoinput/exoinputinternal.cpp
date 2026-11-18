@@ -1844,6 +1844,14 @@ void CExoInputInternal::EndAttemptedBind()  // Xbox 0x0014E340
 {
     m_pRawInput->m_bBindEnded = 1;
 }
+
+void CExoInputInternal::StartAttemptedBind()  // Xbox 0x0014E350
+{
+    if (m_pRawInput != NULL)
+    {
+        m_pRawInput->m_bAttemptingBind = 1;
+    }
+}
 #endif
 
 #ifdef _XBOX

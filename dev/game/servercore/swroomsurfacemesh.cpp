@@ -97,12 +97,18 @@ static __int64 QueryTimer()
     return 1000000 * nCount.QuadPart / performanceFrequency;
 }
 // PC 0x00574D50 GOG 0x005751C0 Xbox 0x001F9960
+#ifdef _XBOX
+void CSWRoomSurfaceMeshHitInfo::ClearOutput()
+#else
 int CSWRoomSurfaceMeshHitInfo::ClearOutput()
+#endif
 {
     m_bHit = 0;
     m_nHitMaterialMask = 0;
     m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
+#ifndef _XBOX
     return 0;
+#endif
 }
 // PC 0x00574D80 GOG 0x005751F0 Xbox 0x001F99A0
 void CSWRoomSurfaceMeshHitInfo::ClearAll(unsigned long nMask)

@@ -19,7 +19,7 @@ void CSWGuiStartScreen::HandleInputEvent(int nEvent, int nState)  // Xbox 0x000B
     }
 }
 
-void CSWGuiStartScreen::Draw(float fElapsed)
+void CSWGuiStartScreen::Draw(float fElapsed)  // Xbox 0x000B4AD0
 {
     if (!g_pAppManager->m_pClientExoApp->IsMoviePlaying())
     {
@@ -36,12 +36,9 @@ void CSWGuiStartScreen::Draw(float fElapsed)
         {
             int bSkipped = 0;
             m_fIdleTime = 0.0f;
-            g_pAppManager->GetClientExoApp()->PlayMovie("sizzle", bSkipped, 1, 0);
+            g_pExoInput->StartAttemptedBind();
+            g_pAppManager->GetClientExoApp()->PlayMovie("Trailer", bSkipped, 1, 0, 0);
             m_bResetIdleTime = 1;
-            if (bSkipped)
-            {
-                g_pAppManager->GetClientExoApp()->DisplayMainMenu(1);
-            }
         }
     }
 }

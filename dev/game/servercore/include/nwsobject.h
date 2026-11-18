@@ -2649,9 +2649,15 @@ public:
                                   unsigned char nSaveVsType,
                                   unsigned long oidSaveVersus,
                                   int bSendFeedback, unsigned short nFeat, int bFromCombat);
+#ifdef _XBOX
+    int AddEquipItemActions(CSWSItem* pItem, unsigned long nSlot, int bAddToFront,
+                            int bIgnoreCombatRound, int nEquipFlags, int nAttackFlags,
+                            int bSkipInventoryCheck);
+#else
     int AddEquipItemActions(CSWSItem* pItem, unsigned long nSlot, int bAddToFront,
                             int bIgnoreCombatRound, int nEquipFlags, int nAttackFlags, int bSkipReplace,
                             int bSkipInventoryCheck = 0);
+#endif
     void ProcessPendingCombatActions();
     int ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot,
                                int bInstant, int nEquipFlags);

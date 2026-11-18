@@ -43,7 +43,11 @@ class CSWRoomSurfaceMeshHitInfo
 {
 public:
     CSWRoomSurfaceMeshHitInfo(unsigned long nMask);
+#ifdef _XBOX
+    void ClearOutput();
+#else
     int ClearOutput();
+#endif
     void ClearAll(unsigned long nMask);
 
     int m_nMaterialMask;

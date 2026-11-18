@@ -73,48 +73,40 @@ public:
     };
 
     CSWGuiButton m_aUpgradeButtons4[4];
-#ifndef _XBOX
     CSWGuiButton m_aUpgradeButtons3Ls[6];
-#endif
     CSWGuiButton m_aUpgradeButtons3[3];
-#ifdef _XBOX
-    CSWGuiLabel m_aUpgradeLabels4[4];
-#else
     CSWGuiLabel m_aUpgradeLabels3Ls[6];
-#endif
     CSWGuiLabel m_aUpgradeLabels3[3];
     CSWGuiListBox m_lbItems;
     CSWGuiListBox m_lbDesc;
     CSWGuiListBox m_lbDescLs;
     CSWGuiLabel m_cTitle;
-#ifndef _XBOX
     CSWGuiLabel m_lblTitle2;
-#endif
     CSWGuiLabel m_cDescription;
     CSWGuiLabel m_cLightsaberDescription;
+#ifndef _XBOX
     CSWGuiLabel m_cDescriptionBackground;
     CSWGuiLabel m_cLightsaberDescriptionBackground;
+#endif
     CSWGuiLabel m_cProperty;
     CSWGuiLabel m_cSlotName;
-#ifdef _XBOX
-    CSWGuiLabel m_cLightsaberSlotName;
-    CSWGuiLabel m_cUpgrades;
-    CSWGuiLabel m_cUpgradeCount;
+#ifndef _XBOX
+    CSWGuiButton m_cAssemble;
+#endif
+    CSWGuiButton m_btnOk;
+    CSWGui3DSceneView m_3dModel;
+    CSWGui3DSceneView m_3dModelLs;
+#ifndef _XBOX
+    CSWGuiButton m_btnBack;
+#else
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblAAction;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblRanalog;
-    CSWGuiLabel m_lblRanalogLs;
-#endif
-    CSWGuiButton m_cAssemble;
-#ifndef _XBOX
-    CSWGuiButton m_btnOk;
-#endif
-    CSWGui3DSceneView m_3dModel;
-    CSWGui3DSceneView m_3dModelLs;
-#ifndef _XBOX
-    CSWGuiButton m_btnBack;
+    CSWGuiLabel m_alblBar[3];
+    CSWGuiLabel m_lblXAssemble;
+    CSWGuiLabel m_lblX;
 #endif
     unsigned long m_bItemListShown : 1;
     unsigned long m_nFlagsUnused : 31;
@@ -135,6 +127,9 @@ public:
     C2DA* m_pCrystalTable;
     CSWGuiControl* m_pItemListControl;
     CSWGuiUpgradeItemSelect* m_pItemSelect;
+#ifdef _XBOX
+    int m_nReserved;
+#endif
     virtual void OnPanelRemoved();
     void ShowItems(int);
     void SetDescription(CExoString const&);
@@ -156,9 +151,6 @@ public:
     void VerifyUpgrade(CSWGuiControl*);
     void OnAssemble(CSWGuiControl*);
     void OnDisabledSelected(CSWGuiControl* pControl);
-#ifdef _XBOX
-    void OnEnterAssemble(CSWGuiControl*);
-#endif
     void CancelPanel();
     void OnSlotSelected(CSWGuiControl*);
     virtual void HandleInputEvent(int, int);
@@ -267,6 +259,8 @@ public:
     CSWGuiLabel m_lblUpgradeitem;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblRanalog;
+    CSWGuiLabel m_lblX;
+    CSWGuiLabel m_lblCreateItem;
 #else
 
     CSWGuiButton m_btnUpgradeitem;

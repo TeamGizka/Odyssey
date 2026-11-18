@@ -186,6 +186,7 @@ public:
     int SetPortBinding(unsigned long nBinding);
     int GetCheatCombo(unsigned char nCombo);
     int GetDebugOption();
+    void StartAttemptedBind();
 #endif
     int SetRumble(int nJoystick, float fLeft, float fRight, unsigned long nDuration);
     int GetMainDeviceLost();

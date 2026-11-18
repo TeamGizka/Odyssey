@@ -1051,6 +1051,7 @@ BOOL CServerAIMaster::LoadEventQueue(CResGFF* pRes, CResStruct* pStruct)
 static inline C2DA* GetReputationAdjustmentTable()
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    EXOXBOXASSERT(p2DArrays->m_pRepAdjustments);
     return p2DArrays->m_pRepAdjustments;
 }
 // PC 0x004DE310 GOG 0x004DE430 Xbox 0x00173290

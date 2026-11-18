@@ -1498,6 +1498,8 @@ extern int g_bModifiedSound;
 
 
 #define RESTYPE_TPC 3006
+#define XBOX_PAGE_SIZE 0x1000
+#define ROUND_TO_XBOX_PAGES(nSize) (((nSize) + XBOX_PAGE_SIZE - 1) & ~(XBOX_PAGE_SIZE - 1))
 #endif
 
 #if defined(_XBOX) && defined(EXORESFILE_KEYTABLE)

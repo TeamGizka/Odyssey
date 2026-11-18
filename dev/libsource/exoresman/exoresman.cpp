@@ -1869,8 +1869,9 @@ int CExoResMan::Malloc(CRes* pRes)
     {
         if (pRes->m_pKeyEntry->m_nType == RESTYPE_MDX)
         {
-            pRes->m_pResource = D3D_AllocContiguousMemory(pRes->m_nSize + 6, 128);
-            g_nContiguousResourceMemory += pRes->m_nSize + 6;
+            unsigned long nAllocSize = pRes->m_nSize + 6;
+            pRes->m_pResource = D3D_AllocContiguousMemory(nAllocSize, 128);
+            g_nContiguousResourceMemory += ROUND_TO_XBOX_PAGES(nAllocSize);
         }
         else
         {
@@ -1882,8 +1883,9 @@ int CExoResMan::Malloc(CRes* pRes)
     {
         if (pRes->m_pKeyEntry->m_nType == RESTYPE_TPC)
         {
-            pRes->m_pResource = D3D_AllocContiguousMemory(pRes->m_nSize + 10, 128);
-            g_nContiguousResourceMemory += pRes->m_nSize + 10;
+            unsigned long nAllocSize = pRes->m_nSize + 10;
+            pRes->m_pResource = D3D_AllocContiguousMemory(nAllocSize, 128);
+            g_nContiguousResourceMemory += ROUND_TO_XBOX_PAGES(nAllocSize);
         }
         else
         {
@@ -2475,7 +2477,7 @@ void CExoResMan::FreeResourceData(CRes* pRes)
                 {
                     if (pRes->m_pKeyEntry->m_nType == RESTYPE_MDX)
                     {
-                        g_nContiguousResourceMemory -= pRes->m_nSize + 6;
+                        g_nContiguousResourceMemory -= ROUND_TO_XBOX_PAGES(pRes->m_nSize + 6);
                         D3D_FreeContiguousMemory((char*)pRes->m_pResource - 6);
                     }
                     else
@@ -2487,7 +2489,7 @@ void CExoResMan::FreeResourceData(CRes* pRes)
                 {
                     if (pRes->m_pKeyEntry->m_nType == RESTYPE_TPC)
                     {
-                        g_nContiguousResourceMemory -= pRes->m_nSize + 10;
+                        g_nContiguousResourceMemory -= ROUND_TO_XBOX_PAGES(pRes->m_nSize + 10);
                         D3D_FreeContiguousMemory(pRes->m_pResource);
                     }
                     else

@@ -993,7 +993,9 @@ public:
     CExoFile* m_pAuxiliaryLogFileTwo;
     CExoFile* m_pAuxiliaryLogFileThree;
     CExoFile* m_pAuxiliaryLogFileFour;
+#ifndef _XBOX
     CExoFile* m_pAuxiliaryLogFileFive;
+#endif
 };
 
 class CExoString;

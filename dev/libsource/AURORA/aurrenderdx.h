@@ -979,6 +979,12 @@ inline void AurSetVertexProgramParameter4f(unsigned int nIndex, float x, float y
     g_pD3DDevice->SetVertexShaderConstant(nIndex, fParameter, 1);
 }
 
+// Xbox 0x29C2C0
+inline void AurSetPixelShaderConstant(unsigned int nIndex, const void* pData, unsigned int nCount)
+{
+    g_pD3DDevice->SetPixelShaderConstant(nIndex, pData, nCount);
+}
+
 inline void GLRender::SetColorMask(unsigned char bRed, unsigned char bGreen, unsigned char bBlue,
                                    unsigned char bAlpha)
 {

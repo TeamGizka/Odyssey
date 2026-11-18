@@ -4813,6 +4813,7 @@ void CSWSCreature::SendAttackSummaryFeedback(unsigned long oidTarget)
                 {
                     CExoString sColumn("MULTIPLIER");
                     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+                    EXOXBOXASSERT(p2DArrays->m_pDifficultyOptions);
                     C2DA* pTable = p2DArrays->m_pDifficultyOptions;
                     bFound = pTable->GetFLOATEntry(nRow, sColumn, &fMultiplier);
                 }

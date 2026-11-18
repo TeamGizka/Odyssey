@@ -645,6 +645,7 @@ CSWCItem* CSWSItem::GetClientItem()
 // PC 0x0055C8A0 GOG 0x0055C9C0
 unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
 {
+    EXOXBOXASSERT(pTable);
     unsigned char nType = UPGRADABLE_TYPE_NONE;
     if (m_nUpgradeLevel > 0)
     {

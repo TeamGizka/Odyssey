@@ -451,6 +451,14 @@ int CExoInput::GetDebugOption()  // Xbox 0x0014DB50
 {
     return m_pExoInputInternal->GetDebugOption();
 }
+
+void CExoInput::StartAttemptedBind()  // Xbox 0x0014DB60
+{
+    if (m_pExoInputInternal != NULL)
+    {
+        m_pExoInputInternal->StartAttemptedBind();
+    }
+}
 #endif
 
 #ifndef _XBOX

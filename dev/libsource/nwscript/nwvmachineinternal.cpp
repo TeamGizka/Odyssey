@@ -1912,9 +1912,12 @@ void CVirtualMachineInternal::InitializeCRCTable()  // Xbox 0x0016AEF0
 unsigned long CVirtualMachineInternal::ComputeCRC(char* pData, unsigned long nSize)  // Xbox 0x0016AF30
 {
     unsigned long nCRC = 0;
-    for (unsigned long nByte = 0; nByte < nSize; nByte++)
+    unsigned long* pWords = (unsigned long*)pData;
+    for (unsigned long nWords = nSize >> 2; nWords != 0; nWords--)
     {
-        nCRC = m_aCRCTable[(pData[nByte] ^ nCRC) & 0xFF] ^ (nCRC >> 8);
+        nCRC += *pWords;
+        nCRC ^= nCRC >> 8;
+        pWords++;
     }
     return nCRC;
 }

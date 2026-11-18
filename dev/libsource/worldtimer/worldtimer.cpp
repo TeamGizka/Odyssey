@@ -441,11 +441,11 @@ unsigned long CWorldTimer::GetCalendarDayFromSeconds(float fSeconds)
     }
     unsigned long nCalendarDay = 0;
     float fTime = fSeconds;
-    do
+    while (fTime >= fSecondsPerDay)
     {
         fTime -= fSecondsPerDay;
         ++nCalendarDay;
-    } while (fTime >= fSecondsPerDay);
+    }
     return nCalendarDay;
 }
 // PC 0x004DB990 GOG 0x004DBAD0 Xbox 0x0028E280

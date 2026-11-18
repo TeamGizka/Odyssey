@@ -864,7 +864,8 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
         InitControl(btnItem, CExoString("BTN_ITEM") + CExoString(nRow + 1), 0);
         m_aItemRows[nRow].Initialize(btnItem.m_cText, btnItem.m_cBorder,
                                      btnItem.m_cHilite,
-                                     btnItem.m_cExtent.m_nWidth, 1);
+                                     btnItem.m_cExtent.m_nWidth, 1,
+                                     CGuiInGame::COLOR_BLUE, CGuiInGame::COLOR_YELLOW);
         m_aItemRows[nRow].SetExtent(btnItem.m_cExtent);
         m_aItemRows[nRow].AddEvent(GUIEVENT_MOUSE_ENTER, this,
             (CSWGuiHandler)&CSWGuiInGameInventory::OnControlEntered);

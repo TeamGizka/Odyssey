@@ -2478,9 +2478,15 @@ void CSWSObject::ClearAllActions(int bClearAll)
                 unsigned long oidClient = pClient->ServerToClientObjectId(oidServer);
                 int nIndex = g_pAppManager->m_pClientExoApp->GetSWParty()->GetIndex(oidClient);
                 if (nIndex != -1)
+#ifdef _XBOX
+                    g_pAppManager->GetClientExoApp()->GetSWParty()
+                        ->GetMemberData(nIndex)->m_nCharacterIndex =
+                            CSWPartyMemberData::FOLLOW_UNINITIALIZED;
+#else
                     g_pAppManager->m_pClientExoApp->GetSWParty()
                         ->m_aPartyMemberData[nIndex].m_nCharacterIndex =
                             CSWPartyMemberData::FOLLOW_UNINITIALIZED;
+#endif
             }
         }
     }
@@ -3145,6 +3151,9 @@ void CSWSObject::SpellCastAndImpact(
                         break;
                     case 2:
                         nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                        break;
+                    default:
+                        EXOXBOXASSERT(0);
                         break;
                     }
                     nForceCost = nPercent * nFullCost / 100;

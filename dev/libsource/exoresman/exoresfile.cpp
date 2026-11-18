@@ -350,6 +350,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
 
     int nFiles = lstFiles.num;
 
+    EXOXBOXASSERT(m_pKeyTable == NULL);
     m_nTableSize = 2 * (nFiles + nSubDirectoryFiles) + 1;
     m_pKeyTable = AllocateTable(m_nTableSize);
 
@@ -455,9 +456,7 @@ int CExoResFile::CloseFile()
 {
     if (m_bFileOpened)
     {
-#ifndef _XBOX
         m_sFileName.CStr();
-#endif
         if (m_pFile)
         {
             delete m_pFile;
@@ -1103,6 +1102,27 @@ unsigned long CExoEncapsulatedFile::ReadResource(unsigned long nId,
                                                  unsigned long nSize,
                                                  unsigned long nOffset)
 {
+#ifdef _XBOX
+    if (m_bFileOpened && pBuffer != NULL)
+    {
+        unsigned long nEntry = nId & 0x3FFF;
+
+        if (nEntry >= m_pHeader->nEntryCount)
+        {
+            return 0;
+        }
+        m_pFile->Seek(m_pResourceList[nEntry].nOffset, 0);
+
+        unsigned long nRead = m_pResourceList[nEntry].nSize;
+
+        if (nRead > nSize)
+        {
+            return m_pFile->Read(pBuffer, nSize, 1);
+        }
+
+        return m_pFile->Read(pBuffer, nRead, 1);
+    }
+#else
     if (m_bFileOpened && pBuffer != NULL)
     {
         unsigned long nEntry = nId & 0x3FFF;
@@ -1121,6 +1141,7 @@ unsigned long CExoEncapsulatedFile::ReadResource(unsigned long nId,
             return m_pFile->Read(pBuffer, nRead, 1);
         }
     }
+#endif
 
     return 0;
 }
@@ -1176,7 +1197,7 @@ int CExoResourceImageFile::CloseFile()
 #ifdef _XBOX
             if (stricmp(m_sFileName.Right(2).CStr(), "dx") == 0)
             {
-                g_nContiguousResourceMemory -= XPhysicalSize(m_pImageFile);
+                g_nContiguousResourceMemory -= ROUND_TO_XBOX_PAGES(XPhysicalSize(m_pImageFile));
                 D3D_FreeContiguousMemory(m_pImageFile);
             }
             else
@@ -1274,7 +1295,7 @@ int CExoResourceImageFile::OpenFile()
     if (stricmp(m_sFileName.Right(2).CStr(), "dx") == 0)
     {
         m_pImageFile = (unsigned char*)D3D_AllocContiguousMemory(nFileSize, 128);
-        g_nContiguousResourceMemory += XPhysicalSize(m_pImageFile);
+        g_nContiguousResourceMemory += ROUND_TO_XBOX_PAGES(XPhysicalSize(m_pImageFile));
     }
     else
     {
@@ -1535,6 +1556,26 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
     {
         EXOLOG("CExoResourceImageFile::ReadResource() files %d\n", CExoArrayList<CExoString>().num);
     }
+#ifdef _XBOX
+    if (m_bFileOpened && pBuffer != NULL)
+    {
+        unsigned long nEntry = nId & 0x3FFF;
+        unsigned char* pImageFile = m_pImageFile;
+
+        if (nEntry >= ((CExoResourceImageFileHeader*)pImageFile)->m_nEntryCount)
+        {
+            return 0;
+        }
+        CExoResourceImageFileEntry* pEntry = ((
+            CExoResourceImageFileEntry**)(m_pImageFile +
+                                          ((CExoResourceImageFileHeader*)m_pImageFile)->m_nEntryOffset))[nEntry];
+        unsigned long nRead = pEntry->m_nSize < nSize ? pEntry->m_nSize : nSize;
+        memcpy(pBuffer, pImageFile + pEntry->m_nOffset, nRead);
+        return nRead;
+    }
+
+    return 0;
+#else
     if (m_bFileOpened && pBuffer != NULL)
     {
         unsigned long nEntry = nId & 0x3FFF;
@@ -1562,6 +1603,7 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
     }
 
     return 0;
+#endif
 }
 // PC 0x0040FAD0 GOG 0x0040FA80 Xbox 0x00027E80
 template <>

@@ -106,7 +106,11 @@ void CExoDebugInternal::FlushVOTestFile()
 {
     if (m_bLogFilesOpen)
     {
+#ifdef _XBOX
+        m_pScriptLogFile->Flush();
+#else
         m_pAuxiliaryLogFileFive->Flush();
+#endif
     }
 }
 
@@ -238,7 +242,11 @@ void CExoDebugInternal::WriteToVOTestFile(const CExoString& text)
 {
     if (m_bLogFilesOpen)
     {
+#ifdef _XBOX
+        m_pScriptLogFile->Write(text);
+#else
         m_pAuxiliaryLogFileFive->Write(text);
+#endif
         FlushVOTestFile();
     }
 }
@@ -318,11 +326,13 @@ void CExoDebugInternal::CloseLogFiles()
             delete m_pScriptLogFile;
             m_pScriptLogFile = NULL;
         }
+#ifndef _XBOX
         if (m_pAuxiliaryLogFileFive)
         {
             delete m_pAuxiliaryLogFileFive;
             m_pAuxiliaryLogFileFive = NULL;
         }
+#endif
         m_bLogFilesOpen = 0;
     }
 }

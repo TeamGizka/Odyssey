@@ -1075,10 +1075,17 @@ int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
                     }
                 }
             }
+#ifdef _XBOX
+            unsigned char nAILevel = (unsigned char)pObject->m_nAILevel;
+            if (nAILevel < 3)
+            {
+                pObject->m_nSavedAILevel = nAILevel;
+#else
             int nAILevel = pObject->m_nAILevel;
             if ((unsigned char)nAILevel < 3)
             {
                 pObject->m_nSavedAILevel = (unsigned char)nAILevel;
+#endif
                 g_pAppManager->GetServerExoApp()->GetServerAIMaster()
                     ->SetAILevel(pObject, 3);
             }
@@ -20306,7 +20313,11 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveNPCFromPartyToBase(int nComma
 // PC 0x005CD560 GOG 0x005CD5D0 Xbox 0x0024B160
 int CSWVirtualMachineCommands::ExecuteCommandGetIsXBox(int nCommand, int nArgs)
 {
+#ifdef _XBOX
+    return g_pVirtualMachine->StackPushInteger(1) != 0 ? 0 : -2000;
+#else
     return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
+#endif
 }
 // PC 0x005CD580 GOG 0x005CD5F0 Xbox 0x0024B180
 int CSWVirtualMachineCommands::ExecuteCommandActionSwitchWeapons(int nCommand, int nArgs)

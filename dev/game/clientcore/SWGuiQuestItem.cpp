@@ -163,8 +163,14 @@ void CSWGuiQuestItem::PopulateItemListBox()
             CSWGuiInGameItemEntry* pItemEntry = new CSWGuiInGameItemEntry;
             if (pItemEntry != 0)
             {
+#ifndef _XBOX
                 pItemEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
                                        pProto->m_cHilite, nWidth, 0);
+#else
+                pItemEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                                       pProto->m_cHilite, nWidth, 0,
+                                       CGuiInGame::COLOR_BLUE, CGuiInGame::COLOR_YELLOW);
+#endif
                 pItemEntry->AddEvent(
                     CSWGuiControl::EVENT_ENTER, this,
                     (PFNGUIEVENT)&CSWGuiQuestItem::OnControlEntered);

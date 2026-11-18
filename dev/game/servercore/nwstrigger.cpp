@@ -462,6 +462,7 @@ CSWSTrigger::CSWSTrigger(unsigned long oidId)
     {
         CExoString sColumn("PrimaryRange");
         CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+        EXOXBOXASSERT(p2DArrays->m_pRanges);
         C2DA* pRanges = p2DArrays->m_pRanges;
         bRangeMissing = !pRanges->GetFLOATEntry(
             17, sColumn, &m_fTrapRadiusRange);

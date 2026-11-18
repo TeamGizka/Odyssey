@@ -937,11 +937,19 @@ int CSWSCreature::ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot,
     return bReplaced;
 }
 // PC 0x00511390 GOG 0x005113F0 Xbox 0x001864B0
+#ifdef _XBOX
+int CSWSCreature::AddEquipItemActions(CSWSItem* pItem,
+                                     unsigned long nInventorySlot,
+                                     int bAddToFront, int bIgnoreCombatRound,
+                                     int nEquipFlags, int nAttackFlags,
+                                     int bSkipInventoryCheck)
+#else
 int CSWSCreature::AddEquipItemActions(CSWSItem* pItem,
                                      unsigned long nInventorySlot,
                                      int bAddToFront, int bIgnoreCombatRound,
                                      int nEquipFlags, int nAttackFlags,
                                      int bSkipReplace, int bSkipInventoryCheck)
+#endif
 {
     if (m_pInventory != NULL && bSkipInventoryCheck == 0 &&
         (nInventorySlot == INVENTORY_SLOT_ARMOUR ||
@@ -976,9 +984,14 @@ int CSWSCreature::AddEquipItemActions(CSWSItem* pItem,
         SendFeedbackMessage(FEEDBACK_CANNOT_EQUIP_ARMOUR_IN_COMBAT, NULL);
         return 0;
     }
+#ifdef _XBOX
+    if (ReplaceEquipItemActions(pItem, nInventorySlot, bIgnoreCombatRound,
+                                nEquipFlags) != 0)
+#else
     if (bSkipReplace == 0 &&
         ReplaceEquipItemActions(pItem, nInventorySlot, bIgnoreCombatRound,
                                 nEquipFlags) != 0)
+#endif
     {
         return 1;
     }
@@ -1185,7 +1198,13 @@ void CSWSCreature::HandleHPRegeneration()
         float fTimePerHP = 0.0f;
         float fConModBonus = 0.0f;
         float fSkillRankBonus = 0.0f;
+#ifdef _XBOX
+        CTwoDimArrays* pArrays = g_pRules->Get2DArrays();
+        EXOXBOXASSERT(pArrays->m_pRegeneration);
+        C2DA* pRegeneration = pArrays->m_pRegeneration;
+#else
         C2DA* pRegeneration = g_pRules->Get2DArrays()->m_pRegeneration;
+#endif
         CExoString sValue("VALUE");
 
         pRegeneration->GetFLOATEntry("TimePerHP", sValue, &fTimePerHP);
@@ -2861,7 +2880,11 @@ void CSWSCreature::AIUpdate()
                 int nIndex = pClient->GetSWParty()->GetIndex(oidClient);
                 if (nIndex != -1)
                 {
+#ifdef _XBOX
+                    CSWPartyMemberData* pMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetMemberData(nIndex);
+#else
                     CSWPartyMemberData* pMember = &g_pAppManager->GetClientExoApp()->GetSWParty()->m_aPartyMemberData[nIndex];
+#endif
                     if (pMember != NULL)
                     {
                         vPosition = pMember->m_vFollowPosition;
@@ -3056,7 +3079,13 @@ void CSWSCreature::HandleFPRegeneration()
         {
             int nMaxForce = GetStats()->m_nTemporaryForcePoints + nMaxForcePoints;
             int nRoomForceRating = pArea->GetRoomForceRating(m_vPosition);
+#ifdef _XBOX
+            CTwoDimArrays* pArrays = g_pRules->Get2DArrays();
+            EXOXBOXASSERT(pArrays->m_pRegeneration);
+            C2DA* pRegeneration = pArrays->m_pRegeneration;
+#else
             C2DA* pRegeneration = g_pRules->Get2DArrays()->m_pRegeneration;
+#endif
             CExoString sValue("VALUE");
             float fTimePerFP = 0.0f;
             float fFPBase = 0.0f;
@@ -5038,6 +5067,11 @@ float CSWSCreature::CalculateDeathExperience()
                 nChallengeRating = 0;
             }
         }
+#ifdef _XBOX
+        float fExperience = 0.0f;
+        int nRow = nLevel - 1 > 30 ? 30 : nLevel - 1;
+        int nColumn = nChallengeRating + 1 > 31 ? 31 : nChallengeRating + 1;
+#else
         int nRow = nLevel - 1;
         float fExperience = 0.0f;
         if (nRow > 30)
@@ -5049,7 +5083,14 @@ float CSWSCreature::CalculateDeathExperience()
         {
             nColumn = 31;
         }
+#endif
+#ifdef _XBOX
+        CTwoDimArrays* pArraysForXp = g_pRules->Get2DArrays();
+        EXOXBOXASSERT(pArraysForXp->m_pXpBase);
+        C2DA* pXpBase = pArraysForXp->m_pXpBase;
+#else
         C2DA* pXpBase = g_pRules->Get2DArrays()->m_pXpBase;
+#endif
         pXpBase->GetFLOATEntry(
             nRow, nColumn, &fExperience);
         float fPercentXP = 0.0f;
@@ -5184,6 +5225,16 @@ float CSWSCreature::GetMovementRateFactor(int bIncludeFeats)  // PC 0x0050CAC0 G
             fMovementRateFactor += 0.1f;
         }
     }
+#ifdef _XBOX
+    if (fMovementRateFactor < 0.125f)
+    {
+        fMovementRateFactor = 0.125f;
+    }
+    else if (fMovementRateFactor > 1.5f)
+    {
+        fMovementRateFactor = 1.5f;
+    }
+#else
     if (fMovementRateFactor < 0.125f)
     {
         return 0.125f;
@@ -5193,6 +5244,7 @@ float CSWSCreature::GetMovementRateFactor(int bIncludeFeats)  // PC 0x0050CAC0 G
     {
         return 1.5f;
     }
+#endif
 
     return fMovementRateFactor;
 }
@@ -11425,9 +11477,16 @@ int CSWSCreature::GetCurrentlyFollowingLeader()
 {
     CSWSObjectActionNode* pAction;
 
+#ifdef _XBOX
+    CExoLinkedListNode* pPosition = m_lstActions.GetHeadPos();
+    if (pPosition != NULL)
+    {
+        pAction = m_lstActions.GetAtPos(pPosition);
+#else
     if (m_lstActions.GetHeadPos() != NULL)
     {
         pAction = m_lstActions.GetAtPos(m_lstActions.GetHeadPos());
+#endif
         if (pAction != NULL && pAction->m_nActionType == 61)
         {
             return TRUE;

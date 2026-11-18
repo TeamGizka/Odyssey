@@ -1463,14 +1463,22 @@ int CSWPartyTable::GetPUPID(unsigned long oidObject)
     return -1;
 }
 // PC 0x00579F20 GOG 0x00579FA0 Xbox 0x00177630
+#ifdef _XBOX
+void CSWPartyTable::AddGameInProgress()
+#else
 int CSWPartyTable::AddGameInProgress()
+#endif
 {
     if (m_nGameInProgress == 0)
     {
         CExoString sAlias("GAMEINPROGRESS:");
         g_pExoResMan->AddResourceDirectory(sAlias);
     }
+#ifdef _XBOX
+    ++m_nGameInProgress;
+#else
     return ++m_nGameInProgress;
+#endif
 }
 // PC 0x00579FA0 GOG 0x0057A020 Xbox 0x00177680
 void CSWPartyTable::RemoveGameInProgress()
@@ -1482,13 +1490,19 @@ void CSWPartyTable::RemoveGameInProgress()
     }
 }
 // PC 0x0057A010 GOG 0x0057A090 Xbox 0x001776C0
+#ifdef _XBOX
+void CSWPartyTable::ClearMembers()
+#else
 int CSWPartyTable::ClearMembers()
+#endif
 {
     for (int i = 0; i < 12; i++)
     {
         m_aoidNPC[i] = OBJECT_INVALID;
     }
+#ifndef _XBOX
     return OBJECT_INVALID;
+#endif
 }
 // PC 0x0057A030 GOG 0x0057A0B0 Xbox 0x001776F0
 void CSWPartyTable::ClearPuppets()

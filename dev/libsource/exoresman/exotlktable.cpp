@@ -233,6 +233,7 @@ int CTlkTable::OpenFile(const CExoString& sResRef)
 
     if (!c2DA.Load2DArray())
     {
+        EXOXBOXASSERT(0);
         return 0;
     }
 

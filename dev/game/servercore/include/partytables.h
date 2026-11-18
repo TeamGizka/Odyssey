@@ -66,9 +66,17 @@ public:
     unsigned char GetNPCSelectability(int nNPC);
     int SetNPCSelectability(int nNPC, unsigned char nSelectability);
     int GetNPCID(unsigned long oidObject);
+#ifdef _XBOX
+    void AddGameInProgress();
+#else
     int AddGameInProgress();
+#endif
     void RemoveGameInProgress();
+#ifdef _XBOX
+    void ClearMembers();
+#else
     int ClearMembers();
+#endif
     int ClearMember(int nNPC);
     int GetIsLeader(unsigned long oidObject);
     void SetLeader(unsigned long oidObject);

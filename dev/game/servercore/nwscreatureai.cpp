@@ -3566,8 +3566,12 @@ int CSWSCreature::AIActionHeal(CSWSObjectActionNode* pAction)
         {
             int nPoison = pAffliction->GetInteger(0);
             CExoString sColumn("Save_DC");
+#ifdef _XBOX
+            g_pRules->Get2DArrays()->GetPoison()->GetINTEntry(nPoison, sColumn, &nSaveDC);
+#else
             C2DA* pPoison = g_pRules->Get2DArrays()->m_pPoison;
             pPoison->GetINTEntry(nPoison, sColumn, &nSaveDC);
+#endif
         }
         else if (pAffliction->GetEffectType() == CSWSEffectListHandler::EFFECT_DISEASE)
         {
@@ -4520,7 +4524,9 @@ float CSWSCreature::ComputeSpeedFactor(float fDistance, int nTime)
 {
     float fSpeedFactor;
     float fFactor;
+#ifndef _XBOX
     float fNewSpeedFactor;
+#endif
     float fWalkDistance;
     float fDistanceScale;
     float fMaximumSpeedFactor;
@@ -4534,6 +4540,17 @@ float CSWSCreature::ComputeSpeedFactor(float fDistance, int nTime)
     if (fWalkDistance <= fDistanceScale)
     {
         fFactor = fWalkDistance / fDistanceScale;
+#ifdef _XBOX
+        if (fFactor >= 0.01f)
+        {
+            fSpeedFactor = sqrt(fFactor);
+        }
+        else
+        {
+            fSpeedFactor = 0.1f;
+        }
+        fSpeedFactor -= nTime * 0.001f;
+#else
         if (fFactor >= 0.01f)
         {
             fNewSpeedFactor = sqrt(fFactor);
@@ -4543,6 +4560,7 @@ float CSWSCreature::ComputeSpeedFactor(float fDistance, int nTime)
             fNewSpeedFactor = 0.1f;
         }
         fSpeedFactor = fNewSpeedFactor - nTime * 0.001f;
+#endif
     }
 
     if (m_fMovementRate <= 1.0f)
@@ -4556,7 +4574,11 @@ float CSWSCreature::ComputeSpeedFactor(float fDistance, int nTime)
 
     if (fSpeedFactor <= 0.1f)
     {
+#ifdef _XBOX
+        fSpeedFactor = 0.1f;
+#else
         return 0.1f;
+#endif
     }
     return fSpeedFactor;
 }
@@ -7552,7 +7574,12 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
         int nMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetIndex(oidClient);
         if (nMember != -1)
         {
+#ifdef _XBOX
+            CSWParty* pCurrentParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+            CSWPartyMemberData* pMember = pCurrentParty->GetMemberData(nMember);
+#else
             CSWParty* pCurrentParty = g_pAppManager->GetClientExoApp()->GetSWParty(); CSWPartyMemberData* pMember = &pCurrentParty->m_aPartyMemberData[nMember];
+#endif
             if (pMember != NULL)
                 pMember->m_vLastPosition = vPosition;
         }

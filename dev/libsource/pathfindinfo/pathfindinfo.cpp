@@ -329,6 +329,16 @@ void CPathfindInformation::FlipTempEndPoints()
 // PC 0x0061A250 GOG 0x0061A230 Xbox 0x0016E550
 void CPathfindInformation::ComputeStepTolerance()
 {
+#ifdef _XBOX
+    if (m_fStepScale == 0.0f)
+    {
+        m_nStepTolerance = (int)m_fStartDistance;
+    }
+    else
+    {
+        m_nStepTolerance = (int)(m_fStartDistance / m_fStepScale);
+    }
+#else
     if (m_fStepScale != 0.0f)
     {
         m_nStepTolerance = (int)(m_fStartDistance / m_fStepScale);
@@ -337,6 +347,7 @@ void CPathfindInformation::ComputeStepTolerance()
     {
         m_nStepTolerance = (int)m_fStartDistance;
     }
+#endif
 }
 // PC 0x0061A280 GOG 0x0061A260 Xbox 0x0016E820
 void CPathfindInformation::Shutdown()

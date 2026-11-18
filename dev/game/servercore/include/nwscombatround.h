@@ -261,7 +261,11 @@ struct CSWSCombatSubAttackDeflect
     int m_nAttackTotal;
     unsigned char m_nJediDefenseFeat;
     unsigned char m_nJediDefenseBonus;
+#ifdef _XBOX
+    unsigned char m_nEffectBonus;
+#else
     char m_nEffectBonus;
+#endif
     unsigned char m_nDeflectResult;
     unsigned char m_nBaseAttackBonus;
     unsigned char m_nArmorCheckPenalty;

@@ -1554,7 +1554,11 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         int nCharacters = g_pAppManager->GetClientExoApp()->GetSWParty()->GetNumCharacters();
         for (int i = 0; i < nCharacters; ++i)
         {
+#ifdef _XBOX
+            CSWPartyMemberData* pMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetMemberData(i);
+#else
             CSWPartyMemberData* pMember = &g_pAppManager->GetClientExoApp()->GetSWParty()->m_aPartyMemberData[i];
+#endif
             if (pMember != NULL)
             {
                 unsigned long oidClient = pMember->m_oidCreature;
@@ -4773,6 +4777,9 @@ int CSWSCreatureStats::GetCreatureTalentRandomKnownPower(
                 case 2:
                     nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
                     break;
+                default:
+                    EXOXBOXASSERT(0);
+                    break;
                 }
                 int nHitPointCost = nFullCost * nPercent / 100;
                 if (nHitPointCost <= GetCurrentForcePoints())
@@ -6539,6 +6546,9 @@ bool CSWSCreatureStats::GetSpellUsesLeft(
         case 2:
             nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
             break;
+        default:
+            EXOXBOXASSERT(0);
+            break;
         }
         int nHitPointCost = (int)(nForcePoints * nPercent) / 100;
         if (nForcePoints - nHitPointCost <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints) &&
@@ -6593,6 +6603,9 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
                 break;
             case 2:
                 nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                break;
+            default:
+                EXOXBOXASSERT(0);
                 break;
             }
             nForcePoints = nFullCost * nPercent / 100;
@@ -6699,6 +6712,16 @@ int CSWSCreatureStats::GetIsInSpellLikeAbilityList(unsigned long nSpell)
     int i = 0;
 
     pAbilities = m_pSpellLikeAbilities;
+#ifdef _XBOX
+    for (; i < pAbilities->num; ++i)
+    {
+        if ((*pAbilities)[i].m_nSpell == nSpell &&
+            (*pAbilities)[i].m_nReady == 1)
+        {
+            return 1;
+        }
+    }
+#else
     if (pAbilities->num > 0)
     {
         while ((*pAbilities)[i].m_nSpell != nSpell ||
@@ -6712,6 +6735,7 @@ int CSWSCreatureStats::GetIsInSpellLikeAbilityList(unsigned long nSpell)
         }
         return 1;
     }
+#endif
     return 0;
 }
 // PC 0x005EF6A0 GOG 0x005EF680 Xbox 0x001BBF40
@@ -7158,6 +7182,9 @@ int CSWSCreatureStats::HasSpell(unsigned char nSpellLevel,
                     break;
                 case 2:
                     nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                    break;
+                default:
+                    EXOXBOXASSERT(0);
                     break;
                 }
                 int nHitPointCost = nFullCost * nPercent / 100;
