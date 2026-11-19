@@ -410,7 +410,8 @@ float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vF
 {
     float sc = 0.0f;
     Vector u = vFirstEnd - vFirstStart;
-    Vector v = vSecondEnd - vSecondStart;
+    Vector v(vSecondEnd.m_fX - vSecondStart.m_fX, vSecondEnd.m_fY - vSecondStart.m_fY,
+             vSecondEnd.m_fZ - vSecondStart.m_fZ);
     Vector w = vFirstStart - vSecondStart;
 #ifdef _XBOX
     float a = u * u;
