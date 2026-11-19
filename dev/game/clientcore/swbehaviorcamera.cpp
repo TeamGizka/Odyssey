@@ -1383,12 +1383,21 @@ int CSWCameraOnAStick::Control(float fTimeStep)
 #ifdef _XBOX
 
 #include "swplayercontrol.h"
+#ifdef _XBOX
+#include "aurdraw.h"
+#endif
 Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // Xbox 0x000AFE80
     Quaternion qOrientation, float fTimeStep)
 {
     Vector vTargetMove =
         static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition() - m_vInitialPosition;
     Quaternion qResult = qOrientation;
+#ifdef _XBOX
+    AurDrawLine(m_vInitialPosition, m_vInitialPosition + vTargetMove);
+    AurDrawLine(m_vInitialPosition, m_vInitialPosition + vTargetMove);
+    AurDrawLine(m_vInitialPosition, m_vInitialPosition + vTargetMove);
+    AurDrawLine(m_vInitialPosition, m_vInitialPosition + vTargetMove);
+#endif
     if (fabs(m_fTurn) > 1.0f)
     {
         m_fTurn = m_fTurn * 0.013333334f;
@@ -1396,8 +1405,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // Xbox 0
     if (m_fTurn != 0.0f)
     {
         float fRotate = CameraRotate;
-        if (vTargetMove.m_fX != 0.0f || vTargetMove.m_fY != 0.0f ||
-            vTargetMove.m_fZ != 0.0f)
+        if (!vTargetMove.IsZero())
         {
             fRotate *= 0.5f;
         }
@@ -1413,6 +1421,9 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // Xbox 0
                 g_pAppManager->m_pClientExoApp->GetGameObject(m_oidLookAt);
             if (pTarget != NULL)
             {
+#ifdef _XBOX
+                AurDrawLine(pTarget->m_vPosition, pTarget->m_vPosition + pTarget->m_vPosition);
+#endif
                 Vector vDirection = pTarget->m_vPosition -
                     static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition();
                 Vector vSide = cross(zaxis, qResult.ydir());
@@ -1493,9 +1504,9 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // Xbox 0
     {
         if (m_fTurn == 0.0f && !bStickCentered && !bLookAt)
         {
+            Gob* pTargetGob = static_cast<Gob*>(m_pTarget.m_pObject);
             Vector vToTarget =
-                static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition() -
-                static_cast<Gob*>(m_pObject)->GetPosition();
+                pTargetGob->GetPosition() - static_cast<Gob*>(m_pObject)->GetPosition();
             vToTarget.m_fZ = 0.0f;
             qResult = YawPitchRoll(Yaw(vToTarget), 0.0f, 0.0f);
         }
