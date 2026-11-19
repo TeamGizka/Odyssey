@@ -64,6 +64,9 @@ public:
     void UpdateGrassForWind(WindManager*);
     void RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
                          WindManager* pWindManager);
+#ifdef _XBOX
+    unsigned long GetVertexPool() { return (unsigned long)m_pVertices; }
+#endif
 
     static float m_fNearRadiusSquared;
     static float m_fFarRadiusSquared;

@@ -369,6 +369,13 @@ int CSWGuiAbilitiesCharGen::DetermineCostToIncreaseScore(int nScore)
 // PC 0x0076A350 GOG 0x0076A170 Xbox 0x00144E20
 void CSWGuiAbilitiesCharGen::OnMinusButton()
 {
+#ifdef _XBOX
+    if (m_bLevelUp != 0 && m_aScore[m_nSelected] == m_aMinimumScore[m_nSelected])
+    {
+        return;
+    }
+    if (m_bLevelUp == 0 && m_aScore[m_nSelected] == 8)
+#else
     int nScore = m_aScore[m_nSelected];
 
     if (m_bLevelUp != 0 && nScore == m_aMinimumScore[m_nSelected])
@@ -376,6 +383,7 @@ void CSWGuiAbilitiesCharGen::OnMinusButton()
         return;
     }
     if (m_bLevelUp == 0 && nScore == 8)
+#endif
     {
         CSWGuiMessageBox* pMessageBox =
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
@@ -385,11 +393,19 @@ void CSWGuiAbilitiesCharGen::OnMinusButton()
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         return;
     }
+#ifdef _XBOX
+    if (m_aScore[m_nSelected] > 8)
+    {
+        m_nPointsRemaining -= DetermineCostToDecreaseScore(m_aScore[m_nSelected]);
+        m_aScore[m_nSelected]--;
+    }
+#else
     if (nScore > 8)
     {
         m_nPointsRemaining -= DetermineCostToDecreaseScore(nScore);
         m_aScore[m_nSelected]--;
     }
+#endif
 
     CExoString sScore(m_aScore[m_nSelected]);
     m_btnPoints[m_nSelected].m_cText.m_cParams.SetText(sScore);

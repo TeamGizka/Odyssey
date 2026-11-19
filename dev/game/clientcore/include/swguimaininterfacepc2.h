@@ -390,7 +390,11 @@ public:
     enum { ACTION_FORM_FLAG = 0x20000000 };
 
     static const int FOG_POINT_SPAN = 4;
+#ifdef _XBOX
+    enum { MINIMAP_SOURCE_WIDTH = 496, MINIMAP_SOURCE_HEIGHT = 248 };
+#else
     enum { MINIMAP_SOURCE_WIDTH = 588, MINIMAP_SOURCE_HEIGHT = 294 };
+#endif
 
     static const unsigned long STRREF_COMBAT_MODE_ENGAGED = 111303;
 

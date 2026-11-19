@@ -179,7 +179,9 @@ int CGameEffect::SaveGameEffect(CResGFF* pRes, CResStruct* pStruct)
     {
         pRes->AddListElement(&element, &list, 6);
 #ifdef _XBOX
-        result = pRes->WriteFieldDWORD(&element, GetObjectID(i), "Value");
+        int nIndex = i;
+        EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
+        result = pRes->WriteFieldDWORD(&element, m_oidObject[nIndex], "Value");
 #else
         result = pRes->WriteFieldDWORD(&element, m_oidObject[i], "Value");
 #endif

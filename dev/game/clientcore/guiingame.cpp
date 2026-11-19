@@ -5267,9 +5267,7 @@ int CGuiInGame::ShowSWInGameGui(int nMenu)
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
-#ifndef _XBOX
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface->ResetPartyMemberItemUse();
-#endif
         if (pGuiManager != 0)
         {
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);

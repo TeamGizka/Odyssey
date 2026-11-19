@@ -3193,19 +3193,23 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
     CClientOptions* pOptions = g_pAppManager->GetClientExoApp()->GetClientOptions();
     if (pOptions == NULL || pOptions->m_bMiniMap)
     {
-#ifndef _XBOX
         if (g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bDisableMap)
         {
+#ifdef _XBOX
+            m_lblMapborder.SetEnabledFlag(0);
+#else
             m_btnMinimap.SetEnabledFlag(0);
             m_lblMap.SetEnabledFlag(0);
             m_lblMapborder.SetEnabledFlag(0);
+#endif
             return;
         }
-#endif
         CSWSAreaMap* pMap = g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap();
         if (pMap != NULL && pMap->m_nExploredSize > 0)
         {
-#ifndef _XBOX
+#ifdef _XBOX
+            m_lblMapborder.SetEnabledFlag(1);
+#else
             if (m_lblMap.m_cBorder.m_cParams.m_cFillImage == "")
                 InitializeMap();
 #endif
@@ -3215,7 +3219,10 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
             int nMapX;
             int nMapY;
             pMap->GetPartyMemberMapLocation(0, nMapX, nMapY);
-#ifndef _XBOX
+#ifdef _XBOX
+            nMapX = m_nMapWidth * nMapX / MINIMAP_SOURCE_WIDTH;
+            nMapY = m_nMapHeight * nMapY / MINIMAP_SOURCE_HEIGHT;
+#else
             nMapX = (int)((float)m_nMapWidth * nMapX / MINIMAP_SOURCE_WIDTH);
             nMapY = (int)((float)m_nMapHeight * nMapY / MINIMAP_SOURCE_HEIGHT);
 #endif

@@ -172,9 +172,9 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
     if (newgrass && m_fDistance < m_fNearRadiusSquared)
     {
         UpdateGrassForWind(pWindManager);
-        void* pPool = GLRender::LockPool((unsigned long)m_pVertices, 0, 0, 1);
+        void* pPool = GLRender::LockPool(GetVertexPool(), 0, 0, 1);
         memcpy(pPool, m_pCurrentVertices, nVertices * sizeof(Vector));
-        GLRender::UnlockPool((unsigned long)m_pVertices);
+        GLRender::UnlockPool(GetVertexPool());
     }
     if (rendertexturedgrass)
         m_pTexture->Bind();

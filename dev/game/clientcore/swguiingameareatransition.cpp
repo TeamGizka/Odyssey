@@ -28,6 +28,9 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     m_vIconBorderColor = m_lblIcon.m_cBorder.m_cParams.m_vColor;
     m_vDescriptionTextColor = m_lblDescription.m_cText.m_cParams.m_vColor;
 
+#ifdef _XBOX
+    m_oidTransitionObject = OBJECT_INVALID;
+#else
     CSWGuiExtent cExtent = m_cExtent;
     m_oidTransitionObject = OBJECT_INVALID;
     cExtent.m_nLeft =
@@ -56,6 +59,7 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     cExtent.m_nTop = 0;
     cExtent.m_nLeft = 0;
     m_lblTextBackground.SetExtent(cExtent);
+#endif
 
     m_nDefaultTop = m_cExtent.m_nTop;
 }

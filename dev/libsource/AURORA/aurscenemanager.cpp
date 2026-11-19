@@ -444,8 +444,14 @@ void LightPartTriMesh(PartTriMesh* pPart, List<PartLight*> lstLights, Scene* pSc
                 if (fIntensity < 0.0f)
                     continue;
             }
-            Vector vMaterialColor = pLightNode->m_bAmbientOnly ? pMesh->m_vAmbient : pMesh->m_vDiffuse;
+            int bAmbientOnly = pLightNode->m_bAmbientOnly;
+            Vector vMaterialColor = bAmbientOnly ? pMesh->m_vAmbient : pMesh->m_vDiffuse;
+#ifdef _XBOX
+            float fScale = fIntensity * fAttenuation;
+            Vector vLightColor = pLight->m_vColor * fScale;
+#else
             Vector vLightColor = pLight->m_vColor * (fIntensity * fAttenuation);
+#endif
             Vector vContribution = vLightColor;
             vContribution.m_fX *= vMaterialColor.m_fX;
             vContribution.m_fY *= vMaterialColor.m_fY;
@@ -456,21 +462,28 @@ void LightPartTriMesh(PartTriMesh* pPart, List<PartLight*> lstLights, Scene* pSc
         {
             unsigned char* pColor = pVertices + nVertexDataOffset +
                 i * pMesh->m_nVertexStride + pMesh->m_nColorOffset;
-            accumulator.m_fX *= pColor[0] / 255.0f;
+            unsigned char nRed = pColor[0];
+            accumulator.m_fX *= nRed / 255.0f;
             accumulator.m_fY *= pColor[1] / 255.0f;
             accumulator.m_fZ *= pColor[2] / 255.0f;
         }
         accumulator.m_fX = min(max(accumulator.m_fX, 0.0f), 1.0f);
         accumulator.m_fY = min(max(accumulator.m_fY, 0.0f), 1.0f);
         accumulator.m_fZ = min(max(accumulator.m_fZ, 0.0f), 1.0f);
-        pColors[i] = AUR_PACKED_COLOR_OPAQUE_ALPHA |
+        unsigned long nColor = AUR_PACKED_COLOR_OPAQUE_ALPHA |
                     ((unsigned char)(accumulator.m_fZ * 255.0f + 0.5f) << 16) |
                     ((unsigned char)(accumulator.m_fY * 255.0f + 0.5f) << 8) |
                     (unsigned char)(accumulator.m_fX * 255.0f + 0.5f);
+        pColors[i] = nColor;
     }
     nColorPool = pPart->m_nColorPool;
     GLRender::UnlockPool(nColorPool);
+#ifdef _XBOX
+    nVertexPool = pMesh->m_pModel->AsModel()->m_nVertexPool;
+    GLRender::UnlockPool(nVertexPool);
+#else
     GLRender::UnlockPool(pMesh->m_pModel->AsModel()->m_nVertexPool);
+#endif
 #ifdef _XBOX
 
     if (checkprimitive)
