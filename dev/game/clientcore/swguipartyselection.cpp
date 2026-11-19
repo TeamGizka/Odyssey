@@ -762,8 +762,9 @@ void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
             }
             else
             {
-                CSWGuiMessageBox* pMessageBox =
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+                CGuiInGame* pInGameGui = pClientExoApp->GetInGameGui();
+                CSWGuiMessageBox* pMessageBox = pInGameGui->m_pMessageBox;
                 pMessageBox->SetAllowCancel(0);
                 pMessageBox->SetCallback(0, 0, 0);
                 pMessageBox->SetMessage(STRREF_CANNOT_CANCEL);

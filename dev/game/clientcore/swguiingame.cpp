@@ -676,14 +676,18 @@ void CSWGuiInGameMessages::ShowEffects()
     m_lblEffectsBad.SetEnabledFlag(1);
 
 #ifdef _XBOX
-    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblDialog.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblCombat.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-    m_lblEffects.m_cText.m_cParams.m_bHilightText = 1;
+    CSWGuiTextParams* pParams = &m_lblFeedback.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblDialog.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblCombat.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblEffects.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    pParams->m_bHilightText = 1;
 #else
     m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
@@ -1357,14 +1361,18 @@ void CSWGuiInGameMessages::ShowDialogMessages()
     m_lblEffectsBad.SetEnabledFlag(0);
 
 #ifdef _XBOX
-    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-    m_lblDialog.m_cText.m_cParams.m_bHilightText = 1;
-    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblCombat.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblEffects.m_cText.m_cParams.m_bHilightText = 0;
+    CSWGuiTextParams* pParams = &m_lblDialog.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    pParams->m_bHilightText = 1;
+    pParams = &m_lblFeedback.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblCombat.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblEffects.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
     if (m_lbDialog.m_nBottomVisibleItem - m_lbMessages.m_nTopVisibleItem + 1 < m_lbDialog.m_lItems.num &&
         m_lbDialog.m_nTopVisibleItem >= 1)
         m_lblRanalog.SetEnabledFlag(1);
@@ -1464,14 +1472,18 @@ void CSWGuiInGameMessages::ShowFeedbackMessages()
     m_lblEffectsGood.SetEnabledFlag(0);
     m_lblEffectsBad.SetEnabledFlag(0);
 #ifdef _XBOX
-    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 1;
-    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblDialog.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblCombat.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblEffects.m_cText.m_cParams.m_bHilightText = 0;
+    CSWGuiTextParams* pParams = &m_lblFeedback.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    pParams->m_bHilightText = 1;
+    pParams = &m_lblDialog.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblCombat.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblEffects.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
     if (m_lbMessages.m_nBottomVisibleItem - m_lbMessages.m_nTopVisibleItem + 1 < m_lbMessages.m_lItems.num &&
         m_lbMessages.m_nTopVisibleItem >= 1)
         m_lblRanalog.SetEnabledFlag(1);
@@ -1500,14 +1512,18 @@ void CSWGuiInGameMessages::ShowCombatMessages()
     m_lblEffectsBad.SetEnabledFlag(0);
 
 #ifdef _XBOX
-    m_lblFeedback.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblFeedback.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblDialog.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblDialog.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblCombat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-    m_lblCombat.m_cText.m_cParams.m_bHilightText = 1;
-    m_lblEffects.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-    m_lblEffects.m_cText.m_cParams.m_bHilightText = 0;
+    CSWGuiTextParams* pParams = &m_lblFeedback.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblDialog.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
+    pParams = &m_lblCombat.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    pParams->m_bHilightText = 1;
+    pParams = &m_lblEffects.m_cText.m_cParams;
+    pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    pParams->m_bHilightText = 0;
     if (m_lbCombat.m_nBottomVisibleItem - m_lbCombat.m_nTopVisibleItem + 1 < m_lbCombat.m_lItems.num &&
         m_lbCombat.m_nTopVisibleItem >= 1)
         m_lblRanalog.SetEnabledFlag(1);

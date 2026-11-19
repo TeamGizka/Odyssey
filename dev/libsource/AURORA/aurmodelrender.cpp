@@ -3677,9 +3677,14 @@ void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002
         vSpecular = pPart->m_pMaterial->GetBumpMapSpecularColor();
         vDiffuse = pNode->m_vDiffuse;
         float fDiffuse = magnitude(vDiffuse);
+#ifdef _XBOX
+        vDiffuse = (vDiffuse * fDiffuse) / (fDiffuse + (bumpspecular && pPart->m_pMaterial->BumpMapIsSpecular()
+            ? magnitude(vSpecular) : 0.0f));
+#else
         float fSpecular = bumpspecular && pPart->m_pMaterial->BumpMapIsSpecular()
             ? magnitude(vSpecular) : 0.0f;
         vDiffuse = (vDiffuse * fDiffuse) / (fDiffuse + fSpecular);
+#endif
     }
 
 #ifdef _XBOX

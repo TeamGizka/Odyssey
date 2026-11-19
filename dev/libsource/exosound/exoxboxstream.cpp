@@ -551,10 +551,7 @@ void CExoXboxStream::CalculatePitchVarianceFrequency()  // Xbox 0x001675E0
 
 void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fScale, int bDirect)  // Xbox 0x00167680
 {
-    if (nVolume > MAX_VOLUME)
-    {
-        nVolume = MAX_VOLUME;
-    }
+    nVolume = ExoSoundClampVolume(nVolume);
     int nMode = nSliderMode;
     if (nSliderMode == 0)
     {
@@ -571,7 +568,8 @@ void CExoXboxStream::SetVolume(unsigned char nVolume, int nSliderMode, float fSc
     int nLevel = nVolume;
     if (bDirect == 0)
     {
-        nLevel = (int)((float)m_nPriorityVolume * (float)nVolume * fSlider * fVolumeScale * (1.0f / 127.0f));
+        float fVolume = (float)m_nPriorityVolume * (float)nVolume * fSlider;
+        nLevel = (int)(fVolume * fVolumeScale * (1.0f / 127.0f));
     }
     long nMillibels = ExoSoundVolumeToMillibels((unsigned char)nLevel, EXOSOUND_MIN_VOLUME);
     if (m_pStream != NULL)

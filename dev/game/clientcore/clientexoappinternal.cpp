@@ -11577,49 +11577,51 @@ void CClientExoAppInternal::UpdateSoundEngine()  // Xbox 0x00021E70
             else if (pCreature == NULL)
                 goto RenderSound;
 
-            Vector vPosition;
-            Vector vDirection;
-            Quaternion qOrientation;
-            vPosition = pCamera->GetPosition();
-            qOrientation = pCamera->GetOrientation();
-
-            if (g_fMicPosFromCam < 0.0f)
-                g_fMicPosFromCam = 0.0f;
-            else if (g_fMicPosFromCam > 1.0f)
-                g_fMicPosFromCam = 1.0f;
-
-            if (pCamera != NULL)
             {
-                CSWCameraOnAStick* pCameraOnAStick =
-                    (CSWCameraOnAStick*)pCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
-                if (pCameraOnAStick != NULL)
-                {
-                    Vector vTarget;
-                    vTarget = pCameraOnAStick->GetTargetHeadPosition();
-                    vPosition += g_fMicPosFromCam * (vTarget - vPosition);
-                }
-                else if (pCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_COMBAT) != NULL)
-                {
-                    CSWCCreature* pCharacter = m_pSWParty->GetCharacter(0);
-                    Vector vTarget = pCharacter->m_vPosition;
-                    vTarget.m_fZ += pCharacter->GetHeadHeightOffset();
-                    vPosition += (vTarget - vPosition) * g_fMicPosFromCam;
-                }
-                else if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState &&
-                         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bComputerCameraShot)
-                {
-                    float fMicRange =
-                        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_fComputerCameraMicRange;
-                    vPosition -= qOrientation.zdir() * fMicRange;
-                }
-            }
+                Vector vPosition;
+                Vector vDirection;
+                Vector vTarget;
+                Quaternion qOrientation;
+                vPosition = pCamera->GetPosition();
+                qOrientation = pCamera->GetOrientation();
 
-            g_pExoSound->SetListenerPosition(vPosition);
-            vDirection = qOrientation.zdir();
-            vDirection.m_fX *= -1.0f;
-            vDirection.m_fY *= -1.0f;
-            vDirection.m_fZ *= -1.0f;
-            g_pExoSound->SetListenerOrientation(vDirection, qOrientation.ydir());
+                if (g_fMicPosFromCam < 0.0f)
+                    g_fMicPosFromCam = 0.0f;
+                else if (g_fMicPosFromCam > 1.0f)
+                    g_fMicPosFromCam = 1.0f;
+
+                if (pCamera != NULL)
+                {
+                    CSWCameraOnAStick* pCameraOnAStick =
+                        (CSWCameraOnAStick*)pCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+                    if (pCameraOnAStick != NULL)
+                    {
+                        vTarget = pCameraOnAStick->GetTargetHeadPosition();
+                        vPosition += g_fMicPosFromCam * (vTarget - vPosition);
+                    }
+                    else if (pCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_COMBAT) != NULL)
+                    {
+                        CSWCCreature* pCharacter = m_pSWParty->GetCharacter(0);
+                        vTarget = pCharacter->m_vPosition;
+                        vTarget.m_fZ += pCharacter->GetHeadHeightOffset();
+                        vPosition += (vTarget - vPosition) * g_fMicPosFromCam;
+                    }
+                    else if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState &&
+                             g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bComputerCameraShot)
+                    {
+                        float fMicRange =
+                            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_fComputerCameraMicRange;
+                        vPosition -= qOrientation.zdir() * fMicRange;
+                    }
+                }
+
+                g_pExoSound->SetListenerPosition(vPosition);
+                vDirection = qOrientation.zdir();
+                vDirection.m_fX *= -1.0f;
+                vDirection.m_fY *= -1.0f;
+                vDirection.m_fZ *= -1.0f;
+                g_pExoSound->SetListenerOrientation(vDirection, qOrientation.ydir());
+            }
         }
     }
 RenderSound:

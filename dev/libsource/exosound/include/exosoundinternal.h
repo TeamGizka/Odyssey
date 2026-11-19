@@ -109,6 +109,17 @@ class CExoXboxStreamManager;
 long ExoSoundVolumeToMillibels(unsigned char nVolume, long nMinVolume);
 unsigned char ExoSoundMillibelsToVolume(long nMillibels, long nMinVolume);
 
+#define EXOSOUND_MAX_VOLUME 127
+
+inline unsigned char ExoSoundClampVolume(int nVolume)
+{
+    if (nVolume > EXOSOUND_MAX_VOLUME)
+    {
+        return EXOSOUND_MAX_VOLUME;
+    }
+    return nVolume;
+}
+
 
 
 inline void ExoSoundCopyWaveFormat(XBOXADPCMWAVEFORMAT* pFormat, const WAVEFORMATEX* pFileFormat)

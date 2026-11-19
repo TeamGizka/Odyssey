@@ -3085,8 +3085,8 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
     CExoString sSound;
     cSound.CopyToString(sSound);
     PostDialogSoundText(sSound);
-    CSWCObject* pObject = g_pAppManager->m_pClientExoApp->GetGameObject(
-        m_oidDialogObject1);
+    unsigned long oidObject = m_oidDialogObject1;
+    CSWCObject* pObject = g_pAppManager->m_pClientExoApp->GetGameObject(oidObject);
     if (pObject == 0 || pObject->AsSWCObject() == 0)
         return 0;
     CSWCObject* pClientObject = pObject->AsSWCObject();
@@ -3097,7 +3097,7 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
             m_pDialogSound->Stop();
             delete m_pDialogSound;
         }
-        m_pDialogSound = new CExoStreamingSoundSource;
+        m_pDialogSound = new CExoStreamingSoundSource(1);
         m_pDialogSound->SetPriorityGroup(
             CExoStreamingSoundSource::PRIORITY_GROUP_DIALOG_VOICE);
         if (m_pDialogSound->Play(cSound, 11, 1, 0, 0) == 0 &&
@@ -6224,8 +6224,8 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                 {
                     Vector vTarget = normalize(pFirst->m_vPosition - pSecond->m_vPosition);
                     Vector vFacing = normalize(pSecond->m_vOrientation);
-                    float fAngle = max(-1.0f, min(1.0f, vTarget * vFacing));
-                    fAngle = (float)acos(fAngle) * RAD_TO_DEG;
+                    float fDot = max(-1.0f, min(1.0f, vTarget * vFacing));
+                    float fAngle = (float)acos(fDot) * RAD_TO_DEG;
                     float fHeadTurn = pSecond->AsSWCCreature()->GetHeadTurnHorizontal();
                     if (!_finite(fAngle))
                         fAngle = 0.0f;
@@ -6233,7 +6233,7 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                     {
                         fAngle = fAngle - (fHeadTurn + 1.0f);
                         Vector vCross = cross(vFacing, Vector(0.0f, 0.0f, 1.0f));
-                        float fDot = vCross * vTarget;
+                        fDot = vCross * vTarget;
                         if (fDot > 0.0f)
                             fAngle *= -1.0f;
                         Quaternion qRotation(Vector(0.0f, 0.0f, 1.0f),
@@ -6276,8 +6276,8 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                 {
                     Vector vTarget = normalize(pSecond->m_vPosition - pFirst->m_vPosition);
                     Vector vFacing = normalize(pFirst->m_vOrientation);
-                    float fAngle = max(-1.0f, min(1.0f, vTarget * vFacing));
-                    fAngle = (float)acos(fAngle) * RAD_TO_DEG;
+                    float fDot = max(-1.0f, min(1.0f, vTarget * vFacing));
+                    float fAngle = (float)acos(fDot) * RAD_TO_DEG;
                     float fHeadTurn = pFirst->AsSWCCreature()->GetHeadTurnHorizontal();
                     if (!_finite(fAngle))
                         fAngle = 0.0f;
@@ -6285,7 +6285,7 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                     {
                         fAngle = fAngle - (fHeadTurn + 1.0f);
                         Vector vCross = cross(vFacing, Vector(0.0f, 0.0f, 1.0f));
-                        float fDot = vCross * vTarget;
+                        fDot = vCross * vTarget;
                         if (fDot > 0.0f)
                             fAngle *= -1.0f;
                         Quaternion qRotation(Vector(0.0f, 0.0f, 1.0f),

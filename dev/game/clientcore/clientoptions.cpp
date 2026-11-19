@@ -1607,16 +1607,12 @@ void CClientOptions::SetWindMode(unsigned char nMode)  // Xbox 0x0005F170
 
 CClientOptions::CClientOptions()  // Xbox 0x0005F950
 {
-    m_nGoreLevel = 2;
-    m_nObjectShadowMode = OBJECT_SHADOWS_ALL;
-    m_fCameraDistance = 3.0f;
-    m_nGameSpeed = 2;
-    m_nWindMode = WIND_ALL;
     m_nUnlockedSongs = 0;
     m_nCameraMode = CClientOptions::CAMERA_MODE_ON_A_STICK;
     m_nCameraStyle = 1;
     m_nAmbientSoundOptions = DEFAULT_AMBIENT_SOUND_OPTIONS;
     m_nGeometryFadeMode = 0;
+    m_nGoreLevel = 2;
     m_nXboxUnmappedBit0 = 1;
     m_nXboxUnmappedBit1 = 0;
     m_bAutoDetectVideo = 1;
@@ -1624,8 +1620,12 @@ CClientOptions::CClientOptions()  // Xbox 0x0005F950
     m_bFullScreen = 0;
     m_bPlayMovies = 1;
     m_bWindowed = 1;
+    m_nObjectShadowMode = OBJECT_SHADOWS_ALL;
+    m_fCameraDistance = 3.0f;
     m_fCameraHeight = 1.0f;
     m_nCombatSpeed = 3;
+    m_nGameSpeed = 2;
+    m_nWindMode = WIND_ALL;
     m_nCurSithLord = 0;
     m_bGameCompleted = 0;
     m_nPCGender = 0;

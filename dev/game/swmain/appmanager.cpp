@@ -185,25 +185,19 @@ CAppManager::~CAppManager()
     if (m_pObjectTableManager)
     {
         delete m_pObjectTableManager;
-#ifndef _XBOX
         m_pObjectTableManager = NULL;
-#endif
     }
 
     if (m_pServerObjectTableManager)
     {
         delete m_pServerObjectTableManager;
-#ifndef _XBOX
         m_pServerObjectTableManager = NULL;
-#endif
     }
 
     if (m_pReentrantServerStats)
     {
         delete m_pReentrantServerStats;
-#ifndef _XBOX
         m_pReentrantServerStats = NULL;
-#endif
     }
 
     if (m_pLargeTempBuffer)

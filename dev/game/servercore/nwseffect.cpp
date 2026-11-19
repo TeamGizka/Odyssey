@@ -800,6 +800,9 @@ void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
     CResStruct element;
     CExoString sValue;
     int bSuccess;
+#ifdef _XBOX
+    int nValue;
+#endif
 
     m_nID = pRes->ReadFieldDWORD64(pStruct, "Id", bSuccess, 0);
     int nType = pRes->ReadFieldWORD(pStruct, "Type", bSuccess, 0);
@@ -837,8 +840,8 @@ void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
                     {
                         pRes->GetListElement(&element, &list, nElement);
 #ifdef _XBOX
-                        SetInteger(nElement,
-                            pRes->ReadFieldINT(&element, "Value", bSuccess, 0));
+                        nValue = pRes->ReadFieldINT(&element, "Value", bSuccess, 0);
+                        SetInteger(nElement, nValue);
 #else
                         m_pIntegers[nElement] =
                             pRes->ReadFieldINT(&element, "Value", bSuccess, 0);
@@ -862,8 +865,8 @@ void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
                     {
                         pRes->GetListElement(&element, &list, nElement);
 #ifdef _XBOX
-                        SetInteger(nElement,
-                            pRes->ReadFieldINT(&element, "Value", bSuccess, 0));
+                        nValue = pRes->ReadFieldINT(&element, "Value", bSuccess, 0);
+                        SetInteger(nElement, nValue);
 #else
                         m_pIntegers[nElement] =
                             pRes->ReadFieldINT(&element, "Value", bSuccess, 0);
@@ -885,8 +888,8 @@ void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
             {
                 pRes->GetListElement(&element, &list, i);
 #ifdef _XBOX
-                SetInteger(i,
-                    pRes->ReadFieldINT(&element, "Value", bSuccess, 0));
+                nValue = pRes->ReadFieldINT(&element, "Value", bSuccess, 0);
+                SetInteger(i, nValue);
 #else
                 m_pIntegers[i] =
                     pRes->ReadFieldINT(&element, "Value", bSuccess, 0);

@@ -1282,25 +1282,27 @@ void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
         if (pControl == (pSlider = &m_sldMusic))
         {
             g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMusicVolume = 85;
+            pSlider->AsSlider()->SetCurValue(85);
+            OnMoveVolumeSlider(pSlider);
         }
         else if (pControl == (pSlider = &m_sldVoice))
         {
             g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nVoiceVolume = 85;
+            pSlider->AsSlider()->SetCurValue(85);
+            OnMoveVolumeSlider(pSlider);
         }
         else if (pControl == (pSlider = &m_sldEffects))
         {
             g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nSoundEffectsVolume = 85;
+            pSlider->AsSlider()->SetCurValue(85);
+            OnMoveVolumeSlider(pSlider);
         }
         else if (pControl == (pSlider = &m_sldMovie))
         {
             g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMovieVolume = 85;
+            pSlider->AsSlider()->SetCurValue(85);
+            OnMoveVolumeSlider(pSlider);
         }
-        else
-        {
-            return;
-        }
-        pSlider->AsSlider()->SetCurValue(85);
-        OnMoveVolumeSlider(pSlider);
 #else
         CClientOptions* pOptions =
             g_pAppManager->m_pClientExoApp->GetClientOptions();

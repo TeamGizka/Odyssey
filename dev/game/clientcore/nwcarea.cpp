@@ -1239,8 +1239,7 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
             for (i = 0; i < nTracks; i++)
             {
                 pLayout->GetTrackName(i).CopyToString(szName);
-                CResRef cTrack(szName);
-                m_pMiniGame->AddTrack(cTrack, pLayout->GetTrackPosition(i));
+                m_pMiniGame->AddTrack(szName, pLayout->GetTrackPosition(i));
             }
         }
         int nObstacles = pLayout->GetObstacleCount();
@@ -1249,8 +1248,7 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
             for (i = 0; i < nObstacles; i++)
             {
                 pLayout->GetObstacleName(i).CopyToString(szName);
-                CResRef cObstacle(szName);
-                m_pMiniGame->AddObstacle(cObstacle,
+                m_pMiniGame->AddObstacle(szName,
                                          pLayout->GetObstaclePosition(i));
             }
         }

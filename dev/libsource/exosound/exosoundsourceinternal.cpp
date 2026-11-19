@@ -1104,10 +1104,7 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // Xb
 void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,  // Xbox 0x00168490
                                         float fScale)
 {
-    if (nVolume > 127)
-    {
-        nVolume = 127;
-    }
+    nVolume = ExoSoundClampVolume(nVolume);
     int nMode = nSliderMode;
     if (nSliderMode == 0)
     {
@@ -1121,8 +1118,10 @@ void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode, 
     }
     float fSlider = m_pSound->GetSliderVolume(nSliderType, nMode);
     float fVolumeScale = !IsScalable() ? 1.0f : fScale;
-    float fVolume = (float)m_nGroupVolume * (float)nVolume * fSlider * fVolumeScale * (1.0f / 127.0f);
-    long nMillibels = ExoSoundVolumeToMillibels((int)fVolume, EXOSOUND_MIN_VOLUME);
+    float fSliderVolume = (float)m_nGroupVolume * (float)nVolume * fSlider;
+    float fVolume = fSliderVolume * fVolumeScale * (1.0f / 127.0f);
+    int nLevel = (int)fVolume;
+    long nMillibels = ExoSoundVolumeToMillibels(nLevel, EXOSOUND_MIN_VOLUME);
     if (m_pSound->m_bInitialized != 0)
     {
         if (m_b3D != 0)

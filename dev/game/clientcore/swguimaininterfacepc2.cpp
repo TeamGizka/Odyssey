@@ -221,8 +221,9 @@ void CSWGuiCharBar::SetExtent(const CSWGuiExtent& cExtent)  // Xbox 0x00334A20
     CSWGuiExtent cFill = cExtent;
 
     m_cExtent = cExtent;
+    cFill.m_nLeft = 0;
+    cFill.m_nTop = 0;
     m_cStartExtent = cExtent;
-    cFill.m_nLeft = cFill.m_nTop = 0;
     m_cBorder.SetExtent(cExtent);
     if (m_nMaxValue > 0)
     {

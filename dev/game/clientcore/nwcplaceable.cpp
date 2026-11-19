@@ -1020,7 +1020,6 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // Xbo
     case TARGET_ACTION_MENU_PRIMARY:
         if (pPlaceable != NULL && pPlaceable->m_bHasInventory)
         {
-            int bUseSearch;
             int bBash = 0;
             int bSecurity = 0;
             if (m_bLocked && pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
@@ -1071,12 +1070,9 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // Xbo
             {
                 lstActions.SetSize(nAction + 1);
                 unsigned long nStrRef = CClientExoApp::GUI_STRING_OPEN;
-                int bRead;
-                {
-                    CExoString sColumn("UseSearch");
-                    unsigned long nAppearance = pPlaceable->m_nAppearance;
-                    bRead = g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(nAppearance, sColumn, &bUseSearch);
-                }
+                int bUseSearch;
+                int bRead = g_pRules->Get2DArrays()->GetPlaceables()->GetINTEntry(
+                    pPlaceable->GetAppearance(), "UseSearch", &bUseSearch);
                 if (bRead)
                 {
                     if (bUseSearch)
