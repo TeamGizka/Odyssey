@@ -159,6 +159,7 @@ public:
     CExoString GetMovie5() { return CExoString(m_szMovie5); }
     CExoString GetMovie6() { return CExoString(m_szMovie6); }
 #ifdef _XBOX
+    void SetRenderQA(int bRenderQA);
     unsigned long GetModuleTrans() { return m_nModuleTrans; }
     bool GetLoadingSave() { return m_bLoadingSave; }
     bool GetLoadAutoSave() { return m_bLoadAutoSave; }
@@ -216,6 +217,13 @@ public:
 extern int g_bLowDiskMode;
 extern unsigned char g_nBootFlags;
 extern __int64 g_nCurrentSessionStartFILETIME;
+
+#ifdef _XBOX
+inline void KOTOR_LAUNCH_DATA::SetRenderQA(int bRenderQA)
+{
+    m_bRenderQA = bRenderQA;
+}
+#endif
 
 inline void KOTOR_LAUNCH_DATA::Clear()  // Xbox 0x00011990
 {

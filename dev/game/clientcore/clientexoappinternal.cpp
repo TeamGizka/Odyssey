@@ -10972,7 +10972,7 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
             cParams.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_NONE;
             cParams.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
             cParams.m_nPortBinding = g_pExoInput->GetPortBinding();
-            cParams.m_bRenderQA = RenderQA;
+            cParams.SetRenderQA(RenderQA);
 
             KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
             g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);

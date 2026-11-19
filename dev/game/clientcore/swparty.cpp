@@ -1308,7 +1308,12 @@ int CSWParty::TestAndResetPath()
         m_cFollowPaths.FindClosestPartyMemeber_Current()].m_vFacing;
 #endif
 
+#ifdef _XBOX
+    float fDot = vPathFacing * vMemberFacing;
+    if (fDot < 0.0f)
+#else
     if (vPathFacing * vMemberFacing < 0.0f)
+#endif
     {
         RecaulateFollowPoint();
         for (int nMember = 1; nMember <= 2; ++nMember)
@@ -1324,7 +1329,9 @@ int CSWParty::TestAndResetPath()
                 {
                     int nFormationPathIndex = GetMemberData(nMember)->m_nFormationPathIndex;
                     GetMemberData(nMember)->m_nFollowPathIndex = nFormationPathIndex;
-                    GetMemberData(nMember)->m_vFollowPosition = GetMemberData(nMember)->m_vFormationPosition;
+                    CSWPartyMemberData* pFormation = GetMemberData(nMember);
+                    CSWPartyMemberData* pFollow = GetMemberData(nMember);
+                    pFollow->m_vFollowPosition = pFormation->m_vFormationPosition;
                     if (g_allowForceSpeedEffect)
                         GetMemberData(nMember);
                     GetMemberData(nMember)->m_nCharacterIndex = CSWPartyMemberData::MOVING_TO_OFFSET;

@@ -94,7 +94,11 @@ int forcefogtest = 0;
 int countvertices = 0;
 float lensflaresize = 0.1f;
 int hitcheckflare = 1;
+#ifdef _XBOX
+float flarespeed = 0.1f;
+#else
 float flarespeed = 3.0f;
+#endif
 int reverseflarehit = 1;
 
 int renderlensflares = 1;

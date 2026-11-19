@@ -170,8 +170,8 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     int nPoisonState = pServer->m_nPoisonState;
     m_cChar1.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1), nPoisonState);
 #ifdef _XBOX
-    short nCurForce = pStats->GetCurrentForcePoints();
-    m_cChar1.SetForce(nCurForce, pServer->GetMaxForcePoints());
+    int nCurForce = pStats->m_nCurrentForcePoints + (unsigned short)pStats->m_nTemporaryForcePoints;
+    m_cChar1.SetForce((short)nCurForce, pServer->GetMaxForcePoints());
 #else
     int nMaxForce = pServer->GetMaxForcePoints();
     m_cChar1.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);

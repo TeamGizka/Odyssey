@@ -5,7 +5,7 @@
 
 enum { MAX_VOLUME = 127 };
 
-DWORD CExoXboxStream::s_nFreePackets;
+DWORD CExoXboxStream::s_nFreePackets = 1;
 
 CExoXboxStream::~CExoXboxStream()  // Xbox 0x00166A70
 {

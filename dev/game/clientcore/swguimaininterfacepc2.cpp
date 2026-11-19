@@ -2838,8 +2838,8 @@ void CSWGuiMainInterface::UpdatePortraits()
             m_aCharacters[nPortrait].SetHealth(pServer->GetCurrentHitPoints(0),
                                  pServer->GetMaxHitPoints(1), nPoisonState);
 #ifdef _XBOX
-            short nCurForce = pServer->GetStats()->GetCurrentForcePoints();
-            m_aCharacters[nPortrait].SetForce(nCurForce, pServer->GetMaxForcePoints());
+            int nCurForce = pServer->GetStats()->m_nCurrentForcePoints + (unsigned short)pServer->GetStats()->m_nTemporaryForcePoints;
+            m_aCharacters[nPortrait].SetForce((short)nCurForce, pServer->GetMaxForcePoints());
 #else
             CSWSCreatureStats* pStats = pServer->GetStats();
             int nMaxForce = pServer->GetMaxForcePoints();
@@ -2968,8 +2968,8 @@ void CSWGuiMainInterface::UpdatePortraits()
                     pServer->GetMaxHitPoints(1), nTransitionPoisonState);
 #endif
 #ifdef _XBOX
-                short nTransitionForce = pServer->GetStats()->GetCurrentForcePoints();
-                m_cTransitionCharacter.SetForce(nTransitionForce, pServer->GetMaxForcePoints());
+                int nTransitionForce = pServer->GetStats()->m_nCurrentForcePoints + (unsigned short)pServer->GetStats()->m_nTemporaryForcePoints;
+                m_cTransitionCharacter.SetForce((short)nTransitionForce, pServer->GetMaxForcePoints());
 #else
                 CSWSCreatureStats* pTransitionStats = pServer->GetStats();
                 int nTransitionMaxForce = pServer->GetMaxForcePoints();
@@ -3961,6 +3961,12 @@ void CSWGuiMainInterface::PopulateMenus(int bForce)  // Xbox 0x000D98C0
         RevertActionBarStates();
         m_nLeaderNPC = nLeaderNPC;
     }
+
+    EXOLOG("PopulateMenus: target %d selected %d %d %d %d %d %d %d\n", m_nTargetType,
+           m_aSelectedPersonalActions[m_nTargetType][0], m_aSelectedPersonalActions[m_nTargetType][1],
+           m_aSelectedPersonalActions[m_nTargetType][2], m_aSelectedPersonalActions[m_nTargetType][3],
+           m_aSelectedPersonalActions[m_nTargetType][4], m_aSelectedPersonalActions[m_nTargetType][5],
+           m_aSelectedPersonalActions[m_nTargetType][6]);
 
     for (nMenu = 0; nMenu < NUM_PERSONAL_MENUS; nMenu++)
     {

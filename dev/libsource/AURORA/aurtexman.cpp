@@ -1681,32 +1681,33 @@ inline void GLRender::DeleteTextures(unsigned int nCount, const unsigned int* pn
 
 inline void GLRender::SetTextureParameteri(int nTarget, int nParam, int nValue)  // Xbox 0x002970A0
 {
+    DWORD dwValue;
     switch (nValue)
     {
     case 2:
-        nValue = D3DTADDRESS_CLAMP;
+        dwValue = D3DTADDRESS_CLAMP;
         break;
     case 1:
-        nValue = D3DTADDRESS_CLAMPTOEDGE;
+        dwValue = D3DTADDRESS_CLAMPTOEDGE;
         break;
     case 3:
     case 4:
-        nValue = D3DTEXF_POINT;
+        dwValue = D3DTEXF_POINT;
         break;
     case 5:
-        nValue = D3DTEXF_LINEAR;
+        dwValue = D3DTEXF_LINEAR;
         break;
     case 6:
+        dwValue = D3DTEXF_LINEAR;
         g_pD3DDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
-        nValue = D3DTEXF_LINEAR;
         break;
     case 7:
+        dwValue = D3DTEXF_POINT;
         g_pD3DDevice->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_POINT);
-        nValue = D3DTEXF_POINT;
         break;
     }
     g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, (D3DTEXTURESTAGESTATETYPE)texParamTranslationTable[nParam],
-                                       nValue);
+                                       dwValue);
 }
 
 inline void GLRender::GenTextures(unsigned int nCount, unsigned int* pnTextures)  // Xbox 0x00297D00
