@@ -2682,7 +2682,11 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
     {
         CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
         int nMember = pClient->GetSWParty()->GetIndex(pClient->ServerToClientObjectId(GetId()));
+#ifdef _XBOX
+        if (0 <= nMember)
+#else
         if (nMember >= 0)
+#endif
         {
 #ifdef _XBOX
             CSWPartyMemberData* pMember = pClient->GetSWParty()->GetMemberData(nMember); pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
@@ -2746,8 +2750,8 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
             GetUseRange(pTarget->GetId(), vEnd, fUseRange, 0);
             vTarget = vEnd;
         }
-        Vector vHit;
         vEnd.m_fZ += NWSCREATURE_ATTACK_SIGHT_HEIGHT;
+        Vector vHit;
         if (GetArea() != NULL)
         {
             vStart.m_fZ += NWSCREATURE_ATTACK_SIGHT_ENDPOINT_MARGIN;
@@ -2790,9 +2794,9 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
         }
 
         Vector vDifference = m_vPosition - vTarget;
-        Vector vRetreat;
         float fDistanceSquared = vDifference.m_fX * vDifference.m_fX +
                                  vDifference.m_fY * vDifference.m_fY;
+        Vector vRetreat;
         if (fDistanceSquared < fDesiredRange * fDesiredRange - NWSCREATURE_ATTACK_RANGE_TOLERANCE_SQUARED ||
             pTarget->AsSWSDoor() != NULL)
         {
@@ -2860,7 +2864,8 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
                     goto AttackFailed;
                 CSWSCreature* pTargetCreature = pTarget->AsSWSCreature();
                 oidArea = pTargetCreature->m_oidDisappearTarget;
-                vTarget = pTarget->AsSWSCreature()->m_vDisappearPosition;
+                pTargetCreature = pTarget->AsSWSCreature();
+                vTarget = pTargetCreature->m_vDisappearPosition;
             }
 
             if (!bLineOfSight ||
