@@ -773,15 +773,11 @@ int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned shor
     m_resRef = cResRef;
     m_nResourceType = nResourceType;
     cResRef.CopyToString(m_sFileName);
-    if (bVoice != 0 && bMusic != 0 && bCached != 0)
+    bDirect = (bVoice != 0 && bMusic != 0 && bCached != 0);
+    if (bDirect != 0)
     {
-        bDirect = 1;
         bVoice = 0;
         bCached = 0;
-    }
-    else
-    {
-        bDirect = 0;
     }
     if (bPlaying == 0 && bDirect != 0 && g_pAppManager->m_pClientExoApp != NULL &&
         g_pAppManager->m_pClientExoApp->IsMoviePlaying() != 0)
@@ -805,9 +801,11 @@ int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned shor
             unsigned int i;
             char szDirectory[4];
 
-            for (i = 0; i < 3; i++)
+            i = 0;
+            while (i < 3)
             {
                 szDirectory[i] = m_sFileName[i];
+                i++;
             }
             szDirectory[i] = 0;
             int nDirectory = atoi(szDirectory);
@@ -851,7 +849,7 @@ int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned shor
         {
             if (g_bSoundPaused != 0)
             {
-                m_pSoundInternal->GetPauseable(this);
+                GetSoundInternal()->GetPauseable(this);
             }
             m_pStream->m_bPlaying = 1;
             m_pStream->m_bPlayFailed = 0;
@@ -864,13 +862,13 @@ int CExoStreamingSoundSourceInternal::Play(CResRef const& cResRef, unsigned shor
             cCommand.m_fParam3 = (float)bMusic;
             cCommand.m_fParam4 = (float)bCached;
             cCommand.m_sFileName = m_sFileName;
-            m_pSoundInternal->m_pStreamManager->QueueCommand(cCommand);
-            m_pSoundInternal->AddToStreamingList(this);
+            GetSoundInternal()->m_pStreamManager->QueueCommand(cCommand);
+            GetSoundInternal()->AddToStreamingList(this);
             return 1;
         }
         if (m_bLooping != 0)
         {
-            m_pSoundInternal->AddToNonPlayingStreamingLoopingList(this);
+            GetSoundInternal()->AddToNonPlayingStreamingLoopingList(this);
         }
         return 1;
     }

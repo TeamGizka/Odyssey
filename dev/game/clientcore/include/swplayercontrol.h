@@ -115,6 +115,13 @@ public:
             m_oidPlayer);
     }
 
+#ifdef _XBOX
+    int GetEnabled()
+    {
+        return m_bEnabled;
+    }
+#endif
+
     int Initialize();
     void SetEnabled(int bEnabled);
     void SetPlayer(unsigned long oidPlayer);

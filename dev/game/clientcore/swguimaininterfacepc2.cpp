@@ -4864,8 +4864,135 @@ void CSWGuiMainInterface::Draw(float fElapsed)
     UpdateIndicator(fIndicatorElapsed);
     m_cTargetActionMenu.UpdateTimers(fElapsed);
 #endif
+#ifdef _XBOX
+    if (m_bSelectingUseItemTarget)
+    {
+        m_fActionBarAlpha = 0.0f;
+        m_fActionBarIdleElapsed = 0.0f;
+    }
+    for (int nCharacter = 0; nCharacter < 3; ++nCharacter)
+    {
+        if (m_aCharacters[nCharacter].m_aBars[CSWGuiMainInterfaceChar::BAR_VIT].m_bEnabled &&
+            m_aCharacters[nCharacter].m_aBars[CSWGuiMainInterfaceChar::BAR_VIT].m_nMaxValue !=
+                m_aCharacters[nCharacter].m_aBars[CSWGuiMainInterfaceChar::BAR_VIT].m_nCurValue)
+        {
+            m_fActionBarIdleElapsed = 0.0f;
+            break;
+        }
+    }
+    if (m_bActionBarFadeEnabled && g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bGuiFade)
+    {
+        m_fActionBarAlpha += fElapsed;
+        m_fActionBarIdleElapsed += fElapsed;
+    }
+    if (m_fActionBarAlpha >= m_fActionBarIdleTime)
+    {
+        if (!m_bActionBarHidden)
+        {
+            m_fActionBarFadeTimer = m_fActionBarFadeTime;
+            m_bActionBarHidden = 1;
+        }
+    }
+    else
+    {
+        m_bActionBarHidden = 0;
+        m_fActionBarFadeTimer = -1.0f;
+        m_fActionBarTargetAlpha = 1.0f;
+        SetActionBarAlpha(1.0f);
+    }
+    if (m_fActionBarIdleElapsed >= m_fActionBarIdleRemaining)
+    {
+        if (!m_bActionBarFading)
+        {
+            m_fActionBarFadeElapsed = m_fActionBarFadeRemaining;
+            m_bActionBarFading = 1;
+        }
+    }
+    else
+    {
+        m_bActionBarFading = 0;
+        m_fActionBarFadeElapsed = -1.0f;
+        m_fActionBarAlphaScale = 1.0f;
+        SetPartyBarAlpha(1.0f);
+    }
+    if (m_bActionBarHidden)
+    {
+        if (m_fActionBarFadeTimer != -1.0f)
+        {
+            m_fActionBarFadeTimer -= fElapsed;
+            if (m_fActionBarFadeTimer <= -1.0f)
+                m_fActionBarFadeTimer = -1.0f;
+        }
+        if (m_fActionBarFadeTimer > 0.0f)
+            m_fActionBarTargetAlpha = (1.0f / m_fActionBarFadeTime) * m_fActionBarFadeTimer;
+        else
+            m_fActionBarTargetAlpha = 0.0f;
+        SetActionBarAlpha(m_fActionBarTargetAlpha);
+    }
+    if (m_bActionBarFading)
+    {
+        if (m_fActionBarFadeElapsed != 1.0f)
+        {
+            m_fActionBarFadeElapsed -= fElapsed;
+            if (m_fActionBarFadeElapsed <= -1.0f)
+                m_fActionBarFadeElapsed = -1.0f;
+        }
+        if (m_fActionBarFadeElapsed > 0.0f)
+            m_fActionBarAlphaScale = (1.0f / m_fActionBarFadeRemaining) * m_fActionBarFadeElapsed;
+        else
+            m_fActionBarAlphaScale = 0.0f;
+        SetPartyBarAlpha(m_fActionBarAlphaScale);
+    }
+#endif
     PopulateMenus(1);
-#ifndef _XBOX
+#ifdef _XBOX
+    if (m_bSelectingUseItemTarget)
+    {
+        m_fFormMessageTime = 0.0f;
+        m_nFormMessage = 0;
+        CSWCCreature* pCharacter = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(m_nUseItemTargetMember);
+        unsigned long oidItem = m_oidUseItemPending;
+        unsigned long oidServer = g_pAppManager->GetServerExoApp()->ClientToServerObjectId(oidItem);
+        CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidServer);
+        CSWSCreature* pServerCharacter = pCharacter->GetServerCreature();
+        CExoString sText;
+        if (pServerCharacter->CanUseItem(pItem, 0, 1))
+        {
+            sText = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_XBOX_USE_ITEM_ON) + " " + pCharacter->GetName();
+            sText = sText + "\n" + g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_XBOX_USE_ITEM_CANCEL);
+            m_lblHelp.m_cText.m_cParams.SetText(sText);
+            m_lblHelp.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        }
+        else
+        {
+            sText = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_XBOX_CANNOT_USE_ITEM_ON) + " " + pCharacter->GetName();
+            sText = sText + "\n" + g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_XBOX_USE_ITEM_CANCEL);
+            m_lblHelp.m_cText.m_cParams.SetText(sText);
+            m_lblHelp.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        }
+        m_lblHelp.SetEnabledFlag(1);
+        m_lblHelp.Draw(fElapsed);
+    }
+    else if (m_fFormMessageTime > 0.0f)
+    {
+        m_fFormMessageTime -= fElapsed;
+        if (m_fFormMessageTime <= 0.0f)
+        {
+            m_fFormMessageTime = 0.0f;
+        }
+        else
+        {
+            m_lblHelp.m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(m_nFormMessage));
+            m_lblHelp.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_lblHelp.SetEnabledFlag(1);
+            m_lblHelp.Draw(fElapsed);
+        }
+    }
+    else
+    {
+        m_lblHelp.SetEnabledFlag(0);
+    }
+#else
     if (SWGUIMAININTERFACEPC2_DEBUG)
     {
         CExoArrayList<CSWGuiInterfaceAction> lstActions;
@@ -5021,7 +5148,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
         }
         m_cTransitionCharacter.DrawEffects(fElapsed, 0);
 #ifdef _XBOX
-        for (int nAction = 0; nAction < 6; ++nAction)
+        for (int nAction = 0; nAction < NUM_PERSONAL_MENUS; ++nAction)
             m_aPersonalActions[nAction].Draw(fElapsed);
 #endif
         AurGUIStopLayer();
@@ -5617,6 +5744,61 @@ void CSWGuiMainInterface::SelectPreviousUseItemTarget()
     {
         m_nUseItemTargetMember--;
     }
+}
+
+// Xbox 0x000D8730
+void CSWGuiMainInterface::SetActionBarAlpha(float fAlpha)
+{
+    if (fAlpha < 0.0)
+        fAlpha = 0.0f;
+    m_lblSolomode.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    m_lblSolomode.m_cText.m_cParams.m_fAlpha = fAlpha;
+    m_cActionText.m_cText.m_cParams.m_fAlpha = fAlpha;
+    m_cActionText.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    m_cActionTextBack.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    m_cActionTextBack.m_cText.m_cParams.m_fAlpha = fAlpha;
+    m_lblActiondescbg2.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    for (int nAction = 0; nAction < NUM_PERSONAL_MENUS; ++nAction)
+    {
+        m_aPersonalActions[nAction].m_lblIcon.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        m_aPersonalActions[nAction].m_lblIcon.m_cText.m_cParams.m_fAlpha = fAlpha;
+        m_aPersonalActions[nAction].m_lblIconB.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        m_aPersonalActions[nAction].m_lblIconB.m_cText.m_cParams.m_fAlpha = fAlpha;
+        m_aPersonalActions[nAction].m_lbhArrow.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        m_aPersonalActions[nAction].m_lbhArrow.m_cHilite.m_cParams.m_fHilightAlpha = fAlpha;
+        m_aPersonalActions[nAction].m_lbhBorder.m_cHilite.m_cParams.m_fHilightAlpha = fAlpha;
+        m_aPersonalActions[nAction].m_lbhBorder.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    }
+}
+
+// Xbox 0x000D8950
+void CSWGuiMainInterface::SetPartyBarAlpha(float fAlpha)
+{
+    if (fAlpha < 0.0f)
+        fAlpha = 0.0f;
+    for (int nCharacter = 0; nCharacter < 3; ++nCharacter)
+    {
+        CSWGuiMainInterfaceChar& cCharacter = m_aCharacters[nCharacter];
+        for (int nLabel = 0; nLabel < 6; ++nLabel)
+            cCharacter.m_aLabels[nLabel].m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        for (int nBar = 0; nBar < 2; ++nBar)
+        {
+            cCharacter.m_aBars[nBar].m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+            cCharacter.m_aBars[nBar].m_cFill.m_cParams.m_fHilightAlpha = fAlpha;
+        }
+        cCharacter.m_cBuffLabel.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        cCharacter.m_cDebuffLabel.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    }
+    for (int nLabel = 0; nLabel < 6; ++nLabel)
+        m_cTransitionCharacter.m_aLabels[nLabel].m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    for (int nBar = 0; nBar < 2; ++nBar)
+    {
+        m_cTransitionCharacter.m_aBars[nBar].m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        m_cTransitionCharacter.m_aBars[nBar].m_cFill.m_cParams.m_fHilightAlpha = fAlpha;
+    }
+    m_cTransitionCharacter.m_cBuffLabel.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    m_cTransitionCharacter.m_cDebuffLabel.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+    m_lblBg2.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
 }
 
 // Xbox 0x000DCFE0

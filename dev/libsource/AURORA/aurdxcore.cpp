@@ -441,7 +441,6 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
     int bLinear = 0;
     int x;
     int y;
-    unsigned char* pBuffer;
 
     if (nFormat == 10)
     {
@@ -485,7 +484,7 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
     else if (nFormat == 1)
     {
         int nSize = nWidth * nHeight * 4;
-        pBuffer = new unsigned char[nSize];
+        unsigned char* pBuffer = new unsigned char[nSize];
         memset(pBuffer, 0, nSize);
         unsigned char* pSource = (unsigned char*)pImage;
         for (y = 0; y < nHeight; y++)
@@ -499,19 +498,17 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
         }
         if (bLinear)
         {
-
             memcpy(pLock->pBits, pImage, nSize);
-            delete[] pBuffer;
         }
         else
         {
             XGSwizzleRect(pBuffer, 0, NULL, pLock->pBits, nWidth, nHeight, NULL, 4);
-            delete[] pBuffer;
         }
+        delete[] pBuffer;
     }
     else if (nFormat == 12)
     {
-        pBuffer = new unsigned char[nWidth * nHeight * 2];
+        unsigned char* pBuffer = new unsigned char[nWidth * nHeight * 2];
         unsigned char* pSource = (unsigned char*)pImage;
         for (y = 0; y < nHeight; y++)
         {
@@ -543,7 +540,7 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
     else
     {
         sprintf(szMessage, "texture format: %d not implemented", nFormat);
-        AurReportError(2996, "aurdxcore.cpp", szMessage);
+        AurReportError(3422, "aurdxcore.cpp", szMessage);
     }
 }
 
@@ -1510,8 +1507,9 @@ void GLRender::CreateCompressedTexImage(int nTarget, int bMipMaps, int nLevel, i
     }
     else
     {
+        D3DTexture* pTexture = (D3DTexture*)g_pCurrentTexture;
         D3DSurface* pLevel;
-        ((D3DTexture*)g_pCurrentTexture)->GetSurfaceLevel(nLevel, &pLevel);
+        pTexture->GetSurfaceLevel(nLevel, &pLevel);
         pLevel->LockRect(&lock, NULL, 0);
         memcpy(lock.pBits, pData, nSize);
         pLevel->Release();
@@ -3637,10 +3635,11 @@ unsigned long RequestPoolManager::AddVertexPool(D3DVertexBuffer* pBuffer, unsign
     {
         unsigned long nPool = m_lstFreeVertexPools[m_lstFreeVertexPools.m_nCount - 1];
         m_ppVertexPools[nPool] = pBuffer;
+        unsigned long nResult = nPool | POOL_VERTEX_FLAG;
         m_pVertexPoolSize[nPool] = nSize;
         m_pVertexPoolState[nPool] = POOL_STATE_ADOPTED;
         m_lstFreeVertexPools.DelIndex(m_lstFreeVertexPools.m_nCount - 1);
-        return nPool | POOL_VERTEX_FLAG;
+        return nResult;
     }
 
     unsigned char* pState = new unsigned char[m_nVertexPools * 2];
@@ -4075,7 +4074,7 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, 
         unsigned char* pMipImage = pImage;
         int nCompressedSize = pTexture->GetCompressedSize();
         int nCompressionFormat = pTexture->GetCompressionFormat();
-        CreateCompressedTexImage(0, bMipMap, 0, nCompressionFormat, nWidth, nHeight, 0, nCompressedSize, pImage);
+        CreateCompressedTexImage(0, bMipMap, nLevel, nCompressionFormat, nWidth, nHeight, 0, nCompressedSize, pImage);
         if (bMipMap)
         {
             int nSize = pTexture->GetCompressedSize();
@@ -4119,11 +4118,14 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, 
             if (pTexture->GetDepth())
             {
                 int nDepth = pTexture->GetDepth();
+                int nVolumeHeight = nSubHeight;
+                int nVolumeWidth = nSubWidth;
                 D3DVolume* pVolume;
-                ((D3DVolumeTexture*)g_pCurrentTexture)->GetVolumeLevel(0, &pVolume);
+                D3DVolumeTexture* pVolumeTexture = (D3DVolumeTexture*)g_pCurrentTexture;
+                pVolumeTexture->GetVolumeLevel(0, &pVolume);
                 D3DLOCKED_BOX lock;
                 pVolume->LockBox(&lock, NULL, 0);
-                CopyVolumeToTextureMemory(pSubImage, &lock, nSubWidth, nSubHeight, nDepth, nFormat);
+                CopyVolumeToTextureMemory(pSubImage, &lock, nVolumeWidth, nVolumeHeight, nDepth, nFormat);
                 pVolume->Release();
             }
             else
@@ -4132,8 +4134,10 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, 
         else
         {
             if (pTexture->GetDepth())
-                CreateTextureImageRaw3D(0, 0, nBPP, nSubWidth, nSubHeight, pTexture->GetDepth(), 0, nFormat,
-                                        pSubImage);
+            {
+                int nDepth = pTexture->GetDepth();
+                CreateTextureImageRaw3D(0, 0, nBPP, nSubWidth, nSubHeight, nDepth, 0, nFormat, pSubImage);
+            }
             else
                 CreateTextureImageRaw(0, 0, nBPP, nSubWidth, nSubHeight, 0, nFormat, pSubImage);
         }
@@ -7472,15 +7476,14 @@ int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,  // X
         if (m_UsedVertices[i] == SHADOW_VERTEX_USED)
             m_UsedVertices[i] = ++nUsed;
     }
-    int nSize = nUsed * sizeof(scratch);
-    cm_pUserShadowData = (float*)AllocateShadowMemory(nSize + sizeof(scratch));
+    cm_pUserShadowData = (float*)AllocateShadowMemory(nUsed * sizeof(scratch) + sizeof(scratch));
     char* pShadowData = (char*)cm_pUserShadowData;
-    for (int iVertex = 0; iVertex < nVertices; ++iVertex)
+    for (int iVertex = 0; iVertex < nVertices; nOffset += nStride, ++iVertex)
     {
         int nShadowOffset = m_UsedVertices[iVertex] * 6 - 6;
         if (m_UsedVertices[iVertex] > 0)
         {
-            scratch[0] = *(Vector*)(pVertices + nOffset + iVertex * nStride);
+            scratch[0] = *(Vector*)(pVertices + nOffset);
             light2temp = normalize(scratch[0] - vLight);
             scratch[1] = vLight + light2temp * fRadius;
             if (!noclipshadows)
@@ -7494,10 +7497,8 @@ int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,  // X
             memcpy(pShadowData + nShadowOffset * sizeof(float), scratch, sizeof(scratch));
         }
     }
-    char* pCap = pShadowData + nSize;
-    *(Vector*)pCap = vNearCap;
-    pCap += sizeof(Vector);
-    *(Vector*)pCap = vFarCap;
+    *(Vector*)(pShadowData + nUsed * 6 * sizeof(float)) = vNearCap;
+    *(Vector*)(pShadowData + nUsed * 6 * sizeof(float) + sizeof(Vector)) = vFarCap;
     UnlockPool(nPool);
     return nUsed;
 }

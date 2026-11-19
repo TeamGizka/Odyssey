@@ -614,10 +614,8 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250 Xb
         return;
     }
 
+#ifndef _XBOX
     Vector vDirection;
-#ifdef _XBOX
-    vDirection = pPlayer->m_vOrientation;
-#else
     if (pGui->m_bCameraRelativeAreaTransition)
     {
         CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
@@ -631,7 +629,11 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250 Xb
     }
 #endif
 
+#ifdef _XBOX
+    float fFacing = pPlayer->m_vOrientation * (m_vPosition - pPlayer->m_vPosition);
+#else
     float fFacing = (m_vPosition - pPlayer->m_vPosition) * vDirection;
+#endif
     if (fFacing <= 0.0f)
     {
         return;
@@ -656,7 +658,12 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250 Xb
 
         Vector vIntersection;
         Vector vStart = pPlayer->m_vPosition;
+#ifdef _XBOX
+        Vector vDirection = pPlayer->m_vOrientation;
         Vector vEnd = pPlayer->m_vPosition + vDirection * 8.0f;
+#else
+        Vector vEnd = pPlayer->m_vPosition + vDirection * 8.0f;
+#endif
         vEnd.m_fZ = 0.0f;
         vStart.m_fZ = 0.0f;
         if (!IntersectLineSegments2d(vStart, vEnd, vMinimum, vMaximum,

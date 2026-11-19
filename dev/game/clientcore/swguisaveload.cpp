@@ -199,9 +199,10 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
         }
         CClientExoApp* pClientExoApp = g_pAppManager->GetClientExoApp();
         CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)pControl;
+        int nArea;
         if (pEntry->m_bMissingLiveContent && !g_bEnableLiveContentIgnore)
         {
-            CSWGuiMessageBox* pMessageBox = pClientExoApp->GetInGameGui()->m_pMessageBox;
+            CSWGuiMessageBox* pMessageBox = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMessageBox;
             pMessageBox->SetAllowCancel(0);
             pMessageBox->SetCallback(NULL, NULL, NULL);
             CExoString sMessage;
@@ -225,7 +226,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
             pClientExoApp->SetLoadScreenByModuleName(sLastModule);
             unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
             pClientExoApp->SetGamePlayHint(nGamePlayHint);
-            for (int nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
+            for (nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
             {
                 unsigned char nStoryHint = pEntry->GetStoryHint(nArea);
                 pClientExoApp->SetStoryHint(nStoryHint, nArea);
@@ -246,15 +247,15 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
         }
         else if (m_bExitToMainMenu)
         {
+            g_pExoBase->m_pExoAliasList->ChangePath("SAVES", pEntry->m_sSaveDirectory);
             CExoString& sSaveDirectory = pEntry->m_sSaveDirectory;
-            g_pExoBase->m_pExoAliasList->ChangePath("SAVES", sSaveDirectory);
             CExoString& sLastModule = pEntry->m_sLastModule;
             pClientExoApp->SetLoadScreenByModuleName(sLastModule);
             pClientExoApp->SetLoadMusic("");
             pClientExoApp->ShowLoadScreen(0, 1, 0);
             unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
             pClientExoApp->SetGamePlayHint(nGamePlayHint);
-            for (int nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
+            for (nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
             {
                 unsigned char nStoryHint = pEntry->GetStoryHint(nArea);
                 pClientExoApp->SetStoryHint(nStoryHint, nArea);
@@ -263,71 +264,69 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
                 pClientExoApp->GetNextLoadScreenHintSTRREF(
                     sLastModule, CClientExoAppInternal::LOAD_SCREEN_HINT_STORY));
             pClientExoApp->SetLoadScreenHintUpdateTimer(0);
-            CExoString& sGameName = pEntry->m_sGameName;
-            CExoString sSaveName = sGameName;
-            CExoString sStartWaypoint = sGameName;
-            if (UnpackGame(pEntry->GetSaveGame(), sGameName, pControl))
+            CExoString sGameName = pEntry->m_sGameName;
+            CExoString sModuleName = sLastModule;
+            if (!UnpackGame(pEntry->GetSaveGame(), pEntry->m_sGameName, pControl))
+                return;
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            KOTOR_LAUNCH_DATA cLaunchData;
+            cLaunchData.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_LOADGAME;
+            cLaunchData.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
+            cLaunchData.m_nPortBinding = g_pExoInput->GetPortBinding();
+            cLaunchData.m_nSaveSlot = pEntry->m_nSaveGame;
+            cLaunchData.SetXboxSavePath(sSaveDirectory);
+            cLaunchData.m_bLoadingSave = 1;
+            KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);
+            cLaunchData.SetOptionsData(cOptionsData);
+            cLaunchData.SetModuleName(sLastModule);
+            CExoString sBMPResRef;
+            if (g_pRules->m_p2DArrays->GetAreaTransition()->GetCExoStringEntry(
+                    sLastModule, "BMPResRef", &sBMPResRef) == 0)
             {
-                m_bDeferredRemoval = 0;
-                m_nExitState = EXITSTATE_DELETE;
-                KOTOR_LAUNCH_DATA cLaunchData;
-                cLaunchData.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_LOADGAME;
-                cLaunchData.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
-                cLaunchData.m_nPortBinding = g_pExoInput->GetPortBinding();
-                cLaunchData.m_nSaveSlot = pEntry->m_nSaveGame;
-                cLaunchData.SetXboxSavePath(sSaveDirectory);
-                cLaunchData.m_bLoadingSave = 1;
-                KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
-                g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);
-                cLaunchData.SetOptionsData(cOptionsData);
-                cLaunchData.SetModuleName(sLastModule);
-                CExoString sBMPResRef;
-                if (g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
-                        sLastModule, "BMPResRef", &sBMPResRef) == 0)
+                cLaunchData.SetLoadScreen(sBMPResRef);
+                CExoString sLoadScreen;
+                sLoadScreen.Format("load_%s", sLastModule);
+                cLaunchData.SetLoadScreen(sLoadScreen);
+                if (!g_pExoResMan->Exists(sBMPResRef, RESTYPE_TGA, (unsigned long*)NULL) &&
+                    !g_pExoResMan->Exists(sBMPResRef, RESTYPE_TPC, (unsigned long*)NULL))
                 {
-                    cLaunchData.SetLoadScreen(sBMPResRef);
-                    CExoString sLoadScreen;
-                    sLoadScreen.Format("load_%s", sLastModule);
-                    cLaunchData.SetLoadScreen(sLoadScreen);
-                    if (!g_pExoResMan->Exists(sBMPResRef, RESTYPE_TGA, (unsigned long*)NULL) &&
-                        !g_pExoResMan->Exists(sBMPResRef, RESTYPE_TPC, (unsigned long*)NULL))
-                    {
-                        g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
-                            "DEFAULT", "BMPResRef", &sLoadScreen);
-                    }
+                    g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
+                        "DEFAULT", "BMPResRef", &sLoadScreen);
                 }
-                CExoString sModuleResRef;
-                CExoString sModule;
-                int bMinGlobalRim = 0;
-                C2DA* pMinGlobalRim = g_pRules->m_p2DArrays->m_pMinGlobalRim;
-                if (pMinGlobalRim != NULL)
+            }
+            CExoString sModuleResRef;
+            CExoString sModule;
+            int bMinGlobalRim = 0;
+            C2DA* pMinGlobalRim = g_pRules->m_p2DArrays->m_pMinGlobalRim;
+            if (pMinGlobalRim != NULL)
+            {
+                for (int nRow = 0; nRow < pMinGlobalRim->m_nNumRows; nRow++)
                 {
-                    for (int nRow = 0; nRow < pMinGlobalRim->m_nNumRows; nRow++)
+                    if (pMinGlobalRim->GetCExoStringEntry(nRow, "ModuleResRef", &sModuleResRef) == 1)
                     {
-                        if (pMinGlobalRim->GetCExoStringEntry(nRow, "ModuleResRef", &sModuleResRef) == 1)
+                        if (sModuleResRef.CompareNoCase(sLastModule) == 1)
                         {
-                            if (sModuleResRef.CompareNoCase(sLastModule) == 1)
-                            {
-                                bMinGlobalRim = 1;
-                                break;
-                            }
+                            bMinGlobalRim = 1;
+                            break;
                         }
                     }
                 }
-                cLaunchData.m_bMinGlobalRim = bMinGlobalRim;
-                cLaunchData.SetLoadMusic("");
-                cLaunchData.SetStartWaypoint(pEntry->m_sGameName);
-                cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
-                cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-                for (int nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
-                {
-                    cLaunchData.m_anStoryHint[(unsigned char)nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
-                }
-                cLaunchData.m_nLoadScreenHintUpdateTimer =
-                    g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
-                AurPersistDisplay();
-                ExoXboxLaunch(&cLaunchData, NULL);
             }
+            cLaunchData.m_bMinGlobalRim = (unsigned char)bMinGlobalRim;
+            cLaunchData.SetLoadMusic("");
+            cLaunchData.SetStartWaypoint(pEntry->m_sGameName);
+            cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
+            cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
+            for (nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+            {
+                cLaunchData.m_anStoryHint[(unsigned char)nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
+            }
+            cLaunchData.m_nLoadScreenHintUpdateTimer =
+                g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
+            AurPersistDisplay();
+            ExoXboxLaunch(&cLaunchData, NULL);
         }
         else
         {
@@ -338,7 +337,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
             pClient->ShowLoadScreen(0, 1, 0);
             unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
             pClient->SetGamePlayHint(nGamePlayHint);
-            for (int nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
+            for (nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
             {
                 unsigned char nStoryHint = pEntry->GetStoryHint(nArea);
                 pClient->SetStoryHint(nStoryHint, nArea);
@@ -367,7 +366,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
                 cLaunchData.SetOptionsData(cOptionsData);
                 cLaunchData.SetModuleName(sLastModule);
                 CExoString sBMPResRef;
-                if (g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
+                if (g_pRules->m_p2DArrays->GetAreaTransition()->GetCExoStringEntry(
                         sLastModule, "BMPResRef", &sBMPResRef) == 0)
                 {
                     cLaunchData.SetLoadScreen(sBMPResRef);
@@ -399,12 +398,12 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
                         }
                     }
                 }
-                cLaunchData.m_bMinGlobalRim = bMinGlobalRim;
+                cLaunchData.m_bMinGlobalRim = (unsigned char)bMinGlobalRim;
                 cLaunchData.SetLoadMusic("");
                 cLaunchData.SetStartWaypoint(pEntry->m_sGameName);
                 cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
                 cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-                for (int nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+                for (nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
                 {
                     cLaunchData.m_anStoryHint[(unsigned char)nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
                 }
@@ -975,9 +974,7 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // Xbox 0x000
     cCorruptFile.Write("CORRUPT");                                                                    \
     cCorruptFile.Flush();                                                                             \
     g_pAppManager->m_pReentrantServerStats->StartStallEvent(1);                                       \
-    g_pAppManager->m_pReentrantServerStats->m_nError = 4;                                         \
-    g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);          \
-    g_pExoBase->m_pExoDebug->FlushScriptLogFile()
+    g_pAppManager->m_pReentrantServerStats->m_nError = 4
 
 int CSWGuiSaveLoad::LoadPCAutoSave()  // Xbox 0x000E2610
 {
@@ -1062,7 +1059,7 @@ int CSWGuiSaveLoad::LoadPCAutoSave()  // Xbox 0x000E2610
     CResGFF* pGFF = new CResGFF(0, "NFO ", "savenfo");
     CResStruct cTopLevel;
     pGFF->GetTopLevelStruct(&cTopLevel);
-    if (pGFF->GetSize() > 0)
+    if ((int)pGFF->GetSize() > 0)
     {
         hSignature = XCalculateSignatureBegin(0);
         XCalculateSignatureUpdate(hSignature, (BYTE*)pGFF->GetData(), pGFF->GetSize());
@@ -1116,11 +1113,11 @@ int CSWGuiSaveLoad::LoadPCAutoSave()  // Xbox 0x000E2610
         g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);
         cLaunchData.SetOptionsData(cOptionsData);
         cLaunchData.m_nLoadScreenHint = g_pAppManager->GetClientExoApp()->GetLoadScreenHint();
-        cLaunchData.SetLoadMusic(CExoString(""));
+        cLaunchData.SetLoadMusic("");
         cLaunchData.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-        for (unsigned char nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
+        for (int nArea = 0; nArea < KOTOR_LAUNCH_DATA::STORY_HINT_AREAS; nArea++)
         {
-            cLaunchData.m_anStoryHint[nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
+            cLaunchData.m_anStoryHint[(unsigned char)nArea] = g_pAppManager->GetClientExoApp()->GetStoryHint(nArea);
         }
         cLaunchData.m_nLoadScreenHintUpdateTimer =
             g_pAppManager->GetClientExoApp()->GetLoadScreenHintUpdateTimer();
@@ -1131,10 +1128,13 @@ int CSWGuiSaveLoad::LoadPCAutoSave()  // Xbox 0x000E2610
             : g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CStr());
         return 1;
     }
-    XBOX_MARK_SAVE_CORRUPT(sSavePath);
-    delete pGFF;
-    g_pExoResMan->RemoveResourceDirectory(sSavePath);
-    return 0;
+    else
+    {
+        XBOX_MARK_SAVE_CORRUPT(sSavePath);
+        delete pGFF;
+        g_pExoResMan->RemoveResourceDirectory(sSavePath);
+        return 0;
+    }
 }
 
 #define XBOX_SAVE_SLOT_FIRST_NORMAL 1
@@ -1246,12 +1246,12 @@ void CSWGuiSaveLoad::PopulateGameList()  // Xbox 0x000E5000
         for (int i = 0; i < lControls.num; i++)
         {
             CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)lControls[i];
-            unsigned long nSlot = pEntry->m_nSaveGame;
-            if (nSlot == nNextSlot)
+            if (pEntry->m_nSaveGame == nNextSlot)
             {
                 nNextSlot++;
             }
-            nMaxSlot = max(nMaxSlot, nSlot);
+            unsigned long nTop = max(nMaxSlot, pEntry->m_nSaveGame);
+            nMaxSlot = nTop;
         }
         CSWGuiSaveLoadEntry* pEntry = new CSWGuiSaveLoadEntry;
         pEntry->Initialize(cExtent, pProto);
@@ -1387,24 +1387,28 @@ void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)  // Xbo
     CResStruct stSub;
 
     m_nModuleTrans = pRes->ReadFieldDWORD(&stStruct, "MODULETRANS", bSuccess, m_nModuleTrans);
-    m_bRenderQA = pRes->ReadFieldBYTE(&stStruct, "RENDERQA", bSuccess, m_bRenderQA);
-    m_bLowDiskMode = pRes->ReadFieldBYTE(&stStruct, "LOWDISKMODE", bSuccess, m_bLowDiskMode);
+    int bRenderQA = pRes->ReadFieldBYTE(&stStruct, "RENDERQA", bSuccess, m_bRenderQA);
+    m_bRenderQA = bRenderQA;
+    int bLowDiskMode = pRes->ReadFieldBYTE(&stStruct, "LOWDISKMODE", bSuccess, m_bLowDiskMode);
+    m_bLowDiskMode = bLowDiskMode;
     m_nAutoCalInfo = pRes->ReadFieldDWORD(&stStruct, "AUTOCALINFO", bSuccess, m_nAutoCalInfo);
     m_nPortBinding = pRes->ReadFieldDWORD(&stStruct, "PORTBINDING", bSuccess, m_nPortBinding);
     m_nSaveSlot = pRes->ReadFieldINT(&stStruct, "SAVESLOT", bSuccess, m_nSaveSlot);
-    SetXboxSavePath(pRes->ReadFieldCExoString(&stStruct, "XBOXSAVEPATH", bSuccess, CExoString(m_szXboxSavePath)));
-    SetModuleName(pRes->ReadFieldCExoString(&stStruct, "MODULENAME", bSuccess, CExoString(m_szModuleName)));
-    SetLoadScreen(pRes->ReadFieldCExoString(&stStruct, "LOADSCREEN", bSuccess, CExoString(m_szLoadScreen)));
-    SetLoadMusic(pRes->ReadFieldCExoString(&stStruct, "LOADMUSIC", bSuccess, CExoString(m_szLoadMusic)));
-    SetStartWaypoint(pRes->ReadFieldCExoString(&stStruct, "STARTWAYPOINT", bSuccess, CExoString(m_szStartWaypoint)));
-    SetMovie1(pRes->ReadFieldCExoString(&stStruct, "MOVIE1", bSuccess, CExoString(m_szMovie1)));
-    SetMovie2(pRes->ReadFieldCExoString(&stStruct, "MOVIE2", bSuccess, CExoString(m_szMovie2)));
-    SetMovie3(pRes->ReadFieldCExoString(&stStruct, "MOVIE3", bSuccess, CExoString(m_szMovie3)));
-    SetMovie4(pRes->ReadFieldCExoString(&stStruct, "MOVIE4", bSuccess, CExoString(m_szMovie4)));
-    SetMovie5(pRes->ReadFieldCExoString(&stStruct, "MOVIE5", bSuccess, CExoString(m_szMovie5)));
-    SetMovie6(pRes->ReadFieldCExoString(&stStruct, "MOVIE6", bSuccess, CExoString(m_szMovie6)));
-    m_bMinGlobalRim = pRes->ReadFieldBYTE(&stStruct, "MINGLOBALRIM", bSuccess, m_bMinGlobalRim);
-    m_bLoadingSave = pRes->ReadFieldBYTE(&stStruct, "LOADINGSAVE", bSuccess, m_bLoadingSave);
+    SetXboxSavePath(pRes->ReadFieldCExoString(&stStruct, "XBOXSAVEPATH", bSuccess, m_szXboxSavePath));
+    SetModuleName(pRes->ReadFieldCExoString(&stStruct, "MODULENAME", bSuccess, m_szModuleName));
+    SetLoadScreen(pRes->ReadFieldCExoString(&stStruct, "LOADSCREEN", bSuccess, m_szLoadScreen));
+    SetLoadMusic(pRes->ReadFieldCExoString(&stStruct, "LOADMUSIC", bSuccess, m_szLoadMusic));
+    SetStartWaypoint(pRes->ReadFieldCExoString(&stStruct, "STARTWAYPOINT", bSuccess, m_szStartWaypoint));
+    SetMovie1(pRes->ReadFieldCExoString(&stStruct, "MOVIE1", bSuccess, m_szMovie1));
+    SetMovie2(pRes->ReadFieldCExoString(&stStruct, "MOVIE2", bSuccess, m_szMovie2));
+    SetMovie3(pRes->ReadFieldCExoString(&stStruct, "MOVIE3", bSuccess, m_szMovie3));
+    SetMovie4(pRes->ReadFieldCExoString(&stStruct, "MOVIE4", bSuccess, m_szMovie4));
+    SetMovie5(pRes->ReadFieldCExoString(&stStruct, "MOVIE5", bSuccess, m_szMovie5));
+    SetMovie6(pRes->ReadFieldCExoString(&stStruct, "MOVIE6", bSuccess, m_szMovie6));
+    int bMinGlobalRim = pRes->ReadFieldBYTE(&stStruct, "MINGLOBALRIM", bSuccess, m_bMinGlobalRim);
+    m_bMinGlobalRim = bMinGlobalRim;
+    int bLoadingSave = pRes->ReadFieldBYTE(&stStruct, "LOADINGSAVE", bSuccess, m_bLoadingSave);
+    m_bLoadingSave = bLoadingSave;
     m_bLoadAutoSave = pRes->ReadFieldBYTE(&stStruct, "LOAD_AUTOSAVE", bSuccess, m_bLoadAutoSave);
     unsigned long nYear = pRes->ReadFieldDWORD(&stStruct, "TIME_YEAR", bSuccess, 0);
     unsigned char nMonth = pRes->ReadFieldBYTE(&stStruct, "TIME_MONTH", bSuccess, 0);
@@ -1424,28 +1428,28 @@ void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)  // Xbo
     {
         m_cStatusSummary.LoadFromGFF(pRes, stSub);
     }
-    unsigned char nDefault = m_nGamePlayHint;
-    m_nGamePlayHint = pRes->ReadFieldBYTE(&stStruct, "GAMEPLAYHINT", bSuccess, nDefault);
-    nDefault = m_anStoryHint[0];
-    m_anStoryHint[0] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT0", bSuccess, nDefault);
-    nDefault = m_anStoryHint[1];
-    m_anStoryHint[1] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT1", bSuccess, nDefault);
-    nDefault = m_anStoryHint[2];
-    m_anStoryHint[2] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT2", bSuccess, nDefault);
-    nDefault = m_anStoryHint[3];
-    m_anStoryHint[3] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT3", bSuccess, nDefault);
-    nDefault = m_anStoryHint[4];
-    m_anStoryHint[4] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT4", bSuccess, nDefault);
-    nDefault = m_anStoryHint[5];
-    m_anStoryHint[5] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT5", bSuccess, nDefault);
-    nDefault = m_anStoryHint[6];
-    m_anStoryHint[6] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT6", bSuccess, nDefault);
-    nDefault = m_anStoryHint[7];
-    m_anStoryHint[7] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT7", bSuccess, nDefault);
-    nDefault = m_anStoryHint[8];
-    m_anStoryHint[8] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT8", bSuccess, nDefault);
-    nDefault = m_anStoryHint[9];
-    m_anStoryHint[9] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT9", bSuccess, nDefault);
+    unsigned char nGamePlayHint = m_nGamePlayHint;
+    m_nGamePlayHint = pRes->ReadFieldBYTE(&stStruct, "GAMEPLAYHINT", bSuccess, nGamePlayHint);
+    unsigned char nStoryHint0 = GetStoryHint(0);
+    m_anStoryHint[0] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT0", bSuccess, nStoryHint0);
+    unsigned char nStoryHint1 = m_anStoryHint[1];
+    m_anStoryHint[1] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT1", bSuccess, nStoryHint1);
+    unsigned char nStoryHint2 = m_anStoryHint[2];
+    m_anStoryHint[2] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT2", bSuccess, nStoryHint2);
+    unsigned char nStoryHint3 = m_anStoryHint[3];
+    m_anStoryHint[3] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT3", bSuccess, nStoryHint3);
+    unsigned char nStoryHint4 = m_anStoryHint[4];
+    m_anStoryHint[4] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT4", bSuccess, nStoryHint4);
+    unsigned char nStoryHint5 = m_anStoryHint[5];
+    m_anStoryHint[5] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT5", bSuccess, nStoryHint5);
+    unsigned char nStoryHint6 = m_anStoryHint[6];
+    m_anStoryHint[6] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT6", bSuccess, nStoryHint6);
+    unsigned char nStoryHint7 = m_anStoryHint[7];
+    m_anStoryHint[7] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT7", bSuccess, nStoryHint7);
+    unsigned char nStoryHint8 = m_anStoryHint[8];
+    m_anStoryHint[8] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT8", bSuccess, nStoryHint8);
+    unsigned char nStoryHint9 = m_anStoryHint[9];
+    m_anStoryHint[9] = pRes->ReadFieldBYTE(&stStruct, "STORYHINT9", bSuccess, nStoryHint9);
 }
 #endif
 int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0 GOG 0x007070C0 Xbox 0x000DFC30

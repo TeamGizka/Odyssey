@@ -211,11 +211,13 @@ CSWCModule* CClientExoAppInternal::GetModule()
 {
     return m_pModule;
 }
+#ifndef _XBOX
 // PC 0x006396D0 GOG 0x006395D0
 CExoString CSWCModule::GetModuleTitle()
 {
     return m_sModuleTitle;
 }
+#endif
 // PC 0x006396F0 GOG 0x006395F0
 inline CExoImeUI::CExoImeUI()
     : m_sResult(),
@@ -3049,8 +3051,9 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                 {
                     if (m_fTargetChanging <= 0.0f)
                     {
-                        CSWSCreature* pTarget = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
-                            g_pAppManager->GetServerExoApp()->ClientToServerObjectId(m_nLastTarget));
+                        CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+                        CSWSCreature* pTarget = pServer->GetCreatureByGameObjectID(
+                            pServer->ClientToServerObjectId(m_nLastTarget));
                         if (pTarget != NULL && (pTarget->GetDead() || pTarget->GetDeadTemp()))
                         {
 
@@ -3089,16 +3092,11 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                                     bMineVisible = 1;
                                 else
                                     bEnemyVisible = 1;
-#ifdef _XBOX
-                                if (!GetPausedByCombat())
-#else
                                 if (!GetPausedByCombat() && m_nDelayedAutoPauseType == AUTO_PAUSE_TYPE_UNSET)
-#endif
                                 {
                                     if (pObject->AsSWCTrigger() != NULL && pObject->AsSWCTrigger()->m_bTrap)
                                     {
                                         bNoMine = 1;
-#ifndef _XBOX
                                         if (!m_bMineSighted)
                                         {
                                             CClientOptions* pOptions = m_pClientOptions;
@@ -3109,7 +3107,6 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                                             bNewTarget = 1;
                                             break;
                                         }
-#endif
                                     }
                                     else
                                     {
@@ -3143,7 +3140,6 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                     m_bEnemySighted = 0;
                 else
                     m_fCombatAutoPauseTimer -= fDeltaTime;
-#ifndef _XBOX
                 if (!m_bMineSighted || bMineVisible)
                 {
                     m_bMineSighted = bMineVisible;
@@ -3153,7 +3149,6 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                     m_bMineSighted = 0;
                 else
                     m_fMineSightedTime -= fDeltaTime;
-#endif
 
                 if (bLastTargetFound)
                 {
@@ -10324,8 +10319,9 @@ void CClientExoAppInternal::InitializeClientOptions()  // Xbox 0x0001D0D0
 
 #include "aurconsole.h"
 #include "LaunchData.h"
-#define KOTOR_XBOX_TITLE_ID 0x4c410003
+#define KOTOR_XBOX_TITLE_ID 0x4c410014
 #define CONTENT_SIGNATURE_SIZE 20
+#define XBOX_SCAN_CONTENT_DIRECTORIES 1
 #define STRREF_CHECKING_CONTENT 47939
 int g_bAcceptCorruptDownloads = 0;
 #ifdef _DEBUG
@@ -10445,24 +10441,30 @@ void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgres
                                 CExoArrayList<CExoString> lstDirectories;
                                 g_pExoBase->GetDirectoryList(&lstDirectories, sDirectory, 0xffff, 1, 0);
                                 int nDirectory;
-                                for (nDirectory = 0; nDirectory < lstDirectories.num; nDirectory++)
+                                if (XBOX_SCAN_CONTENT_DIRECTORIES)
                                 {
-                                    CExoArrayList<CExoString> lstSubFiles;
-                                    if (bShowProgress)
+                                    for (nDirectory = 0; nDirectory < lstDirectories.num; nDirectory++)
                                     {
-                                        nProgress += 30 / lstDirectories.num;
-                                        SetLoadBarProgress(nProgress, 0);
-                                        UpdateScreen(1.0f / 30.0f, 0, 0);
-                                    }
-                                    if (g_pExoBase->GetDirectoryList(
-                                            &lstSubFiles,
-                                            sDirectory + "\\" + lstDirectories.element[nDirectory], 0xffff,
-                                            0, 0))
-                                    {
-                                        for (int nSubFile = 0; nSubFile < lstSubFiles.num; nSubFile++)
+                                        if (XBOX_SCAN_CONTENT_DIRECTORIES)
                                         {
-                                            lstFiles.Add(lstDirectories.element[nDirectory] + "\\" +
-                                                         lstSubFiles.element[nSubFile]);
+                                            CExoArrayList<CExoString> lstSubFiles;
+                                            if (bShowProgress)
+                                            {
+                                                nProgress += 30 / lstDirectories.num;
+                                                SetLoadBarProgress(nProgress, 0);
+                                                UpdateScreen(1.0f / 30.0f, 0, 0);
+                                            }
+                                            if (g_pExoBase->GetDirectoryList(
+                                                    &lstSubFiles,
+                                                    sDirectory + "\\" + lstDirectories.element[nDirectory], 0xffff,
+                                                    0, 0))
+                                            {
+                                                for (int nSubFile = 0; nSubFile < lstSubFiles.num; nSubFile++)
+                                                {
+                                                    lstFiles.Add(lstDirectories.element[nDirectory] + "\\" +
+                                                                 lstSubFiles.element[nSubFile]);
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -10517,8 +10519,11 @@ void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgres
 
                                         LPBYTE pExtraSignature = NULL;
                                         DWORD nExtraSignatureSize = CONTENT_SIGNATURE_SIZE;
-                                        nFailed = XLocateSignatureByIndex(hSignatures, nVerified, &pExtraSignature,
-                                                                          &nExtraSignatureSize);
+                                        if (XLocateSignatureByIndex(hSignatures, nVerified, &pExtraSignature,
+                                                                    &nExtraSignatureSize))
+                                        {
+                                            nFailed = 1;
+                                        }
                                     }
                                 }
                                 if (nFailed && !g_bAcceptCorruptDownloads)
@@ -10560,9 +10565,9 @@ void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgres
                             szName[nOut++] = 1;
                         }
                     }
+                    szName[nOut] = 0;
                     m_aLiveContentNames[nPackage].m_bCorrupt = bCorrupt;
                     m_aLiveContentNames[nPackage].m_bExists = 1;
-                    szName[nOut] = 0;
                     m_aLiveContentNames[nPackage].m_sName.Format("%s", szName);
                 }
                 g_nBootFlags |= (unsigned char)bCorrupt << nPackage;
@@ -10810,16 +10815,21 @@ void CClientExoAppInternal::TurnOffKeyboardModal()  // Xbox 0x0001F050
 extern int g_bMissingFileDeferred;
 extern CExoString g_sMissingFileDeferred;
 
+inline CSWGuiTutorialBox* GetTutorialBox(CGuiInGame* pGui)
+{
+    return pGui->m_pTutorialBox;
+}
+
 #define XBOX_END_GAME_INPUT_LOCK_MS 500
 int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
 {
-    int bAreaReady = 0;
-    static int a;
-
     if (m_bMissingFilePending == 1 || g_bMissingFileDeferred != 0)
     {
         g_pExoResMan->ReportMissingFile(g_sMissingFileDeferred.CStr(), 0xffff, 1);
     }
+    int bAreaReady = 0;
+    static int a;
+
     if (m_pGuiInGame != NULL)
         m_pGuiInGame->HideAreaTransition();
 
@@ -10928,8 +10938,8 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
         if (!m_bEndGameInputLocked)
         {
             m_bEndGameInputLocked = 1;
-            g_pExoInput->SetActive(0);
             bEndGameReady = 0;
+            g_pExoInput->SetActive(0);
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_MUTE);
             m_nEndGameInputLockTime = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
         }
@@ -10965,7 +10975,7 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
             cParams.m_bRenderQA = RenderQA;
 
             KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
-            g_pAppManager->m_pClientExoApp->GetClientOptions()->GetOptionsData(&cOptionsData);
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);
             cParams.SetOptionsData(cOptionsData);
 
             SetLoadScreenByModuleName("default");
@@ -10981,7 +10991,7 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
             cParams.SetLoadScreen("load_default");
             cParams.m_nLoadScreenHint = 0;
             AurPersistDisplay();
-            ExoXboxLaunch(&cParams, g_pAppManager->m_pServerExoApp->GetModuleName().CStr());
+            ExoXboxLaunch(&cParams, g_pAppManager->GetServerExoApp()->GetModuleName().CStr());
         }
     }
     int bSlowMotion = m_bGuiGameSlow;
@@ -11105,7 +11115,7 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
         }
         if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack() &&
             m_nInputClass != INPUT_CLASS_MINIGAME &&
-            !m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pTutorialBox))
+            !m_pSWGuiManager->PanelExists(GetTutorialBox(m_pGuiInGame)))
             UpdateCamera(DeltaT);
         g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
         m_pClientAIMaster->UpdateState();
@@ -11145,7 +11155,7 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
         DoPassiveSelection(DeltaT);
         UpdateCombatMode();
     }
-    UpdateHostileHilite((__int64)g_pAppManager->GetClientExoApp()->GetExoAppInternal()->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f);
+    UpdateHostileHilite((__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f);
     g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
     if (m_pGuiInGame->GetPendingStatusSummary() && m_nInputClass == INPUT_CLASS_GAME &&
         !m_nAreaNotReadyToDisplay && !m_pGuiInGame->m_bHoldWorldFadeInForDialog &&
@@ -11171,7 +11181,7 @@ int CClientExoAppInternal::MainLoop()  // Xbox 0x0002F550
     bool bForceSight = g_ForceSight;
     g_ForceSight = false;
     m_pSWGuiManager->SetGuiScale(DeltaT);
-    DeltaT = (__int64)g_pAppManager->GetClientExoApp()->GetExoAppInternal()->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f;
+    DeltaT = (__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f;
     m_pSWGuiManager->Draw(DeltaT);
     DeltaT = m_pSWGuiManager->m_fGuiScale;
     g_ForceSight = bForceSight;

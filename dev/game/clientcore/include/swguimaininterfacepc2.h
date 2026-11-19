@@ -404,6 +404,9 @@ public:
     static const unsigned long STRREF_PC_DEAD = 47936;
 #ifdef _XBOX
     static const unsigned long STRREF_NOT_ENOUGH_HIT_POINTS = 48437;
+    static const unsigned long STRREF_XBOX_USE_ITEM_ON = 48056;
+    static const unsigned long STRREF_XBOX_CANNOT_USE_ITEM_ON = 48057;
+    static const unsigned long STRREF_XBOX_USE_ITEM_CANCEL = 48362;
 #endif
 
     static const unsigned long STRREF_HOTKEY_HELP = 48972;
@@ -645,6 +648,8 @@ public:
 #ifdef _XBOX
     void SelectNextUseItemTarget();
     void SelectPreviousUseItemTarget();
+    void SetActionBarAlpha(float fAlpha);
+    void SetPartyBarAlpha(float fAlpha);
     void ParseTargetName(CExoString& sName);
     enum { STRREF_EMPTY = 125550, STRREF_NOTHING = 125551 };
 #endif

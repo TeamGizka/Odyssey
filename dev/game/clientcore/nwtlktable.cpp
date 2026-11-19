@@ -64,7 +64,9 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
     case CTlkTableToken::ALIGNMENT_NAME:
     case CTlkTableToken::ALIGNMENT_NAME_LOWER:
     case CTlkTableToken::ALIGNMENT_STRING:
+#ifndef _XBOX
     case CTlkTableToken::PLAYER_NAME:
+#endif
         if (m_pObject == 0)
         {
             sValue = g_pAppManager->GetClientExoApp()->GetGUIString(token.m_nTokenValue);
@@ -83,7 +85,9 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
                     switch (token.m_nType)
                     {
                     case CTlkTableToken::FULL_NAME:
+#ifndef _XBOX
                     case CTlkTableToken::PLAYER_NAME:
+#endif
                         sValue = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPCName();
                         break;
                     case CTlkTableToken::FIRST_NAME:
@@ -142,10 +146,12 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
                         break;
                     }
                     m_nCurGender = nGender;
+#ifndef _XBOX
                     if (nGender > CTlkTable::GENDER_FEMALE)
                     {
                         m_nCurGender = CTlkTable::GENDER_MALE;
                     }
+#endif
                 }
             }
             else
@@ -156,20 +162,34 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
         break;
     case CTlkTableToken::YEAR:
         {
+#ifdef _XBOX
+            sValue = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeYear;
+#else
             unsigned long nYear = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeYear;
             sValue = nYear;
+#endif
         }
         break;
     case CTlkTableToken::MONTH:
         {
+#ifdef _XBOX
+            sValue = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeMonth;
+#else
             unsigned long nMonth = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeMonth;
             sValue = nMonth;
+#endif
         }
         break;
     case CTlkTableToken::HOUR:
         {
+#ifdef _XBOX
+            CSWCModule* pModule = g_pAppManager->GetClientExoApp()->GetModule();
+            nHour = pModule->m_nTimeHour;
+            sValue = (nHour + CWorldTimer::HOURS_IN_DAY / 2 - 1) % (CWorldTimer::HOURS_IN_DAY / 2) + 1;
+#else
             nHour = g_pAppManager->GetClientExoApp()->GetModule()->m_nTimeHour;
             sValue = (nHour + CWorldTimer::HOURS_IN_DAY / 2 - 1) % (CWorldTimer::HOURS_IN_DAY / 2) + 1;
+#endif
         }
         break;
     case CTlkTableToken::TIME_OF_DAY:
@@ -198,6 +218,13 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
         sValue = "";
         m_bParsing = 0;
         break;
+#ifdef _XBOX
+    case CTlkTableToken::PLAYER_NAME:
+        {
+            unsigned long nStrRef = token.m_nTokenValue;
+        }
+        break;
+#endif
     case CTlkTableToken::CHARACTER:
         sValue.Format("%c", token.m_nTokenValue);
         break;
@@ -209,6 +236,7 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
             sValue.Format("%d", nBounty * 500);
         }
         break;
+#ifndef _XBOX
     case CTlkTableToken::INPUT_CONTROL:
         {
             unsigned long nEvent = token.m_nTokenValue;
@@ -232,7 +260,6 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
             }
         }
         break;
-#ifndef _XBOX
     case CTlkTableToken::MOUSE_BUTTON:
         {
             int nButton = token.m_nTokenValue;

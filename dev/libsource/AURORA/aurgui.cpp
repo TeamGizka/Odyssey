@@ -898,44 +898,6 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         g_bTexturesRebuilt = false;
     }
 
-#ifdef _XBOX
-    unsigned char nCorner0, nCorner1, nCorner2, nCorner3;
-    unsigned char nRotated[4];
-    switch (nFlags & GUI_IMAGE_MAPPING_MASK)
-    {
-    case GUI_IMAGE_MAPPING_MIRRORED:
-        nCorner0 = 1; nCorner1 = 0; nCorner2 = 3; nCorner3 = 2;
-        break;
-    case GUI_IMAGE_MAPPING_REVERSED:
-        nCorner0 = 3; nCorner1 = 2; nCorner2 = 1; nCorner3 = 0;
-        break;
-    case GUI_IMAGE_MAPPING_NORMAL:
-        nCorner0 = 0; nCorner1 = 1; nCorner2 = 2; nCorner3 = 3;
-        break;
-    }
-
-    if (fRotation < 0.0f)
-        fRotation += 360.0f;
-    switch ((int)((fRotation + 45.0f) / 90.0f))
-    {
-    case 0:
-        nRotated[0] = nCorner0; nRotated[1] = nCorner1;
-        nRotated[2] = nCorner2; nRotated[3] = nCorner3;
-        break;
-    case 1:
-        nRotated[nCorner0] = 1; nRotated[nCorner1] = 2;
-        nRotated[nCorner2] = 3; nRotated[nCorner3] = 0;
-        break;
-    case 2:
-        nRotated[nCorner0] = 2; nRotated[nCorner1] = 3;
-        nRotated[nCorner2] = 0; nRotated[nCorner3] = 1;
-        break;
-    case 3:
-        nRotated[nCorner0] = 3; nRotated[nCorner1] = 0;
-        nRotated[nCorner2] = 1; nRotated[nCorner3] = 2;
-        break;
-    }
-#else
     unsigned char nCorner[4];
     unsigned char nRotated[4];
     switch (nFlags & GUI_IMAGE_MAPPING_MASK)
@@ -953,7 +915,11 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
 
     if (fRotation < 0.0f)
         fRotation += 360.0f;
+#ifdef _XBOX
+    switch ((int)((fRotation + 45.0f) / 90.0f))
+#else
     switch ((unsigned int)((fRotation + 45.0f) / 90.0f))
+#endif
     {
     case 0:
         nRotated[0] = nCorner[0]; nRotated[1] = nCorner[1];
@@ -972,44 +938,24 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         nRotated[nCorner[2]] = 1; nRotated[nCorner[3]] = 2;
         break;
     }
-#endif
 
-#ifdef _XBOX
-    float fHalfU = 0.5f / AsTexture(m_pMaterial->m_pTexture0)->GetWidth();
-    float fHalfV = 0.5f / AsTexture(m_pMaterial->m_pTexture0)->GetHeight();
-#endif
     if (bColored == 0)
     {
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed] = fX;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 1] = 1.0f - fY;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 2] = 0.0f;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 5 + 3] = fHalfU;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 5 + 4] = 1.0f - fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 5 + 3] = 0.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 5 + 4] = 1.0f;
-#endif
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 5] = fX;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 6] = 1.0f - (fY + fHeight);
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 7] = 0.0f;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 5 + 3] = fHalfU;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 5 + 4] = 0.0f - fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 5 + 3] = 0.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 5 + 4] = 0.0f;
-#endif
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 10] = fX + fWidth;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 11] = 1.0f - (fY + fHeight);
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 12] = 0.0f;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 5 + 3] = fHalfU + 1.0f;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 5 + 4] = 0.0f - fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 5 + 3] = 1.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 5 + 4] = 0.0f;
-#endif
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 15] = fX + fWidth;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 16] = 1.0f - fY;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 17] = 0.0f;
@@ -1043,50 +989,26 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 1] = 1.0f - fY;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 2] = 0.0f;
         *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 3] = nColor;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 6 + 4] = fHalfU;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 6 + 5] = 1.0f - fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 6 + 4] = 0.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 6 + 5] = 1.0f;
-#endif
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 6] = fX;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 7] = 1.0f - (fY + fHeight);
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 8] = 0.0f;
         *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 9] = nColor;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 6 + 4] = fHalfU;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 6 + 5] = fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 6 + 4] = 0.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 6 + 5] = 0.0f;
-#endif
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 12] = fX + fWidth;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 13] = 1.0f - (fY + fHeight);
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 14] = 0.0f;
         *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 15] = nColor;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 6 + 4] = 1.0f - fHalfU;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 6 + 5] = fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 6 + 4] = 1.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 6 + 5] = 0.0f;
-#endif
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 18] = fX + fWidth;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 19] = 1.0f - fY;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 20] = fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 20] = 0.0f;
-#endif
         *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 21] = nColor;
-#ifdef _XBOX
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 6 + 4] = 1.0f - fHalfU;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 6 + 5] = 1.0f - fHalfV;
-#else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 6 + 4] = 1.0f;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 6 + 5] = 1.0f;
-#endif
         cm_nGUIBufferSizeUsed = cm_nGUIBufferSizeUsed + 24;
     }
 }

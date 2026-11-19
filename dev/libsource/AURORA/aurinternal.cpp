@@ -297,7 +297,8 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
     }
     memset(&g_d3dpp, 0, sizeof(g_d3dpp));
     XGetVideoStandard();
-    g_d3dpp.FullScreen_RefreshRateInHz = (XGetVideoFlags() & XC_VIDEO_FLAGS_PAL_60Hz) ? 60 : 0;
+    DWORD dwPal60 = XGetVideoFlags() & XC_VIDEO_FLAGS_PAL_60Hz;
+    g_d3dpp.FullScreen_RefreshRateInHz = dwPal60 ? 60 : dwPal60;
     g_d3dpp.BackBufferWidth = 640;
     g_d3dpp.BackBufferHeight = 480;
     g_d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
@@ -306,6 +307,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
     g_d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
     g_d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
     g_d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    g_d3dpp.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_TWO;
     int bHadDevice = 0;
     if (g_pD3DDevice != NULL)
     {

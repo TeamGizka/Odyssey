@@ -25,6 +25,8 @@
 #include "aurtexcontrol.h"
 #include "aurprimitiveinl.h"
 
+#define AURPOSTPROCESS_DEBUG 0
+
 
 int animationfootprint = 0;
 
@@ -348,9 +350,10 @@ void MdlNode::ProcessSkinSeams()
         while (pNode != 0)
         {
             vTranslation = pNode->m_qOrientation * vTranslation;
+            MdlNode* pParentNode = pNode->m_pParentNode;
             vTranslation = vTranslation + pNode->m_vPosition;
             qOrientation = pNode->m_qOrientation * qOrientation;
-            pNode = pNode->m_pParentNode;
+            pNode = pParentNode;
         }
         lstPositions.Add(vTranslation);
         lstOrientations.Add(qOrientation);
@@ -529,7 +532,8 @@ void MdlNodeTriMesh::InternalGenVertices()
             bool bFound = false;
             for (nVertex = 0; nVertex < m_pPostProcess->m_lstVertices.m_nCount; nVertex++)
             {
-                if (*(NodeVertex*)m_pPostProcess->m_lstVertices[nVertex] == *pVertex)
+                NodeVertex* pExisting = (NodeVertex*)m_pPostProcess->m_lstVertices[nVertex];
+                if (*pExisting == *pVertex)
                 {
                     delete pVertex;
                     m_lFaces[nFace].m_anVertexIndices[nCorner] = nVertex;
@@ -670,10 +674,10 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
     Vector vTangent;
     Vector vBinormal;
     Matrix* pFaceBases = new Matrix[m_lFaces.m_nCount];
+    List<MaxFace>& lFaces = m_lFaces;
 
     for (int nFace = 0; nFace < m_lFaces.m_nCount; nFace++)
     {
-        List<MaxFace>& lFaces = m_lFaces;
         Vector vPosition0 = ((NodeVertex*)m_pPostProcess->m_lstVertices[
             lFaces[nFace].m_anVertexIndices[0]])->m_vPosition;
         Vector vPosition1 = ((NodeVertex*)m_pPostProcess->m_lstVertices[
@@ -699,6 +703,10 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
         vBinormal = normalize(vS);
         Vector vNormal;
         vNormal = cross(vTangent, vBinormal);
+        if (AURPOSTPROCESS_DEBUG)
+        {
+            AurPrintf("face %d normal %f\n", nFace, vNormal.m_fX);
+        }
         Vector vFaceNormal = m_pPostProcess->m_lNormals[
             m_pPostProcess->m_lFaces[nFace].m_pFaceRemap[0]];
         if (vFaceNormal * vNormal < 0.0f)
@@ -717,7 +725,7 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
         for (int nCorner = 0; nCorner < 3; nCorner++)
         {
             Vector vPosition = ((NodeVertex*)m_pPostProcess->m_lstVertices[
-                m_lFaces[nFace].m_anVertexIndices[nCorner]])->m_vPosition;
+                lFaces[nFace].m_anVertexIndices[nCorner]])->m_vPosition;
             List<int> lstFaces;
             lstFaces.Add(nFace);
             int nSmoothingGroups = m_pPostProcess->m_lFaces[nFace].m_nFaces;
@@ -728,7 +736,7 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
                     for (int nOtherCorner = 0; nOtherCorner < 3; nOtherCorner++)
                     {
                         Vector vOtherPosition = ((NodeVertex*)m_pPostProcess->m_lstVertices[
-                            m_lFaces[nOtherFace].m_anVertexIndices[nOtherCorner]])->m_vPosition;
+                            lFaces[nOtherFace].m_anVertexIndices[nOtherCorner]])->m_vPosition;
                         if (equal(vPosition, vOtherPosition) &&
                             (nSmoothingGroups & m_pPostProcess->m_lFaces[nOtherFace].m_nFaces))
                             lstFaces.Add(nOtherFace);
@@ -749,8 +757,8 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
             matAverage.m_vSecond.Normalize();
             matAverage.m_vThird.Normalize();
             matAverage = Transpose(matAverage);
-            int nVertex = m_lFaces[nFace].m_anVertexIndices[nCorner];
 #ifdef _XBOX
+            int nVertex = lFaces[nFace].m_anVertexIndices[nCorner];
             *(unsigned long*)(pVertexData + m_TangentBases + m_nVertexDataOffset + nVertex * m_nVertexStride) =
                 ((((unsigned long)(matAverage.m_vSecond.m_fX * 1023.0f) & 0x7ff) |
                 ((unsigned long)(matAverage.m_vThird.m_fX * 511.0f) << 11)) << 11) |
@@ -764,6 +772,7 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
                 ((unsigned long)(matAverage.m_vThird.m_fZ * 511.0f) << 11)) << 11) |
                 ((unsigned long)(matAverage.m_vFirst.m_fZ * 1023.0f) & 0x7ff);
 #else
+            int nVertex = m_lFaces[nFace].m_anVertexIndices[nCorner];
             *(float*)(pVertexData + m_TangentBases + m_nVertexDataOffset + nVertex * m_nVertexStride) = matAverage.m_vFirst.m_fX;
             *(float*)(pVertexData + m_TangentBases + m_nVertexDataOffset + nVertex * m_nVertexStride + 4) = matAverage.m_vSecond.m_fX;
             *(float*)(pVertexData + m_TangentBases + m_nVertexDataOffset + nVertex * m_nVertexStride + 8) = matAverage.m_vThird.m_fX;

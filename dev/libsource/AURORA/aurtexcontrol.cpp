@@ -626,7 +626,11 @@ void RingDistortTextureController::Control()
                 float fDistance =
                     (fX - 0.5f) * (fX - 0.5f) + (fY - 0.5f) * (fY - 0.5f);
 
+#ifdef _XBOX
+                fDistance = SqrtEstimateNR_ASM(fDistance);
+#else
                 fDistance = sqrt(fDistance);
+#endif
                 float fRed =
                     cosineLUT(fDistance * frequency1 + m_fAngle * frequency2) *
                         amplitude +
@@ -638,10 +642,21 @@ void RingDistortTextureController::Control()
 
                 fRed = max(0.0f, min(255.0f, fRed * 255.0f));
                 fGreen = max(0.0f, min(255.0f, fGreen * 255.0f));
+#ifdef _XBOX
+                int nRed;
+                int nGreen;
+                roundToInt(nRed, fRed);
+                roundToInt(nGreen, fGreen);
+                m_pRingImage[nPixel] = 255;
+                m_pRingImage[nPixel + 1] = (unsigned char)nGreen;
+                m_pRingImage[nPixel + 2] = (unsigned char)nRed;
+                m_pRingImage[nPixel + 3] = 255;
+#else
                 m_pRingImage[nPixel + 2] = 255;
                 m_pRingImage[nPixel + 1] = (unsigned char)fGreen;
                 m_pRingImage[nPixel] = (unsigned char)fRed;
                 m_pRingImage[nPixel + 3] = 255;
+#endif
                 nPixel += 4;
             }
         }
@@ -1278,6 +1293,20 @@ void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
                         m_pDirtyImage[nOffset + 3] = nValue % nAlpha;
                     else
                         m_pDirtyImage[nOffset + 3] = 0;
+#ifdef _XBOX
+                    if (nRed)
+                        m_pDirtyImage[nOffset + 2] = nValue % nRed;
+                    else
+                        m_pDirtyImage[nOffset + 2] = 0;
+                    if (nGreen)
+                        m_pDirtyImage[nOffset + 1] = nValue % nGreen;
+                    else
+                        m_pDirtyImage[nOffset + 1] = 0;
+                    if (nBlue)
+                        m_pDirtyImage[nOffset] = nValue % nBlue;
+                    else
+                        m_pDirtyImage[nOffset] = 0;
+#else
                     if (nRed)
                         m_pDirtyImage[nOffset] = nValue % nRed;
                     else
@@ -1290,6 +1319,7 @@ void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
                         m_pDirtyImage[nOffset + 2] = nValue % nBlue;
                     else
                         m_pDirtyImage[nOffset + 2] = 0;
+#endif
                 }
                 else
                 {
@@ -1298,6 +1328,20 @@ void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
                         m_pDirtyImage[nOffset + 3] = 0;
                     else
                         m_pDirtyImage[nOffset + 3] = nValue % nAlpha;
+#ifdef _XBOX
+                    if (nRed == 0)
+                        m_pDirtyImage[nOffset + 2] = 0;
+                    else
+                        m_pDirtyImage[nOffset + 2] = nValue % nRed;
+                    if (nGreen == 0)
+                        m_pDirtyImage[nOffset + 1] = 0;
+                    else
+                        m_pDirtyImage[nOffset + 1] = nValue % nGreen;
+                    if (nBlue == 0)
+                        m_pDirtyImage[nOffset] = 0;
+                    else
+                        m_pDirtyImage[nOffset] = nValue % nBlue;
+#else
                     if (nRed == 0)
                         m_pDirtyImage[nOffset] = 0;
                     else
@@ -1310,6 +1354,7 @@ void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
                         m_pDirtyImage[nOffset + 2] = 0;
                     else
                         m_pDirtyImage[nOffset + 2] = nValue % nBlue;
+#endif
                 }
                 nOffset += 4;
             }

@@ -3128,16 +3128,15 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // Xbox 0x001
 
     CExoString sStampFile;
     int nDot = sDest.Find('.', 0);
+    if (nDot < 0)
     {
         CExoString sStampExtension("_v.res");
-        if (nDot < 0)
-        {
-            sStampFile = sDest + sStampExtension;
-        }
-        else
-        {
-            sStampFile = sDest.SubString(0, nDot) + sStampExtension;
-        }
+        sStampFile = sDest + sStampExtension;
+    }
+    else
+    {
+        CExoString sStampExtension("_v.res");
+        sStampFile = sDest.SubString(0, nDot) + sStampExtension;
     }
 
     WIN32_FIND_DATA cFindData;

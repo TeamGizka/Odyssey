@@ -1285,8 +1285,13 @@ int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
         pHit->m_vSoundPosition = DefaultHitInfo.m_vOutputPosition;
         pHit->OnHitBullet(0);
 
+#ifdef _XBOX
+        if (!g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("505OND") &&
+            !g_pAppManager->m_pClientExoApp->GetModule()->GetModuleTitle().CompareNoCase("module000"))
+#else
         if (!g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("505OND") &&
             !g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("module000"))
+#endif
         {
             if (pBullet->PlayAnimation("explode", 1.0f, 3, 0.0f))
             {

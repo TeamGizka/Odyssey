@@ -128,6 +128,9 @@ extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 
 int maxgrass = 0;
 int newstuff = 0;
+#ifdef _XBOX
+#define AURGRASS_FORCESIGHT_COLOR_CONSTANT 6
+#endif
 // PC 0x004D3430 GOG 0x004D3570 Xbox 0x002E9AF0
 void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
                                       WindManager* pWindManager)
@@ -157,11 +160,14 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
         return;
 
 #ifdef _XBOX
-
-    GLRender_SetMaterialv(FACING_FRONT, MATERIAL_AMBIENT,
-                          Homogenize(g_GrassInfo[nGrassInfo].m_vAmbient, 1.0f));
-    GLRender_SetMaterialv(FACING_FRONT, MATERIAL_DIFFUSE,
-                          Homogenize(g_GrassInfo[nGrassInfo].m_vDiffuse, fAlpha));
+    float afAmbient[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float afDiffuse[4] = {0.0f, 0.0f, 0.0f, fAlpha};
+    SetMaterialParameter(FACING_FRONT, MATERIAL_AMBIENT, afAmbient);
+    SetMaterialParameter(FACING_FRONT, MATERIAL_DIFFUSE, afDiffuse);
+    float afEmissive[4] = {g_GrassInfo[nGrassInfo].m_vEmissive.m_fX,
+                           g_GrassInfo[nGrassInfo].m_vEmissive.m_fY,
+                           g_GrassInfo[nGrassInfo].m_vEmissive.m_fZ, fAlpha};
+    SetMaterialParameter(FACING_FRONT, MATERIAL_EMISSION, afEmissive);
     int nVertices = m_nTriangles * 4;
     if (newgrass && m_fDistance < m_fNearRadiusSquared)
     {
@@ -184,21 +190,50 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
         int nFirst = 0;
         for (int i = 0; i < m_lstTextureIndices.m_nCount; i++)
         {
-            GLRender_EnablePixelShaders(MODEL_SHADER_EMLM,
-                m_pTexture.m_pObject, m_lstTextures[i].m_pObject, 0, 0);
+            if (g_ForceSight)
+            {
+                GLRender_EnablePixelShaders(MODEL_SHADER_DESAT_LM,
+                    m_pTexture.m_pObject, m_lstTextures[i].m_pObject, 0, 0);
+                float afColor[4];
+                afColor[0] = 0.0f;
+                afColor[1] = 0.0f;
+                afColor[2] = 0.0f;
+                afColor[3] = 0.75f;
+                AurSetPixelShaderConstant(AURGRASS_FORCESIGHT_COLOR_CONSTANT, afColor, 1);
+            }
+            else
+            {
+                GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_LIGHTMAP,
+                    m_pTexture.m_pObject, m_lstTextures[i].m_pObject, 0, 0);
+            }
             GLRender::DrawLightmappedGrass((void*)m_nVertexOffset, 12, (void*)m_nIndexOffset,
                 nStride, nFirst, m_lstTextureIndices[i]);
             nFirst += m_lstTextureIndices[i] * 4;
         }
-        GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+        if (g_ForceSight)
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+        else
+            GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
         GLRender::ActivateTextureStage(1);
         GLRender_DisableClientState(CLIENT_STATE_TEXTURE_COORD);
         GLRender::ActivateTextureStage(0);
     }
     else
     {
+        if (g_ForceSight)
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_DESAT, m_pTexture.m_pObject, 0, 0, 0);
+            float afColor[4];
+            afColor[0] = 0.0f;
+            afColor[1] = 0.0f;
+            afColor[2] = 0.0f;
+            afColor[3] = 1.0f;
+            AurSetPixelShaderConstant(AURGRASS_FORCESIGHT_COLOR_CONSTANT, afColor, 1);
+        }
         GLRender::DrawLightmappedGrass((void*)m_nVertexOffset, 12, (void*)m_nIndexOffset,
                                       nStride, 0, m_nTriangles);
+        if (g_ForceSight)
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
     }
     countfaces += m_nTriangles;
 #else
@@ -916,22 +951,25 @@ void CAurTriangleBin::CreateArrays()  // Xbox 0x002EBA20
     GLRender::RequestPool(Aurora::POOL_VERTEX, nVertices * m_nVertexSize,
                           RequestPoolManager::POOL_COLOR | RequestPoolManager::POOL_STATIC, 0,
                           (unsigned long*)&m_pVertices);
-    float* pVertices = (float*)GLRender::LockPool((unsigned long)m_pVertices, 0, 0,
-                                                  RequestPoolManager::POOL_LOCK_WRITE);
     int nIndexOffset = 3 * sizeof(float) * nVertices;
     m_pCurrentVertices = (float*)new unsigned char[nIndexOffset];
-    m_nVertexOffset = (int)new D3DVertexBuffer;
-    memset((void*)m_nVertexOffset, 0, sizeof(D3DVertexBuffer));
-    m_nIndexOffset = (int)new D3DVertexBuffer;
-    memset((void*)m_nIndexOffset, 0, sizeof(D3DVertexBuffer));
+    D3DVertexBuffer* pVertexBuffer = new D3DVertexBuffer;
+    m_nVertexOffset = (int)pVertexBuffer;
+    memset(pVertexBuffer, 0, sizeof(D3DVertexBuffer));
+    D3DVertexBuffer* pIndexBuffer = new D3DVertexBuffer;
+    m_nIndexOffset = (int)pIndexBuffer;
+    memset(pIndexBuffer, 0, sizeof(D3DVertexBuffer));
     GLRender::SetPoolBufferHeaders((unsigned long)m_pVertices, (D3DVertexBuffer*)m_nVertexOffset,
                                    (D3DVertexBuffer*)m_nIndexOffset, nIndexOffset);
+    unsigned long nPool = (unsigned long)m_pVertices;
+    float* pVertices = (float*)GLRender::LockPool(nPool, 0, 0,
+                                                  RequestPoolManager::POOL_LOCK_WRITE);
     if (m_nFlags & MULTI_TEXTURE)
         SortTriangles();
+    Vector vUp(0.0f, 0.0f, 1.0f);
     int nTriangles = m_lstTriangles.m_nCount;
     m_nFlags |= HAS_VERTEX_DATA;
     int nAttribute = nIndexOffset / sizeof(float) - 1;
-    Vector vUp(0.0f, 0.0f, 1.0f);
     int nVertex = -1;
     Vector vWeight;
     Quaternion qRotation;
@@ -977,7 +1015,8 @@ void CAurTriangleBin::CreateArrays()  // Xbox 0x002EBA20
                 vWeight.m_fX = (rand() % 10000) * 0.0001f;
                 vWeight.m_fY = (rand() % 10000) * 0.0001f;
                 vWeight.m_fZ = (rand() % 10000) * 0.0001f;
-                vWeight = vWeight / (vWeight.m_fX + vWeight.m_fY + vWeight.m_fZ);
+                Vector& vNormalized = vWeight;
+                vNormalized = vWeight / (vWeight.m_fX + vWeight.m_fY + vWeight.m_fZ);
                 if (m_nFlags & MULTI_TEXTURE)
                 {
                     int nVertexPool = pNode->m_pModel->AsModel()->m_nVertexPool;
@@ -1010,25 +1049,25 @@ void CAurTriangleBin::CreateArrays()  // Xbox 0x002EBA20
                     int nColorPool = pTriMesh->m_nColorPool;
                     unsigned long* pColors = (unsigned long*)GLRender::LockPool(
                         nColorPool, 0, 0, RequestPoolManager::POOL_LOCK_READ_ONLY);
-                    float fWeightA = vWeight.m_fX;
-                    float fWeightB = vWeight.m_fY;
                     float fWeightC = vWeight.m_fZ;
-                    float fRed = (pColors[pFace->m_anVertexIndices[0]] & 0xff) * fWeightA +
-                                 (pColors[pFace->m_anVertexIndices[1]] & 0xff) * fWeightB +
+                    float fRed = (pColors[pFace->m_anVertexIndices[0]] & 0xff) * vWeight.m_fX +
+                                 (pColors[pFace->m_anVertexIndices[1]] & 0xff) * vWeight.m_fY +
                                  (pColors[pFace->m_anVertexIndices[2]] & 0xff) * fWeightC;
-                    float fGreen = ((pColors[pFace->m_anVertexIndices[0]] & 0xff00) >> 8) * vWeight.m_fX +
-                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff00) >> 8) * vWeight.m_fY +
-                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff00) >> 8) * vWeight.m_fZ;
-                    float fBlue = ((pColors[pFace->m_anVertexIndices[0]] & 0xff0000) >> 16) * vWeight.m_fX +
-                                  ((pColors[pFace->m_anVertexIndices[1]] & 0xff0000) >> 16) * vWeight.m_fY +
-                                  ((pColors[pFace->m_anVertexIndices[2]] & 0xff0000) >> 16) * vWeight.m_fZ;
-                    float fAlpha = ((pColors[pFace->m_anVertexIndices[0]] & 0xff000000) >> 24) * vWeight.m_fX +
-                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff000000) >> 24) * vWeight.m_fY +
-                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff000000) >> 24) * vWeight.m_fZ;
-                    nRed = (unsigned char)max(0.0f, min(255.0f, fRed));
-                    nGreen = (unsigned char)max(0.0f, min(255.0f, fGreen));
-                    nBlue = (unsigned char)max(0.0f, min(255.0f, fBlue));
-                    nAlpha = (unsigned char)max(0.0f, min(255.0f, fAlpha));
+                    float fGreen = ((pColors[pFace->m_anVertexIndices[0]] & 0xff00) >> 8) * vNormalized.m_fX +
+                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff00) >> 8) * vNormalized.m_fY +
+                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff00) >> 8) * vNormalized.m_fZ;
+                    float fBlue = ((pColors[pFace->m_anVertexIndices[0]] & 0xff0000) >> 16) * vNormalized.m_fX +
+                                  ((pColors[pFace->m_anVertexIndices[1]] & 0xff0000) >> 16) * vNormalized.m_fY +
+                                  ((pColors[pFace->m_anVertexIndices[2]] & 0xff0000) >> 16) * vNormalized.m_fZ;
+                    float fAlpha = ((pColors[pFace->m_anVertexIndices[0]] & 0xff000000) >> 24) * vNormalized.m_fX +
+                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff000000) >> 24) * vNormalized.m_fY +
+                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff000000) >> 24) * vNormalized.m_fZ;
+                    float fMinimum = 0.0f;
+                    float fMaximum = 255.0f;
+                    nRed = (unsigned char)max(fMinimum, min(fMaximum, fRed));
+                    nGreen = (unsigned char)max(fMinimum, min(fMaximum, fGreen));
+                    nBlue = (unsigned char)max(fMinimum, min(fMaximum, fBlue));
+                    nAlpha = (unsigned char)max(fMinimum, min(fMaximum, fAlpha));
                     nColorPool = pTriMesh->m_nColorPool;
                     GLRender::UnlockPool(nColorPool);
                 }

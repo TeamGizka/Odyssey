@@ -1184,7 +1184,7 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
     {
     case 0:
         bResult = 1;
-        break;
+        goto FilterDone;
     case 1:
         bResult = pItem->m_bNewItem;
         break;
@@ -1274,6 +1274,7 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
                 bResult = 0;
             }
         }
+    FilterDone:
         break;
     case FILTER_MISC:
         bResult = 1;

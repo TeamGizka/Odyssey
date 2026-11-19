@@ -149,10 +149,9 @@ void CExoMoviePlayerInternal::RenderFrame(int nWait)
         rectSource.top = 0;
         rectSource.right = m_hBink->Width;
         rectSource.bottom = m_hBink->Height;
-        rectDest.left = nCenterX - m_hBink->Width / 2;
-        rectDest.right = m_hBink->Width / 2 + nCenterX;
-        rectDest.top = nCenterY - m_hBink->Height / 2;
-        rectDest.bottom = m_hBink->Height / 2 + nCenterY;
+        RECT rectFrame = {nCenterX - m_hBink->Width / 2, nCenterY - m_hBink->Height / 2,
+                          m_hBink->Width / 2 + nCenterX, m_hBink->Height / 2 + nCenterY};
+        rectDest = rectFrame;
         D3DDevice::UpdateOverlay(m_aFrameBuffers[nBuffer].m_pSurface, &rectSource, &rectDest, FALSE, 0);
         BinkNextFrame(m_hBink);
         while (BinkWait(m_hBink) == 1)

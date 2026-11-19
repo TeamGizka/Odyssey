@@ -534,16 +534,12 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
         int nIndex = pClient->GetSWParty()->GetIndex(
             pClient->ServerToClientObjectId(GetId()));
-        if (nIndex >= 0)
 #ifdef _XBOX
-        {
-            CSWParty* pMemberParty = pClient->GetSWParty();
-
-            pMemberParty->GetMemberData(nIndex)->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
-        }
+        if (0 <= nIndex)
 #else
-            pClient->GetSWParty()->GetMemberData(nIndex)->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
+        if (nIndex >= 0)
 #endif
+            pClient->GetSWParty()->GetMemberData(nIndex)->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
     }
     m_nAttackMovementTimer = ITEM_CAST_AI_DELAY;
     if (GetDead() == TRUE || GetIsPCDying() == TRUE || GetDeadTemp() == TRUE)
@@ -3035,15 +3031,25 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
         EXOLOG("Party follow: %s\n", m_sTag.CStr());
         EXOLOG("Party follow: formation distance %f\n", magnitude(pMember->m_vFormationPosition - pMember->m_vFollowPosition));
         AurDrawLine(pMember->m_vFollowPosition - m_vPosition, pMember->m_vFormationPosition - m_vPosition, nMember);
+#ifndef _XBOX
         AurDrawLine(pMember->m_vFormationPosition - m_vPosition, pMember->m_vLastPosition - m_vPosition, nMember);
         AurDrawLine(pMember->m_vLastPosition - m_vPosition, pMember->m_vFollowPosition - m_vPosition, nMember);
+#endif
     }
     if (m_nWalkElapsedTime == 0.0f)
         return ACTION_IN_PROGRESS;
     Vector vDifference = pMember->m_vFormationPosition - pMember->m_vFollowPosition;
     float fDistanceSquared = vDifference * vDifference;
+#ifdef _XBOX
+    Vector vFromLast;
+    vFromLast = pMember->m_vFormationPosition - pMember->m_vLastPosition;
+#else
     Vector vFromLast = pMember->m_vFormationPosition - pMember->m_vLastPosition;
+#endif
     float fRate;
+#ifdef _XBOX
+    float fSpeed;
+#endif
     if (!(fDistanceSquared >= 16.0) && !(vFromLast * vFromLast >= 100.0f))
     {
         if (pClient->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed() > 0.1f)
@@ -3055,16 +3061,17 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
             Vector vBack = pMember->m_vFollowPosition - pMember->m_vFormationPosition;
             if (vBack * vBack >= 0.001f)
             {
+#ifdef _XBOX
+                fSpeed = pMember->m_fSpeed;
+#else
                 float fSpeed = pMember->m_fSpeed;
+#endif
                 if (fSpeed > GetWalkRate() * 0.9f)
                     fRate = pMember->m_fSpeed;
                 else
                     fRate = GetWalkRate() * 0.9f;
                 if (FollowLeaderFullLogging)
-                {
-                    pClient->GetSWParty()->GetCharacter(0);
-                    GetClientCreature();
-                }
+                    EXOLOG("Party follow: creature %p, leader %p\n", GetClientCreature(), pClient->GetSWParty()->GetCharacter(0));
             }
             else
             {
@@ -3073,10 +3080,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
                 else
                     fRate = GetRunRate();
                 if (FollowLeaderFullLogging)
-                {
-                    pClient->GetSWParty()->GetCharacter(0);
-                    GetClientCreature();
-                }
+                    EXOLOG("Party follow: creature %p, leader %p\n", GetClientCreature(), pClient->GetSWParty()->GetCharacter(0));
             }
         }
     }
@@ -3087,10 +3091,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
     else
         fRate = GetRunRate();
     if (FollowLeaderFullLogging)
-    {
-        pClient->GetSWParty()->GetCharacter(0);
-        GetClientCreature();
-    }
+        EXOLOG("Party follow: %x creature %p, leader %p\n", GetId(), GetClientCreature(), pClient->GetSWParty()->GetCharacter(0));
     float fMaximumSpeed = fRate;
     if (fDistanceSquared <= 1.0f)
         fRate *= 0.9f;
@@ -3202,8 +3203,14 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
     }
     g_pAppManager->GetServerExoApp()->UpdateSubareasOnMoveTo(GetId(), vOldPosition, m_vPosition);
     Vector vNewPosition = m_vPosition;
+#ifdef _XBOX
+    Vector vLastPosition = vOldPosition;
+    Vector vMovement(vNewPosition.m_fX - vLastPosition.m_fX,
+                     vNewPosition.m_fY - vLastPosition.m_fY, 0.0f);
+#else
     Vector vMovement(vNewPosition.m_fX - vOldPosition.m_fX,
                      vNewPosition.m_fY - vOldPosition.m_fY, 0.0f);
+#endif
     float fMovement = magnitude(vMovement);
     Vector vLeaderDirection = normalize(pParty->GetCharacter(0)->m_vPosition - m_vPosition);
     if (vMovement.m_fX == 0.0f && vMovement.m_fY == 0.0f)
@@ -3221,6 +3228,16 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
         pMember->m_nStepCount = 0;
         pMember->m_vFacing = m_vOrientation;
     }
+#ifdef _XBOX
+    float fNewSpeed = fMovement * 1000000.0f / m_nWalkElapsedTime;
+    double dSpeed = fNewSpeed;
+    float fRounded = (float)dSpeed;
+    fSpeed = pMember->m_fSpeed;
+    if (fRounded <= 0.0001)
+        fSpeed = fRounded;
+    else
+        fSpeed = (fSpeed + (float)dSpeed) * 0.5f;
+#else
     float fNewSpeed = fMovement * 1000000.0f / m_nWalkElapsedTime;
     float fOldSpeed;
     memcpy(&fOldSpeed, &pMember->m_fSpeed, sizeof(float));
@@ -3228,6 +3245,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
     if (!(dSpeed <= 0.0001))
         dSpeed = (fOldSpeed + fNewSpeed) * 0.5f;
     float fSpeed = (float)dSpeed;
+#endif
     if (fSpeed < 10.0f)
         fSpeed = 0.0f;
     fSpeed = min(fMaximumSpeed, fSpeed);
@@ -6189,16 +6207,12 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
         CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
         int nIndex = pClient->GetSWParty()->GetIndex(
             pClient->ServerToClientObjectId(GetId()));
-        if (nIndex >= 0)
 #ifdef _XBOX
-        {
-            CSWParty* pMemberParty = pClient->GetSWParty();
-
-            pMemberParty->GetMemberData(nIndex)->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
-        }
+        if (0 <= nIndex)
 #else
-            pClient->GetSWParty()->GetMemberData(nIndex)->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
+        if (nIndex >= 0)
 #endif
+            pClient->GetSWParty()->GetMemberData(nIndex)->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
     }
     m_nAttackMovementTimer = 3000;
     if (GetDead() == TRUE || GetIsPCDying() == TRUE || GetDeadTemp() == TRUE)
@@ -6262,9 +6276,14 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
     else
         m_oidSpellTarget = oidTarget;
     CGameObject* pTarget = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
-    if ((oidTarget != OBJECT_INVALID && pTarget == NULL) ||
-        (pTarget != NULL && pTarget->AsSWSCreature() != NULL &&
-         (pTarget->AsSWSCreature()->GetDead() || pTarget->AsSWSCreature()->GetDeadTemp())))
+    if (oidTarget != OBJECT_INVALID && pTarget == NULL)
+    {
+        RemoveSpellActionFromRound();
+        ProcessPendingCombatActions();
+        return ACTION_FAILED;
+    }
+    if (pTarget != NULL && pTarget->AsSWSCreature() != NULL &&
+        (pTarget->AsSWSCreature()->GetDead() || pTarget->AsSWSCreature()->GetDeadTemp()))
     {
         RemoveSpellActionFromRound();
         ProcessPendingCombatActions();

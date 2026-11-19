@@ -2301,6 +2301,9 @@ void CAurTexture::SetIsEnvironmentMapped(bool bMapped)
         }
     }
 }
+#ifdef _XBOX
+#define XBOX_TEXTURE_CONTROLLERS 1
+#endif
 // PC 0x00422BB0 GOG 0x00422C60 Xbox 0x00298170
 void CAurTexture::Bind()
 {
@@ -2336,12 +2339,15 @@ void CAurTexture::Bind()
             {
                 AurTextureBindTID(nCurrentTID, pBasic->IsCubeMap(), false);
             }
-            TextureController* pController = AurTextureGetController(pBasic);
-            if (pController != NULL)
+            if (XBOX_TEXTURE_CONTROLLERS)
             {
-                if (enabletexturecontrollers)
+                TextureController* pController = AurTextureGetController(pBasic);
+                if (pController != NULL)
                 {
-                    pController->Control();
+                    if (enabletexturecontrollers)
+                    {
+                        pController->Control();
+                    }
                 }
             }
         }
@@ -4298,6 +4304,10 @@ void CAurTextureBasic::ReduceToLevel()  // Xbox 0x002960A0
     {
         if (m_nCompressedSize > 0)
         {
+            if (!m_bMipMap)
+            {
+                return;
+            }
             int nBlockSize = m_nBPP == 4 ? 16 : 8;
             m_pImage = ImageSkipS3TCLevels(m_nWidth, m_nHeight, m_nBPP, pImage, m_nLevel);
             int nBytesPerBlock;
@@ -4333,9 +4343,9 @@ void CAurTextureBasic::ReduceToLevel()  // Xbox 0x002960A0
             }
             AurTextureFreeImage(pImage, m_nWidth, m_nHeight, m_nBPP, nSize, m_nDataSize, m_nTxiSize,
                                 (bool*)&m_bRasterAllocated, m_bProcessed, false);
-            m_nNumMipMaps -= m_nLevel;
-            m_nHeight >>= m_nLevel;
             m_nWidth >>= m_nLevel;
+            m_nHeight >>= m_nLevel;
+            m_nNumMipMaps -= m_nLevel;
             nHeight = m_nHeight;
             nWidth = m_nWidth;
             m_nCompressedSize = ((nHeight + 3) / 4) * ((nWidth + 3) / 4) * nBlockSize;

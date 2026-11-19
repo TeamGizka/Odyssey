@@ -755,7 +755,8 @@ CSWGuiManager::~CSWGuiManager()
 // PC 0x0040AD80 GOG 0x0040AD50
 int CSWGuiManager::GetPosInModalStack(CSWGuiPanel* pPanel)
 {
-    for (int i = 0; i < m_lModalPanels.num; i++)
+    int nCount = m_lModalPanels.num;
+    for (int i = 0; i < nCount; i++)
     {
         if (m_lModalPanels.element[i] == pPanel)
         {
@@ -802,7 +803,8 @@ int CSWGuiManager::PushModalPanel(CSWGuiPanel* pPanel)
 // PC 0x0040ADB0 GOG 0x0040AD80
 int CSWGuiManager::GetPosInPanelList(CSWGuiPanel* pPanel)
 {
-    for (int i = 0; i < m_lPanels.num; i++)
+    int nCount = m_lPanels.num;
+    for (int i = 0; i < nCount; i++)
     {
         if (m_lPanels.element[i] != NULL && m_lPanels.element[i] == pPanel)
         {

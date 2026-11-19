@@ -694,11 +694,16 @@ void CSWPartyTable::PositionParty()
         {
             CSWPartyFollowDataArray* pPaths = &pParty->m_cFollowPaths;
             Vector vAxis(0.0f, 0.0f, 1.0f);
+#ifndef _XBOX
             CSWPartyMemberData* pMember = &pParty->m_aPartyMemberData[1];
             int* pNPC = m_anMembers;
+#endif
             do
             {
                 EXOXBOXASSERT(nMember + 1 >= 0 && nMember + 1 < 3);
+#ifdef _XBOX
+                CSWPartyMemberData* pMember = &pParty->m_aPartyMemberData[nMember + 1];
+#endif
                 Vector vOffset = pMember->m_vFormationOffset;
                 EXOXBOXASSERT(nMember + 1 >= 0 && nMember + 1 < 3);
                 Vector vFollow = pMember->m_vFormationPosition;
@@ -709,7 +714,12 @@ void CSWPartyTable::PositionParty()
                     vFollow +
                     Quaternion(vAxis, DegToRad(fFacing)) *
                         vOffset;
+#ifdef _XBOX
+                int nNPC = m_anMembers[nMember];
+                unsigned long oidNPC = GetNPCObject(nNPC, 0, 1);
+#else
                 unsigned long oidNPC = GetNPCObject(*pNPC, 0, 1);
+#endif
                 g_pAppManager->m_pServerExoApp->ComputeSafeLocation(
                     vPosition, 10.0f, oidNPC, 0, &vPosition);
                 pNPCCreature =
@@ -718,12 +728,8 @@ void CSWPartyTable::PositionParty()
                 EXOXBOXASSERT(nMember + 1 >= 0 && nMember + 1 < 3);
                 pMember->m_vLastPosition = vPosition;
                 pNPCCreature->SetOrientation(vFacing);
-#ifdef _XBOX
-                pNPC++;
-                pMember++;
                 nMember++;
-#else
-                nMember++;
+#ifndef _XBOX
                 pNPC++;
                 pMember++;
 #endif

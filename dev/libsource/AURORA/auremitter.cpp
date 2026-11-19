@@ -4122,10 +4122,8 @@ void PartEmitter::RenderLinked()  // Xbox 0x002F9330
         fInverseLife = 1.0f / m_fLifeTime;
     else
         fInverseLife = 0.01f;
-    int nXGrid = pNode->m_nXGrid;
-    if (!nXGrid) nXGrid = 1;
-    int nYGrid = pNode->m_nYGrid;
-    if (!nYGrid) nYGrid = 1;
+    int nXGrid = pNode->m_nXGrid ? pNode->m_nXGrid : 1;
+    int nYGrid = pNode->m_nYGrid ? pNode->m_nYGrid : 1;
 
     GLRender_SetDepthMask(GL_FALSE);
     GLRender_Disable(ENABLE_LIGHTING);
@@ -4162,6 +4160,8 @@ void PartEmitter::RenderLinked()  // Xbox 0x002F9330
         float fYSize;
         if (m_fLifeTime >= 0.0f)
         {
+            AurDrawLine(m_vOrigin, m_lstActive[i]->m_vPosition);
+            AurDrawLine(m_vOrigin, m_lstActive[i]->m_vPosition, 1);
             float fAge;
             if (m_nEmitterType == LIGHTNING)
                 fAge = i * fInverseLife;
@@ -4285,12 +4285,10 @@ void PartEmitter::RenderLinked()  // Xbox 0x002F9330
                 ((unsigned long)(fAlpha * (fGobAlpha * fTileAlpha) * 255.0f) << 8)) << 8)) << 8);
 
             int nVertex = i * 4;
-            *reinterpret_cast<unsigned long*>(particlePool[nVertex].color) = nColor;
-            *reinterpret_cast<unsigned long*>(particlePool[nVertex + 1].color) = nColor;
-            *reinterpret_cast<unsigned long*>(particlePool[nVertex + 2].color) = nColor;
-            *reinterpret_cast<unsigned long*>(particlePool[nVertex + 3].color) = nColor;
+            for (int j = 0; j < 4; j++)
+                *reinterpret_cast<unsigned long*>(particlePool[4 * i + j].color) = nColor;
             Vector vCorner;
-            if (nVertex > 0)
+            if (i > 0)
             {
                 vCorner.m_fX = particlePool[4 * i - 3].position[0];
                 vCorner.m_fY = particlePool[4 * i - 3].position[1];
@@ -4315,7 +4313,7 @@ void PartEmitter::RenderLinked()  // Xbox 0x002F9330
             particlePool[4 * i + 2].position[2] = vCorner.m_fZ;
             particlePool[4 * i + 2].u = nColumn * fUScale;
             particlePool[4 * i + 2].v = 1.0f - nRow * fVScale;
-            if (nVertex > 0)
+            if (i > 0)
             {
                 vCorner.m_fX = particlePool[4 * i - 2].position[0];
                 vCorner.m_fY = particlePool[4 * i - 2].position[1];
@@ -4376,7 +4374,10 @@ void PartEmitter::RenderMotionBlurred()  // Xbox 0x002F1030
     if (m_pAurObject && m_pAurObject->m_fScale != 1.0f)
         fScale = m_pAurObject->m_fScale;
     if (fFrameTime > 0.0f)
-        fFrameTime = 1.0f / fFrameTime;
+    {
+        float fFrameRate = fFrameTime;
+        fFrameTime = 1.0f / fFrameRate;
+    }
     else
         fFrameTime = 0.0f;
     m_pEmitterMaterial->BindTexture0();
@@ -4594,18 +4595,18 @@ void PartEmitter::RenderMotionBlurred()  // Xbox 0x002F1030
         Vector vHeight;
         vWidth = vRight * (fWidth * 2.0f);
         vHeight = vUp * (fHeight * 0.5f);
-        int nBlue = (int)(vColor.m_fZ * 255.0f);
-        int nGreen = (int)(vColor.m_fY * 255.0f);
-        int nRed = (int)(vColor.m_fX * 255.0f);
+        unsigned long nBlue = (unsigned long)(vColor.m_fZ * 255.0f);
+        unsigned long nGreen = (unsigned long)(vColor.m_fY * 255.0f);
+        unsigned long nRed = (unsigned long)(vColor.m_fX * 255.0f);
         unsigned long nColor = nRed | ((nGreen | ((nBlue |
             ((unsigned long)((fObjectAlpha * fAlpha) * fTileAlpha * 255.0f) << 8)) << 8)) << 8);
         int nVertex = i * 4;
-        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 0].color) = nColor;
-        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 1].color) = nColor;
+        for (int j = 0; j < 2; j++)
+            *reinterpret_cast<unsigned long*>(particlePool[nVertex + j].color) = nColor;
         nColor = nRed | ((nGreen | ((nBlue |
             ((unsigned long)((fObjectAlpha * fTailAlpha * fAlpha * fTileAlpha) * 255.0f) << 8)) << 8)) << 8);
-        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 2].color) = nColor;
-        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 3].color) = nColor;
+        for (int j = 2; j < 4; j++)
+            *reinterpret_cast<unsigned long*>(particlePool[nVertex + j].color) = nColor;
 
         Vector vVertexPosition = pParticle->m_vPosition + vWidth + vHeight;
         particlePool[i * 4 + 0].position[0] = vVertexPosition.m_fX;
@@ -4684,7 +4685,10 @@ void PartEmitter::RenderStandard()  // Xbox 0x002EF170
     if (m_pAurObject && m_pAurObject->m_fScale != 1.0f)
         fScale = m_pAurObject->m_fScale;
     if (fFrameTime > 0.0f)
-        fFrameTime = 1.0f / fFrameTime;
+    {
+        float fFrameRate = fFrameTime;
+        fFrameTime = 1.0f / fFrameRate;
+    }
     else
         fFrameTime = 0.0f;
 

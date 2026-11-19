@@ -608,16 +608,15 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
     CSWSRoom* pRoom = GetRoom(vFrom, NULL);
     if (DumpRoomBBox)
     {
-#ifdef _XBOX
-        g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile();
-#endif
         DumpRoomBBox = 0;
     }
     float fMinHeight = 0.0f;
     float fMaxHeight = 0.0f;
     int nEdge;
     unsigned long oidHit;
+#ifndef _XBOX
     int nSteps = 0;
+#endif
     while (nResult == DIRECT_LINE_CLEAR && !bFinished)
     {
         if (pRoom != NULL)
@@ -631,6 +630,50 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                 bRoomClear = pRoom->NoNonWalkPolysOnRoom(vClippedStart, vClippedEnd,
                     fMinHeight, fMaxHeight, fRadius, pWalkHitInfo);
             }
+#ifdef _XBOX
+            if (!bRoomClear)
+            {
+                nResult = DIRECT_LINE_BLOCKED_ROOM;
+                break;
+            }
+            unsigned long oidObject = m_pPathfindInformation->m_oidIgnoreDoor;
+            float fObjectMinHeight = fMinHeight - AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
+            float fObjectMaxHeight = fMaxHeight + AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
+            if (!NoNonWalkPolysDetailed(vClippedStart, vClippedEnd, fObjectMinHeight, fObjectMaxHeight, fRadius, oidObject, oidHit, 0, NULL, 0, pWalkHitInfo, 0))
+            {
+                nResult = DIRECT_LINE_BLOCKED_OBJECT;
+                break;
+            }
+            if (m_pPathfindInformation == NULL || (!m_pPathfindInformation->m_bIgnoreCreatures && (!(fRadius > 0.0f) || !NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
+            {
+                nResult = DIRECT_LINE_BLOCKED_CREATURE;
+                break;
+            }
+            if (vEnd.m_fX - EPSILON <= vClippedEnd.m_fX &&
+                EPSILON + vEnd.m_fX >= vClippedEnd.m_fX &&
+                vEnd.m_fY - EPSILON <= vClippedEnd.m_fY &&
+                EPSILON + vEnd.m_fY >= vClippedEnd.m_fY)
+            {
+                bFinished = 1;
+            }
+            else
+            {
+                int nRoom = pRoom->GetAdjacentRoom(nEdge);
+                if (nRoom == -1 || m_pRooms[nRoom].m_bNoWalkMesh)
+                {
+                    nResult = DIRECT_LINE_NO_ROOM;
+                }
+                else
+                {
+                    equal(vClippedStart, vClippedEnd);
+                    if (pRoom->GetResRef() != m_pRooms[nRoom].GetResRef())
+                    {
+                    }
+                    pRoom = &m_pRooms[nRoom];
+                    vFrom = vClippedEnd;
+                }
+            }
+#else
             if (bRoomClear)
             {
                 unsigned long oidObject = m_pPathfindInformation->m_oidIgnoreDoor;
@@ -674,17 +717,20 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
             {
                 nResult = DIRECT_LINE_BLOCKED_ROOM;
             }
+#endif
         }
         else
         {
             return DIRECT_LINE_NO_ROOM;
         }
+#ifndef _XBOX
         if (nSteps >= AREA_DIRECT_LINE_MAX_ROOM_STEPS)
         {
             nResult = DIRECT_LINE_NO_ROOM;
             break;
         }
         nSteps++;
+#endif
     }
 
     if (!RenderTest)

@@ -18,6 +18,10 @@
 #include "aurmaterialinl.h"
 #include "aurdraw.h"
 
+#ifdef _XBOX
+#define SetBlendMode(nSource, nDestination) GLRender::SetBlendFunc(nSource, nDestination)
+#endif
+
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
 
@@ -193,7 +197,11 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,  // Xbox 0x
         RequestPoolManager::POOL_LOCK_WRITE);
     Vector* pNormals = (Vector*)GLRender::LockPool(normalToken, 0, 0,
         RequestPoolManager::POOL_LOCK_WRITE);
+#ifdef _XBOX
+    unsigned long nPool = pNode->m_pModel->AsModel()->m_nVertexPool;
+#else
     unsigned long nPool = pNode->m_pModel->AsModel()->GetVertexPool();
+#endif
 #ifdef _XBOX
     unsigned char* pVertices = (unsigned char*)GLRender::LockPool(nPool, 0, 0,
         RequestPoolManager::POOL_LOCK_WRITE);
@@ -245,7 +253,11 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,  // Xbox 0x
     Vector newcoord;
     Vector newnormal;
     unsigned short* pIndices;
+#ifdef _XBOX
+    for (int i = 0; i < pPrimitive->m_pNode->m_lstIndexPools.m_nCount; i++)
+#else
     for (int i = 0; i < pPrimitive->GetNode()->m_lstIndexPools.m_nCount; i++)
+#endif
     {
         nPool = pPrimitive->m_pNode->m_lstIndexPools[i];
         pIndices = (unsigned short*)GLRender::LockPool(
@@ -1070,6 +1082,9 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         Quaternion qRotation = -pPart->m_qOrientation;
         SkinDebugSetup();
         SkinDebugBone();
+#ifdef _XBOX
+        AurDrawLine(vTranslation, qRotation * vTranslation);
+#endif
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
@@ -1079,6 +1094,10 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             SkinDebugValue(vRotated.m_fY);
             qRotation = qRotation * -pPart->m_qOrientation;
         }
+#ifdef _XBOX
+        AurDrawLine(vTranslation, qRotation * vTranslation, 0);
+        AurDrawLine(pPart->m_vPosition, qRotation * vTranslation, 0);
+#endif
         for (int i = 0; i < pNode->m_nBoneMap; i++)
         {
             int nBone = (int)pNode->m_pfBoneMap[i];
@@ -1092,8 +1111,13 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 if (!pNode)
                     continue;
                 Vector vRotated = qRotation * vBoneTranslation;
+#ifdef _XBOX
+                Vector vSkinned = vTranslation + vRotated + vBone;
+                AurDrawLine(vSkinned, qRotation * vBoneTranslation, 0);
+#else
                 vBone = vTranslation + vRotated + vBone;
                 AurDrawLine(vBone, vBoneTranslation);
+#endif
                 SkinDebugValue(vRotated.m_fY);
                 if (!pSkin || !pPrimitive || !pPart)
                     continue;
@@ -1104,15 +1128,15 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 afBone[0] = pAxes[0].m_fX;
                 afBone[1] = pAxes[1].m_fX;
                 afBone[2] = vThird.m_fX;
-                afBone[3] = vBone.m_fX;
+                afBone[3] = vSkinned.m_fX;
                 afBone[4] = pAxes[0].m_fY;
                 afBone[5] = pAxes[1].m_fY;
                 afBone[6] = vThird.m_fY;
-                afBone[7] = vBone.m_fY;
+                afBone[7] = vSkinned.m_fY;
                 afBone[8] = pAxes[0].m_fZ;
                 afBone[9] = pAxes[1].m_fZ;
                 afBone[10] = vThird.m_fZ;
-                afBone[11] = vBone.m_fZ;
+                afBone[11] = vSkinned.m_fZ;
                 g_pD3DDevice->SetVertexShaderConstantFast(PartSkin::SKIN_VP_BONES + 3 * nBone, afBone, 3);
 #else
                 nBone = PartSkin::SKIN_VP_BONES + 3 * nBone;
@@ -1313,12 +1337,17 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
 #endif
                 if (!g_ForceSight)
                 {
+#ifdef _XBOX
+                    Vector& vAmbient = currentscene->m_vAmbient;
+#endif
                     GLRender_EnablePixelShaders(MODEL_SHADER_BUMP,
                         pSkin->m_pMaterial->m_pBumpMap,
                         currentscene->m_pNormalizationCubeMap,
                         currentscene->m_pNormalizationCubeMap,
                         pSkin->m_pMaterial->m_pTexture0);
+#ifndef _XBOX
                     Vector& vAmbient = currentscene->m_vAmbient;
+#endif
                     GLRender_SetPixelShaderAmbientColor(vAmbient, 1.0f);
                     Quaternion qOrientation;
                     Vector vPosition;
@@ -1995,7 +2024,12 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
                 int nBone = (int)pNode->m_pfBoneMap[i];
                 if (nBone != -1)
                 {
+#ifdef _XBOX
+                    Quaternion& qBone = qbones[i];
+                    tbones[i] = tbones[i] + qBone * pNode->m_lstTBoneRefInv[i];
+#else
                     tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
+#endif
                     qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
                     mRotation = qbones[i].getmatrix();
                     Vector& vBoneTranslation = tbones[i];
@@ -2141,6 +2175,11 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
             vTranslation = vTranslation + vRotated;
             qRotation = qRotation * -pPart->m_qOrientation;
         }
+#ifdef _XBOX
+        AurDrawLine(vTranslation, pPart->m_vPosition, 0);
+        AurDrawLine(pPart->m_vPosition, vTranslation);
+        AurDrawLine(pPart->m_vPosition, vTranslation, 0);
+#endif
         GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
         for (int i = 0; i < pNode->m_nBoneMap; i++)
         {

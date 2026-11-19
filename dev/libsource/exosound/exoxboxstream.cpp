@@ -5,7 +5,7 @@
 
 enum { MAX_VOLUME = 127 };
 
-static DWORD s_nFreePackets;
+DWORD CExoXboxStream::s_nFreePackets;
 
 CExoXboxStream::~CExoXboxStream()  // Xbox 0x00166A70
 {
@@ -315,7 +315,7 @@ int CExoXboxStream::CreateStream(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)  // Xbo
 
 HRESULT CExoXboxStream::Process()  // Xbox 0x001671B0
 {
-    DWORD nPacket = 0;
+    DWORD nPacket;
     DWORD nProcessed = 0;
     DWORD nPending = 0;
     DWORD nStatus;
@@ -326,7 +326,11 @@ HRESULT CExoXboxStream::Process()  // Xbox 0x001671B0
         return S_OK;
     }
     DirectSoundDoWork();
-    if (m_bFinished != 0 || m_bPaused != 0)
+    if (m_bFinished != 0)
+    {
+        return S_OK;
+    }
+    if (m_bPaused != 0)
     {
         return S_OK;
     }
@@ -342,7 +346,7 @@ HRESULT CExoXboxStream::Process()  // Xbox 0x001671B0
     s_nFreePackets = NUM_PACKETS - nPending;
     if (nPending != NUM_PACKETS)
     {
-        for (; nPacket < NUM_PACKETS; nPacket++)
+        for (nPacket = 0; nPacket < NUM_PACKETS; nPacket++)
         {
             if (m_aPackets[nPacket].m_nStatus != XMEDIAPACKET_STATUS_PENDING)
             {

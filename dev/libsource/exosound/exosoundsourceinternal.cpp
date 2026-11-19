@@ -1018,10 +1018,10 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // Xb
         }
         m_pSound->InterruptPlayingSound(m_nPriorityGroup);
     }
-    nGroup = m_nPriorityGroup;
     pSound = m_pSound;
     if (m_b3D != 0)
     {
+        nGroup = m_nPriorityGroup;
         C3DVoice* p3DVoice = pSound->GetFree3DVoice(nGroup);
         if (p3DVoice == 0)
         {
@@ -1055,6 +1055,7 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // Xb
     }
     else
     {
+        nGroup = m_nPriorityGroup;
         C2DVoice* p2DVoice = pSound->GetFree2DVoice(nGroup);
         if (p2DVoice == 0)
         {

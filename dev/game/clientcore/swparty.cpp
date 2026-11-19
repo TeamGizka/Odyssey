@@ -99,7 +99,7 @@ CSWCCreature* CSWParty::GetCharacter(int nIndex)
     unsigned long oidCreature;
     CClientExoApp* pClientExoApp;
 
-    if (nIndex >= 0 && nIndex < m_nCharacters)
+    if (0 <= nIndex && nIndex < m_nCharacters)
     {
         oidCreature = m_aPartyMemberData[nIndex].m_oidCreature;
         pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -1302,9 +1302,7 @@ int CSWParty::TestAndResetPath()
     Vector vPathFacing = Quaternion(Vector(0.0f, 0.0f, 1.0f),
                                     DegToRad(fFacing)) * vForward;
 #ifdef _XBOX
-    int nClosestMember = m_cFollowPaths.FindClosestPartyMemeber_Current();
-    EXOXBOXASSERT(nClosestMember >= 0 && nClosestMember < 3);
-    Vector vMemberFacing = m_aPartyMemberData[nClosestMember].m_vFacing;
+    Vector vMemberFacing = GetMemberData(m_cFollowPaths.FindClosestPartyMemeber_Current())->m_vFacing;
 #else
     Vector vMemberFacing = m_aPartyMemberData[
         m_cFollowPaths.FindClosestPartyMemeber_Current()].m_vFacing;

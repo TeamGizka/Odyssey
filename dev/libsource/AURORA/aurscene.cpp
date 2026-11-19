@@ -3779,6 +3779,13 @@ void Scene::RenderLensFlares()
                         pNode->m_lstTextures.m_pList[j]->Bind();
                         float fPosition = pNode->m_lstFlarePositions.m_pList[j];
                         Vector vPosition = vDirection * fPosition;
+#ifdef _XBOX
+                        if (AURSCENE_DEBUG)
+                        {
+                            AurPrintf("RenderLensFlares() flare %d height %f\n", j, vToLight.m_fZ);
+                            AurDrawLine(vDirection, vPosition);
+                        }
+#endif
                         Vector vColor = (pNode->m_lstFlareColorShifts.m_pList[j] + pLight->m_vColor) *
                                         pLight->m_fFlareFade * fFacing *
                                         (pNode->m_fFlareRadius - fDistance) / pNode->m_fFlareRadius;
@@ -3810,7 +3817,11 @@ void Scene::RenderLensFlares()
                         roundToInt(nRed, vColor.m_fX * 255.0f);
                         roundToInt(nGreen, vColor.m_fY * 255.0f);
                         roundToInt(nBlue, vColor.m_fZ * 255.0f);
+#ifdef _XBOX
+                        unsigned long nColor = nBlue | ((nGreen | ((nRed | (0xFFFFFF << 8)) << 8)) << 8);
+#else
                         unsigned long nColor = nRed | ((nGreen | ((nBlue | (0xFF << 8)) << 8)) << 8);
+#endif
                         for (int k = 0; k < 4; k++)
                         {
                             *(unsigned long*)pVertices[k].color = nColor;

@@ -164,7 +164,11 @@ template <class T> void List<T>::allocate(int nAllocated)
 {
     T* pOldList = m_pList;
     m_nAllocated = nAllocated;
+#ifdef _XBOX
+    m_pList = new T[m_nAllocated];
+#else
     m_pList = new T[nAllocated];
+#endif
     for (int i = 0; i < m_nCount; i++)
         m_pList[i] = pOldList[i];
     if (pOldList != 0)

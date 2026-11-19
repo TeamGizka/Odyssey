@@ -3741,7 +3741,7 @@ CExoSoundInternal::~CExoSoundInternal()  // Xbox 0x00163680
 #pragma optimize("", off)
 void CExoSoundInternal::Render()  // Xbox 0x001645E0
 {
-    unsigned __int64 nStartTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    unsigned __int64 nBeginTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
 
     Sleep(1);
     DeleteStoppedStreams();
@@ -3787,6 +3787,7 @@ void CExoSoundInternal::Render()  // Xbox 0x001645E0
     m_pStreamManager->m_fVolumeScale = m_fVolumeScale;
     DirectSoundDoWork();
 
+    int bRemoved = 0;
     CExoLinkedListNode* pPos = m_lstStreaming.GetHeadPos();
     CExoStreamingSoundSourceInternal* pStreamingSoundSource =
         m_lstStreaming.GetHead();
@@ -3809,8 +3810,12 @@ void CExoSoundInternal::Render()  // Xbox 0x001645E0
             !pStreamingSoundSource->GetWithinRangeOfListener())
         {
             m_lstStreaming.GetNext(pPos);
-            pStreamingSoundSource->Stop();
+            pStreamingSoundSource->Stop(1);
             AddToNonPlayingStreamingLoopingList(pStreamingSoundSource);
+            if (pPos != NULL)
+            {
+                pStreamingSoundSource = m_lstStreaming.GetAtPos(pPos);
+            }
             continue;
         }
         pStreamingSoundSource = m_lstStreaming.GetNext(pPos);
@@ -3862,6 +3867,25 @@ void CExoSoundInternal::Render()  // Xbox 0x001645E0
             {
                 m_nMuteFadeTime = 0;
                 m_nMuteStartTime = 0;
+                pPos = m_lstStreaming.GetHeadPos();
+                pStreamingSoundSource = m_lstStreaming.GetHead();
+                while (pPos != NULL)
+                {
+                    if (pStreamingSoundSource->GetFadeDuration() != 0)
+                    {
+                        pPos = RemoveFromStreamingList(pStreamingSoundSource);
+                        pStreamingSoundSource->Stop();
+                        if (pPos != NULL)
+                        {
+                            pStreamingSoundSource =
+                                m_lstStreaming.GetAtPos(pPos);
+                        }
+                    }
+                    else
+                    {
+                        pStreamingSoundSource = m_lstStreaming.GetNext(pPos);
+                    }
+                }
             }
         }
     }
@@ -4026,20 +4050,31 @@ void CExoSoundInternal::Render()  // Xbox 0x001645E0
 
 
 
-    DWORD nStatus = 0;
+    DWORD dwDSStatus = 0;
     pPos = m_lstReleasing2DVoices.GetHeadPos();
     while (pPos != NULL)
     {
         C2DVoice* p2DVoice = m_lstReleasing2DVoices.GetAtPos(pPos);
         if (p2DVoice != NULL)
         {
-            p2DVoice->m_pBuffer->GetStatus(&nStatus);
-            if (!(nStatus & DSBSTATUS_PLAYING))
+            if (p2DVoice->m_pBuffer != NULL)
+            {
+                p2DVoice->m_pBuffer->GetStatus(&dwDSStatus);
+            }
+            else
+            {
+                dwDSStatus = 0;
+            }
+            if (!(dwDSStatus & DSBSTATUS_PLAYING))
             {
                 CExoLinkedListNode* pReleasePosition = pPos;
                 m_lstReleasing2DVoices.GetNext(pPos);
                 m_lstReleasing2DVoices.Remove(pReleasePosition);
-                p2DVoice->m_pBuffer->Release();
+                if (p2DVoice->m_pBuffer != NULL)
+                {
+                    p2DVoice->m_pBuffer->Release();
+                    p2DVoice->m_pBuffer = NULL;
+                }
                 if (p2DVoice->m_bSourceGone == 0)
                 {
                     p2DVoice->m_pSource->Release();
@@ -4054,20 +4089,31 @@ void CExoSoundInternal::Render()  // Xbox 0x001645E0
             m_lstReleasing2DVoices.GetNext(pPos);
         }
     }
-    nStatus = 0;
+    dwDSStatus = 0;
     pPos = m_lstReleasing3DVoices.GetHeadPos();
     while (pPos != NULL)
     {
         C3DVoice* p3DVoice = m_lstReleasing3DVoices.GetAtPos(pPos);
         if (p3DVoice != NULL)
         {
-            p3DVoice->m_pBuffer->GetStatus(&nStatus);
-            if (!(nStatus & DSBSTATUS_PLAYING))
+            if (p3DVoice->m_pBuffer != NULL)
+            {
+                p3DVoice->m_pBuffer->GetStatus(&dwDSStatus);
+            }
+            else
+            {
+                dwDSStatus = 0;
+            }
+            if (!(dwDSStatus & DSBSTATUS_PLAYING))
             {
                 CExoLinkedListNode* pReleasePosition = pPos;
                 m_lstReleasing3DVoices.GetNext(pPos);
                 m_lstReleasing3DVoices.Remove(pReleasePosition);
-                p3DVoice->m_pBuffer->Release();
+                if (p3DVoice->m_pBuffer != NULL)
+                {
+                    p3DVoice->m_pBuffer->Release();
+                    p3DVoice->m_pBuffer = NULL;
+                }
                 if (p3DVoice->m_bSourceGone == 0)
                 {
                     p3DVoice->m_pSource->Release();
@@ -4084,8 +4130,8 @@ void CExoSoundInternal::Render()  // Xbox 0x001645E0
     }
     m_pDirectSound->CommitDeferredSettings();
     OcclusionRender(nRenderDeltaMS);
-    g_fSoundRenderTime = (float)(int)
-        (g_pExoBase->m_pExoTimers->GetHighResolutionTimer() - nStartTime) * 0.001f;
+    unsigned __int64 nEndTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    g_fSoundRenderTime = (float)(int)(nEndTime - nBeginTime) * 0.001f;
 }
 #pragma optimize("", on)
 #endif
@@ -4103,11 +4149,11 @@ int CExoSoundInternal::Initialize(const CExoString& s3DProvider, unsigned char n
         return 0;
     }
     m_n3DVoices = n3DVoices;
-    m_n3DVoices = min(m_n3DVoices, MAX_VOICES);
+    m_n3DVoices = min(n3DVoices, MAX_VOICES);
     m_n3DVoices = max(m_n3DVoices, 8);
     m_p3DVoices = new C3DVoice[m_n3DVoices];
     m_n2DVoices = n2DVoices;
-    m_n2DVoices = min(m_n2DVoices, MAX_VOICES);
+    m_n2DVoices = min(n2DVoices, MAX_VOICES);
     m_n2DVoices = max(m_n2DVoices, 8);
     m_p2DVoices = new C2DVoice[m_n2DVoices];
     for (nVoice = 0; nVoice < m_n3DVoices; nVoice++)

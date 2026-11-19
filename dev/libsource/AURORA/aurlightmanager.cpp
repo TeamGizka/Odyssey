@@ -786,12 +786,8 @@ void LightManager::EnableHighestPriorityLightsFade(
 {
     List<PartLight*>& lstLights = pContainer->m_lstLights;
     List<float>& lstIntensities = pContainer->m_lstFadeIntensities;
-#ifdef _XBOX
-    List<PartLight*> listHighestPriorityLights;
-#else
     static List<PartLight*> listHighestPriorityLights(0);
     listHighestPriorityLights.m_nCount = 0;
-#endif
 
     int i;
     for (i = 0; i < nMaxLights; i++)
@@ -844,52 +840,49 @@ void LightManager::EnableHighestPriorityLightsFade(
         }
     }
 
+    PartLight* pShadowLight = NULL;
     for (i = 0; i < m_lstEnabledLights.m_nCount; i++)
     {
         PartLight* pLight = m_lstEnabledLights[i];
-#ifdef _XBOX
-        int bShadow = pLight->m_bShadow;
-        if (bShadow)
-#else
         if (pLight->m_bShadow)
-#endif
         {
-            float fShadowFade;
-
-            if (pContainer->m_pShadowLight == NULL)
-            {
-                pContainer->m_pShadowLight = pLight;
-                fShadowFade = pContainer->m_fShadowFade + lightshadowfadespeed * DeltaT;
-            }
-            else if (pContainer->m_pShadowLight == pLight)
-            {
-                fShadowFade = pContainer->m_fShadowFade + lightshadowfadespeed * DeltaT;
-            }
-            else
-            {
-                pContainer->m_fShadowFade = max(0.0f,
-                    pContainer->m_fShadowFade - lightshadowfadespeed * DeltaT);
-                if (pContainer->m_fShadowFade <= 0.0f)
-                {
-                    pContainer->m_pShadowLight = pLight;
-                    fShadowFade = pContainer->m_fShadowFade + lightshadowfadespeed * DeltaT;
-                }
-                else
-                    goto ShadowFadeDone;
-            }
-            pContainer->m_fShadowFade = min(1.0f, fShadowFade);
-            goto ShadowFadeDone;
+            pShadowLight = pLight;
+            break;
         }
     }
-    if (pContainer->m_pShadowLight)
+    if (pShadowLight == NULL)
+    {
+        if (pContainer->m_pShadowLight)
+        {
+            pContainer->m_fShadowFade = max(0.0f,
+                pContainer->m_fShadowFade - lightshadowfadespeed * DeltaT);
+            if (pContainer->m_fShadowFade <= 0.0f)
+                pContainer->m_pShadowLight = NULL;
+        }
+    }
+    else if (pContainer->m_pShadowLight == NULL)
+    {
+        pContainer->m_pShadowLight = pShadowLight;
+        pContainer->m_fShadowFade = min(1.0f,
+            pContainer->m_fShadowFade + lightshadowfadespeed * DeltaT);
+    }
+    else if (pContainer->m_pShadowLight == pShadowLight)
+    {
+        pContainer->m_fShadowFade = min(1.0f,
+            pContainer->m_fShadowFade + lightshadowfadespeed * DeltaT);
+    }
+    else
     {
         pContainer->m_fShadowFade = max(0.0f,
             pContainer->m_fShadowFade - lightshadowfadespeed * DeltaT);
         if (pContainer->m_fShadowFade <= 0.0f)
-            pContainer->m_pShadowLight = NULL;
+        {
+            pContainer->m_pShadowLight = pShadowLight;
+            pContainer->m_fShadowFade = min(1.0f,
+                pContainer->m_fShadowFade + lightshadowfadespeed * DeltaT);
+        }
     }
 
-ShadowFadeDone:
     if (lstLights.m_nCount == m_lstPreviousFadeLights.m_nCount)
     {
         bool bSameLights = true;
@@ -917,7 +910,7 @@ ShadowFadeDone:
         pLight->m_fMultiplier = lstIntensities[i];
         GLRender_EnableLight(i + 1);
         SetLightGL(i, pLight->m_vWorldPosition,
-                   pLight->m_fMultiplier * pLight->m_vColor,
+                   pLight->m_vColor * pLight->m_fMultiplier,
                    pLight->m_fRadius, pLight->m_bAmbientOnly);
     }
     for (i = lstLights.m_nCount; i < MAX_ENABLED_LIGHTS; i++)

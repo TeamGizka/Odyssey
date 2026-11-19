@@ -70,6 +70,14 @@ void CSWGuiSkillsCharGen::OnExitPointsButton(CSWGuiControl* pControl)
 // PC 0x00767AF0 GOG 0x00767910 Xbox 0x00142700
 void CSWGuiSkillsCharGen::OnMinusButton()
 {
+#ifdef _XBOX
+    if (m_pCreature->m_pStats->GetSkillRank((unsigned short)m_nSelected) ==
+        m_aStartRank[m_nSelected])
+    {
+        return;
+    }
+    CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
+#else
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
 
     if (pStats->GetSkillRank((unsigned short)m_nSelected) ==
@@ -77,6 +85,7 @@ void CSWGuiSkillsCharGen::OnMinusButton()
     {
         return;
     }
+#endif
     pStats->DecreaseSkillRank((unsigned short)m_nSelected,
                               m_aStartRank[m_nSelected]);
     CSWCLevelUpStats* pCurrentStats = m_pCreature->m_pStats;

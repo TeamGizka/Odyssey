@@ -244,8 +244,13 @@ inline Vector CSWPlayerControlCamRelative::GetAcceleration(
 int CSWPlayerControlCamRelative::Control(float fTimeStep)
 {
     float fTime = 1.0f < fTimeStep ? 1.0f : fTimeStep;
+#ifdef _XBOX
+    if (m_oidPlayer != OBJECT_INVALID && m_pCamera != NULL &&
+        g_pAppManager->m_pServerExoApp != NULL)
+#else
     if (m_oidPlayer != OBJECT_INVALID && m_pCamera != NULL &&
         g_pAppManager->GetServerExoApp() != NULL)
+#endif
     {
         CSWCCreature* pPlayer = GetPlayer();
         CSWSCreature* pServerPlayer = pPlayer->GetServerCreature();
@@ -277,7 +282,13 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
             }
 #endif
 
+#ifdef _XBOX
+            float fLeftRight = m_fLeftRight;
+            float fUpDown = m_fUpDown;
+            Vector vInput(-fLeftRight, fUpDown, 0.0f);
+#else
             Vector vInput(-m_fLeftRight, m_fUpDown, 0.0f);
+#endif
             if (vInput.m_fX != 0.0f && vInput.m_fY != 0.0f)
                 vInput.Normalize();
 #ifndef _XBOX
@@ -292,7 +303,11 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
             Quaternion qCamera = YawPitchRoll(Yaw(vCameraDirection), 0.0f, 0.0f);
             unsigned char bStopped = vInput.IsZero();
             pPlayer->m_fDriveTurnAngle = 0.0f;
+#ifdef _XBOX
+            if (GetEnabled() && !bStopped)
+#else
             if (m_bEnabled && !bStopped)
+#endif
             {
                 Vector vDirection = qCamera * vInput;
                 pointto(vDirection);
@@ -327,9 +342,15 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
                 {
                     float fSpeed = magnitude(m_stateB.m_vValue);
                     float fScale = 1.0f - fSpeed / GetMaxSpeed();
+#ifdef _XBOX
+                    float fTurnRate = m_fMinTurnRate +
+                        (m_fMaxTurnRate - m_fMinTurnRate) * fScale;
+                    float fTurn = fTurnRate * fTime * m_fTurnDirection;
+#else
                     float fTurn = (m_fMinTurnRate +
                         (m_fMaxTurnRate - m_fMinTurnRate) * fScale) *
                         fTime * m_fTurnDirection;
+#endif
                     if (fTurn > fDifference)
                         fTurn = fDifference;
                     else if (fTurn < -fDifference)
@@ -388,8 +409,14 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
                     pPlayer->SetOrientation(normalize(Vector(pPlayer->m_vOrientation.m_fX,
                                         pPlayer->m_vOrientation.m_fY, 0.0f)));
                     vDisplacement = pPlayer->m_vOrientation * magnitude(vDisplacement);
+#ifdef _XBOX
+                    EXOLOG("Camera relative: moving player %x\n", pPlayer->GetId());
+                    Vector vPosition = pPlayer->m_vPosition + vDisplacement;
+                    magnitude(pPlayer->m_vPosition - vPosition);
+#else
                     Vector vPosition = pPlayer->m_vPosition + vDisplacement;
                     float fDistance = magnitude(pPlayer->m_vPosition - vPosition);
+#endif
                     fAnimationSpeed = magnitude(m_stateA.m_vValue);
                     if (_finite(fAnimationSpeed) && fAnimationSpeed > 1.0f)
                     {

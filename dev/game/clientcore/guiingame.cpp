@@ -6081,14 +6081,12 @@ int CGuiInGame::Initialize()
         m_pPausePanel = new CSWGuiInGamePause(m_pGuiManager);
         m_pSoloModeQuery = new CSWGuiInGameSoloModeQuery(m_pGuiManager);
         m_pAreaTransition = new CSWGuiInGameAreaTransition(m_pGuiManager);
-#ifndef _XBOX
         if (m_bFadeUntilScript != 0)
         {
             m_pGuiManager->AddPanel(m_pGlobalFade, SWGUI_PANEL_MODE_OVERLAY, 1);
             m_pGlobalFade->SetVisible(1);
             m_pGlobalFade->SetFade(0, 0.0f, 0.1f, Vector());
         }
-#endif
         if (g_bCreateAllGUIs != 0)
         {
             m_pMessagesPanel = new CSWGuiInGameMessages(m_pGuiManager);

@@ -2162,7 +2162,7 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
             g_bMissingFileDeferred = 1;
             g_sMissingFileDeferred = sName;
         }
-        return bResult;
+        break;
     case 2:
         m_nId = nId;
         m_nTableType = 2;
@@ -2195,7 +2195,11 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
             g_sMissingFileDeferred = sName;
         }
         return bResult;
+    default:
+        return 0;
     }
+
+    return bResult;
 #else
     switch (nTableType)
     {
@@ -2216,9 +2220,9 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
         m_nTableType = 4;
         return AddResourceImageContents(bFlag);
     }
-#endif
 
     return 0;
+#endif
 }
 // PC 0x00411410 GOG 0x004113C0 Xbox 0x00161000
 void CExoKeyTable::RebuildTable()

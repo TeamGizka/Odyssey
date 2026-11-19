@@ -281,7 +281,11 @@ public:
     unsigned char* m_pDirtyImage;
     int m_nDirtyIndex;
     char m_nBlendMode;
+#ifdef _XBOX
+    float m_nDirtyFrame;
+#else
     int m_nDirtyFrame;
+#endif
 };
 
 #endif

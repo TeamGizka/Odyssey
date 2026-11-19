@@ -45,7 +45,11 @@ public:
 
     void UnloadModule();
     int LoadModule();
+#ifdef _XBOX
+    CExoString GetModuleTitle() { return m_sModuleTitle; }
+#else
     CExoString GetModuleTitle();
+#endif
     void SetCameraFollow(unsigned long oidTarget, int bSnap);
     void TiltCamera(float fTilt);
     void AcclTiltCamera(float fTilt);

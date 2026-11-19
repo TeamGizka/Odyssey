@@ -2302,8 +2302,12 @@ void RenderEMLM(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DBBE0
             pPart->m_pMaterial->m_pTexture1.m_pObject, pEnvMap, 0);
     DoEnvMapTransform(pEnvMap, 2);
     Vector vColor(1.0f, 1.0f, 1.0f);
+#ifdef _XBOX
+    XbSetPixelShaderAmbientColor(vColor, fAlpha);
+#else
     if (!g_ForceSight)
         GLRender_SetPixelShaderAmbientColor(vColor, fAlpha);
+#endif
     RenderFlat(pPrimitive);
     UndoEnvMapTransform(pEnvMap, 2);
     if (g_ForceSight)
@@ -2314,11 +2318,7 @@ void RenderEMLM(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x002DBBE0
     GLRender_DisableClientState(CLIENT_STATE_TEXTURE_COORD);
     GLRender::ActivateTextureStage(0);
     GLRender_Enable(ENABLE_ALPHA_TEST);
-#ifdef _XBOX
-    GLRender::SetActiveTexture(2);
-#else
     GLRender::SetActiveTexture(1);
-#endif
     GLRender_Disable(ENABLE_TEXTURE_CUBE_MAP);
     GLRender::SetActiveTexture(0);
 }
@@ -3518,7 +3518,11 @@ void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x00
         GLRender_EnablePixelShaders(MODEL_SHADER_BUMP_DISABLE, 0, 0, 0, 0);
         GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+#ifdef _XBOX
+        pPart->m_pMaterial->m_pTexture0->Bind();
+#else
         ((CAurTexture*)pPart->m_pMaterial->m_pTexture0.m_pObject)->Bind();
+#endif
     }
 }
 
@@ -4083,9 +4087,37 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
             {
                 currentscene->m_pLightManager->DisableBumpMapLights();
                 bumpmapvp->Enable(pPart, true);
-                Vector vLight = lstLights[nLight]->m_vWorldPosition;
-                vLight = -qOrientation * (vLight - vPosition);
                 Vector& vColor = lstLights[nLight]->m_vColor;
+#ifdef _XBOX
+                if (AURMODELRENDER_DEBUG)
+                {
+                    GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+                    GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+                    SetBlendMode(BLEND_ONE, BLEND_ONE);
+                    GLRender_SetColor4f(vColor.m_fX, vColor.m_fY, vColor.m_fZ, 1.0f);
+                    RenderFlatNonTextured(pPrimitive);
+                    SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+                    GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+                    GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+                    GLRender_SetPixelShaderAmbientColor(vColor, 1.0f);
+                    RenderFlat(pPrimitive);
+                    GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+                    GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+                    GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+                    SetBlendMode(BLEND_DST_COLOR, BLEND_ZERO);
+                    GLRender_SetColor4f(vColor.m_fX, vColor.m_fY, vColor.m_fZ, 1.0f);
+                    RenderFlatNonTextured(pPrimitive);
+                    SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+                    GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+                }
+#endif
+                Vector vLight = lstLights[nLight]->m_vWorldPosition;
+#ifdef _XBOX
+                Vector vLightOffset = vLight - vPosition;
+                vLight = -qOrientation * vLightOffset;
+#else
+                vLight = -qOrientation * (vLight - vPosition);
+#endif
                 Vector vLightColor = cmul(vColor,
                     (vDiffuse * diffuseintensity) *
                     ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetDiffuseBumpIntensity());
@@ -4112,9 +4144,19 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
                     vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
                 AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
                     vEye.m_fX, vEye.m_fY, vEye.m_fZ, 1.0f);
+#ifdef _XBOX
+                PartLight* pLight = lstLights[nLight];
+                float fRadius = pLight->m_fRadius;
+                float fRadiusSq = fRadius * fRadius;
+                float fDenominator = fRadiusSq + fRadiusSq;
+                float fAttenuation = AUR_LIGHT_ATTENUATION_SCALE / fDenominator;
+                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
+                    1.0f, 0.0f, fAttenuation, 1.0f);
+#else
                 AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
                     1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (lstLights[nLight]->m_fRadius * lstLights[nLight]->m_fRadius +
                                                     lstLights[nLight]->m_fRadius * lstLights[nLight]->m_fRadius), 1.0f);
+#endif
                 RenderFlat(pPrimitive);
                 if (bAlphaTestEnabled)
                 {
@@ -4221,6 +4263,22 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
 #endif
             fogvp->Enable(pPrimitive->m_pPart, false);
             GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+#ifdef _XBOX
+            float afFog[12];
+            afFog[0] = currentscene->m_fFogNear;
+            afFog[1] = currentscene->m_fFogFar;
+            afFog[2] = (float)currentscene->m_nFogMode;
+            afFog[3] = 1.0f;
+            afFog[4] = currentscene->m_vFogColor.m_fX;
+            afFog[5] = currentscene->m_vFogColor.m_fY;
+            afFog[6] = currentscene->m_vFogColor.m_fZ;
+            afFog[7] = 1.0f;
+            afFog[8] = 1.0f;
+            afFog[9] = 0.0f;
+            afFog[10] = 0.0f;
+            afFog[11] = 0.0f;
+            g_pD3DDevice->SetVertexShaderConstantFast(VertexProgram::PARAM_FOG_RANGE, afFog, 3);
+#else
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_FOG_RANGE,
                 currentscene->m_fFogNear, currentscene->m_fFogFar,
                 (float)currentscene->m_nFogMode, 1.0f);
@@ -4229,6 +4287,7 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
                 currentscene->m_vFogColor.m_fZ, 1.0f);
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_FOG_LIMITS,
                 1.0f, 0.0f, 0.0f, 0.0f);
+#endif
             SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
             RenderFlatNonTextured(pPrimitive);
             GLRender_Disable(ENABLE_VERTEX_PROGRAM);
@@ -4632,31 +4691,36 @@ void PartSkin::Project(const Vector& vPosition, float fDistance,
     GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
     for (int i = 0; i < pNode->m_nBoneMap; i++)
     {
+#ifdef _XBOX
+        int nBone = (int)pNode->m_pfBoneMap[i];
+#else
         float fBone = pNode->m_pfBoneMap[i];
         int nBone = (int)fBone;
+#endif
         if (nBone != MdlNodeSkin::UNMAPPED_BONE)
         {
             tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
             qbones[i] = qbones[i] * pNode->m_lstQBoneRefInv[i];
             mRotation = qbones[i].getmatrix();
-            Vector& vBoneTranslation = tbones[i];
-            int nRegister = SKIN_VP_BONES + 3 * nBone;
 #ifdef _XBOX
+            int nRegister = SKIN_VP_BONES + 3 * nBone;
             float afBone[12];
             afBone[0] = mRotation.m_vFirst.m_fX;
             afBone[1] = mRotation.m_vSecond.m_fX;
             afBone[2] = mRotation.m_vThird.m_fX;
-            afBone[3] = vBoneTranslation.m_fX;
+            afBone[3] = tbones[i].m_fX;
             afBone[4] = mRotation.m_vFirst.m_fY;
             afBone[5] = mRotation.m_vSecond.m_fY;
             afBone[6] = mRotation.m_vThird.m_fY;
-            afBone[7] = vBoneTranslation.m_fY;
+            afBone[7] = tbones[i].m_fY;
             afBone[8] = mRotation.m_vFirst.m_fZ;
             afBone[9] = mRotation.m_vSecond.m_fZ;
             afBone[10] = mRotation.m_vThird.m_fZ;
-            afBone[11] = vBoneTranslation.m_fZ;
+            afBone[11] = tbones[i].m_fZ;
             g_pD3DDevice->SetVertexShaderConstantFast(nRegister, afBone, 3);
 #else
+            Vector& vBoneTranslation = tbones[i];
+            int nRegister = SKIN_VP_BONES + 3 * nBone;
             AurSetVertexProgramParameter4f(nRegister,
                 mRotation.m_vFirst.m_fX, mRotation.m_vSecond.m_fX,
                 mRotation.m_vThird.m_fX, vBoneTranslation.m_fX);

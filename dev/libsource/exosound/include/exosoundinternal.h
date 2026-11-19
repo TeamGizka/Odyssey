@@ -75,6 +75,8 @@ public:
 class C2DVoice
 {
 public:
+    C2DVoice() : m_pSource(0), m_pBuffer(0), m_bReleasing(0), m_bSourceGone(0) {}
+
     CExoSoundSourceInternal* m_pSource;
     LPDIRECTSOUNDBUFFER m_pBuffer;
 
@@ -87,6 +89,8 @@ public:
 class C3DVoice
 {
 public:
+    C3DVoice() : m_pSource(0), m_pBuffer(0), m_bReleasing(0), m_bSourceGone(0) {}
+
     CExoSoundSourceInternal* m_pSource;
     LPDIRECTSOUNDBUFFER m_pBuffer;
     int m_bReleasing;
@@ -648,6 +652,8 @@ public:
     void SetPitchVariance(float fVariance);
     int Play(const CExoString& sFileName, unsigned short nResourceType, int bVoice, int bMusic, int bCached,
              int bPaused);
+
+    static DWORD s_nFreePackets;
 
     int m_bPlaying;
     int m_bPlayFailed;

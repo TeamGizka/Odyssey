@@ -472,17 +472,7 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
     {
         switch (nEvent)
         {
-#ifdef _XBOX
-        case GUIEVENT_TOGGLE_MODE:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            if (!g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
-                    CClientExoApp::TUTORIAL_RETURN_TO_EBON_HAWK,
-                    OBJECT_INVALID, OBJECT_INVALID, 0))
-            {
-                OnXButton(0);
-            }
-            break;
-#endif
+#ifndef _XBOX
         case GUIEVENT_ACTIVATE:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             if (m_bPartySelection)
@@ -501,6 +491,7 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
                 m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             }
             break;
+#endif
         case GUIEVENT_CANCEL:
         case GUIEVENT_ACCEPT:
         case GUIEVENT_CANCEL_ALTERNATE:

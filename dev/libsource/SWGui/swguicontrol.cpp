@@ -1654,7 +1654,7 @@ inline void CSWGuiControl::SetActive(int bActive)
     m_bActive = bActive;
 }
 // PC 0x00417A60 GOG 0x00417A90 Xbox 0x00333EF0
-int CSWGuiListBox::GetNumSegments()
+inline int CSWGuiListBox::GetNumSegments()
 {
     int nRange;
     if (m_cItemExtent.m_nHeight != 0)

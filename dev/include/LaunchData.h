@@ -163,6 +163,7 @@ public:
     bool GetLoadingSave() { return m_bLoadingSave; }
     bool GetLoadAutoSave() { return m_bLoadAutoSave; }
     unsigned char GetOptionsDataValid() { return m_bOptionsDataValid; }
+    unsigned char GetStoryHint(unsigned char nArea) { return m_anStoryHint[nArea]; }
 #endif
 
     int SaveToGFF(class CResGFF* pRes, class CResStruct& stStruct);

@@ -532,6 +532,10 @@ void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
         }
     }
 }
+static inline CAurScene* GetAurScene(CSWGuiScene* pGuiScene)
+{
+    return pGuiScene->m_pScene;
+}
 CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60 GOG 0x00730970 Xbox 0x00119B00
     : CSWGuiPanel(pManager)
 {
@@ -644,10 +648,10 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60 GOG 0x00
     if (g_bDo3DGUIs != 0)
     {
         CSWGuiScene* pScene = &m_3dModel.m_cScene;
-        pScene->m_pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        GetAurScene(pScene)->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
         pScene->AddModel("upgitem_light", -1);
         pScene = &m_3dModelLs.m_cScene;
-        pScene->m_pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        GetAurScene(pScene)->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
         pScene->AddModel("upgitem_light", -1);
     }
 #ifndef _XBOX
@@ -5719,10 +5723,10 @@ CSWGuiSwoopUpgrade::CSWGuiSwoopUpgrade(CSWGuiManager* pManager)
     if (g_bDo3DGUIs != 0)
     {
         CSWGuiScene* pScene = &m_3dModel.m_cScene;
-        pScene->m_pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        GetAurScene(pScene)->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
         pScene->AddModel("upgitem_light", -1);
         pScene = &m_3dModelLs.m_cScene;
-        pScene->m_pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        GetAurScene(pScene)->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
         pScene->AddModel("upgitem_light", -1);
     }
 }

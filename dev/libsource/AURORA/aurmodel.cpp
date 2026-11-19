@@ -2037,17 +2037,18 @@ int PartTriMesh::HitCheckGeom(const Vector& vStart, Vector& vEnd,
 
 #ifdef _XBOX
 
+    Vector vNormal;
     int nVertexPool = pMesh->m_pModel->AsModel()->m_nVertexPool;
     unsigned char* pVertices = (unsigned char*)GLRender::LockPool(
         nVertexPool, 0, 0, RequestPoolManager::POOL_LOCK_READ_ONLY);
-    Vector vNormal;
 #else
     Vector* pVertices = pMesh->m_pVertexPositions;
     Vector vNormal;
 #endif
+    int i;
     if (fScale == 1.0f)
     {
-        for (int i = 0; i < pMesh->m_lFaces.m_nCount; i++)
+        for (i = 0; i < pMesh->m_lFaces.m_nCount; i++)
         {
             Vector vTriangle[3];
 #ifdef _XBOX
@@ -2089,22 +2090,25 @@ int PartTriMesh::HitCheckGeom(const Vector& vStart, Vector& vEnd,
     }
     else
     {
-        for (int i = 0; i < pMesh->m_lFaces.m_nCount; i++)
+        for (i = 0; i < pMesh->m_lFaces.m_nCount; i++)
         {
             Vector vTriangle[3];
 #ifdef _XBOX
+            int nVertex0 = pMesh->m_lFaces[i].m_anVertexIndices[0];
             Vector& vVertex0 = *(Vector*)(pVertices + pMesh->m_nVertexDataOffset +
-                pMesh->m_nVertexStride * pMesh->m_lFaces[i].m_anVertexIndices[0]);
+                pMesh->m_nVertexStride * nVertex0);
             vTriangle[0].m_fX = fScale * vVertex0.m_fX;
             vTriangle[0].m_fY = fScale * vVertex0.m_fY;
             vTriangle[0].m_fZ = fScale * vVertex0.m_fZ;
+            int nVertex1 = pMesh->m_lFaces[i].m_anVertexIndices[1];
             Vector& vVertex1 = *(Vector*)(pVertices + pMesh->m_nVertexDataOffset +
-                pMesh->m_nVertexStride * pMesh->m_lFaces[i].m_anVertexIndices[1]);
+                pMesh->m_nVertexStride * nVertex1);
             vTriangle[1].m_fX = fScale * vVertex1.m_fX;
             vTriangle[1].m_fY = fScale * vVertex1.m_fY;
             vTriangle[1].m_fZ = fScale * vVertex1.m_fZ;
+            int nVertex2 = pMesh->m_lFaces[i].m_anVertexIndices[2];
             Vector& vVertex2 = *(Vector*)(pVertices + pMesh->m_nVertexDataOffset +
-                pMesh->m_nVertexStride * pMesh->m_lFaces[i].m_anVertexIndices[2]);
+                pMesh->m_nVertexStride * nVertex2);
             vTriangle[2].m_fX = fScale * vVertex2.m_fX;
             vTriangle[2].m_fY = fScale * vVertex2.m_fY;
             vTriangle[2].m_fZ = fScale * vVertex2.m_fZ;
@@ -3767,9 +3771,11 @@ Gob::Gob(char* sName)
       m_lstAppendModels(0), m_lstAppendParts(0), m_lCallBacks(0),
       m_lstLights(0), m_lstAttachments(0)
 {
+#ifndef _XBOX
     m_fIlluminationBlue = 0.5f;
     m_fIlluminationGreen = 0.5f;
     m_fIlluminationRed = 0.5f;
+#endif
     m_nForcePoints = 0;
     m_nAlignmentValue = 50;
     m_bNonForceBlending = 0;
@@ -3779,13 +3785,20 @@ Gob::Gob(char* sName)
     m_fForceGlowRed = 0.0f;
     m_bHologram = 0;
     m_bPerObjectIllumination = 0;
+#ifdef _XBOX
+    m_fIlluminationBlue = 0.5f;
+    m_fIlluminationGreen = 0.5f;
+    m_fIlluminationRed = 0.5f;
+#endif
     m_bRenderingEnabled = 1;
     m_bFirstAnimate = 1;
     m_bAnimateUV = 0;
     ++g_nSpawnedGobs;
     m_bRenderPersonalSpace = false;
+#ifndef _XBOX
     m_bVisible = true;
     m_fVisibilityCheckTime = 0.0f;
+#endif
     ++g_nCountOfGobs;
     m_sName[0] = 0;
     if (sName)
@@ -4706,7 +4719,7 @@ void Gob::ReattachReference(CAurObject* pObject, char* sPart)  // Xbox 0x002BD9D
         {
             if (pObject)
                 pReference->m_pReferenceObject->AttachToObject(pObject, sPart, ATTACH_NORMAL);
-            if (!pObject)
+            else
                 pReference->m_pReferenceObject->AttachToObject(this, pReference->Name(), ATTACH_NORMAL);
             m_qOrientation = RotationArc(m_qOrientation.zdir(),
                 pReference->m_pReferenceObject->GetPosition() - m_vPosition) * m_qOrientation;

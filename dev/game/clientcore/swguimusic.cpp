@@ -594,18 +594,18 @@ CSWGuiTitleMusic::CSWGuiTitleMusic(CSWGuiManager* pManager)
     g_pExoSound->SetMusicVolume(1.0f, 0);
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMusicVolume = 100;
 
-    for (int nSong = 1; nSong <= NUM_SONG_BUTTONS; nSong++)
+    for (int nSong = 0; nSong < NUM_SONG_BUTTONS; nSong++)
     {
-        CSWGuiButton* pButton = &m_abtnSongs[nSong - 1];
-        InitControl(*pButton, CExoString("BTN_SONG") + CExoString(nSong), 1);
-        pButton->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
-        pButton->SetEnabledFlag(1);
+        InitControl(m_abtnSongs[nSong], CExoString("BTN_SONG") + CExoString(nSong + 1), 1);
+        m_abtnSongs[nSong].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+        m_abtnSongs[nSong].SetEnabledFlag(1);
     }
     StopLoadFromLayout();
 
     CExoIni cIni;
     CExoString sValue;
-    int nUnlocked = g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nUnlockedSongs;
+    CClientOptions* pOptions = g_pAppManager->m_pClientExoApp->GetClientOptions();
+    int nUnlocked = pOptions->m_nUnlockedSongs;
     for (int nPlanet = 0; nPlanet < TITLEMUSIC_NUM_PLANETS; nPlanet++)
     {
         m_bPlanetUnlocked[nPlanet] = nUnlocked & (1 << nPlanet);

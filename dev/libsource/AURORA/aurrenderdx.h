@@ -1357,7 +1357,7 @@ inline __int64 AurGetHighResolutionTime()  // Xbox 0x000118F0
     {
         LARGE_INTEGER nCounter;
         QueryPerformanceCounter(&nCounter);
-        if (g_bTimerScaled)
+        if (g_bTimerScaled == 1)
         {
             return (__int64)((double)g_fTimerScale * nCounter.QuadPart);
         }
