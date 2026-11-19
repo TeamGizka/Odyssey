@@ -550,11 +550,16 @@ void CSWGuiDialogLetterbox::Draw(float fElapsed)
         {
             m_fFadeTime += fElapsed;
         }
+#ifdef _XBOX
+        float fFadeTime = m_fFadeTime;
+        if (fFadeTime > m_fFadeDelay)
+#else
         if (m_fFadeTime > m_fFadeDelay)
+#endif
         {
             float fAlpha;
 #ifdef _XBOX
-            float fFraction = (m_fFadeTime - m_fFadeDelay) / m_fFadeLength;
+            float fFraction = (fFadeTime - m_fFadeDelay) / m_fFadeLength;
             if (m_bFadeIn)
             {
                 fAlpha = 1.0f - fFraction;
@@ -563,13 +568,13 @@ void CSWGuiDialogLetterbox::Draw(float fElapsed)
                     fAlpha = 0.0f;
                 }
             }
-            else if (1.0f < fFraction)
-            {
-                fAlpha = 1.0f;
-            }
             else
             {
                 fAlpha = fFraction;
+                if (1.0f < fFraction)
+                {
+                    fAlpha = 1.0f;
+                }
             }
 #else
             if (m_bFadeIn)
