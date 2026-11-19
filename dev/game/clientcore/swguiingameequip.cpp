@@ -624,17 +624,16 @@ void CSWGuiInGameEquip::SetItemRows(int nTopItem, int nSelectedItem)
     int nRow;
     for (nRow = 0; nRow < nRows; nRow++)
     {
-        CSWGuiInGameItemEntry& cRow = m_aItemRows[nRow];
-        cRow.SetItem(m_lItems[nTopItem + nRow].m_oidItem,
-                     m_lItems[nTopItem + nRow].m_bEquipped, 0,
-                     m_vItemTextColor, m_vItemBorderColor, m_vItemHilightColor);
-        cRow.SetCanUse(m_lItems[nTopItem + nRow].m_nCanUse,
-                       m_vItemBorderColor, m_vItemHilightColor);
-        cRow.m_bEnabled = 1;
+        m_aItemRows[nRow].SetItem(m_lItems[nTopItem + nRow].m_oidItem,
+                                  m_lItems[nTopItem + nRow].m_bEquipped, 0,
+                                  m_vItemTextColor, m_vItemBorderColor, m_vItemHilightColor);
+        m_aItemRows[nRow].SetCanUse(m_lItems[nTopItem + nRow].m_nCanUse,
+                                    m_vItemBorderColor, m_vItemHilightColor);
+        m_aItemRows[nRow].SetShown(1);
     }
     for (nRow = nRows; nRow < NUM_ITEM_ROWS; nRow++)
     {
-        m_aItemRows[nRow].m_bEnabled = 0;
+        m_aItemRows[nRow].SetShown(0);
     }
     if (m_bDescriptionShown && nSelectedItem != -1)
     {

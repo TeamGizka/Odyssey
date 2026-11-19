@@ -1170,7 +1170,9 @@ CSWGuiTextParams::CSWGuiTextParams(const CExoString& sText,
     m_nStrRef = -1;
     m_vColor = m_vOriginalColor;
 #else
-    m_vColor = vColor; m_nStrRef = -1;
+    m_vOriginalColor = vColor;
+    m_vColor = vColor;
+    m_nStrRef = -1;
 #endif
     m_fAlpha = fAlpha;
     m_nAlignment = nAlignment;
@@ -1569,9 +1571,10 @@ CSWGuiTextParams::CSWGuiTextParams(unsigned long nStrRef, const CResRef& cFont, 
     m_pText = NULL;
     SetStrRef(nStrRef);
     SetFont(cFont);
+    m_vOriginalColor = vColor;
     m_vColor = vColor;
     m_nAlignment = nAlignment;
-    m_bHilightText = 0;
     m_fAlpha = fAlpha;
+    m_bHilightText = 0;
 }
 #endif

@@ -77,7 +77,8 @@ int CExoXboxStream::OpenWMAFile(XBOXADPCMWAVEFORMAT* pFormat)  // Xbox 0x00166BD
 
 DWORD CExoXboxStream::GetPacketSize(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)  // Xbox 0x00166C50
 {
-    DWORD nBytes;
+    DWORD nBytes = 0;
+    DWORD nSize = 0;
     DWORD nAlignment = max(pFormat->wfx.nBlockAlign * 512, 2048);
     if (bWMA != 0)
     {
@@ -87,7 +88,7 @@ DWORD CExoXboxStream::GetPacketSize(XBOXADPCMWAVEFORMAT* pFormat, int bWMA)  // 
     {
         nBytes = pFormat->wfx.nAvgBytesPerSec * 666 / 1000;
     }
-    DWORD nSize = max(nAlignment, nBytes);
+    nSize = max(nAlignment, nBytes);
     m_nBlockAlign = pFormat->wfx.nBlockAlign;
     return (nSize - 1 + nAlignment) / nAlignment * nAlignment;
 }

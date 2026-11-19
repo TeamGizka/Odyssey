@@ -2807,8 +2807,10 @@ int main()  // Xbox 0x00012560
 
             pClientExoApp->SetLoadScreenByModuleName(cParams.GetModuleName());
             if (pClientExoApp->GetMoveToModuleMovies()->num == 0)
+            {
                 pClientExoApp->ShowLoadScreen(1, 1, 0);
-            pClientExoApp->SetLoadScreenHint(cParams.m_nLoadScreenHint);
+                pClientExoApp->SetLoadScreenHint(cParams.m_nLoadScreenHint);
+            }
             g_pAppManager->CreateServer(1);
             g_pAppManager->GetClientExoApp()->GetWorldTimer()->PauseWorldTimer();
             g_pAppManager->GetServerExoApp()->GetWorldTimer()->PauseWorldTimer();
@@ -2835,7 +2837,7 @@ int main()  // Xbox 0x00012560
                         cParams.GetStartWaypoint());
                 else
                     g_pAppManager->GetServerExoApp()->SetMoveToModuleStartWaypoint(
-                        "");
+                        CExoString(""));
                 g_pAppManager->GetServerExoApp()->SetMoveToWorldTime(
                     cParams.m_nTimeYear, cParams.m_nTimeMonth,
                     cParams.m_nTimeDay, cParams.m_nTimeHour,
@@ -2959,7 +2961,7 @@ int main()  // Xbox 0x00012560
         }
         messagepump();
         if (g_bNiceClient != 0)
-            Sleep(g_nSleeptime);
+            Sleep(0);
 
         if (displayFPS > 0.0f)
         {

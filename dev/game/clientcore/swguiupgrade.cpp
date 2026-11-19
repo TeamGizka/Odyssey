@@ -520,7 +520,11 @@ void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
         CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
         if (pEntry->m_oidItem != OBJECT_INVALID)
         {
+#ifdef _XBOX
+            CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(pEntry->m_oidItem);
+#else
             CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
+#endif
             if (pItem != 0)
             {
                 int nType = pItem->GetUpgradableType(pTable);
@@ -5954,7 +5958,11 @@ void CSWGuiUpgradeSelection::OnPanelAdded()
     }
     CSWSItem* pItem;
     if (m_oidItem != OBJECT_INVALID &&
+#ifdef _XBOX
+        (pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(m_oidItem)) != 0)
+#else
         (pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(m_oidItem)) != 0)
+#endif
     {
         int nType = pItem->GetUpgradableType(pTable);
         m_pItemSelect->m_nUpgradeType = nType;

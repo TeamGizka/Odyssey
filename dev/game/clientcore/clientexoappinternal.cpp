@@ -2858,7 +2858,11 @@ void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
                             vEnd, 0);
                         Vector avSquare[4] = {vStart, vStart, vEnd, vEnd};
                         nPathNumbers[i - 1] = (AurAddDrawableSquare)((float*)avSquare, AUR_DRAWABLE_COLOR_WHITE,
+#ifdef _XBOX
+                                                                     "clientexoappinternal.cpp", 13196);
+#else
                                                                      "clientexoappinternal.cpp", 13250);
+#endif
                     }
                 }
                 if (pCreature->m_lstActions.GetHeadPos() != NULL)
