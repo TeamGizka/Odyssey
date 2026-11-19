@@ -1551,6 +1551,12 @@ void CSWGuiInGameMessages::ShowCombatMessages()
 // PC 0x00678930 GOG 0x006786D0 Xbox 0x0004DA10
 void CSWGuiStatusSummary::OnPanelAdded()
 {
+#ifdef _XBOX
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    int nTop = (int)(fScaleY * 10.0f);
+    int nWidth = (int)(fScaleX * 150.0f);
+#endif
 
     int bJournal = 0;
     CExoString sDescription;
@@ -1561,17 +1567,17 @@ void CSWGuiStatusSummary::OnPanelAdded()
     if (m_cStatusSummary.m_nDarkShift || m_cStatusSummary.m_nLightShift)
         m_bAlignmentShifted = 1;
 
+#ifndef _XBOX
     float fScaleX = 1.0f;
     float fScaleY = 1.0f;
-#ifndef _XBOX
     if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
     {
         fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
         fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
     }
-#endif
     int nTop = (int)(fScaleY * 10.0f);
     int nWidth = (int)(fScaleX * 150.0f);
+#endif
 
     for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; nStatus++)
     {
@@ -1653,11 +1659,21 @@ void CSWGuiStatusSummary::OnPanelAdded()
             break;
         case GUI_STATUS_ITEM_RECEIVED:
         {
+#ifdef _XBOX
+            CExoArrayList<CExoLocString>* pItems = &g_pAppManager->GetClientExoApp()->GetInGameGui()->m_aItemsReceived;
+            CExoString sItems;
+            for (int nItem = 0; nItem < pItems->num; nItem++)
+#else
             CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
             CExoString sItems;
             for (int nItem = 0; nItem < pInGameGui->m_aItemsReceived.num; nItem++)
+#endif
             {
+#ifdef _XBOX
+                CExoLocString sLocName((*pItems)[nItem]);
+#else
                 CExoLocString sLocName(pInGameGui->m_aItemsReceived[nItem]);
+#endif
                 CExoString sName;
                 sLocName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
                 if (sItems == "")
@@ -1775,7 +1791,9 @@ void CSWGuiStatusSummary::OnPanelAdded()
             if (bSetDescription)
             {
                 m_aStatusDescriptions[nStatus].m_cText.m_cParams.SetText(sDescription);
+#ifndef _XBOX
                 m_aStatusDescriptions[nStatus].m_cText.m_cParams.ReSetFont();
+#endif
             }
             cExtent = m_aStatusLabels[nStatus].m_cExtent;
             cExtent.m_nTop = nTop;
@@ -1817,11 +1835,15 @@ void CSWGuiStatusSummary::OnPanelAdded()
                 g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowFlashingStatus(nStatus);
             if (nStatus == GUI_STATUS_ITEM_RECEIVED)
             {
+#ifdef _XBOX
+                nTop += m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
+#else
                 int nIdealHeight = m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
                 if (nIdealHeight < STATUS_ROW_HEIGHT)
                     nTop += STATUS_ROW_HEIGHT;
                 else
                     nTop += nIdealHeight;
+#endif
             }
             else
                 nTop += STATUS_ROW_HEIGHT;
@@ -1865,8 +1887,8 @@ void CSWGuiStatusSummary::OnPanelAdded()
     m_cStatusSummary.m_bCompleteSound = 0;
     m_cStatusSummary.m_bDarkAlignSound = 0;
     m_cStatusSummary.m_bLightAlignSound = 0;
-    m_cStatusSummary.m_bCreditsNet = 0;
     m_cStatusSummary.m_nCredits = 0;
+    m_cStatusSummary.m_bCreditsNet = 0;
     m_cStatusSummary.m_nLightShift = 0;
     m_cStatusSummary.m_nDarkShift = 0;
     m_cStatusSummary.m_nExperience = 0;
