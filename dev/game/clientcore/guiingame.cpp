@@ -251,7 +251,7 @@ CGuiInGame::CGuiInGame()
     m_pStatusSummary = 0;
     m_pPendingStatusSummary = 0;
     m_pInGameMenu = 0;
-    for (int nScreen = 0; nScreen < IN_GAME_SCREEN_COUNT; nScreen++)
+    for (unsigned char nScreen = 0; nScreen < IN_GAME_SCREEN_COUNT; nScreen++)
         m_apScreenPanels[nScreen] = 0;
     m_asReplyText = 0;
     m_pnReplyIndex = 0;
@@ -305,7 +305,7 @@ CGuiInGame::CGuiInGame()
     CExoIni cIni;
     CExoString sCompass;
 #ifdef _XBOX
-    if (cIni.ReadIniEntry(sCompass, "d:\\swkotor.ini", "Display Options", "Compass"))
+    if (cIni.ReadIniEntry(sCompass, "d:\\swkotor2.ini", "Display Options", "Compass"))
 #else
     if (cIni.ReadIniEntry(sCompass, ".\\swkotor2.ini", "Display Options", "Compass"))
 #endif
@@ -352,7 +352,7 @@ CGuiInGame::CGuiInGame()
     m_bUsePartyCharacterForDialog = 0;
     m_nDialogSoundId = OBJECT_INVALID;
     m_cDialogSound = "";
-    for (int nParticipant = 0; nParticipant < 3; nParticipant++)
+    for (unsigned char nParticipant = 0; nParticipant < 3; nParticipant++)
         m_aDialogParticipants[nParticipant] = OBJECT_INVALID;
     m_oidCameraAnimationObject = OBJECT_INVALID;
     m_bDeferredFOVCall = 0;
