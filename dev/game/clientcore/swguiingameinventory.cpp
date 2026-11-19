@@ -867,16 +867,17 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
     InitControl(m_btnQuests, "BTN_FILTER_QUESTS", 1);
     InitControl(m_btnMisc, "BTN_FILTER_MISC", 1);
     m_apFilterButtons[FILTER_ALL] = &m_btnAll;
-    for (int nFilter = FILTER_ALL + 1; nFilter < FILTER_DATAPADS; nFilter++)
-    {
-        m_apFilterButtons[nFilter] = NULL;
-    }
+    m_apFilterButtons[FILTER_ALL + 1] = NULL;
+    m_apFilterButtons[FILTER_ALL + 2] = NULL;
+    m_apFilterButtons[FILTER_ALL + 3] = NULL;
+    m_apFilterButtons[FILTER_ALL + 4] = NULL;
+    m_apFilterButtons[FILTER_ALL + 5] = NULL;
     m_apFilterButtons[FILTER_DATAPADS] = &m_btnDatapads;
     m_apFilterButtons[FILTER_WEAPONS] = &m_btnWeapons;
     m_apFilterButtons[FILTER_ARMOR] = &m_btnArmor;
     m_apFilterButtons[FILTER_USEABLE] = &m_btnUseable;
     m_apFilterButtons[FILTER_MISC] = &m_btnMisc;
-    m_vFilterTextColor = m_btnAll.m_cText.m_cParams.m_vColor;
+    m_vFilterTextColor = m_apFilterButtons[FILTER_ALL]->m_cText.m_cParams.m_vColor;
     for (int nRow = 0; nRow < NUM_ITEM_ROWS; nRow++)
     {
         InitControl(btnItem, CExoString("BTN_ITEM") + CExoString(nRow + 1), 0);
@@ -919,8 +920,9 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)  // Xbox 0
         {
             if (nButton == nCurrentFilter)
             {
-                pButton->m_cText.m_cParams.SetColor(m_vItemHilightColor);
-                pButton->m_cText.m_cParams.m_bHilightText = 1;
+                CSWGuiTextParams& cParams = pButton->m_cText.m_cParams;
+                cParams.SetColor(m_vItemHilightColor);
+                cParams.m_bHilightText = 1;
             }
             else
             {
