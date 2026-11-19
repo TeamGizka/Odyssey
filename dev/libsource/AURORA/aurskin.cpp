@@ -699,32 +699,32 @@ void PartSkin::PostProcess(Part* pRoot)
             if (pVertex->m_nFlags & NodeVertex::VERTEX_HAS_TEXCOORD0)
             {
                 pNode->m_nTextureCount++;
-                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD0;
                 pNode->m_nTexCoord0Offset = nOffset;
+                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD0;
                 nOffset += 8;
                 pNode->m_nVertexStride = nOffset;
             }
             if (pVertex->m_nFlags & NodeVertex::VERTEX_HAS_TEXCOORD1)
             {
                 pNode->m_nTextureCount++;
-                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD1;
                 pNode->m_nTexCoord1Offset = nOffset;
+                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD1;
                 nOffset += 8;
                 pNode->m_nVertexStride = nOffset;
             }
             if (pVertex->m_nFlags & NodeVertex::VERTEX_HAS_TEXCOORD2)
             {
                 pNode->m_nTextureCount++;
-                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD2;
                 pNode->m_nTexCoord2Offset = nOffset;
+                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD2;
                 nOffset += 8;
                 pNode->m_nVertexStride = nOffset;
             }
             if (pVertex->m_nFlags & NodeVertex::VERTEX_HAS_TEXCOORD3)
             {
                 pNode->m_nTextureCount++;
-                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD3;
                 pNode->m_nTexCoord3Offset = nOffset;
+                pNode->m_nVertexArrayFlags |= MdlNodeTriMesh::VERTEX_ARRAY_TEXCOORD3;
                 nOffset += 8;
                 pNode->m_nVertexStride = nOffset;
             }
@@ -756,8 +756,12 @@ void PartSkin::PostProcess(Part* pRoot)
             m_vPosition = m_vPosition;
             pNode->m_nBoneIndexOffset = nOffset;
 
+#ifdef _XBOX
+            int nPadding = pNode->m_pModel->AsModel()->m_nVertexDataSize & 15;
+#else
             Model* pModel = pNode->m_pModel->AsModel();
             int nPadding = pModel->m_nVertexDataSize & 15;
+#endif
             int nSize = pNode->m_pModel->AsModel()->m_nVertexDataSize +
                 (pNode->m_nVertexCount + 1) * pNode->m_nVertexStride + nPadding;
             unsigned long nPool = pNode->m_pModel->AsModel()->m_nVertexPool;
