@@ -3913,7 +3913,7 @@ void CSWGuiListBox::OrganizeOversized()  // Xbox 0x003357B0
     {
         cExtent.m_nTop =
             m_cItemExtent.m_nHeight - m_nContentHeight - m_nPadding;
-        m_cScrollBar.SetCurValue(m_nContentHeight);
+        m_cScrollBar.SetCurValue(cExtent.m_nHeight);
         m_cScrollBar.m_nTopValue = m_nContentHeight;
     }
     else

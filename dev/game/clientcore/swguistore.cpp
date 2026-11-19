@@ -255,8 +255,13 @@ void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
                     }
                     if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nCharacter != -1)
                         nOnHand += pRepository->GetMatchingItemCount(pItem) - 1;
+#ifdef _XBOX
+                    int nTotal = pItem->m_nStackSize + nOnHand;
+                    m_lblOnHandValue.m_cText.m_cParams.SetText(CExoString(nTotal));
+#else
                     nOnHand += pItem->m_nStackSize;
                     m_lblOnHandValue.m_cText.m_cParams.SetText(CExoString(nOnHand));
+#endif
                 }
             }
             CExoString sDescription = pItem->GetPropertyDescription();

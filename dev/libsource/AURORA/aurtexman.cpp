@@ -3710,8 +3710,8 @@ void AurSnapshot(char* sFileName)
     }
 #ifdef _XBOX
     {
+        int nSize = viewport.Height * nWidth * 3;
         int nHeight = viewport.Height;
-        int nSize = nHeight * nWidth * 3;
         unsigned char* pPixels = new unsigned char[nSize];
         memset(pPixels, 0, nSize);
 #else

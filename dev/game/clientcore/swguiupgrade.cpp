@@ -3603,9 +3603,16 @@ void CSWGuiUpgradeSelection::PopulateItemList()
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWPartyTable* pParty = pServer->GetPartyTable();
     CItemRepository* pRepository = pParty->GetPartyItems();
+#ifdef _XBOX
+    CSWGuiListBox* pListBox = &m_lbUpgradelist;
+    CSWGuiButton* pProto = (CSWGuiButton*)pListBox->m_pProtoItem;
+    int nWidth = pListBox->m_cItemExtent.m_nWidth -
+                 2 * pListBox->m_nPadding;
+#else
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbUpgradelist.m_pProtoItem;
     int nWidth = m_lbUpgradelist.m_cItemExtent.m_nWidth -
                  2 * m_lbUpgradelist.m_nPadding;
+#endif
     C2DA* pTable = new C2DA("upgrade", 0);
     pTable->Load2DArray();
     SetDescription("");
@@ -3652,10 +3659,12 @@ void CSWGuiUpgradeSelection::PopulateItemList()
                                    pProto->m_cHilite, nWidth, 0);
                 pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this,
                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemEntered);
+#ifndef _XBOX
                 pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this,
                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
                 pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
+#endif
                 unsigned long oidItem = pItem->m_nId;
                 pEntry->SetItem(oidItem, 0, OBJECT_INVALID, 0);
                 aItems.Add(pEntry);
@@ -3663,7 +3672,9 @@ void CSWGuiUpgradeSelection::PopulateItemList()
         }
     }
     delete pTable;
+#ifndef _XBOX
     CSWGuiListBox* pListBox = &m_lbUpgradelist;
+#endif
     pListBox->AddControls(aItems, 1, 1, 0);
 #ifdef _XBOX
     if (m_lbUpgradelist.m_lItems.num > 0)
