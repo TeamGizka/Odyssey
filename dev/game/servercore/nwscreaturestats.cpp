@@ -4288,11 +4288,11 @@ void CSWSCreatureStats::LevelDown(CSWLevelStats* pLevelStats)
     {
         RemoveKnownSpell(nClass, pLevelStats->m_lstSpellsAdded[0][nSpell]);
     }
-    for (unsigned char nRemovedSpell = 0;
-         nRemovedSpell < (unsigned char)pLevelStats->m_lstSpellsRemoved[0].num;
-         ++nRemovedSpell)
+    unsigned char nRemovedSpell = 0;
+    while (nRemovedSpell < (unsigned char)pLevelStats->m_lstSpellsRemoved[0].num)
     {
         AddKnownSpell(nClass, pLevelStats->m_lstSpellsRemoved[0][nRemovedSpell]);
+        ++nRemovedSpell;
     }
     m_lstLevelStats.Remove(pLevelStats);
     delete pLevelStats;

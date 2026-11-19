@@ -440,6 +440,7 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
     CSWPartyTable* pPartyTable = pServer->GetPartyTable();
     CSWCCreature* pClientCreature;
     int bFirstRemoval = 1;
+    int nMember;
 
     for (int nNPC = 0; nNPC < CSWPartyTable::MAX_NPCS; ++nNPC)
     {
@@ -454,7 +455,7 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
             {
                 pParty->SetLeader(-3);
                 CSWPartyTable* pTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
-                for (int nMember = 0; nMember < CSWPartyTable::MAX_NPCS; ++nMember)
+                for (nMember = 0; nMember < CSWPartyTable::MAX_NPCS; ++nMember)
                 {
                     if (pTable->GetIsMember(nMember))
                         m_aPartyMembers[nMember].m_nPartyIndex = pParty->GetIndex(
@@ -466,7 +467,7 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
                 pParty->GetCharacter(m_aPartyMembers[nNPC].m_nPartyIndex);
             if (pClientCreature != 0)
             {
-                for (int nMember = 0; nMember < CSWPartyTable::MAX_NPCS; ++nMember)
+                for (nMember = 0; nMember < CSWPartyTable::MAX_NPCS; ++nMember)
                 {
                     int nPartyIndex = m_aPartyMembers[nMember].m_nPartyIndex;
                     if (nPartyIndex != -1 &&

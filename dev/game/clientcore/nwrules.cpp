@@ -844,7 +844,7 @@ void CSWRules::LoadFeatInfo()
             if (p2DA->GetCExoStringEntry(i, "Icon", &sIcon))
             {
 #ifdef _XBOX
-                m_pFeats[i].SetIcon(CResRef((char*)sIcon.CStr()));
+                m_pFeats[i].SetIcon((char*)sIcon.CStr());
 #else
                 CResRef cIcon((char*)sIcon.CStr());
                 m_pFeats[i].SetIcon(cIcon);

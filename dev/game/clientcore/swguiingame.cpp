@@ -490,8 +490,12 @@ void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned lo
         CExoString sMessage(pMessages[i].m_sMessage);
         int nToken = sMessage.Find('<', 0);
         int nCustomToken = sMessage.Find('{', 0);
+#ifdef _XBOX
+        if (nToken != -1 || nCustomToken != -1)
+#else
         int bHasToken = nToken != -1 || nCustomToken != -1;
         if (bHasToken)
+#endif
         {
             g_pSWTlkTable->ParseStr(sMessage,
                 (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
@@ -613,7 +617,11 @@ void CSWGuiInGameMessages::AddCombatMessages(CGuiInGameMessage* pMessages, unsig
         if (nToken != -1 || nCustomToken != -1)
         {
             g_pSWTlkTable->ParseStr(sMessage,
+#ifdef _XBOX
+                (CGameObject*)g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter(),
+#else
                 (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
+#endif
                 0, 1);
             int nLength = sMessage.GetLength();
             while (sMessage[nLength - 1] == ' ')

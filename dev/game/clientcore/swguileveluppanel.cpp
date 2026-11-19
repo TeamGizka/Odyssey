@@ -233,7 +233,7 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
             {
                 m_pParent->CancelLevelUp();
                 CSWGuiSkillInfoBox* pInfoBox =
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()
                         ->m_pSkillInfoBox;
                 if (m_pManager->PanelExists(pInfoBox))
                 {

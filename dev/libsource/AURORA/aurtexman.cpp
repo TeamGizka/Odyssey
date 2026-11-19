@@ -2327,9 +2327,10 @@ void CAurTexture::Bind()
 
         if (nCurrentTID != GLRender::GetCurrentStageTID())
         {
+            bool bCubeMap = false;
             if (GetDepth())
             {
-                AurTextureBindTID(nCurrentTID, false, true);
+                AurTextureBindTID(nCurrentTID, bCubeMap, true);
             }
             else
             {

@@ -406,8 +406,8 @@ float CSWPartyFollowDataArray::PointOnLineDistanceFromLeader(int nMember,
     vDelta = pParty->m_aPartyMemberData[nMember].m_vFollowPosition -
                     pLeader->m_vPosition;
 #endif
-    float fDistanceSquared = vDelta.m_fZ * vDelta.m_fZ + vDelta.m_fX * vDelta.m_fX +
-                             vDelta.m_fY * vDelta.m_fY;
+    float fDistanceSquared = vDelta.m_fY * vDelta.m_fY + vDelta.m_fX * vDelta.m_fX +
+                             vDelta.m_fZ * vDelta.m_fZ;
 
     if (bSquared)
     {

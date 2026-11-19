@@ -1310,7 +1310,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         unsigned long oidItem = static_cast<CSWGuiInGameItemEntry*>(pControl)->m_oidItem;
         if (oidItem != OBJECT_INVALID)
         {
-            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
+            CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
             CExoString sDescription = pItem->GetPropertyDescription();
             int nTokenStart = sDescription.Find('<', 0);
             int nBraceStart = sDescription.Find('{', 0);
@@ -1328,8 +1328,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         else
         {
             m_bSelectedUsable = 0;
-            CExoString sDescription("Error: Invalid item");
-            m_lblDescription.m_cText.m_cParams.SetText(sDescription);
+            m_lblDescription.m_cText.m_cParams.SetText("Error: Invalid item");
         }
         m_lbxDescription.ClearItems();
         CSWGuiExtent cExtent = m_lblDescription.m_cExtent;

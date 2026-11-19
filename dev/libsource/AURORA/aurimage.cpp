@@ -1028,7 +1028,8 @@ unsigned char* ImageDownSampleBy(int nWidth, int nHeight, unsigned char* pImage,
             anColor[3] = anSum[3] / (nFactor * nFactor);
             pDest[(y * nNewWidth + x) * 4] = anColor[0];
             pDest[(y * nNewWidth + x) * 4 + 1] = anColor[1];
-            pDest[(y * nNewWidth + x) * 4 + 2] = anColor[2];
+            int nIndex = (y * nNewWidth + x) * 4 + 2;
+            pDest[nIndex] = anColor[2];
             pDest[(y * nNewWidth + x) * 4 + 3] = anColor[3];
             for (int k = 0; k < 4; k++)
                 anSum[k] = 0;

@@ -156,9 +156,14 @@ void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
         for (i = 0; i < nCount; i++)
         {
             CExoString* pName = pResources->GetString(i);
+#ifdef _XBOX
+            CResGFF* pGFF =
+                (CResGFF*)g_pExoResMan->GetResObject((char*)pName->CStr(), RESTYPE_UTI);
+#else
             CResRef cResource((char*)pName->CStr());
             CResGFF* pGFF =
                 (CResGFF*)g_pExoResMan->GetResObject(cResource, RESTYPE_UTI);
+#endif
 
             if (pGFF == NULL)
             {

@@ -20,7 +20,7 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     m_pCreature = pClientExoApp->GetCreatureByGameObjectID(nCreature);
     CSWSCreatureStats* pServerStats =
-        m_pCreature->GetServerCreature()->m_pStats;
+        m_pCreature->GetServerCreature()->GetStats();
     m_bIsPC = pServerStats->m_bIsPC;
     m_nSelectedPower = -1;
 #ifdef _XBOX

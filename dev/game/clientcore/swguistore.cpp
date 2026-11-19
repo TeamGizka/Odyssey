@@ -1458,7 +1458,8 @@ void CSWGuiStore::SelectPreviousItem()
     int nTop = m_nTopItem;
     if (nSelected < 0)
     {
-        nSelected = GetNumItemEntries() - 1;
+        nSelected = GetNumItemEntries();
+        nSelected -= 1;
         nTop = nSelected - (NUM_ITEM_ROWS - 1) < 0 ? 0 : nSelected - (NUM_ITEM_ROWS - 1);
         g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
     }

@@ -400,19 +400,20 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // Xbox 0x0011DBB0
     Quaternion qOrientation =
         YawPitchRoll(fTurn, 0.0f, 0.0f) * pCamera->GetOrientation();
     float fCameraYaw = Yaw(qOrientation);
-    if (m_fTurn == 0.0f)
+    float fTurnInput = m_fTurn;
+    if (fTurnInput == 0.0f)
     {
         float fTargetYaw = Yaw(pTarget->m_vPosition - pCamera->GetPosition());
 
         float fDelta = fCameraYaw - fTargetYaw;
-        float fAngle = (float)fabs(fDelta);
-        while (fAngle < 0.0f)
-            fAngle += 360.0f;
-        while (fAngle >= 360.0f)
-            fAngle -= 360.0f;
-        if (fAngle > 180.0f)
-            fAngle = 360.0f - fAngle;
-        if (fAngle > 25.0f)
+        fTurn = (float)fabs(fDelta);
+        while (fTurn < 0.0f)
+            fTurn += 360.0f;
+        while (fTurn >= 360.0f)
+            fTurn -= 360.0f;
+        if (fTurn > 180.0f)
+            fTurn = 360.0f - fTurn;
+        if (fTurn > 25.0f)
         {
             float fOffset = 25.0f;
             if (fCameraYaw > fTargetYaw)

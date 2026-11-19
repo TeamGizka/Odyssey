@@ -367,16 +367,16 @@ void CSWGuiMainInterfaceAction::Update(float fElapsed, int bHidden)
             CSWGuiExtent cExtentB = m_lblIconB.m_cExtent;
             CSWGuiExtent cExtent = m_lblIcon.m_cExtent;
             float fFraction = m_fSlideTimer * 10.0f;
-            int nOffset = (int)(fFraction * m_cIconExtent.m_nHeight);
+            float fOffset = fFraction * m_cIconExtent.m_nHeight;
             if (cExtentB.m_nTop < 0)
             {
-                cExtentB.m_nTop = -nOffset;
+                cExtentB.m_nTop = -(int)fOffset;
                 cExtent.m_nTop = cExtentB.m_nTop + cExtentB.m_nHeight;
             }
             else
             {
-                cExtentB.m_nTop = nOffset;
-                cExtent.m_nTop = nOffset - cExtent.m_nHeight;
+                cExtentB.m_nTop = (int)fOffset;
+                cExtent.m_nTop = cExtentB.m_nTop - cExtent.m_nHeight;
             }
             m_lblIconB.SetExtent(cExtentB);
             m_lblIcon.SetExtent(cExtent);
