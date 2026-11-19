@@ -247,11 +247,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
         }
     }
 
-#ifdef _XBOX
-    if (m_pSoundSource->IsPlaying())
-#else
     if (m_pSoundSource != NULL && m_pSoundSource->IsPlaying())
-#endif
     {
         if (bShowBark)
         {
@@ -266,12 +262,8 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
             SetToBeRemoved(0);
         }
     }
-#ifdef _XBOX
-    else if (m_pSoundSource->GetPlayFailed() || !m_bSoundStarted)
-#else
     else if (m_pSoundSource != NULL &&
              (m_pSoundSource->GetPlayFailed() || !m_bSoundStarted))
-#endif
     {
         if (m_fTimeLeft > 0.0f && bShowBark)
         {

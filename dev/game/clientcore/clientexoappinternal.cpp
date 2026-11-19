@@ -3883,10 +3883,8 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nDriveInputTimeLow = 0;
     m_nDriveInputTimeHigh = 0;
 #ifdef _XBOX
-    m_fLeftX = 0.0f;
-    m_fLeftY = 0.0f;
-    m_fRightX = 0.0f;
-    m_fRightY = 0.0f;
+    m_AnalogMove.Clear();
+    m_fAnalogTurn = 0.0f;
 #else
     m_AnalogInput.Clear();
 #endif

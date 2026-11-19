@@ -105,9 +105,7 @@ public:
 
     void SetForcedNPC(int nFirstNPC, int nSecondNPC);
     void UpdateCount();
-#ifndef _XBOX
     void UpdateVisibleCharacters();
-#endif
     void AcceptParty(int bCancelled);
     void ConfirmPartySelection(CSWGuiControl* pControl);
     void SetAddRemoveLabel(int bAdd);

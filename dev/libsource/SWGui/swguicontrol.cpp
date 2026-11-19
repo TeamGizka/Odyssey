@@ -2495,13 +2495,12 @@ void CSWGuiListBox::Draw(float fElapsed)  // PC 0x0041ADF0 GOG 0x0041ADE0 Xbox 0
         {
             for (int i = 0; i < nCount; i++)
             {
-                CSWGuiControl* pControl = m_lItems[i];
-                int nTop = pControl->m_cExtent.m_nTop;
-                int nBottom = pControl->m_cExtent.GetBottom();
+                int nTop = m_lItems[i]->m_cExtent.m_nTop;
+                int nBottom = m_lItems[i]->m_cExtent.GetBottom();
                 if (nBottom > 0 && nTop <= m_cItemExtent.m_nHeight &&
                     (!m_bClipItems ||
                      (nBottom < m_cItemExtent.m_nHeight && nTop >= 0)))
-                    pControl->Draw(fElapsed);
+                    m_lItems[i]->Draw(fElapsed);
             }
         }
         AurGUICloseViewport();

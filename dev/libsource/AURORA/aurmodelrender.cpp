@@ -173,6 +173,9 @@ int lightsaberrender = 1;
 int renderdangly = 1;
 
 float partalpha = 0.5f;
+#ifdef _XBOX
+int useshadowmethod = SHADOW_METHOD_VERTEX_PROGRAM;
+#endif
 int shadowmodeone = 1;
 int shadowmodetwo = 1;
 float cullProjectionSize = 0.25f;
@@ -184,7 +187,9 @@ int doallmaterials = 0;
 int alwaysmat = 0;
 float epsilon = 0.0f;
 int maxshadowvar = 0;
+#ifndef _XBOX
 int useshadowmethod = 0;
+#endif
 
 int doskinshadows = 0;
 int rendergobbbox = 0;

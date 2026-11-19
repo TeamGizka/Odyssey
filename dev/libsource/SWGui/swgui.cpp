@@ -2381,10 +2381,9 @@ void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
         {
             do
             {
-                CSWGuiPanel* pPanel = lPanels.element[nIndex];
-
-                if (m_lPanels.IndexOf(pPanel) != -1)
+                if (m_lPanels.IndexOf(lPanels.element[nIndex]) != -1)
                 {
+                    CSWGuiPanel* pPanel = lPanels.element[nIndex];
                     pPanel->HandleInputEvent(nEvent, nState);
                 }
                 nIndex++;

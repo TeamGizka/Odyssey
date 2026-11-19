@@ -140,7 +140,11 @@ public:
     }
 #endif
     void Draw(float);
+#ifdef _XBOX
+    void Update(float fElapsed, int bHidden);
+#else
     void Update(float);
+#endif
 #ifndef _XBOX
     void SetIcon(CResRef const&, CExoString const&, int, unsigned char);
 #else

@@ -564,8 +564,16 @@ void CSWGuiInGameMessages::AddDialogMessages(CGuiInGameDialogMessage* pMessages,
             }
         }
         if (sSpeaker.GetLength() > 0)
+#ifdef _XBOX
+        {
+            CExoString sSeparator(": ");
+            CSWGuiText* pText = &m_pDialogLabels[i].m_cText;
+            pText->m_cParams.SetText(sSpeaker + sSeparator + pMessages[i].m_sMessage);
+        }
+#else
             m_pDialogLabels[i].m_cText.m_cParams.SetText(
                 sSpeaker + ": " + pMessages[i].m_sMessage);
+#endif
         else
             m_pDialogLabels[i].m_cText.m_cParams.SetText(pMessages[i].m_sMessage);
 #ifndef _XBOX
@@ -1233,7 +1241,11 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
 CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    StartLoadFromLayout("statussummary_x");
+#else
     StartLoadFromLayout("statussummary_p");
+#endif
     InitControl(m_aStatusLabels[GUI_STATUS_JOURNAL], "LBL_JOURNAL", 1);
     InitControl(m_aStatusDescriptions[GUI_STATUS_JOURNAL], "LBL_JOURNAL_DESC", 1);
     InitControl(m_aStatusLabels[GUI_STATUS_CREDITS], "LBL_CREDITS", 1);

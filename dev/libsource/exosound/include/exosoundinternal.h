@@ -925,17 +925,23 @@ inline int CExoSoundSourceInternal::GetLooping() { return m_bLooping; }
 
 inline float CExoSoundInternal::GetMusicVolume(int bTemporary)
 {
-    return bTemporary ? m_fTempMusicVolume : m_fMusicVolume;
+    if (bTemporary)
+        return m_fTempMusicVolume;
+    return m_fMusicVolume;
 }
 
 inline float CExoSoundInternal::GetSoundEffectVolume(int bTemporary)
 {
-    return bTemporary ? m_fTempSoundEffectVolume : m_fSoundEffectVolume;
+    if (bTemporary)
+        return m_fTempSoundEffectVolume;
+    return m_fSoundEffectVolume;
 }
 
 inline float CExoSoundInternal::GetDialogVolume(int bTemporary)
 {
-    return bTemporary ? m_fTempDialogVolume : m_fDialogVolume;
+    if (bTemporary)
+        return m_fTempDialogVolume;
+    return m_fDialogVolume;
 }
 #endif
 

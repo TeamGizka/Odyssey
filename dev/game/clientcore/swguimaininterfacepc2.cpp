@@ -331,7 +331,7 @@ CSWGuiControl* CSWGuiMainInterfaceAction::HitCheckMouse(int nX, int nY)  // PC 0
 #endif
 
 #ifdef _XBOX
-void CSWGuiMainInterfaceAction::Update(float fElapsed)
+void CSWGuiMainInterfaceAction::Update(float fElapsed, int bHidden)
 {
     if (m_nFadeSteps != 0)
     {
@@ -351,7 +351,8 @@ void CSWGuiMainInterfaceAction::Update(float fElapsed)
                 fAlpha = 1.0f - fAlpha;
             }
         }
-        m_lblIcon.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
+        if (!bHidden)
+            m_lblIcon.m_cBorder.m_cParams.m_fHilightAlpha = fAlpha;
     }
 
     if (m_fSlideTimer > 0.0f)
@@ -365,11 +366,12 @@ void CSWGuiMainInterfaceAction::Update(float fElapsed)
         {
             CSWGuiExtent cExtentB = m_lblIconB.m_cExtent;
             CSWGuiExtent cExtent = m_lblIcon.m_cExtent;
-            int nOffset = (int)(m_fSlideTimer * 10.0f * m_cIconExtent.m_nHeight);
+            float fFraction = m_fSlideTimer * 10.0f;
+            int nOffset = (int)(fFraction * m_cIconExtent.m_nHeight);
             if (cExtentB.m_nTop < 0)
             {
                 cExtentB.m_nTop = -nOffset;
-                cExtent.m_nTop = cExtentB.m_nHeight - nOffset;
+                cExtent.m_nTop = cExtentB.m_nTop + cExtentB.m_nHeight;
             }
             else
             {
@@ -4981,7 +4983,11 @@ void CSWGuiMainInterface::Draw(float fElapsed)
 #endif
     ShowActionQueue(g_pAppManager->GetClientExoApp()->GetCombatMode());
     for (int nAction = 0; nAction < 7; ++nAction)
+#ifdef _XBOX
+        m_aPersonalActions[nAction].Update(fElapsed, m_bActionBarHidden);
+#else
         m_aPersonalActions[nAction].Update(fElapsed);
+#endif
     if (m_cActionDescriptionState.m_bEnabled)
         UpdateActionQueue();
 

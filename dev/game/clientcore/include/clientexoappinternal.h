@@ -324,6 +324,22 @@ public:
         SPauseFlagBits m_Bits;
     };
 
+#ifdef _XBOX
+    struct SAnalogMove
+    {
+        float m_fX;
+        float m_fY;
+        float m_fZ;
+
+        void Clear()
+        {
+            m_fX = 0.0f;
+            m_fY = 0.0f;
+            m_fZ = 0.0f;
+        }
+    };
+#endif
+
     struct SAnalogInput
     {
         int m_nLeftX;
@@ -865,10 +881,8 @@ public:
     int m_bDriveAborted;
     int m_anKeyboardModal[7];
 #ifdef _XBOX
-    float m_fLeftX;
-    float m_fLeftY;
-    float m_fRightX;
-    float m_fRightY;
+    SAnalogMove m_AnalogMove;
+    float m_fAnalogTurn;
 #else
     SAnalogInput m_AnalogInput;
 #endif
