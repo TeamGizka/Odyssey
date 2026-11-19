@@ -1609,25 +1609,17 @@ void Scene::AddFacesToBins(PartAABB* pAABB, const Vector& vMinimum,
     Quaternion qOrientation;
     pAABB->GetWorld(vPosition, qOrientation);
 
-#ifdef _XBOX
 
-    unsigned long nVertexPool = pNode->m_pModel->AsModel()->GetVertexPool();
-    void* pBuffer = GLRender::LockPool(nVertexPool, 0, 0,
-        RequestPoolManager::POOL_LOCK_READ_ONLY);
-    unsigned long nOffset = pNode->m_nVertexDataOffset;
-#endif
     for (int i = 0; i < pNode->m_lFaces.m_nCount; i++)
     {
         MaxFace& face = pNode->m_lFaces.m_pList[i];
         if (!AurGrassMaterialInUse(face.m_nSurfaceType))
             continue;
 
-#ifndef _XBOX
         unsigned long nVertexPool = pNode->m_pModel->AsModel()->GetVertexPool();
         void* pBuffer = GLRender::LockPool(nVertexPool, 0, 0,
             RequestPoolManager::POOL_LOCK_READ_ONLY);
         unsigned long nOffset = pNode->m_nVertexDataOffset;
-#endif
         Vector vCenter;
         Vector* pVertex = (Vector*)((char*)pBuffer + nOffset + pNode->m_nPositionOffset +
             pNode->m_nVertexStride * face.m_anVertexIndices[0]);
@@ -1663,17 +1655,11 @@ void Scene::AddFacesToBins(PartAABB* pAABB, const Vector& vMinimum,
         nY = max(0, min(nY, lstBins[nX].m_nCount - 1));
         if (!lstBins[nX][nY])
             lstBins[nX][nY] = new CAurTriangleBin;
-#ifndef _XBOX
         nVertexPool = pNode->m_pModel->AsModel()->m_nVertexPool;
         GLRender::UnlockPool(nVertexPool);
-#endif
         lstBins[nX][nY]->AddTriangle(face, pAABB, pNode);
         m_bBinsPopulated = 1;
     }
-#ifdef _XBOX
-    nVertexPool = pNode->m_pModel->AsModel()->m_nVertexPool;
-    GLRender::UnlockPool(nVertexPool);
-#endif
 }
 
 Scene* FindScene(char* sName);

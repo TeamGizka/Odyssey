@@ -2082,6 +2082,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
 
         if (!m_pPackedFiles[i]->LoadHeader(0))
         {
+            g_pExoResMan->ReportMissingFile(m_pPackedFiles[i]->m_sFileName, RESTYPE_BIF, 1);
             if (sFileName.SubString(0, 4).LowerCase() != "live")
             {
                 EXOFREE(pFileTable, __FILE__, __LINE__);

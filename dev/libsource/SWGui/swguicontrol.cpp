@@ -3633,6 +3633,7 @@ void CSWGuiListBox::OrganizeUnequal()  // Xbox 0x00335410
     if (m_bTopAnchored)
     {
         int nNext = m_nTopVisibleItem + 1;
+        int bAllFit = 1;
         if (nNext < nItems)
         {
             CSWGuiControl** ppItem = &m_lItems[nNext];
@@ -3643,11 +3644,12 @@ void CSWGuiListBox::OrganizeUnequal()  // Xbox 0x00335410
                 if (pExtent->m_nHeight + pExtent->m_nTop > nViewHeight)
                 {
                     m_nBottomVisibleItem = nNext - 1;
+                    bAllFit = 0;
                     break;
                 }
             }
         }
-        if (m_nBottomVisibleItem == -1)
+        if (m_nBottomVisibleItem == -1 || bAllFit)
         {
             m_nBottomVisibleItem = nItems - 1;
         }

@@ -380,8 +380,6 @@ PartTrigger* AurPartTriggerCreate(CAurScene* pScene, Vector* pVertices,
     {
         SceneAddPartToRooms((Scene*)pScene, pTrigger);
     }
-#ifndef _XBOX
     delete pHitInfo;
-#endif
     return pTrigger;
 }

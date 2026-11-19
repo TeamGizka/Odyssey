@@ -382,6 +382,7 @@ public:
     C2DA* GetFormations() { EXOXBOXASSERT(m_pFormations); return m_pFormations; }
 #ifdef _XBOX
     C2DA* GetCameraStyle() { EXOXBOXASSERT(m_pCameraStyle); return m_pCameraStyle; }  // Xbox 0x0005FF30
+    C2DA* GetForceShields() { EXOXBOXASSERT(m_pForceShields); return m_pForceShields; }  // Xbox 0x0006FF20
 #endif
     C2DA* GetTraps() { return m_pTraps; }
     C2DA* GetIPRPPC() { return m_pIPRPPC; }

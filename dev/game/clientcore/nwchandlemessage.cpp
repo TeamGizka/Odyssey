@@ -7961,13 +7961,23 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileProjectile()
                         while (nShieldAppearance != nAppearance && ++nShield <= 4)
                         {
                             sColumn.Format("Appearance_0%d", nShield);
+#ifdef _XBOX
+                            g_pRules->Get2DArrays()->GetForceShields()->GetINTEntry(
+                                nForceShield, sColumn, &nShieldAppearance);
+#else
                             C2DA* pForceShields = g_pRules->Get2DArrays()->m_pForceShields;
                             pForceShields->GetINTEntry(nForceShield, sColumn,
                                                        &nShieldAppearance);
+#endif
                         }
                         sColumn.Format("Radius_0%d", nShield);
+#ifdef _XBOX
+                        g_pRules->Get2DArrays()->GetForceShields()->GetFLOATEntry(
+                            nForceShield, sColumn, &fRadius);
+#else
                         C2DA* pForceShields = g_pRules->Get2DArrays()->m_pForceShields;
                         pForceShields->GetFLOATEntry(nForceShield, sColumn, &fRadius);
+#endif
                     }
                     pProjectile->m_fSourceDistance = fRadius;
                     pProjectile->SetSourcePosition(vEnd);
