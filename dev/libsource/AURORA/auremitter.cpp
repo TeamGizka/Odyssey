@@ -4562,10 +4562,9 @@ void PartEmitter::RenderMotionBlurred()  // Xbox 0x002F1030
         qRotation = qRotation * qCamera;
         int nRow = (int)(pParticle->m_nFrame * fU);
         int nColumn = pParticle->m_nFrame - nXGrid * nRow;
-        Vector vOrigin = pParticle->m_vOrigin;
-        Vector vTravel = pParticle->m_vPosition - vOrigin;
-        float fTravelX = vCameraX * vTravel;
-        float fTravelY = vCameraY * vTravel;
+        const Vector& vOrigin = pParticle->m_vOrigin;
+        float fTravelX = vCameraX * (pParticle->m_vPosition - vOrigin);
+        float fTravelY = vCameraY * (pParticle->m_vPosition - vOrigin);
         float fLength = sqrt(fTravelY * fTravelY + fTravelX * fTravelX);
         Vector vRight;
         Vector vUp;

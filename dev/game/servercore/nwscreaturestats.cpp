@@ -2198,6 +2198,15 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
 {
     int nNumDice, nDie;
     nNumDice = nDie = 0;
+#ifdef _XBOX
+    short nDamage = 0;
+    short nMaximum;
+    int nDifficulty = 100;
+    int nAttack = GetCreature()->GetCombatRound()->GetCurrentAttack();
+    CSWSCombatAttackData* pAttack = GetCreature()->GetCombatRound()->GetAttack(nAttack);
+    CSWItemProperty* pProperty;
+    CSWSItem* pWeapon = NULL;
+#else
     int nAttack = GetCreature()->GetCombatRound()->GetCurrentAttack();
     short nDamage = 0;
     short nMaximum;
@@ -2205,6 +2214,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     CSWSCombatAttackData* pAttack = GetCreature()->GetCombatRound()->GetAttack(nAttack);
     CSWItemProperty* pProperty;
     CSWSItem* pWeapon = NULL;
+#endif
     if (bOffHand)
     {
         pWeapon = GetCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
@@ -2234,7 +2244,11 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     {
         if (!bMaxDamage)
         {
+#ifdef _XBOX
+            if (m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE1 || m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE2 || m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE3)
+#else
             if (GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE1 || GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE2 || GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE3)
+#endif
             {
                 if (pWeapon->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_MONSTER_DAMAGE, 0))
                 {
@@ -2339,9 +2353,15 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
         }
         else
         {
+#ifdef _XBOX
+            if (m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE1 ||
+                m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE2 ||
+                m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE3)
+#else
             if (GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE1 ||
                 GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE2 ||
                 GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE3)
+#endif
             {
                 if (pWeapon->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_MONSTER_DAMAGE, 0))
                 {
@@ -2365,8 +2385,13 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                     }
                 }
             }
+#ifdef _XBOX
+            else if (m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_UNARMED ||
+                m_pCreature->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_EXTRA_UNARMED)
+#else
             else if (GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_UNARMED ||
                 GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_EXTRA_UNARMED)
+#endif
             {
                 nNumDice = GetUnarmedDamageDice();
                 nDie = GetUnarmedDamageDie();
