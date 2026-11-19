@@ -532,10 +532,14 @@ void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
         }
     }
 }
+#ifdef _XBOX
 static inline CAurScene* GetAurScene(CSWGuiScene* pGuiScene)
 {
     return pGuiScene->m_pScene;
 }
+#else
+#define GetAurScene(pGuiScene) ((pGuiScene)->m_pScene)
+#endif
 CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60 GOG 0x00730970 Xbox 0x00119B00
     : CSWGuiPanel(pManager)
 {
