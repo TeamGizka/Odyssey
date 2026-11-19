@@ -7909,7 +7909,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileProjectile()
                                                  sImpactSoundColumn,
                                                  &sImpactSound);
 #ifdef _XBOX
-            pProjectile->m_cProjectileSound = CResRef(sImpactSound.CStr());
+            pProjectile->m_cProjectileSound = static_cast<const CResRef&>(sImpactSound.CStr());
 #else
             {
                 CResRef cImpactSound(sImpactSound.CStr());

@@ -327,6 +327,10 @@ void Camera::RenderScene()
         {
             GLRender::SetViewTransform(m_vPosition, m_qOrientation);
         }
+#ifdef _XBOX
+        AurDrawLine(m_vPosition, m_vPosition + m_vPosition);
+        AurDrawLine(m_vPosition, m_vPosition);
+#endif
         for (int i = 0; i < VIEW_PLANE_COUNT; ++i)
         {
             m_lstViewVolume[i].m_vNormal =

@@ -7713,6 +7713,10 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
                 Vector vDifference;
                 if (pLeader != NULL)
                 {
+#ifdef _XBOX
+                    if (pLeader == NULL && pFollowPaths != NULL)
+                        return ACTION_FAILED;
+#endif
                     vDifference = pLeader->m_vPosition - pMember->m_vLeaderPosition;
                     if (HasAction(ACTION_FOLLOW_LEADER) && bAtEnd == 0 && vDifference * vDifference >= NWSCREATURE_FOLLOW_PATH_WAIT_DISTANCE_SQUARED)
                     {
@@ -7813,7 +7817,11 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
         else if (pTarget->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
         {
             Vector vTarget = pTarget->AsSWSCreature()->m_vPosition;
+#ifdef _XBOX
+            Vector vLastTarget = m_pPathfindInformation->m_vTargetPosition;
+#else
             Vector vLastTarget = GetPathfindInformation()->m_vTargetPosition;
+#endif
             Vector vTargetDifference = vTarget - vLastTarget;
             if (vTargetDifference * vTargetDifference >=
                 NWSCREATURE_WALK_TARGET_REFRESH_DISTANCE_SQUARED)
