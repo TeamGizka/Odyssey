@@ -695,7 +695,7 @@ CSWGuiMapHider::CSWGuiMapHider()
                               CSWGuiImageParams::ALIGNMENT_DEFAULT, 1.0f,
                               Vector(1.0f, 1.0f, 1.0f)));
         CSWGuiImageParams* pParams = &m_pCurrentNoteImage->m_cParams;
-        pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+        pParams->m_vColor = CGuiInGame::COLOR_NEW_BONUS;
     }
     if (m_pNoteImage != 0)
     {
@@ -704,7 +704,7 @@ CSWGuiMapHider::CSWGuiMapHider()
                               CSWGuiImageParams::ALIGNMENT_DEFAULT, 1.0f,
                               Vector(1.0f, 1.0f, 1.0f)));
         CSWGuiImageParams* pParams = &m_pNoteImage->m_cParams;
-        pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+        pParams->m_vColor = CGuiInGame::COLOR_NEW_TEXT;
     }
 #else
     m_btnHider.Initialize(CSWGuiExtent(0, 0, 20, 20), CSWGuiTextParams(),

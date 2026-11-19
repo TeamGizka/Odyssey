@@ -85,6 +85,7 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
         cExtent.m_nLeft = m_nBarkX;
     if (m_nBarkY != -1)
         cExtent.m_nTop = m_nBarkY;
+#ifndef _XBOX
     float fScaleX = 1.0f;
     float fScaleY = 1.0f;
     if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
@@ -94,6 +95,7 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
     }
     cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
     cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+#endif
     SetExtent(cExtent);
 
     m_bDeferredRemoval = 0;
@@ -108,7 +110,11 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
         delete m_pSoundSource;
         m_pSoundSource = NULL;
     }
+#ifdef _XBOX
+    m_pSoundSource = new CExoStreamingSoundSource();
+#else
     m_pSoundSource = new CExoStreamingSoundSource(1);
+#endif
     if (oidSpeaker != OBJECT_INVALID)
     {
         Vector vPosition = g_pAppManager->m_pClientExoApp
@@ -135,6 +141,8 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
     m_pSoundSource->SetVolume(CExoSound::CMAX_VOLUME);
 #ifdef _XBOX
     m_bSoundStarted = m_pSoundSource->Play(cSound, 11, 1, 0, 0);
+    if (m_bSoundStarted == 0)
+        m_bSoundStarted = m_pSoundSource->Play(cSound, 4, 1, 0, 0);
 
     int nDebugOption = g_pExoInput->GetDebugOption();
     if (nDebugOption == 3)

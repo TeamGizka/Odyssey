@@ -2123,6 +2123,7 @@ void CSWGuiPanel::InitControl(CSWGuiControl& cControl, const CExoString& sName,
                               int bRequired, int bScale)
 {
     cControl.Load(this, m_pLayout, m_lLayoutControls, sName);
+#ifndef _XBOX
     CSWGuiExtent cExtent = cControl.m_cExtent;
     float fScaleX = 1.0f;
     float fScaleY = 1.0f;
@@ -2136,6 +2137,7 @@ void CSWGuiPanel::InitControl(CSWGuiControl& cControl, const CExoString& sName,
     cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
     cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
     cControl.SetExtent(cExtent);
+#endif
     if (bRequired != 0)
     {
         int nIndex = cControl.m_nID;

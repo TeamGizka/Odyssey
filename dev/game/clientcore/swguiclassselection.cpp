@@ -228,11 +228,13 @@ void CSWGuiClassSelection::BeginPlayGame()
 void CSWGuiClassSelection::Draw(float fElapsed)
 {
     float fScale = 1.0f;
+#ifndef _XBOX
     if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
     {
         fScale = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight
                  / (float)g_nGUIHeight;
     }
+#endif
     CSWGuiExtent cButtonExtent;
     CSWGuiExtent cModelExtent;
     cButtonExtent.m_nLeft = cButtonExtent.m_nTop = cButtonExtent.m_nWidth =
@@ -472,21 +474,12 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
     UpdateScreen(0.033333335f, 0, 0);
     for (int i = 0; i < 6; i++)
     {
-#ifdef _XBOX
-        sControl.Format("3D_MODEL%d", i + 1);
-        CSWGui3DSceneView* pView = &m_aCharacters[i].m_viewModel;
-        InitControl(*pView, sControl, 1);
-        sControl.Format("BTN_SEL%d", i + 1);
-        CSWGuiButton* pButton = &m_aCharacters[i].m_btnSelect;
-        InitControl(*pButton, sControl, 1);
-#else
         sControl.Format("BTN_SEL%d", i + 1);
         CSWGuiButton* pButton = &m_aCharacters[i].m_btnSelect;
         InitControl(*pButton, sControl, 1);
         sControl.Format("3D_MODEL%d", i + 1);
         CSWGui3DSceneView* pView = &m_aCharacters[i].m_viewModel;
         InitControl(*pView, sControl, 1);
-#endif
         pButton->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
         pButton->AddEvent(
             GUIEVENT_MOUSE_ENTER, this,

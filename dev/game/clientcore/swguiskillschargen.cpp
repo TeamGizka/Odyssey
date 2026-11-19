@@ -672,7 +672,7 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
         }
 #ifdef _XBOX
         m_lblMinus[i].SetEnabledFlag(0);
-        m_lblMinus[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_lblMinus[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
 #endif
         int nMaxRank = GetCreature()->GetStats()->GetLevel() + CSWCLevelUpStats::SKILL_RANK_LEVEL_BONUS;
         if (!IsClassSkill(i))
@@ -684,7 +684,7 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
         {
             m_lblPlus[i].SetEnabledFlag(0);
         }
-        m_lblPlus[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_lblPlus[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
 #else
         if (m_bLevelUp)
         {
@@ -817,7 +817,7 @@ void CSWGuiSkillsCharGen::Draw(float fElapsed)  // Xbox 0x001407F0
         m_lArrowHilights.element[i].m_fTimeLeft -= fElapsed;
         if (m_lArrowHilights.element[i].m_fTimeLeft <= 0.0f)
         {
-            m_lArrowHilights.element[i].m_pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+            m_lArrowHilights.element[i].m_pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
             m_lArrowHilights.DelIndex(i);
         }
     }
@@ -839,6 +839,6 @@ void CSWGuiSkillsCharGen::HilightArrow(CSWGuiLabel* pLabel)  // Xbox 0x001413C0
     m_lArrowHilights.SetSize(nCount + 1);
     m_lArrowHilights.element[nCount].m_pLabel = pLabel;
     m_lArrowHilights.element[nCount].m_fTimeLeft = 0.25f;
-    pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 }
 #endif

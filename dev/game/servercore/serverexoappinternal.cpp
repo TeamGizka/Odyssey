@@ -5202,13 +5202,15 @@ int CServerExoAppInternal::MainLoop()
             {
                 bMinGlobalRim = 1;
             }
-            cParams.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
-            cParams.m_nPortBinding = g_pExoInput->GetPortBinding();
+            int nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
+            int nPortBinding = g_pExoInput->GetPortBinding();
             if (sStartWaypoint == "")
             {
                 sStartWaypoint = "*";
             }
             cParams.m_bRenderQA = RenderQA;
+            cParams.m_nAutoCalInfo = nAutoCalInfo;
+            cParams.m_nPortBinding = nPortBinding;
             cParams.SetModuleName(sModule);
             cParams.SetLoadScreen(sLoadScreen);
             cParams.SetLoadMusic(sLoadMusic);

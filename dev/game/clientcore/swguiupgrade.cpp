@@ -4976,8 +4976,12 @@ void CSWGuiUpgrade::OnPanelAdded()
     }
     int nSlots = nSlotCount;
     CExoString sTemplate;
+#ifdef _XBOX
+    int abAvailable[NUM_UPGRADE_SLOTS] = {0, 0, 0, 0, 0, 0};
+#else
     int abAvailable[NUM_UPGRADE_SLOTS];
     memset(abAvailable, 0, sizeof(abAvailable));
+#endif
     int nSlot;
     for (nSlot = 0; nSlot < nSlots; nSlot++)
     {
@@ -5032,8 +5036,12 @@ void CSWGuiUpgrade::OnPanelAdded()
                     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidItem);
                     CSWSItem* pItem = pObject != 0 ? pObject->AsSWSItem() : 0;
                     EXOXBOXASSERT(pItem);
+#ifdef _XBOX
+                    if (pObject->AsSWSItem()->m_nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
+#else
                     int nUpgradeLevel = pObject->AsSWSItem()->m_nUpgradeLevel;
                     if (nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
+#endif
                     {
                         pLabels[nSlot].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
                         abAvailable[nSlot] = 1;

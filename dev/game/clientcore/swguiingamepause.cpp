@@ -21,27 +21,6 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0 
 
     switch (nReason)
     {
-#ifdef _XBOX
-    case 1:
-        nStrRef = 41895;
-        bShowPress = 0;
-        break;
-    case 5:
-        nStrRef = 42432;
-        break;
-    case 7:
-        nStrRef = 42482;
-        break;
-    case 8:
-        nStrRef = 42481;
-        break;
-    case 9:
-        nStrRef = 42397;
-        break;
-    case 10:
-        nStrRef = 42579;
-        break;
-#else
     case 1:
         nStrRef = STRREF_ENEMY_SIGHTED;
         bShowPress = 0;
@@ -65,7 +44,6 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0 
         nStrRef = STRREF_MINE_SIGHTED;
         bShowPress = 0;
         break;
-#endif
     default:
         nStrRef = STRREF_PAUSED;
         break;
@@ -173,19 +151,18 @@ void CSWGuiInGamePause::HandleInputEvent(int nEvent, int nState)
     if (nState != 0 && nEvent == GUIEVENT_ACTIVATE)
     {
         CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
+        int nAttachType = CSWMiniGame::ATTACH_TRACK;
         if (pMiniGame != 0)
+            nAttachType = pMiniGame->m_nAttachType;
+        if (nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
         {
-            int nAttachType = pMiniGame->m_nAttachType;
-            if (nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
             {
-                {
-                    CExoString sQuitSwoop("GBL_QUIT_SWOOP");
-                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueBoolean(sQuitSwoop, 1);
-                }
-                g_pAppManager->GetClientExoApp()->SetPausedByCombat(0, 4, 0);
-                g_pAppManager->GetClientExoApp()->SetAutoPaused(0, 0);
-                m_pManager->RemovePanel(this);
+                CExoString sQuitSwoop("GBL_QUIT_SWOOP");
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueBoolean(sQuitSwoop, 1);
             }
+            g_pAppManager->GetClientExoApp()->SetPausedByCombat(0, 4, 0);
+            g_pAppManager->GetClientExoApp()->SetAutoPaused(0, 0);
+            m_pManager->RemovePanel(this);
         }
     }
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -242,11 +219,6 @@ void CSWGuiInGamePause::OnPanelAdded()  // Xbox 0x00107620
         {
             m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
             m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
-            m_lblPauseReason.m_cText.m_cParams.SetStrRef(STRREF_PAUSED);
-            CExoString sPress =
-                g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_PRESS_TO_UNPAUSE_MINIGAME);
-            g_pTlkTable->ParseStr(sPress);
-            m_lblPress.m_cText.m_cParams.SetText(sPress);
         }
         else
         {

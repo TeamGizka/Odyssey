@@ -1803,7 +1803,8 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0 Xbox 0x00327
         m_fCameraDistance = fX > fY ? fX : fY;
     }
     bool bAnimateHierarchy = true;
-    if (m_pScene && !m_pScene->IsAnimating())
+    Scene* pScene = m_pScene;
+    if (pScene && !pScene->IsAnimating())
     {
         if (!IsForceAnimated() && !IsRenderEarly())
             return;
@@ -1858,7 +1859,7 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0 Xbox 0x00327
     if (nRun != 0 &&
         (m_lOutOfOrderAnimations[nRun - 1]->m_nFlags & AnimRun::FLAG_CURRENT_ANIMATION_SUPPRESSED))
     {
-        m_lOutOfOrderAnimations[nRun - 1]->m_nFlags -= AnimRun::FLAG_CURRENT_ANIMATION_SUPPRESSED;
+        m_lOutOfOrderAnimations[nRun - 1]->m_nFlags = m_lOutOfOrderAnimations[nRun - 1]->m_nFlags - AnimRun::FLAG_CURRENT_ANIMATION_SUPPRESSED;
         char sEvent[64];
         sprintf(sEvent, "start%s", m_lOutOfOrderAnimations[nRun - 1]->m_pAnimation->m_sName);
         DoEvent(sEvent, 0);
@@ -1920,7 +1921,7 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0 Xbox 0x00327
                     if (nRun > 0 &&
                         (m_lOutOfOrderAnimations[nRun - 1]->m_nFlags & AnimRun::FLAG_CURRENT_ANIMATION_SUPPRESSED))
                     {
-                        m_lOutOfOrderAnimations[nRun - 1]->m_nFlags -= AnimRun::FLAG_CURRENT_ANIMATION_SUPPRESSED;
+                        m_lOutOfOrderAnimations[nRun - 1]->m_nFlags = m_lOutOfOrderAnimations[nRun - 1]->m_nFlags - AnimRun::FLAG_CURRENT_ANIMATION_SUPPRESSED;
                         char sEvent[64];
                         sprintf(sEvent, "start%s", m_lOutOfOrderAnimations[nRun - 1]->m_pAnimation->m_sName);
                         DoEvent(sEvent, 0);

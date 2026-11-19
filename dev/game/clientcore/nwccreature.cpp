@@ -363,10 +363,10 @@ void HitGroundEvent(CAurObject* pObject, char* sEvent, void* pData)
 // PC 0x00657910 GOG 0x006577C0 Xbox 0x000371A0
 CSWCCombatAttackData::CSWCCombatAttackData()
 {
-    m_oidCreature = OBJECT_INVALID;
-    m_oidAttackObject = OBJECT_INVALID;
     m_bHit = 0;
     m_nAttackState = 0;
+    m_oidCreature = OBJECT_INVALID;
+    m_oidAttackObject = OBJECT_INVALID;
     m_nAttackRoll = 0;
     m_nDamage = 0;
     m_nAttackResult = 0;

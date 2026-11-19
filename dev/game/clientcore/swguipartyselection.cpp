@@ -293,11 +293,11 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
                 m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
                     CGuiInGame::DISABLED_TEXT);
 #ifdef _XBOX
-            int bSelected = ((CSWGuiPartySelectionButton*)pControl)->m_bToggled;
+            SetAddRemoveLabel(((CSWGuiPartySelectionButton*)pControl)->m_bToggled == 0);
 #else
             int bSelected = ((CSWGuiPartySelectionButton*)pControl)->m_bPartySelected;
-#endif
             SetAddRemoveLabel(bSelected == 0);
+#endif
         }
         else
         {
@@ -397,7 +397,9 @@ void CSWGuiPartySelection::UpdateCount()
 {
     CExoString sCount;
     sCount.Format("%d", MAX_SELECTED_NPCS - m_nSelectedCount);
+#ifndef _XBOX
     sCount = sCount + " " + g_pTlkTable->GetSimpleString(STRREF_AVAILABLE_SLOTS);
+#endif
     m_lblCount.m_cText.m_cParams.SetText(sCount);
 }
 // PC 0x0071E140 GOG 0x0071DBA0 Xbox 0x000F0700

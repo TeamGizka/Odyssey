@@ -59,8 +59,13 @@ public:
     {
 
         LOAD_STEPS = 16,
+#ifdef _XBOX
+        PREVIEW_TOP_NORMAL = 118,
+        PREVIEW_TOP_ACTIVE = 108,
+#else
         PREVIEW_TOP_NORMAL = 167,
         PREVIEW_TOP_ACTIVE = 157,
+#endif
         SOUNDSET_PLAYER_MALE = 85,
         SOUNDSET_PLAYER_FEMALE = 83,
         STRREF_MALE = 646,
@@ -78,14 +83,14 @@ public:
     CSWGuiClassSelChar m_aCharacters[6];
     CSWGuiLabel m_lblCharGen;
     CSWGuiLabel m_lblInstruction;
+    CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblClass;
 #ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblAccept;
     CSWGuiLabel m_lblBack;
 #endif
-    CSWGuiLabel m_lblDescription;
-    CSWGuiLabel m_lblClass;
 #ifndef _XBOX
     CSWGuiButton m_btnBack;
 #endif

@@ -145,8 +145,7 @@ void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
     if (nControl >= 0 && nControl < m_lControls.num)
         SetActiveControl(m_lControls[nControl], bActive);
 }
-#ifndef _XBOX
-// PC 0x00676B00 GOG 0x006768A0
+// PC 0x00676B00 GOG 0x006768A0 Xbox 0x0004A0D0
 void CSWGuiInGameMenu::Draw(float fElapsed)
 {
     CSWCCreature* pCreature;
@@ -170,8 +169,13 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     m_cChar1.SetPortrait(pCreature->GetPortrait(1));
     int nPoisonState = pServer->m_nPoisonState;
     m_cChar1.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1), nPoisonState);
+#ifdef _XBOX
+    short nCurForce = pStats->GetCurrentForcePoints();
+    m_cChar1.SetForce(nCurForce, pServer->GetMaxForcePoints());
+#else
     int nMaxForce = pServer->GetMaxForcePoints();
     m_cChar1.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);
+#endif
     int nState = 0;
     int nBuffCount = 0;
     int nDebuffCount = 0;
@@ -189,6 +193,16 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     }
     else
     {
+#ifdef _XBOX
+        int nEffectCount = pServer->GetEffectIconCount();
+        for (int nIcon = 0; nIcon < nEffectCount; nIcon++)
+        {
+            if (pServer->m_lstEffectIcons.element[nIcon]->m_bGood)
+                nBuffCount++;
+            else
+                nDebuffCount++;
+        }
+#else
         int nIcon = 0;
         int nEffectCount = pServer->GetEffectIconCount();
         if (nEffectCount > 0)
@@ -202,6 +216,7 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
                 ++nIcon;
             } while (nIcon < nEffectCount);
         }
+#endif
     }
     CExoString sName = pCreature->GetName();
     int nTag = sName.Find('<', 0);
@@ -231,9 +246,14 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
             g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
         m_lblTopClass2Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(1, 0));
     }
+#ifdef _XBOX
+    m_cChar1.Show(1, nState, nBuffCount, nDebuffCount, 0);
+#else
     m_cChar1.Show(1, nState, nBuffCount, nDebuffCount);
+#endif
     CSWGuiPanel::Draw(fElapsed);
     m_cChar1.DrawEffects(fElapsed, 1);
+#ifndef _XBOX
     int nCharacters = g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters();
     if (nCharacters == 1 || nCharacters == 0)
     {
@@ -286,8 +306,8 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
             m_lblLevelUp3.SetEnabledFlag(0);
         m_btnChange3.SetEnabledFlag(1);
     }
-}
 #endif
+}
 // PC 0x00675490 GOG 0x00675230 Xbox 0x0004A040
 void CSWGuiInGameMenu::Update(float fElapsed)
 {
@@ -1262,8 +1282,8 @@ CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     m_cStatusSummary.m_bCompleteSound = 0;
     m_cStatusSummary.m_bDarkAlignSound = 0;
     m_cStatusSummary.m_bLightAlignSound = 0;
-    m_cStatusSummary.m_bCreditsNet = 0;
     m_cStatusSummary.m_nCredits = 0;
+    m_cStatusSummary.m_bCreditsNet = 0;
     m_cStatusSummary.m_nLightShift = 0;
     m_cStatusSummary.m_nDarkShift = 0;
     m_cStatusSummary.m_nExperience = 0;
@@ -1498,11 +1518,13 @@ void CSWGuiStatusSummary::OnPanelAdded()
 
     float fScaleX = 1.0f;
     float fScaleY = 1.0f;
+#ifndef _XBOX
     if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
     {
         fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
         fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
     }
+#endif
     int nTop = (int)(fScaleY * 10.0f);
     int nWidth = (int)(fScaleX * 150.0f);
 

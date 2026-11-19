@@ -3717,7 +3717,7 @@ void CSWGuiListBox::OrganizeControls()  // Xbox 0x00336140
             return;
         }
         nStride = m_nContentHeight + m_nPadding;
-        m_nVisibleItems = (m_cItemExtent.m_nHeight - m_nPadding) / nStride;
+        m_nVisibleItems = m_cItemExtent.m_nHeight / nStride;
         if (m_nVisibleItems == 0)
         {
             EXOXBOXASSERT(IsOversized());

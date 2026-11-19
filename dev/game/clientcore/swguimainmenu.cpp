@@ -912,6 +912,7 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
 
 void CSWGuiMainMenu::OnErrorMessageDone(CSWGuiControl* pControl)
 {
+    m_bIdleTimerDisabled = 0;
     if (m_lstErrorMessages[0].m_pfnCallback != NULL)
     {
         (m_lstErrorMessages[0].m_pCallbackObject->*m_lstErrorMessages[0].m_pfnCallback)(NULL);
