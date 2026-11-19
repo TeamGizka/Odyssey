@@ -4295,21 +4295,27 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
     }
     else
     {
-        CSWGuiStoreItemEntry* pNewEntry = new CSWGuiStoreItemEntry;
-        pEntry = pNewEntry;
-        pEntries->Add(pNewEntry);
-        pNewEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
 #ifdef _XBOX
+        pEntry = new CSWGuiStoreItemEntry;
+        pEntries->Add(pEntry);
+        pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+        if (!bInventory)
         {
             CSWGuiButton* pProto = m_lbxStoreItems.m_pProtoItem->AsButton();
             int nWidth = m_lbxStoreItems.m_cItemExtent.m_nWidth -
                          2 * m_lbxStoreItems.m_nPadding;
-            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+            pEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
                                pProto->m_cHilite, nWidth);
-            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
+            pEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiCreateItem::OnControlStoreAButton);
         }
+        pEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                        (CSWGuiHandler)&CSWGuiCreateItem::OnControlEntered);
 #else
+        CSWGuiStoreItemEntry* pNewEntry = new CSWGuiStoreItemEntry;
+        pEntry = pNewEntry;
+        pEntries->Add(pNewEntry);
+        pNewEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
         if (bInventory)
         {
             CSWGuiButton* pProto = m_lbxInventoryItems.m_pProtoItem->AsButton();
@@ -4330,9 +4336,9 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiCreateItem::OnControlStoreAButton);
         }
-#endif
         pNewEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
                         (CSWGuiHandler)&CSWGuiCreateItem::OnControlEntered);
+#endif
     }
     if (bInventory == 0)
     {

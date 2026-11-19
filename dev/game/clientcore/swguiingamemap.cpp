@@ -758,9 +758,9 @@ void CSWGuiMapHider::Draw(float fElapsed)
         return;
     }
 
-#ifndef _XBOX
     float fGuiScaleX = 1.0f;
     float fGuiScaleY = 1.0f;
+#ifndef _XBOX
     if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
     {
         fGuiScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
@@ -778,17 +778,12 @@ void CSWGuiMapHider::Draw(float fElapsed)
             pAreaMap->GetMapData(nMapSize, nMapWidth, nMapHeight);
         if (pMapData != NULL && g_bShowFogOfWar)
         {
-#ifdef _XBOX
-            float fScaleX = (float)CSWSAreaMap::MAP_PIXEL_WIDTH / nMapWidth;
-            float fScaleY = (float)CSWSAreaMap::MAP_PIXEL_HEIGHT / nMapHeight;
-#else
             float fScaleX = fGuiScaleX * CSWSAreaMap::MAP_PIXEL_WIDTH / nMapWidth;
             float fScaleY = fGuiScaleY * CSWSAreaMap::MAP_PIXEL_HEIGHT / nMapHeight;
-#endif
-            float fDotWidth = fScaleX * 4.0f;
-            float fDotHeight = fScaleY * 4.0f;
             float fX = 0.0f;
             float fY = 0.0f;
+            float fDotWidth = fScaleX * 4.0f;
+            float fDotHeight = fScaleY * 4.0f;
             int nPixels = (nMapWidth + 1) * (nMapHeight + 1);
             for (int nPixel = 0; nPixel < nPixels; )
             {
@@ -932,18 +927,6 @@ void CSWGuiMapHider::Draw(float fElapsed)
         {
             nMapX = 0;
             nMapY = 0;
-#ifdef _XBOX
-            if (pAreaMap->GetPartyMemberMapLocation(nMember, nMapX, nMapY) &&
-                m_pCircle != NULL)
-            {
-                cExtent.m_nLeft = nMapX - 8;
-                cExtent.m_nTop = nMapY - 8;
-                cExtent.m_nWidth = 16;
-                cExtent.m_nHeight = 16;
-                m_pCircle->SetExtent(cExtent);
-                m_pCircle->Draw(fElapsed);
-            }
-#else
             if (pAreaMap->GetPartyMemberMapLocation(nMember, nMapX, nMapY))
             {
                 nMapX = (int)(nMapX * fGuiScaleX);
@@ -958,7 +941,6 @@ void CSWGuiMapHider::Draw(float fElapsed)
                     m_pCircle->Draw(fElapsed);
                 }
             }
-#endif
         }
 
         nMapX = 0;
@@ -966,10 +948,8 @@ void CSWGuiMapHider::Draw(float fElapsed)
         if (m_pArrow != NULL &&
             pAreaMap->GetPartyMemberMapLocation(0, nMapX, nMapY))
         {
-#ifndef _XBOX
             nMapX = (int)(nMapX * fGuiScaleX);
             nMapY = (int)(nMapY * fGuiScaleY);
-#endif
             cExtent.m_nLeft = nMapX - 16;
             cExtent.m_nTop = nMapY - 16;
             cExtent.m_nWidth = 32;

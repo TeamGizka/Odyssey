@@ -165,7 +165,7 @@ void CSWGuiSkillsCharGen::OnPlusButton()
     {
         nMaxRank /= 2;
     }
-    int nSkillPoints = GetCreature()->GetStats()->m_nSkillPoints;
+    int nSkillPoints = GetCreature()->GetStats()->GetSkillPoints();
     nSkill = m_nSelected;
     if (nSkillPoints >= GetCreature()->GetStats()->GetSkillPointCostForSkillRank(
                                        nSkill, 1))

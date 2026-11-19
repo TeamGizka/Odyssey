@@ -16,7 +16,11 @@ public:
     static const int MAP_PIXEL_HEIGHT = 294;
 #endif
 
+#ifdef _XBOX
+    static const unsigned int EXPLORED_BITS_PER_WORD = 32;
+#else
     static const int EXPLORED_BITS_PER_WORD = 32;
+#endif
 
     enum MapOrientation
     {

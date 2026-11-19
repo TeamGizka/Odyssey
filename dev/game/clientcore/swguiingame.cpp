@@ -974,15 +974,7 @@ void CSWGuiMessageBox::FixMessageLabel()
         cPanel.m_nTop -= 16;
     }
 #ifdef _XBOX
-    if (m_bShowButtons && !m_bHideButtons)
-    {
-        if (!m_bAllowCancel)
-        {
-            cPanel.m_nHeight -= m_nLblBBottomOffset - 15;
-            cPanel.m_nTop += (m_nLblBBottomOffset - 15) / 2;
-        }
-    }
-    else
+    if (!m_bShowButtons || m_bHideButtons)
     {
         cPanel.m_nHeight -= m_nLblABottomOffset - 15;
         cPanel.m_nTop += (m_nLblABottomOffset - 15) / 2;
@@ -991,7 +983,7 @@ void CSWGuiMessageBox::FixMessageLabel()
     if (m_lblOk.m_bEnabled)
     {
         cControl = m_lblOk.m_cExtent;
-        cControl.m_nWidth = 20;
+        cControl.m_nWidth = 30;
         m_lblOk.SetExtent(cControl);
         while (m_lblOk.m_cText.GetIdealHeight() != m_lblOk.m_cText.GetFontHeight())
         {
@@ -1004,7 +996,7 @@ void CSWGuiMessageBox::FixMessageLabel()
     if (m_lblCancel.m_bEnabled)
     {
         cControl = m_lblCancel.m_cExtent;
-        cControl.m_nWidth = 20;
+        cControl.m_nWidth = 30;
         m_lblCancel.SetExtent(cControl);
         while (m_lblCancel.m_cText.GetIdealHeight() != m_lblCancel.m_cText.GetFontHeight())
         {
@@ -1061,6 +1053,7 @@ void CSWGuiMessageBox::FixMessageLabel()
     }
 #endif
 
+#ifndef _XBOX
     if (m_nStyle != 0)
     {
         cPanel.m_nHeight = 300;
@@ -1069,8 +1062,10 @@ void CSWGuiMessageBox::FixMessageLabel()
             g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / 2 -
             cPanel.m_nWidth / 2;
     }
+#endif
     cMessage.m_nWidth += cPanel.m_nWidth - m_cPanelExtent.m_nWidth;
     SetExtent(cPanel);
+#ifndef _XBOX
     if (m_nStyle != 0)
     {
         cMessage.m_nHeight = 208;
@@ -1078,6 +1073,7 @@ void CSWGuiMessageBox::FixMessageLabel()
         cMessage.m_nLeft = 33;
         cMessage.m_nTop = 27;
     }
+#endif
     m_lbMessage.SetExtent(cMessage);
     m_lbMessage.SetScrollBarExtent(16, 1);
     AddMessageLabel();
@@ -1128,27 +1124,40 @@ void CSWGuiMessageBox::FixMessageLabel()
     cControl.m_nTop = cPrompt.m_nHeight / 2 - cControl.m_nHeight / 2 + cPrompt.m_nTop;
     cControl.m_nLeft = m_cExtent.m_nWidth - m_nLblRAnalogRightOffset;
     m_lblRAnalog.SetExtent(cControl);
-    int nCenter = m_cExtent.m_nWidth / 2;
     cControl = m_lblIcon.m_cExtent;
-    cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
+    cControl.m_nLeft = m_cExtent.m_nWidth / 2 - cControl.m_nWidth / 2;
     m_lblIcon.SetExtent(cControl);
-    cControl = m_lblOk.m_cExtent;
-    CSWGuiExtent* pAExtent = &m_lblA.m_cExtent;
-    cPrompt = *pAExtent;
-    cPrompt.m_nTop = pListExtent->m_nHeight + pListExtent->m_nTop - 4;
-    cPrompt.m_nLeft = nCenter - (cPrompt.m_nWidth + cControl.m_nWidth - 2) / 2;
-    m_lblA.SetExtent(cPrompt);
-    cControl.m_nTop = cPrompt.m_nTop - 1;
-    cControl.m_nLeft = cPrompt.m_nLeft + 30;
-    m_lblOk.SetExtent(cControl);
-    cControl = m_lblCancel.m_cExtent;
-    cPrompt = m_lblB.m_cExtent;
-    cPrompt.m_nTop = pAExtent->m_nHeight + pAExtent->m_nTop - 14;
-    cPrompt.m_nLeft = nCenter - (cPrompt.m_nWidth + cControl.m_nWidth - 2) / 2;
-    m_lblB.SetExtent(cPrompt);
-    cControl.m_nTop = cPrompt.m_nTop - 1;
-    cControl.m_nLeft = cPrompt.m_nLeft + 30;
-    m_lblCancel.SetExtent(cControl);
+    if (m_bAllowCancel)
+    {
+        cControl = m_lblOk.m_cExtent;
+        cPrompt = m_lblA.m_cExtent;
+        cPrompt.m_nTop = pListExtent->m_nTop + pListExtent->m_nHeight + 25;
+        cPrompt.m_nLeft = 23;
+        m_lblA.SetExtent(cPrompt);
+        cControl.m_nTop = cPrompt.m_nTop;
+        cControl.m_nLeft = cPrompt.m_nLeft + 37;
+        m_lblOk.SetExtent(cControl);
+        cControl = m_lblCancel.m_cExtent;
+        CSWGuiExtent* pBExtent = &m_lblB.m_cExtent;
+        cPrompt = *pBExtent;
+        cPrompt.m_nTop = m_lblA.m_cExtent.m_nTop;
+        cPrompt.m_nLeft = cPanel.m_nWidth - 117;
+        m_lblB.SetExtent(cPrompt);
+        cControl.m_nTop = cPrompt.m_nTop;
+        cControl.m_nLeft = pBExtent->m_nLeft + pBExtent->m_nWidth + 10;
+        m_lblCancel.SetExtent(cControl);
+    }
+    else
+    {
+        cControl = m_lblOk.m_cExtent;
+        cPrompt = m_lblA.m_cExtent;
+        cPrompt.m_nTop = pListExtent->m_nTop + pListExtent->m_nHeight + 25;
+        cPrompt.m_nLeft = m_cExtent.m_nWidth / 2 - (cPrompt.m_nWidth + cControl.m_nWidth + 10) / 2;
+        m_lblA.SetExtent(cPrompt);
+        cControl.m_nTop = cPrompt.m_nTop;
+        cControl.m_nLeft = cPrompt.m_nLeft + 37;
+        m_lblOk.SetExtent(cControl);
+    }
 #else
     if (m_lbMessage.IsOversized())
     {
