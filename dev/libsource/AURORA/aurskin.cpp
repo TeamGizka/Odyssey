@@ -616,6 +616,15 @@ void PartSkin::PostProcess(Part* pRoot)
                 return;
             }
 
+#ifdef _XBOX
+            AurDrawLine(m_vPosition, m_vPosition + m_vPosition);
+            AurDrawLine(m_vPosition, m_vPosition, 1);
+            AurDrawLine(m_vPosition, m_vPosition, 1);
+            AurDrawLine(m_vPosition, m_vPosition, 1);
+            AurDrawLine(m_vPosition, m_vPosition, 1);
+            AurDrawLine(m_vPosition, m_vPosition, 1);
+            AurDrawLine(m_vPosition, m_vPosition, 1);
+#endif
             Part* pPart = this;
             Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
             Quaternion qRotation = -pPart->m_qOrientation;
