@@ -3299,6 +3299,9 @@ void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,  // Xbo
         if (enabletransform)
             GLRender::Transform(pPart->m_vPosition, pPart->m_qOrientation, 0);
 #endif
+#ifdef _XBOX
+        AurDrawLine(pPart->m_vPosition, pPart->m_vPosition + localPlane.m_vNormal);
+#endif
         ++counttrans;
         if (pPart->m_fScale != 1.0f)
             GLRender::Scale(pPart->m_fScale, pPart->m_fScale, pPart->m_fScale);
@@ -3826,12 +3829,20 @@ void RenderSpecularBumpMappedPass(VertexPrimitiveFlat* pPrimitive)  // Xbox 0x00
         Vector vLight = lstLights[nLight]->m_vWorldPosition;
         Vector vEye = CurrentCamera->m_vPosition;
         float fRadius = lstLights[nLight]->m_fRadius;
+#ifdef _XBOX
+        AurDrawLine(pPart->m_vPosition, pPart->m_vPosition + pPart->m_vPosition);
+#endif
         vLight = -pPart->m_qOrientation * (vLight - pPart->m_vPosition);
         vEye = -pPart->m_qOrientation * (vEye - pPart->m_vPosition);
         pPrimitive->UpdateHalfAngleVectors(vLight, vEye);
         pPrimitive->UpdateFogValues(vLight, fRadius);
         Vector vLightColor = cmul(lstLights[nLight]->m_vColor,
+#ifdef _XBOX
+            (vSpecular * specularintensity) *
+            ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetBumpIntensity());
+#else
             (vSpecular * specularintensity) * pPart->m_pMaterial->GetBumpMapIntensity());
+#endif
         GLRender_SetBumpLightColor(vLightColor, 1.0f);
         RenderFlat(pPrimitive);
     }

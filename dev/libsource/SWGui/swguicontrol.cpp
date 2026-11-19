@@ -1572,19 +1572,15 @@ void CSWGuiScrollBar::SetMaxValue(int nMaxValue, bool bExtendedRange)
 // PC 0x00417920 GOG 0x00417950 Xbox 0x00333DF0
 void CSWGuiScrollBar::SetCurValue(int nValue)
 {
-    int nCurValue = nValue;
     if (nValue < 0)
     {
-        nCurValue = 0;
+        nValue = 0;
     }
-    else
+    else if (nValue > m_nMaxValue)
     {
-        if (nValue > m_nMaxValue)
-        {
-            nCurValue = m_nMaxValue;
-        }
+        nValue = m_nMaxValue;
     }
-    m_nCurValue = nCurValue;
+    m_nCurValue = nValue;
     return SetExtent(m_cExtent);
 }
 // PC 0x00417950 GOG 0x00417980 Xbox 0x00333E20
@@ -3915,7 +3911,7 @@ void CSWGuiListBox::OrganizeOversized()  // Xbox 0x003357B0
     {
         cExtent.m_nTop =
             m_cItemExtent.m_nHeight - m_nContentHeight - m_nPadding;
-        m_cScrollBar.SetCurValue(cExtent.m_nHeight);
+        m_cScrollBar.SetCurValue(m_nContentHeight);
         m_cScrollBar.m_nTopValue = m_nContentHeight;
     }
     else

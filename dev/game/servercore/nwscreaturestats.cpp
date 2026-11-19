@@ -1536,8 +1536,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             }
         }
     }
-    pAttack->m_AttackBreakdown.m_nOffensiveTrainingBonus = nOffensiveTrainingBonus;
     nAttackBonus += nOffensiveTrainingBonus;
+    pAttack->m_AttackBreakdown.m_nOffensiveTrainingBonus = nOffensiveTrainingBonus;
     if (g_bEnableCombatDebugging && nOffensiveTrainingBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1587,8 +1587,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             }
         }
     }
-    pAttack->m_AttackBreakdown.m_nDualStrikeBonus = nDualStrikeBonus;
     nAttackBonus += nDualStrikeBonus;
+    pAttack->m_AttackBreakdown.m_nDualStrikeBonus = nDualStrikeBonus;
 
     int nDexterityBonus = 0;
     int nStrengthBonus = 0;

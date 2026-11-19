@@ -2851,6 +2851,7 @@ int main()  // Xbox 0x00012560
                     cParams.m_nHintTimer1, cParams.m_nHintTimer2);
                 pClientExoApp->SetPlayerCharacterName("test");
                 pClientExoApp->SetInputClass(0, 1);
+                break;
             }
             else
             {

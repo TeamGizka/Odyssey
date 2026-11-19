@@ -29,6 +29,9 @@
 #include "../../libsource/AURORA/aurpointer.h"
 
 #include <math.h>
+#ifdef _XBOX
+#include "aurdraw.h"
+#endif
 // PC 0x0069CF50 GOG 0x0069CD30 Xbox 0x0009F220
 void CSWCDoor::UnloadModel(unsigned char nModel)
 {
@@ -639,6 +642,9 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250 Xb
         return;
     }
 
+#ifdef _XBOX
+    AurDrawLine(m_vPosition, m_vPosition + m_vOrientation);
+#endif
     if (GetModel(MODEL_SLOT_DEFAULT, 1) != NULL)
     {
         Quaternion qRotation;
@@ -657,21 +663,29 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250 Xb
         vMaximum = vMaximum + m_vPosition;
 
         Vector vIntersection;
-        Vector vStart = pPlayer->m_vPosition;
 #ifdef _XBOX
         Vector vDirection = pPlayer->m_vOrientation;
+#endif
+        Vector vStart = pPlayer->m_vPosition;
+#ifdef _XBOX
         Vector vEnd = pPlayer->m_vPosition + vDirection * 8.0f;
 #else
         Vector vEnd = pPlayer->m_vPosition + vDirection * 8.0f;
 #endif
         vEnd.m_fZ = 0.0f;
         vStart.m_fZ = 0.0f;
+#ifdef _XBOX
+        AurDrawLine(vStart, vEnd, 1);
+#endif
         if (!IntersectLineSegments2d(vStart, vEnd, vMinimum, vMaximum,
                                      vIntersection))
         {
             return;
         }
 
+#ifdef _XBOX
+        AurDrawLine(vStart, vIntersection, 2);
+#endif
         Gob* pPlayerModel = pPlayer->GetModel(254, 1);
         int bVisible = TRUE;
         if (pPlayerModel != NULL)
@@ -685,6 +699,9 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250 Xb
                 pPlayer->m_vPosition.m_fZ + 1.0f;
         }
 
+#ifdef _XBOX
+        AurDrawLine(vStart, vIntersection, 3);
+#endif
         CSWCArea* pArea = m_pArea;
         if (pArea != NULL)
         {
@@ -727,6 +744,9 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250 Xb
     {
         Vector vDistance = m_vPosition - pPlayer->m_vPosition;
         float fDistanceSquared = vDistance * vDistance;
+#ifdef _XBOX
+        AurDrawLine(m_vPosition, pPlayer->m_vPosition, 4);
+#endif
         if (fDistanceSquared <= 64.0f && fFacing >= 0.866)
         {
             Vector vPrevious =

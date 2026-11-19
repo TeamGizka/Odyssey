@@ -1080,7 +1080,7 @@ void CSWGuiStore::DeleteItemEntries()
 void CSWGuiStore::PopulateStoreItemListBox()
 {
 #ifdef _XBOX
-    m_lStoreItems.num = 0;
+    m_lStoreItems.RemoveAll(0);
     CItemRepository* pRepository =
         g_pAppManager->GetServerExoApp()->GetStoreByGameObjectID(m_nStoreId)->m_pItemRepository;
     CExoArrayList<CSWGuiControl*> lControls;
@@ -1098,15 +1098,16 @@ void CSWGuiStore::PopulateStoreItemListBox()
             pItem = pRepository->ItemListGetItem(i);
             if (pItem != 0 && pItem->m_bPlotObject == 0)
             {
-                nCurrentItemClass = pItem->GetBaseItem()->m_nStorePanelSort;
+                CSWBaseItem* pBaseItem = pItem->GetBaseItem();
+                nCurrentItemClass = pBaseItem->m_nStorePanelSort;
                 if (nCurrentItemClass == nItemClass)
                 {
                     if (CheckFilter(pItem))
                     {
                         ItemListEntry cEntry;
                         cEntry.m_oidItem = pItem->GetId();
-                        cEntry.m_pHandler = (CSWGuiHandler)&CSWGuiStore::OnControlStoreAButton;
                         cEntry.m_nCharacter = -1;
+                        cEntry.m_pHandler = (CSWGuiHandler)&CSWGuiStore::OnControlStoreAButton;
                         m_lStoreItems.Add(cEntry);
                     }
                     nEntries++;
