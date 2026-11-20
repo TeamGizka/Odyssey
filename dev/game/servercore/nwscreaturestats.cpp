@@ -6912,7 +6912,7 @@ int CSWSCreatureStats::GetEffectLinkImmunity(CGameEffect* pEffect)
                     bImmune = GetEffectImmunity(nImmunity, NULL);
                     if (bImmune != 0)
                     {
-                        unsigned short nFeedback;
+                        unsigned short nFeedback = 0;
                         if (nImmunity == CSWSEffectListHandler::IMMUNITY_TYPE_MIND_AFFECTING)
                             nFeedback = CSWSCreature::FEEDBACK_MIND_SPELLS_IMMUNITY;
                         else if (nImmunity == CSWSEffectListHandler::IMMUNITY_TYPE_POISON)
@@ -6953,22 +6953,22 @@ int CSWSCreatureStats::GetEffectLinkImmunity(CGameEffect* pEffect)
                             nFeedback = CSWSCreature::FEEDBACK_DEATH_IMMUNITY;
                         else if (nImmunity == CSWSEffectListHandler::IMMUNITY_TYPE_DROID_CONFUSED)
                             nFeedback = CSWSCreature::FEEDBACK_CONFUSED_IMMUNITY;
-                        else
-                            return bImmune;
-
-                        unsigned long oidCreator = pEffect->m_oidCreator;
-                        CSWSCreature* pCreator =
-                            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
-                                oidCreator);
-                        CSWCCMessageData* pMessageData = new CSWCCMessageData;
-                        pMessageData->SetObjectID(0, GetCreature()->GetId());
-                        if (pCreator != NULL)
+                        if (nFeedback != 0)
                         {
-                            CSWCCMessageData* pCreatorMessageData = new CSWCCMessageData;
-                            pMessageData->CopyTo(pCreatorMessageData);
-                            pCreator->SendFeedbackMessage(nFeedback, pCreatorMessageData);
+                            unsigned long oidCreator = pEffect->m_oidCreator;
+                            CSWSCreature* pCreator =
+                                g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
+                                    oidCreator);
+                            CSWCCMessageData* pMessageData = new CSWCCMessageData;
+                            pMessageData->SetObjectID(0, GetCreature()->GetId());
+                            if (pCreator != NULL)
+                            {
+                                CSWCCMessageData* pCreatorMessageData = new CSWCCMessageData;
+                                pMessageData->CopyTo(pCreatorMessageData);
+                                pCreator->SendFeedbackMessage(nFeedback, pCreatorMessageData);
+                            }
+                            GetCreature()->SendFeedbackMessage(nFeedback, pMessageData);
                         }
-                        GetCreature()->SendFeedbackMessage(nFeedback, pMessageData);
                         return bImmune;
                     }
                 }

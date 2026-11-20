@@ -331,6 +331,9 @@ void MdlNode::ProcessSkinSeams()
 
     unsigned char* pBuffer = 0;
     unsigned long nPool;
+    RenderVertexV* pPosition = 0;
+    RenderVertexN* pNormal = 0;
+    RenderVertexV* pOtherPosition = 0;
     List<RenderVertexN*> lstNormals;
     List<Vector> lstPositions;
     List<Quaternion> lstOrientations;
@@ -352,7 +355,12 @@ void MdlNode::ProcessSkinSeams()
             vTranslation = pNode->m_qOrientation * vTranslation;
             MdlNode* pParentNode = pNode->m_pParentNode;
             vTranslation = vTranslation + pNode->m_vPosition;
+#ifdef _XBOX
+            const Quaternion& qNode = pNode->m_qOrientation;
+            qOrientation = qNode * qOrientation;
+#else
             qOrientation = pNode->m_qOrientation * qOrientation;
+#endif
             pNode = pParentNode;
         }
         lstPositions.Add(vTranslation);
@@ -375,7 +383,7 @@ void MdlNode::ProcessSkinSeams()
     {
         for (int nVertex = 0; nVertex < lstNodes[nNode]->m_nVertexCount; nVertex++)
         {
-            RenderVertexV* pPosition = (RenderVertexV*)(pBuffer +
+            pPosition = (RenderVertexV*)(pBuffer +
                 lstNodes[nNode]->m_nVertexDataOffset + lstNodes[nNode]->m_nPositionOffset +
                 nVertex * lstNodes[nNode]->m_nVertexStride);
             vPosition.m_fX = pPosition->position.m_fX;
@@ -385,7 +393,7 @@ void MdlNode::ProcessSkinSeams()
             Vector& vVertexPosition = vPosition;
             lstNormals.SetSize(0);
             lstNormalNodes.SetSize(0);
-            RenderVertexN* pNormal = (RenderVertexN*)(pBuffer +
+            pNormal = (RenderVertexN*)(pBuffer +
                 lstNodes[nNode]->m_nVertexDataOffset + lstNodes[nNode]->m_nNormalOffset +
                 nVertex * lstNodes[nNode]->m_nVertexStride);
             lstNormals.Add(pNormal);
@@ -412,7 +420,7 @@ void MdlNode::ProcessSkinSeams()
                          nOtherVertex < lstNodes[nOther]->m_nVertexCount + 1;
                          nOtherVertex++)
                     {
-                        RenderVertexV* pOtherPosition = (RenderVertexV*)(pBuffer +
+                        pOtherPosition = (RenderVertexV*)(pBuffer +
                             lstNodes[nOther]->m_nVertexDataOffset +
                             lstNodes[nOther]->m_nPositionOffset +
                             nOtherVertex * lstNodes[nOther]->m_nVertexStride);
