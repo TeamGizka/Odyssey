@@ -233,11 +233,7 @@ void CSWGuiInGameMap::OnPanelAdded()
 
     CSWSCreature* pPlayer =
         pServer->GetPlayerCreature();
-#ifdef _XBOX
-    int bUnescapable = pPlayer->GetArea()->m_bUnescapable;
-#else
     int bUnescapable = pPlayer->GetArea()->m_bDisableTransit;
-#endif
     if (bUnescapable)
     {
         m_nMessageStrRef = STRREF_FUNCTION_UNAVAILABLE;

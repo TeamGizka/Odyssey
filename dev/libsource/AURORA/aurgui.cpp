@@ -262,6 +262,14 @@ void CAurGUIStringInternal::Draw(float fAlpha)
     GLRender::BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
     for (; nLine < m_lstLineLength.m_nCount; ++nLine)
     {
+#ifdef _XBOX
+        while (m_lstLineLength[nLine] == 0)
+        {
+            fTop += (pInfo->m_fLineSpacing * m_fScale * 100.0f /
+                CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT] +
+                pInfo->m_lstUpperLeft[*pChar].m_fY -
+                pInfo->m_lstLowerRight[*pChar].m_fY) * fScaleY;
+#else
         unsigned char nChar;
         while (m_lstLineLength[nLine] == 0)
         {
@@ -270,6 +278,7 @@ void CAurGUIStringInternal::Draw(float fAlpha)
                 CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT] +
                 pInfo->m_lstUpperLeft[nChar].m_fY -
                 pInfo->m_lstLowerRight[nChar].m_fY) * fScaleY;
+#endif
             ++pChar;
             if (++nLine == m_lstLineLength.m_nCount)
                 break;
@@ -279,6 +288,18 @@ void CAurGUIStringInternal::Draw(float fAlpha)
 
         float fSpacing = pInfo->m_fLineSpacing * m_fScale * 100.0f /
             CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
+#ifdef _XBOX
+        if ((fSpacing + pInfo->m_lstUpperLeft[*pChar].m_fY -
+             pInfo->m_lstLowerRight[*pChar].m_fY) * fScaleY + fTop < 0.0f)
+        {
+            pChar += m_lstLineLength[nLine];
+            if (*pChar == '\n' || *pChar == ' ')
+                ++pChar;
+            fTop += (fSpacing + pInfo->m_lstUpperLeft[*pChar].m_fY -
+                     pInfo->m_lstLowerRight[*pChar].m_fY) * fScaleY;
+            continue;
+        }
+#else
         nChar = *pChar;
         if ((fSpacing + pInfo->m_lstUpperLeft[nChar].m_fY -
              pInfo->m_lstLowerRight[nChar].m_fY) * fScaleY + fTop < 0.0f)
@@ -291,6 +312,7 @@ void CAurGUIStringInternal::Draw(float fAlpha)
                      pInfo->m_lstLowerRight[nChar].m_fY) * fScaleY;
             continue;
         }
+#endif
 
         int nLength = m_lstLineLength[nLine];
         char bHyphen;
@@ -311,8 +333,13 @@ void CAurGUIStringInternal::Draw(float fAlpha)
             char* pText = m_sString;
             while (*pText)
             {
+#ifdef _XBOX
+                nWidth -= (int)(((pInfo->m_lstLowerRight[*pChar].m_fX -
+                    pInfo->m_lstUpperLeft[*pChar].m_fX) * pInfo->m_fTextureWidth +
+#else
                 nWidth -= (int)(((pInfo->m_lstLowerRight[nChar].m_fX -
                     pInfo->m_lstUpperLeft[nChar].m_fX) * pInfo->m_fTextureWidth +
+#endif
                     pInfo->m_fSpacingR) * m_fScale * -100.0f);
                 ++pText;
             }

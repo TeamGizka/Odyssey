@@ -386,7 +386,7 @@ Vector Quaternion::axis() const  // Xbox 0x0029ADC0
 {
     Vector vAxis(m_fX, m_fY, m_fZ);
     float dAngle = acos(m_fW) * 2.0;
-    if (AbsoluteValue(dAngle) < 1e-7)
+    if (AbsoluteValue((float)(dAngle * 1.0f)) < 1e-7)
     {
         return Vector(1.0f, 0.0f, 0.0f);
     }

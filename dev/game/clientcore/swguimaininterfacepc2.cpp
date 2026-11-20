@@ -4331,9 +4331,8 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000
     m_lblSolomode.m_cText.m_cParams.SetText(sSoloMode);
     cArrowExtent = m_lblSolomode.m_cExtent;
     int nInnerOffset = m_lblSolomode.m_cBorder.m_cParams.GetVerticalInnerOffset();
-    int nBorder = m_lblSolomode.m_cBorder.m_cParams.GetBorderDim() - nInnerOffset;
     cArrowExtent.m_nHeight =
-        m_lblSolomode.m_cText.GetIdealHeight() + nBorder * 2;
+        m_lblSolomode.m_cText.GetIdealHeight() + (m_lblSolomode.m_cBorder.m_cParams.GetBorderDim() - nInnerOffset) * 2;
     m_lblSolomode.SetExtent(cArrowExtent);
 
     m_lblReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
@@ -4390,10 +4389,10 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000
     else
         m_bActionBarFadeEnabled = 1;
     m_fActionBarIdleRemaining = m_fActionBarIdleTime;
+    m_fActionBarIdleElapsed = 0.0f;
     m_fActionBarFadeRemaining = m_fActionBarFadeTime;
     m_vIndicateColor = m_lblIndicate.m_cBorder.m_cParams.m_vColor;
     m_fActionBarFadeElapsed = -1.0f;
-    m_fActionBarIdleElapsed = 0.0f;
     m_bActionBarFading = 0;
     m_fActionBarAlphaScale = 1.0f;
     m_fFormMessageTime = 0.0f;

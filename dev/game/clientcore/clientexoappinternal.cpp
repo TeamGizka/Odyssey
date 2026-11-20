@@ -2832,6 +2832,10 @@ void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
             if (pCreature != NULL)
             {
                 int nPoints = pCreature->m_pPathfindInformation->m_nWayPointCount / 2;
+#ifdef _XBOX
+                if (pCreature->m_pPathfindInformation->m_nWayPointCount > 0)
+                    EXOLOG("CClientExoAppInternal::ShowObject() path points %d\n", nPoints);
+#endif
                 float* pPoints = pCreature->m_pPathfindInformation->m_pWayPoints;
                 if (ShowPath && pPoints != NULL)
                 {
