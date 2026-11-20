@@ -2773,7 +2773,10 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
             CExoInputEventDesc* pDesc = aEvents[i].m_pDesc;
             int nEvent = pDesc->m_nEvent;
             int nValue = aEvents[i].m_nValue;
+            int bGuiEvent = 0;
             if (nEvent >= 39 && nEvent <= 64)
+                bGuiEvent = 1;
+            if (bGuiEvent)
             {
                 if (nValue &&
                     GetClientOptions()->m_nCameraMode == CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED &&

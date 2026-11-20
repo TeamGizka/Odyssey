@@ -58,6 +58,10 @@ void HeatDistortTextureController::Init()  // Xbox 0x00317C50
     m_pHeatImage = new unsigned char[nWidth * nHeight * nBPP];
 }
 
+static inline void HeatDistortDebugImage(unsigned char* pImage, int nWidth, int nHeight)
+{
+}
+
 void HeatDistortTextureController::Control()  // Xbox 0x00317F60
 {
     if (m_nLastUpdate != texcurrentframe)
@@ -98,6 +102,7 @@ void HeatDistortTextureController::Control()  // Xbox 0x00317F60
                     nPixel += 4;
                 }
             }
+            HeatDistortDebugImage(m_pHeatImage, nWidth, nHeight);
             m_pTexture->glImage(true, m_pHeatImage);
             m_fAngle += DeltaT;
         }

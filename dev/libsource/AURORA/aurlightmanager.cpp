@@ -949,6 +949,9 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
         return;
 
     int nMaxLights = m_nMaxLights;
+#ifdef _XBOX
+    float* pfFade = NULL;
+#endif
     int i;
     if (m_pOnlyGob)
     {
@@ -968,8 +971,14 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
     for (i = lstFadeIn.m_nCount; i--;)
     {
         PartLight* pLight = lstFadeIn[i];
+#ifdef _XBOX
+        pfFade = bDynamicOnly ? &pLight->m_fDynamicMultiplier
+                              : &pLight->m_fMultiplier;
+        float& fFade = *pfFade;
+#else
         float& fFade = bDynamicOnly ? pLight->m_fDynamicMultiplier
                                    : pLight->m_fMultiplier;
+#endif
         if (lstLights.Contains(pLight))
         {
             if (lstLights.IndexOf(pLight) >= nMaxLights)

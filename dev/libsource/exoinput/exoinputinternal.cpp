@@ -1475,8 +1475,8 @@ CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEv
         if (aBuffers[i].GetNumEvents() > 0)
             bEmpty = 0;
     }
-    int nTotal = 0;
     m_nOutputEvents = 0;
+    int nTotal = 0;
     for (int i = 0; i < m_nDevices; ++i)
         nTotal += aBuffers[i].GetNumEvents();
     int bHaveEvents = nTotal != 0 && !bEmpty;
