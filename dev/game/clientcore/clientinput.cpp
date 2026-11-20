@@ -2812,13 +2812,12 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
     CSWCCreature* pCharacter = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
     if (!GetControlledCharacterDead() && m_pPlayerControl != NULL)
     {
-        float fUpDown, fLeftRight;
         if (m_pPlayerControl->m_bEnabled && m_nInputClass == INPUT_CLASS_GAME &&
             !m_nAreaNotReadyToDisplay &&
             g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode != CClientOptions::CAMERA_MODE_NAVIGATE)
         {
-            fUpDown = g_pExoInput->PollInput(7, INPUT_CLASS_GAME);
-            fLeftRight = g_pExoInput->PollInput(8, INPUT_CLASS_GAME);
+            float fUpDown = g_pExoInput->PollInput(7, INPUT_CLASS_GAME);
+            float fLeftRight = g_pExoInput->PollInput(8, INPUT_CLASS_GAME);
             if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetGlobalFadeActive())
             {
                 fUpDown = 0.0f;
@@ -2909,7 +2908,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
                         if (m_pPlayerControl->GetCurSpeed() < 0.25f)
                         {
                             if (pMember->m_nCombatMessage == CSWPartyMemberData::COMBAT_MESSAGE_MOVING_CANCELS_COMBAT)
-                                pMember->SetCombatMessage(42475);
+                                pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
                         }
                         else
                             pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_MOVING_CANCELS_COMBAT);
@@ -2935,8 +2934,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
         {
             if (g_pAppManager->GetClientExoApp()->GetClientOptions()->GetCameraMode() == CClientOptions::CAMERA_MODE_NAVIGATE)
             {
-                fUpDown = g_pExoInput->PollInput(7, INPUT_CLASS_GAME);
-                fLeftRight = g_pExoInput->PollInput(8, INPUT_CLASS_GAME);
+                float fUpDown = g_pExoInput->PollInput(7, INPUT_CLASS_GAME);
+                float fLeftRight = g_pExoInput->PollInput(8, INPUT_CLASS_GAME);
                 if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetGlobalFadeActive())
                 {
                     fUpDown = 0.0f;
@@ -2975,7 +2974,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
         float fStickY = g_pExoInput->PollInput(23, INPUT_CLASS_MINIGAME);
         float fPadY = g_pExoInput->PollInput(32, INPUT_CLASS_MINIGAME);
         float fDown = g_pExoInput->PollInput(33, INPUT_CLASS_MINIGAME);
-        float fButtonY = g_pExoInput->PollInput(34, INPUT_CLASS_MINIGAME) - fDown;
+        float fUp = g_pExoInput->PollInput(34, INPUT_CLASS_MINIGAME);
+        float fButtonY = fUp - fDown;
         if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bReverseMinigameYAxis)
         {
             fStickY *= -1.0f;
@@ -2986,7 +2986,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // Xbox 0x00060D10
         float fStickX = g_pExoInput->PollInput(22, INPUT_CLASS_MINIGAME);
         float fPadX = g_pExoInput->PollInput(31, INPUT_CLASS_MINIGAME);
         float fRight = g_pExoInput->PollInput(36, INPUT_CLASS_MINIGAME);
-        float fButtonX = fRight - g_pExoInput->PollInput(35, INPUT_CLASS_MINIGAME);
+        float fLeft = g_pExoInput->PollInput(35, INPUT_CLASS_MINIGAME);
+        float fButtonX = fRight - fLeft;
         float fX = min(1.0f, max(-1.0f, fButtonX + fPadX + fStickX));
         pMiniGame->UpdateAxis(fX, fY, fTimeStep);
         pMiniGame->Control(fTimeStep);

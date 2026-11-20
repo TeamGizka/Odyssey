@@ -1570,7 +1570,8 @@ void MdlNodeDanglyMesh::InternalPostProcess()
             ((float*)(pData + nStride * m_nVertexCount + m_nPositionOffset + nOffset))[0] = MESH_UNUSED_VERTEX_COORDINATE;
             ((float*)(pData + nStride * m_nVertexCount + m_nPositionOffset + nOffset))[1] = MESH_UNUSED_VERTEX_COORDINATE;
             ((float*)(pData + nStride * m_nVertexCount + m_nPositionOffset + nOffset))[2] = MESH_UNUSED_VERTEX_COORDINATE;
-            GLRender::UnlockPool(m_pModel->AsModel()->m_nVertexPool);
+            nPool = m_pModel->AsModel()->m_nVertexPool;
+            GLRender::UnlockPool(nPool);
         }
         m_pfnRemoveTemporaryArrays(this);
     }

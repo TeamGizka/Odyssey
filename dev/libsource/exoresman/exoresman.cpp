@@ -296,9 +296,7 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
     CExoLinkedList<CExoKeyTable>* pList;
     unsigned long nIdBase;
     unsigned long nTableId = 0;
-#ifndef _XBOX
     unsigned long anUsedIds[2];
-#endif
     CExoKeyTable* pTable;
 
     switch (nType)
@@ -323,9 +321,10 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
         return 0;
     }
 
-#ifndef _XBOX
     anUsedIds[0] = 0;
     anUsedIds[1] = 0;
+#ifdef _XBOX
+    unsigned long nTables = 0;
 #endif
 
     CExoLinkedListNode* pPos = pList->GetHeadPos();
@@ -356,25 +355,19 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
             }
 
 #ifdef _XBOX
-            if (pTable->m_nId > nTableId)
-            {
-                nTableId = pTable->m_nId;
-            }
-#else
+            nTables++;
+#endif
             unsigned long nUsedId = pTable->m_nId & 0x0FFFFFFF;
 
             anUsedIds[nUsedId >> 5] |= 1 << (nUsedId & 0x1F);
-#endif
         }
 
         pTable = pList->GetNext(pPos);
     }
 
 #ifdef _XBOX
-    EXOXBOXASSERT((nTableId & 0x0FFFFFFF) < 0x0FFFFFFF);
-
-    nTableId = ((nTableId + 1) & 0x0FFFFFFF) | nIdBase;
-#else
+    EXOXBOXASSERT(nTables < 63);
+#endif
     for (int i = 1; i < 64; i++)
     {
         if (!(anUsedIds[i >> 5] & (1 << (i & 0x1F))))
@@ -385,7 +378,6 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
     }
 
     nTableId |= nIdBase;
-#endif
 
     CExoKeyTable* pNewTable = new CExoKeyTable;
     CExoLinkedListNode* pNode = pList->AddHead(pNewTable);
