@@ -697,6 +697,7 @@ void CSWGuiInGameEquip::ScrollItemsUp()  // Xbox 0x000FD260
 
 void CSWGuiContainer::SetItemRows(int nTopItem, int nSelectedItem)  // Xbox 0x000FD2E0
 {
+    int nTopItem2 = nTopItem;
     int bTakeMode = m_nGiveModeFlags & GIVE_MODE_ACTIVE;
     int nItems;
     if (m_nGiveModeFlags & GIVE_MODE_ACTIVE)
@@ -704,8 +705,8 @@ void CSWGuiContainer::SetItemRows(int nTopItem, int nSelectedItem)  // Xbox 0x00
         nItems = m_lContainerItems.num;
         if (nSelectedItem >= nItems)
         {
+            nTopItem2 = m_nSelectedItem - NUM_ITEM_ROWS < 0 ? 0 : m_nSelectedItem - NUM_ITEM_ROWS;
             nSelectedItem = nItems - 1;
-            nTopItem = m_nSelectedItem - NUM_ITEM_ROWS < 0 ? 0 : m_nSelectedItem - NUM_ITEM_ROWS;
         }
     }
     else
@@ -713,17 +714,17 @@ void CSWGuiContainer::SetItemRows(int nTopItem, int nSelectedItem)  // Xbox 0x00
         nItems = m_lGiveItems.num;
         if (nSelectedItem >= nItems)
         {
+            nTopItem2 = m_nSelectedItem - NUM_ITEM_ROWS < 0 ? 0 : m_nSelectedItem - NUM_ITEM_ROWS;
             nSelectedItem = nItems - 1;
-            nTopItem = m_nSelectedItem - NUM_ITEM_ROWS < 0 ? 0 : m_nSelectedItem - NUM_ITEM_ROWS;
         }
     }
-    if (nTopItem + (NUM_ITEM_ROWS - 1) >= nItems)
+    if (nTopItem2 + (NUM_ITEM_ROWS - 1) >= nItems)
     {
-        nTopItem = nItems - NUM_ITEM_ROWS < 0 ? 0 : nItems - NUM_ITEM_ROWS;
+        nTopItem2 = nItems - NUM_ITEM_ROWS < 0 ? 0 : nItems - NUM_ITEM_ROWS;
     }
     nItems = bTakeMode ? m_lContainerItems.num : m_lGiveItems.num;
     int nRows = nItems > NUM_ITEM_ROWS ? NUM_ITEM_ROWS : nItems;
-    m_nTopItem = nTopItem;
+    m_nTopItem = nTopItem2;
     m_nPreviousSelectedItem = m_nSelectedItem;
     m_nSelectedItem = nSelectedItem;
     SetActiveControl(NULL, 0);
@@ -733,13 +734,13 @@ void CSWGuiContainer::SetItemRows(int nTopItem, int nSelectedItem)  // Xbox 0x00
         CSWGuiInGameItemEntry& cRow = m_aItemRows[nRow];
         if (m_nGiveModeFlags & GIVE_MODE_ACTIVE)
         {
-            cRow.SetItem(m_lContainerItems[nTopItem + nRow], 0, 0, CGuiInGame::COLOR_NEW_TEXT,
+            cRow.SetItem(m_lContainerItems[nTopItem2 + nRow], 0, 0, CGuiInGame::COLOR_NEW_TEXT,
                          CGuiInGame::COLOR_NEW_GREEN, CGuiInGame::COLOR_NEW_HIGHLIGHT);
             cRow.AddEvent(GUIEVENT_ACTIVATE, this, NULL);
         }
         else
         {
-            cRow.SetItem(m_lGiveItems[nTopItem + nRow], 0, 0, CGuiInGame::COLOR_NEW_TEXT,
+            cRow.SetItem(m_lGiveItems[nTopItem2 + nRow], 0, 0, CGuiInGame::COLOR_NEW_TEXT,
                          CGuiInGame::COLOR_NEW_GREEN, CGuiInGame::COLOR_NEW_HIGHLIGHT);
             cRow.AddEvent(GUIEVENT_ACTIVATE, this,
                           (CSWGuiHandler)&CSWGuiContainer::GiveItem);
@@ -756,7 +757,7 @@ void CSWGuiContainer::SetItemRows(int nTopItem, int nSelectedItem)  // Xbox 0x00
     }
     else if (m_lGiveItems.num > 0)
     {
-        SetActiveControl(&m_aItemRows[nSelectedItem - nTopItem], 1);
+        SetActiveControl(&m_aItemRows[nSelectedItem - nTopItem2], 1);
     }
 }
 

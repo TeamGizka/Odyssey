@@ -987,7 +987,11 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
             }
             else if (fFade < 1.0f)
             {
+#ifdef _XBOX
+                fFade = min(1.0f, fFade + (float)(DeltaT * fFadeRate));
+#else
                 fFade = min(1.0f, fFade + DeltaT);
+#endif
             }
         }
         else if (m_lstLights.Contains(pLight))
@@ -1065,7 +1069,11 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
                     fFade = 0.0f;
             }
         }
+#ifdef _XBOX
+        fFade = min(1.0f, fFade + (float)(DeltaT * fFadeRate));
+#else
         fFade = min(1.0f, fFade + DeltaT);
+#endif
     }
 
     qsort(lstFadeIn.m_pList, lstFadeIn.m_nCount, sizeof(PartLight*), lightcmp);

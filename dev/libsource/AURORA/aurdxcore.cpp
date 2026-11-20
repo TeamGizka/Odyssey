@@ -3888,10 +3888,17 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter, const Vector& vCo
     float fYZ = fMatrix[6];
     fMatrix[6] = fMatrix[9];
     fMatrix[9] = fYZ;
+#ifdef _XBOX
+#else
     float fInverseScale = 1.0f / fScale;
+#endif
     for (int i = 0; i < 16; i++)
     {
+#ifdef _XBOX
+        fMatrix[i] = (1.0f / fScale) * fMatrix[i];
+#else
         fMatrix[i] = fInverseScale * fMatrix[i];
+#endif
     }
     g_nMatrixMode = 2;
     MultMatrix(fMatrix);
