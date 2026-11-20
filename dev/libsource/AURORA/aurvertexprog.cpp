@@ -20,9 +20,9 @@
 
 int currentframe;
 
+#ifndef _XBOX
 int nLastVertexProgram;
 int nLastVertexProgramFrame;
-#ifndef _XBOX
 List<VertexProgram*> VertexProgramManager::cm_listExistentVertexPrograms;
 
 unsigned long* cBumpyShinyRegularVPDeclaration = 0;
@@ -197,6 +197,7 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 #ifdef _XBOX
     static unsigned long* lastProg;
     static bool wasLit;
+    static int nLastVertexProgramFrame;
 
     if (LightManager::cm_bLightManagerUpdated || nLastVertexProgramFrame != currentframe ||
         lastProg != m_pFunction[bEnableLights] || wasLit != bEnableLights)
@@ -213,10 +214,10 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
         }
     }
 
+    nLastVertexProgramFrame = currentframe;
     lastProg = m_pFunction[bEnableLights];
     wasLit = bEnableLights;
     LightManager::cm_bLightManagerUpdated = 0;
-    nLastVertexProgramFrame = currentframe;
 
     unsigned int* pnProgram = &m_nGLProgram[bEnableLights];
     if (*pnProgram)

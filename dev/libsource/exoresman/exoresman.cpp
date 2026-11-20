@@ -957,13 +957,14 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
             if (nDownloadedPackage == 0)
             {
                 sPath = CExoString("RIMSXBOX:") + sPath;
+                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
             }
             else
             {
                 sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
                 sPath = sDirectory + sPath;
+                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
             }
-            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
 
             if (bResult)
             {
@@ -983,13 +984,14 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
                 if (nDownloadedPackage == 0)
                 {
                     sPath = CExoString("RIMSXBOX:") + sPath;
+                    bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
                 }
                 else
                 {
                     sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
                     sPath = sDirectory + sPath;
+                    bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
                 }
-                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
 
                 if (bResult)
                 {
@@ -1018,13 +1020,14 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
                         if (nDownloadedPackage == 0)
                         {
                             sPath = CExoString("MODULES:") + sPath;
+                            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
                         }
                         else
                         {
-                            sDirectory = sDirectory + CExoString("\\");
+                            sDirectory = sDirectory + "\\";
                             sPath = sDirectory + sPath;
+                            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
                         }
-                        bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
 
                         if (bResult)
                         {
@@ -1044,12 +1047,14 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
                     }
                     else
                     {
-                        sDirectory = sDirectory + CExoString("\\");
+                        sDirectory = sDirectory + "\\";
                         sPath = sDirectory + m_sAsyncModuleName + CExoString("_dlg");
                     }
                     int nCached;
-                    AddKeyTable(CacheResource(sPath, RESTYPE_ERF, nCached),
-                                TABLE_ENCAPSULATED, PRIORITY_MODULE);
+                    {
+                        CExoString sCachedPath = CacheResource(sPath, RESTYPE_ERF, nCached);
+                        AddKeyTable(sCachedPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
+                    }
                 }
                 else
                 {
@@ -1059,7 +1064,7 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0 GOG 0x004096B0 Xbox 0x00155020
                     }
                     else
                     {
-                        sDirectory = sDirectory + CExoString("\\");
+                        sDirectory = sDirectory + "\\";
                         sPath = sDirectory + m_sAsyncModuleName;
                     }
                     bResult = AddKeyTable(sPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
