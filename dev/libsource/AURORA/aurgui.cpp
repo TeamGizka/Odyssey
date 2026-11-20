@@ -183,10 +183,18 @@ void CAurGUIStringInternal::Draw(float fAlpha)
 
     CAurFontInfo* pInfo = AsTexture(m_pFont)->GetFontInfo();
     float fTextureWidth = pInfo->m_fTextureWidth;
+#ifdef _XBOX
+    float fTextScale = fTextureWidth * m_fScale * 100.0f;
+    float fScaleX = fTextScale /
+        CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_WIDTH];
+    float fScaleY = fTextScale /
+        CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
+#else
     float fScaleX = fTextureWidth * m_fScale * 100.0f /
         CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_WIDTH];
     float fScaleY = fTextureWidth * m_fScale * 100.0f /
         CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
+#endif
     int nLine = 0;
     float fTop = (float)m_nPositionY / (float)CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
     unsigned char* pChar = (unsigned char*)m_sString;

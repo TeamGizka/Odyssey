@@ -7645,10 +7645,10 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
             if (fSquaredDistance >= 0.001f)
             {
                 fFollowRate = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed();
-                if (GetRunRate() > fFollowRate * 1000.0f) fRate = GetRunRate();
+                if (GetRunRate() > fFollowRate * 1000.0f) fRate = (GetRunRate());
                 else fRate = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed() * 1000.0f;
             }
-            if (fSquaredDistance <= 1.0f) fRate = fRate * 0.9f; else if (fSquaredDistance <= 225.0f) fRate = fRate * 1.2f; else fRate = fRate * 1.5f;
+            if (fSquaredDistance <= 1.0f) fRate = (fRate * 0.9f); else if (fSquaredDistance <= 225.0f) fRate = (fRate * 1.2f); else fRate = (fRate * 1.5f);
         }
     }
     float fSpeedFactor = ComputeSpeedFactor(fRate, m_nWalkElapsedTime);
@@ -7838,6 +7838,13 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
             Vector vLastTarget = GetPathfindInformation()->m_vTargetPosition;
 #endif
             Vector vTargetDifference = vTarget - vLastTarget;
+#ifdef _XBOX
+            AurDrawLine(vTarget, vTarget + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
+            AurDrawLine(vLastTarget, vLastTarget + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
+            AurDrawLine(vLastTarget + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), vTarget + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
+            AurDrawLine(m_vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), vTarget + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
+            AurDrawLine(m_vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), vLastTarget + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
+#endif
             if (vTargetDifference * vTargetDifference >=
                 NWSCREATURE_WALK_TARGET_REFRESH_DISTANCE_SQUARED)
             {
