@@ -487,12 +487,20 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 {
     m_pCreature = pCreature;
     m_bLevelUp = bLevelUp;
+#ifdef _XBOX
+    m_bAllSkills = !bLevelUp ||
+        (pCreature->GetServerCreature()->m_pStats->m_bIsPC &&
+         g_pAppManager->GetServerExoApp() &&
+         g_pAppManager->GetServerExoApp()->GetPartyTable() &&
+         g_pAppManager->GetServerExoApp()->GetPartyTable()->m_nControlledNPC == NPC_PLAYER);
+#else
     CAppManager* pAppManager;
     m_bAllSkills = !bLevelUp ||
         (pCreature->GetServerCreature()->m_pStats->m_bIsPC &&
          (pAppManager = g_pAppManager)->GetServerExoApp() &&
          pAppManager->GetServerExoApp()->GetPartyTable() &&
          g_pAppManager->GetServerExoApp()->GetPartyTable()->m_nControlledNPC == NPC_PLAYER);
+#endif
     m_bDroid = m_pCreature->m_pStats->m_nRace == CSWRace::CRACE_DROID;
     unsigned char nClass = m_pCreature->m_pStats->GetClass(
         m_pCreature->m_pStats->GetNumClasses() - 1);
