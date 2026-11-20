@@ -1070,21 +1070,21 @@ unsigned char* ImageDownSample(int nWidth, int nHeight, int nBPP, unsigned char*
         {
             for (x = 0; x < nNewWidth; x++)
             {
-                for (i = 0; i < 2; i++)
+                for (i = 0; i < nBPP; i++)
                 {
-                    pDest[(y * nNewWidth + x) * 2 + i] = 0;
-                    pDest[(y * nNewWidth + x) * 2 + i] =
-                        (((pImage[((2 * y + 1) * nWidth + 2 * x + 1) * 2 + i] & 0xF0) +
-                          (pImage[(2 * (y * nWidth + x) + 1) * 2 + i] & 0xF0) +
-                          (pImage[((2 * y + 1) * nWidth + 2 * x) * 2 + i] & 0xF0) +
-                          (pImage[2 * (y * nWidth + x) * 2 + i] & 0xF0)) /
+                    pDest[(y * nNewWidth + x) * nBPP + i] = 0;
+                    pDest[(y * nNewWidth + x) * nBPP + i] |=
+                        (((pImage[((2 * y + 1) * nWidth + 2 * x + 1) * nBPP + i] & 0xF0) +
+                          (pImage[(2 * (y * nWidth + x) + 1) * nBPP + i] & 0xF0) +
+                          (pImage[((2 * y + 1) * nWidth + 2 * x) * nBPP + i] & 0xF0) +
+                          (pImage[2 * (y * nWidth + x) * nBPP + i] & 0xF0)) /
                          4) &
                         0xF0;
-                    pDest[(y * nNewWidth + x) * 2 + i] |=
-                        (((pImage[((2 * y + 1) * nWidth + 2 * x + 1) * 2 + i] & 0x0F) +
-                          (pImage[(2 * (y * nWidth + x) + 1) * 2 + i] & 0x0F) +
-                          (pImage[((2 * y + 1) * nWidth + 2 * x) * 2 + i] & 0x0F) +
-                          (pImage[2 * (y * nWidth + x) * 2 + i] & 0x0F)) /
+                    pDest[(y * nNewWidth + x) * nBPP + i] |=
+                        (((pImage[((2 * y + 1) * nWidth + 2 * x + 1) * nBPP + i] & 0x0F) +
+                          (pImage[(2 * (y * nWidth + x) + 1) * nBPP + i] & 0x0F) +
+                          (pImage[((2 * y + 1) * nWidth + 2 * x) * nBPP + i] & 0x0F) +
+                          (pImage[2 * (y * nWidth + x) * nBPP + i] & 0x0F)) /
                          4) &
                         0x0F;
                 }

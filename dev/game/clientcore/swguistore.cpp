@@ -143,7 +143,12 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
                         g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nCharacter);
                     if (pCharacter != NULL)
                     {
+#ifdef _XBOX
+                        int nSlot = 0;
+                        while (nSlot < NUM_INVENTORY_SLOTS)
+#else
                         for (int nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot)
+#endif
                         {
                             unsigned long nSlotMask = 1 << nSlot;
                             if (nSlotMask == INVENTORY_SLOT_CREATUREWEAPON1 ||
@@ -151,6 +156,9 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
                                 nSlotMask == INVENTORY_SLOT_CREATUREWEAPON3 ||
                                 nSlotMask == INVENTORY_SLOT_CREATUREARMOUR)
                             {
+#ifdef _XBOX
+                                ++nSlot;
+#endif
                                 continue;
                             }
                             if (pCharacter->GetEquippedItemID(nSlotMask) ==
@@ -158,6 +166,9 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
                             {
                                 pCharacter->SetEquippedItemID(nSlotMask, OBJECT_INVALID);
                             }
+#ifdef _XBOX
+                            ++nSlot;
+#endif
                         }
                         CSWSCreature* pServerCreature = pCharacter->GetServerCreature();
                         if (pServerCreature != NULL)

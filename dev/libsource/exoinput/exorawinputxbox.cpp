@@ -547,17 +547,31 @@ void CExoRawInputInternal::UpdateJoysticks()  // Xbox 0x00150100
 int CExoRawInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,  // Xbox 0x00150590
                                     unsigned long nDuration)
 {
-    if (!m_bRumbleEnabled || m_bRumblePaused || m_bMainDeviceLost)
+    const unsigned long nMaxDuration = 10000000;
+    const float fMinRumble = 0.0f;
+    const float fMaxRumble = 1.0f;
+    const float fMotorScale = 65535.0f;
+    const float fLeftMinSpeed = 8000.0f;
+    const float fLeftStartSpeed = 18000.0f;
+    const float fRightMinSpeed = 8500.0f;
+    const float fRightStartSpeed = 14500.0f;
+    const unsigned short nLeftMinSpeed = 8000;
+    const unsigned short nLeftStartSpeed = 18000;
+    const unsigned short nRightMinSpeed = 8500;
+    const unsigned short nRightStartSpeed = 14500;
+    const unsigned long nTimerScale = 1000;
+
+    if (!m_bRumbleEnabled || m_bRumblePaused || GetMainDeviceLost())
     {
         return 1;
     }
-    if (nJoystick >= 0 && nJoystick < m_nJoysticks && fLeft >= 0.0f &&
-        fLeft <= 1.0f && fRight >= 0.0f && fRight <= 1.0f &&
-        nDuration < 10000000)
+    if (nJoystick >= 0 && nJoystick < m_nJoysticks && fLeft >= fMinRumble &&
+        fLeft <= fMaxRumble && fRight >= fMinRumble && fRight <= fMaxRumble &&
+        nDuration < nMaxDuration)
     {
         int nPort = m_aPorts[nJoystick];
 
-        if (fLeft == 0.0f || !m_pDevices[nPort].m_bHasLeftMotor)
+        if (fLeft == fMinRumble || !m_pDevices[nPort].m_bHasLeftMotor)
         {
             m_pDevices[nPort].m_bLeftMotorOn = 0;
             m_pDevices[nPort].m_nLeftDuration = 0;
@@ -566,19 +580,19 @@ int CExoRawInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,  /
         }
         else
         {
-            float fSpeed = fLeft * 65535.0f;
-            if (fSpeed < 8000.0f)
+            float fSpeed = fLeft * fMotorScale;
+            if (fSpeed < fLeftMinSpeed)
             {
-                m_pDevices[nPort].m_nLeftMotorSpeed = 8000;
-                m_pDevices[nPort].m_Feedback.Rumble.wLeftMotorSpeed = 18000;
+                m_pDevices[nPort].m_nLeftMotorSpeed = nLeftMinSpeed;
+                m_pDevices[nPort].m_Feedback.Rumble.wLeftMotorSpeed = nLeftStartSpeed;
             }
             else
             {
                 double fValue = fSpeed;
-                if (fSpeed < 18000.0f && !m_pDevices[nPort].m_bLeftMotorOn)
+                if (fSpeed < fLeftStartSpeed && !m_pDevices[nPort].m_bLeftMotorOn)
                 {
                     m_pDevices[nPort].m_nLeftMotorSpeed = (unsigned short)fValue;
-                    m_pDevices[nPort].m_Feedback.Rumble.wLeftMotorSpeed = 18000;
+                    m_pDevices[nPort].m_Feedback.Rumble.wLeftMotorSpeed = nLeftStartSpeed;
                 }
                 else
                 {
@@ -589,11 +603,12 @@ int CExoRawInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,  /
             }
             m_pDevices[nPort].m_bLeftMotorOn = 1;
             m_pDevices[nPort].m_nLeftDuration = nDuration;
-            m_pDevices[nPort].m_nLeftStartTime = (unsigned long)(
-                g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
+            unsigned long nTime = (unsigned long)(
+                g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / nTimerScale);
+            m_pDevices[nPort].m_nLeftStartTime = nTime;
         }
 
-        if (fRight == 0.0f || !m_pDevices[nPort].m_bHasRightMotor)
+        if (fRight == fMinRumble || !m_pDevices[nPort].m_bHasRightMotor)
         {
             m_pDevices[nPort].m_bRightMotorOn = 0;
             m_pDevices[nPort].m_nRightDuration = 0;
@@ -602,19 +617,19 @@ int CExoRawInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,  /
         }
         else
         {
-            fRight *= 65535.0f;
-            if (fRight < 8500.0f)
+            float fSpeed = fRight * fMotorScale;
+            if (fSpeed < fRightMinSpeed)
             {
-                m_pDevices[nPort].m_nRightMotorSpeed = 8500;
-                m_pDevices[nPort].m_Feedback.Rumble.wRightMotorSpeed = 14500;
+                m_pDevices[nPort].m_nRightMotorSpeed = nRightMinSpeed;
+                m_pDevices[nPort].m_Feedback.Rumble.wRightMotorSpeed = nRightStartSpeed;
             }
             else
             {
-                double fValue = fRight;
-                if (fRight < 14500.0f && !m_pDevices[nPort].m_bRightMotorOn)
+                double fValue = fSpeed;
+                if (fSpeed < fRightStartSpeed && !m_pDevices[nPort].m_bRightMotorOn)
                 {
                     m_pDevices[nPort].m_nRightMotorSpeed = (unsigned short)fValue;
-                    m_pDevices[nPort].m_Feedback.Rumble.wRightMotorSpeed = 14500;
+                    m_pDevices[nPort].m_Feedback.Rumble.wRightMotorSpeed = nRightStartSpeed;
                 }
                 else
                 {
@@ -625,8 +640,9 @@ int CExoRawInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,  /
             }
             m_pDevices[nPort].m_bRightMotorOn = 1;
             m_pDevices[nPort].m_nRightDuration = nDuration;
-            m_pDevices[nPort].m_nRightStartTime = (unsigned long)(
-                g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
+            unsigned long nTime = (unsigned long)(
+                g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / nTimerScale);
+            m_pDevices[nPort].m_nRightStartTime = nTime;
         }
 
         XInputSetState(m_pDevices[nPort].m_hDevice, &m_pDevices[nPort].m_Feedback);

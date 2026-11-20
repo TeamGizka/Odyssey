@@ -197,11 +197,13 @@ void CSWGuiInGameMap::OnPanelAdded()
     m_cMapHider.SetExtent(CSWGuiExtent(0, 0, (int)(fScaleX * CSWSAreaMap::MAP_PIXEL_WIDTH),
                                        (int)(fScaleY * CSWSAreaMap::MAP_PIXEL_HEIGHT)));
 #endif
-    CSWCArea* pClientArea = g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo;
+    CSWCModule* pClientModule = g_pAppManager->GetClientExoApp()->GetModule();
+    CSWCArea* pClientArea = pClientModule->m_pInfo;
     CExoString sAreaName = pClientArea->m_sAreaName;
     m_lblArea.m_cText.m_cParams.SetText(sAreaName);
 
-    CResRef cAreaResRef = pServer->GetModule()->m_cAreaResRef;
+    CSWSModule* pModule = pServer->GetModule();
+    CResRef cAreaResRef = pModule->m_cAreaResRef;
     CExoString sAreaResRef;
     CExoString sMapImage;
     cAreaResRef.CopyToString(sAreaResRef);
@@ -211,21 +213,18 @@ void CSWGuiInGameMap::OnPanelAdded()
     CSWPartyTable* pPartyTable = pServer->GetPartyTable();
     if (pPartyTable->m_bDisableMap)
     {
-        CResRef cMapImage("LBL_STATIC");
-        m_imgMap.m_cParams.SetImage(cMapImage, 0);
+        m_imgMap.m_cParams.SetImage("LBL_STATIC", 0);
         nMapMode = 0;
     }
     else
     if (pServer->GetModule()->GetAreaMap()->m_nExploredSize > 0)
     {
-        CResRef cMapImage(sMapImage);
-        m_imgMap.m_cParams.SetImage(cMapImage, 0);
+        m_imgMap.m_cParams.SetImage(sMapImage, 0);
         nMapMode = 1;
     }
     else
     {
-        CResRef cMapImage("lbl_mapm28aa");
-        m_imgMap.m_cParams.SetImage(cMapImage, 0);
+        m_imgMap.m_cParams.SetImage("lbl_mapm28aa", 0);
         nMapMode = 0;
     }
     m_imgMap.m_cParams.SetDrawStyle(SWGUI_IMAGE_DRAW_STYLE_NORMAL);
