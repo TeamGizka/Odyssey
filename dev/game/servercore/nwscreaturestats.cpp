@@ -1930,7 +1930,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         int nCharacters = pParty->GetNumCharacters();
         for (int i = 0; i < nCharacters; ++i)
         {
-            CSWSCreatureStats* pStats = pParty->GetCharacter(i)->GetServerCreature()->m_pStats;
+            CSWSCreatureStats* pStats = pParty->GetCharacter(i)->GetServerCreature()->GetStats();
             if (pStats->m_bIsPC)
             {
                 nCharismaBonus = pStats->m_nCharismaModifier;

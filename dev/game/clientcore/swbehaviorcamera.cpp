@@ -1525,29 +1525,28 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // Xbox 0
         qResult = static_cast<Gob*>(m_pTarget.m_pObject)->GetOrientation();
     }
 
-    m_vInitialPosition = static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition();
-    float fInterp;
+    Gob* pTargetGob = static_cast<Gob*>(m_pTarget.m_pObject);
+    m_vInitialPosition = pTargetGob->GetPosition();
     if (m_fTurn == 0.0f && !bStickCentered)
     {
         if (bLookAt)
         {
-            fInterp = CameraInterpAmt2;
+            m_fOrientationInterpAmount = CameraInterpAmt2;
         }
         else
         {
-            fInterp = CameraInterpAmt1;
+            m_fOrientationInterpAmount = CameraInterpAmt1;
             m_bFollowingMove = 1;
         }
     }
     else if (!bLookAt && m_fTurn == 0.0f && m_bKeepManualYaw != 1)
     {
-        fInterp = CameraInterpAmt3;
+        m_fOrientationInterpAmount = CameraInterpAmt3;
     }
     else
     {
-        fInterp = CameraInterpAmt2;
+        m_fOrientationInterpAmount = CameraInterpAmt2;
     }
-    m_fOrientationInterpAmount = fInterp;
     if (m_fTurn == 0.0f && m_bFollowingMove && OldCamera)
     {
         m_fOrientationInterpAmount = CameraInterpAmt3;
