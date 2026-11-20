@@ -1445,15 +1445,31 @@ void CSWGuiStore::SelectNextItem()
 {
     int nSelected = m_nSelectedItem + 1;
     int nTop = m_nTopItem;
-    if (nSelected >= GetNumItemEntries())
+    if (m_bBuying)
     {
-        nSelected = 0;
-        nTop = 0;
-        g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
+        if (nSelected >= m_lStoreItems.num)
+        {
+            nTop = 0;
+            nSelected = 0;
+            g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
+        }
+        else if (nSelected - nTop > NUM_ITEM_ROWS - 1)
+        {
+            nTop = nSelected - (NUM_ITEM_ROWS - 1);
+        }
     }
-    else if (nSelected - nTop > NUM_ITEM_ROWS - 1)
+    else
     {
-        nTop = nSelected - (NUM_ITEM_ROWS - 1);
+        if (nSelected >= m_lInventoryItems.num)
+        {
+            nTop = 0;
+            nSelected = 0;
+            g_pExoInput->ClearEventRepeat(m_pManager->m_nLastInputEvent);
+        }
+        else if (nSelected - nTop > NUM_ITEM_ROWS - 1)
+        {
+            nTop = nSelected - (NUM_ITEM_ROWS - 1);
+        }
     }
     SetItemRows(nTop, nSelected);
 }
