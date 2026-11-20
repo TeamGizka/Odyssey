@@ -401,7 +401,7 @@ void MdlNode::ProcessSkinSeams()
 #ifdef _XBOX
 
             long nPackedNormal = *(long*)pNormal;
-            vLocalNormal.m_fX = (float)((nPackedNormal << 21) >> 21) * (1.0f / 1023.0f);
+            vLocalNormal.m_fX = ((float)((nPackedNormal << 21) >> 21)) * (1.0f / 1023.0f);
             vLocalNormal.m_fY = (float)((nPackedNormal << 10) >> 21) * (1.0f / 1023.0f);
             vLocalNormal.m_fZ = (float)(nPackedNormal >> 22) * (1.0f / 511.0f);
 #else

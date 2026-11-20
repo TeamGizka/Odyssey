@@ -2612,8 +2612,8 @@ void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x0050
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     int nWaitCount = 0;
     int nProgress = pClientExoApp->GetLoadStep(0);
-    int nProgressEnd = nProgress +
-        g_pAppManager->m_pClientExoApp->GetLoadStep(1);
+    pClientExoApp = g_pAppManager->m_pClientExoApp;
+    int nProgressEnd = nProgress + pClientExoApp->GetLoadStep(1);
 
     g_pExoResMan->FindModuleDownloadedPkg(sModuleName);
     int nProgressIncrement = (nProgressEnd - nProgress) / 15;
