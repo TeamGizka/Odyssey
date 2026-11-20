@@ -520,8 +520,8 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         nStartTime = (unsigned long)pAction->m_apParam[8];
     }
 
-    int bCastComplete = FALSE;
     unsigned long nEndTime = 0;
+    int bCastComplete = FALSE;
     unsigned short nEndAnimation = 0;
     if (pAction->m_nNumParams > 9)
     {
@@ -649,7 +649,7 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
     int bForceMaster = FALSE;
     unsigned short nAnimation;
     unsigned long nCastTime, nRoundTime;
-    switch (pItem->GetBaseItem()->m_nItemType)
+    switch (pItem->GetBaseItem()->GetItemType())
     {
     case CSWBaseItem::ITEM_TYPE_STIMULANT:
     case CSWBaseItem::ITEM_TYPE_MEDPAC:
@@ -754,8 +754,8 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
     if (!m_bItemCastStarted)
     {
 
-        if ((pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_STIMULANT ||
-             pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_STIMULANT) &&
+        if ((pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_STIMULANT ||
+             pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_STIMULANT) &&
             (!m_nAreaWaitState || !g_pAppManager->GetServerExoApp()->GetDifficultyOption(2)))
             BroadcastAttackOfOpportunity(OBJECT_INVALID);
         m_bItemCastStarted = TRUE;
@@ -794,9 +794,9 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
 
     if (!m_bSafeProjectileBroadcast)
     {
-        m_vSpellTargetPosition = vTarget;
         m_nLastSpellId = nSpellId;
         m_oidSpellTargetObject = oidTarget;
+        m_vSpellTargetPosition = vTarget;
         m_bSafeProjectileBroadcast = FALSE;
         m_oidSpellCasterItem = oidItem;
         m_bCasterLevelOverride = TRUE;
@@ -804,14 +804,14 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         int nLevel = m_pStats->GetClassLevel(m_pStats->GetNumClasses() - 1, FALSE);
         m_nCasterLevelOverride = nLevel;
         if (pTargetCreature != NULL &&
-            (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_STIMULANT ||
-             pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
-             pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC))
+            (pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_STIMULANT ||
+             pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
+             pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC))
             pTargetCreature->SetAnimation(nAnimation);
         else
             SetAnimation(nAnimation);
         GetCombatRound()->m_nNumActionsTaken = GetCombatRound()->GetNumActionsTaken() + 1;
-        if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE &&
+        if (pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE &&
             nSpellId < CSWSpell::ITEM_ABILITY_GRENADE_LAUNCHED_FRAGMENTATION)
             SpellCastAndImpact(nSpellId, vTarget, OBJECT_INVALID, CASTING_CLASS_INNATE_FF, oidItem, 0, 0, 0, 0);
         else

@@ -2289,6 +2289,9 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
         glDepthMask(GL_TRUE);
 #endif
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+#ifdef _XBOX
+        AurDrawLine(vTranslation, pPart->m_vPosition);
+#endif
     }
 }
 
