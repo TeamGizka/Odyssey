@@ -1469,12 +1469,10 @@ void MdlNodeDanglyMesh::InternalPostProcess()
             m_nVertexStride = 0;
             m_nPositionOffset = 0;
             m_pVertexPositions = (Vector*)new char[m_nVertexCount * sizeof(Vector)];
-#ifdef _XBOX
-            int nVertexSize = sizeof(Vector) + sizeof(unsigned long);
-            m_nNormalOffset = sizeof(Vector);
-#else
             int nVertexSize = 2 * sizeof(Vector);
             m_nNormalOffset = nVertexSize / 2;
+#ifdef _XBOX
+            nVertexSize -= sizeof(Vector) - sizeof(unsigned long);
 #endif
             m_nVertexStride = nVertexSize;
             m_nVertexArrayFlags |= VERTEX_ARRAY_POSITION | VERTEX_ARRAY_NORMAL;
