@@ -1598,7 +1598,8 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
         return 0;
     }
     float fReciprocal = 1.0f / fMagnitude;
-    Vector vNormal = vSum * fReciprocal;
+    Vector vNormal;
+    vNormal = vSum * fReciprocal;
     float fDistance = -(vNormal * pVertices[0]);
     float fStart, fEnd;
     if ((fStart = vNormal * vStart + fDistance) < 0.0f ||
