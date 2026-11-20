@@ -2271,7 +2271,7 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
             GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
             GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 #ifdef _XBOX
-            GLRender_SetDepthMask(GL_TRUE);
+            GLRender::SetDepthMask(GL_TRUE);
 #else
             glDepthMask(GL_TRUE);
 #endif
@@ -2290,14 +2290,11 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
         }
         GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 #ifdef _XBOX
-        GLRender_SetDepthMask(GL_TRUE);
+        GLRender::SetDepthMask(GL_TRUE);
 #else
         glDepthMask(GL_TRUE);
 #endif
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
-#ifdef _XBOX
-        AurDrawLine(vTranslation, pPart->m_vPosition);
-#endif
     }
 }
 

@@ -1302,7 +1302,7 @@ inline void GLRender::GetViewPort(int* pViewport)
     D3DVIEWPORT8 viewport;
     g_pD3DDevice->GetViewport(&viewport);
     int nHeight = viewport.Height;
-    int nY = g_nScreenHeight - viewport.Y - nHeight;
+    int nY = (&g_nScreenWidth)[1] - viewport.Y - nHeight;
     pViewport[0] = viewport.X;
     pViewport[1] = nY;
     pViewport[2] = viewport.Width;
