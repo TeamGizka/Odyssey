@@ -155,6 +155,7 @@ public:
 };
 
 #define VM_MAX_SCRIPTS 8
+#define VM_NCS_CODE_START 13
 
 #ifdef _XBOX
 

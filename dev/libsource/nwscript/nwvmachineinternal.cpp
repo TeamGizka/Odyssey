@@ -572,8 +572,9 @@ int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)  // PC 0x0061D
     if (nVersion == 10 && pNCSData[8] == 'B')
 #endif
     {
-        InitializeScript(&m_aScripts[m_nCurrentScript], pNCSData + 13,
-                         nNCSSize - 13);
+        InitializeScript(&m_aScripts[m_nCurrentScript],
+                         pNCSData + VM_NCS_CODE_START,
+                         nNCSSize - VM_NCS_CODE_START);
 #ifndef _XBOX
         m_pRes->Release();
         {
@@ -1997,12 +1998,17 @@ int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)  // Xbox 0x001
             return -96;
         }
 
-        if (pNCSData[8] == 'B')
+        if (pNCSData[8] != 'B')
         {
-            InitializeScript(&m_aScripts[m_nCurrentScript], pNCSData + 13,
-                             nNCSSize - 13);
-            return 0;
+            m_aVMFile[m_nCurrentScript].m_pRes->Release();
+            m_nCurrentScript--;
+            return -96;
         }
+
+        pNCSData += VM_NCS_CODE_START;
+        nNCSSize -= VM_NCS_CODE_START;
+        InitializeScript(&m_aScripts[m_nCurrentScript], pNCSData, nNCSSize);
+        return 0;
     }
 
     m_aVMFile[m_nCurrentScript].m_pRes->Release();

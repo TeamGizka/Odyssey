@@ -2184,7 +2184,9 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
         Part* pPart = pSkin;
         Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
         Quaternion qRotation = -pPart->m_qOrientation;
+#ifndef _XBOX
         AurDrawLine(vTranslation, vTranslation * 2.0f);
+#endif
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
@@ -2194,9 +2196,8 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490 GOG 0x004AA550
             qRotation = qRotation * -pPart->m_qOrientation;
         }
 #ifdef _XBOX
-        AurDrawLine(vTranslation, pPart->m_vPosition, 0);
-        AurDrawLine(pPart->m_vPosition, vTranslation);
-        AurDrawLine(pPart->m_vPosition, vTranslation, 0);
+        SkinDebugEnd((int)pNode->m_pfBoneMap[pNode->m_nBoneMap - 1]);
+        SkinDebugBone();
 #endif
         GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
         for (int i = 0; i < pNode->m_nBoneMap; i++)
