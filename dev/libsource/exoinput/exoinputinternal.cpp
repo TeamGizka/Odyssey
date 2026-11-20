@@ -1528,19 +1528,21 @@ CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEv
                 {
                     if (anPositions[i] < aBuffers[i].GetNumEvents())
                     {
+#ifdef _XBOX
+                        unsigned long nEventSequence = aBuffers[i].m_pEvents[anPositions[i]].m_nSequence;
+                        if (nDevice != -1 && nSequence != nEventSequence)
+                            continue;
+#else
                         unsigned long nEventSequence;
                         if (nDevice == -1)
                             nEventSequence = aBuffers[i].m_pEvents[anPositions[i]].m_nSequence;
                         else
                         {
                             nEventSequence = aBuffers[i].m_pEvents[anPositions[i]].m_nSequence;
-#ifdef _XBOX
-                            if (nSequence != nEventSequence)
-#else
                             if (!DISEQUENCE_COMPARE(nSequence, ==, nEventSequence))
-#endif
                                 continue;
                         }
+#endif
                         nSequence = nEventSequence;
                         nDevice = i;
                         bSelected = 1;
