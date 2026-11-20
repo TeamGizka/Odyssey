@@ -1580,27 +1580,25 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
             const Vector& vEnd, Vector* pHit, Vector* pNormal)
 {
 
-    Vector vSum(0.0f, 0.0f, 0.0f);
+    Vector vNormal(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < nVertices - 2; i++)
     {
         int nNext = (i + 1) % nVertices;
         int nAfter = (i + 2) % nVertices;
-        vSum = vSum + cross(pVertices[nNext] - pVertices[i],
-                            pVertices[nAfter] - pVertices[nNext]);
+        vNormal = vNormal + cross(pVertices[nNext] - pVertices[i],
+                                  pVertices[nAfter] - pVertices[nNext]);
     }
 #ifdef _XBOX
-    float fMagnitude = SqrtEstimateNR_ASM(vSum * vSum);
+    float fMagnitude = SqrtEstimateNR_ASM(vNormal * vNormal);
 #else
-    float fMagnitude = magnitude(vSum);
+    float fMagnitude = magnitude(vNormal);
 #endif
     if (fMagnitude < 1e-8f)
     {
         return 0;
     }
-    float fReciprocal = 1.0f / fMagnitude;
-    Vector vNormal;
-    vNormal = vSum * fReciprocal;
-    float fDistance = -(vNormal * pVertices[0]);
+    vNormal = vNormal * (1.0f / fMagnitude);
+    float fDistance = 0.0f - vNormal * pVertices[0];
     float fStart, fEnd;
     if ((fStart = vNormal * vStart + fDistance) < 0.0f ||
         (fEnd = vNormal * vEnd + fDistance) > 0.0f || fStart == fEnd)

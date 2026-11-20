@@ -3803,10 +3803,17 @@ CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
                         int nInsert;
                         for (nInsert = nObjectCount - 1; nInsert >= 0; --nInsert)
                         {
+#ifdef _XBOX
+                            float fDistance;
+                            if (nCategory < pObjects[nInsert].m_nCategory ||
+                                (nCategory == pObjects[nInsert].m_nCategory &&
+                                 fDistanceSquared < (fDistance = pObjects[nInsert].m_fDistance) * fDistance))
+#else
                             if (nCategory < pObjects[nInsert].m_nCategory ||
                                 (nCategory == pObjects[nInsert].m_nCategory &&
                                  fDistanceSquared < pObjects[nInsert].m_fDistance *
                                                     pObjects[nInsert].m_fDistance))
+#endif
                             {
                                 pObjects[nInsert + 1].m_fDistance = pObjects[nInsert].m_fDistance;
                                 pObjects[nInsert + 1].m_nCategory = pObjects[nInsert].m_nCategory;

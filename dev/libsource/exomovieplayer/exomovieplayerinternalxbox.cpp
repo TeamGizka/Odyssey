@@ -141,8 +141,7 @@ void CExoMoviePlayerInternal::RenderFrame(int nWait)
     while (m_hBink->Frames != m_hBink->FrameNum && m_bMoviePlaying)
     {
         BinkDoFrame(m_hBink);
-        nBuffer ^= 1;
-        m_aFrameBuffers[nBuffer].m_pTexture->LockRect(0, &lockedRect, NULL, 0);
+        m_aFrameBuffers[nBuffer ^ 1].m_pTexture->LockRect(0, &lockedRect, NULL, 0);
         BinkCopyToBuffer(m_hBink, lockedRect.pBits, lockedRect.Pitch, m_hBink->Height, 0, 0,
                          BINKSURFACEYUY2 | BINKCOPYALL);
         rectSource.left = 0;
@@ -152,7 +151,7 @@ void CExoMoviePlayerInternal::RenderFrame(int nWait)
         RECT rectFrame = {nCenterX - m_hBink->Width / 2, nCenterY - m_hBink->Height / 2,
                           m_hBink->Width / 2 + nCenterX, m_hBink->Height / 2 + nCenterY};
         rectDest = rectFrame;
-        D3DDevice::UpdateOverlay(m_aFrameBuffers[nBuffer].m_pSurface, &rectSource, &rectDest, FALSE, 0);
+        D3DDevice::UpdateOverlay(m_aFrameBuffers[nBuffer ^ 1].m_pSurface, &rectSource, &rectDest, FALSE, 0);
         BinkNextFrame(m_hBink);
         while (BinkWait(m_hBink) == 1)
         {
@@ -162,6 +161,7 @@ void CExoMoviePlayerInternal::RenderFrame(int nWait)
         {
             break;
         }
+        nBuffer ^= 1;
     }
     D3DDevice::BlockUntilVerticalBlank();
     D3DDevice::EnableOverlay(FALSE);

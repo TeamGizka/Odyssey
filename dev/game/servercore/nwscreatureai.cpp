@@ -6261,6 +6261,9 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
     if ((nForceItemMask & pSpell->m_nForbidItemMask) ||
         (nForceItemMask & GetRequireItemMask(pSpell)) != pSpell->m_nRequireItemMask)
     {
+#ifdef _XBOX
+Failed:
+#endif
         RemoveSpellActionFromRound();
         ProcessPendingCombatActions();
         return ACTION_FAILED;
@@ -6406,6 +6409,13 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
             {
                 if (!bOverride)
                 {
+#ifdef _XBOX
+                    if (DecrementSpellReadyCount(nSpellId, nMultiClass, nSpellLevel,
+                            nMetamagic, nSpellLikeClass))
+                        ;
+                    else
+                        goto Failed;
+#else
                     if (!DecrementSpellReadyCount(nSpellId, nMultiClass, nSpellLevel,
                             nMetamagic, nSpellLikeClass))
                     {
@@ -6413,6 +6423,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
                         ProcessPendingCombatActions();
                         return ACTION_FAILED;
                     }
+#endif
                 }
                 else
                 {
@@ -6431,9 +6442,13 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
                     m_bIgnoreSpellReadyCount = 0;
                     if (!bInstant)
                         SendFeedbackMessage(FEEDBACK_CAST_ENTANGLE_CONCENTRATION_FAILURE, NULL);
+#ifdef _XBOX
+                    goto Failed;
+#else
                     RemoveSpellActionFromRound();
                     ProcessPendingCombatActions();
                     return ACTION_FAILED;
+#endif
                 }
             }
         }
