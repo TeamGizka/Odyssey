@@ -3888,8 +3888,7 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter, const Vector& vCo
     float fYZ = fMatrix[6];
     fMatrix[6] = fMatrix[9];
     fMatrix[9] = fYZ;
-#ifdef _XBOX
-#else
+#ifndef _XBOX
     float fInverseScale = 1.0f / fScale;
 #endif
     for (int i = 0; i < 16; i++)
