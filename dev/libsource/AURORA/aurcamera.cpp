@@ -266,14 +266,22 @@ void Camera::RenderScene()
                                   m_nViewPortWidth, m_nViewPortHeight);
             float fWidth = (float)m_nViewPortWidth;
             float fHeight = (float)m_nViewPortHeight;
+#ifdef _XBOX
+            fAspect = (fWidth / fHeight);
+#else
             fAspect = fWidth / fHeight;
+#endif
             m_fViewPlaneScale = m_nViewPortHeight * 0.01f;
         }
         else
         {
             float fWidth = (float)aViewport[2];
             float fHeight = (float)aViewport[3];
+#ifdef _XBOX
+            fAspect = (fWidth / fHeight);
+#else
             fAspect = fWidth / fHeight;
+#endif
             m_fViewPlaneScale = aViewport[3] * 0.01f;
         }
 
