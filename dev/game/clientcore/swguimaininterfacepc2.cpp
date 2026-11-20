@@ -4322,17 +4322,18 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000
     cArrowExtent.m_nLeft -= m_cActionTextBackExtent.m_nLeft;
     m_cActionText.SetExtent(cArrowExtent);
     cArrowExtent = m_cActionTextBackExtent;
-    cArrowExtent.m_nLeft = 0;
     cArrowExtent.m_nTop = 0;
+    cArrowExtent.m_nLeft = 0;
     m_cActionTextBack.SetExtent(cArrowExtent);
 
     CExoString sSoloMode = m_lblSolomode.m_cText.m_cParams.m_sText;
     g_pTlkTable->ParseStr(sSoloMode);
     m_lblSolomode.m_cText.m_cParams.SetText(sSoloMode);
     cArrowExtent = m_lblSolomode.m_cExtent;
+    CSWGuiText* pText = &m_lblSolomode.m_cText;
     int nInnerOffset = m_lblSolomode.m_cBorder.m_cParams.GetVerticalInnerOffset();
     cArrowExtent.m_nHeight =
-        m_lblSolomode.m_cText.GetIdealHeight() + (m_lblSolomode.m_cBorder.m_cParams.GetBorderDim() - nInnerOffset) * 2;
+        pText->GetIdealHeight() + (m_lblSolomode.m_cBorder.m_cParams.GetBorderDim() - nInnerOffset) * 2;
     m_lblSolomode.SetExtent(cArrowExtent);
 
     m_lblReticle.m_cBorder.m_cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
@@ -4358,8 +4359,8 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000
 
     cArrowExtent.m_nLeft = 48;
     cArrowExtent.m_nTop = 279;
-    cArrowExtent.m_nWidth = 264;
     cArrowExtent.m_nHeight = 80;
+    cArrowExtent.m_nWidth = 264;
     m_lblHelp.m_cBorder.m_cParams.SetCornerImage("uibit_brdr_16bct", 0);
     m_lblHelp.m_cBorder.m_cParams.SetEdgeImage("uibit_brdr_16bet", 0);
     m_lblHelp.m_cBorder.m_cParams.SetFillImage("uibit_fill_2bt", 0);
@@ -4391,12 +4392,12 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // Xbox 0x000
     m_fActionBarIdleRemaining = m_fActionBarIdleTime;
     m_fActionBarIdleElapsed = 0.0f;
     m_fActionBarFadeRemaining = m_fActionBarFadeTime;
-    m_vIndicateColor = m_lblIndicate.m_cBorder.m_cParams.m_vColor;
     m_fActionBarFadeElapsed = -1.0f;
     m_bActionBarFading = 0;
     m_fActionBarAlphaScale = 1.0f;
     m_fFormMessageTime = 0.0f;
     m_nFormMessage = 0;
+    m_vIndicateColor = m_lblIndicate.m_cBorder.m_cParams.m_vColor;
     m_bPersonalActionScrolled = 0;
     m_nLeaderNPC = -1;
 }

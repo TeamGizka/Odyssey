@@ -1044,14 +1044,12 @@ unsigned char* ImageDownSample(int nWidth, int nHeight, int nBPP, unsigned char*
     int nNewWidth = nWidth / 2;
     int nNewHeight = nHeight / 2;
     unsigned char* pDest = (unsigned char*)operator new(nNewHeight * nNewWidth * nBPP);
-    int x;
-    int y;
     int i;
     if (nBPP == 3 || nBPP == 4 || nBPP == 1)
     {
-        for (y = 0; y < nNewHeight; y++)
+        for (int y = 0; y < nNewHeight; y++)
         {
-            for (x = 0; x < nNewWidth; x++)
+            for (int x = 0; x < nNewWidth; x++)
             {
                 for (i = 0; i < nBPP; i++)
                 {
@@ -1066,9 +1064,9 @@ unsigned char* ImageDownSample(int nWidth, int nHeight, int nBPP, unsigned char*
     }
     else if (nBPP == 2)
     {
-        for (y = 0; y < nNewHeight; y++)
+        for (int y = 0; y < nNewHeight; y++)
         {
-            for (x = 0; x < nNewWidth; x++)
+            for (int x = 0; x < nNewWidth; x++)
             {
                 for (i = 0; i < nBPP; i++)
                 {

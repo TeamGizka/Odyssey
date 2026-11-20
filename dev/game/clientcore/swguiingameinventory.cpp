@@ -1125,49 +1125,63 @@ void CSWGuiInGameInventory::CreateItemEntry(CSWCCreature* pCreature, CSWSItem* p
     }
 }
 
+static inline int GetNextInventoryFilter(int nFilter)
+{
+    nFilter++;
+    if (nFilter >= CSWGuiInGameInventory::NUM_FILTERS)
+    {
+        nFilter = CSWGuiInGameInventory::FILTER_ALL;
+    }
+    else if (nFilter == 1 || nFilter == 2 || nFilter == 3 || nFilter == 4 || nFilter == 5)
+    {
+        nFilter = CSWGuiInGameInventory::FILTER_DATAPADS;
+    }
+    return nFilter;
+}
+
+static inline int GetPreviousInventoryFilter(int nFilter)
+{
+    nFilter--;
+    if (nFilter < 0)
+    {
+        nFilter = CSWGuiInGameInventory::NUM_FILTERS - 1;
+    }
+    else if (nFilter == 1 || nFilter == 2 || nFilter == 3 || nFilter == 4 || nFilter == 5)
+    {
+        nFilter = CSWGuiInGameInventory::FILTER_ALL;
+    }
+    return nFilter;
+}
+
 // Xbox 0x000F9120
 void CSWGuiInGameInventory::SetNextFilter(int bPrevious)
 {
     int nFilter = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nInventoryFilter;
     if (!bPrevious)
     {
-        nFilter++;
-        if (nFilter >= NUM_FILTERS)
-        {
-            nFilter = FILTER_ALL;
-        }
-        else if (nFilter == 1 || nFilter == 2 || nFilter == 3 || nFilter == 4 || nFilter == 5)
-        {
-            nFilter = FILTER_DATAPADS;
-        }
+        nFilter = GetNextInventoryFilter(nFilter);
     }
     else
     {
-        nFilter--;
-        if (nFilter < 0)
-        {
-            nFilter = NUM_FILTERS - 1;
-        }
-        else if (nFilter == 1 || nFilter == 2 || nFilter == 3 || nFilter == 4 || nFilter == 5)
-        {
-            nFilter = FILTER_ALL;
-        }
+        nFilter = GetPreviousInventoryFilter(nFilter);
     }
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nInventoryFilter = nFilter;
     for (int nButton = 0; nButton < NUM_FILTERS; nButton++)
     {
-        if (m_apFilterButtons[nButton] != NULL)
+        CSWGuiButton* pButton = m_apFilterButtons[nButton];
+        if (pButton != NULL)
         {
-            CSWGuiTextParams* pParams = &m_apFilterButtons[nButton]->m_cText.m_cParams;
             if (nButton == nFilter)
             {
-                pParams->SetColor(m_vItemHilightColor);
-                pParams->m_bHilightText = 1;
+                CSWGuiTextParams& cParams = pButton->m_cText.m_cParams;
+                cParams.SetColor(m_vItemHilightColor);
+                cParams.m_bHilightText = 1;
             }
             else
             {
-                pParams->SetColor(m_vFilterTextColor);
-                pParams->m_bHilightText = 0;
+                CSWGuiTextParams& cParams = pButton->m_cText.m_cParams;
+                cParams.SetColor(m_vFilterTextColor);
+                cParams.m_bHilightText = 0;
             }
         }
     }

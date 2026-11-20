@@ -8440,8 +8440,13 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
             CExoIni cIni;
             CExoString sValue;
 #ifdef _XBOX
-            unsigned long nUnlocked = g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nUnlockedSongs | (1 << nArea);
-            g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nUnlockedSongs = nUnlocked;
+            CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+            CClientOptions* pOptions = pClientExoApp->GetClientOptions();
+            int nUnlocked = pOptions->m_nUnlockedSongs;
+            nUnlocked |= 1 << nArea;
+            pClientExoApp = g_pAppManager->m_pClientExoApp;
+            pOptions = pClientExoApp->GetClientOptions();
+            pOptions->m_nUnlockedSongs = nUnlocked;
 #else
             cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                               "UnlockedPlanetSongs");
@@ -8466,11 +8471,10 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
         break;
     default:
         if (g_pAppManager->GetServerExoApp() == NULL ||
-            g_pAppManager->GetServerExoApp()->m_pcExoAppInternal == NULL ||
-            !g_pAppManager->GetServerExoApp()->GetModulePreviouslyVisited(sModule))
+            g_pAppManager->GetServerExoApp()->m_pcExoAppInternal == NULL)
             bStoryHint = 0;
         else
-            bStoryHint = 1;
+            bStoryHint = g_pAppManager->GetServerExoApp()->GetModulePreviouslyVisited(sModule);
         break;
     }
     if (!bStoryHint)

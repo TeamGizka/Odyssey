@@ -259,7 +259,7 @@ Vector cmul(const Vector& left, const Vector& right);
 Vector normalize(const Vector& vector);
 Quaternion normalize(Quaternion quaternion);
 float DegToRad(float fDegrees);
-double Round(float fValue, float fRoundTo);
+float Round(float fValue, float fRoundTo);
 Matrix Transpose(const Matrix& matrix);
 Vector operator*(const Matrix& matrix, const Vector& vector);
 #ifndef MATH3D_NO_INLINE

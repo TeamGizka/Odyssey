@@ -3005,13 +3005,13 @@ int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // Xbox 0x0015
                                     unsigned char* pSignature,
                                     unsigned long nFlags)
 {
-    int bResult = 0;
     unsigned long nTotalRead = 0;
-    memset(pSignature, 0, SIGNATURE_SIZE);
-    CExoFile* pFile = new CExoFile(sFileName, nType, "rb");
+    int bResult = 0;
     unsigned char* pBuffer = NULL;
-
     unsigned long nBytesToSign = nSize;
+    memset(pSignature, 0, SIGNATURE_SIZE);
+
+    CExoFile* pFile = new CExoFile(sFileName, nType, "rb");
     if (pFile != NULL)
     {
         if (pFile->FileOpened())
@@ -3029,11 +3029,10 @@ int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // Xbox 0x0015
                 {
                     do
                     {
-                        unsigned long nChunk = nBytesToSign - nTotalRead;
-                        if (nChunk > SIGNATURE_BUFFER_SIZE)
-                        {
-                            nChunk = SIGNATURE_BUFFER_SIZE;
-                        }
+                        unsigned long nChunk =
+                            (nBytesToSign - nTotalRead > SIGNATURE_BUFFER_SIZE)
+                                ? SIGNATURE_BUFFER_SIZE
+                                : nBytesToSign - nTotalRead;
                         unsigned long nRead = pFile->Read(pBuffer, nChunk, 1);
                         nTotalRead += nRead;
                         if (nRead == 0)

@@ -1788,6 +1788,12 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
     EXOLOG("moveParticleP2PBezier: %f %f %f %f %f %f\n", vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ,
         vTarget.m_fX, vTarget.m_fY, vTarget.m_fZ);
 }
+#ifdef _XBOX
+static inline void EmitterDebugInheritLocal(const Particle* pParticle, const Vector& vPosition,
+    const Vector& vTranslation, int nIndex)
+{
+}
+#endif
 // PC 0x004BF280 GOG 0x004BF390 Xbox 0x002F55B0
 void PartEmitter::moveParticleP2PGrav(float fTimeStep)
 {
@@ -1846,6 +1852,9 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
             Vector vTranslation = m_pAurObject->m_vPosition - m_vInheritPosition;
             vPosition += vTranslation;
             pParticle->m_vOrigin += vTranslation;
+#ifdef _XBOX
+            EmitterDebugInheritLocal(pParticle, vPosition, vTranslation, i);
+#endif
             vPosition += m_vInheritPosition;
             pParticle->m_vDrift = m_pAurObject->m_qOrientation *
                 (-m_qInheritOrientation * pParticle->m_vDrift);
@@ -1862,6 +1871,9 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
                 (-m_qInheritOrientation * pParticle->m_vOrigin);
             pParticle->m_vOrigin = pParticle->m_vOrigin + m_pAurObject->m_vPosition;
             vPosition += m_vInheritPosition;
+#ifdef _XBOX
+            AurDrawLine(vPosition + vNext, vPosition + vTarget);
+#endif
             pParticle->m_vDrift = m_pAurObject->m_qOrientation *
                 (-m_qInheritOrientation * pParticle->m_vDrift);
         }
@@ -1869,7 +1881,11 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
         if (pNode->IsAffectedByWind())
             vNext += currentscene->GetWindVector(vPosition, fTimeStep);
         vDelta = vTarget - vPosition;
+#ifdef _XBOX
+        float fThresholdSquared = (m_fThreshold * m_fThreshold);
+#else
         float fThresholdSquared = m_fThreshold * m_fThreshold;
+#endif
         if (vDelta * vDelta <= fThresholdSquared)
         {
             pParticle->m_fAge = m_fLifeTime;

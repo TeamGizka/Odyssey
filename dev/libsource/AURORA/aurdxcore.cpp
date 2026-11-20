@@ -822,37 +822,6 @@ void GLRender::SetOrthoTransform(double fLeft, double fRight, double fBottom, do
     }
 }
 
-static float AdjustBrightness(float fValue)
-{
-    fValue += g_fBrightness;
-    if (fValue > 1.0f)
-    {
-        fValue = 1.0f;
-    }
-    else if (fValue < 0.0f)
-    {
-        fValue = 0.0f;
-    }
-    float fResult;
-    if (fValue < 0.5)
-    {
-        fResult = ((1.0f - aquadraticterm) + aquadraticterm * fValue * 2.0f) * fValue;
-    }
-    else
-    {
-        fResult = 1.0f - (1.0f - fValue) * (1.0f - fValue) * aquadraticterm * 2.0f - (1.0f - aquadraticterm) * (1.0f - fValue);
-    }
-    if (fResult > 1.0f)
-    {
-        return 1.0f;
-    }
-    if (fResult < 0.0f)
-    {
-        return 0.0f;
-    }
-    return fResult;
-}
-
 // Xbox 0x0029BA40
 void GLRender::SetDirtyTexture(int nIndex, CAurTexture* pTexture)
 {
@@ -3197,8 +3166,39 @@ void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)  // Xbox 0x002
         DWORD* pBits = (DWORD*)lock.pBits;
         for (i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; i++)
         {
-            float fValue = AdjustBrightness(i * (1.0f / 255.0f));
-            pBits[(lock.Pitch >> 2) * i] = (unsigned int)(fValue * 255.0f) << FRAMEBUFFER_BLUE_SHIFT;
+            float fIntensity = i * (1.0f / AUR_FRAMEBUFFER_CHANNEL_MAX) + g_fBrightness;
+            if (fIntensity > 1.0f)
+            {
+                fIntensity = 1.0f;
+            }
+            else if (fIntensity < 0.0f)
+            {
+                fIntensity = 0.0f;
+            }
+            float fResult;
+            if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+            {
+                fResult = ((1.0f - aquadraticterm) + aquadraticterm * fIntensity * 2.0f) * fIntensity;
+            }
+            else
+            {
+                fResult = 1.0f - (1.0f - fIntensity) * (1.0f - fIntensity) * aquadraticterm * 2.0f -
+                          (1.0f - aquadraticterm) * (1.0f - fIntensity);
+            }
+            float fLookup;
+            if (fResult > 1.0f)
+            {
+                fLookup = 1.0f;
+            }
+            else if (fResult < 0.0f)
+            {
+                fLookup = 0.0f;
+            }
+            else
+            {
+                fLookup = fResult;
+            }
+            pBits[(lock.Pitch >> 2) * i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_BLUE_SHIFT;
         }
         XGSwizzleRect(pBits, 0, NULL, lock.pBits, 1, FRAMEBUFFER_LOOKUP_SIZE, NULL, sizeof(DWORD));
 
@@ -3206,8 +3206,39 @@ void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)  // Xbox 0x002
         pBits = (DWORD*)lock.pBits;
         for (i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; i++)
         {
-            float fValue = AdjustBrightness(i * (1.0f / 255.0f));
-            pBits[i] = (unsigned int)(fValue * 255.0f) << FRAMEBUFFER_GREEN_SHIFT;
+            float fIntensity = i * (1.0f / AUR_FRAMEBUFFER_CHANNEL_MAX) + g_fBrightness;
+            if (fIntensity > 1.0f)
+            {
+                fIntensity = 1.0f;
+            }
+            else if (fIntensity < 0.0f)
+            {
+                fIntensity = 0.0f;
+            }
+            float fResult;
+            if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+            {
+                fResult = ((1.0f - aquadraticterm) + aquadraticterm * fIntensity * 2.0f) * fIntensity;
+            }
+            else
+            {
+                fResult = 1.0f - (1.0f - fIntensity) * (1.0f - fIntensity) * aquadraticterm * 2.0f -
+                          (1.0f - aquadraticterm) * (1.0f - fIntensity);
+            }
+            float fLookup;
+            if (fResult > 1.0f)
+            {
+                fLookup = 1.0f;
+            }
+            else if (fResult < 0.0f)
+            {
+                fLookup = 0.0f;
+            }
+            else
+            {
+                fLookup = fResult;
+            }
+            pBits[i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX) << FRAMEBUFFER_GREEN_SHIFT;
         }
         XGSwizzleRect(pBits, 0, NULL, lock.pBits, FRAMEBUFFER_LOOKUP_SIZE, 1, NULL, sizeof(DWORD));
 
@@ -3215,8 +3246,39 @@ void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)  // Xbox 0x002
         pBits = (DWORD*)lock.pBits;
         for (i = 0; i < FRAMEBUFFER_LOOKUP_SIZE; i++)
         {
-            float fValue = AdjustBrightness(i * (1.0f / 255.0f));
-            pBits[(lock.Pitch >> 2) * i] = (unsigned int)(fValue * 255.0f);
+            float fIntensity = i * (1.0f / AUR_FRAMEBUFFER_CHANNEL_MAX) + g_fBrightness;
+            if (fIntensity > 1.0f)
+            {
+                fIntensity = 1.0f;
+            }
+            else if (fIntensity < 0.0f)
+            {
+                fIntensity = 0.0f;
+            }
+            float fResult;
+            if (fIntensity < AUR_FRAMEBUFFER_OVERBRIGHTEN_THRESHOLD)
+            {
+                fResult = ((1.0f - aquadraticterm) + aquadraticterm * fIntensity * 2.0f) * fIntensity;
+            }
+            else
+            {
+                fResult = 1.0f - (1.0f - fIntensity) * (1.0f - fIntensity) * aquadraticterm * 2.0f -
+                          (1.0f - aquadraticterm) * (1.0f - fIntensity);
+            }
+            float fLookup;
+            if (fResult > 1.0f)
+            {
+                fLookup = 1.0f;
+            }
+            else if (fResult < 0.0f)
+            {
+                fLookup = 0.0f;
+            }
+            else
+            {
+                fLookup = fResult;
+            }
+            pBits[(lock.Pitch >> 2) * i] = (unsigned int)(fLookup * AUR_FRAMEBUFFER_CHANNEL_MAX);
         }
         XGSwizzleRect(pBits, 0, NULL, lock.pBits, 1, FRAMEBUFFER_LOOKUP_SIZE, NULL, sizeof(DWORD));
     }

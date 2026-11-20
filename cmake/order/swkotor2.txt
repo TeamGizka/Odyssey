@@ -2809,7 +2809,7 @@ AurSetAntiAliasingMode
 ??0VertexCache@@QAE@H@Z
 ??1VertexCache@@QAE@XZ
 ?DegToRad@@YAMM@Z
-?Round@@YANMM@Z
+?Round@@YAMMM@Z
 ?SphereAbovePlane@@YAMABVVector@@MABVPlane@@@Z
 ?PlaneHeightAtPoint@@YAMABVVector@@M0@Z
 ??D@YA?AVVector@@ABVMatrix@@ABV0@@Z

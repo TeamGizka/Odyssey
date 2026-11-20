@@ -38,7 +38,7 @@ float DegToRad(float fDegrees)
 inline float SegmentAbs(float x) { return x < 0 ? -x : x; }  // Xbox 0x0028E6E0
 #define SEGMENT_MAX(a, b) ((a) > (b) ? (a) : (b))
 // PC 0x004D6970 GOG 0x004D6AB0 Xbox 0x0028FD90
-double Round(float fValue, float fRoundTo)
+float Round(float fValue, float fRoundTo)
 {
     return floor(fValue / fRoundTo + 0.5f) * fRoundTo;
 }
