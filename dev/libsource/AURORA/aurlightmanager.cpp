@@ -962,6 +962,9 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
         nMaxLights = min(nMaxLights, nGobLights);
     }
 
+#ifdef _XBOX
+    float fFadeRate = 1.0f;
+#endif
     for (i = lstFadeIn.m_nCount; i--;)
     {
         PartLight* pLight = lstFadeIn[i];
@@ -972,7 +975,7 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
             if (lstLights.IndexOf(pLight) >= nMaxLights)
             {
 #ifdef _XBOX
-                fFade -= DeltaT;
+                fFade -= (float)(DeltaT * fFadeRate);
 #else
                 fFade -= (float)(DeltaT * 1.0);
 #endif
@@ -990,7 +993,7 @@ void LightManager::ControlLightsFade(List<PartLight*>& lstFadeIn,
         else if (m_lstLights.Contains(pLight))
         {
 #ifdef _XBOX
-            fFade -= DeltaT;
+            fFade -= (float)(DeltaT * fFadeRate);
 #else
             fFade -= (float)(DeltaT * 1.0);
 #endif

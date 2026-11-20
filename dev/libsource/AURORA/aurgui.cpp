@@ -187,19 +187,35 @@ void CAurGUIStringInternal::Draw(float fAlpha)
         CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_WIDTH];
     float fScaleY = fTextureWidth * m_fScale * 100.0f /
         CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
+    int nLine = 0;
     float fTop = (float)m_nPositionY / (float)CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
     unsigned char* pChar = (unsigned char*)m_sString;
-    int nLine = 0;
+#ifndef _XBOX
     unsigned char nAlignment = m_nAlignmentBits & ALIGNMENT_VERTICAL;
+#endif
     float fLineHeight;
+#ifdef _XBOX
+    if ((m_nAlignmentBits & ALIGNMENT_VERTICAL) == ALIGNMENT_VCENTER)
+#else
     if (nAlignment == ALIGNMENT_VCENTER)
+#endif
     {
         fLineHeight = pInfo->m_fHeight * m_fScale * 100.0f;
+#ifdef _XBOX
+        float fViewportHeight = (float)CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
+        float fOffset = (m_nHeight - m_lstLineLength.m_nCount * fLineHeight) /
+            (fViewportHeight + fViewportHeight);
+#else
         float fOffset = (m_nHeight - m_lstLineLength.m_nCount * fLineHeight) /
             ((float)CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT] + (float)CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT]);
+#endif
         while (fOffset < 0.0f)
         {
+#ifdef _XBOX
+            fOffset += fLineHeight / fViewportHeight;
+#else
             fOffset += fLineHeight / (float)CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT];
+#endif
             int nLength = m_lstLineLength[nLine];
             if (nLength < 0)
                 pChar -= nLength;
@@ -211,7 +227,11 @@ void CAurGUIStringInternal::Draw(float fAlpha)
         }
         fTop += fOffset;
     }
+#ifdef _XBOX
+    else if ((m_nAlignmentBits & ALIGNMENT_VERTICAL) == ALIGNMENT_BOTTOM)
+#else
     else if (nAlignment == ALIGNMENT_BOTTOM)
+#endif
     {
         fLineHeight = pInfo->m_fHeight * m_fScale * 100.0f;
         float fTextHeight = m_lstLineLength.m_nCount * fLineHeight;
@@ -291,7 +311,11 @@ void CAurGUIStringInternal::Draw(float fAlpha)
             m_lstLineWidth.Add((short)(nWidth -
                 (int)(pInfo->m_fSpacingR * m_fScale * 100.0f)));
         }
+#ifdef _XBOX
+        unsigned char nAlignment = m_nAlignmentBits & ALIGNMENT_HORIZONTAL;
+#else
         nAlignment = m_nAlignmentBits & ALIGNMENT_HORIZONTAL;
+#endif
         if (nAlignment == ALIGNMENT_HCENTER)
         {
             float fWidth = CAurGUIDraw::cm_nViewportStack[

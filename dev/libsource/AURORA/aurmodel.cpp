@@ -2158,6 +2158,9 @@ inline void DebugValidatePartMaterial(Part* pPart, char* sName);
 int HitCheckAABBnode(AABB* pNode, const Vector& vStart, Vector& vEnd, float fScale)
 {
     ++countboxes;
+#ifdef _XBOX
+    AurDrawLine(vStart, vEnd);
+#endif
     if (fScale == 1.0f)
     {
         if (!BoxIntersect(vStart, vEnd, pNode->m_vMinimum, pNode->m_vMaximum))
@@ -2273,6 +2276,10 @@ int HitCheckAABBnode(AABB* pNode, const Vector& vStart, Vector& vEnd, float fSca
             aabb_hitinfo->m_vOutputVector = vEnd;
             aabb_hitinfo->m_vOutputPosition = vEnd;
             aabb_test = nFace;
+#ifdef _XBOX
+            AurDrawLine(aabb_hitinfo->m_vOutputPosition,
+                        aabb_hitinfo->m_vOutputPosition + aabb_hitinfo->m_vOutputNormal);
+#endif
         }
         return nHit;
     }

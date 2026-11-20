@@ -611,7 +611,12 @@ void PartSkin::PostProcess(Part* pRoot)
             List<Quaternion> qbones;
             List<Vector> tbones;
 
+#ifdef _XBOX
+            int nCount = pNode->m_lstTBoneRefInv.m_nCount;
+            if (nCount != 0)
+#else
             if (pNode->m_lstTBoneRefInv.m_nCount != 0)
+#endif
             {
                 return;
             }
