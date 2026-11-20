@@ -445,6 +445,7 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
     if (nFormat == 10)
     {
         bLinear = 1;
+        nFormat = 0;
     }
     else if (nFormat == 11)
     {
@@ -461,7 +462,14 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
     }
     else if (nFormat == 0)
     {
-        XGSwizzleRect(pImage, 0, NULL, pLock->pBits, nWidth, nHeight, NULL, 4);
+        if (bLinear)
+        {
+            memcpy(pLock->pBits, pImage, nWidth * nHeight * 4);
+        }
+        else
+        {
+            XGSwizzleRect(pImage, 0, NULL, pLock->pBits, nWidth, nHeight, NULL, 4);
+        }
     }
     else if (nFormat == 4)
     {
@@ -476,10 +484,6 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
             }
         }
         XGSwizzleRect(pImage, 0, NULL, pLock->pBits, nWidth, nHeight, NULL, 4);
-    }
-    else if (nFormat == 10)
-    {
-        memcpy(pLock->pBits, pImage, nWidth * nHeight * 4);
     }
     else if (nFormat == 1)
     {
