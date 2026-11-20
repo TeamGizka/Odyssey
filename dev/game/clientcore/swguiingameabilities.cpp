@@ -164,17 +164,20 @@ void CSWGuiInGameAbilities::UpdateView()  // Xbox 0x000F42A0
     CSWGuiExtent cExtent;
 
     SetDescription("");
-    m_lblSkills.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblFeats.m_cText.m_cParams.m_bHilightText = 0;
-    m_lblPowers.m_cText.m_cParams.m_bHilightText = 0;
+    CSWGuiTextParams* pSkillsParams = &m_lblSkills.m_cText.m_cParams;
+    pSkillsParams->m_bHilightText = 0;
+    CSWGuiTextParams* pFeatsParams = &m_lblFeats.m_cText.m_cParams;
+    pFeatsParams->m_bHilightText = 0;
+    CSWGuiTextParams* pPowersParams = &m_lblPowers.m_cText.m_cParams;
+    pPowersParams->m_bHilightText = 0;
 
     switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
     {
     case 2:
-        m_lblSkills.m_cText.m_cParams.SetColor(m_vTabColor);
-        m_lblFeats.m_cText.m_cParams.SetColor(m_vHiliteColor);
-        m_lblFeats.m_cText.m_cParams.m_bHilightText = 1;
-        m_lblPowers.m_cText.m_cParams.SetColor(m_vTabColor);
+        pSkillsParams->SetColor(m_vTabColor);
+        pFeatsParams->SetColor(m_vHiliteColor);
+        pFeatsParams->m_bHilightText = 1;
+        pPowersParams->SetColor(m_vTabColor);
         m_lblInfoBackground.SetEnabledFlag(0);
         m_lblSkillRank.SetEnabledFlag(0);
         m_lblRankValue.SetEnabledFlag(0);
@@ -198,10 +201,10 @@ void CSWGuiInGameAbilities::UpdateView()  // Xbox 0x000F42A0
                                                            OBJECT_INVALID, 0);
         break;
     case 1:
-        m_lblSkills.m_cText.m_cParams.SetColor(m_vTabColor);
-        m_lblFeats.m_cText.m_cParams.SetColor(m_vTabColor);
-        m_lblPowers.m_cText.m_cParams.SetColor(m_vHiliteColor);
-        m_lblPowers.m_cText.m_cParams.m_bHilightText = 1;
+        pSkillsParams->SetColor(m_vTabColor);
+        pFeatsParams->SetColor(m_vTabColor);
+        pPowersParams->SetColor(m_vHiliteColor);
+        pPowersParams->m_bHilightText = 1;
         m_lblName.m_cText.m_cParams.SetText("");
         m_lblRankValue.m_cText.m_cParams.SetText("");
         m_lblBonusValue.m_cText.m_cParams.SetText("");
@@ -231,10 +234,10 @@ void CSWGuiInGameAbilities::UpdateView()  // Xbox 0x000F42A0
                                                            OBJECT_INVALID, 0);
         break;
     case 0:
-        m_lblSkills.m_cText.m_cParams.SetColor(m_vHiliteColor);
-        m_lblSkills.m_cText.m_cParams.m_bHilightText = 1;
-        m_lblFeats.m_cText.m_cParams.SetColor(m_vTabColor);
-        m_lblPowers.m_cText.m_cParams.SetColor(m_vTabColor);
+        pSkillsParams->SetColor(m_vHiliteColor);
+        pSkillsParams->m_bHilightText = 1;
+        pFeatsParams->SetColor(m_vTabColor);
+        pPowersParams->SetColor(m_vTabColor);
         DisplayPowers();
         m_lblSkillRank.m_cText.m_cParams.SetStrRef(STRREF_SKILL_RANK);
         m_lblBonus.m_cText.m_cParams.SetStrRef(STRREF_BONUS);
